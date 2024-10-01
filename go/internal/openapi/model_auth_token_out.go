@@ -22,7 +22,7 @@ type AuthTokenOut struct {
 	// The key's ID
 	Id string `json:"id"`
 	Name NullableString `json:"name,omitempty"`
-	Scopes []string `json:"scopes,omitempty"`
+	Scopes *[]string `json:"scopes,omitempty"`
 	Token string `json:"token"`
 }
 
@@ -180,11 +180,11 @@ func (o *AuthTokenOut) UnsetName() {
 
 // GetScopes returns the Scopes field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *AuthTokenOut) GetScopes() []string {
-	if o == nil  {
+	if o == nil || o.Scopes == nil {
 		var ret []string
 		return ret
 	}
-	return o.Scopes
+	return *o.Scopes
 }
 
 // GetScopesOk returns a tuple with the Scopes field value if set, nil otherwise
@@ -194,7 +194,7 @@ func (o *AuthTokenOut) GetScopesOk() (*[]string, bool) {
 	if o == nil || o.Scopes == nil {
 		return nil, false
 	}
-	return &o.Scopes, true
+	return o.Scopes, true
 }
 
 // HasScopes returns a boolean if a field has been set.
@@ -208,7 +208,7 @@ func (o *AuthTokenOut) HasScopes() bool {
 
 // SetScopes gets a reference to the given []string and assigns it to the Scopes field.
 func (o *AuthTokenOut) SetScopes(v []string) {
-	o.Scopes = v
+	o.Scopes = &v
 }
 
 // GetToken returns the Token field value

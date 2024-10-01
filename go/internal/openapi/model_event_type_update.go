@@ -23,7 +23,7 @@ type EventTypeUpdate struct {
 	// The event type group's name
 	GroupName NullableString `json:"groupName,omitempty"`
 	// The schema for the event type for a specific version as a JSON schema.
-	Schemas map[string]map[string]interface{} `json:"schemas,omitempty"`
+	Schemas *map[string]map[string]interface{} `json:"schemas,omitempty"`
 }
 
 // NewEventTypeUpdate instantiates a new EventTypeUpdate object
@@ -226,11 +226,11 @@ func (o *EventTypeUpdate) UnsetGroupName() {
 
 // GetSchemas returns the Schemas field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *EventTypeUpdate) GetSchemas() map[string]map[string]interface{} {
-	if o == nil  {
+	if o == nil || o.Schemas == nil {
 		var ret map[string]map[string]interface{}
 		return ret
 	}
-	return o.Schemas
+	return *o.Schemas
 }
 
 // GetSchemasOk returns a tuple with the Schemas field value if set, nil otherwise
@@ -240,7 +240,7 @@ func (o *EventTypeUpdate) GetSchemasOk() (*map[string]map[string]interface{}, bo
 	if o == nil || o.Schemas == nil {
 		return nil, false
 	}
-	return &o.Schemas, true
+	return o.Schemas, true
 }
 
 // HasSchemas returns a boolean if a field has been set.
@@ -254,7 +254,7 @@ func (o *EventTypeUpdate) HasSchemas() bool {
 
 // SetSchemas gets a reference to the given map[string]map[string]interface{} and assigns it to the Schemas field.
 func (o *EventTypeUpdate) SetSchemas(v map[string]map[string]interface{}) {
-	o.Schemas = v
+	o.Schemas = &v
 }
 
 func (o EventTypeUpdate) MarshalJSON() ([]byte, error) {

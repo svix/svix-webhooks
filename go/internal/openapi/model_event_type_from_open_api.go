@@ -20,7 +20,7 @@ type EventTypeFromOpenApi struct {
 	Description string `json:"description"`
 	// The event type's name
 	Name string `json:"name"`
-	Schemas map[string]map[string]interface{} `json:"schemas,omitempty"`
+	Schemas *map[string]map[string]interface{} `json:"schemas,omitempty"`
 }
 
 // NewEventTypeFromOpenApi instantiates a new EventTypeFromOpenApi object
@@ -117,11 +117,11 @@ func (o *EventTypeFromOpenApi) SetName(v string) {
 
 // GetSchemas returns the Schemas field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *EventTypeFromOpenApi) GetSchemas() map[string]map[string]interface{} {
-	if o == nil  {
+	if o == nil || o.Schemas == nil {
 		var ret map[string]map[string]interface{}
 		return ret
 	}
-	return o.Schemas
+	return *o.Schemas
 }
 
 // GetSchemasOk returns a tuple with the Schemas field value if set, nil otherwise
@@ -131,7 +131,7 @@ func (o *EventTypeFromOpenApi) GetSchemasOk() (*map[string]map[string]interface{
 	if o == nil || o.Schemas == nil {
 		return nil, false
 	}
-	return &o.Schemas, true
+	return o.Schemas, true
 }
 
 // HasSchemas returns a boolean if a field has been set.
@@ -145,7 +145,7 @@ func (o *EventTypeFromOpenApi) HasSchemas() bool {
 
 // SetSchemas gets a reference to the given map[string]map[string]interface{} and assigns it to the Schemas field.
 func (o *EventTypeFromOpenApi) SetSchemas(v map[string]map[string]interface{}) {
-	o.Schemas = v
+	o.Schemas = &v
 }
 
 func (o EventTypeFromOpenApi) MarshalJSON() ([]byte, error) {

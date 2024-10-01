@@ -18,7 +18,7 @@ import (
 type TemplateIn struct {
 	Description *string `json:"description,omitempty"`
 	FeatureFlag NullableString `json:"featureFlag,omitempty"`
-	FilterTypes []string `json:"filterTypes,omitempty"`
+	FilterTypes *[]string `json:"filterTypes,omitempty"`
 	Instructions *string `json:"instructions,omitempty"`
 	InstructionsLink NullableString `json:"instructionsLink,omitempty"`
 	Kind *TransformationTemplateKind `json:"kind,omitempty"`
@@ -135,11 +135,11 @@ func (o *TemplateIn) UnsetFeatureFlag() {
 
 // GetFilterTypes returns the FilterTypes field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *TemplateIn) GetFilterTypes() []string {
-	if o == nil  {
+	if o == nil || o.FilterTypes == nil {
 		var ret []string
 		return ret
 	}
-	return o.FilterTypes
+	return *o.FilterTypes
 }
 
 // GetFilterTypesOk returns a tuple with the FilterTypes field value if set, nil otherwise
@@ -149,7 +149,7 @@ func (o *TemplateIn) GetFilterTypesOk() (*[]string, bool) {
 	if o == nil || o.FilterTypes == nil {
 		return nil, false
 	}
-	return &o.FilterTypes, true
+	return o.FilterTypes, true
 }
 
 // HasFilterTypes returns a boolean if a field has been set.
@@ -163,7 +163,7 @@ func (o *TemplateIn) HasFilterTypes() bool {
 
 // SetFilterTypes gets a reference to the given []string and assigns it to the FilterTypes field.
 func (o *TemplateIn) SetFilterTypes(v []string) {
-	o.FilterTypes = v
+	o.FilterTypes = &v
 }
 
 // GetInstructions returns the Instructions field value if set, zero value otherwise.

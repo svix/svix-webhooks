@@ -18,7 +18,7 @@ import (
 // EnvironmentIn struct for EnvironmentIn
 type EnvironmentIn struct {
 	CreatedAt time.Time `json:"createdAt"`
-	EventTypes []EventTypeIn `json:"eventTypes,omitempty"`
+	EventTypes *[]EventTypeIn `json:"eventTypes,omitempty"`
 	Settings *SettingsIn `json:"settings,omitempty"`
 	TransformationTemplates []TemplateIn `json:"transformationTemplates,omitempty"`
 	Version int32 `json:"version"`
@@ -69,11 +69,11 @@ func (o *EnvironmentIn) SetCreatedAt(v time.Time) {
 
 // GetEventTypes returns the EventTypes field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *EnvironmentIn) GetEventTypes() []EventTypeIn {
-	if o == nil  {
+	if o == nil || o.EventTypes == nil {
 		var ret []EventTypeIn
 		return ret
 	}
-	return o.EventTypes
+	return *o.EventTypes
 }
 
 // GetEventTypesOk returns a tuple with the EventTypes field value if set, nil otherwise
@@ -83,7 +83,7 @@ func (o *EnvironmentIn) GetEventTypesOk() (*[]EventTypeIn, bool) {
 	if o == nil || o.EventTypes == nil {
 		return nil, false
 	}
-	return &o.EventTypes, true
+	return o.EventTypes, true
 }
 
 // HasEventTypes returns a boolean if a field has been set.
@@ -97,7 +97,7 @@ func (o *EnvironmentIn) HasEventTypes() bool {
 
 // SetEventTypes gets a reference to the given []EventTypeIn and assigns it to the EventTypes field.
 func (o *EnvironmentIn) SetEventTypes(v []EventTypeIn) {
-	o.EventTypes = v
+	o.EventTypes = &v
 }
 
 // GetSettings returns the Settings field value if set, zero value otherwise.

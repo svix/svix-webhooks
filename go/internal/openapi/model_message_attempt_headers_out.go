@@ -16,7 +16,7 @@ import (
 
 // MessageAttemptHeadersOut struct for MessageAttemptHeadersOut
 type MessageAttemptHeadersOut struct {
-	ResponseHeaders [][]string `json:"responseHeaders,omitempty"`
+	ResponseHeaders *[][]string `json:"responseHeaders,omitempty"`
 	Sensitive []string `json:"sensitive"`
 	SentHeaders map[string]string `json:"sentHeaders"`
 }
@@ -42,11 +42,11 @@ func NewMessageAttemptHeadersOutWithDefaults() *MessageAttemptHeadersOut {
 
 // GetResponseHeaders returns the ResponseHeaders field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *MessageAttemptHeadersOut) GetResponseHeaders() [][]string {
-	if o == nil  {
+	if o == nil || o.ResponseHeaders == nil {
 		var ret [][]string
 		return ret
 	}
-	return o.ResponseHeaders
+	return *o.ResponseHeaders
 }
 
 // GetResponseHeadersOk returns a tuple with the ResponseHeaders field value if set, nil otherwise
@@ -56,7 +56,7 @@ func (o *MessageAttemptHeadersOut) GetResponseHeadersOk() (*[][]string, bool) {
 	if o == nil || o.ResponseHeaders == nil {
 		return nil, false
 	}
-	return &o.ResponseHeaders, true
+	return o.ResponseHeaders, true
 }
 
 // HasResponseHeaders returns a boolean if a field has been set.
@@ -70,7 +70,7 @@ func (o *MessageAttemptHeadersOut) HasResponseHeaders() bool {
 
 // SetResponseHeaders gets a reference to the given [][]string and assigns it to the ResponseHeaders field.
 func (o *MessageAttemptHeadersOut) SetResponseHeaders(v [][]string) {
-	o.ResponseHeaders = v
+	o.ResponseHeaders = &v
 }
 
 // GetSensitive returns the Sensitive field value

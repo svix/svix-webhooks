@@ -22,13 +22,13 @@ type EndpointOauthConfigIn struct {
 	// Optional client secret. This is only used for `clientSecretBasic` and `clientSecretPost`.  For `clientSecretBasic`, the secret will be appended to the `Authorization` header. For `clientSecretPost`, this will be added to the body in a `client_secret` parameter.
 	ClientSecret NullableString `json:"clientSecret,omitempty"`
 	// Extra parameters added to the request body as key-value pairs.
-	ExtraParams map[string]string `json:"extraParams,omitempty"`
+	ExtraParams *map[string]string `json:"extraParams,omitempty"`
 	GrantType Oauth2GrantTypeIn `json:"grantType"`
 	JwtParams *ClientSecretJwtParamsIn `json:"jwtParams,omitempty"`
 	// For `refreshToken` grant type
 	RefreshToken NullableString `json:"refreshToken,omitempty"`
 	// Optional OAuth scopes added to the request body.
-	Scopes []string `json:"scopes,omitempty"`
+	Scopes *[]string `json:"scopes,omitempty"`
 	// The URL of the authorization server.
 	TokenUrl string `json:"tokenUrl"`
 }
@@ -146,11 +146,11 @@ func (o *EndpointOauthConfigIn) UnsetClientSecret() {
 
 // GetExtraParams returns the ExtraParams field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *EndpointOauthConfigIn) GetExtraParams() map[string]string {
-	if o == nil  {
+	if o == nil || o.ExtraParams == nil {
 		var ret map[string]string
 		return ret
 	}
-	return o.ExtraParams
+	return *o.ExtraParams
 }
 
 // GetExtraParamsOk returns a tuple with the ExtraParams field value if set, nil otherwise
@@ -160,7 +160,7 @@ func (o *EndpointOauthConfigIn) GetExtraParamsOk() (*map[string]string, bool) {
 	if o == nil || o.ExtraParams == nil {
 		return nil, false
 	}
-	return &o.ExtraParams, true
+	return o.ExtraParams, true
 }
 
 // HasExtraParams returns a boolean if a field has been set.
@@ -174,7 +174,7 @@ func (o *EndpointOauthConfigIn) HasExtraParams() bool {
 
 // SetExtraParams gets a reference to the given map[string]string and assigns it to the ExtraParams field.
 func (o *EndpointOauthConfigIn) SetExtraParams(v map[string]string) {
-	o.ExtraParams = v
+	o.ExtraParams = &v
 }
 
 // GetGrantType returns the GrantType field value
@@ -277,11 +277,11 @@ func (o *EndpointOauthConfigIn) UnsetRefreshToken() {
 
 // GetScopes returns the Scopes field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *EndpointOauthConfigIn) GetScopes() []string {
-	if o == nil  {
+	if o == nil || o.Scopes == nil {
 		var ret []string
 		return ret
 	}
-	return o.Scopes
+	return *o.Scopes
 }
 
 // GetScopesOk returns a tuple with the Scopes field value if set, nil otherwise
@@ -291,7 +291,7 @@ func (o *EndpointOauthConfigIn) GetScopesOk() (*[]string, bool) {
 	if o == nil || o.Scopes == nil {
 		return nil, false
 	}
-	return &o.Scopes, true
+	return o.Scopes, true
 }
 
 // HasScopes returns a boolean if a field has been set.
@@ -305,7 +305,7 @@ func (o *EndpointOauthConfigIn) HasScopes() bool {
 
 // SetScopes gets a reference to the given []string and assigns it to the Scopes field.
 func (o *EndpointOauthConfigIn) SetScopes(v []string) {
-	o.Scopes = v
+	o.Scopes = &v
 }
 
 // GetTokenUrl returns the TokenUrl field value

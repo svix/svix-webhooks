@@ -18,7 +18,7 @@ import (
 // EndpointMessageOut A model containing information on a given message plus additional fields on the last attempt for that message.
 type EndpointMessageOut struct {
 	// List of free-form identifiers that endpoints can filter by
-	Channels []string `json:"channels,omitempty"`
+	Channels *[]string `json:"channels,omitempty"`
 	// Optional unique identifier for the message
 	EventId NullableString `json:"eventId,omitempty"`
 	// The event type's name
@@ -28,7 +28,7 @@ type EndpointMessageOut struct {
 	NextAttempt NullableTime `json:"nextAttempt,omitempty"`
 	Payload map[string]interface{} `json:"payload"`
 	Status MessageStatus `json:"status"`
-	Tags []string `json:"tags,omitempty"`
+	Tags *[]string `json:"tags,omitempty"`
 	Timestamp time.Time `json:"timestamp"`
 }
 
@@ -56,11 +56,11 @@ func NewEndpointMessageOutWithDefaults() *EndpointMessageOut {
 
 // GetChannels returns the Channels field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *EndpointMessageOut) GetChannels() []string {
-	if o == nil  {
+	if o == nil || o.Channels == nil {
 		var ret []string
 		return ret
 	}
-	return o.Channels
+	return *o.Channels
 }
 
 // GetChannelsOk returns a tuple with the Channels field value if set, nil otherwise
@@ -70,7 +70,7 @@ func (o *EndpointMessageOut) GetChannelsOk() (*[]string, bool) {
 	if o == nil || o.Channels == nil {
 		return nil, false
 	}
-	return &o.Channels, true
+	return o.Channels, true
 }
 
 // HasChannels returns a boolean if a field has been set.
@@ -84,7 +84,7 @@ func (o *EndpointMessageOut) HasChannels() bool {
 
 // SetChannels gets a reference to the given []string and assigns it to the Channels field.
 func (o *EndpointMessageOut) SetChannels(v []string) {
-	o.Channels = v
+	o.Channels = &v
 }
 
 // GetEventId returns the EventId field value if set, zero value otherwise (both if not set or set to explicit null).
@@ -269,11 +269,11 @@ func (o *EndpointMessageOut) SetStatus(v MessageStatus) {
 
 // GetTags returns the Tags field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *EndpointMessageOut) GetTags() []string {
-	if o == nil  {
+	if o == nil || o.Tags == nil {
 		var ret []string
 		return ret
 	}
-	return o.Tags
+	return *o.Tags
 }
 
 // GetTagsOk returns a tuple with the Tags field value if set, nil otherwise
@@ -283,7 +283,7 @@ func (o *EndpointMessageOut) GetTagsOk() (*[]string, bool) {
 	if o == nil || o.Tags == nil {
 		return nil, false
 	}
-	return &o.Tags, true
+	return o.Tags, true
 }
 
 // HasTags returns a boolean if a field has been set.
@@ -297,7 +297,7 @@ func (o *EndpointMessageOut) HasTags() bool {
 
 // SetTags gets a reference to the given []string and assigns it to the Tags field.
 func (o *EndpointMessageOut) SetTags(v []string) {
-	o.Tags = v
+	o.Tags = &v
 }
 
 // GetTimestamp returns the Timestamp field value
