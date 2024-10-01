@@ -407,11 +407,19 @@ async fn make_http_call(
 
 #[tracing::instrument(skip_all, fields(response_code, msg_dest_id = msg_dest.id.0))]
 async fn handle_successful_dispatch(
-    WorkerContext { cache, db, .. }: &WorkerContext<'_>,
+    WorkerContext {
+        cache,
+        db,
+        op_webhook_sender,
+        ..
+    }: &WorkerContext<'_>,
     DispatchContext {
         org_id,
         endp,
         app_id,
+        app_uid,
+        msg_task,
+        msg_uid,
         ..
     }: DispatchContext<'_>,
     SuccessfulDispatch(mut attempt): SuccessfulDispatch,
@@ -431,6 +439,28 @@ async fn handle_successful_dispatch(
 
     tracing::Span::current().record("response_code", attempt.response_status_code);
     tracing::info!("Webhook success.");
+
+    if msg_task.attempt_count as usize >= OP_WEBHOOKS_SEND_FAILING_EVENT_AFTER {
+        if let Err(e) = op_webhook_sender
+            .send_operational_webhook(
+                org_id,
+                OperationalWebhook::MessageAttemptRecovered(MessageAttemptEvent {
+                    app_id: app_id.clone(),
+                    app_uid: app_uid.cloned(),
+                    endpoint_id: msg_task.endpoint_id.clone(),
+                    msg_id: msg_task.msg_id.clone(),
+                    msg_event_id: msg_uid.cloned(),
+                    last_attempt: attempt.into(),
+                }),
+            )
+            .await
+        {
+            tracing::error!(
+                "Failed sending MessageAttemptRecovered Operational Webhook: {}",
+                e
+            );
+        }
+    }
 
     Ok(())
 }

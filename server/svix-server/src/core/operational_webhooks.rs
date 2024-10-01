@@ -103,6 +103,8 @@ pub enum OperationalWebhook {
     MessageAttemptExhausted(MessageAttemptEvent),
     #[serde(rename = "message.attempt.failing")]
     MessageAttemptFailing(MessageAttemptEvent),
+    #[serde(rename = "message.attempt.recovered")]
+    MessageAttemptRecovered(MessageAttemptEvent),
 }
 
 pub type OperationalWebhookSender = Arc<OperationalWebhookSenderInner>;

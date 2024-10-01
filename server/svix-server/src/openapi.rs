@@ -415,6 +415,13 @@ mod webhooks {
         common_: MessageAttemptEvent,
     }
 
+    #[derive(JsonSchema)]
+    #[allow(unused)]
+    struct MessageAttemptRecoveredEventData {
+        #[serde(flatten)]
+        common_: MessageAttemptEvent,
+    }
+
     webhook_event!(
         EndpointCreatedEvent,
         EndpointCreatedEventData,
@@ -451,6 +458,12 @@ mod webhooks {
         "message.attempt.failing",
         "Sent after a message has been failing for a few times.\nIt's sent on the fourth failure. It complements `message.attempt.exhausted` which is sent after the last failure."
     );
+    webhook_event!(
+        MessageAttemptRecoveredEvent,
+        MessageAttemptRecoveredEventData,
+        "message.attempt.recovered",
+        "Sent on a successful dispatch after an earlier failure op webhook has already been sent."
+    );
 
     /// Generates documentation for operational webhooks in the Redoc `x-webhooks`
     /// format. For more info see https://redocly.com/docs/api-reference-docs/specification-extensions/x-webhooks/
@@ -462,6 +475,7 @@ mod webhooks {
             document_webhook::<EndpointUpdatedEvent>(),
             document_webhook::<MessageAttemptExhaustedEvent>(),
             document_webhook::<MessageAttemptFailingEvent>(),
+            document_webhook::<MessageAttemptRecoveredEvent>(),
         ])
     }
 }
