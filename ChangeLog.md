@@ -3,6 +3,9 @@
 ## Next
 * 
 
+## Version 1.37.0
+* Libs(Go): `EndpointUpdate` and `EndpointPatch` allow null for channels, filter types
+
 ## Version 1.36.0
 * Libs(Go): edit `EndpointIn` to allow null for channels, filter types
 
