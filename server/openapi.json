@@ -1747,6 +1747,69 @@
                 ],
                 "type": "object"
             },
+            "MessageAttemptRecoveredEvent": {
+                "description": "Sent on a successful dispatch after an earlier failure op webhook has already been sent.",
+                "properties": {
+                    "data": {
+                        "$ref": "#/components/schemas/MessageAttemptRecoveredEventData"
+                    },
+                    "type": {
+                        "default": "message.attempt.recovered",
+                        "enum": [
+                            "message.attempt.recovered"
+                        ],
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "data",
+                    "type"
+                ],
+                "type": "object"
+            },
+            "MessageAttemptRecoveredEventData": {
+                "description": "Sent when a message delivery has failed (all of the retry attempts have been exhausted) as a \"message.attempt.exhausted\" type or after it's failed four times as a \"message.attempt.failing\" event.",
+                "properties": {
+                    "appId": {
+                        "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "type": "string"
+                    },
+                    "appUid": {
+                        "example": "unique-app-identifier",
+                        "maxLength": 256,
+                        "minLength": 1,
+                        "nullable": true,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                        "type": "string"
+                    },
+                    "endpointId": {
+                        "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "type": "string"
+                    },
+                    "lastAttempt": {
+                        "$ref": "#/components/schemas/MessageAttempetLast"
+                    },
+                    "msgEventId": {
+                        "example": "unique-msg-identifier",
+                        "maxLength": 256,
+                        "minLength": 1,
+                        "nullable": true,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                        "type": "string"
+                    },
+                    "msgId": {
+                        "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "appId",
+                    "endpointId",
+                    "lastAttempt",
+                    "msgId"
+                ],
+                "type": "object"
+            },
             "MessageAttemptTriggerType": {
                 "description": "The reason an attempt was made:\n- Scheduled = 0\n- Manual = 1",
                 "enum": [
@@ -7749,6 +7812,30 @@
                     }
                 },
                 "summary": "MessageAttemptFailingEvent",
+                "tags": [
+                    "Webhooks"
+                ]
+            }
+        },
+        "MessageAttemptRecoveredEvent": {
+            "post": {
+                "description": "Sent on a successful dispatch after an earlier failure op webhook has already been sent.",
+                "operationId": "MessageAttemptRecoveredEvent",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MessageAttemptRecoveredEvent"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "2XX": {
+                        "description": "Return any 2XX status to indicate that the data was received successfully"
+                    }
+                },
+                "summary": "MessageAttemptRecoveredEvent",
                 "tags": [
                     "Webhooks"
                 ]
