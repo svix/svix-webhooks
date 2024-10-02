@@ -4,13 +4,15 @@
 use chrono::{Duration, Utc};
 use reqwest::StatusCode;
 use sea_orm::{sea_query::Expr, ColumnTrait, EntityTrait, QueryFilter};
+use serde::de::IgnoredAny;
 use svix_server::{
+    core::types::{EventTypeName, MessageUid},
     db::models::messagecontent,
     expired_message_cleaner,
     v1::{
         endpoints::{
             attempt::MessageAttemptOut,
-            message::{MessageOut, RawPayload},
+            message::{MessageIn, MessageOut, RawPayload},
         },
         utils::ListResponse,
     },
@@ -471,4 +473,45 @@ async fn test_expunge_message_payload() {
         .unwrap();
 
     assert_eq!(msg.payload.0.get(), r#"{"expired":true}"#);
+}
+
+#[tokio::test]
+async fn test_message_conflict() {
+    let (client, _jh) = start_svix_server().await;
+
+    let app_id = create_test_app(&client, "v1MessageCRTestApp")
+        .await
+        .unwrap()
+        .id;
+
+    let _endp_id = create_test_endpoint(&client, &app_id, "http://localhost:2/bad/url/")
+        .await
+        .unwrap()
+        .id;
+
+    let msg_in = MessageIn {
+        event_type: EventTypeName("user.signup".to_owned()),
+        payload: RawPayload::from_string(serde_json::json!({"test": "value"}).to_string()).unwrap(),
+        payload_retention_period: 5,
+        channels: None,
+        uid: Some(MessageUid("test1".to_owned())),
+    };
+
+    let _: MessageOut = client
+        .post(
+            &format!("api/v1/app/{}/msg/", &app_id),
+            msg_in.clone(),
+            StatusCode::ACCEPTED,
+        )
+        .await
+        .unwrap();
+
+    let _: IgnoredAny = client
+        .post(
+            &format!("api/v1/app/{}/msg/", &app_id),
+            msg_in,
+            StatusCode::CONFLICT,
+        )
+        .await
+        .unwrap();
 }

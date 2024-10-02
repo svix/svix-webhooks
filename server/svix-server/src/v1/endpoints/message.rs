@@ -30,7 +30,7 @@ use crate::{
         },
     },
     db::models::{application, message, messagecontent},
-    error::{Error, HttpError, Result},
+    error::{http_error_on_conflict, Error, HttpError, Result},
     queue::{MessageTaskBatch, TaskQueueProducer},
     v1::utils::{
         filter_and_paginate_time_limited, openapi_tag, validation_error, ApplicationMsgPath,
@@ -360,7 +360,7 @@ pub(crate) async fn create_message_inner(
     let (msg, msg_content) = db
         .transaction(|txn| {
             async move {
-                let msg = msg.insert(txn).await?;
+                let msg = msg.insert(txn).await.map_err(http_error_on_conflict)?;
                 let msg_content = messagecontent::ActiveModel::new(msg.id.clone(), payload);
                 let msg_content = msg_content.insert(txn).await?;
                 Ok((msg, msg_content))
