@@ -395,6 +395,12 @@ async fn test_payload_retention_period() {
         .unwrap();
     let msg_id = msg.id.clone();
 
+    let content: Option<messagecontent::Model> = messagecontent::Entity::find_by_id(msg_id.clone())
+        .one(&pool)
+        .await
+        .unwrap();
+    assert_eq!(content.unwrap().id, msg_id.clone());
+
     let res = messagecontent::Entity::update_many()
         .col_expr(
             messagecontent::Column::Expiration,
@@ -405,12 +411,6 @@ async fn test_payload_retention_period() {
         .await
         .unwrap();
     assert_eq!(1, res.rows_affected);
-
-    let content: Option<messagecontent::Model> = messagecontent::Entity::find_by_id(msg_id.clone())
-        .one(&pool)
-        .await
-        .unwrap();
-    assert_eq!(content.unwrap().id, msg_id.clone());
 
     expired_message_cleaner::clean_expired_messages(&pool, 5000, false)
         .await
