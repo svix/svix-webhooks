@@ -3,6 +3,12 @@
 ## Next
 * 
 
+## Version 1.38.0
+* Server: Increase max endpoint rotations
+* Server: Return 409 on duplicate message insert
+* Server: Add `expunge` parameter to event-type deletion endpoint
+* Server: Add `message.attempt.recovered` operational webhook
+
 ## Version 1.37.0
 * Libs(Go): `EndpointUpdate` and `EndpointPatch` allow null for channels, filter types
 
