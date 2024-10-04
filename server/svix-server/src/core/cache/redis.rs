@@ -59,7 +59,7 @@ impl CacheBehavior for RedisCache {
 
         cmd.arg("NX");
 
-        let res: Option<()> = pool.query_async(cmd).await?;
+        let res: Option<()> = cmd.query_async(&mut pool).await?;
 
         Ok(res.is_some())
     }
