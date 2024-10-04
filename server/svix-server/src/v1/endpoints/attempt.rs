@@ -845,7 +845,7 @@ async fn resend_webhook(
 
     queue_tx
         .send(
-            MessageTask::new_task(
+            &MessageTask::new_task(
                 msg.id.clone(),
                 app.id,
                 endp.id,

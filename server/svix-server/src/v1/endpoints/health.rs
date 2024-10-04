@@ -100,7 +100,7 @@ async fn health(
         .into();
 
     // Send a [`HealthCheck`] through the queue
-    let queue: HealthStatus = queue_tx.send(QueueTask::HealthCheck, None).await.into();
+    let queue: HealthStatus = queue_tx.send(&QueueTask::HealthCheck, None).await.into();
 
     // Set a cache value with an expiration to ensure it works
     let cache: HealthStatus = cache

@@ -68,7 +68,7 @@ urlencoding = "2.1.2"
 form_urlencoded = "1.1.0"
 lapin = "2.1.1"
 sentry = { version = "0.32.2", features = ["tracing"] }
-omniqueue = { git = "https://github.com/svix/omniqueue-rs", rev = "75e5a9510ad338ac3702b2e911bacf8967ac58d8", default-features = false, features = ["in_memory", "rabbitmq-with-message-ids", "redis_cluster", "redis_sentinel"] }
+omniqueue = { git = "https://github.com/svix/omniqueue-rs", rev = "75e5a9510ad338ac3702b2e911bacf8967ac58d8", default-features = false, features = ["in_memory", "rabbitmq-with-message-ids", "redis_cluster", "redis_sentinel", "beta"] }
 # Not a well-known author, and no longer gets updates => pinned.
 # Switch to hyper-http-proxy when upgrading hyper to 1.0.
 hyper-proxy = { version = "=0.9.1", default-features = false, features = ["openssl-tls"] }

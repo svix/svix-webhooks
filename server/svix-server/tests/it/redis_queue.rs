@@ -59,7 +59,7 @@ async fn test_many_queue_consumers_inner(prefix: &str, delay: Option<Duration>) 
     for (index, (p, _c)) in producers_and_consumers.iter().enumerate() {
         for num in 0..200 {
             p.send(
-                QueueTask::MessageV1(MessageTask {
+                &QueueTask::MessageV1(MessageTask {
                     msg_id: MessageId(format!("{}", index * 200 + num)),
                     app_id: ApplicationId("TestApplicationId".to_owned()),
                     endpoint_id: EndpointId("TestEndpointId".to_owned()),
@@ -88,7 +88,12 @@ async fn test_many_queue_consumers_inner(prefix: &str, delay: Option<Duration>) 
                 let mut out = Vec::new();
                 let mut read = 0;
 
-                while let Ok(recv) = timeout(Duration::from_secs(1), c.receive_all()).await {
+                while let Ok(recv) = timeout(
+                    Duration::from_secs(1),
+                    c.receive_all(Duration::from_secs(5)),
+                )
+                .await
+                {
                     let recv = recv.unwrap();
                     read += recv.len();
                     for r in recv {
