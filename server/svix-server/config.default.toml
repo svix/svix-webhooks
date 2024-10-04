@@ -120,3 +120,6 @@ worker_max_tasks = 500
 # Whether or not to disable TLS certificate validation on Webhook dispatch. This is a dangerous flag
 # to set true. This value will default to false.
 # dangerous_disable_tls_verification = false
+
+# Maximum seconds of queue long-poll
+queue_max_poll_secs = 20

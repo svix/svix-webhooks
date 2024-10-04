@@ -186,7 +186,7 @@ mod tests {
                 .await
                 .unwrap();
 
-            producer.send(QueueTask::HealthCheck, None).await.unwrap();
+            producer.send(&QueueTask::HealthCheck, None).await.unwrap();
         }
 
         // Receive with lapin consumer

@@ -376,7 +376,7 @@ pub(crate) async fn create_message_inner(
     {
         queue_tx
             .send(
-                MessageTaskBatch::new_task(
+                &MessageTaskBatch::new_task(
                     msg.id.clone(),
                     app.id.clone(),
                     force_endpoint,

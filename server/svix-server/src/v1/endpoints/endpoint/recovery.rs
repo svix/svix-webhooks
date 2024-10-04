@@ -53,7 +53,7 @@ async fn bulk_recover_failed_messages(
         for msg_dest in items {
             queue_tx
                 .send(
-                    MessageTask::new_task(
+                    &MessageTask::new_task(
                         msg_dest.msg_id,
                         app.id.clone(),
                         msg_dest.endp_id,

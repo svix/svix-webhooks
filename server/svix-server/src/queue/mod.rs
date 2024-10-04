@@ -1,10 +1,9 @@
-use std::{sync::Arc, time::Duration};
+use std::{marker::PhantomData, num::NonZeroUsize, sync::Arc, time::Duration};
 
 use omniqueue::{
-    backends::InMemoryBackend, Delivery, DynConsumer, DynScheduledProducer, QueueConsumer,
-    ScheduledQueueProducer,
+    backends::InMemoryBackend, Delivery, DynConsumer, QueueConsumer, ScheduledQueueProducer,
 };
-use serde::{Deserialize, Serialize};
+use serde::{de::DeserializeOwned, Deserialize, Serialize};
 
 use crate::{
     cfg::{Configuration, QueueBackend},
@@ -23,6 +22,8 @@ const RETRY_SCHEDULE: &[Duration] = &[
     Duration::from_millis(20),
     Duration::from_millis(40),
 ];
+
+pub type TaskQueueDelivery = SvixOmniDelivery<QueueTask>;
 
 fn should_retry(err: &Error) -> bool {
     matches!(err.typ, ErrorType::Queue(_))
@@ -139,19 +140,34 @@ impl QueueTask {
     }
 }
 
-#[derive(Clone)]
-pub struct TaskQueueProducer {
-    inner: Arc<DynScheduledProducer>,
+pub type TaskQueueProducer = SvixOmniProducer<QueueTask>;
+pub type TaskQueueConsumer = SvixOmniConsumer<QueueTask>;
+
+pub struct SvixOmniProducer<T: OmniMessage> {
+    inner: Arc<omniqueue::DynScheduledProducer>,
+    _phantom: PhantomData<T>,
 }
 
-impl TaskQueueProducer {
-    pub fn new(inner: impl ScheduledQueueProducer + 'static) -> Self {
+// Manual impl to avoid adding 'Clone' bound on T
+impl<T: OmniMessage> Clone for SvixOmniProducer<T> {
+    fn clone(&self) -> Self {
+        Self {
+            inner: self.inner.clone(),
+            _phantom: PhantomData,
+        }
+    }
+}
+
+impl<T: OmniMessage> SvixOmniProducer<T> {
+    pub(super) fn new(inner: impl ScheduledQueueProducer + 'static) -> Self {
         Self {
             inner: Arc::new(inner.into_dyn_scheduled()),
+            _phantom: PhantomData,
         }
     }
 
-    pub async fn send(&self, task: QueueTask, delay: Option<Duration>) -> Result<()> {
+    #[tracing::instrument(skip_all, name = "queue_send")]
+    pub async fn send(&self, task: &T, delay: Option<Duration>) -> Result<()> {
         let task = Arc::new(task);
         run_with_retries(
             || async {
@@ -169,57 +185,99 @@ impl TaskQueueProducer {
         )
         .await
     }
+
+    #[tracing::instrument(skip_all, name = "redrive_dlq")]
+    pub async fn redrive_dlq(&self) -> Result<()> {
+        self.inner.redrive_dlq().await.map_err(Into::into)
+    }
 }
 
-pub struct TaskQueueConsumer {
+pub struct SvixOmniConsumer<T: OmniMessage> {
     inner: DynConsumer,
+    _phantom: PhantomData<T>,
 }
 
-impl TaskQueueConsumer {
-    pub fn new(inner: impl QueueConsumer + 'static) -> Self {
+pub trait OmniMessage: Serialize + DeserializeOwned + Send + Sync {
+    fn task_id(&self) -> Option<&str>;
+}
+
+impl OmniMessage for QueueTask {
+    fn task_id(&self) -> Option<&str> {
+        self.msg_id()
+    }
+}
+
+impl<T: OmniMessage> SvixOmniConsumer<T> {
+    pub(super) fn new(inner: impl QueueConsumer + 'static) -> Self {
         Self {
             inner: inner.into_dyn(),
+            _phantom: PhantomData,
         }
     }
 
-    pub async fn receive_all(&mut self) -> Result<Vec<TaskQueueDelivery>> {
-        const MAX_MESSAGES: usize = 128;
-        // FIXME(onelson): need to figure out what deadline/duration to use here
+    #[tracing::instrument(skip_all, name = "queue_receive_all")]
+    pub async fn receive_all(&mut self, deadline: Duration) -> Result<Vec<SvixOmniDelivery<T>>> {
+        pub const MAX_MESSAGES: usize = 128;
         self.inner
-            .receive_all(MAX_MESSAGES, Duration::from_secs(30))
+            .receive_all(MAX_MESSAGES, deadline)
             .await
-            .map_err(Into::into)
+            .map_err(Error::from)
             .trace()?
             .into_iter()
-            .map(TryInto::try_into)
+            .map(|acker| {
+                Ok(SvixOmniDelivery {
+                    task: Arc::new(
+                        acker
+                            .payload_serde_json()
+                            .map_err(|e| {
+                                Error::queue(format!("Failed to decode queue task: {e:?}"))
+                            })?
+                            .ok_or_else(|| Error::queue("Unexpected empty delivery"))?,
+                    ),
+
+                    acker,
+                })
+            })
             .collect()
+    }
+
+    pub fn max_messages(&self) -> Option<NonZeroUsize> {
+        self.inner.max_messages()
     }
 }
 
 #[derive(Debug)]
-pub struct TaskQueueDelivery {
-    pub task: Arc<QueueTask>,
-    acker: Delivery,
+pub struct SvixOmniDelivery<T> {
+    pub task: Arc<T>,
+    pub(super) acker: Delivery,
 }
 
-impl TaskQueueDelivery {
+impl<T: OmniMessage> SvixOmniDelivery<T> {
+    pub async fn set_ack_deadline(&mut self, duration: Duration) -> Result<()> {
+        Ok(self.acker.set_ack_deadline(duration).await?)
+    }
     pub async fn ack(self) -> Result<()> {
-        tracing::trace!(msg_id = self.task.msg_id(), "ack");
+        tracing::trace!(
+            task_id = self.task.task_id().map(tracing::field::display),
+            "ack"
+        );
 
         let mut retry = Retry::new(should_retry, RETRY_SCHEDULE);
         let mut acker = Some(self.acker);
         loop {
             if let Some(result) = retry
                 .run(|| async {
-                    let delivery = acker
-                        .take()
-                        .expect("acker is always Some when trying to ack");
-                    delivery.ack().await.map_err(|(e, delivery)| {
-                        // Put the delivery back in acker before retrying, to
-                        // satisfy the expect above.
-                        acker = Some(delivery);
-                        e.into()
-                    })
+                    match acker.take() {
+                        Some(delivery) => {
+                            delivery.ack().await.map_err(|(e, delivery)| {
+                                // Put the delivery back in acker before retrying, to
+                                // satisfy the expect above.
+                                acker = Some(delivery);
+                                e.into()
+                            })
+                        }
+                        None => unreachable!(),
+                    }
                 })
                 .await
             {
@@ -229,47 +287,36 @@ impl TaskQueueDelivery {
     }
 
     pub async fn nack(self) -> Result<()> {
-        tracing::trace!(msg_id = self.task.msg_id(), "nack");
+        tracing::trace!(
+            task_id = self.task.task_id().map(tracing::field::display),
+            "nack"
+        );
 
         let mut retry = Retry::new(should_retry, RETRY_SCHEDULE);
         let mut acker = Some(self.acker);
         loop {
             if let Some(result) = retry
                 .run(|| async {
-                    let delivery = acker
-                        .take()
-                        .expect("acker is always Some when trying to ack");
-
-                    delivery
-                        .nack()
-                        .await
-                        .map_err(|(e, delivery)| {
-                            // Put the delivery back in acker before retrying, to
-                            // satisfy the expect above.
-                            acker = Some(delivery);
-                            e.into()
-                        })
-                        .trace()
+                    match acker.take() {
+                        Some(delivery) => {
+                            delivery
+                                .nack()
+                                .await
+                                .map_err(|(e, delivery)| {
+                                    // Put the delivery back in acker before retrying, to
+                                    // satisfy the expect above.
+                                    acker = Some(delivery);
+                                    Error::from(e)
+                                })
+                                .trace()
+                        }
+                        _ => unreachable!(),
+                    }
                 })
                 .await
             {
                 return result;
             }
         }
-    }
-}
-
-impl TryFrom<Delivery> for TaskQueueDelivery {
-    type Error = Error;
-    fn try_from(value: Delivery) -> Result<Self> {
-        Ok(TaskQueueDelivery {
-            task: Arc::new(
-                value
-                    .payload_serde_json()
-                    .map_err(|_| Error::queue("Failed to decode queue task"))?
-                    .ok_or_else(|| Error::queue("Unexpected empty delivery"))?,
-            ),
-            acker: value,
-        })
     }
 }

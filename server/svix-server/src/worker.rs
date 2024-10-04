@@ -553,7 +553,7 @@ async fn handle_failed_dispatch(
         }
         queue_tx
             .send(
-                QueueTask::MessageV1(MessageTask {
+                &QueueTask::MessageV1(MessageTask {
                     attempt_count: msg_task.attempt_count + 1,
                     ..msg_task.clone()
                 }),
@@ -918,6 +918,8 @@ pub async fn queue_handler(
     mut queue_rx: TaskQueueConsumer,
     op_webhook_sender: OperationalWebhookSender,
 ) -> Result<()> {
+    let recv_deadline = Duration::from_secs(cfg.queue_max_poll_secs.into());
+
     static NUM_WORKERS: AtomicUsize = AtomicUsize::new(0);
 
     let task_limit = cfg.worker_max_tasks;
@@ -980,7 +982,7 @@ pub async fn queue_handler(
             break;
         }
 
-        match queue_rx.receive_all().await {
+        match queue_rx.receive_all(recv_deadline).await {
             Ok(batch) => {
                 for delivery in batch {
                     let cfg = cfg.clone();

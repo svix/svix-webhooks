@@ -402,6 +402,8 @@ pub mod tests {
         redis::RedisManager,
     };
 
+    const TEST_RECV_DEADLINE: Duration = Duration::from_secs(5);
+
     async fn get_pool(cfg: &Configuration) -> RedisManager {
         RedisManager::from_queue_backend(&cfg.queue_backend(), cfg.redis_pool_max_size).await
     }
@@ -476,7 +478,12 @@ pub mod tests {
     /// Reads and acknowledges all items in the queue with the given name for clearing out entries
     /// from previous test runs
     async fn flush_stale_queue_items(_p: TaskQueueProducer, c: &mut TaskQueueConsumer) {
-        while let Ok(recv) = timeout(Duration::from_millis(100), c.receive_all()).await {
+        while let Ok(recv) = timeout(
+            Duration::from_millis(100),
+            c.receive_all(TEST_RECV_DEADLINE),
+        )
+        .await
+        {
             let recv = recv.unwrap().pop().unwrap();
             recv.ack().await.unwrap();
         }
@@ -508,16 +515,16 @@ pub mod tests {
             trigger_type: MessageAttemptTriggerType::Manual,
             attempt_count: 0,
         });
-        p.send(mt.clone(), None).await.unwrap();
+        p.send(&mt, None).await.unwrap();
 
-        let recv = timeout(Duration::from_secs(5), c.receive_all())
+        let recv = timeout(Duration::from_secs(5), c.receive_all(TEST_RECV_DEADLINE))
             .await
             .expect("`c.receive()` has timed out");
         assert_eq!(*recv.unwrap()[0].task, mt);
 
         tokio::time::sleep(Duration::from_millis(100)).await;
 
-        let recv = timeout(Duration::from_secs(5), c.receive_all())
+        let recv = timeout(Duration::from_secs(5), c.receive_all(TEST_RECV_DEADLINE))
             .await
             .expect("`c.receive()` has timed out");
         let recv = recv.unwrap().pop().unwrap();
@@ -575,13 +582,18 @@ pub mod tests {
             trigger_type: MessageAttemptTriggerType::Manual,
             attempt_count: 0,
         });
-        p.send(mt.clone(), None).await.unwrap();
+        p.send(&mt, None).await.unwrap();
 
-        let recv = c.receive_all().await.unwrap().pop().unwrap();
+        let recv = c
+            .receive_all(TEST_RECV_DEADLINE)
+            .await
+            .unwrap()
+            .pop()
+            .unwrap();
         assert_eq!(*recv.task, mt);
         recv.ack().await.unwrap();
 
-        if let Ok(recv) = timeout(Duration::from_secs(1), c.receive_all()).await {
+        if let Ok(recv) = timeout(Duration::from_secs(1), c.receive_all(TEST_RECV_DEADLINE)).await {
             panic!("Received unexpected QueueTask {:?}", recv.unwrap()[0].task);
         }
 
@@ -620,13 +632,18 @@ pub mod tests {
             trigger_type: MessageAttemptTriggerType::Manual,
             attempt_count: 0,
         });
-        p.send(mt.clone(), None).await.unwrap();
+        p.send(&mt, None).await.unwrap();
 
-        let recv = c.receive_all().await.unwrap().pop().unwrap();
+        let recv = c
+            .receive_all(TEST_RECV_DEADLINE)
+            .await
+            .unwrap()
+            .pop()
+            .unwrap();
         assert_eq!(*recv.task, mt);
         recv.nack().await.unwrap();
 
-        let recv = timeout(Duration::from_secs(1), c.receive_all())
+        let recv = timeout(Duration::from_secs(1), c.receive_all(TEST_RECV_DEADLINE))
             .await
             .expect("Expected QueueTask");
         assert_eq!(*recv.unwrap().pop().unwrap().task, mt);
@@ -666,16 +683,26 @@ pub mod tests {
             attempt_count: 0,
         });
 
-        p.send(mt1.clone(), Some(Duration::from_millis(2000)))
+        p.send(&mt1, Some(Duration::from_millis(2000)))
             .await
             .unwrap();
-        p.send(mt2.clone(), None).await.unwrap();
+        p.send(&mt2, None).await.unwrap();
 
-        let [recv2] = c.receive_all().await.unwrap().try_into().unwrap();
+        let [recv2] = c
+            .receive_all(TEST_RECV_DEADLINE)
+            .await
+            .unwrap()
+            .try_into()
+            .unwrap();
         assert_eq!(*recv2.task, mt2);
         recv2.ack().await.unwrap();
 
-        let [recv1] = c.receive_all().await.unwrap().try_into().unwrap();
+        let [recv1] = c
+            .receive_all(TEST_RECV_DEADLINE)
+            .await
+            .unwrap()
+            .try_into()
+            .unwrap();
         assert_eq!(*recv1.task, mt1);
         recv1.ack().await.unwrap();
     }
@@ -813,9 +840,9 @@ pub mod tests {
         // 2 second delay on the delayed and pending queue is inserted after main queue, so first
         // the 6-10 should appear, then 1-5, then 11-15
 
-        let mut items = c.receive_all().await.unwrap();
+        let mut items = c.receive_all(TEST_RECV_DEADLINE).await.unwrap();
         while items.len() < 15 {
-            let more_tasks = c.receive_all().await.unwrap();
+            let more_tasks = c.receive_all(TEST_RECV_DEADLINE).await.unwrap();
             assert!(!more_tasks.is_empty(), "failed to receive all the tasks");
             items.extend(more_tasks);
         }
