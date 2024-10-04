@@ -29,7 +29,7 @@
 
 use std::{num::NonZeroUsize, sync::Arc, time::Duration};
 
-use omniqueue::backends::{RedisBackend, RedisConfig};
+use omniqueue::backends::{redis::DeadLetterQueueConfig, RedisBackend, RedisConfig};
 use redis::{AsyncCommands as _, RedisResult};
 
 use super::{QueueTask, TaskQueueConsumer, TaskQueueProducer};
@@ -50,6 +50,9 @@ const DELAYED: &str = "{queue}_svix_delayed";
 
 /// The key for the lock guarding the delayed queue background task.
 const DELAYED_LOCK: &str = "{queue}_svix_delayed_lock";
+
+/// The key for the DLQ
+const DLQ: &str = "{queue}_svix_dlq";
 
 // v2 KEY CONSTANTS
 const LEGACY_V2_MAIN: &str = "{queue}_svix_main";
@@ -82,11 +85,12 @@ pub async fn new_pair(
 ) -> (TaskQueueProducer, TaskQueueConsumer) {
     new_pair_inner(
         cfg,
-        Duration::from_secs(45),
+        Duration::from_secs(cfg.redis_pending_duration_secs),
         prefix.unwrap_or_default(),
         MAIN,
         DELAYED,
         DELAYED_LOCK,
+        DLQ,
     )
     .await
 }
@@ -125,10 +129,12 @@ async fn new_pair_inner(
     main_queue_name: &'static str,
     delayed_queue_name: &'static str,
     delayed_lock_name: &'static str,
+    dlq_name: &'static str,
 ) -> (TaskQueueProducer, TaskQueueConsumer) {
     let main_queue_name = format!("{queue_prefix}{main_queue_name}");
     let delayed_queue_name = format!("{queue_prefix}{delayed_queue_name}");
     let delayed_lock_name = format!("{queue_prefix}{delayed_lock_name}");
+    let dlq_name = format!("{queue_prefix}{dlq_name}");
 
     // This fn is only called from
     // - `queue::new_pair` if the queue type is redis and a DSN is set
@@ -205,6 +211,7 @@ async fn new_pair_inner(
         let pool = pool.clone();
         let main_queue_name = main_queue_name.clone();
         let delayed_queue_name = delayed_queue_name.clone();
+        let deadletter_queue_name = dlq_name.clone();
 
         async move {
             let mut interval = tokio::time::interval(Duration::from_secs(1));
@@ -214,12 +221,19 @@ async fn new_pair_inner(
                 group: WORKERS_GROUP,
             };
             let delayed_queue = RedisQueueType::SortedSet(&delayed_queue_name);
+            let deadletter_queue = RedisQueueType::List(&deadletter_queue_name);
             let metrics =
                 crate::metrics::RedisQueueMetrics::new(&opentelemetry::global::meter("svix.com"));
             loop {
                 interval.tick().await;
                 metrics
-                    .record(&pool, &main_queue, &pending, &delayed_queue)
+                    .record(
+                        &pool,
+                        &main_queue,
+                        &pending,
+                        &delayed_queue,
+                        &deadletter_queue,
+                    )
                     .await;
             }
         }
@@ -236,7 +250,10 @@ async fn new_pair_inner(
         consumer_name: WORKER_CONSUMER.to_owned(),
         payload_key: QUEUE_KV_KEY.to_owned(),
         ack_deadline_ms: pending_duration,
-        dlq_config: None,
+        dlq_config: Some(DeadLetterQueueConfig {
+            queue_key: dlq_name.to_string(),
+            max_receives: 3,
+        }),
         sentinel_config: cfg.redis_sentinel_cfg.clone().map(|c| c.into()),
     };
 
@@ -502,6 +519,7 @@ pub mod tests {
             "{test}_idle_period",
             "{test}_idle_period_delayed",
             "{test}_idle_period_delayed_lock",
+            "{test}_dlq",
         )
         .await;
 
@@ -572,6 +590,7 @@ pub mod tests {
             "{test}_ack",
             "{test}_ack_delayed",
             "{test}_ack_delayed_lock",
+            "{test}_dlq",
         )
         .await;
 
@@ -618,6 +637,7 @@ pub mod tests {
             "{test}_nack",
             "{test}_nack_delayed",
             "{test}_nack_delayed_lock",
+            "{test}_dlq",
         )
         .await;
 
@@ -661,6 +681,7 @@ pub mod tests {
             "{test}_delay",
             "{test}_delay_delayed",
             "{test}_delay_delayed_lock",
+            "{test}_dlq",
         )
         .await;
 
@@ -834,6 +855,7 @@ pub mod tests {
             v3_main,
             v2_delayed,
             v2_delayed_lock,
+            "dlq-bruh",
         )
         .await;
 

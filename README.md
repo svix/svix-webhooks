@@ -389,6 +389,10 @@ To support graceful shutdown on the server, all running tasks are finished befor
 One of our main goals with open sourcing the Svix dispatcher is ease of use. The hosted Svix service, however, is quite complex due to our scale and the infrastructure it requires. This complexity is not useful for the vast majority of people and would make this project much harder to use and much more limited.
 This is why this code has been adjusted before being released, and some of the features, optimizations, and behaviors supported by the hosted dispatcher are not yet available in this repo. With that being said, other than some known incompatibilities, the internal Svix test suite passes. This means they are already mostly compatible, and we are working hard on bringing them to full feature parity.
 
+# Re-driving Redis DLQ
+We have an undocumented endpoint for re-driving failed messages that are DLQ'ed. You can do this by calling `POST /api/v1/admin/redrive-dlq/`.
+
+To monitor the DLQ depth, you should monitor the `svix.queue.depth_dlq` metric. Any non-zero values indicate that there is data in the DLQ. 
 
 # Development
 

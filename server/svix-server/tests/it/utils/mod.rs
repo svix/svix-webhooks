@@ -331,6 +331,15 @@ pub async fn start_svix_server_with_cfg_and_org_id(
     cfg: &ConfigurationInner,
     org_id: OrganizationId,
 ) -> (TestClient, tokio::task::JoinHandle<()>) {
+    let prefix = svix_ksuid::Ksuid::new(None, None).to_string();
+    start_svix_server_with_cfg_and_org_id_and_prefix(cfg, org_id, prefix).await
+}
+
+pub async fn start_svix_server_with_cfg_and_org_id_and_prefix(
+    cfg: &ConfigurationInner,
+    org_id: OrganizationId,
+    prefix: String,
+) -> (TestClient, tokio::task::JoinHandle<()>) {
     let (tracing_subscriber, _guard) = setup_tracing(cfg, /* for_test = */ true);
 
     let cfg = Arc::new(cfg.clone());
@@ -340,12 +349,8 @@ pub async fn start_svix_server_with_cfg_and_org_id(
     let base_uri = format!("http://{}", listener.local_addr().unwrap());
 
     let jh = tokio::spawn(
-        svix_server::run_with_prefix(
-            Some(svix_ksuid::Ksuid::new(None, None).to_string()),
-            cfg,
-            Some(listener),
-        )
-        .with_subscriber(tracing_subscriber),
+        svix_server::run_with_prefix(Some(prefix), cfg, Some(listener))
+            .with_subscriber(tracing_subscriber),
     );
 
     (TestClient::new(base_uri, &token), jh)

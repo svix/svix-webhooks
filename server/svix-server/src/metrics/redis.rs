@@ -43,6 +43,7 @@ pub struct RedisQueueMetrics {
     main_queue: Option<ObservableGauge<u64>>,
     pending_queue: Option<ObservableGauge<u64>>,
     delayed_queue: Option<ObservableGauge<u64>>,
+    deadletter_queue: Option<ObservableGauge<u64>>,
 }
 
 impl RedisQueueMetrics {
@@ -65,10 +66,17 @@ impl RedisQueueMetrics {
                 .try_init(),
         );
 
+        let deadletter_queue = init_metric(
+            meter
+                .u64_observable_gauge("svix.queue.depth_dlq")
+                .try_init(),
+        );
+
         Self {
             main_queue,
             pending_queue,
             delayed_queue,
+            deadletter_queue,
         }
     }
     pub async fn record(
@@ -77,6 +85,7 @@ impl RedisQueueMetrics {
         main_queue: &RedisQueueType<'_>,
         pending_queue: &RedisQueueType<'_>,
         delayed_queue: &RedisQueueType<'_>,
+        deadletter_queue: &RedisQueueType<'_>,
     ) {
         main_queue
             .queue_depth(redis)
@@ -99,6 +108,13 @@ impl RedisQueueMetrics {
             .unwrap_or_else(|e| {
                 tracing::warn!("Failed to record queue depth: {e}");
             });
+        deadletter_queue
+            .queue_depth(redis)
+            .await
+            .map(|d| self.record_deadletter_queue_depth(d))
+            .unwrap_or_else(|e| {
+                tracing::warn!("Failed to record queue depth: {e}");
+            });
     }
 
     fn record_main_queue_depth(&self, value: u64) {
@@ -113,6 +129,11 @@ impl RedisQueueMetrics {
     }
     fn record_delayed_queue_depth(&self, value: u64) {
         if let Some(recorder) = &self.delayed_queue {
+            recorder.observe(value, &[]);
+        }
+    }
+    fn record_deadletter_queue_depth(&self, value: u64) {
+        if let Some(recorder) = &self.deadletter_queue {
             recorder.observe(value, &[]);
         }
     }

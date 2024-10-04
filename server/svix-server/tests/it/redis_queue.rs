@@ -6,16 +6,26 @@
 
 use std::{str::FromStr, time::Duration};
 
+use http::StatusCode;
 use redis::AsyncCommands as _;
+use svix_ksuid::KsuidLike;
 use svix_server::{
     cfg::Configuration,
-    core::types::{ApplicationId, EndpointId, MessageAttemptTriggerType, MessageId},
+    core::types::{
+        ApplicationId, BaseId, EndpointId, MessageAttemptTriggerType, MessageId, OrganizationId,
+    },
     queue::{
         new_pair, MessageTask, QueueTask, TaskQueueConsumer, TaskQueueDelivery, TaskQueueProducer,
     },
     redis::RedisManager,
+    v1::endpoints::message::MessageOut,
 };
 use tokio::time::timeout;
+
+use crate::utils::{
+    common_calls::{create_test_app, create_test_endpoint, message_in},
+    get_default_test_config, start_svix_server_with_cfg_and_org_id_and_prefix,
+};
 
 // TODO: Don't copy this from the Redis queue test directly, place the fn somewhere both can access
 async fn get_pool(cfg: &Configuration) -> RedisManager {
@@ -147,4 +157,91 @@ async fn test_many_queue_consumers_delayed() {
         Some(Duration::from_millis(500)),
     )
     .await;
+}
+
+#[tokio::test]
+#[ignore]
+async fn test_redis_streams_dlq() {
+    let mut cfg = get_default_test_config();
+    cfg.worker_enabled = false;
+    cfg.redis_pending_duration_secs = 1;
+
+    let cfg = std::sync::Arc::new(cfg);
+    let prefix = svix_ksuid::Ksuid::new(None, None).to_string();
+
+    let pool = get_pool(&cfg).await;
+    let mut conn = pool.get().await.unwrap();
+
+    let _: () = conn
+        .del(format!("{prefix}{{queue}}_svix_v3_main"))
+        .await
+        .unwrap();
+
+    let _: () = conn
+        .del(format!("{prefix}{{queue}}_svix_dlq"))
+        .await
+        .unwrap();
+
+    let (client, _jh) = start_svix_server_with_cfg_and_org_id_and_prefix(
+        &cfg,
+        OrganizationId::new(None, None),
+        prefix.clone(),
+    )
+    .await;
+
+    let app_id = create_test_app(&client, "v1MessageCRTestApp")
+        .await
+        .unwrap()
+        .id;
+
+    let _endp_id = create_test_endpoint(&client, &app_id, "http://localhost:2/bad/url/")
+        .await
+        .unwrap()
+        .id;
+
+    let _message_1: MessageOut = client
+        .post(
+            &format!("api/v1/app/{app_id}/msg/"),
+            message_in(&app_id, serde_json::json!({"test": "value"})).unwrap(),
+            StatusCode::ACCEPTED,
+        )
+        .await
+        .unwrap();
+
+    let (_p, mut c) = new_pair(&cfg, Some(&prefix)).await;
+
+    let wait_time = std::time::Duration::from_millis(1_500);
+    for _ in 0..3 {
+        let res = c.receive_all(wait_time).await.unwrap();
+        assert!(!res.is_empty());
+        for j in res {
+            j.nack().await.unwrap();
+        }
+    }
+
+    let res = c.receive_all(wait_time).await.unwrap();
+    assert!(res.is_empty());
+
+    tokio::time::sleep(wait_time).await;
+
+    // Redrive
+    client
+        .post_without_response(
+            "/api/v1/admin/redrive-dlq",
+            serde_json::Value::Null,
+            StatusCode::NO_CONTENT,
+        )
+        .await
+        .unwrap();
+
+    for _ in 0..3 {
+        let res = c.receive_all(wait_time).await.unwrap();
+        assert!(!res.is_empty());
+        for j in res {
+            j.nack().await.unwrap();
+        }
+    }
+
+    let res = c.receive_all(wait_time).await.unwrap();
+    assert!(res.is_empty());
 }

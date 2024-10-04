@@ -69,6 +69,10 @@ const DEFAULTS: &str = include_str!("../config.default.toml");
 
 pub type Configuration = Arc<ConfigurationInner>;
 
+fn default_redis_pending_duration_secs() -> u64 {
+    45
+}
+
 #[derive(Clone, Debug, Deserialize, Validate)]
 #[validate(
     schema(function = "validate_config_complete"),
@@ -199,6 +203,9 @@ pub struct ConfigurationInner {
     /// Optional configuration for sending webhooks through a proxy.
     #[serde(flatten)]
     pub proxy_config: Option<ProxyConfig>,
+
+    #[serde(default = "default_redis_pending_duration_secs")]
+    pub redis_pending_duration_secs: u64,
 
     #[serde(flatten)]
     pub internal: InternalConfig,
