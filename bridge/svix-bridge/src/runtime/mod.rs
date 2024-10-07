@@ -1,8 +1,8 @@
 use std::num::NonZeroUsize;
 
-use anyhow::Result;
+use anyhow::{Context as _, Result};
 use deadpool::unmanaged::Pool;
-use deno_ast::{MediaType, ParseParams, SourceTextInfo};
+use deno_ast::{MediaType, ModuleSpecifier, ParseParams};
 use deno_core::{
     serde_v8,
     v8::{self},
@@ -91,15 +91,16 @@ impl JsPooler {
 
 /// Checks that the input parses as valid JavaScript, giving the parser's error back on failure.
 pub fn validate_script(src: &str) -> Result<()> {
-    Ok(deno_ast::parse_script(ParseParams {
-        specifier: "file:///x.js".to_string(),
-        text_info: SourceTextInfo::new(src.into()),
+    deno_ast::parse_script(ParseParams {
+        specifier: ModuleSpecifier::parse("file:///x.js")
+            .context("known valid URL must parse successfully")?,
+        text: src.into(),
         media_type: MediaType::JavaScript,
         capture_tokens: false,
         scope_analysis: false,
         maybe_syntax: None,
-    })
-    .map(|_| ())?)
+    })?;
+    Ok(())
 }
 
 fn run_script_inner(
@@ -119,8 +120,7 @@ fn run_script_inner(
         return handler({input});
     }})()
     "#,
-        )
-        .into(),
+        ),
     );
     match res {
         Ok(global) => {
