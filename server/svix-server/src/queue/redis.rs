@@ -36,6 +36,7 @@ use super::{QueueTask, TaskQueueConsumer, TaskQueueProducer};
 use crate::{
     cfg::{Configuration, QueueType},
     error::Result,
+    metrics::RedisQueueType,
     redis::{RedisConnection, RedisManager},
 };
 
@@ -172,27 +173,56 @@ async fn new_pair_inner(
         .expect("Pending duration out of bounds");
 
     // Migrate v1 queues to v2 and v2 queues to v3 on a loop with exponential backoff.
-    tokio::spawn(async move {
-        let delays = [
-            // 11.25 min
-            Duration::from_secs(60 * 11 + 15),
-            // 22.5 min
-            Duration::from_secs(60 * 22 + 30),
-            // 45 min
-            Duration::from_secs(60 * 45),
-            // 1.5 hours
-            Duration::from_secs(60 * 30 * 3),
-            // 3 hours
-            Duration::from_secs(60 * 60 * 3),
-            // 6 hours
-            Duration::from_secs(60 * 60 * 6),
-            // 12 hours
-            Duration::from_secs(60 * 60 * 12),
-            // 24 hours
-            Duration::from_secs(60 * 60 * 24),
-        ];
+    tokio::spawn({
+        let pool = pool.clone();
 
-        run_migration_schedule(&delays, pool).await;
+        async move {
+            let delays = [
+                // 11.25 min
+                Duration::from_secs(60 * 11 + 15),
+                // 22.5 min
+                Duration::from_secs(60 * 22 + 30),
+                // 45 min
+                Duration::from_secs(60 * 45),
+                // 1.5 hours
+                Duration::from_secs(60 * 30 * 3),
+                // 3 hours
+                Duration::from_secs(60 * 60 * 3),
+                // 6 hours
+                Duration::from_secs(60 * 60 * 6),
+                // 12 hours
+                Duration::from_secs(60 * 60 * 12),
+                // 24 hours
+                Duration::from_secs(60 * 60 * 24),
+            ];
+
+            run_migration_schedule(&delays, pool).await;
+        }
+    });
+
+    // Metrics task
+    tokio::spawn({
+        let pool = pool.clone();
+        let main_queue_name = main_queue_name.clone();
+        let delayed_queue_name = delayed_queue_name.clone();
+
+        async move {
+            let mut interval = tokio::time::interval(Duration::from_secs(1));
+            let main_queue = RedisQueueType::Stream(&main_queue_name);
+            let pending = RedisQueueType::StreamPending {
+                stream: &main_queue_name,
+                group: WORKERS_GROUP,
+            };
+            let delayed_queue = RedisQueueType::SortedSet(&delayed_queue_name);
+            let metrics =
+                crate::metrics::RedisQueueMetrics::new(&opentelemetry::global::meter("svix.com"));
+            loop {
+                interval.tick().await;
+                metrics
+                    .record(&pool, &main_queue, &pending, &delayed_queue)
+                    .await;
+            }
+        }
     });
 
     let config = RedisConfig {
