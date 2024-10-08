@@ -1,11 +1,28 @@
+    require 'securerandom'
+
     # Call an API with given options.
     #
     # @return [Array<(Object, Integer, Hash)>] an array of 3 elements:
     #   the data deserialized from response body (may be a Tempfile or nil), response status code and response headers.
     def call_api(http_method, path, opts = {})
+      opts[:'header_params'][:'svix-req-id'] = SecureRandom.random_number(2**32).to_s
       request = build_request(http_method, path, opts)
       tempfile = download_file(request) if opts[:return_type] == 'File'
       response = request.run
+
+      # retry on 5XX and general network errors
+      sleep_time = 0.05
+      retry_count = 0
+      (0..1).each do |n|
+        break if response.success? || (response.code < 500 && response.code > 0)
+        retry_count += 1
+        sleep(sleep_time)
+        sleep_time = sleep_time * 2
+        opts[:'header_params'][:'svix-retry-count'] = retry_count.to_s
+        request = build_request(http_method, path, opts)
+        tempfile = download_file(request) if opts[:return_type] == 'File'
+        response = request.run
+      end
 
       if @config.debugging
         @config.logger.debug "HTTP response body ~BEGIN~\n#{response.body}\n~END~\n"
