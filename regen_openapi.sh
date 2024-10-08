@@ -11,7 +11,7 @@ yarn openapi-generator-cli generate -i openapi.json -g typescript -o javascript/
 # Cleanup previous codegen, allowing us to spot removals.
 # If the removals are expected, stage them eg. `git add -u`, then commit them.
 rm -f go/internal/openapi/*.go
-yarn openapi-generator-cli generate -i openapi.json -g go -o go/internal/openapi -c go/openapi-generator-config.json # -t go/templates
+yarn openapi-generator-cli generate -i openapi.json -g go -o go/internal/openapi -c go/openapi-generator-config.json -t go/templates
 
 
 yarn openapi-generator-cli generate -i openapi.json -g java -o java/lib/generated/openapi -c java/openapi-generator-config.json -t java/templates
