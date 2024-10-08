@@ -45,7 +45,7 @@ type EndpointStatsOptions struct {
 }
 
 func (e *Endpoint) List(ctx context.Context, appId string, options *EndpointListOptions) (*ListResponseEndpointOut, error) {
-	req := e.api.EndpointApi.V1EndpointList(ctx, appId)
+	req := e.api.EndpointAPI.V1EndpointList(ctx, appId)
 	if options != nil {
 		if options.Iterator != nil {
 			req = req.Iterator(*options.Iterator)
@@ -54,15 +54,14 @@ func (e *Endpoint) List(ctx context.Context, appId string, options *EndpointList
 			req = req.Limit(*options.Limit)
 		}
 		if options.Order != nil {
-			req = req.Order(openapi.Ordering(*options.Order))
+			req = req.Order(*options.Order)
 		}
 	}
-	out, res, err := req.Execute()
+	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
-	ret := ListResponseEndpointOut(out)
-	return &ret, nil
+	return ret, nil
 }
 
 func (e *Endpoint) Create(ctx context.Context, appId string, endpointIn *EndpointIn) (*EndpointOut, error) {
@@ -70,67 +69,62 @@ func (e *Endpoint) Create(ctx context.Context, appId string, endpointIn *Endpoin
 }
 
 func (e *Endpoint) CreateWithOptions(ctx context.Context, appId string, endpointIn *EndpointIn, options *PostOptions) (*EndpointOut, error) {
-	req := e.api.EndpointApi.V1EndpointCreate(ctx, appId)
-	req = req.EndpointIn(openapi.EndpointIn(*endpointIn))
+	req := e.api.EndpointAPI.V1EndpointCreate(ctx, appId)
+	req = req.EndpointIn(*endpointIn)
 	if options != nil {
 		if options.IdempotencyKey != nil {
 			req = req.IdempotencyKey(*options.IdempotencyKey)
 		}
 	}
-	out, res, err := req.Execute()
+	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
-	ret := EndpointOut(out)
-	return &ret, nil
+	return ret, nil
 }
 
 func (e *Endpoint) Get(ctx context.Context, appId string, endpointId string) (*EndpointOut, error) {
-	req := e.api.EndpointApi.V1EndpointGet(ctx, appId, endpointId)
-	out, res, err := req.Execute()
+	req := e.api.EndpointAPI.V1EndpointGet(ctx, appId, endpointId)
+	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
-	ret := EndpointOut(out)
-	return &ret, nil
+	return ret, nil
 }
 
 func (e *Endpoint) Update(ctx context.Context, appId string, endpointId string, endpointUpdate *EndpointUpdate) (*EndpointOut, error) {
-	req := e.api.EndpointApi.V1EndpointUpdate(ctx, appId, endpointId)
-	req = req.EndpointUpdate(openapi.EndpointUpdate(*endpointUpdate))
-	out, res, err := req.Execute()
+	req := e.api.EndpointAPI.V1EndpointUpdate(ctx, appId, endpointId)
+	req = req.EndpointUpdate(*endpointUpdate)
+	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
-	ret := EndpointOut(out)
-	return &ret, nil
+	return ret, nil
 }
 
 func (e *Endpoint) Patch(ctx context.Context, appId string, endpointId string, endpointPatch *EndpointPatch) (*EndpointOut, error) {
-	req := e.api.EndpointApi.V1EndpointPatch(ctx, appId, endpointId)
-	req = req.EndpointPatch(openapi.EndpointPatch(*endpointPatch))
-	out, res, err := req.Execute()
+	req := e.api.EndpointAPI.V1EndpointPatch(ctx, appId, endpointId)
+	req = req.EndpointPatch(*endpointPatch)
+	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
-	ret := EndpointOut(out)
-	return &ret, nil
+	return ret, nil
 }
 
 func (e *Endpoint) Delete(ctx context.Context, appId string, endpointId string) error {
-	req := e.api.EndpointApi.V1EndpointDelete(ctx, appId, endpointId)
+	req := e.api.EndpointAPI.V1EndpointDelete(ctx, appId, endpointId)
 	res, err := req.Execute()
 	return wrapError(err, res)
 }
 
 func (e *Endpoint) GetSecret(ctx context.Context, appId string, endpointId string) (*EndpointSecretOut, error) {
-	req := e.api.EndpointApi.V1EndpointGetSecret(ctx, appId, endpointId)
-	out, res, err := req.Execute()
+	req := e.api.EndpointAPI.V1EndpointGetSecret(ctx, appId, endpointId)
+	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
-	ret := EndpointSecretOut(out)
-	return &ret, nil
+	return ret, nil
 }
 
 func (e *Endpoint) RotateSecret(ctx context.Context, appId string, endpointId string, endpointSecretRotateIn *EndpointSecretRotateIn) error {
@@ -138,8 +132,8 @@ func (e *Endpoint) RotateSecret(ctx context.Context, appId string, endpointId st
 }
 
 func (e *Endpoint) RotateSecretWithOptions(ctx context.Context, appId string, endpointId string, endpointSecretRotateIn *EndpointSecretRotateIn, options *PostOptions) error {
-	req := e.api.EndpointApi.V1EndpointRotateSecret(ctx, appId, endpointId)
-	req = req.EndpointSecretRotateIn(openapi.EndpointSecretRotateIn(*endpointSecretRotateIn))
+	req := e.api.EndpointAPI.V1EndpointRotateSecret(ctx, appId, endpointId)
+	req = req.EndpointSecretRotateIn(*endpointSecretRotateIn)
 	if options != nil {
 		if options.IdempotencyKey != nil {
 			req = req.IdempotencyKey(*options.IdempotencyKey)
@@ -157,33 +151,32 @@ func (e *Endpoint) Recover(ctx context.Context, appId string, endpointId string,
 }
 
 func (e *Endpoint) RecoverWithOptions(ctx context.Context, appId string, endpointId string, recoverIn *RecoverIn, options *PostOptions) (*RecoverOut, error) {
-	req := e.api.EndpointApi.V1EndpointRecover(ctx, appId, endpointId)
-	req = req.RecoverIn(openapi.RecoverIn(*recoverIn))
+	req := e.api.EndpointAPI.V1EndpointRecover(ctx, appId, endpointId)
+	req = req.RecoverIn(*recoverIn)
 	if options != nil {
 		if options.IdempotencyKey != nil {
 			req = req.IdempotencyKey(*options.IdempotencyKey)
 		}
 	}
-	out, res, err := req.Execute()
+	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
-	return &out, nil
+	return ret, nil
 }
 
 func (e *Endpoint) GetHeaders(ctx context.Context, appId string, endpointId string) (*EndpointHeadersOut, error) {
-	req := e.api.EndpointApi.V1EndpointGetHeaders(ctx, appId, endpointId)
-	out, res, err := req.Execute()
+	req := e.api.EndpointAPI.V1EndpointGetHeaders(ctx, appId, endpointId)
+	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
-	ret := EndpointHeadersOut(out)
-	return &ret, nil
+	return ret, nil
 }
 
 func (e *Endpoint) UpdateHeaders(ctx context.Context, appId string, endpointId string, endpointHeadersIn *EndpointHeadersIn) error {
-	req := e.api.EndpointApi.V1EndpointUpdateHeaders(ctx, appId, endpointId)
-	req = req.EndpointHeadersIn(openapi.EndpointHeadersIn(*endpointHeadersIn))
+	req := e.api.EndpointAPI.V1EndpointUpdateHeaders(ctx, appId, endpointId)
+	req = req.EndpointHeadersIn(*endpointHeadersIn)
 	res, err := req.Execute()
 	if err != nil {
 		return wrapError(err, res)
@@ -192,8 +185,8 @@ func (e *Endpoint) UpdateHeaders(ctx context.Context, appId string, endpointId s
 }
 
 func (e *Endpoint) PatchHeaders(ctx context.Context, appId string, endpointId string, endpointHeadersIn *EndpointHeadersPatchIn) error {
-	req := e.api.EndpointApi.V1EndpointPatchHeaders(ctx, appId, endpointId)
-	req = req.EndpointHeadersPatchIn(openapi.EndpointHeadersPatchIn(*endpointHeadersIn))
+	req := e.api.EndpointAPI.V1EndpointPatchHeaders(ctx, appId, endpointId)
+	req = req.EndpointHeadersPatchIn(*endpointHeadersIn)
 	res, err := req.Execute()
 	if err != nil {
 		return wrapError(err, res)
@@ -206,19 +199,18 @@ func (e *Endpoint) GetStats(ctx context.Context, appId string, endpointId string
 }
 
 func (e *Endpoint) GetStatsWithOptions(ctx context.Context, appId string, endpointId string, options EndpointStatsOptions) (*EndpointStats, error) {
-	req := e.api.EndpointApi.V1EndpointGetStats(ctx, appId, endpointId)
+	req := e.api.EndpointAPI.V1EndpointGetStats(ctx, appId, endpointId)
 	if options.Since != nil {
 		req = req.Since(*options.Since)
 	}
 	if options.Until != nil {
 		req = req.Until(*options.Until)
 	}
-	out, res, err := req.Execute()
+	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
-	ret := EndpointStats(out)
-	return &ret, nil
+	return ret, nil
 }
 
 func (e *Endpoint) ReplayMissing(ctx context.Context, appId string, endpointId string, replayIn *ReplayIn) (*ReplayOut, error) {
@@ -232,35 +224,32 @@ func (e *Endpoint) ReplayMissingWithOptions(
 	replayIn *ReplayIn,
 	options *PostOptions,
 ) (*ReplayOut, error) {
-	req := e.api.EndpointApi.V1EndpointReplay(ctx, appId, endpointId)
-	req.ReplayIn(openapi.ReplayIn(*replayIn))
+	req := e.api.EndpointAPI.V1EndpointReplay(ctx, appId, endpointId)
+	req.ReplayIn(*replayIn)
 	if options != nil {
 		if options.IdempotencyKey != nil {
 			req = req.IdempotencyKey(*options.IdempotencyKey)
 		}
 	}
-	out, res, err := req.Execute()
+	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
-	return &out, nil
+	return ret, nil
 }
 
 func (e *Endpoint) TransformationGet(ctx context.Context, appId string, endpointId string) (*EndpointTransformationOut, error) {
-	req := e.api.EndpointApi.V1EndpointTransformationGet(ctx, appId, endpointId)
-
-	out, res, err := req.Execute()
+	req := e.api.EndpointAPI.V1EndpointTransformationGet(ctx, appId, endpointId)
+	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
-
-	ret := EndpointTransformationOut(out)
-	return &ret, nil
+	return ret, nil
 }
 
 func (e *Endpoint) TransformationPartialUpdate(ctx context.Context, appId string, endpointId string, transformation *EndpointTransformationIn) error {
-	req := e.api.EndpointApi.V1EndpointTransformationPartialUpdate(ctx, appId, endpointId)
-	req = req.EndpointTransformationIn(openapi.EndpointTransformationIn(*transformation))
+	req := e.api.EndpointAPI.V1EndpointTransformationPartialUpdate(ctx, appId, endpointId)
+	req = req.EndpointTransformationIn(*transformation)
 
 	res, err := req.Execute()
 	if err != nil {
@@ -281,8 +270,8 @@ func (e *Endpoint) SendExampleWithOptions(
 	eventExampleIn *EventExampleIn,
 	options *PostOptions,
 ) (*MessageOut, error) {
-	req := e.api.EndpointApi.V1EndpointSendExample(ctx, appId, endpointId)
-	req.EventExampleIn(openapi.EventExampleIn(*eventExampleIn))
+	req := e.api.EndpointAPI.V1EndpointSendExample(ctx, appId, endpointId)
+	req.EventExampleIn(*eventExampleIn)
 
 	if options != nil {
 		if options.IdempotencyKey != nil {
@@ -290,11 +279,9 @@ func (e *Endpoint) SendExampleWithOptions(
 		}
 	}
 
-	out, res, err := req.Execute()
+	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
-
-	ret := MessageOut(out)
-	return &ret, nil
+	return ret, nil
 }

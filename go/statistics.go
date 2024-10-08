@@ -17,7 +17,7 @@ type (
 )
 
 func (s *Statistics) AggregateAppStats(ctx context.Context, appUsageStatsIn *AppUsageStatsIn, options *PostOptions) (*AppUsageStatsOut, error) {
-	req := s.api.StatisticsApi.V1StatisticsAggregateAppStats(ctx)
+	req := s.api.StatisticsAPI.V1StatisticsAggregateAppStats(ctx)
 	if appUsageStatsIn != nil {
 		req = req.AppUsageStatsIn(*appUsageStatsIn)
 	}
@@ -26,21 +26,19 @@ func (s *Statistics) AggregateAppStats(ctx context.Context, appUsageStatsIn *App
 			req = req.IdempotencyKey(*options.IdempotencyKey)
 		}
 	}
-	out, res, err := req.Execute()
+	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
-	ret := AppUsageStatsOut(out)
-	return &ret, nil
+	return ret, nil
 }
 
 func (s *Statistics) AggregateEventTypes(ctx context.Context) (*AggregateEventTypesOut, error) {
-	req := s.api.StatisticsApi.V1StatisticsAggregateEventTypes(ctx)
+	req := s.api.StatisticsAPI.V1StatisticsAggregateEventTypes(ctx)
 
-	out, res, err := req.Execute()
+	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
-	ret := AggregateEventTypesOut(out)
-	return &ret, nil
+	return ret, nil
 }

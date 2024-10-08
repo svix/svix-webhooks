@@ -2,7 +2,10 @@ module github.com/svix/svix-webhooks
 
 go 1.20
 
-require golang.org/x/oauth2 v0.0.0-20210514164344-f6687ab2804c
+require (
+	golang.org/x/oauth2 v0.0.0-20210514164344-f6687ab2804c
+	gopkg.in/validator.v2 v2.0.1
+)
 
 require (
 	github.com/golang/protobuf v1.5.0 // indirect

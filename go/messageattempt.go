@@ -45,7 +45,7 @@ func (m *MessageAttempt) List(ctx context.Context, appId string, msgId string, o
 }
 
 func (m *MessageAttempt) ListByMsg(ctx context.Context, appId string, msgId string, options *MessageAttemptListOptions) (*ListResponseMessageAttemptOut, error) {
-	req := m.api.MessageAttemptApi.V1MessageAttemptListByMsg(ctx, appId, msgId)
+	req := m.api.MessageAttemptAPI.V1MessageAttemptListByMsg(ctx, appId, msgId)
 	if options != nil {
 		if options.Iterator != nil {
 			req = req.Iterator(*options.Iterator)
@@ -54,7 +54,7 @@ func (m *MessageAttempt) ListByMsg(ctx context.Context, appId string, msgId stri
 			req = req.Limit(*options.Limit)
 		}
 		if options.Status != nil {
-			req = req.Status(openapi.MessageStatus(*options.Status))
+			req = req.Status(*options.Status)
 		}
 		if options.EventTypes != nil {
 			req = req.EventTypes(*options.EventTypes)
@@ -66,7 +66,7 @@ func (m *MessageAttempt) ListByMsg(ctx context.Context, appId string, msgId stri
 			req = req.After(*options.After)
 		}
 		if options.StatusCodeClass != nil {
-			req.StatusCodeClass(openapi.StatusCodeClass(*options.StatusCodeClass))
+			req.StatusCodeClass(*options.StatusCodeClass)
 		}
 		if options.Channel != nil {
 			req = req.Channel(*options.Channel)
@@ -81,16 +81,15 @@ func (m *MessageAttempt) ListByMsg(ctx context.Context, appId string, msgId stri
 			req = req.Tag(*options.Tag)
 		}
 	}
-	out, res, err := req.Execute()
+	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
-	ret := ListResponseMessageAttemptOut(out)
-	return &ret, nil
+	return ret, nil
 }
 
 func (m *MessageAttempt) ListByEndpoint(ctx context.Context, appId string, endpointId string, options *MessageAttemptListOptions) (*ListResponseMessageAttemptOut, error) {
-	req := m.api.MessageAttemptApi.V1MessageAttemptListByEndpoint(ctx, appId, endpointId)
+	req := m.api.MessageAttemptAPI.V1MessageAttemptListByEndpoint(ctx, appId, endpointId)
 	if options != nil {
 		if options.Iterator != nil {
 			req = req.Iterator(*options.Iterator)
@@ -99,7 +98,7 @@ func (m *MessageAttempt) ListByEndpoint(ctx context.Context, appId string, endpo
 			req = req.Limit(*options.Limit)
 		}
 		if options.Status != nil {
-			req = req.Status(openapi.MessageStatus(*options.Status))
+			req = req.Status(*options.Status)
 		}
 		if options.EventTypes != nil {
 			req = req.EventTypes(*options.EventTypes)
@@ -111,7 +110,7 @@ func (m *MessageAttempt) ListByEndpoint(ctx context.Context, appId string, endpo
 			req = req.After(*options.After)
 		}
 		if options.StatusCodeClass != nil {
-			req.StatusCodeClass(openapi.StatusCodeClass(*options.StatusCodeClass))
+			req.StatusCodeClass(*options.StatusCodeClass)
 		}
 		if options.Channel != nil {
 			req = req.Channel(*options.Channel)
@@ -126,22 +125,20 @@ func (m *MessageAttempt) ListByEndpoint(ctx context.Context, appId string, endpo
 			req = req.Tag(*options.Tag)
 		}
 	}
-	out, res, err := req.Execute()
+	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
-	ret := ListResponseMessageAttemptOut(out)
-	return &ret, nil
+	return ret, nil
 }
 
 func (m *MessageAttempt) Get(ctx context.Context, appId string, msgId string, attemptID string) (*MessageAttemptOut, error) {
-	req := m.api.MessageAttemptApi.V1MessageAttemptGet(ctx, appId, msgId, attemptID)
-	out, res, err := req.Execute()
+	req := m.api.MessageAttemptAPI.V1MessageAttemptGet(ctx, appId, msgId, attemptID)
+	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
-	ret := MessageAttemptOut(out)
-	return &ret, nil
+	return ret, nil
 }
 
 func (m *MessageAttempt) Resend(ctx context.Context, appId string, msgId string, endpointId string) error {
@@ -149,7 +146,7 @@ func (m *MessageAttempt) Resend(ctx context.Context, appId string, msgId string,
 }
 
 func (m *MessageAttempt) ResendWithOptions(ctx context.Context, appId string, msgId string, endpointId string, options *PostOptions) error {
-	req := m.api.MessageAttemptApi.V1MessageAttemptResend(ctx, appId, msgId, endpointId)
+	req := m.api.MessageAttemptAPI.V1MessageAttemptResend(ctx, appId, msgId, endpointId)
 	if options != nil {
 		if options.IdempotencyKey != nil {
 			req = req.IdempotencyKey(*options.IdempotencyKey)
@@ -160,7 +157,7 @@ func (m *MessageAttempt) ResendWithOptions(ctx context.Context, appId string, ms
 }
 
 func (m *MessageAttempt) ListAttemptedMessages(ctx context.Context, appId string, endpointId string, options *MessageAttemptListOptions) (*ListResponseEndpointMessageOut, error) {
-	req := m.api.MessageAttemptApi.V1MessageAttemptListAttemptedMessages(ctx, appId, endpointId)
+	req := m.api.MessageAttemptAPI.V1MessageAttemptListAttemptedMessages(ctx, appId, endpointId)
 	if options != nil {
 		if options.Iterator != nil {
 			req = req.Iterator(*options.Iterator)
@@ -190,16 +187,15 @@ func (m *MessageAttempt) ListAttemptedMessages(ctx context.Context, appId string
 			req = req.Tag(*options.Tag)
 		}
 	}
-	out, res, err := req.Execute()
+	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
-	ret := ListResponseEndpointMessageOut(out)
-	return &ret, nil
+	return ret, nil
 }
 
 func (m *MessageAttempt) ListAttemptedDestinations(ctx context.Context, appId string, msgId string, options *MessageAttemptListOptions) (*ListResponseMessageEndpointOut, error) {
-	req := m.api.MessageAttemptApi.V1MessageAttemptListAttemptedDestinations(ctx, appId, msgId)
+	req := m.api.MessageAttemptAPI.V1MessageAttemptListAttemptedDestinations(ctx, appId, msgId)
 	if options != nil {
 		if options.Iterator != nil {
 			req = req.Iterator(*options.Iterator)
@@ -208,16 +204,15 @@ func (m *MessageAttempt) ListAttemptedDestinations(ctx context.Context, appId st
 			req = req.Limit(*options.Limit)
 		}
 	}
-	out, res, err := req.Execute()
+	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
-	ret := ListResponseMessageEndpointOut(out)
-	return &ret, nil
+	return ret, nil
 }
 
 func (m *MessageAttempt) ListAttemptsForEndpoint(ctx context.Context, appId string, msgId string, endpointId string, options *MessageAttemptListOptions) (*ListResponseMessageAttemptEndpointOut, error) {
-	req := m.api.MessageAttemptApi.V1MessageAttemptListByEndpointDeprecated(ctx, appId, msgId, endpointId)
+	req := m.api.MessageAttemptAPI.V1MessageAttemptListByEndpointDeprecated(ctx, appId, msgId, endpointId)
 	if options != nil {
 		if options.Iterator != nil {
 			req = req.Iterator(*options.Iterator)
@@ -244,16 +239,15 @@ func (m *MessageAttempt) ListAttemptsForEndpoint(ctx context.Context, appId stri
 			req = req.Tag(*options.Tag)
 		}
 	}
-	out, res, err := req.Execute()
+	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
-	ret := ListResponseMessageAttemptEndpointOut(out)
-	return &ret, nil
+	return ret, nil
 }
 
 func (m *MessageAttempt) ExpungeContent(ctx context.Context, appId string, msgId string, attemptId string) error {
-	req := m.api.MessageAttemptApi.V1MessageAttemptExpungeContent(ctx, appId, msgId, attemptId)
+	req := m.api.MessageAttemptAPI.V1MessageAttemptExpungeContent(ctx, appId, msgId, attemptId)
 	res, err := req.Execute()
 	return wrapError(err, res)
 }
