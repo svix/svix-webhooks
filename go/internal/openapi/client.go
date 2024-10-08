@@ -31,8 +31,11 @@ import (
 	"strings"
 	"time"
 	"unicode/utf8"
+	"math/rand"
 
 )
+
+const NumTries = 3
 
 var (
 	JsonCheck       = regexp.MustCompile(`(?i:(?:application|text)/(?:[^;]+\+)?json)`)
@@ -301,9 +304,22 @@ func (c *APIClient) callAPI(request *http.Request) (*http.Response, error) {
 		log.Printf("\n%s\n", string(dump))
 	}
 
-	resp, err := c.cfg.HTTPClient.Do(request)
-	if err != nil {
-		return resp, err
+	var resp *http.Response
+	var err error
+	sleepTime := time.Millisecond * 50
+	retryCount := 0
+	for try := 0; try < NumTries; try++ {
+		resp, err = c.cfg.HTTPClient.Do(request)
+		if err == nil && resp.StatusCode < 500 {
+			break
+		}
+		if try >= NumTries - 1 {
+			return resp, err
+		}
+		retryCount++
+		request.Header.Set("svix-retry-count", strconv.Itoa(retryCount))
+		time.Sleep(sleepTime)
+		sleepTime = sleepTime * 2
 	}
 
 	if c.cfg.Debug {
@@ -458,6 +474,8 @@ func (c *APIClient) prepareRequest(
 
 	// Add the user agent to the request.
 	localVarRequest.Header.Add("User-Agent", c.cfg.UserAgent)
+	rand.Seed(time.Now().UnixNano())
+	localVarRequest.Header.Add("svix-req-id", strconv.FormatUint(rand.Uint64(), 10))
 
 	if ctx != nil {
 		// add context to the request
