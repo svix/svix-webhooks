@@ -13,12 +13,14 @@ use std::{
 
 use aide::axum::ApiRouter;
 use cfg::ConfigurationInner;
+use once_cell::sync::Lazy;
 use opentelemetry_otlp::WithExportConfig;
-use opentelemetry_sdk::runtime::Tokio;
+use opentelemetry_sdk::{metrics::SdkMeterProvider, runtime::Tokio};
 use queue::TaskQueueProducer;
 use redis::RedisManager;
 use sea_orm::DatabaseConnection;
 use sentry::integrations::tracing::EventFilter;
+use svix_ksuid::{KsuidLike, KsuidMs};
 use tower::layer::layer_fn;
 use tower_http::{
     cors::{AllowHeaders, Any, CorsLayer},
@@ -44,6 +46,7 @@ pub mod core;
 pub mod db;
 pub mod error;
 pub mod expired_message_cleaner;
+pub mod metrics;
 pub mod openapi;
 pub mod queue;
 pub mod redis;
@@ -53,6 +56,9 @@ pub mod worker;
 const CRATE_NAME: &str = env!("CARGO_CRATE_NAME");
 
 pub static SHUTTING_DOWN: AtomicBool = AtomicBool::new(false);
+
+pub static INSTANCE_ID: Lazy<String> =
+    Lazy::new(|| hex::encode(KsuidMs::new(None, None).to_string()));
 
 async fn graceful_shutdown_handler() {
     let ctrl_c = async {
@@ -83,6 +89,8 @@ async fn graceful_shutdown_handler() {
 
 #[tracing::instrument(name = "app_start", level = "trace", skip_all)]
 pub async fn run(cfg: Configuration, listener: Option<TcpListener>) {
+    let _metrics = setup_metrics(&cfg);
+
     run_with_prefix(None, cfg, listener).await
 }
 
@@ -323,6 +331,32 @@ pub fn setup_tracing(
         .into();
 
     (registry, sentry_guard)
+}
+
+pub fn setup_metrics(cfg: &ConfigurationInner) -> Option<SdkMeterProvider> {
+    cfg.opentelemetry_address.as_ref().map(|addr| {
+        let exporter = opentelemetry_otlp::new_exporter()
+            .tonic()
+            .with_endpoint(addr);
+
+        opentelemetry_otlp::new_pipeline()
+            .metrics(Tokio)
+            .with_delta_temporality()
+            .with_exporter(exporter)
+            .with_resource(opentelemetry_sdk::Resource::new(vec![
+                opentelemetry::KeyValue::new(
+                    "service.name",
+                    cfg.opentelemetry_service_name.clone(),
+                ),
+                opentelemetry::KeyValue::new("instance_id", INSTANCE_ID.to_owned()),
+                opentelemetry::KeyValue::new(
+                    "service.version",
+                    option_env!("GITHUB_SHA").unwrap_or("unknown"),
+                ),
+            ]))
+            .build()
+            .unwrap()
+    })
 }
 
 pub fn setup_tracing_for_tests() {
