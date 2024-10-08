@@ -584,6 +584,7 @@ pub struct EndpointHeadersOut {
 impl EndpointHeadersOut {
     const SENSITIVE_HEADERS: &'static [&'static str] = &[
         "x-auth-token",
+        "x-api-key",
         "www-authenticate",
         "authorization",
         "proxy-authenticate",
