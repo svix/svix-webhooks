@@ -1343,6 +1343,7 @@ impl<'a> Statistics<'a> {
         let options = options.unwrap_or_default();
         let params = statistics_api::V1PeriodStatisticsPeriodAggregateAppStatsParams {
             app_usage_stats_in: AppUsageStatsIn {
+                // XXX: "double option" - the field changed from `Option<Vec<String>>` to `Option<Option<Vec<String>>>`. Why?
                 app_ids: Some(app_ids),
                 since,
                 until,
