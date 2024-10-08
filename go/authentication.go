@@ -21,19 +21,18 @@ func (a *Authentication) AppPortalAccess(ctx context.Context, appId string, appP
 }
 
 func (a *Authentication) AppPortalAccessWithOptions(ctx context.Context, appId string, appPortalAccessIn *AppPortalAccessIn, options *PostOptions) (*AppPortalAccessOut, error) {
-	req := a.api.AuthenticationApi.V1AuthenticationAppPortalAccess(ctx, appId)
-	req = req.AppPortalAccessIn(openapi.AppPortalAccessIn(*appPortalAccessIn))
+	req := a.api.AuthenticationAPI.V1AuthenticationAppPortalAccess(ctx, appId)
+	req = req.AppPortalAccessIn(*appPortalAccessIn)
 	if options != nil {
 		if options.IdempotencyKey != nil {
 			req = req.IdempotencyKey(*options.IdempotencyKey)
 		}
 	}
-	out, res, err := req.Execute()
+	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
-	ret := AppPortalAccessOut(out)
-	return &ret, nil
+	return ret, nil
 }
 
 func (a *Authentication) DashboardAccess(ctx context.Context, appId string) (*DashboardAccessOut, error) {
@@ -41,18 +40,17 @@ func (a *Authentication) DashboardAccess(ctx context.Context, appId string) (*Da
 }
 
 func (a *Authentication) DashboardAccessWithOptions(ctx context.Context, appId string, options *PostOptions) (*DashboardAccessOut, error) {
-	req := a.api.AuthenticationApi.V1AuthenticationDashboardAccess(ctx, appId)
+	req := a.api.AuthenticationAPI.V1AuthenticationDashboardAccess(ctx, appId)
 	if options != nil {
 		if options.IdempotencyKey != nil {
 			req = req.IdempotencyKey(*options.IdempotencyKey)
 		}
 	}
-	out, res, err := req.Execute()
+	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
-	ret := DashboardAccessOut(out)
-	return &ret, nil
+	return ret, nil
 }
 
 func (a *Authentication) Logout(ctx context.Context) error {
@@ -60,7 +58,7 @@ func (a *Authentication) Logout(ctx context.Context) error {
 }
 
 func (a *Authentication) LogoutWithOptions(ctx context.Context, options *PostOptions) error {
-	req := a.api.AuthenticationApi.V1AuthenticationLogout(ctx)
+	req := a.api.AuthenticationAPI.V1AuthenticationLogout(ctx)
 	if options != nil {
 		if options.IdempotencyKey != nil {
 			req = req.IdempotencyKey(*options.IdempotencyKey)

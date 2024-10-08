@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -36,15 +37,23 @@ func getTestClient(t *testing.T) *svix.Svix {
 	})
 }
 
-// Suppresses a request error response if it has an allowed status code.
-func checkErrStatus(err error, allowedStatus int) error {
+// Suppresses a request error response if it's a 409
+func isNotConflict(err error) error {
 	if err != nil {
 		var svixError *svix.Error
 		if errors.As(err, &svixError) {
-			if svixError.Status() == allowedStatus {
+			if svixError.Status() == http.StatusConflict {
 				// Pass if we see the suppressed status
 				return nil
 			}
+		}
+		// FIXME: the client template patch (currently omitted during codegen) fixes the errors so they all
+		//   come back wrapped as `svix.Error` from the various internal API methods.
+		//   I think?
+		//   Since that patch is not currently applied, we'll fall through here. Need to make that patch client work
+		//   with the latest templates or something else.
+		if strings.Contains(err.Error(), "Conflict") {
+			return nil
 		}
 	}
 	return err
@@ -64,12 +73,12 @@ func TestKitchenSink(t *testing.T) {
 
 	_, err = client.EventType.Create(ctx, &svix.EventTypeIn{Name: "event.started"})
 
-	if checkErrStatus(err, http.StatusConflict) != nil {
+	if isNotConflict(err) != nil {
 		t.Fatal(err)
 	}
 
 	_, err = client.EventType.Create(ctx, &svix.EventTypeIn{Name: "event.ended"})
-	if checkErrStatus(err, http.StatusConflict) != nil {
+	if isNotConflict(err) != nil {
 		t.Fatal(err)
 	}
 
