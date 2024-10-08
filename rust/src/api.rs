@@ -11,8 +11,9 @@ use crate::{
 
 #[cfg(feature = "svix_beta")]
 pub use crate::apis::message_api::{
-    V1MessageCreateError, V1MessageCreateParams, V1MessageEventsParams,
-    V1MessageEventsSubscriptionError, V1MessageEventsSubscriptionParams,
+    V1PeriodMessagePeriodCreateError, V1PeriodMessagePeriodCreateParams,
+    V1PeriodMessagePeriodEventsParams, V1PeriodMessagePeriodEventsSubscriptionError,
+    V1PeriodMessagePeriodEventsSubscriptionParams,
 };
 pub use crate::models::*;
 
@@ -168,9 +169,9 @@ impl<'a> Authentication<'a> {
         options: Option<PostOptions>,
     ) -> Result<DashboardAccessOut> {
         let options = options.unwrap_or_default();
-        authentication_api::v1_authentication_dashboard_access(
+        authentication_api::v1_period_authentication_period_dashboard_access(
             self.cfg,
-            authentication_api::V1AuthenticationDashboardAccessParams {
+            authentication_api::V1PeriodAuthenticationPeriodDashboardAccessParams {
                 app_id,
                 idempotency_key: options.idempotency_key,
             },
@@ -185,9 +186,9 @@ impl<'a> Authentication<'a> {
         options: Option<PostOptions>,
     ) -> Result<AppPortalAccessOut> {
         let options = options.unwrap_or_default();
-        authentication_api::v1_authentication_app_portal_access(
+        authentication_api::v1_period_authentication_period_app_portal_access(
             self.cfg,
-            authentication_api::V1AuthenticationAppPortalAccessParams {
+            authentication_api::V1PeriodAuthenticationPeriodAppPortalAccessParams {
                 app_id,
                 app_portal_access_in,
                 idempotency_key: options.idempotency_key,
@@ -198,9 +199,9 @@ impl<'a> Authentication<'a> {
 
     pub async fn logout(&self, options: Option<PostOptions>) -> Result<()> {
         let PostOptions { idempotency_key } = options.unwrap_or_default();
-        authentication_api::v1_authentication_logout(
+        authentication_api::v1_period_authentication_period_logout(
             self.cfg,
-            authentication_api::V1AuthenticationLogoutParams { idempotency_key },
+            authentication_api::V1PeriodAuthenticationPeriodLogoutParams { idempotency_key },
         )
         .await
     }
@@ -237,9 +238,9 @@ impl<'a> Application<'a> {
             limit,
             order,
         } = options.unwrap_or_default();
-        application_api::v1_application_list(
+        application_api::v1_period_application_period_list(
             self.cfg,
-            application_api::V1ApplicationListParams {
+            application_api::V1PeriodApplicationPeriodListParams {
                 iterator,
                 limit,
                 order,
@@ -254,9 +255,9 @@ impl<'a> Application<'a> {
         options: Option<PostOptions>,
     ) -> Result<ApplicationOut> {
         let PostOptions { idempotency_key } = options.unwrap_or_default();
-        application_api::v1_application_create(
+        application_api::v1_period_application_period_create(
             self.cfg,
-            application_api::V1ApplicationCreateParams {
+            application_api::V1PeriodApplicationPeriodCreateParams {
                 application_in,
                 idempotency_key,
                 get_if_exists: None,
@@ -271,9 +272,9 @@ impl<'a> Application<'a> {
         options: Option<PostOptions>,
     ) -> Result<ApplicationOut> {
         let PostOptions { idempotency_key } = options.unwrap_or_default();
-        application_api::v1_application_create(
+        application_api::v1_period_application_period_create(
             self.cfg,
-            application_api::V1ApplicationCreateParams {
+            application_api::V1PeriodApplicationPeriodCreateParams {
                 application_in,
                 idempotency_key,
                 get_if_exists: Some(true),
@@ -283,9 +284,9 @@ impl<'a> Application<'a> {
     }
 
     pub async fn get(&self, app_id: String) -> Result<ApplicationOut> {
-        application_api::v1_application_get(
+        application_api::v1_period_application_period_get(
             self.cfg,
-            application_api::V1ApplicationGetParams { app_id },
+            application_api::V1PeriodApplicationPeriodGetParams { app_id },
         )
         .await
     }
@@ -296,9 +297,9 @@ impl<'a> Application<'a> {
         application_in: ApplicationIn,
         _: Option<PostOptions>,
     ) -> Result<ApplicationOut> {
-        application_api::v1_application_update(
+        application_api::v1_period_application_period_update(
             self.cfg,
-            application_api::V1ApplicationUpdateParams {
+            application_api::V1PeriodApplicationPeriodUpdateParams {
                 app_id,
                 application_in,
             },
@@ -312,9 +313,9 @@ impl<'a> Application<'a> {
         application_patch: ApplicationPatch,
         _: Option<PostOptions>,
     ) -> Result<ApplicationOut> {
-        application_api::v1_application_patch(
+        application_api::v1_period_application_period_patch(
             self.cfg,
-            application_api::V1ApplicationPatchParams {
+            application_api::V1PeriodApplicationPeriodPatchParams {
                 app_id,
                 application_patch,
             },
@@ -323,9 +324,9 @@ impl<'a> Application<'a> {
     }
 
     pub async fn delete(&self, app_id: String) -> Result<()> {
-        application_api::v1_application_delete(
+        application_api::v1_period_application_period_delete(
             self.cfg,
-            application_api::V1ApplicationDeleteParams { app_id },
+            application_api::V1PeriodApplicationPeriodDeleteParams { app_id },
         )
         .await
     }
@@ -363,9 +364,9 @@ impl<'a> Endpoint<'a> {
             limit,
             order,
         } = options.unwrap_or_default();
-        endpoint_api::v1_endpoint_list(
+        endpoint_api::v1_period_endpoint_period_list(
             self.cfg,
-            endpoint_api::V1EndpointListParams {
+            endpoint_api::V1PeriodEndpointPeriodListParams {
                 app_id,
                 order,
                 iterator,
@@ -382,9 +383,9 @@ impl<'a> Endpoint<'a> {
         options: Option<PostOptions>,
     ) -> Result<EndpointOut> {
         let PostOptions { idempotency_key } = options.unwrap_or_default();
-        endpoint_api::v1_endpoint_create(
+        endpoint_api::v1_period_endpoint_period_create(
             self.cfg,
-            endpoint_api::V1EndpointCreateParams {
+            endpoint_api::V1PeriodEndpointPeriodCreateParams {
                 app_id,
                 endpoint_in,
                 idempotency_key,
@@ -394,9 +395,9 @@ impl<'a> Endpoint<'a> {
     }
 
     pub async fn get(&self, app_id: String, endpoint_id: String) -> Result<EndpointOut> {
-        endpoint_api::v1_endpoint_get(
+        endpoint_api::v1_period_endpoint_period_get(
             self.cfg,
-            endpoint_api::V1EndpointGetParams {
+            endpoint_api::V1PeriodEndpointPeriodGetParams {
                 app_id,
                 endpoint_id,
             },
@@ -411,9 +412,9 @@ impl<'a> Endpoint<'a> {
         endpoint_update: EndpointUpdate,
         _: Option<PostOptions>,
     ) -> Result<EndpointOut> {
-        endpoint_api::v1_endpoint_update(
+        endpoint_api::v1_period_endpoint_period_update(
             self.cfg,
-            endpoint_api::V1EndpointUpdateParams {
+            endpoint_api::V1PeriodEndpointPeriodUpdateParams {
                 app_id,
                 endpoint_id,
                 endpoint_update,
@@ -429,9 +430,9 @@ impl<'a> Endpoint<'a> {
         endpoint_patch: EndpointPatch,
         _: Option<PostOptions>,
     ) -> Result<EndpointOut> {
-        endpoint_api::v1_endpoint_patch(
+        endpoint_api::v1_period_endpoint_period_patch(
             self.cfg,
-            endpoint_api::V1EndpointPatchParams {
+            endpoint_api::V1PeriodEndpointPeriodPatchParams {
                 app_id,
                 endpoint_id,
                 endpoint_patch,
@@ -441,9 +442,9 @@ impl<'a> Endpoint<'a> {
     }
 
     pub async fn delete(&self, app_id: String, endpoint_id: String) -> Result<()> {
-        endpoint_api::v1_endpoint_delete(
+        endpoint_api::v1_period_endpoint_period_delete(
             self.cfg,
-            endpoint_api::V1EndpointDeleteParams {
+            endpoint_api::V1PeriodEndpointPeriodDeleteParams {
                 app_id,
                 endpoint_id,
             },
@@ -456,9 +457,9 @@ impl<'a> Endpoint<'a> {
         app_id: String,
         endpoint_id: String,
     ) -> Result<EndpointSecretOut> {
-        endpoint_api::v1_endpoint_get_secret(
+        endpoint_api::v1_period_endpoint_period_get_secret(
             self.cfg,
-            endpoint_api::V1EndpointGetSecretParams {
+            endpoint_api::V1PeriodEndpointPeriodGetSecretParams {
                 app_id,
                 endpoint_id,
             },
@@ -472,9 +473,9 @@ impl<'a> Endpoint<'a> {
         endpoint_id: String,
         endpoint_secret_rotate_in: EndpointSecretRotateIn,
     ) -> Result<()> {
-        endpoint_api::v1_endpoint_rotate_secret(
+        endpoint_api::v1_period_endpoint_period_rotate_secret(
             self.cfg,
-            endpoint_api::V1EndpointRotateSecretParams {
+            endpoint_api::V1PeriodEndpointPeriodRotateSecretParams {
                 app_id,
                 endpoint_id,
                 endpoint_secret_rotate_in,
@@ -490,9 +491,9 @@ impl<'a> Endpoint<'a> {
         endpoint_id: String,
         recover_in: RecoverIn,
     ) -> Result<()> {
-        endpoint_api::v1_endpoint_recover(
+        endpoint_api::v1_period_endpoint_period_recover(
             self.cfg,
-            endpoint_api::V1EndpointRecoverParams {
+            endpoint_api::V1PeriodEndpointPeriodRecoverParams {
                 app_id,
                 endpoint_id,
                 recover_in,
@@ -508,9 +509,9 @@ impl<'a> Endpoint<'a> {
         app_id: String,
         endpoint_id: String,
     ) -> Result<EndpointHeadersOut> {
-        endpoint_api::v1_endpoint_get_headers(
+        endpoint_api::v1_period_endpoint_period_get_headers(
             self.cfg,
-            endpoint_api::V1EndpointGetHeadersParams {
+            endpoint_api::V1PeriodEndpointPeriodGetHeadersParams {
                 app_id,
                 endpoint_id,
             },
@@ -524,9 +525,9 @@ impl<'a> Endpoint<'a> {
         endpoint_id: String,
         endpoint_headers_in: EndpointHeadersIn,
     ) -> Result<()> {
-        endpoint_api::v1_endpoint_update_headers(
+        endpoint_api::v1_period_endpoint_period_update_headers(
             self.cfg,
-            endpoint_api::V1EndpointUpdateHeadersParams {
+            endpoint_api::V1PeriodEndpointPeriodUpdateHeadersParams {
                 app_id,
                 endpoint_id,
                 endpoint_headers_in,
@@ -541,9 +542,9 @@ impl<'a> Endpoint<'a> {
         endpoint_id: String,
         endpoint_headers_patch_in: EndpointHeadersPatchIn,
     ) -> Result<()> {
-        endpoint_api::v1_endpoint_patch_headers(
+        endpoint_api::v1_period_endpoint_period_patch_headers(
             self.cfg,
-            endpoint_api::V1EndpointPatchHeadersParams {
+            endpoint_api::V1PeriodEndpointPeriodPatchHeadersParams {
                 app_id,
                 endpoint_id,
                 endpoint_headers_patch_in,
@@ -559,9 +560,9 @@ impl<'a> Endpoint<'a> {
         options: Option<EndpointStatsOptions>,
     ) -> Result<EndpointStats> {
         let EndpointStatsOptions { since, until } = options.unwrap_or_default();
-        endpoint_api::v1_endpoint_get_stats(
+        endpoint_api::v1_period_endpoint_period_get_stats(
             self.cfg,
-            endpoint_api::V1EndpointGetStatsParams {
+            endpoint_api::V1PeriodEndpointPeriodGetStatsParams {
                 app_id,
                 endpoint_id,
                 since,
@@ -579,9 +580,9 @@ impl<'a> Endpoint<'a> {
         options: Option<PostOptions>,
     ) -> Result<()> {
         let PostOptions { idempotency_key } = options.unwrap_or_default();
-        endpoint_api::v1_endpoint_replay(
+        endpoint_api::v1_period_endpoint_period_replay(
             self.cfg,
-            endpoint_api::V1EndpointReplayParams {
+            endpoint_api::V1PeriodEndpointPeriodReplayParams {
                 app_id,
                 endpoint_id,
                 replay_in,
@@ -597,9 +598,9 @@ impl<'a> Endpoint<'a> {
         app_id: String,
         endpoint_id: String,
     ) -> Result<EndpointTransformationOut> {
-        endpoint_api::v1_endpoint_transformation_get(
+        endpoint_api::v1_period_endpoint_period_transformation_get(
             self.cfg,
-            endpoint_api::V1EndpointTransformationGetParams {
+            endpoint_api::V1PeriodEndpointPeriodTransformationGetParams {
                 app_id,
                 endpoint_id,
             },
@@ -613,9 +614,9 @@ impl<'a> Endpoint<'a> {
         endpoint_id: String,
         endpoint_transformation_in: EndpointTransformationIn,
     ) -> Result<()> {
-        endpoint_api::v1_endpoint_transformation_partial_update(
+        endpoint_api::v1_period_endpoint_period_transformation_partial_update(
             self.cfg,
-            endpoint_api::V1EndpointTransformationPartialUpdateParams {
+            endpoint_api::V1PeriodEndpointPeriodTransformationPartialUpdateParams {
                 app_id,
                 endpoint_id,
                 endpoint_transformation_in,
@@ -633,9 +634,9 @@ impl<'a> Endpoint<'a> {
         options: Option<PostOptions>,
     ) -> Result<MessageOut> {
         let PostOptions { idempotency_key } = options.unwrap_or_default();
-        endpoint_api::v1_endpoint_send_example(
+        endpoint_api::v1_period_endpoint_period_send_example(
             self.cfg,
-            endpoint_api::V1EndpointSendExampleParams {
+            endpoint_api::V1PeriodEndpointPeriodSendExampleParams {
                 app_id,
                 endpoint_id,
                 event_example_in,
@@ -672,9 +673,9 @@ impl<'a> Integration<'a> {
             limit,
             order,
         } = options.unwrap_or_default();
-        integration_api::v1_integration_list(
+        integration_api::v1_period_integration_period_list(
             self.cfg,
-            integration_api::V1IntegrationListParams {
+            integration_api::V1PeriodIntegrationPeriodListParams {
                 app_id,
                 iterator,
                 limit,
@@ -691,9 +692,9 @@ impl<'a> Integration<'a> {
         options: Option<PostOptions>,
     ) -> Result<IntegrationOut> {
         let PostOptions { idempotency_key } = options.unwrap_or_default();
-        integration_api::v1_integration_create(
+        integration_api::v1_period_integration_period_create(
             self.cfg,
-            integration_api::V1IntegrationCreateParams {
+            integration_api::V1PeriodIntegrationPeriodCreateParams {
                 app_id,
                 integration_in,
                 idempotency_key,
@@ -703,9 +704,9 @@ impl<'a> Integration<'a> {
     }
 
     pub async fn get(&self, app_id: String, integ_id: String) -> Result<IntegrationOut> {
-        integration_api::v1_integration_get(
+        integration_api::v1_period_integration_period_get(
             self.cfg,
-            integration_api::V1IntegrationGetParams { app_id, integ_id },
+            integration_api::V1PeriodIntegrationPeriodGetParams { app_id, integ_id },
         )
         .await
     }
@@ -717,9 +718,9 @@ impl<'a> Integration<'a> {
         integration_update: IntegrationUpdate,
         _: Option<PostOptions>,
     ) -> Result<IntegrationOut> {
-        integration_api::v1_integration_update(
+        integration_api::v1_period_integration_period_update(
             self.cfg,
-            integration_api::V1IntegrationUpdateParams {
+            integration_api::V1PeriodIntegrationPeriodUpdateParams {
                 app_id,
                 integ_id,
                 integration_update,
@@ -729,25 +730,25 @@ impl<'a> Integration<'a> {
     }
 
     pub async fn delete(&self, app_id: String, integ_id: String) -> Result<()> {
-        integration_api::v1_integration_delete(
+        integration_api::v1_period_integration_period_delete(
             self.cfg,
-            integration_api::V1IntegrationDeleteParams { app_id, integ_id },
+            integration_api::V1PeriodIntegrationPeriodDeleteParams { app_id, integ_id },
         )
         .await
     }
 
     pub async fn get_key(&self, app_id: String, integ_id: String) -> Result<IntegrationKeyOut> {
-        integration_api::v1_integration_get_key(
+        integration_api::v1_period_integration_period_get_key(
             self.cfg,
-            integration_api::V1IntegrationGetKeyParams { app_id, integ_id },
+            integration_api::V1PeriodIntegrationPeriodGetKeyParams { app_id, integ_id },
         )
         .await
     }
 
     pub async fn rotate_key(&self, app_id: String, integ_id: String) -> Result<IntegrationKeyOut> {
-        integration_api::v1_integration_rotate_key(
+        integration_api::v1_period_integration_period_rotate_key(
             self.cfg,
-            integration_api::V1IntegrationRotateKeyParams {
+            integration_api::V1PeriodIntegrationPeriodRotateKeyParams {
                 app_id,
                 integ_id,
                 idempotency_key: None,
@@ -784,9 +785,9 @@ impl<'a> EventType<'a> {
             with_content,
             include_archived,
         } = options.unwrap_or_default();
-        event_type_api::v1_event_type_list(
+        event_type_api::v1_period_event_type_period_list(
             self.cfg,
-            event_type_api::V1EventTypeListParams {
+            event_type_api::V1PeriodEventTypePeriodListParams {
                 iterator,
                 limit,
                 with_content,
@@ -803,9 +804,9 @@ impl<'a> EventType<'a> {
         options: Option<PostOptions>,
     ) -> Result<EventTypeOut> {
         let PostOptions { idempotency_key } = options.unwrap_or_default();
-        event_type_api::v1_event_type_create(
+        event_type_api::v1_period_event_type_period_create(
             self.cfg,
-            event_type_api::V1EventTypeCreateParams {
+            event_type_api::V1PeriodEventTypePeriodCreateParams {
                 event_type_in,
                 idempotency_key,
             },
@@ -814,9 +815,9 @@ impl<'a> EventType<'a> {
     }
 
     pub async fn get(&self, event_type_name: String) -> Result<EventTypeOut> {
-        event_type_api::v1_event_type_get(
+        event_type_api::v1_period_event_type_period_get(
             self.cfg,
-            event_type_api::V1EventTypeGetParams { event_type_name },
+            event_type_api::V1PeriodEventTypePeriodGetParams { event_type_name },
         )
         .await
     }
@@ -827,9 +828,9 @@ impl<'a> EventType<'a> {
         event_type_update: EventTypeUpdate,
         _: Option<PostOptions>,
     ) -> Result<EventTypeOut> {
-        event_type_api::v1_event_type_update(
+        event_type_api::v1_period_event_type_period_update(
             self.cfg,
-            event_type_api::V1EventTypeUpdateParams {
+            event_type_api::V1PeriodEventTypePeriodUpdateParams {
                 event_type_name,
                 event_type_update,
             },
@@ -843,9 +844,9 @@ impl<'a> EventType<'a> {
         event_type_patch: EventTypePatch,
         _: Option<PostOptions>,
     ) -> Result<EventTypeOut> {
-        event_type_api::v1_event_type_patch(
+        event_type_api::v1_period_event_type_period_patch(
             self.cfg,
-            event_type_api::V1EventTypePatchParams {
+            event_type_api::V1PeriodEventTypePeriodPatchParams {
                 event_type_name,
                 event_type_patch,
             },
@@ -854,9 +855,9 @@ impl<'a> EventType<'a> {
     }
 
     pub async fn delete(&self, event_type_name: String) -> Result<()> {
-        event_type_api::v1_event_type_delete(
+        event_type_api::v1_period_event_type_period_delete(
             self.cfg,
-            event_type_api::V1EventTypeDeleteParams {
+            event_type_api::V1PeriodEventTypePeriodDeleteParams {
                 event_type_name,
                 expunge: None,
             },
@@ -870,9 +871,9 @@ impl<'a> EventType<'a> {
         options: Option<PostOptions>,
     ) -> Result<EventTypeImportOpenApiOut> {
         let PostOptions { idempotency_key } = options.unwrap_or_default();
-        event_type_api::v1_event_type_import_openapi(
+        event_type_api::v1_period_event_type_period_import_openapi(
             self.cfg,
-            event_type_api::V1EventTypeImportOpenapiParams {
+            event_type_api::V1PeriodEventTypePeriodImportOpenapiParams {
                 event_type_import_open_api_in,
                 idempotency_key,
             },
@@ -920,9 +921,9 @@ impl<'a> Message<'a> {
             with_content,
             tag,
         } = options.unwrap_or_default();
-        message_api::v1_message_list(
+        message_api::v1_period_message_period_list(
             self.cfg,
-            message_api::V1MessageListParams {
+            message_api::V1PeriodMessagePeriodListParams {
                 app_id,
                 iterator,
                 limit,
@@ -944,9 +945,9 @@ impl<'a> Message<'a> {
         options: Option<PostOptions>,
     ) -> Result<MessageOut> {
         let PostOptions { idempotency_key } = options.unwrap_or_default();
-        message_api::v1_message_create(
+        message_api::v1_period_message_period_create(
             self.cfg,
-            message_api::V1MessageCreateParams {
+            message_api::V1PeriodMessagePeriodCreateParams {
                 app_id,
                 message_in,
                 idempotency_key,
@@ -957,9 +958,9 @@ impl<'a> Message<'a> {
     }
 
     pub async fn get(&self, app_id: String, msg_id: String) -> Result<MessageOut> {
-        message_api::v1_message_get(
+        message_api::v1_period_message_period_get(
             self.cfg,
-            message_api::V1MessageGetParams {
+            message_api::V1PeriodMessagePeriodGetParams {
                 app_id,
                 msg_id,
                 with_content: None,
@@ -969,9 +970,9 @@ impl<'a> Message<'a> {
     }
 
     pub async fn expunge_content(&self, app_id: String, msg_id: String) -> Result<()> {
-        message_api::v1_message_expunge_content(
+        message_api::v1_period_message_period_expunge_content(
             self.cfg,
-            message_api::V1MessageExpungeContentParams { msg_id, app_id },
+            message_api::V1PeriodMessagePeriodExpungeContentParams { msg_id, app_id },
         )
         .await
     }
@@ -979,17 +980,17 @@ impl<'a> Message<'a> {
     #[cfg(feature = "svix_beta")]
     pub async fn events(
         &self,
-        params: message_api::V1MessageEventsParams,
+        params: message_api::V1PeriodMessagePeriodEventsParams,
     ) -> Result<crate::models::MessageEventsOut> {
-        message_api::v1_message_events(self.cfg, params).await
+        message_api::v1_period_message_period_events(self.cfg, params).await
     }
 
     #[cfg(feature = "svix_beta")]
     pub async fn events_subscription(
         &self,
-        params: message_api::V1MessageEventsSubscriptionParams,
+        params: message_api::V1PeriodMessagePeriodEventsSubscriptionParams,
     ) -> Result<crate::models::MessageEventsOut> {
-        message_api::v1_message_events_subscription(self.cfg, params).await
+        message_api::v1_period_message_period_events_subscription(self.cfg, params).await
     }
 }
 
@@ -1058,9 +1059,9 @@ impl<'a> MessageAttempt<'a> {
             endpoint_id,
             with_content,
         } = options.unwrap_or_default();
-        message_attempt_api::v1_message_attempt_list_by_msg(
+        message_attempt_api::v1_period_message_attempt_period_list_by_msg(
             self.cfg,
-            message_attempt_api::V1MessageAttemptListByMsgParams {
+            message_attempt_api::V1PeriodMessageAttemptPeriodListByMsgParams {
                 app_id,
                 msg_id,
                 iterator,
@@ -1099,9 +1100,9 @@ impl<'a> MessageAttempt<'a> {
             with_content,
             with_msg,
         } = options.unwrap_or_default();
-        message_attempt_api::v1_message_attempt_list_by_endpoint(
+        message_attempt_api::v1_period_message_attempt_period_list_by_endpoint(
             self.cfg,
-            message_attempt_api::V1MessageAttemptListByEndpointParams {
+            message_attempt_api::V1PeriodMessageAttemptPeriodListByEndpointParams {
                 app_id,
                 endpoint_id,
                 iterator,
@@ -1139,9 +1140,9 @@ impl<'a> MessageAttempt<'a> {
             with_content,
             endpoint_id: _,
         } = options.unwrap_or_default();
-        message_attempt_api::v1_message_attempt_list_attempted_messages(
+        message_attempt_api::v1_period_message_attempt_period_list_attempted_messages(
             self.cfg,
-            message_attempt_api::V1MessageAttemptListAttemptedMessagesParams {
+            message_attempt_api::V1PeriodMessageAttemptPeriodListAttemptedMessagesParams {
                 app_id,
                 endpoint_id,
                 iterator,
@@ -1165,9 +1166,9 @@ impl<'a> MessageAttempt<'a> {
         options: Option<ListOptions>,
     ) -> Result<ListResponseMessageEndpointOut> {
         let ListOptions { iterator, limit } = options.unwrap_or_default();
-        message_attempt_api::v1_message_attempt_list_attempted_destinations(
+        message_attempt_api::v1_period_message_attempt_period_list_attempted_destinations(
             self.cfg,
-            message_attempt_api::V1MessageAttemptListAttemptedDestinationsParams {
+            message_attempt_api::V1PeriodMessageAttemptPeriodListAttemptedDestinationsParams {
                 app_id,
                 msg_id,
                 iterator,
@@ -1197,9 +1198,9 @@ impl<'a> MessageAttempt<'a> {
             endpoint_id: _,
             with_content: _,
         } = options.unwrap_or_default();
-        message_attempt_api::v1_message_attempt_list_by_endpoint_deprecated(
+        message_attempt_api::v1_period_message_attempt_period_list_by_endpoint_deprecated(
             self.cfg,
-            message_attempt_api::V1MessageAttemptListByEndpointDeprecatedParams {
+            message_attempt_api::V1PeriodMessageAttemptPeriodListByEndpointDeprecatedParams {
                 app_id,
                 endpoint_id,
                 msg_id,
@@ -1222,9 +1223,9 @@ impl<'a> MessageAttempt<'a> {
         msg_id: String,
         attempt_id: String,
     ) -> Result<MessageAttemptOut> {
-        message_attempt_api::v1_message_attempt_get(
+        message_attempt_api::v1_period_message_attempt_period_get(
             self.cfg,
-            message_attempt_api::V1MessageAttemptGetParams {
+            message_attempt_api::V1PeriodMessageAttemptPeriodGetParams {
                 app_id,
                 msg_id,
                 attempt_id,
@@ -1234,9 +1235,9 @@ impl<'a> MessageAttempt<'a> {
     }
 
     pub async fn resend(&self, app_id: String, msg_id: String, endpoint_id: String) -> Result<()> {
-        message_attempt_api::v1_message_attempt_resend(
+        message_attempt_api::v1_period_message_attempt_period_resend(
             self.cfg,
-            message_attempt_api::V1MessageAttemptResendParams {
+            message_attempt_api::V1PeriodMessageAttemptPeriodResendParams {
                 app_id,
                 msg_id,
                 endpoint_id,
@@ -1252,9 +1253,9 @@ impl<'a> MessageAttempt<'a> {
         msg_id: String,
         attempt_id: String,
     ) -> Result<()> {
-        message_attempt_api::v1_message_attempt_expunge_content(
+        message_attempt_api::v1_period_message_attempt_period_expunge_content(
             self.cfg,
-            message_attempt_api::V1MessageAttemptExpungeContentParams {
+            message_attempt_api::V1PeriodMessageAttemptPeriodExpungeContentParams {
                 app_id,
                 msg_id,
                 attempt_id,
@@ -1340,19 +1341,19 @@ impl<'a> Statistics<'a> {
         options: Option<PostOptions>,
     ) -> Result<AppUsageStatsOut> {
         let options = options.unwrap_or_default();
-        let params = statistics_api::V1StatisticsAggregateAppStatsParams {
+        let params = statistics_api::V1PeriodStatisticsPeriodAggregateAppStatsParams {
             app_usage_stats_in: AppUsageStatsIn {
-                app_ids,
+                app_ids: Some(app_ids),
                 since,
                 until,
             },
             idempotency_key: options.idempotency_key,
         };
-        statistics_api::v1_statistics_aggregate_app_stats(self.cfg, params).await
+        statistics_api::v1_period_statistics_period_aggregate_app_stats(self.cfg, params).await
     }
 
     pub async fn aggregate_event_types(&self) -> Result<AggregateEventTypesOut> {
-        statistics_api::v1_statistics_aggregate_event_types(self.cfg).await
+        statistics_api::v1_period_statistics_period_aggregate_event_types(self.cfg).await
     }
 }
 
