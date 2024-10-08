@@ -39,3 +39,4 @@ msbuild.wrn
 # Svix OpenApi generated content
 .openapi-generator/
 /Svix/Generated/OpenApi/Svix/
+/api/openapi.yaml
