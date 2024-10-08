@@ -16,8 +16,6 @@ use hyper_util::client::legacy::{connect::HttpConnector, Client as HyperClient};
 
 #[macro_use]
 extern crate serde_derive;
-#[macro_use]
-extern crate serde_repr;
 
 pub mod api;
 pub mod error;
