@@ -10,14 +10,9 @@ yarn openapi-generator-cli generate -i openapi.json -g typescript -o javascript/
 
 # Cleanup previous codegen, allowing us to spot removals.
 # If the removals are expected, stage them eg. `git add -u`, then commit them.
-rm go/internal/openapi/*.go
+rm -f go/internal/openapi/*.go
 yarn openapi-generator-cli generate -i openapi.json -g go -o go/internal/openapi -c go/openapi-generator-config.json -t go/templates
 
-# Currently the generator will add unused imports for `time` to some modules.
-ls \
-    go/internal/openapi/model_stream_sink_out.go \
-    go/internal/openapi/model_sink_out.go \
-    | xargs sed -i '0,/"time"/{/"time"/d}'
 
 
 yarn openapi-generator-cli generate -i openapi.json -g java -o java/lib/generated/openapi -c java/openapi-generator-config.json -t java/templates
