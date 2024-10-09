@@ -66,7 +66,7 @@ async fn test_forwarding_no_verification() {
                 .uri("/webhook/a")
                 .method("POST")
                 .header("content-type", "application/json")
-                .body(serde_json::to_vec(&json!({"a": true})).unwrap().into())
+                .body(axum::body::Body::from(json!({ "a": true }).to_string()))
                 .unwrap(),
         )
         .await
@@ -110,7 +110,7 @@ async fn test_forwarding_multiple_receivers() {
         .uri("/webhook/a")
         .method("POST")
         .header("content-type", "application/json")
-        .body(serde_json::to_vec(&json!({"a": true})).unwrap().into())
+        .body(axum::body::Body::from(json!({ "a": true }).to_string()))
         .unwrap();
 
     let response = ServiceExt::<Request<Body>>::ready(&mut app)
@@ -128,7 +128,7 @@ async fn test_forwarding_multiple_receivers() {
         .uri("/webhook/b")
         .method("POST")
         .header("content-type", "application/json")
-        .body(serde_json::to_vec(&json!({"b": true})).unwrap().into())
+        .body(axum::body::Body::from(json!({ "b": true }).to_string()))
         .unwrap();
 
     let response = ServiceExt::<Request<Body>>::ready(&mut app)
@@ -200,7 +200,7 @@ async fn test_transformation_json() {
         .uri("/webhook/transformed")
         .method("POST")
         .header("content-type", "application/json")
-        .body(serde_json::to_vec(&json!({"a": true})).unwrap().into())
+        .body(axum::body::Body::from(json!({ "a": true }).to_string()))
         .unwrap();
 
     let response = ServiceExt::<Request<Body>>::ready(&mut app)
@@ -222,7 +222,7 @@ async fn test_transformation_json() {
         .uri("/webhook/as-is")
         .method("POST")
         .header("content-type", "application/json")
-        .body(serde_json::to_vec(&json!({"b": true})).unwrap().into())
+        .body(axum::body::Body::from(json!({ "b": true }).to_string()))
         .unwrap();
 
     let response = ServiceExt::<Request<Body>>::ready(&mut app)
@@ -280,7 +280,7 @@ async fn test_transformation_string() {
         .uri("/webhook/transformed")
         .method("POST")
         .header("content-type", "text/plain")
-        .body("plain text".as_bytes().into())
+        .body(axum::body::Body::from("plain text"))
         .unwrap();
 
     let response = ServiceExt::<Request<Body>>::ready(&mut app)
@@ -337,7 +337,7 @@ async fn test_forwarding_svix_verification_mismatch() {
                 .header("svix-id", "msg_valid")
                 .header("svix-signature", signature.clone())
                 .header("svix-timestamp", &format!("{timestamp}"))
-                .body(sent_payload_bytes.into())
+                .body(axum::body::Body::from(sent_payload_bytes))
                 .unwrap(),
         )
         .await
@@ -383,13 +383,13 @@ async fn test_forwarding_svix_verification_match() {
                 .header("content-type", "application/json")
                 .header("svix-id", "msg_valid")
                 .header("svix-signature", signature.clone())
-                .header("svix-timestamp", &format!("{timestamp}"))
-                .body(payload_bytes.into())
+                .header("svix-timestamp", timestamp.to_string())
+                .body(axum::body::Body::from(payload_bytes))
                 .unwrap(),
         )
         .await
         .unwrap();
     assert_eq!(response.status(), StatusCode::NO_CONTENT);
     let forwarded = a_rx.try_recv().unwrap();
-    assert_eq!(json!(forwarded), json!({"a": true}));
+    assert_eq!(json!(forwarded), json!({ "a": true }));
 }

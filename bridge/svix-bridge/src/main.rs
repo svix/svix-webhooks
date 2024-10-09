@@ -7,6 +7,7 @@ use std::{
 use clap::Parser;
 use itertools::{Either, Itertools};
 use once_cell::sync::Lazy;
+use opentelemetry::trace::TracerProvider as _;
 use opentelemetry_otlp::WithExportConfig;
 use opentelemetry_sdk::{
     metrics::{data::Temporality, reader::TemporalitySelector, InstrumentKind, SdkMeterProvider},
@@ -89,7 +90,7 @@ fn setup_tracing(cfg: &Config) {
             .tracing()
             .with_exporter(exporter)
             .with_trace_config(
-                opentelemetry_sdk::trace::config()
+                opentelemetry_sdk::trace::Config::default()
                     .with_sampler(
                         otel_cfg
                             .sample_ratio
@@ -99,7 +100,8 @@ fn setup_tracing(cfg: &Config) {
                     .with_resource(get_svc_identifiers(cfg)),
             )
             .install_batch(Tokio)
-            .unwrap();
+            .unwrap()
+            .tracer("svix_bridge");
 
         tracing_opentelemetry::layer().with_tracer(tracer)
     });

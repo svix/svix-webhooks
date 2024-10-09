@@ -85,7 +85,7 @@ pub enum Verifier {
 mod tests {
     use std::sync::Arc;
 
-    use axum::extract::FromRequest;
+    use axum::{extract::FromRequest, http};
     use svix_bridge_types::svix::webhooks::Webhook;
 
     use super::{super::types::SerializableRequest, SvixVerifier, VerificationMethod};
@@ -107,7 +107,7 @@ mod tests {
             .header("svix-id", "msg_valid")
             .header("svix-signature", signature.clone())
             .header("svix-timestamp", &format!("{timestamp}"))
-            .body(axum::body::Full::new(payload))
+            .body(axum::body::Body::from(payload))
             .unwrap();
 
         let sr = SerializableRequest::from_request(req, &()).await.unwrap();
@@ -119,7 +119,7 @@ mod tests {
             .header("svix-id", "msg_invalid")
             .header("svix-signature", signature)
             .header("svix-timestamp", &format!("{timestamp}"))
-            .body(axum::body::Full::new(payload))
+            .body(axum::body::Body::from(payload))
             .unwrap();
 
         let sr = SerializableRequest::from_request(req, &()).await.unwrap();

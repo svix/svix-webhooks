@@ -54,6 +54,8 @@ pub async fn consumer(cfg: &RedisInputOpts) -> Result<DynConsumer> {
         // FIXME: expose in config?
         payload_key: "payload".to_string(),
         ack_deadline_ms: cfg.ack_deadline_ms,
+        dlq_config: None,
+        sentinel_config: None,
     })
     .make_dynamic()
     .build_consumer()
@@ -80,6 +82,8 @@ pub async fn producer(cfg: &RedisOutputOpts) -> Result<DynProducer> {
         consumer_group: String::new(),
         consumer_name: String::new(),
         ack_deadline_ms: cfg.ack_deadline_ms,
+        dlq_config: None,
+        sentinel_config: None,
     })
     .make_dynamic()
     .build_producer()
