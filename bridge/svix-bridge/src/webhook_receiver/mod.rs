@@ -1,8 +1,8 @@
 use std::{net::SocketAddr, sync::Arc, time::Duration};
 
 use axum::{
-    body::Body,
     extract::{Path, State},
+    http,
     routing::post,
     Router,
 };
@@ -26,7 +26,7 @@ mod config;
 mod types;
 mod verification;
 
-fn router() -> Router<InternalState, Body> {
+fn router() -> Router<InternalState> {
     Router::new()
         .route(
             "/webhook/:integration_id",
@@ -50,8 +50,8 @@ pub async fn run(
     let router = router().with_state(state);
 
     tracing::info!("Listening on: {listen_addr}");
-    axum::Server::bind(&listen_addr)
-        .serve(router.into_make_service())
+    let listener = tokio::net::TcpListener::bind(listen_addr).await.unwrap();
+    axum::serve(listener, router)
         .await
         .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))
 }

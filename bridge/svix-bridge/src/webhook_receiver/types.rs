@@ -3,11 +3,10 @@ use std::{collections::HashMap, marker::PhantomData, sync::Arc};
 use anyhow::Result;
 use axum::{
     async_trait,
-    body::{Bytes, HttpBody},
-    extract::FromRequest,
-    BoxError,
+    body::Bytes,
+    extract::{FromRequest, Request},
+    http::{self, HeaderMap, HeaderValue},
 };
-use http::{HeaderMap, HeaderValue, Request};
 use serde::{Deserialize, Serialize};
 use svix_bridge_types::{
     svix, ReceiverInputOpts, ReceiverOutput, TransformationConfig, TransformerTx, WebhookVerifier,
@@ -212,16 +211,13 @@ impl From<RequestFromParts> for SerializableRequest<Unvalidated> {
 }
 
 #[async_trait]
-impl<S, B> FromRequest<S, B> for SerializableRequest<Unvalidated>
+impl<S> FromRequest<S> for SerializableRequest<Unvalidated>
 where
     S: Send + Sync,
-    B: HttpBody + Send + Sync + 'static,
-    B::Data: Send,
-    B::Error: Into<BoxError>,
 {
-    type Rejection = <RequestFromParts as FromRequest<S, B>>::Rejection;
+    type Rejection = <RequestFromParts as FromRequest<S>>::Rejection;
 
-    async fn from_request(req: Request<B>, state: &S) -> Result<Self, Self::Rejection> {
+    async fn from_request(req: Request, state: &S) -> Result<Self, Self::Rejection> {
         RequestFromParts::from_request(req, state)
             .await
             .map(Into::into)
