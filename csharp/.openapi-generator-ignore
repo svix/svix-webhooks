@@ -37,6 +37,10 @@ Svix.sln
 
 docs/
 src/
+# When bumping generator versions:
+# - Comment these out to "re-up" the generator source.
+# - Roll back any of our local changes that got wiped out in the process.
+# - Uncomment them again to prevent the generator from wiping out the manual edits.
 Svix/Generated/OpenApi/Svix/Model/ApplicationPatch.cs
 Svix/Generated/OpenApi/Svix/Model/EndpointPatch.cs
 Svix/Generated/OpenApi/Svix/Model/EventTypePatch.cs

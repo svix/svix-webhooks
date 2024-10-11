@@ -32,20 +32,24 @@ namespace Svix.Model
     /// EventTypePatch
     /// </summary>
     [DataContract(Name = "EventTypePatch")]
-    public partial class EventTypePatch : IEquatable<EventTypePatch>, IValidatableObject
+    public partial class EventTypePatch : IValidatableObject
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="EventTypePatch" /> class.
         /// </summary>
         /// <param name="archived">archived.</param>
+        /// <param name="deprecated">deprecated.</param>
         /// <param name="description">description.</param>
         /// <param name="featureFlag">featureFlag.</param>
+        /// <param name="groupName">The event type group&#39;s name.</param>
         /// <param name="schemas">schemas.</param>
-        public EventTypePatch(bool archived = default(bool), string description = default(string), string featureFlag = default(string), Dictionary<string, Object> schemas = default(Dictionary<string, Object>))
+        public EventTypePatch(bool archived = default(bool), bool deprecated = default(bool), string description = default(string), string featureFlag = default(string), string groupName = default(string), Dictionary<string, Object> schemas = default(Dictionary<string, Object>))
         {
             this.Archived = archived;
+            this.Deprecated = deprecated;
             this.Description = description;
             this.FeatureFlag = featureFlag;
+            this.GroupName = groupName;
             this.Schemas = schemas;
         }
 
@@ -56,6 +60,12 @@ namespace Svix.Model
         public bool Archived { get; set; }
 
         /// <summary>
+        /// Gets or Sets Deprecated
+        /// </summary>
+        [DataMember(Name = "deprecated", EmitDefaultValue = false)]
+        public bool Deprecated { get; set; }
+
+        /// <summary>
         /// Gets or Sets Description
         /// </summary>
         [DataMember(Name = "description", EmitDefaultValue = false)]
@@ -64,12 +74,28 @@ namespace Svix.Model
         /// <summary>
         /// Gets or Sets FeatureFlag
         /// </summary>
+        /*
+        <example>cool-new-feature</example>
+        */
         [DataMember(Name = "featureFlag", EmitDefaultValue = false)]
         public string FeatureFlag { get; set; }
 
         /// <summary>
+        /// The event type group&#39;s name
+        /// </summary>
+        /// <value>The event type group&#39;s name</value>
+        /*
+        <example>user</example>
+        */
+        [DataMember(Name = "groupName", EmitDefaultValue = false)]
+        public string GroupName { get; set; }
+
+        /// <summary>
         /// Gets or Sets Schemas
         /// </summary>
+        /*
+        <example>{&quot;description&quot;:&quot;An invoice was paid by a user&quot;,&quot;properties&quot;:{&quot;invoiceId&quot;:{&quot;description&quot;:&quot;The invoice id&quot;,&quot;type&quot;:&quot;string&quot;},&quot;userId&quot;:{&quot;description&quot;:&quot;The user id&quot;,&quot;type&quot;:&quot;string&quot;}},&quot;required&quot;:[&quot;invoiceId&quot;,&quot;userId&quot;],&quot;title&quot;:&quot;Invoice Paid Event&quot;,&quot;type&quot;:&quot;object&quot;}</example>
+        */
         [DataMember(Name = "schemas", EmitDefaultValue = false)]
         public Dictionary<string, Object> Schemas { get; set; }
 
@@ -79,11 +105,13 @@ namespace Svix.Model
         /// <returns>String presentation of the object</returns>
         public override string ToString()
         {
-            var sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
             sb.Append("class EventTypePatch {\n");
             sb.Append("  Archived: ").Append(Archived).Append("\n");
+            sb.Append("  Deprecated: ").Append(Deprecated).Append("\n");
             sb.Append("  Description: ").Append(Description).Append("\n");
             sb.Append("  FeatureFlag: ").Append(FeatureFlag).Append("\n");
+            sb.Append("  GroupName: ").Append(GroupName).Append("\n");
             sb.Append("  Schemas: ").Append(Schemas).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
@@ -99,86 +127,42 @@ namespace Svix.Model
         }
 
         /// <summary>
-        /// Returns true if objects are equal
-        /// </summary>
-        /// <param name="input">Object to be compared</param>
-        /// <returns>Boolean</returns>
-        public override bool Equals(object input)
-        {
-            return this.Equals(input as EventTypePatch);
-        }
-
-        /// <summary>
-        /// Returns true if EventTypePatch instances are equal
-        /// </summary>
-        /// <param name="input">Instance of EventTypePatch to be compared</param>
-        /// <returns>Boolean</returns>
-        public bool Equals(EventTypePatch input)
-        {
-            if (input == null)
-                return false;
-
-            return
-                (
-                    this.Archived == input.Archived ||
-                    this.Archived.Equals(input.Archived)
-                ) &&
-                (
-                    this.Description == input.Description ||
-                    (this.Description != null &&
-                    this.Description.Equals(input.Description))
-                ) &&
-                (
-                    this.FeatureFlag == input.FeatureFlag ||
-                    (this.FeatureFlag != null &&
-                    this.FeatureFlag.Equals(input.FeatureFlag))
-                ) &&
-                (
-                    this.Schemas == input.Schemas ||
-                    this.Schemas != null &&
-                    input.Schemas != null &&
-                    this.Schemas.SequenceEqual(input.Schemas)
-                );
-        }
-
-        /// <summary>
-        /// Gets the hash code
-        /// </summary>
-        /// <returns>Hash code</returns>
-        public override int GetHashCode()
-        {
-            unchecked // Overflow is fine, just wrap
-            {
-                int hashCode = 41;
-                hashCode = hashCode * 59 + this.Archived.GetHashCode();
-                if (this.Description != null)
-                    hashCode = hashCode * 59 + this.Description.GetHashCode();
-                if (this.FeatureFlag != null)
-                    hashCode = hashCode * 59 + this.FeatureFlag.GetHashCode();
-                if (this.Schemas != null)
-                    hashCode = hashCode * 59 + this.Schemas.GetHashCode();
-                return hashCode;
-            }
-        }
-
-        /// <summary>
         /// To validate all properties of the instance
         /// </summary>
         /// <param name="validationContext">Validation context</param>
         /// <returns>Validation Result</returns>
-        IEnumerable<System.ComponentModel.DataAnnotations.ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
+        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
         {
             // FeatureFlag (string) maxLength
             if (this.FeatureFlag != null && this.FeatureFlag.Length > 256)
             {
-                yield return new System.ComponentModel.DataAnnotations.ValidationResult("Invalid value for FeatureFlag, length must be less than 256.", new[] { "FeatureFlag" });
+                yield return new ValidationResult("Invalid value for FeatureFlag, length must be less than 256.", new[] { "FeatureFlag" });
             }
 
-            // FeatureFlag (string) pattern
-            Regex regexFeatureFlag = new Regex(@"^[a-zA-Z0-9\\-_.]+$", RegexOptions.CultureInvariant);
-            if (false == regexFeatureFlag.Match(this.FeatureFlag).Success)
+            if (this.FeatureFlag != null)
             {
-                yield return new System.ComponentModel.DataAnnotations.ValidationResult("Invalid value for FeatureFlag, must match a pattern of " + regexFeatureFlag, new[] { "FeatureFlag" });
+                // FeatureFlag (string) pattern
+                Regex regexFeatureFlag = new Regex(@"^[a-zA-Z0-9\-_.]+$", RegexOptions.CultureInvariant);
+                if (!regexFeatureFlag.Match(this.FeatureFlag).Success)
+                {
+                    yield return new System.ComponentModel.DataAnnotations.ValidationResult("Invalid value for FeatureFlag, must match a pattern of " + regexFeatureFlag, new[] { "FeatureFlag" });
+                }
+            }
+
+            // GroupName (string) maxLength
+            if (this.GroupName != null && this.GroupName.Length > 256)
+            {
+                yield return new ValidationResult("Invalid value for GroupName, length must be less than 256.", new[] { "GroupName" });
+            }
+
+            if (this.GroupName != null)
+            {
+                // GroupName (string) pattern
+                Regex regexGroupName = new Regex(@"^[a-zA-Z0-9\-_.]+$", RegexOptions.CultureInvariant);
+                if (!regexGroupName.Match(this.GroupName).Success)
+                {
+                    yield return new System.ComponentModel.DataAnnotations.ValidationResult("Invalid value for GroupName, must match a pattern of " + regexGroupName, new[] { "GroupName" });
+                }
             }
 
             yield break;
