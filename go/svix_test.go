@@ -71,13 +71,13 @@ func TestKitchenSink(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	_, err = client.EventType.Create(ctx, &svix.EventTypeIn{Name: "event.started"})
+	_, err = client.EventType.Create(ctx, &svix.EventTypeIn{Name: "event.started", Description: "Something started"})
 
 	if isNotConflict(err) != nil {
 		t.Fatal(err)
 	}
 
-	_, err = client.EventType.Create(ctx, &svix.EventTypeIn{Name: "event.ended"})
+	_, err = client.EventType.Create(ctx, &svix.EventTypeIn{Name: "event.ended", Description: "Something ended"})
 	if isNotConflict(err) != nil {
 		t.Fatal(err)
 	}
