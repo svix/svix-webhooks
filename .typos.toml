@@ -2,6 +2,7 @@
 extend-ignore-re = [
     # Mock token
     ";iuani;ansd;ifgjbnai;sdjfgb",
+    "jakarta\\.ws\\.rs",
 ]
 
 [files]
