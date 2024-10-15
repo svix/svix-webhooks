@@ -2,12 +2,13 @@ group GROUP
 version VERSION_NAME
 
 wrapper {
-    gradleVersion = '6.8.3'
+    gradleVersion = '8.7'
     distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
 }
 
 buildscript {
-    ext.kotlin_version = '1.5.10'
+    ext.kotlin_version = '1.9.23'
+    ext.spotless_version = "6.25.0"
 
     repositories {
         maven { url "https://repo1.maven.org/maven2" }
@@ -15,6 +16,7 @@ buildscript {
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "com.diffplug.spotless:spotless-plugin-gradle:$spotless_version"
         classpath "io.github.gradle-nexus:publish-plugin:1.1.0"
     }
 }

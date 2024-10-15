@@ -57,6 +57,8 @@ import com.fasterxml.jackson.core.type.TypeReference
 {{#moshi}}
 import com.squareup.moshi.adapter
 {{/moshi}}
+import kotlinx.coroutines.delay
+import kotlin.random.Random
 
 {{#nonPublicApi}}internal {{/nonPublicApi}}val EMPTY_REQUEST: RequestBody = ByteArray(0).toRequestBody()
 
@@ -69,13 +71,13 @@ import com.squareup.moshi.adapter
         protected const val FormDataMediaType = "multipart/form-data"
         protected const val FormUrlEncMediaType = "application/x-www-form-urlencoded"
         protected const val XmlMediaType = "application/xml"
+        protected const val UserAgent = "User-Agent"
         protected const val OctetMediaType = "application/octet-stream"
 
         val apiKey: MutableMap<String, String> = mutableMapOf()
         val apiKeyPrefix: MutableMap<String, String> = mutableMapOf()
         var username: String? = null
         var password: String? = null
-        var accessToken: String? = null
         const val baseUrlKey = "{{packageName}}.baseUrl"
 
         @JvmStatic
@@ -86,6 +88,11 @@ import com.squareup.moshi.adapter
         @JvmStatic
         val builder: OkHttpClient.Builder = OkHttpClient.Builder()
     }
+
+    var accessToken: String? = null
+    var userAgent: String? = null
+    var initialRetryDelayMillis = 50L
+    var numRetries: Int = 3
 
     /**
      * Guess Content-Type header from the given file (defaults to "application/octet-stream").
@@ -137,6 +144,9 @@ import com.squareup.moshi.adapter
             }
             mediaType == null || mediaType.startsWith("application/") && mediaType.endsWith("json") ->
                 if (content == null) {
+                    // FIXME(onelson): double check that this is where we land on DELETE requests
+                    //   We initially had to patch the client for responses without a body.
+                    //   Ref: https://github.com/svix/svix-webhooks/pull/1124
                     EMPTY_REQUEST
                 } else {
                     {{#moshi}}
@@ -318,6 +328,13 @@ import com.squareup.moshi.adapter
         updateAuthParams(requestConfig)
         {{/hasAuthMethods}}
 
+        // add user agent
+        if (requestConfig.headers[UserAgent].isNullOrEmpty()) {
+            userAgent?.let { userAgent ->
+                requestConfig.headers[UserAgent] = userAgent
+            }
+        }
+
         val url = httpUrl.newBuilder()
             .addEncodedPathSegments(requestConfig.path.trimStart('/'))
             .apply {
@@ -331,6 +348,9 @@ import com.squareup.moshi.adapter
         // take content-type/accept from spec or set to default (application/json) if not defined
         if (requestConfig.body != null && requestConfig.headers[ContentType].isNullOrEmpty()) {
             requestConfig.headers[ContentType] = JsonMediaType
+        }
+        if (requestConfig.headers["svix-req-id"].isNullOrEmpty()) {
+            requestConfig.headers["svix-req-id"] = Math.abs(Random.nextBits(32)).toString()
         }
         if (requestConfig.headers[Accept].isNullOrEmpty()) {
             requestConfig.headers[Accept] = JsonMediaType
@@ -360,23 +380,26 @@ import com.squareup.moshi.adapter
             headers.forEach { header -> addHeader(header.key, header.value) }
         }.build()
 
-        {{#useCoroutines}}
-        val response: Response = suspendCancellableCoroutine { continuation ->
-            val call = client.newCall(request)
-            continuation.invokeOnCancellation { call.cancel() }
-            call.enqueue(object : Callback {
-                override fun onFailure(call: Call, e: IOException) {
-                    continuation.resumeWithException(e)
-                }
-                override fun onResponse(call: Call, response: Response) {
-                    continuation.resume(response)
-                }
-            })
+
+        // FIXME(onelson): the upstream generator template has the below block for the useCoroutines=false case.
+        //    More reading up on kotlin required before it's clear how to do a retry loop over a suspendable.
+        //    For now, we'll do the non-coroutine thing.
+        //    Ref: https://github.com/OpenAPITools/openapi-generator/blob/4145000dfebe7a9edea4555c8515383da7602458/modules/openapi-generator/src/main/resources/kotlin-client/libraries/jvm-okhttp/infrastructure/ApiClient.kt.mustache#L363-L376
+        var response = client.newCall(request).execute()
+
+        var sleepTime = initialRetryDelayMillis
+        var retryCount = 0
+        for (i in 0 until numRetries-1) {
+            if (response.isSuccessful || response.code < 500) {
+                break
+            }
+            response.close()
+            retryCount = retryCount.inc()
+            delay(sleepTime)
+            sleepTime = sleepTime * 2
+            var newRequest = request.newBuilder().header("svix-retry-count", retryCount.toString()).build()
+            response = client.newCall(newRequest).execute()
         }
-        {{/useCoroutines}}
-        {{^useCoroutines}}
-        val response = client.newCall(request).execute()
-        {{/useCoroutines}}
 
         val accept = response.header(ContentType)?.substringBefore(";")?.lowercase(Locale.US)
 

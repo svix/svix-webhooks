@@ -22,4 +22,4 @@
 # Then explicitly reverse the ignore rule for a single file:
 #!docs/README.md
 
-src/main/kotlin/com/svix/kotlin/internal/infrastructure/Serializer.kt
+# src/main/kotlin/com/svix/kotlin/internal/infrastructure/Serializer.kt
