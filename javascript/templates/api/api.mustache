@@ -62,6 +62,9 @@ export class {{classname}}RequestFactory extends BaseAPIRequestFactory {
         // Make Request Context
         const requestContext = _config.baseServer.makeRequestContext(localVarPath, HttpMethod.{{httpMethod}});
         requestContext.setHeaderParam("Accept", "application/json, */*;q=0.8")
+        const randomId = Math.floor(Math.random() * Math.pow(2, 32))
+        requestContext.setHeaderParam("svix-req-id", randomId.toString())
+
         {{#queryParams}}
 
         // Query Params
@@ -92,7 +95,9 @@ export class {{classname}}RequestFactory extends BaseAPIRequestFactory {
         {{#headerParams}}
 
         // Header Params
-        requestContext.setHeaderParam("{{baseName}}", ObjectSerializer.serialize({{paramName}}, "{{{dataType}}}", "{{dataFormat}}"));
+        if ({{paramName}} !== undefined) {
+            requestContext.setHeaderParam("{{baseName}}", ObjectSerializer.serialize({{paramName}}, "{{{dataType}}}", "{{dataFormat}}"));
+        }
         {{/headerParams}}
         {{#hasFormParams}}
 
@@ -211,6 +216,7 @@ export class {{classname}}ResponseProcessor {
      * @throws ApiException if the response code was not in [200, 299]
      */
      public async {{nickname}}WithHttpInfo(response: ResponseContext): Promise<HttpInfo<{{{returnType}}} {{^returnType}}void{{/returnType}}>> {
+        // FIXME(onelson): verify that special handling of empty body is no longer required.
         const contentType = ObjectSerializer.normalizeMediaType(response.headers["content-type"]);
         {{#responses}}
         if (isCodeInRange("{{code}}", response.httpStatusCode)) {
@@ -260,7 +266,7 @@ export class {{classname}}ResponseProcessor {
             return new HttpInfo(response.httpStatusCode, response.headers, response.body, undefined);
             {{/returnType}}
         }
-
+        // FIXME(onelson): verify that special handling of empty body is no longer required.
         throw new ApiException<string | {{{fileContentDataType}}} | undefined>(response.httpStatusCode, "Unknown API Status Code!", await response.getBodyAsAny(), response.headers);
     }
 
