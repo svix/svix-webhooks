@@ -69,14 +69,7 @@ function ensureAbsoluteUrl(url: string) {
     if (url.startsWith("http://") || url.startsWith("https://")) {
         return url;
     }
-    {{#platforms}}
-    {{#node}}
     throw new Error("You need to define an absolute base url for the server.");
-    {{/node}}
-    {{^node}}
-    return window.location.origin + url;
-    {{/node}}
-    {{/platforms}}
 }
 
 /**
