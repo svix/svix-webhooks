@@ -59,6 +59,18 @@
     # @option opts [Object] :body HTTP body (JSON/XML)
     # @return [Typhoeus::Request] A Typhoeus Request
     def build_request(http_method, path, opts = {})
+
+      begin
+        require 'typhoeus'
+      rescue LoadError
+        raise <<~MESSAGE
+          To use svix for sending outgoing webhooks, you need to install the typheous gem.
+          Please add it to your Gemfile and then run `bundle install`:
+
+            gem 'typhoeus'
+        MESSAGE
+      end
+
       url = build_request_url(path, opts)
       http_method = http_method.to_sym.downcase
 

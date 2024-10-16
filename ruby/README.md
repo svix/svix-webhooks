@@ -50,6 +50,13 @@ Add this line to your application's Gemfile:
 gem 'svix'
 ```
 
+If you are using svix to send outgoing webhhooks, you should also install the `typhoeus` gem.
+If you are only using svix to consume incoming webhooks, you do not need it.
+
+```ruby
+gem 'typhoeus`
+```
+
 And then execute:
 
 ```sh
@@ -69,7 +76,7 @@ First checkout the [core README](../README.md#development) for details on how to
 ## Building
 
 ```sh
-bundler exec rake build
+bundle exec rake build
 ```
 
 ## Contributing
