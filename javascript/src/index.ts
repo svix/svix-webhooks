@@ -271,7 +271,10 @@ class Application {
     return this.api.v1ApplicationUpdate({ appId, applicationIn });
   }
 
-  public patch(appId: string, applicationPatch: ApplicationPatch): Promise<ApplicationOut> {
+  public patch(
+    appId: string,
+    applicationPatch: ApplicationPatch
+  ): Promise<ApplicationOut> {
     return this.api.v1ApplicationPatch({ appId, applicationPatch });
   }
 
@@ -455,11 +458,15 @@ class Endpoint {
     });
   }
 
-  public getStats(appId: string, endpointId: string, options?: EndpointStatsOptions): Promise<EndpointStats> {
+  public getStats(
+    appId: string,
+    endpointId: string,
+    options?: EndpointStatsOptions
+  ): Promise<EndpointStats> {
     return this.api.v1EndpointGetStats({
       appId,
       endpointId,
-      ...options
+      ...options,
     });
   }
 
@@ -467,9 +474,7 @@ class Endpoint {
     appId: string,
     endpointId: string
   ): Promise<EndpointTransformationOut> {
-    return this.api.v1EndpointTransformationGet(
-      { endpointId, appId }
-    );
+    return this.api.v1EndpointTransformationGet({ endpointId, appId });
   }
 
   public transformationPartialUpdate(
@@ -477,38 +482,43 @@ class Endpoint {
     endpointId: string,
     endpointTransformationIn: EndpointTransformationIn
   ): Promise<void> {
-    return this.api.v1EndpointTransformationPartialUpdate(
-      { appId, endpointId, endpointTransformationIn }
-    );
+    return this.api.v1EndpointTransformationPartialUpdate({
+      appId,
+      endpointId,
+      endpointTransformationIn,
+    });
   }
 
   public sendExample(
     appId: string,
     endpointId: string,
     eventExampleIn: EventExampleIn,
-    options?: PostOptions,
+    options?: PostOptions
   ): Promise<MessageOut> {
-    return this.api.v1EndpointSendExample(
-      { appId, endpointId, eventExampleIn, ...options }
-    );
+    return this.api.v1EndpointSendExample({
+      appId,
+      endpointId,
+      eventExampleIn,
+      ...options,
+    });
   }
 
   public oauthUpdate(
     appId: string,
     endpointId: string,
-    endpointOauthConfigIn: EndpointOauthConfigIn,
+    endpointOauthConfigIn: EndpointOauthConfigIn
   ): Promise<void> {
     return this.api.v1EndpointUpdateOauthConfig({
-      appId, endpointId, endpointOauthConfigIn
+      appId,
+      endpointId,
+      endpointOauthConfigIn,
     });
   }
 
-  public oauthDelete(
-    appId: string,
-    endpointId: string,
-  ): Promise<void> {
+  public oauthDelete(appId: string, endpointId: string): Promise<void> {
     return this.api.v1EndpointDeleteOauthConfig({
-      appId, endpointId
+      appId,
+      endpointId,
     });
   }
 }
@@ -556,7 +566,10 @@ class EventType {
     return this.api.v1EventTypeDelete({ eventTypeName });
   }
 
-  public importOpenApi(eventTypeImportOpenApiIn: EventTypeImportOpenApiIn, options?: PostOptions): Promise<EventTypeImportOpenApiOut> {
+  public importOpenApi(
+    eventTypeImportOpenApiIn: EventTypeImportOpenApiIn,
+    options?: PostOptions
+  ): Promise<EventTypeImportOpenApiOut> {
     return this.api.v1EventTypeImportOpenapi({ eventTypeImportOpenApiIn, ...options });
   }
 }
@@ -759,19 +772,20 @@ class MessageAttempt {
     endpointId: string,
     options?: MessageAttemptListOptions
   ): Promise<ListResponseMessageAttemptEndpointOut> {
-    return this.api.v1MessageAttemptListByEndpointDeprecated(
-      { appId, msgId, endpointId, ...options }
-    );
+    return this.api.v1MessageAttemptListByEndpointDeprecated({
+      appId,
+      msgId,
+      endpointId,
+      ...options,
+    });
   }
 
-  public expungeContent(
-    appId: string,
-    msgId: string,
-    attemptId: string
-  ): Promise<void> {
+  public expungeContent(appId: string, msgId: string, attemptId: string): Promise<void> {
     return this.api.v1MessageAttemptExpungeContent({
-      appId, msgId, attemptId
-    })
+      appId,
+      msgId,
+      attemptId,
+    });
   }
 }
 
@@ -790,14 +804,11 @@ class BackgroundTask {
     });
   }
 
-  public get(
-    taskId: string,
-  ): Promise<BackgroundTaskOut> {
+  public get(taskId: string): Promise<BackgroundTaskOut> {
     return this.api.getBackgroundTask({
-      taskId
+      taskId,
     });
   }
-
 }
 
 class ExtendableError extends Error {
@@ -911,7 +922,9 @@ export class Webhook {
     } else if (payload.constructor.name === "Buffer") {
       payload = payload.toString();
     } else {
-      throw new Error("Expected payload to be of type string or Buffer. Please refer to https://docs.svix.com/receiving/verifying-payloads/how for more information.");
+      throw new Error(
+        "Expected payload to be of type string or Buffer. Please refer to https://docs.svix.com/receiving/verifying-payloads/how for more information."
+      );
     }
 
     const encoder = new TextEncoder();
