@@ -22,6 +22,7 @@ buildscript {
 }
 
 apply plugin: 'kotlin'
+apply plugin: 'com.diffplug.spotless'
 
 repositories {
     maven { url "https://repo1.maven.org/maven2" }
@@ -67,3 +68,9 @@ javadoc {
 }
 
 apply from: "deploy.gradle"
+
+test {
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
