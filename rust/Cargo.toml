@@ -40,6 +40,9 @@ url = "2.2"
 tokio = { version = "1.38.0", features = ["time"] }
 serde_with = { version = "^3.8", default-features = false, features = ["base64", "std", "macros"] }
 
+[dev-dependencies]
+tokio = { version = "1.38.0", features = ["macros"] }
+
 [package.metadata.cargo-public-api-crates]
 allowed = [
     "http",
