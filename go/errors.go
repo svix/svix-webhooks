@@ -1,7 +1,6 @@
 package svix
 
 import (
-	"errors"
 	"net/http"
 
 	"github.com/svix/svix-webhooks/go/internal/openapi"
@@ -31,8 +30,7 @@ func (e Error) Status() int {
 
 // a simple function convert openapi errors to exposed svix.Error
 func wrapError(err error, res *http.Response) error {
-	var openapiError openapi.GenericOpenAPIError
-	if errors.As(err, &openapiError) {
+	if openapiError, ok := err.(*openapi.GenericOpenAPIError); ok {
 		e := &Error{
 			body:  openapiError.Body(),
 			error: openapiError.Error(),

@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"strings"
 	"testing"
 )
 
@@ -46,14 +45,6 @@ func isNotConflict(err error) error {
 				// Pass if we see the suppressed status
 				return nil
 			}
-		}
-		// FIXME: the client template patch (currently omitted during codegen) fixes the errors so they all
-		//   come back wrapped as `svix.Error` from the various internal API methods.
-		//   I think?
-		//   Since that patch is not currently applied, we'll fall through here. Need to make that patch client work
-		//   with the latest templates or something else.
-		if strings.Contains(err.Error(), "Conflict") {
-			return nil
 		}
 	}
 	return err
