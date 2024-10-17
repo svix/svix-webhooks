@@ -26,7 +26,7 @@ env:
 jobs:
   check-fmt:
     name: Check formatting
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
@@ -40,7 +40,7 @@ jobs:
 
   test-versions:
     name: Server CI
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         rust: [stable, beta]
@@ -99,7 +99,7 @@ jobs:
       run: docker compose -f "server/testing-docker-compose.yml" down
 #  deny-check:
 #    name: cargo-deny check
-#    runs-on: ubuntu-latest
+#    runs-on: ubuntu-24.04
 #    continue-on-error: ${{ matrix.checks == 'advisories' }}
 #    strategy:
 #      matrix:

@@ -26,7 +26,7 @@ env:
 jobs:
   check-fmt:
     name: Check formatting
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
@@ -40,7 +40,7 @@ jobs:
 
   test-versions:
     name: Webhook Bridge CI
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         rust: [stable, beta]
@@ -75,7 +75,7 @@ jobs:
           checkinstall=1.* \
           curl \
           libssl-dev=* \
-          pkg-config=0.29.* \
+          pkg-config=1.8.* \
           zlib1g-dev=1:*
 
     - name: Start required services
@@ -90,7 +90,7 @@ jobs:
 
 #  deny-check:
 #    name: cargo-deny check
-#    runs-on: ubuntu-latest
+#    runs-on: ubuntu-24.04
 #    continue-on-error: ${{ matrix.checks == 'advisories' }}
 #    strategy:
 #      matrix:

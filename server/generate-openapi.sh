@@ -14,7 +14,11 @@ export SVIX_REDIS_DSN="redis://localhost:6379"
 server_path=$(dirname "$0")
 openapi_path=$server_path/openapi.json
 # Do not output the entire thing
-output=$(cargo run --manifest-path "$server_path"/Cargo.toml -- generate-openapi | jq -S --indent 4 '.openapi = "3.0.2" | .info.version = "1.1.1" | .info.description = ""')
+output=$(
+    cargo run --manifest-path "$server_path"/Cargo.toml -- generate-openapi \
+        | jq -S --indent 4 '.openapi = "3.0.2" | .info.version = "1.1.1" | .info.description = ""' \
+        | sed 's/\.0,$/,/' # Remove trailing '.0' from numerals to paper over jq version differences
+)
 
 if [[ "$1" = "--check" ]]; then
     # Do not quit immediately if the diff fails, we check status afterwards
