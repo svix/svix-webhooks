@@ -15,6 +15,17 @@ Gem::Specification.new do |spec|
                        "Learn more at https://www.svix.com"
   spec.homepage      = "https://www.svix.com"
 
+  spec.post_install_message = <<~MESSAGE
+
+    Thank you for install svix!
+
+    If you are using svix to send outgoing webhhooks, you should also install the `typhoeus` gem.
+    If you are only using svix to consume incoming webhooks, you do not need it.
+
+      gem 'typhoeus`
+
+  MESSAGE
+
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
   # to allow pushing to a single host or delete this section to allow pushing to any host.
   if spec.respond_to?(:metadata)
@@ -44,8 +55,6 @@ Gem::Specification.new do |spec|
   spec.bindir        = "exe"
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
-
-  spec.add_runtime_dependency 'typhoeus', '~> 1.0', '>= 1.0.1'
 
   spec.add_development_dependency "rake", "~> 13.0"
   spec.add_development_dependency "rspec", "~> 3.2"
