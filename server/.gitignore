@@ -14,3 +14,6 @@ target/
 Session.vim
 
 .env
+
+# grcov outputs
+*.profraw
