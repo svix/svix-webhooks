@@ -117,7 +117,6 @@ impl CreateMessageApp {
         .endpoints
         .iter()
         .filter(|endpoint| {
-            return
             // No disabled or deleted endpoints ever
                !endpoint.disabled && !endpoint.deleted &&
             (

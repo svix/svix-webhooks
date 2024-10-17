@@ -920,7 +920,11 @@ impl sea_orm::sea_query::ValueType for EndpointSecretInternal {
     }
 
     fn column_type() -> sea_orm::sea_query::ColumnType {
-        sea_orm::sea_query::ColumnType::Binary(sea_orm::sea_query::BlobSize::Blob(None))
+        sea_orm::sea_query::ColumnType::Binary(
+            Self::KEY_SIZE
+                .try_into()
+                .expect("Key size is not more than u32::MAX"),
+        )
     }
 
     fn array_type() -> sea_orm::sea_query::ArrayType {
