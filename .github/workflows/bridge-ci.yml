@@ -75,7 +75,7 @@ jobs:
           checkinstall=1.* \
           curl \
           libssl-dev=* \
-          pkg-config=0.29.* \
+          pkg-config=1.8.* \
           zlib1g-dev=1:*
 
     - name: Start required services
