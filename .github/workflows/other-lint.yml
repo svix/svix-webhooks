@@ -54,4 +54,5 @@ jobs:
           VALIDATE_SHELL_SHFMT: false
           VALIDATE_SQL: false
           VALIDATE_SQLFLUFF: false
+          VALIDATE_YAML_PRETTIER: false
           FILTER_REGEX_EXCLUDE: (gradlew|javascript/tsconfig.json)
