@@ -113,33 +113,35 @@ impl CreateMessageApp {
         event_type: &EventTypeName,
         channels: Option<&EventChannelSet>,
     ) -> Vec<CreateMessageEndpoint> {
-        self
-        .endpoints
-        .iter()
-        .filter(|endpoint| {
-            // No disabled or deleted endpoints ever
-               !endpoint.disabled && !endpoint.deleted &&
-            (
-                // Manual attempt types go through regardless
-                trigger_type == MessageAttemptTriggerType::Manual
-                || (
-                        // If an endpoint has event types and it matches ours, or has no event types
-                        endpoint
-                        .event_types_ids
-                        .as_ref()
-                        .map(|x| x.0.contains(event_type))
-                        .unwrap_or(true)
-                    &&
-                        // If an endpoint has no channels accept all messages, otherwise only if their channels overlap.
-                        // A message with no channels doesn't match an endpoint with channels.
-                        endpoint
-                        .channels
-                        .as_ref()
-                        .map(|x| !x.0.is_disjoint(channels.map(|x| &x.0).unwrap_or(&HashSet::new())))
-                        .unwrap_or(true)
-            ))})
-        .cloned()
-        .collect()
+        self.endpoints
+            .iter()
+            .filter(|endpoint| {
+                // No disabled or deleted endpoints ever
+                !endpoint.disabled && !endpoint.deleted
+                    // Manual attempt types go through regardless
+                    && (trigger_type == MessageAttemptTriggerType::Manual
+                        || (
+                            // If an endpoint has event types and it matches ours, or has no event types
+                            endpoint
+                                .event_types_ids
+                                .as_ref()
+                                .map(|x| x.0.contains(event_type))
+                                .unwrap_or(true)
+                            // If an endpoint has no channels accept all messages, otherwise only if their channels overlap.
+                            // A message with no channels doesn't match an endpoint with channels.
+                            && endpoint
+                                .channels
+                                .as_ref()
+                                .map(|x| {
+                                    !x.0.is_disjoint(
+                                        channels.map(|x| &x.0).unwrap_or(&HashSet::new()),
+                                    )
+                                })
+                                .unwrap_or(true)
+                        ))
+            })
+            .cloned()
+            .collect()
     }
 }
 
