@@ -10,7 +10,7 @@ env:
 jobs:
   release:
     name: release x86_64-unknown-linux-gnu
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     environment: release
 
     steps:
@@ -32,7 +32,7 @@ jobs:
 
   docker:
     name: release docker
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
