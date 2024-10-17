@@ -17,7 +17,7 @@ Gem::Specification.new do |spec|
 
   spec.post_install_message = <<~MESSAGE
 
-    Thank you for install svix!
+    Thank you for installing svix!
 
     If you are using svix to send outgoing webhhooks, you should also install the `typhoeus` gem.
     If you are only using svix to consume incoming webhooks, you do not need it.
