@@ -1,4 +1,4 @@
-name: Csharp Lint
+name: C# Lint
 
 on:
   pull_request:
@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Setup .NET Core SDK
-        uses: actions/setup-dotnet@v1.7.2
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 5.0.x
 
