@@ -5,6 +5,7 @@ on:
     paths:
       - "ruby/**"
       - "openapi.json"
+      - '.github/workflows/ruby-lint.yml'
 
 jobs:
   dotnet:

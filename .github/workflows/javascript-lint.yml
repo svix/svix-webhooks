@@ -1,9 +1,12 @@
-name: Javascript Lint
+name: JavaScript Lint
+
 on:
   pull_request:
     paths:
       - "javascript/**"
       - "openapi.json"
+      - '.github/workflows/javascript-lint.yml'
+
 jobs:
   build:
     runs-on: ubuntu-24.04
