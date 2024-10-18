@@ -5,6 +5,7 @@ on:
     paths:
       - "csharp/**"
       - "openapi.json"
+      - '.github/workflows/csharp-lint.yml'
 
 jobs:
   dotnet:
