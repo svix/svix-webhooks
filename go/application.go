@@ -24,7 +24,7 @@ type ApplicationListOptions struct {
 }
 
 func (a *Application) List(ctx context.Context, options *ApplicationListOptions) (*ListResponseApplicationOut, error) {
-	req := a.api.ApplicationApi.V1ApplicationList(ctx)
+	req := a.api.ApplicationAPI.V1ApplicationList(ctx)
 	if options != nil {
 		if options.Iterator != nil {
 			req = req.Iterator(*options.Iterator)
@@ -33,15 +33,14 @@ func (a *Application) List(ctx context.Context, options *ApplicationListOptions)
 			req = req.Limit(*options.Limit)
 		}
 		if options.Order != nil {
-			req = req.Order(openapi.Ordering(*options.Order))
+			req = req.Order(*options.Order)
 		}
 	}
-	resp, res, err := req.Execute()
+	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
-	ret := ListResponseApplicationOut(resp)
-	return &ret, nil
+	return ret, nil
 }
 
 func (a *Application) Create(ctx context.Context, applicationIn *ApplicationIn) (*ApplicationOut, error) {
@@ -49,19 +48,18 @@ func (a *Application) Create(ctx context.Context, applicationIn *ApplicationIn) 
 }
 
 func (a *Application) CreateWithOptions(ctx context.Context, applicationIn *ApplicationIn, options *PostOptions) (*ApplicationOut, error) {
-	req := a.api.ApplicationApi.V1ApplicationCreate(ctx)
-	req = req.ApplicationIn(openapi.ApplicationIn(*applicationIn))
+	req := a.api.ApplicationAPI.V1ApplicationCreate(ctx)
+	req = req.ApplicationIn(*applicationIn)
 	if options != nil {
 		if options.IdempotencyKey != nil {
 			req = req.IdempotencyKey(*options.IdempotencyKey)
 		}
 	}
-	resp, res, err := req.Execute()
+	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
-	ret := ApplicationOut(resp)
-	return &ret, nil
+	return ret, nil
 }
 
 func (a *Application) GetOrCreate(ctx context.Context, applicationIn *ApplicationIn) (*ApplicationOut, error) {
@@ -69,56 +67,52 @@ func (a *Application) GetOrCreate(ctx context.Context, applicationIn *Applicatio
 }
 
 func (a *Application) GetOrCreateWithOptions(ctx context.Context, applicationIn *ApplicationIn, options *PostOptions) (*ApplicationOut, error) {
-	req := a.api.ApplicationApi.V1ApplicationCreate(ctx)
-	req = req.ApplicationIn(openapi.ApplicationIn(*applicationIn))
+	req := a.api.ApplicationAPI.V1ApplicationCreate(ctx)
+	req = req.ApplicationIn(*applicationIn)
 	req = req.GetIfExists(true)
 	if options != nil {
 		if options.IdempotencyKey != nil {
 			req = req.IdempotencyKey(*options.IdempotencyKey)
 		}
 	}
-	resp, res, err := req.Execute()
+	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
-	ret := ApplicationOut(resp)
-	return &ret, nil
+	return ret, nil
 }
 
 func (a *Application) Get(ctx context.Context, appId string) (*ApplicationOut, error) {
-	req := a.api.ApplicationApi.V1ApplicationGet(ctx, appId)
-	resp, res, err := req.Execute()
+	req := a.api.ApplicationAPI.V1ApplicationGet(ctx, appId)
+	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
-	ret := ApplicationOut(resp)
-	return &ret, nil
+	return ret, nil
 }
 
 func (a *Application) Update(ctx context.Context, appId string, applicationIn *ApplicationIn) (*ApplicationOut, error) {
-	req := a.api.ApplicationApi.V1ApplicationUpdate(ctx, appId)
-	req = req.ApplicationIn(openapi.ApplicationIn(*applicationIn))
-	resp, res, err := req.Execute()
+	req := a.api.ApplicationAPI.V1ApplicationUpdate(ctx, appId)
+	req = req.ApplicationIn(*applicationIn)
+	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
-	ret := ApplicationOut(resp)
-	return &ret, nil
+	return ret, nil
 }
 
 func (a *Application) Patch(ctx context.Context, appId string, applicationPatch *ApplicationPatch) (*ApplicationOut, error) {
-	req := a.api.ApplicationApi.V1ApplicationPatch(ctx, appId)
-	req = req.ApplicationPatch(openapi.ApplicationPatch(*applicationPatch))
-	resp, res, err := req.Execute()
+	req := a.api.ApplicationAPI.V1ApplicationPatch(ctx, appId)
+	req = req.ApplicationPatch(*applicationPatch)
+	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
-	ret := ApplicationOut(resp)
-	return &ret, nil
+	return ret, nil
 }
 
 func (a *Application) Delete(ctx context.Context, appId string) error {
-	req := a.api.ApplicationApi.V1ApplicationDelete(ctx, appId)
+	req := a.api.ApplicationAPI.V1ApplicationDelete(ctx, appId)
 	res, err := req.Execute()
 	return wrapError(err, res)
 }

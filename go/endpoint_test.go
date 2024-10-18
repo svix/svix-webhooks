@@ -26,7 +26,7 @@ func TestEndpoint_Serialization(t *testing.T) {
 			name: "channels but not filter types",
 			testEndpoint: &svix.EndpointIn{
 				Url:      "https://example.svix.com/",
-				Channels: &[]string{"ch1", "ch2"},
+				Channels: []string{"ch1", "ch2"},
 			},
 			wantChannels:    true,
 			wantFilterTypes: false,
@@ -35,7 +35,7 @@ func TestEndpoint_Serialization(t *testing.T) {
 			name: "filter types but not channels",
 			testEndpoint: &svix.EndpointIn{
 				Url:         "https://example.svix.com/",
-				FilterTypes: &[]string{"et1", "et2"},
+				FilterTypes: []string{"et1", "et2"},
 			},
 			wantChannels:    false,
 			wantFilterTypes: true,
@@ -44,8 +44,8 @@ func TestEndpoint_Serialization(t *testing.T) {
 			name: "both channels and filter types",
 			testEndpoint: &svix.EndpointIn{
 				Url:         "https://example.svix.com/",
-				Channels:    &[]string{"ch1", "ch2"},
-				FilterTypes: &[]string{"et1", "et2"},
+				Channels:    []string{"ch1", "ch2"},
+				FilterTypes: []string{"et1", "et2"},
 			},
 			wantChannels:    true,
 			wantFilterTypes: true,

@@ -22,17 +22,23 @@ public final class Svix {
 	public Svix(final String token, final SvixOptions options) {
 		ApiClient apiClient = new ApiClient();
 
-		String[] tokenParts = token.split("\\.");
-		String region = tokenParts[tokenParts.length - 1];
-		if (region.equals("us")) {
-			apiClient.setBasePath("https://api.us.svix.com");
-		} else if (region.equals("eu")) {
-			apiClient.setBasePath("https://api.eu.svix.com");
-		} else if (region.equals("in")) {
-			apiClient.setBasePath("https://api.in.svix.com");
-		} else {
+		if (options.hasServerUrl()) {
 			apiClient.setBasePath(options.getServerUrl());
+		} else {
+			String[] tokenParts = token.split("\\.");
+			String region = tokenParts[tokenParts.length - 1];
+			if (region.equals("us")) {
+				apiClient.setBasePath("https://api.us.svix.com");
+			} else if (region.equals("eu")) {
+				apiClient.setBasePath("https://api.eu.svix.com");
+			} else if (region.equals("in")) {
+				apiClient.setBasePath("https://api.in.svix.com");
+			} else {
+				// Fallback when all else fails.
+				apiClient.setBasePath("https://api.svix.com");
+			}
 		}
+
 
 		apiClient.setUserAgent(String.format("svix-libs/%s/java", Svix.VERSION));
 
