@@ -18,7 +18,9 @@ if not TOKEN and not SERVER_URL:
         installed on host."""
         skipper = None
         if shutil.which("docker") is None:
-            skipper = pytest.mark.skip(reason="skipping test as docker command is missing")
+            skipper = pytest.mark.skip(
+                reason="skipping test as docker command is missing"
+            )
         else:
             docker_compose_available = False
             try:
@@ -30,7 +32,9 @@ if not TOKEN and not SERVER_URL:
                 docker_compose_available = shutil.which("docker-compose") is not None
             finally:
                 if not docker_compose_available:
-                    skipper = pytest.mark.skip(reason="skipping test as docker compose is missing")
+                    skipper = pytest.mark.skip(
+                        reason="skipping test as docker compose is missing"
+                    )
         if skipper is not None:
             for item in items:
                 if item.module.__name__ == "tests.test_client":
@@ -77,7 +81,9 @@ if not TOKEN and not SERVER_URL:
         """Spawn a Svix server for the tests session using docker compose"""
         # wait for the svix backend service to be up and responding
         request_session = requests.Session()
-        retries = Retry(total=10, backoff_factor=0.1, status_forcelist=[500, 502, 503, 504])
+        retries = Retry(
+            total=10, backoff_factor=0.1, status_forcelist=[500, 502, 503, 504]
+        )
         request_session.mount("http://", HTTPAdapter(max_retries=retries))
         api_url = f"{svix_server_url}/api/v1/health/"
         response = request_session.get(api_url)
@@ -88,13 +94,22 @@ if not TOKEN and not SERVER_URL:
         """Ensure stateless tests"""
         yield
         # wipe svix database after each test to ensure stateless tests
-        docker_compose.execute(f"exec -T backend svix-server wipe --yes-i-know-what-im-doing {SVIX_ORG_ID}")
+        docker_compose.execute(
+            f"exec -T backend svix-server wipe --yes-i-know-what-im-doing {SVIX_ORG_ID}"
+        )
 
     @pytest.fixture(scope="session")
     def svix_api(svix_server_url, docker_compose):
         # generate bearer token to authorize communication with the svix server
-        exec_output = docker_compose.execute(f"exec -T backend svix-server jwt generate {SVIX_ORG_ID}")
-        svix_auth_token = exec_output.decode().replace("Token (Bearer): ", "").replace("\r", "").replace("\n", "")
+        exec_output = docker_compose.execute(
+            f"exec -T backend svix-server jwt generate {SVIX_ORG_ID}"
+        )
+        svix_auth_token = (
+            exec_output.decode()
+            .replace("Token (Bearer): ", "")
+            .replace("\r", "")
+            .replace("\n", "")
+        )
         return Svix(
             svix_auth_token,
             SvixOptions(server_url=svix_server_url),

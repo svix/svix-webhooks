@@ -216,7 +216,6 @@ export class {{classname}}ResponseProcessor {
      * @throws ApiException if the response code was not in [200, 299]
      */
      public async {{nickname}}WithHttpInfo(response: ResponseContext): Promise<HttpInfo<{{{returnType}}} {{^returnType}}void{{/returnType}}>> {
-        // FIXME(onelson): verify that special handling of empty body is no longer required.
         const contentType = ObjectSerializer.normalizeMediaType(response.headers["content-type"]);
         {{#responses}}
         if (isCodeInRange("{{code}}", response.httpStatusCode)) {
@@ -266,7 +265,6 @@ export class {{classname}}ResponseProcessor {
             return new HttpInfo(response.httpStatusCode, response.headers, response.body, undefined);
             {{/returnType}}
         }
-        // FIXME(onelson): verify that special handling of empty body is no longer required.
         throw new ApiException<string | {{{fileContentDataType}}} | undefined>(response.httpStatusCode, "Unknown API Status Code!", await response.getBodyAsAny(), response.headers);
     }
 
