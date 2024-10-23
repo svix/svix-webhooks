@@ -7,6 +7,9 @@ GEM
   remote: https://rubygems.org/
   specs:
     diff-lcs (1.4.4)
+    ethon (0.16.0)
+      ffi (>= 1.15.0)
+    ffi (1.17.0)
     rake (13.0.6)
     rspec (3.10.0)
       rspec-core (~> 3.10.0)
@@ -21,6 +24,8 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.10.0)
     rspec-support (3.10.2)
+    typhoeus (1.4.1)
+      ethon (>= 0.9.0)
 
 PLATFORMS
   ruby
@@ -29,6 +34,7 @@ DEPENDENCIES
   rake (~> 13.0)
   rspec (~> 3.2)
   svix!
+  typhoeus (~> 1.0, >= 1.0.1)
 
 BUNDLED WITH
    2.2.33
