@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use hyper_util::{client::legacy::Client as HyperClient, rt::TokioExecutor};
 
 use crate::{
@@ -52,8 +54,9 @@ impl Default for SvixOptions {
 }
 
 /// Svix API client.
+#[derive(Clone)]
 pub struct Svix {
-    cfg: Configuration,
+    cfg: Arc<Configuration>,
     server_url: Option<String>,
 }
 
@@ -61,14 +64,14 @@ impl Svix {
     pub fn new(token: String, options: Option<SvixOptions>) -> Self {
         let options = options.unwrap_or_default();
 
-        let cfg = Configuration {
+        let cfg = Arc::new(Configuration {
             user_agent: Some(format!("svix-libs/{CRATE_VERSION}/rust")),
             client: HyperClient::builder(TokioExecutor::new()).build(crate::default_connector()),
             timeout: options.timeout,
             // These fields will be set by `with_token` below
             base_path: String::new(),
             bearer_access_token: None,
-        };
+        });
         let svix = Self {
             cfg,
             server_url: options.server_url,
@@ -92,13 +95,13 @@ impl Svix {
             }
             .to_string()
         });
-        let cfg = Configuration {
+        let cfg = Arc::new(Configuration {
             base_path,
             user_agent: self.cfg.user_agent.clone(),
             bearer_access_token: Some(token),
             client: self.cfg.client.clone(),
             timeout: self.cfg.timeout,
-        };
+        });
 
         Self {
             cfg,
