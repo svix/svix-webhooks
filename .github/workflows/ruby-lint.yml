@@ -34,3 +34,8 @@ jobs:
         run: |
           cd ruby
           bundler exec rake build
+
+      - name: Test
+        run: |
+          cd ruby
+          bundler exec rspec spec

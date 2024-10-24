@@ -31,7 +31,7 @@ type EventTypeListOptions struct {
 }
 
 func (e *EventType) List(ctx context.Context, options *EventTypeListOptions) (*ListResponseEventTypeOut, error) {
-	req := e.api.EventTypeApi.V1EventTypeList(ctx)
+	req := e.api.EventTypeAPI.V1EventTypeList(ctx)
 	if options != nil {
 		if options.Iterator != nil {
 			req = req.Iterator(*options.Iterator)
@@ -49,12 +49,11 @@ func (e *EventType) List(ctx context.Context, options *EventTypeListOptions) (*L
 			req = req.Order(*options.Order)
 		}
 	}
-	out, res, err := req.Execute()
+	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
-	ret := ListResponseEventTypeOut(out)
-	return &ret, nil
+	return ret, nil
 }
 
 func (e *EventType) Create(ctx context.Context, eventTypeIn *EventTypeIn) (*EventTypeOut, error) {
@@ -62,51 +61,47 @@ func (e *EventType) Create(ctx context.Context, eventTypeIn *EventTypeIn) (*Even
 }
 
 func (e *EventType) CreateWithOptions(ctx context.Context, eventTypeIn *EventTypeIn, options *PostOptions) (*EventTypeOut, error) {
-	req := e.api.EventTypeApi.V1EventTypeCreate(ctx)
-	req = req.EventTypeIn(openapi.EventTypeIn(*eventTypeIn))
+	req := e.api.EventTypeAPI.V1EventTypeCreate(ctx)
+	req = req.EventTypeIn(*eventTypeIn)
 	if options != nil {
 		if options.IdempotencyKey != nil {
 			req = req.IdempotencyKey(*options.IdempotencyKey)
 		}
 	}
-	out, res, err := req.Execute()
+	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
-	ret := EventTypeOut(out)
-	return &ret, nil
+	return ret, nil
 }
 
 func (e *EventType) Get(ctx context.Context, eventTypeName string) (*EventTypeOut, error) {
-	req := e.api.EventTypeApi.V1EventTypeGet(ctx, eventTypeName)
-	out, res, err := req.Execute()
+	req := e.api.EventTypeAPI.V1EventTypeGet(ctx, eventTypeName)
+	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
-	ret := EventTypeOut(out)
-	return &ret, nil
+	return ret, nil
 }
 
 func (e *EventType) Update(ctx context.Context, eventTypeName string, eventTypeUpdate *EventTypeUpdate) (*EventTypeOut, error) {
-	req := e.api.EventTypeApi.V1EventTypeUpdate(ctx, eventTypeName)
-	req = req.EventTypeUpdate(openapi.EventTypeUpdate(*eventTypeUpdate))
-	out, res, err := req.Execute()
+	req := e.api.EventTypeAPI.V1EventTypeUpdate(ctx, eventTypeName)
+	req = req.EventTypeUpdate(*eventTypeUpdate)
+	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
-	ret := EventTypeOut(out)
-	return &ret, nil
+	return ret, nil
 }
 
 func (e *EventType) Patch(ctx context.Context, eventTypeName string, eventTypePatch *EventTypePatch) (*EventTypeOut, error) {
-	req := e.api.EventTypeApi.V1EventTypePatch(ctx, eventTypeName)
-	req = req.EventTypePatch(openapi.EventTypePatch(*eventTypePatch))
-	out, res, err := req.Execute()
+	req := e.api.EventTypeAPI.V1EventTypePatch(ctx, eventTypeName)
+	req = req.EventTypePatch(*eventTypePatch)
+	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
-	ret := EventTypeOut(out)
-	return &ret, nil
+	return ret, nil
 }
 
 func (e *EventType) Delete(ctx context.Context, eventTypeName string) error {
@@ -118,7 +113,7 @@ type EventTypeDeleteOptions struct {
 }
 
 func (e *EventType) DeleteWithOptions(ctx context.Context, eventTypeName string, options *EventTypeDeleteOptions) error {
-	req := e.api.EventTypeApi.V1EventTypeDelete(ctx, eventTypeName)
+	req := e.api.EventTypeAPI.V1EventTypeDelete(ctx, eventTypeName)
 	if options != nil {
 		if options.Expunge != nil {
 			req = req.Expunge(*options.Expunge)
@@ -133,14 +128,13 @@ func (e *EventType) ImportOpenApi(ctx context.Context, eventTypeImportOpenApiIn 
 }
 
 func (e *EventType) ImportOpenApiWithOptions(ctx context.Context, eventTypeImportOpenApiIn EventTypeImportOpenApiIn, options *PostOptions) (*EventTypeImportOpenApiOut, error) {
-	req := e.api.EventTypeApi.V1EventTypeImportOpenapi(ctx).EventTypeImportOpenApiIn(eventTypeImportOpenApiIn)
+	req := e.api.EventTypeAPI.V1EventTypeImportOpenapi(ctx).EventTypeImportOpenApiIn(eventTypeImportOpenApiIn)
 	if options != nil && options.IdempotencyKey != nil {
 		req = req.IdempotencyKey(*options.IdempotencyKey)
 	}
-	out, res, err := req.Execute()
+	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
-	ret := EventTypeImportOpenApiOut(out)
-	return &ret, nil
+	return ret, nil
 }

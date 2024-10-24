@@ -24,7 +24,7 @@ type BackgroundTaskListOptions struct {
 }
 
 func (a *BackgroundTask) List(ctx context.Context, options *BackgroundTaskListOptions) (*ListResponseBackgroundTaskOut, error) {
-	req := a.api.BackgroundTasksApi.ListBackgroundTasks(ctx)
+	req := a.api.BackgroundTasksAPI.ListBackgroundTasks(ctx)
 	if options != nil {
 		if options.Iterator != nil {
 			req = req.Iterator(*options.Iterator)
@@ -33,7 +33,7 @@ func (a *BackgroundTask) List(ctx context.Context, options *BackgroundTaskListOp
 			req = req.Limit(*options.Limit)
 		}
 		if options.Order != nil {
-			req = req.Order(openapi.Ordering(*options.Order))
+			req = req.Order(*options.Order)
 		}
 		if options.Status != nil {
 			req = req.Status(*options.Status)
@@ -42,20 +42,18 @@ func (a *BackgroundTask) List(ctx context.Context, options *BackgroundTaskListOp
 			req = req.Task(*options.Task)
 		}
 	}
-	resp, res, err := req.Execute()
+	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
-	ret := ListResponseBackgroundTaskOut(resp)
-	return &ret, nil
+	return ret, nil
 }
 
 func (a *BackgroundTask) Get(ctx context.Context, taskId string) (*BackgroundTaskOut, error) {
-	req := a.api.BackgroundTasksApi.GetBackgroundTask(ctx, taskId)
-	resp, res, err := req.Execute()
+	req := a.api.BackgroundTasksAPI.GetBackgroundTask(ctx, taskId)
+	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
-	ret := BackgroundTaskOut(resp)
-	return &ret, nil
+	return ret, nil
 }

@@ -36,12 +36,12 @@ func getTestClient(t *testing.T) *svix.Svix {
 	})
 }
 
-// Suppresses a request error response if it has an allowed status code.
-func checkErrStatus(err error, allowedStatus int) error {
+// Suppresses a request error response if it's a 409
+func isNotConflict(err error) error {
 	if err != nil {
 		var svixError *svix.Error
 		if errors.As(err, &svixError) {
-			if svixError.Status() == allowedStatus {
+			if svixError.Status() == http.StatusConflict {
 				// Pass if we see the suppressed status
 				return nil
 			}
@@ -62,14 +62,14 @@ func TestKitchenSink(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	_, err = client.EventType.Create(ctx, &svix.EventTypeIn{Name: "event.started"})
+	_, err = client.EventType.Create(ctx, &svix.EventTypeIn{Name: "event.started", Description: "Something started"})
 
-	if checkErrStatus(err, http.StatusConflict) != nil {
+	if isNotConflict(err) != nil {
 		t.Fatal(err)
 	}
 
-	_, err = client.EventType.Create(ctx, &svix.EventTypeIn{Name: "event.ended"})
-	if checkErrStatus(err, http.StatusConflict) != nil {
+	_, err = client.EventType.Create(ctx, &svix.EventTypeIn{Name: "event.ended", Description: "Something ended"})
+	if isNotConflict(err) != nil {
 		t.Fatal(err)
 	}
 
