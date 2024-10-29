@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestEndpoint_Serialization(t *testing.T) {
+func TestEndpointIn_Serialization(t *testing.T) {
 	testCases := []struct {
 		name            string
 		testEndpoint    *svix.EndpointIn
@@ -71,6 +71,46 @@ func TestEndpoint_Serialization(t *testing.T) {
 		}
 		if !tc.wantFilterTypes && gotFilterTypes {
 			t.Errorf("case `%s`: expected EndpointIn to NOT have a filterTypes field", tc.name)
+		}
+	}
+}
+
+func TestEndpointPatch_Serialization(t *testing.T) {
+	testCases := []struct {
+		name            string
+		testEndpoint    *svix.EndpointPatch
+		wantChannels    bool
+		wantFilterTypes bool
+	}{
+		{
+			name: "explicitly setting channels to null",
+			testEndpoint: &svix.EndpointPatch{
+				Channels: nil,
+			},
+			wantChannels:    true,
+			wantFilterTypes: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		b, _ := json.Marshal(tc.testEndpoint)
+		s := string(b)
+
+		gotChannels := strings.Contains(s, "channels")
+		gotFilterTypes := strings.Contains(s, "filterTypes")
+
+		if tc.wantChannels && !gotChannels {
+			t.Errorf("case `%s`: expected EndpointPatch to have a channels field", tc.name)
+		}
+		if !tc.wantChannels && gotChannels {
+			t.Errorf("case `%s`: expected EndpointPatch to NOT have a channels field", tc.name)
+		}
+
+		if tc.wantFilterTypes && !gotFilterTypes {
+			t.Errorf("case `%s`: expected EndpointPatch to have a filterTypes field", tc.name)
+		}
+		if !tc.wantFilterTypes && gotFilterTypes {
+			t.Errorf("case `%s`: expected EndpointPatch to NOT have a filterTypes field", tc.name)
 		}
 	}
 }
