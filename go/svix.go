@@ -41,6 +41,9 @@ func String(s string) *string {
 func NullableString(s *string) *openapi.NullableString {
 	return openapi.NewNullableString(s)
 }
+func StaticNullableString(s string) openapi.NullableString {
+	return *NullableString(String(s))
+}
 func NullableInt32(num *int32) *openapi.NullableInt32 {
 	return openapi.NewNullableInt32(num)
 }

@@ -94,3 +94,23 @@ func TestKitchenSink(t *testing.T) {
 		}
 	}
 }
+
+func TestStaticNullableString(t *testing.T) {
+	app := &svix.ApplicationIn{
+		Name: "test",
+		Uid:  svix.StaticNullableString("my-uid"),
+	}
+
+	if !app.Uid.IsSet() {
+		t.Fatalf("app.Uid is not set but should be")
+	}
+
+	if *app.Uid.Get() != "my-uid" {
+		t.Fatalf("app.Uid has unexpected value: `%s`", *app.Uid.Get())
+	}
+
+	app.Uid.Unset()
+	if app.Uid.IsSet() {
+		t.Fatalf("app.Uid is set but shouldn't be")
+	}
+}
