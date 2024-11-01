@@ -1,6 +1,6 @@
 use std::{net::TcpListener, sync::Arc};
 
-use axum::extract::State;
+use axum::{body::HttpBody as _, extract::State};
 use http::{header::USER_AGENT, HeaderValue, Request, StatusCode, Version};
 use hyper::Body;
 use serde::{Deserialize, Serialize};
@@ -122,14 +122,11 @@ async fn test_client_basic_operation() {
     let reqwest_http_req = receiver.req_recv.recv().await.unwrap();
 
     assert_eq!(our_http_req.headers(), reqwest_http_req.headers());
-    assert_eq!(
-        hyper::body::to_bytes(our_http_req.into_body())
-            .await
-            .unwrap(),
-        hyper::body::to_bytes(reqwest_http_req.into_body())
-            .await
-            .unwrap()
-    );
+
+    let our_body = our_http_req.into_body().collect().await.unwrap().to_bytes();
+    #[rustfmt::skip]
+    let reqwest_body = reqwest_http_req.into_body().collect().await.unwrap().to_bytes();
+    assert_eq!(our_body, reqwest_body);
 }
 
 #[tokio::test]
