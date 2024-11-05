@@ -88,10 +88,9 @@ async fn graceful_shutdown_handler() {
 }
 
 #[tracing::instrument(name = "app_start", level = "trace", skip_all)]
-pub async fn run(cfg: Configuration, listener: Option<TcpListener>) {
+pub async fn run(cfg: Configuration) {
     let _metrics = setup_metrics(&cfg);
-
-    run_with_prefix(None, cfg, listener).await
+    run_with_prefix(None, cfg, None).await
 }
 
 #[derive(Clone)]
