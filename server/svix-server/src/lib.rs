@@ -6,7 +6,6 @@
 
 use std::{
     borrow::Cow,
-    net::TcpListener,
     sync::atomic::{AtomicBool, Ordering},
     time::Duration,
 };
@@ -21,6 +20,7 @@ use redis::RedisManager;
 use sea_orm::DatabaseConnection;
 use sentry::integrations::tracing::EventFilter;
 use svix_ksuid::{KsuidLike, KsuidMs};
+use tokio::net::TcpListener;
 use tower::layer::layer_fn;
 use tower_http::{
     cors::{AllowHeaders, Any, CorsLayer},
@@ -183,20 +183,19 @@ pub async fn run_with_prefix(
     let (server, worker_loop, expired_message_cleaner_loop) = tokio::join!(
         async {
             if with_api {
-                if let Some(l) = listener {
-                    tracing::debug!("API: Listening on {}", l.local_addr().unwrap());
-                    axum::Server::from_tcp(l)
-                        .expect("Error starting http server")
-                        .serve(svc)
-                        .with_graceful_shutdown(graceful_shutdown_handler())
+                let listener = match listener {
+                    Some(l) => l,
+                    None => TcpListener::bind(listen_address)
                         .await
-                } else {
-                    tracing::debug!("API: Listening on {}", listen_address);
-                    axum::Server::bind(&listen_address)
-                        .serve(svc)
-                        .with_graceful_shutdown(graceful_shutdown_handler())
-                        .await
-                }
+                        .expect("Error binding to listen_address"),
+                };
+                tracing::debug!("API: Listening on {}", listener.local_addr().unwrap());
+
+                let incoming = hyper::server::conn::AddrIncoming::from_listener(listener)?;
+                axum::Server::builder(incoming)
+                    .serve(svc)
+                    .with_graceful_shutdown(graceful_shutdown_handler())
+                    .await
             } else {
                 tracing::debug!("API: off");
                 graceful_shutdown_handler().await;

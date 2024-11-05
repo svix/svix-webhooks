@@ -348,6 +348,11 @@ pub async fn start_svix_server_with_cfg_and_org_id_and_prefix(
     let listener = TcpListener::bind("127.0.0.1:0").unwrap();
     let base_uri = format!("http://{}", listener.local_addr().unwrap());
 
+    // Could update this fn to take a tokio TcpListener instead, but that's a pretty large diff
+    // for very little benefit (since this is just test code anyways).
+    listener.set_nonblocking(true).unwrap();
+    let listener = tokio::net::TcpListener::from_std(listener).unwrap();
+
     let jh = tokio::spawn(
         svix_server::run_with_prefix(Some(prefix), cfg, Some(listener))
             .with_subscriber(tracing_subscriber),
