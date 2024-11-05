@@ -20,14 +20,15 @@ type (
 		HTTPClient *http.Client
 	}
 	Svix struct {
-		Authentication *Authentication
-		Application    *Application
-		Endpoint       *Endpoint
-		EventType      *EventType
-		Integration    *Integration
-		Message        *Message
-		MessageAttempt *MessageAttempt
-		Statistics     *Statistics
+		Authentication             *Authentication
+		Application                *Application
+		Endpoint                   *Endpoint
+		EventType                  *EventType
+		Integration                *Integration
+		Message                    *Message
+		MessageAttempt             *MessageAttempt
+		Statistics                 *Statistics
+		OperationalWebhookEndpoint *OperationalWebhookEndpoint
 	}
 )
 
@@ -106,6 +107,9 @@ func New(token string, options *SvixOptions) *Svix {
 			api: apiClient,
 		},
 		Statistics: &Statistics{
+			api: apiClient,
+		},
+		OperationalWebhookEndpoint: &OperationalWebhookEndpoint{
 			api: apiClient,
 		},
 	}
