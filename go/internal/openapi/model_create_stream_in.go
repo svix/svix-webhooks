@@ -22,6 +22,7 @@ var _ MappedNullable = &CreateStreamIn{}
 // CreateStreamIn struct for CreateStreamIn
 type CreateStreamIn struct {
 	Messages []EventIn `json:"messages"`
+	Stream *StreamIn `json:"stream,omitempty"`
 }
 
 type _CreateStreamIn CreateStreamIn
@@ -68,6 +69,38 @@ func (o *CreateStreamIn) SetMessages(v []EventIn) {
 	o.Messages = v
 }
 
+// GetStream returns the Stream field value if set, zero value otherwise.
+func (o *CreateStreamIn) GetStream() StreamIn {
+	if o == nil || IsNil(o.Stream) {
+		var ret StreamIn
+		return ret
+	}
+	return *o.Stream
+}
+
+// GetStreamOk returns a tuple with the Stream field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *CreateStreamIn) GetStreamOk() (*StreamIn, bool) {
+	if o == nil || IsNil(o.Stream) {
+		return nil, false
+	}
+	return o.Stream, true
+}
+
+// HasStream returns a boolean if a field has been set.
+func (o *CreateStreamIn) HasStream() bool {
+	if o != nil && !IsNil(o.Stream) {
+		return true
+	}
+
+	return false
+}
+
+// SetStream gets a reference to the given StreamIn and assigns it to the Stream field.
+func (o *CreateStreamIn) SetStream(v StreamIn) {
+	o.Stream = &v
+}
+
 func (o CreateStreamIn) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -79,6 +112,9 @@ func (o CreateStreamIn) MarshalJSON() ([]byte, error) {
 func (o CreateStreamIn) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["messages"] = o.Messages
+	if !IsNil(o.Stream) {
+		toSerialize["stream"] = o.Stream
+	}
 	return toSerialize, nil
 }
 
