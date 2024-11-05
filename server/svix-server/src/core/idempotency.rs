@@ -302,7 +302,7 @@ where
     S::Response: IntoResponse,
     S::Future: Send + 'static,
 {
-    let (parts, mut body) = resolve_service(service, request)
+    let (parts, body) = resolve_service(service, request)
         .await
         // Infallible
         .unwrap()
@@ -311,7 +311,7 @@ where
     // If a 2xx response, cache the actual response
     if parts.status.is_success() {
         // TODO: Don't skip over Err value
-        let bytes = body.data().await.and_then(Result::ok);
+        let bytes = body.collect().await.ok().map(|c| c.to_bytes());
 
         let resp = SerializedResponse::Finished {
             code: parts.status.into(),
