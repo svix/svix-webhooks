@@ -69,6 +69,13 @@ import {
   AppUsageStatsOut,
   AggregateEventTypesOut,
   EndpointOauthConfigIn,
+  WebhookEndpointApi,
+  OperationalWebhookEndpointIn,
+  OperationalWebhookEndpointOut,
+  OperationalWebhookEndpointSecretIn,
+  OperationalWebhookEndpointSecretOut,
+  OperationalWebhookEndpointUpdate,
+  ListResponseOperationalWebhookEndpointOut,
 } from "./openapi/index";
 export * from "./openapi/models/all";
 export * from "./openapi/apis/exception";
@@ -112,6 +119,7 @@ export class Svix {
   public readonly messageAttempt: MessageAttempt;
   public readonly backgroundTask: BackgroundTask;
   public readonly statistics: Statistics;
+  public readonly operationalWebhookEndpoint: OperationalWebhookEndpoint;
 
   public constructor(token: string, options: SvixOptions = {}) {
     const regionalUrl = REGIONS.find((x) => x.region === token.split(".")[1])?.url;
@@ -142,6 +150,7 @@ export class Svix {
     this.messageAttempt = new MessageAttempt(config);
     this.backgroundTask = new BackgroundTask(config);
     this.statistics = new Statistics(config);
+    this.operationalWebhookEndpoint = new OperationalWebhookEndpoint(config);
   }
 }
 export interface PostOptions {
@@ -191,6 +200,10 @@ export interface ApplicationListOptions extends ListOptions {
 }
 
 export interface EndpointListOptions extends ListOptions {
+  order?: Ordering;
+}
+
+export interface OperationalWebhookEndpointListOptions extends ListOptions {
   order?: Ordering;
 }
 
@@ -968,6 +981,64 @@ class Statistics {
   ): Promise<AppUsageStatsOut> {
     return this.api.v1StatisticsAggregateAppStats({
       appUsageStatsIn,
+      ...options,
+    });
+  }
+}
+
+class OperationalWebhookEndpoint {
+  private readonly api: WebhookEndpointApi;
+
+  public constructor(config: Configuration) {
+    this.api = new WebhookEndpointApi(config);
+  }
+
+  public list(
+    options?: OperationalWebhookEndpointListOptions,
+  ): Promise<ListResponseOperationalWebhookEndpointOut> {
+    return this.api.listOperationalWebhookEndpoints({ ...options });
+  }
+
+  public create(
+    endpointIn: OperationalWebhookEndpointIn,
+    options?: PostOptions,
+  ): Promise<OperationalWebhookEndpointOut> {
+    return this.api.createOperationalWebhookEndpoint({
+      operationalWebhookEndpointIn: endpointIn,
+      ...options,
+    });
+  }
+
+  public get(endpointId: string): Promise<OperationalWebhookEndpointOut> {
+    return this.api.getOperationalWebhookEndpoint({ endpointId });
+  }
+
+  public update(
+    endpointId: string,
+    endpointUpdate: OperationalWebhookEndpointUpdate,
+  ): Promise<OperationalWebhookEndpointOut> {
+    return this.api.updateOperationalWebhookEndpoint({
+      endpointId,
+      operationalWebhookEndpointUpdate: endpointUpdate,
+    });
+  }
+
+  public delete(endpointId: string): Promise<void> {
+    return this.api.deleteOperationalWebhookEndpoint({ endpointId });
+  }
+
+  public getSecret(endpointId: string): Promise<OperationalWebhookEndpointSecretOut> {
+    return this.api.getOperationalWebhookEndpointSecret({ endpointId });
+  }
+
+  public rotateSecret(
+    endpointId: string,
+    endpointSecretIn: OperationalWebhookEndpointSecretIn,
+    options?: PostOptions,
+  ): Promise<void> {
+    return this.api.rotateOperationalWebhookEndpointSecret({
+      endpointId,
+      operationalWebhookEndpointSecretIn: endpointSecretIn,
       ...options,
     });
   }

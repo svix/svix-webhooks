@@ -33,6 +33,8 @@ namespace Svix
 
         public IStatistics Statistics { get; }
 
+        public IOperationalWebhookEndpoint OperationalWebhookEndpoint { get; }
+
         public ILogger Logger { get; }
 
         public string ServerUrl => _options?.ServerUrl;
@@ -46,7 +48,8 @@ namespace Svix
         public SvixClient(string token, ISvixOptions options, ILogger<SvixClient> logger = null
             , IApplicationApi applicationApi = null, IAuthenticationApi authenticationApi = null, IEndpointApi endpointApi = null
             , IEventTypeApi eventTypeApi = null, IHealthApi healthApi = null, IIntegrationApi integrationApi = null
-            , IMessageApi messageApi = null, IMessageAttemptApi messageAttemptApi = null, IStatisticsApi statisticsApi = null)
+            , IMessageApi messageApi = null, IMessageAttemptApi messageAttemptApi = null, IStatisticsApi statisticsApi = null
+            , IWebhookEndpointApi operationalWebhookEndpointApi = null)
         {
             Logger = logger;
             _options = options ?? throw new ArgumentNullException(nameof(options));
@@ -61,6 +64,8 @@ namespace Svix
             Message = new Message(this, messageApi ?? new MessageApi(Config));
             MessageAttempt = new MessageAttempt(this, messageAttemptApi ?? new MessageAttemptApi(Config));
             Statistics = new Statistics(this, statisticsApi ?? new StatisticsApi(Config));
+            OperationalWebhookEndpoint = new OperationalWebhookEndpoint(this,
+                operationalWebhookEndpointApi ?? new WebhookEndpointApi(Config));
         }
 
         public SvixClient(string token, ISvixOptions options, ILogger<SvixClient> logger)

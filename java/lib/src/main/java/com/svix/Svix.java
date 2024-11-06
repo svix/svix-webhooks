@@ -14,6 +14,7 @@ public final class Svix {
 	private final Message message;
 	private final MessageAttempt messageAttempt;
 	private final Statistics statistics;
+	private final OperationalWebhookEndpoint operationalWebhookEndpoint;
 
 	public Svix(final String token) {
 		this(token, new SvixOptions());
@@ -55,6 +56,7 @@ public final class Svix {
 		message = new Message();
 		messageAttempt = new MessageAttempt();
 		statistics = new Statistics();
+		operationalWebhookEndpoint = new OperationalWebhookEndpoint();
 	}
 
 	public Application getApplication() {
@@ -87,5 +89,9 @@ public final class Svix {
 
 	public Statistics getStatistics() {
 		return statistics;
+	}
+
+	public OperationalWebhookEndpoint getOperationalWebhookEndpoint() {
+		return operationalWebhookEndpoint;
 	}
 }
