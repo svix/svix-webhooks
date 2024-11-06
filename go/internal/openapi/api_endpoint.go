@@ -2232,6 +2232,8 @@ V1EndpointRecover Recover Failed Webhooks
 
 Resend all failed messages since a given time.
 
+Messages that were sent successfully, even if failed initially, are not resent.
+
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param appId The app's ID or UID
  @param endpointId The ep's ID or UID
@@ -2662,7 +2664,9 @@ func (r ApiV1EndpointRotateSecretRequest) Execute() (*http.Response, error) {
 /*
 V1EndpointRotateSecret Rotate Endpoint Secret
 
-Rotates the endpoint's signing secret.  The previous secret will be valid for the next 24 hours.
+Rotates the endpoint's signing secret.
+
+The previous secret will remain valid for the next 24 hours.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param appId The app's ID or UID

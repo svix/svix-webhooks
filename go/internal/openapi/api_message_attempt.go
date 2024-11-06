@@ -867,7 +867,7 @@ func (r ApiV1MessageAttemptListAttemptedMessagesRequest) Tag(tag string) ApiV1Me
 	return r
 }
 
-// Filter response based on the delivery status
+// Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)
 func (r ApiV1MessageAttemptListAttemptedMessagesRequest) Status(status MessageStatus) ApiV1MessageAttemptListAttemptedMessagesRequest {
 	r.status = &status
 	return r
@@ -1161,7 +1161,7 @@ func (r ApiV1MessageAttemptListByEndpointRequest) Iterator(iterator string) ApiV
 	return r
 }
 
-// Filter response based on the delivery status
+// Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)
 func (r ApiV1MessageAttemptListByEndpointRequest) Status(status MessageStatus) ApiV1MessageAttemptListByEndpointRequest {
 	r.status = &status
 	return r
@@ -1496,7 +1496,7 @@ func (r ApiV1MessageAttemptListByEndpointDeprecatedRequest) Tag(tag string) ApiV
 	return r
 }
 
-// Filter response based on the delivery status
+// Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)
 func (r ApiV1MessageAttemptListByEndpointDeprecatedRequest) Status(status MessageStatus) ApiV1MessageAttemptListByEndpointDeprecatedRequest {
 	r.status = &status
 	return r
@@ -1794,7 +1794,7 @@ func (r ApiV1MessageAttemptListByMsgRequest) Iterator(iterator string) ApiV1Mess
 	return r
 }
 
-// Filter response based on the delivery status
+// Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)
 func (r ApiV1MessageAttemptListByMsgRequest) Status(status MessageStatus) ApiV1MessageAttemptListByMsgRequest {
 	r.status = &status
 	return r
@@ -2133,7 +2133,7 @@ func (r ApiV1MessageAttemptListByMsgDeprecatedRequest) Tag(tag string) ApiV1Mess
 	return r
 }
 
-// Filter response based on the delivery status
+// Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)
 func (r ApiV1MessageAttemptListByMsgDeprecatedRequest) Status(status MessageStatus) ApiV1MessageAttemptListByMsgDeprecatedRequest {
 	r.status = &status
 	return r

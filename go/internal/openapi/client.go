@@ -87,6 +87,8 @@ type APIClient struct {
 	StreamAPI *StreamAPIService
 
 	TransformationTemplateAPI *TransformationTemplateAPIService
+
+	WebhookEndpointAPI *WebhookEndpointAPIService
 }
 
 type service struct {
@@ -123,6 +125,7 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	c.StatisticsAPI = (*StatisticsAPIService)(&c.common)
 	c.StreamAPI = (*StreamAPIService)(&c.common)
 	c.TransformationTemplateAPI = (*TransformationTemplateAPIService)(&c.common)
+	c.WebhookEndpointAPI = (*WebhookEndpointAPIService)(&c.common)
 
 	return c
 }

@@ -23,6 +23,9 @@ var _ MappedNullable = &EventTypeFromOpenApi{}
 type EventTypeFromOpenApi struct {
 	Deprecated bool `json:"deprecated"`
 	Description string `json:"description"`
+	FeatureFlag NullableString `json:"featureFlag,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
+	// The event type group's name
+	GroupName NullableString `json:"groupName,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
 	// The event type's name
 	Name string `json:"name" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
 	Schemas map[string]map[string]interface{} `json:"schemas,omitempty"`
@@ -98,6 +101,90 @@ func (o *EventTypeFromOpenApi) SetDescription(v string) {
 	o.Description = v
 }
 
+// GetFeatureFlag returns the FeatureFlag field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *EventTypeFromOpenApi) GetFeatureFlag() string {
+	if o == nil || IsNil(o.FeatureFlag.Get()) {
+		var ret string
+		return ret
+	}
+	return *o.FeatureFlag.Get()
+}
+
+// GetFeatureFlagOk returns a tuple with the FeatureFlag field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *EventTypeFromOpenApi) GetFeatureFlagOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return o.FeatureFlag.Get(), o.FeatureFlag.IsSet()
+}
+
+// HasFeatureFlag returns a boolean if a field has been set.
+func (o *EventTypeFromOpenApi) HasFeatureFlag() bool {
+	if o != nil && o.FeatureFlag.IsSet() {
+		return true
+	}
+
+	return false
+}
+
+// SetFeatureFlag gets a reference to the given NullableString and assigns it to the FeatureFlag field.
+func (o *EventTypeFromOpenApi) SetFeatureFlag(v string) {
+	o.FeatureFlag.Set(&v)
+}
+// SetFeatureFlagNil sets the value for FeatureFlag to be an explicit nil
+func (o *EventTypeFromOpenApi) SetFeatureFlagNil() {
+	o.FeatureFlag.Set(nil)
+}
+
+// UnsetFeatureFlag ensures that no value is present for FeatureFlag, not even an explicit nil
+func (o *EventTypeFromOpenApi) UnsetFeatureFlag() {
+	o.FeatureFlag.Unset()
+}
+
+// GetGroupName returns the GroupName field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *EventTypeFromOpenApi) GetGroupName() string {
+	if o == nil || IsNil(o.GroupName.Get()) {
+		var ret string
+		return ret
+	}
+	return *o.GroupName.Get()
+}
+
+// GetGroupNameOk returns a tuple with the GroupName field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *EventTypeFromOpenApi) GetGroupNameOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return o.GroupName.Get(), o.GroupName.IsSet()
+}
+
+// HasGroupName returns a boolean if a field has been set.
+func (o *EventTypeFromOpenApi) HasGroupName() bool {
+	if o != nil && o.GroupName.IsSet() {
+		return true
+	}
+
+	return false
+}
+
+// SetGroupName gets a reference to the given NullableString and assigns it to the GroupName field.
+func (o *EventTypeFromOpenApi) SetGroupName(v string) {
+	o.GroupName.Set(&v)
+}
+// SetGroupNameNil sets the value for GroupName to be an explicit nil
+func (o *EventTypeFromOpenApi) SetGroupNameNil() {
+	o.GroupName.Set(nil)
+}
+
+// UnsetGroupName ensures that no value is present for GroupName, not even an explicit nil
+func (o *EventTypeFromOpenApi) UnsetGroupName() {
+	o.GroupName.Unset()
+}
+
 // GetName returns the Name field value
 func (o *EventTypeFromOpenApi) GetName() string {
 	if o == nil {
@@ -167,6 +254,12 @@ func (o EventTypeFromOpenApi) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["deprecated"] = o.Deprecated
 	toSerialize["description"] = o.Description
+	if o.FeatureFlag.IsSet() {
+		toSerialize["featureFlag"] = o.FeatureFlag.Get()
+	}
+	if o.GroupName.IsSet() {
+		toSerialize["groupName"] = o.GroupName.Get()
+	}
 	toSerialize["name"] = o.Name
 	if o.Schemas != nil {
 		toSerialize["schemas"] = o.Schemas

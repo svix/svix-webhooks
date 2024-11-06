@@ -25,6 +25,7 @@ type StreamSinkPatch struct {
 	StreamSinkInOneOf4 *StreamSinkInOneOf4
 	StreamSinkInOneOf5 *StreamSinkInOneOf5
 	StreamSinkInOneOf6 *StreamSinkInOneOf6
+	StreamSinkInOneOf7 *StreamSinkInOneOf7
 }
 
 // StreamSinkInOneOfAsStreamSinkPatch is a convenience function that returns StreamSinkInOneOf wrapped in StreamSinkPatch
@@ -73,6 +74,13 @@ func StreamSinkInOneOf5AsStreamSinkPatch(v *StreamSinkInOneOf5) StreamSinkPatch 
 func StreamSinkInOneOf6AsStreamSinkPatch(v *StreamSinkInOneOf6) StreamSinkPatch {
 	return StreamSinkPatch{
 		StreamSinkInOneOf6: v,
+	}
+}
+
+// StreamSinkInOneOf7AsStreamSinkPatch is a convenience function that returns StreamSinkInOneOf7 wrapped in StreamSinkPatch
+func StreamSinkInOneOf7AsStreamSinkPatch(v *StreamSinkInOneOf7) StreamSinkPatch {
+	return StreamSinkPatch{
+		StreamSinkInOneOf7: v,
 	}
 }
 
@@ -200,6 +208,23 @@ func (dst *StreamSinkPatch) UnmarshalJSON(data []byte) error {
 		dst.StreamSinkInOneOf6 = nil
 	}
 
+	// try to unmarshal data into StreamSinkInOneOf7
+	err = newStrictDecoder(data).Decode(&dst.StreamSinkInOneOf7)
+	if err == nil {
+		jsonStreamSinkInOneOf7, _ := json.Marshal(dst.StreamSinkInOneOf7)
+		if string(jsonStreamSinkInOneOf7) == "{}" { // empty struct
+			dst.StreamSinkInOneOf7 = nil
+		} else {
+			if err = validator.Validate(dst.StreamSinkInOneOf7); err != nil {
+				dst.StreamSinkInOneOf7 = nil
+			} else {
+				match++
+			}
+		}
+	} else {
+		dst.StreamSinkInOneOf7 = nil
+	}
+
 	if match > 1 { // more than 1 match
 		// reset to nil
 		dst.StreamSinkInOneOf = nil
@@ -209,6 +234,7 @@ func (dst *StreamSinkPatch) UnmarshalJSON(data []byte) error {
 		dst.StreamSinkInOneOf4 = nil
 		dst.StreamSinkInOneOf5 = nil
 		dst.StreamSinkInOneOf6 = nil
+		dst.StreamSinkInOneOf7 = nil
 
 		return fmt.Errorf("data matches more than one schema in oneOf(StreamSinkPatch)")
 	} else if match == 1 {
@@ -248,6 +274,10 @@ func (src StreamSinkPatch) MarshalJSON() ([]byte, error) {
 		return json.Marshal(&src.StreamSinkInOneOf6)
 	}
 
+	if src.StreamSinkInOneOf7 != nil {
+		return json.Marshal(&src.StreamSinkInOneOf7)
+	}
+
 	return nil, nil // no data in oneOf schemas
 }
 
@@ -282,6 +312,10 @@ func (obj *StreamSinkPatch) GetActualInstance() (interface{}) {
 
 	if obj.StreamSinkInOneOf6 != nil {
 		return obj.StreamSinkInOneOf6
+	}
+
+	if obj.StreamSinkInOneOf7 != nil {
+		return obj.StreamSinkInOneOf7
 	}
 
 	// all schemas are nil
