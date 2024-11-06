@@ -3,6 +3,16 @@
 ## Next
 * 
 
+## Version 1.39.0
+* Libs: Add operational webhook endpoint API
+* Libs/Rust: **[Breaking]** Models for PATCH endpoints now have `Option<Option<T>>` fields to allow explicitly sending nulls to unset those fields.
+* Libs/Go: **[Breaking]** Nullable arrays are once again represented by `[]T` instead of `*[]T`. Serialization handles the empty case correctly.
+* Libs: Upgrade `openapi-generator` to 7.9.0, with dependency upgrades and internal changes in the SDKs.
+* Server: Add Redis sentinel support
+* Server: Add OTEL metrics for Redis queues
+* Server: Add Redis DLQ support 
+* Server: Several dependency upgrades and CI improvements
+
 ## Version 1.38.0
 * Server: Increase max endpoint rotations
 * Server: Return 409 on duplicate message insert
