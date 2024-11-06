@@ -14,9 +14,7 @@ yanked = "deny"
 notice = "warn"
 ignore = [
     # TODO: Update dependencies that use rsa crate
-    "RUSTSEC-2023-0071",
-    # TODO: sqlx >=0.8.1
-    "RUSTSEC-2024-0363",
+    "RUSTSEC-2023-0071"
 ]
 
 [licenses]
