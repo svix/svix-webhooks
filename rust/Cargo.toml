@@ -1,6 +1,6 @@
 [package]
 name = "svix"
-version = "1.38.0"
+version = "1.39.0"
 authors = ["Svix Inc. <oss@svix.com>"]
 edition = "2021"
 description = "Svix webhooks API client and webhook verification library"
@@ -37,11 +37,11 @@ serde_repr = "0.1"
 thiserror = "1.0.30"
 time = "0.3"
 url = "2.2"
-tokio = { version = "1.38.0", features = ["time"] }
+tokio = { version = "1.39.0", features = ["time"] }
 serde_with = { version = "^3.8", default-features = false, features = ["base64", "std", "macros"] }
 
 [dev-dependencies]
-tokio = { version = "1.38.0", features = ["macros"] }
+tokio = { version = "1.39.0", features = ["macros"] }
 
 [package.metadata.cargo-public-api-crates]
 allowed = [
