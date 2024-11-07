@@ -58,7 +58,7 @@ RUN set -ex ; \
         chown -R appuser: /home/appuser
 
 RUN apt-get update ;\
-    apt-get install --no-install-recommends -y ca-certificates=20210119; \
+    apt-get install --no-install-recommends -y ca-certificates=20230311; \
     update-ca-certificates; \
     rm -rf /var/lib/apt/lists/*
 
