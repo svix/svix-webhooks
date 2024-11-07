@@ -17,7 +17,6 @@ use svix_bridge_types::{PollerInput, SenderInput, TransformerJob};
 use svix_ksuid::{KsuidLike as _, KsuidMs};
 #[cfg(all(not(target_env = "msvc"), feature = "jemalloc"))]
 use tikv_jemallocator::Jemalloc;
-use tracing::Instrument;
 use tracing_subscriber::{layer::SubscriberExt as _, util::SubscriberInitExt as _};
 
 use self::config::Config;
@@ -279,33 +278,26 @@ async fn main() -> Result<()> {
     let _metrics = setup_metrics(&cfg);
     tracing::info!("starting");
 
-    tokio::spawn(
-        async move {
-            let mut interval = tokio::time::interval(Duration::from_secs(15));
-            let metrics = CommonMetrics::new(&opentelemetry::global::meter("svix.com"));
-            match get_allocator_stat_mibs() {
-                Ok(mibs) => {
-                    tracing::debug!("Common Metrics Collection: Started");
+    tokio::spawn(async move {
+        let mut interval = tokio::time::interval(Duration::from_secs(15));
+        let metrics = CommonMetrics::new(&opentelemetry::global::meter("svix.com"));
+        match get_allocator_stat_mibs() {
+            Ok(mibs) => {
+                tracing::debug!("Common Metrics Collection: Started");
 
-                    loop {
-                        interval.tick().await;
+                loop {
+                    interval.tick().await;
 
-                        if let Ok(Some((allocated, resident))) =
-                            get_allocator_stats(true, mibs.clone())
-                        {
-                            metrics.record_mem_allocated(allocated as _);
-                            metrics.record_mem_resident(resident as _);
-                        }
+                    if let Ok(Some((allocated, resident))) = get_allocator_stats(true, mibs.clone())
+                    {
+                        metrics.record_mem_allocated(allocated as _);
+                        metrics.record_mem_resident(resident as _);
                     }
                 }
-                Err(e) => tracing::error!("Unable to get allocator stats mibs: {e}"),
             }
+            Err(e) => tracing::error!("Unable to get allocator stats mibs: {e}"),
         }
-        .instrument(tracing::error_span!(
-            "common_metrics_collector",
-            instance_id = tracing::field::Empty
-        )),
-    );
+    });
 
     let (xform_tx, mut xform_rx) = tokio::sync::mpsc::unbounded_channel::<TransformerJob>();
 
