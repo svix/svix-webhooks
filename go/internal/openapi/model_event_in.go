@@ -21,6 +21,8 @@ var _ MappedNullable = &EventIn{}
 
 // EventIn struct for EventIn
 type EventIn struct {
+	// The event type's name
+	EventType NullableString `json:"eventType,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
 	Payload string `json:"payload"`
 }
 
@@ -42,6 +44,48 @@ func NewEventIn(payload string) *EventIn {
 func NewEventInWithDefaults() *EventIn {
 	this := EventIn{}
 	return &this
+}
+
+// GetEventType returns the EventType field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *EventIn) GetEventType() string {
+	if o == nil || IsNil(o.EventType.Get()) {
+		var ret string
+		return ret
+	}
+	return *o.EventType.Get()
+}
+
+// GetEventTypeOk returns a tuple with the EventType field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *EventIn) GetEventTypeOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return o.EventType.Get(), o.EventType.IsSet()
+}
+
+// HasEventType returns a boolean if a field has been set.
+func (o *EventIn) HasEventType() bool {
+	if o != nil && o.EventType.IsSet() {
+		return true
+	}
+
+	return false
+}
+
+// SetEventType gets a reference to the given NullableString and assigns it to the EventType field.
+func (o *EventIn) SetEventType(v string) {
+	o.EventType.Set(&v)
+}
+// SetEventTypeNil sets the value for EventType to be an explicit nil
+func (o *EventIn) SetEventTypeNil() {
+	o.EventType.Set(nil)
+}
+
+// UnsetEventType ensures that no value is present for EventType, not even an explicit nil
+func (o *EventIn) UnsetEventType() {
+	o.EventType.Unset()
 }
 
 // GetPayload returns the Payload field value
@@ -78,6 +122,9 @@ func (o EventIn) MarshalJSON() ([]byte, error) {
 
 func (o EventIn) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
+	if o.EventType.IsSet() {
+		toSerialize["eventType"] = o.EventType.Get()
+	}
 	toSerialize["payload"] = o.Payload
 	return toSerialize, nil
 }
