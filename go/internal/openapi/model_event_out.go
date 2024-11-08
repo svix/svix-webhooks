@@ -22,6 +22,8 @@ var _ MappedNullable = &EventOut{}
 
 // EventOut struct for EventOut
 type EventOut struct {
+	// The event type's name
+	EventType NullableString `json:"eventType,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
 	Payload string `json:"payload"`
 	Timestamp time.Time `json:"timestamp"`
 }
@@ -45,6 +47,48 @@ func NewEventOut(payload string, timestamp time.Time) *EventOut {
 func NewEventOutWithDefaults() *EventOut {
 	this := EventOut{}
 	return &this
+}
+
+// GetEventType returns the EventType field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *EventOut) GetEventType() string {
+	if o == nil || IsNil(o.EventType.Get()) {
+		var ret string
+		return ret
+	}
+	return *o.EventType.Get()
+}
+
+// GetEventTypeOk returns a tuple with the EventType field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *EventOut) GetEventTypeOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return o.EventType.Get(), o.EventType.IsSet()
+}
+
+// HasEventType returns a boolean if a field has been set.
+func (o *EventOut) HasEventType() bool {
+	if o != nil && o.EventType.IsSet() {
+		return true
+	}
+
+	return false
+}
+
+// SetEventType gets a reference to the given NullableString and assigns it to the EventType field.
+func (o *EventOut) SetEventType(v string) {
+	o.EventType.Set(&v)
+}
+// SetEventTypeNil sets the value for EventType to be an explicit nil
+func (o *EventOut) SetEventTypeNil() {
+	o.EventType.Set(nil)
+}
+
+// UnsetEventType ensures that no value is present for EventType, not even an explicit nil
+func (o *EventOut) UnsetEventType() {
+	o.EventType.Unset()
 }
 
 // GetPayload returns the Payload field value
@@ -105,6 +149,9 @@ func (o EventOut) MarshalJSON() ([]byte, error) {
 
 func (o EventOut) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
+	if o.EventType.IsSet() {
+		toSerialize["eventType"] = o.EventType.Get()
+	}
 	toSerialize["payload"] = o.Payload
 	toSerialize["timestamp"] = o.Timestamp
 	return toSerialize, nil

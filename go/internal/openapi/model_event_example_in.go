@@ -23,6 +23,8 @@ var _ MappedNullable = &EventExampleIn{}
 type EventExampleIn struct {
 	// The event type's name
 	EventType string `json:"eventType" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
+	// If the event type schema contains an array of examples, chooses which one to send.  Defaults to the first example. Ignored if the schema doesn't contain an array of examples.
+	ExampleIndex *int32 `json:"exampleIndex,omitempty"`
 }
 
 type _EventExampleIn EventExampleIn
@@ -34,6 +36,8 @@ type _EventExampleIn EventExampleIn
 func NewEventExampleIn(eventType string) *EventExampleIn {
 	this := EventExampleIn{}
 	this.EventType = eventType
+	var exampleIndex int32 = 0
+	this.ExampleIndex = &exampleIndex
 	return &this
 }
 
@@ -42,6 +46,8 @@ func NewEventExampleIn(eventType string) *EventExampleIn {
 // but it doesn't guarantee that properties required by API are set
 func NewEventExampleInWithDefaults() *EventExampleIn {
 	this := EventExampleIn{}
+	var exampleIndex int32 = 0
+	this.ExampleIndex = &exampleIndex
 	return &this
 }
 
@@ -69,6 +75,38 @@ func (o *EventExampleIn) SetEventType(v string) {
 	o.EventType = v
 }
 
+// GetExampleIndex returns the ExampleIndex field value if set, zero value otherwise.
+func (o *EventExampleIn) GetExampleIndex() int32 {
+	if o == nil || IsNil(o.ExampleIndex) {
+		var ret int32
+		return ret
+	}
+	return *o.ExampleIndex
+}
+
+// GetExampleIndexOk returns a tuple with the ExampleIndex field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *EventExampleIn) GetExampleIndexOk() (*int32, bool) {
+	if o == nil || IsNil(o.ExampleIndex) {
+		return nil, false
+	}
+	return o.ExampleIndex, true
+}
+
+// HasExampleIndex returns a boolean if a field has been set.
+func (o *EventExampleIn) HasExampleIndex() bool {
+	if o != nil && !IsNil(o.ExampleIndex) {
+		return true
+	}
+
+	return false
+}
+
+// SetExampleIndex gets a reference to the given int32 and assigns it to the ExampleIndex field.
+func (o *EventExampleIn) SetExampleIndex(v int32) {
+	o.ExampleIndex = &v
+}
+
 func (o EventExampleIn) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -80,6 +118,9 @@ func (o EventExampleIn) MarshalJSON() ([]byte, error) {
 func (o EventExampleIn) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["eventType"] = o.EventType
+	if !IsNil(o.ExampleIndex) {
+		toSerialize["exampleIndex"] = o.ExampleIndex
+	}
 	return toSerialize, nil
 }
 

@@ -80,11 +80,11 @@ type APIClient struct {
 
 	MessageAttemptAPI *MessageAttemptAPIService
 
-	SinkAPI *SinkAPIService
-
 	StatisticsAPI *StatisticsAPIService
 
 	StreamAPI *StreamAPIService
+
+	StreamEventTypesAPI *StreamEventTypesAPIService
 
 	TransformationTemplateAPI *TransformationTemplateAPIService
 
@@ -121,9 +121,9 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	c.IntegrationAPI = (*IntegrationAPIService)(&c.common)
 	c.MessageAPI = (*MessageAPIService)(&c.common)
 	c.MessageAttemptAPI = (*MessageAttemptAPIService)(&c.common)
-	c.SinkAPI = (*SinkAPIService)(&c.common)
 	c.StatisticsAPI = (*StatisticsAPIService)(&c.common)
 	c.StreamAPI = (*StreamAPIService)(&c.common)
+	c.StreamEventTypesAPI = (*StreamEventTypesAPIService)(&c.common)
 	c.TransformationTemplateAPI = (*TransformationTemplateAPIService)(&c.common)
 	c.WebhookEndpointAPI = (*WebhookEndpointAPIService)(&c.common)
 
