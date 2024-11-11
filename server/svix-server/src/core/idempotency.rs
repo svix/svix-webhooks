@@ -13,9 +13,9 @@
 use std::{collections::HashMap, convert::Infallible, future::Future, pin::Pin, time::Duration};
 
 use axum::{
-    body::{Body, BoxBody, HttpBody},
-    http::{Request, Response, StatusCode},
-    response::IntoResponse,
+    body::{Body, HttpBody},
+    http::{Request, StatusCode},
+    response::{IntoResponse, Response},
 };
 use blake2::{Blake2b512, Digest};
 use http::request::Parts;
@@ -88,7 +88,7 @@ fn finished_serialized_response_to_response(
     code: u16,
     headers: Option<HashMap<String, Vec<u8>>>,
     body: Option<Vec<u8>>,
-) -> Result<Response<BoxBody>, ConversionToResponseError> {
+) -> Result<Response, ConversionToResponseError> {
     let mut out = body.unwrap_or_default().into_response();
 
     let status = out.status_mut();
@@ -105,10 +105,7 @@ fn finished_serialized_response_to_response(
     Ok(out)
 }
 
-async fn resolve_service<S>(
-    mut service: S,
-    req: Request<Body>,
-) -> Result<Response<BoxBody>, Infallible>
+async fn resolve_service<S>(mut service: S, req: Request<Body>) -> Result<Response, Infallible>
 where
     S: Service<Request<Body>, Error = Infallible> + Clone + Send + 'static,
     S::Response: IntoResponse,
@@ -130,7 +127,7 @@ where
     S::Response: IntoResponse,
     S::Future: Send + 'static,
 {
-    type Response = Response<BoxBody>;
+    type Response = Response;
     type Error = Infallible;
     type Future = Pin<Box<dyn Future<Output = Result<Self::Response, Self::Error>> + Send>>;
 
@@ -299,7 +296,7 @@ async fn resolve_and_cache_response<S>(
     key: &IdempotencyKey,
     service: S,
     request: Request<Body>,
-) -> Result<Response<BoxBody>, Infallible>
+) -> Result<Response, Infallible>
 where
     S: Service<Request<Body>, Error = Infallible> + Clone + Send + 'static,
     S::Response: IntoResponse,
