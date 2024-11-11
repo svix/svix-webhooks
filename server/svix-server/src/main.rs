@@ -196,7 +196,7 @@ async fn main() {
             );
         }
         None => {
-            run(cfg, None).await;
+            run(cfg).await;
         }
     };
 

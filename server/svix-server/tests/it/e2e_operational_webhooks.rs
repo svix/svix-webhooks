@@ -114,6 +114,11 @@ fn start_svix_server_with_operational_webhooks(
     let regular_jwt = generate_org_token(&cfg.jwt_signing_config, org_id.clone()).unwrap();
 
     let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    // Could update this fn to take a tokio TcpListener instead, but that's a pretty large diff
+    // for very little benefit (since this is just test code anyways).
+    listener.set_nonblocking(true).unwrap();
+    let listener = tokio::net::TcpListener::from_std(listener).unwrap();
+
     let base_url = format!("http://{}", listener.local_addr().unwrap());
 
     cfg.operational_webhook_address = Some(base_url.clone());

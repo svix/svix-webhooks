@@ -13,9 +13,9 @@
 use std::{collections::HashMap, convert::Infallible, future::Future, pin::Pin, time::Duration};
 
 use axum::{
-    body::{Body, BoxBody, HttpBody},
-    http::{Request, Response, StatusCode},
-    response::IntoResponse,
+    body::{Body, HttpBody},
+    http::{Request, StatusCode},
+    response::{IntoResponse, Response},
 };
 use blake2::{Blake2b512, Digest};
 use http::request::Parts;
@@ -88,7 +88,7 @@ fn finished_serialized_response_to_response(
     code: u16,
     headers: Option<HashMap<String, Vec<u8>>>,
     body: Option<Vec<u8>>,
-) -> Result<Response<BoxBody>, ConversionToResponseError> {
+) -> Result<Response, ConversionToResponseError> {
     let mut out = body.unwrap_or_default().into_response();
 
     let status = out.status_mut();
@@ -105,16 +105,16 @@ fn finished_serialized_response_to_response(
     Ok(out)
 }
 
-async fn resolve_service<S>(
-    mut service: S,
-    req: Request<Body>,
-) -> Result<Response<BoxBody>, Infallible>
+async fn resolve_service<S>(mut service: S, req: Request<Body>) -> Response
 where
     S: Service<Request<Body>, Error = Infallible> + Clone + Send + 'static,
     S::Response: IntoResponse,
     S::Future: Send + 'static,
 {
-    service.call(req).await.map(IntoResponse::into_response)
+    match service.call(req).await {
+        Ok(res) => res.into_response(),
+        Err(e) => match e {},
+    }
 }
 
 /// The idempotency middleware itself -- used via the [`Router::layer`] method
@@ -130,7 +130,7 @@ where
     S::Response: IntoResponse,
     S::Future: Send + 'static,
 {
-    type Response = Response<BoxBody>;
+    type Response = Response;
     type Error = Infallible;
     type Future = Pin<Box<dyn Future<Output = Result<Self::Response, Self::Error>> + Send>>;
 
@@ -151,7 +151,7 @@ where
 
                 // If not a POST request, simply resolve the service as usual
                 if parts.method != http::Method::POST {
-                    return resolve_service(service, Request::from_parts(parts, body)).await;
+                    return Ok(resolve_service(service, Request::from_parts(parts, body)).await);
                 }
 
                 // Retrieve `IdempotencyKey` from header and URL parts, but returning the service
@@ -159,7 +159,7 @@ where
                 let key = if let Some(key) = get_key(&parts) {
                     key
                 } else {
-                    return resolve_service(service, Request::from_parts(parts, body)).await;
+                    return Ok(resolve_service(service, Request::from_parts(parts, body)).await);
                 };
 
                 // Set the [`SerializedResponse::Start`] lock if the key does not exist in the cache
@@ -231,8 +231,13 @@ where
                 // If it's set or the lock or the `lock_loop` returns Ok(None), then the key has no
                 // value, so continue resolving the service while caching the response for 2xx
                 // responses
-                resolve_and_cache_response(&cache, &key, service, Request::from_parts(parts, body))
-                    .await
+                Ok(resolve_and_cache_response(
+                    &cache,
+                    &key,
+                    service,
+                    Request::from_parts(parts, body),
+                )
+                .await)
             })
         } else {
             Box::pin(async move { Ok(service.call(req).await.into_response()) })
@@ -299,22 +304,18 @@ async fn resolve_and_cache_response<S>(
     key: &IdempotencyKey,
     service: S,
     request: Request<Body>,
-) -> Result<Response<BoxBody>, Infallible>
+) -> Response
 where
     S: Service<Request<Body>, Error = Infallible> + Clone + Send + 'static,
     S::Response: IntoResponse,
     S::Future: Send + 'static,
 {
-    let (parts, mut body) = resolve_service(service, request)
-        .await
-        // Infallible
-        .unwrap()
-        .into_parts();
+    let (parts, body) = resolve_service(service, request).await.into_parts();
 
     // If a 2xx response, cache the actual response
     if parts.status.is_success() {
         // TODO: Don't skip over Err value
-        let bytes = body.data().await.and_then(Result::ok);
+        let bytes = body.collect().await.ok().map(|c| c.to_bytes());
 
         let resp = SerializedResponse::Finished {
             code: parts.status.into(),
@@ -329,20 +330,20 @@ where
         };
 
         if cache.set(key, &resp, expiry_default()).await.is_err() {
-            return Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response());
+            return StatusCode::INTERNAL_SERVER_ERROR.into_response();
         }
 
         // Assumes None to be an empty byte array
         let bytes = bytes.unwrap_or_default();
-        Ok(Response::from_parts(parts, Body::from(bytes)).into_response())
+        Response::from_parts(parts, Body::from(bytes)).into_response()
     }
     // If any other status, unset the start lock and return the response
     else {
         if cache.delete(key).await.is_err() {
-            return Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response());
+            return StatusCode::INTERNAL_SERVER_ERROR.into_response();
         }
 
-        Ok(Response::from_parts(parts, body).into_response())
+        Response::from_parts(parts, body).into_response()
     }
 }
 

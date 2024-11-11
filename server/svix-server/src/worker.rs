@@ -10,6 +10,7 @@ use std::{
     time::Duration,
 };
 
+use axum::body::HttpBody as _;
 use chrono::Utc;
 use futures::future;
 use http::{HeaderValue, StatusCode, Version};
@@ -370,11 +371,15 @@ async fn make_http_call(
                 None
             };
 
-            let body = match hyper::body::to_bytes(res.into_body()).await {
-                Ok(bytes) if bytes.len() > RESPONSE_MAX_SIZE => {
-                    bytes_to_string(bytes.slice(..RESPONSE_MAX_SIZE))
+            let body = match res.into_body().collect().await {
+                Ok(collected) => {
+                    let bytes = collected.to_bytes();
+                    if bytes.len() > RESPONSE_MAX_SIZE {
+                        bytes_to_string(bytes.slice(..RESPONSE_MAX_SIZE))
+                    } else {
+                        bytes_to_string(bytes)
+                    }
                 }
-                Ok(bytes) => bytes_to_string(bytes),
                 Err(err) => format!("Error reading response body: {err}"),
             };
 
