@@ -14,7 +14,7 @@ pub enum RedisQueueType<'a> {
     SortedSet(&'a str),
 }
 
-impl<'a> RedisQueueType<'a> {
+impl RedisQueueType<'_> {
     pub async fn queue_depth(&self, redis: &RedisManager) -> Result<u64> {
         let mut conn = redis.get().await?;
         match self {
