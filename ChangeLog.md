@@ -3,6 +3,11 @@
 ## Next
 * 
 
+## Version 1.40.0
+* Libs(JS): downgrade `@stablelib/base64` avoiding `ERR_REQUIRE_ESM` by @svix-onelson in https://github.com/svix/svix-webhooks/pull/1506
+* Bridge: update ca-certificates by @jaymell in https://github.com/svix/svix-webhooks/pull/1507
+* Server: exit early if endpoints don't exist by @jaymell in https://github.com/svix/svix-webhooks/pull/1515
+
 ## Version 1.39.0
 * Libs: Add operational webhook endpoint API
 * Libs/Rust: **[Breaking]** Models for PATCH endpoints now have `Option<Option<T>>` fields to allow explicitly sending nulls to unset those fields.
