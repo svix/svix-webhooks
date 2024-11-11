@@ -213,7 +213,7 @@ async fn main() -> anyhow::Result<()> {
             let router = svix_server::v1::router();
             _ = aide::axum::ApiRouter::new()
                 .nest("/api/v1", router)
-                .finish_api(&mut openapi);
+                .finish_api_with(&mut openapi, svix_server::openapi::add_security_scheme);
 
             svix_server::openapi::postprocess_spec(&mut openapi);
             println!(

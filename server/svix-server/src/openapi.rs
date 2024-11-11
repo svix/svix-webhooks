@@ -229,6 +229,20 @@ fn replace_multiple_examples(openapi: &mut OpenApi) {
     }
 }
 
+pub fn add_security_scheme(
+    api: aide::transform::TransformOpenApi<'_>,
+) -> aide::transform::TransformOpenApi<'_> {
+    api.security_scheme(
+        "HTTPBearer",
+        aide::openapi::SecurityScheme::Http {
+            scheme: "bearer".to_string(),
+            bearer_format: None,
+            description: Some("HTTP Bearer token passed in the `Authorization` header".into()),
+            extensions: Default::default(),
+        },
+    )
+}
+
 /// Applies a list of hacks to the finished OpenAPI spec to make it usable with
 /// our tooling.
 pub fn postprocess_spec(openapi: &mut OpenApi) {

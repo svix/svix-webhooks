@@ -3,9 +3,10 @@
 
 use std::fmt::{Debug, Formatter};
 
-use axum::{
-    extract::{FromRequestParts, TypedHeader},
+use axum::extract::FromRequestParts;
+use axum_extra::{
     headers::{authorization::Bearer, Authorization},
+    TypedHeader,
 };
 use http::request::Parts;
 use jwt_simple::prelude::*;

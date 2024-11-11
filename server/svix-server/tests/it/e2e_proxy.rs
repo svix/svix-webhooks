@@ -10,8 +10,7 @@ use crate::utils::{
     get_default_test_config, TestClient, TestReceiver,
 };
 
-// I could not get it to work with a dockerized socks5 proxy yet
-#[ignore]
+#[ignore] // works with microsocks running at the specified address
 #[tokio::test]
 async fn test_message_delivery_via_socks5() {
     use crate::utils::start_svix_server_with_cfg;
@@ -28,7 +27,7 @@ fn socks_proxy_config() -> ProxyConfig {
     }
 }
 
-#[ignore] // requires an http proxy to be running
+#[ignore] // works with tinyproxy running at the specified address
 #[tokio::test]
 async fn test_message_delivery_via_http_proxy() {
     use crate::utils::start_svix_server_with_cfg;

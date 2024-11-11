@@ -1,8 +1,8 @@
 use std::{net::TcpListener, sync::Arc};
 
-use axum::{body::HttpBody as _, extract::State};
+use axum::{body::Body, extract::State};
 use http::{header::USER_AGENT, HeaderValue, Request, StatusCode, Version};
-use hyper::Body;
+use http_body_util::BodyExt as _;
 use serde::{Deserialize, Serialize};
 use svix_server::core::webhook_http_client::{Error, RequestBuilder, WebhookClient};
 use tokio::sync::mpsc;
@@ -28,6 +28,9 @@ struct TestAppState {
 impl TestReceiver {
     pub fn start(resp_code: StatusCode) -> Self {
         let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        listener.set_nonblocking(true).unwrap();
+        let listener = tokio::net::TcpListener::from_std(listener).unwrap();
+
         let uri = format!("http://{}/", listener.local_addr().unwrap());
 
         let (tx, req_recv) = mpsc::channel(32);
@@ -41,11 +44,7 @@ impl TestReceiver {
             .into_make_service();
 
         let server_jh = tokio::spawn(async move {
-            axum::Server::from_tcp(listener)
-                .unwrap()
-                .serve(routes)
-                .await
-                .unwrap();
+            axum::serve(listener, routes).await.unwrap();
         });
 
         TestReceiver {
