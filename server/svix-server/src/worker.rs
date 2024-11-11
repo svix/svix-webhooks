@@ -860,6 +860,11 @@ async fn process_queue_task_inner(
                 })
                 .collect();
 
+            if destinations.is_empty() {
+                tracing::debug!("No destinations for message. Returning");
+                return Ok(());
+            }
+
             messagedestination::Entity::insert_many(destinations.clone())
                 .exec(db)
                 .await?;
