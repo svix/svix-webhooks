@@ -271,7 +271,7 @@ pub fn setup_tracing(
             .tracing()
             .with_exporter(exporter)
             .with_trace_config(
-                opentelemetry_sdk::trace::config()
+                opentelemetry_sdk::trace::Config::default()
                     .with_sampler(
                         cfg.opentelemetry_sample_ratio
                             .map(opentelemetry_sdk::trace::Sampler::TraceIdRatioBased)
