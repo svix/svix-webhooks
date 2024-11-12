@@ -65,6 +65,11 @@ RUN apt-get update ;\
 USER appuser
 
 COPY --from=build /app/target/release/svix-bridge /usr/local/bin/svix-bridge
+COPY scripts/check-deps.sh /usr/local/bin/check-deps.sh
+
+# Verify all the dynamic libs we depend on are present in the runtime stage
+RUN /usr/local/bin/check-deps.sh /usr/local/bin/svix-bridge
+
 EXPOSE 5000
 
 # Will fail if there's no `svix-bridge.yaml` in the CWD or `SVIX_BRIDGE_CFG` is not set to a valid
