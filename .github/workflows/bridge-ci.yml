@@ -88,6 +88,11 @@ jobs:
     - name: Stop required services
       run: docker compose -f "bridge/testing-docker-compose.yml" down
 
+    - name: Idle Test
+      working-directory: bridge
+      run: ./run-idle-test.sh
+
+
 #  deny-check:
 #    name: cargo-deny check
 #    runs-on: ubuntu-24.04
