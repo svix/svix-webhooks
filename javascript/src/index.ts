@@ -191,7 +191,7 @@ class Authentication {
 }
 
 interface ListOptions {
-  iterator?: string;
+  iterator?: string | null;
   limit?: number;
 }
 
@@ -208,8 +208,8 @@ export interface OperationalWebhookEndpointListOptions extends ListOptions {
 }
 
 export interface EndpointStatsOptions {
-  since?: Date;
-  until?: Date;
+  since?: Date | null;
+  until?: Date | null;
 }
 
 export type IntegrationListOptions = ListOptions;
@@ -221,8 +221,8 @@ export interface EventTypeListOptions extends ListOptions {
 
 export interface MessageListOptions extends ListOptions {
   eventTypes?: string[];
-  before?: Date;
-  after?: Date;
+  before?: Date | null;
+  after?: Date | null;
   channel?: string;
   withContent?: boolean;
   tag?: string;
@@ -231,8 +231,8 @@ export interface MessageListOptions extends ListOptions {
 export interface MessageAttemptListOptions extends ListOptions {
   status?: MessageStatus;
   eventTypes?: string[];
-  before?: Date;
-  after?: Date;
+  before?: Date | null;
+  after?: Date | null;
   statusCodeClass?: StatusCodeClass;
   channel?: string;
   withContent?: boolean;
@@ -255,7 +255,8 @@ class Application {
   }
 
   public list(options?: ApplicationListOptions): Promise<ListResponseApplicationOut> {
-    return this.api.v1ApplicationList({ ...options });
+    const iterator = options?.iterator ?? undefined;
+    return this.api.v1ApplicationList({ ...options, iterator });
   }
 
   public create(
@@ -307,7 +308,8 @@ class Endpoint {
     appId: string,
     options?: EndpointListOptions
   ): Promise<ListResponseEndpointOut> {
-    return this.api.v1EndpointList({ appId, ...options });
+    const iterator = options?.iterator ?? undefined;
+    return this.api.v1EndpointList({ appId, ...options, iterator });
   }
 
   public create(
@@ -480,6 +482,8 @@ class Endpoint {
       appId,
       endpointId,
       ...options,
+      since: options?.since ?? undefined,
+      until: options?.until ?? undefined,
     });
   }
 
@@ -544,7 +548,8 @@ class EventType {
   }
 
   public list(options?: EventTypeListOptions): Promise<ListResponseEventTypeOut> {
-    return this.api.v1EventTypeList({ ...options });
+    const iterator = options?.iterator ?? undefined;
+    return this.api.v1EventTypeList({ ...options, iterator });
   }
 
   public get(eventTypeName: string): Promise<EventTypeOut> {
@@ -598,7 +603,8 @@ class Integration {
     appId: string,
     options?: IntegrationListOptions
   ): Promise<ListResponseIntegrationOut> {
-    return this.api.v1IntegrationList({ appId, ...options });
+    const iterator = options?.iterator ?? undefined;
+    return this.api.v1IntegrationList({ appId, ...options, iterator });
   }
 
   public create(
@@ -667,7 +673,13 @@ class Message {
     appId: string,
     options?: MessageListOptions
   ): Promise<ListResponseMessageOut> {
-    return this.api.v1MessageList({ appId, ...options });
+    return this.api.v1MessageList({
+      appId,
+      ...options,
+      iterator: options?.iterator ?? undefined,
+      before: options?.before ?? undefined,
+      after: options?.after ?? undefined,
+    });
   }
 
   public create(
@@ -714,6 +726,9 @@ class MessageAttempt {
       appId,
       msgId,
       ...options,
+      iterator: options?.iterator ?? undefined,
+      before: options?.before ?? undefined,
+      after: options?.after ?? undefined,
     });
   }
 
@@ -726,6 +741,9 @@ class MessageAttempt {
       appId,
       endpointId,
       ...options,
+      iterator: options?.iterator ?? undefined,
+      before: options?.before ?? undefined,
+      after: options?.after ?? undefined,
     });
   }
 
@@ -764,6 +782,9 @@ class MessageAttempt {
       appId,
       endpointId,
       ...options,
+      iterator: options?.iterator ?? undefined,
+      before: options?.before ?? undefined,
+      after: options?.after ?? undefined,
     });
   }
 
@@ -776,6 +797,7 @@ class MessageAttempt {
       appId,
       msgId,
       ...options,
+      iterator: options?.iterator ?? undefined,
     });
   }
 
@@ -790,6 +812,9 @@ class MessageAttempt {
       msgId,
       endpointId,
       ...options,
+      iterator: options?.iterator ?? undefined,
+      before: options?.before ?? undefined,
+      after: options?.after ?? undefined,
     });
   }
 
@@ -812,9 +837,8 @@ class BackgroundTask {
   public listByEndpoint(
     options?: BackgroundTaskListOptions
   ): Promise<ListResponseBackgroundTaskOut> {
-    return this.api.listBackgroundTasks({
-      ...options,
-    });
+    const iterator = options?.iterator ?? undefined;
+    return this.api.listBackgroundTasks({ ...options, iterator });
   }
 
   public get(taskId: string): Promise<BackgroundTaskOut> {
@@ -996,7 +1020,8 @@ class OperationalWebhookEndpoint {
   public list(
     options?: OperationalWebhookEndpointListOptions,
   ): Promise<ListResponseOperationalWebhookEndpointOut> {
-    return this.api.listOperationalWebhookEndpoints({ ...options });
+    const iterator = options?.iterator ?? undefined;
+    return this.api.listOperationalWebhookEndpoints({ ...options, iterator });
   }
 
   public create(
