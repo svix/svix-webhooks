@@ -108,11 +108,11 @@ fn org_id_parser(s: &str) -> Result<OrganizationId, String> {
 }
 
 #[tokio::main]
-async fn main() {
+async fn main() -> anyhow::Result<()> {
     dotenv().ok();
 
     let args = Args::parse();
-    let cfg = cfg::load().expect("Error loading configuration");
+    let cfg = cfg::load()?;
 
     let (tracing_subscriber, _guard) = setup_tracing(&cfg, /* for_test = */ false);
     tracing_subscriber.init();
@@ -137,7 +137,7 @@ async fn main() {
 
         if let Err(e) = futures::future::try_join_all(wait_for).await {
             tracing::error!("{e}");
-            return;
+            return Ok(());
         }
     }
 
@@ -201,4 +201,5 @@ async fn main() {
     };
 
     opentelemetry::global::shutdown_tracer_provider();
+    Ok(())
 }
