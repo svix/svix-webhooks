@@ -79,6 +79,7 @@
             "AppUsageStatsIn": {
                 "properties": {
                     "appIds": {
+                        "description": "Specific app IDs or UIDs to aggregate stats for.\n\nNote that if none of the given IDs or UIDs are resolved, a 422 response will be given.",
                         "items": {
                             "description": "The app's ID or UID",
                             "example": "unique-app-identifier",
@@ -116,12 +117,26 @@
                     },
                     "task": {
                         "$ref": "#/components/schemas/BackgroundTaskType"
+                    },
+                    "unresolvedAppIds": {
+                        "description": "Any app IDs or UIDs received in the request that weren't found.\n\nStats will be produced for all the others.",
+                        "items": {
+                            "description": "The app's ID or UID",
+                            "example": "unique-app-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "uniqueItems": true
                     }
                 },
                 "required": [
                     "id",
                     "status",
-                    "task"
+                    "task",
+                    "unresolvedAppIds"
                 ],
                 "type": "object"
             },
@@ -2707,7 +2722,8 @@
                 },
                 "required": [
                     "data",
-                    "done"
+                    "done",
+                    "iterator"
                 ],
                 "type": "object"
             },
@@ -2735,7 +2751,8 @@
                 },
                 "required": [
                     "data",
-                    "done"
+                    "done",
+                    "iterator"
                 ],
                 "type": "object"
             },
@@ -2763,7 +2780,8 @@
                 },
                 "required": [
                     "data",
-                    "done"
+                    "done",
+                    "iterator"
                 ],
                 "type": "object"
             },
@@ -2791,7 +2809,8 @@
                 },
                 "required": [
                     "data",
-                    "done"
+                    "done",
+                    "iterator"
                 ],
                 "type": "object"
             },
@@ -2819,7 +2838,8 @@
                 },
                 "required": [
                     "data",
-                    "done"
+                    "done",
+                    "iterator"
                 ],
                 "type": "object"
             },
@@ -2847,7 +2867,8 @@
                 },
                 "required": [
                     "data",
-                    "done"
+                    "done",
+                    "iterator"
                 ],
                 "type": "object"
             },
@@ -2875,7 +2896,8 @@
                 },
                 "required": [
                     "data",
-                    "done"
+                    "done",
+                    "iterator"
                 ],
                 "type": "object"
             },
@@ -2903,7 +2925,8 @@
                 },
                 "required": [
                     "data",
-                    "done"
+                    "done",
+                    "iterator"
                 ],
                 "type": "object"
             },
@@ -2931,7 +2954,8 @@
                 },
                 "required": [
                     "data",
-                    "done"
+                    "done",
+                    "iterator"
                 ],
                 "type": "object"
             },
@@ -2959,7 +2983,8 @@
                 },
                 "required": [
                     "data",
-                    "done"
+                    "done",
+                    "iterator"
                 ],
                 "type": "object"
             },
@@ -2987,7 +3012,8 @@
                 },
                 "required": [
                     "data",
-                    "done"
+                    "done",
+                    "iterator"
                 ],
                 "type": "object"
             },
@@ -3015,7 +3041,8 @@
                 },
                 "required": [
                     "data",
-                    "done"
+                    "done",
+                    "iterator"
                 ],
                 "type": "object"
             },
@@ -3043,7 +3070,8 @@
                 },
                 "required": [
                     "data",
-                    "done"
+                    "done",
+                    "iterator"
                 ],
                 "type": "object"
             },
@@ -3071,7 +3099,8 @@
                 },
                 "required": [
                     "data",
-                    "done"
+                    "done",
+                    "iterator"
                 ],
                 "type": "object"
             },
@@ -3099,7 +3128,8 @@
                 },
                 "required": [
                     "data",
-                    "done"
+                    "done",
+                    "iterator"
                 ],
                 "type": "object"
             },
@@ -3127,7 +3157,8 @@
                 },
                 "required": [
                     "data",
-                    "done"
+                    "done",
+                    "iterator"
                 ],
                 "type": "object"
             },
@@ -3155,7 +3186,8 @@
                 },
                 "required": [
                     "data",
-                    "done"
+                    "done",
+                    "iterator"
                 ],
                 "type": "object"
             },
@@ -4677,6 +4709,11 @@
                         },
                         "default": {},
                         "type": "object"
+                    },
+                    "key": {
+                        "default": null,
+                        "nullable": true,
+                        "type": "string"
                     },
                     "url": {
                         "format": "uri",
@@ -27288,7 +27325,7 @@
                 ]
             },
             "post": {
-                "description": "Creates streaming events.",
+                "description": "Creates events on the Stream.",
                 "operationId": "v1.stream.create-events",
                 "parameters": [
                     {
@@ -27407,7 +27444,7 @@
                         "HTTPBearer": []
                     }
                 ],
-                "summary": "Append To Stream",
+                "summary": "Create Events",
                 "tags": [
                     "Stream"
                 ],
