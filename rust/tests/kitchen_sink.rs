@@ -83,7 +83,7 @@ async fn test_endpoint_crud() {
         .create(
             app.id.clone(),
             EndpointIn {
-                channels: Some(Some(vec![String::from("ch0"), String::from("ch1")])),
+                channels: Some(vec![String::from("ch0"), String::from("ch1")]),
                 url: String::from("https://example.svix.com/"),
                 ..Default::default()
             },
@@ -95,15 +95,9 @@ async fn test_endpoint_crud() {
     let want_channels: HashSet<_> = [String::from("ch0"), String::from("ch1")]
         .into_iter()
         .collect();
-    let got_channels = ep.channels.clone().unwrap().unwrap().into_iter().collect();
+    let got_channels = ep.channels.clone().unwrap().into_iter().collect();
     assert_eq!(want_channels, got_channels);
-    assert_eq!(
-        0,
-        ep.filter_types
-            .unwrap_or_default()
-            .unwrap_or_default()
-            .len()
-    );
+    assert_eq!(0, ep.filter_types.unwrap_or_default().len());
 
     let ep_patched = client
         .endpoint()
@@ -126,17 +120,10 @@ async fn test_endpoint_crud() {
         [String::from("event.started"), String::from("event.ended")]
             .into_iter()
             .collect();
-    let got_channels = ep_patched
-        .channels
-        .clone()
-        .unwrap()
-        .unwrap()
-        .into_iter()
-        .collect();
+    let got_channels = ep_patched.channels.clone().unwrap().into_iter().collect();
     let got_filter_types = ep_patched
         .filter_types
         .clone()
-        .unwrap()
         .unwrap()
         .into_iter()
         .collect();

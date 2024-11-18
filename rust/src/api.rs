@@ -1476,7 +1476,7 @@ impl<'a> Statistics<'a> {
         let options = options.unwrap_or_default();
         let params = statistics_api::V1PeriodStatisticsPeriodAggregateAppStatsParams {
             app_usage_stats_in: AppUsageStatsIn {
-                app_ids: Some(app_ids),
+                app_ids,
                 since,
                 until,
             },
