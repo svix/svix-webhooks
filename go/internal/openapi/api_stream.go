@@ -244,9 +244,9 @@ func (r ApiV1StreamCreateEventsRequest) Execute() (map[string]interface{}, *http
 }
 
 /*
-V1StreamCreateEvents Append To Stream
+V1StreamCreateEvents Create Events
 
-Creates streaming events.
+Creates events on the Stream.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param streamId

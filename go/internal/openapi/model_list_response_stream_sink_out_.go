@@ -23,7 +23,7 @@ var _ MappedNullable = &ListResponseStreamSinkOut{}
 type ListResponseStreamSinkOut struct {
 	Data []StreamSinkOut `json:"data"`
 	Done bool `json:"done"`
-	Iterator NullableString `json:"iterator,omitempty"`
+	Iterator NullableString `json:"iterator"`
 	PrevIterator NullableString `json:"prevIterator,omitempty"`
 }
 
@@ -33,10 +33,11 @@ type _ListResponseStreamSinkOut ListResponseStreamSinkOut
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewListResponseStreamSinkOut(data []StreamSinkOut, done bool) *ListResponseStreamSinkOut {
+func NewListResponseStreamSinkOut(data []StreamSinkOut, done bool, iterator NullableString) *ListResponseStreamSinkOut {
 	this := ListResponseStreamSinkOut{}
 	this.Data = data
 	this.Done = done
+	this.Iterator = iterator
 	return &this
 }
 
@@ -96,16 +97,18 @@ func (o *ListResponseStreamSinkOut) SetDone(v bool) {
 	o.Done = v
 }
 
-// GetIterator returns the Iterator field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetIterator returns the Iterator field value
+// If the value is explicit nil, the zero value for string will be returned
 func (o *ListResponseStreamSinkOut) GetIterator() string {
-	if o == nil || IsNil(o.Iterator.Get()) {
+	if o == nil || o.Iterator.Get() == nil {
 		var ret string
 		return ret
 	}
+
 	return *o.Iterator.Get()
 }
 
-// GetIteratorOk returns a tuple with the Iterator field value if set, nil otherwise
+// GetIteratorOk returns a tuple with the Iterator field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *ListResponseStreamSinkOut) GetIteratorOk() (*string, bool) {
@@ -115,27 +118,9 @@ func (o *ListResponseStreamSinkOut) GetIteratorOk() (*string, bool) {
 	return o.Iterator.Get(), o.Iterator.IsSet()
 }
 
-// HasIterator returns a boolean if a field has been set.
-func (o *ListResponseStreamSinkOut) HasIterator() bool {
-	if o != nil && o.Iterator.IsSet() {
-		return true
-	}
-
-	return false
-}
-
-// SetIterator gets a reference to the given NullableString and assigns it to the Iterator field.
+// SetIterator sets field value
 func (o *ListResponseStreamSinkOut) SetIterator(v string) {
 	o.Iterator.Set(&v)
-}
-// SetIteratorNil sets the value for Iterator to be an explicit nil
-func (o *ListResponseStreamSinkOut) SetIteratorNil() {
-	o.Iterator.Set(nil)
-}
-
-// UnsetIterator ensures that no value is present for Iterator, not even an explicit nil
-func (o *ListResponseStreamSinkOut) UnsetIterator() {
-	o.Iterator.Unset()
 }
 
 // GetPrevIterator returns the PrevIterator field value if set, zero value otherwise (both if not set or set to explicit null).
@@ -192,9 +177,7 @@ func (o ListResponseStreamSinkOut) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["data"] = o.Data
 	toSerialize["done"] = o.Done
-	if o.Iterator.IsSet() {
-		toSerialize["iterator"] = o.Iterator.Get()
-	}
+	toSerialize["iterator"] = o.Iterator.Get()
 	if o.PrevIterator.IsSet() {
 		toSerialize["prevIterator"] = o.PrevIterator.Get()
 	}
@@ -208,6 +191,7 @@ func (o *ListResponseStreamSinkOut) UnmarshalJSON(data []byte) (err error) {
 	requiredProperties := []string{
 		"data",
 		"done",
+		"iterator",
 	}
 
 	allProperties := make(map[string]interface{})

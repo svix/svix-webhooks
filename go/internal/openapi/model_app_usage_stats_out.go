@@ -24,6 +24,8 @@ type AppUsageStatsOut struct {
 	Id string `json:"id"`
 	Status BackgroundTaskStatus `json:"status"`
 	Task BackgroundTaskType `json:"task"`
+	// Any app IDs or UIDs received in the request that weren't found.  Stats will be produced for all the others.
+	UnresolvedAppIds []string `json:"unresolvedAppIds"`
 }
 
 type _AppUsageStatsOut AppUsageStatsOut
@@ -32,11 +34,12 @@ type _AppUsageStatsOut AppUsageStatsOut
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewAppUsageStatsOut(id string, status BackgroundTaskStatus, task BackgroundTaskType) *AppUsageStatsOut {
+func NewAppUsageStatsOut(id string, status BackgroundTaskStatus, task BackgroundTaskType, unresolvedAppIds []string) *AppUsageStatsOut {
 	this := AppUsageStatsOut{}
 	this.Id = id
 	this.Status = status
 	this.Task = task
+	this.UnresolvedAppIds = unresolvedAppIds
 	return &this
 }
 
@@ -120,6 +123,30 @@ func (o *AppUsageStatsOut) SetTask(v BackgroundTaskType) {
 	o.Task = v
 }
 
+// GetUnresolvedAppIds returns the UnresolvedAppIds field value
+func (o *AppUsageStatsOut) GetUnresolvedAppIds() []string {
+	if o == nil {
+		var ret []string
+		return ret
+	}
+
+	return o.UnresolvedAppIds
+}
+
+// GetUnresolvedAppIdsOk returns a tuple with the UnresolvedAppIds field value
+// and a boolean to check if the value has been set.
+func (o *AppUsageStatsOut) GetUnresolvedAppIdsOk() ([]string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return o.UnresolvedAppIds, true
+}
+
+// SetUnresolvedAppIds sets field value
+func (o *AppUsageStatsOut) SetUnresolvedAppIds(v []string) {
+	o.UnresolvedAppIds = v
+}
+
 func (o AppUsageStatsOut) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -133,6 +160,7 @@ func (o AppUsageStatsOut) ToMap() (map[string]interface{}, error) {
 	toSerialize["id"] = o.Id
 	toSerialize["status"] = o.Status
 	toSerialize["task"] = o.Task
+	toSerialize["unresolvedAppIds"] = o.UnresolvedAppIds
 	return toSerialize, nil
 }
 
@@ -144,6 +172,7 @@ func (o *AppUsageStatsOut) UnmarshalJSON(data []byte) (err error) {
 		"id",
 		"status",
 		"task",
+		"unresolvedAppIds",
 	}
 
 	allProperties := make(map[string]interface{})
