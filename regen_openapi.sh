@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 
-set -ex
+set -exo pipefail
 
 if [ -n "$1" ]; then
     curl "$1" | python -m json.tool > openapi.json
@@ -22,6 +22,28 @@ yarn openapi-generator-cli generate -i openapi.json -g ruby -o ruby -c ruby/open
 
 yarn openapi-generator-cli generate -i openapi.json -g csharp -o csharp/ -c csharp/openapi-generator-config.json --global-property apis,models,supportingFiles,apiTests=false,apiDocs=false,modelTests=false,modelDocs=false
 
-yarn openapi-generator-cli generate -i openapi.json -g rust -o rust/ -c rust/openapi-generator-config.json -t rust/templates
+# For Rust, write a separate OpenAPI spec file where optional fields of
+# non-`Patch` schemas are set to not be nullable, so the codegen doesn't wrap
+# the Rust struct fields in double options.
+# serde will respect both in deserialization anyways, but this frees users from
+# having to think about the difference between absence of the field or setting
+# it to `null` (which is only significant for patch request bodies).
+jq --indent 4 '.components.schemas |= with_entries(
+        if .key | endswith("Patch") then .
+        else
+            (.required // []) as $required |
+            if .value | has("properties") then
+                .value.properties |= with_entries(
+                    if .key | IN($required[]) then .
+                    else del(.value.nullable)
+                    end
+                )
+            else .
+            end
+        end
+    )' \
+    < openapi.json \
+    > rust/openapi.json
+yarn openapi-generator-cli generate -i rust/openapi.json -g rust -o rust/ -c rust/openapi-generator-config.json -t rust/templates
 
 echo Note: Python generation is not executed automatically.
