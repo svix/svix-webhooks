@@ -4,6 +4,7 @@
 #![warn(clippy::all)]
 #![forbid(unsafe_code)]
 
+use anyhow::bail;
 use clap::{Parser, Subcommand};
 use dotenvy::dotenv;
 use svix_server::{
@@ -137,7 +138,7 @@ async fn main() -> anyhow::Result<()> {
 
         if let Err(e) = futures::future::try_join_all(wait_for).await {
             tracing::error!("{e}");
-            return Ok(());
+            bail!(e);
         }
     }
 
