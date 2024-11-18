@@ -7629,7 +7629,8 @@
                             "description": "Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)",
                             "nullable": true
                         },
-                        "style": "form"
+                        "style": "form",
+                        "explode": false
                     },
                     {
                         "description": "Filter response based on the HTTP status code",
@@ -7960,7 +7961,8 @@
                             "description": "Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)",
                             "nullable": true
                         },
-                        "style": "form"
+                        "style": "form",
+                        "explode": false
                     },
                     {
                         "description": "Filter response based on the HTTP status code",
@@ -10084,7 +10086,8 @@
                             "description": "Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)",
                             "nullable": true
                         },
-                        "style": "form"
+                        "style": "form",
+                        "explode": false
                     },
                     {
                         "description": "Only include items created before a certain date",
@@ -16452,7 +16455,8 @@
                             "description": "Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)",
                             "nullable": true
                         },
-                        "style": "form"
+                        "style": "form",
+                        "explode": false
                     },
                     {
                         "description": "Only include items created before a certain date",
@@ -17764,7 +17768,8 @@
                             "description": "Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)",
                             "nullable": true
                         },
-                        "style": "form"
+                        "style": "form",
+                        "explode": false
                     },
                     {
                         "description": "Only include items created before a certain date",
