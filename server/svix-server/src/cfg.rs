@@ -561,11 +561,11 @@ pub fn load() -> anyhow::Result<Arc<ConfigurationInner>> {
         .merge(Toml::file("config.toml"))
         .merge(Env::prefixed("SVIX_"));
 
-    let config = try_extract(merged).with_context(|| "failed to extract configuration")?;
+    let config = try_extract(merged).context("failed to extract configuration")?;
 
     config
         .validate()
-        .with_context(|| "failed to validate configuration")?;
+        .context("failed to validate configuration")?;
     Ok(Arc::from(config))
 }
 
