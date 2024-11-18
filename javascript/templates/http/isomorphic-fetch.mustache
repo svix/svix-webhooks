@@ -49,7 +49,7 @@ export class IsomorphicFetchHttpLibrary implements HttpLibrary {
             credentials: isCredentialsSupported ? "same-origin" : undefined
             {{/browser}}
             {{/platforms}}
-        }).then((resp: any) => {
+        }).then(resp => {
             const headers: { [name: string]: string } = {};
             resp.headers.forEach((value: string, name: string) => {
               headers[name] = value;
