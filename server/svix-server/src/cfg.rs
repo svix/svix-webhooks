@@ -3,6 +3,7 @@
 
 use std::{borrow::Cow, collections::HashMap, fmt, net::SocketAddr, sync::Arc, time::Duration};
 
+use anyhow::{bail, Context};
 use figment::{
     providers::{Env, Format, Toml},
     Figment,
@@ -533,7 +534,20 @@ impl From<SentinelConfig> for omniqueue::backends::redis::SentinelConfig {
     }
 }
 
-pub fn load() -> Result<Arc<ConfigurationInner>> {
+/// Try to extract a [`ConfigurationInner`] from the provided [`Figment`]. Any error message should
+/// indicate the missing required field(s).
+fn try_extract(figment: Figment) -> anyhow::Result<ConfigurationInner> {
+    // Explicitly override error if `jwt_secret` is not set, as the default error does not mention
+    // the field name due it coming from an inlined field `ConfigurationInner::jwt_signing_config`
+    // See: <https://github.com/SergioBenitez/Figment/issues/80>
+    if !figment.contains("jwt_secret") {
+        bail!("missing field `jwt_secret`");
+    }
+
+    Ok(figment.extract()?)
+}
+
+pub fn load() -> anyhow::Result<Arc<ConfigurationInner>> {
     if let Ok(db_url) = std::env::var("DATABASE_URL") {
         // If we have DATABASE_URL set, we should potentially use it.
         const DB_DSN: &str = "SVIX_DB_DSN";
@@ -542,14 +556,16 @@ pub fn load() -> Result<Arc<ConfigurationInner>> {
         }
     }
 
-    let config: ConfigurationInner = Figment::new()
+    let merged = Figment::new()
         .merge(Toml::string(DEFAULTS))
         .merge(Toml::file("config.toml"))
-        .merge(Env::prefixed("SVIX_"))
-        .extract()
-        .expect("Error loading configuration");
+        .merge(Env::prefixed("SVIX_"));
 
-    config.validate().expect("Error validating configuration");
+    let config = try_extract(merged).context("failed to extract configuration")?;
+
+    config
+        .validate()
+        .context("failed to validate configuration")?;
     Ok(Arc::from(config))
 }
 
@@ -562,7 +578,7 @@ mod tests {
         Figment,
     };
 
-    use super::{load, CacheBackend, CacheType, QueueBackend, QueueType};
+    use super::{load, try_extract, CacheBackend, CacheType, QueueBackend, QueueType};
     use crate::core::security::{JWTAlgorithm, JwtSigningConfig};
 
     #[test]
@@ -580,6 +596,16 @@ mod tests {
         // Assert that the queue_dsn and cache_dsn overwrite the `redis_dsn`
         assert_eq!(cfg.queue_backend(), QueueBackend::Redis("test_a"));
         assert_eq!(cfg.cache_backend(), CacheBackend::Redis("test_b"));
+    }
+
+    #[test]
+    fn test_try_extract_missing_jwt_secret() {
+        let defaults = Figment::new();
+
+        let actual = try_extract(defaults);
+
+        let err = actual.unwrap_err();
+        assert_eq!(err.to_string(), "missing field `jwt_secret`");
     }
 
     #[test]
