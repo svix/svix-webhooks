@@ -137,7 +137,6 @@ async fn main() -> anyhow::Result<()> {
         }
 
         if let Err(e) = futures::future::try_join_all(wait_for).await {
-            tracing::error!("{e}");
             bail!(e);
         }
     }
