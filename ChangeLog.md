@@ -3,6 +3,12 @@
 ## Next
 * 
 
+## Version 1.41.0
+* Libs/JS: Allow `iterator` and date parameters on list endpoints to be `null` (in addition to `undefined`)
+* Libs/JS: Fix serialization of message `status` query parameters
+* Libs/Rust: Revert many pointless type changes from `Option<T>` to `Option<Option<T>>` that came with 1.39.0
+* Server: Improve error messages for configuration loading
+
 ## Version 1.40.0
 * Libs(JS): downgrade `@stablelib/base64` avoiding `ERR_REQUIRE_ESM` by @svix-onelson in https://github.com/svix/svix-webhooks/pull/1506
 * Bridge: update ca-certificates by @jaymell in https://github.com/svix/svix-webhooks/pull/1507
