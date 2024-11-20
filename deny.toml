@@ -12,7 +12,9 @@ db-urls = ["https://github.com/rustsec/advisory-db"]
 yanked = "deny"
 ignore = [
     # TODO: Update dependencies that use rsa crate
-    "RUSTSEC-2023-0071"
+    "RUSTSEC-2023-0071",
+    # TODO: Wait for dependencies to upgrade off of proc-macro-error
+    "RUSTSEC-2024-0370",
 ]
 
 [licenses]
