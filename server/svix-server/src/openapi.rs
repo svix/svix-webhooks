@@ -140,15 +140,15 @@ fn replace_true_schemas(openapi: &mut OpenApi) {
 
     fn visit_object_validation(obj: &mut Box<ObjectValidation>) {
         if let Some(additional_props) = &mut obj.additional_properties {
-            visit_schema(additional_props.as_mut())
+            visit_schema(additional_props)
         }
-        for (_, schema) in obj.properties.iter_mut() {
+        for (_, schema) in &mut obj.properties {
             visit_schema(schema)
         }
     }
 
-    if let Some(ref mut components) = openapi.components {
-        for (_, schema) in components.schemas.iter_mut() {
+    if let Some(components) = &mut openapi.components {
+        for (_, schema) in &mut components.schemas {
             visit_schema(&mut schema.json_schema)
         }
     }
@@ -177,8 +177,8 @@ fn add_idempotency_to_post(openapi: &mut OpenApi) {
         extensions: indexmap::indexmap! {},
     };
 
-    if let Some(paths) = openapi.paths.as_mut() {
-        for (_, op) in paths.paths.iter_mut() {
+    if let Some(paths) = &mut openapi.paths {
+        for (_, op) in &mut paths.paths {
             match op {
                 openapi::ReferenceOr::Reference { reference, .. } => {
                     // References to operations should never appear in our
@@ -189,11 +189,11 @@ fn add_idempotency_to_post(openapi: &mut OpenApi) {
                     );
                 }
                 openapi::ReferenceOr::Item(op) => {
-                    if let Some(post) = op.post.as_mut() {
+                    if let Some(post) = &mut op.post {
                         post.parameters.push(ReferenceOr::Item(Parameter::Header {
                             parameter_data: idempotency_key_data.clone(),
                             style: openapi::HeaderStyle::Simple,
-                        }))
+                        }));
                     }
                 }
             }
@@ -205,7 +205,7 @@ fn add_idempotency_to_post(openapi: &mut OpenApi) {
 /// circumstances not referenced. At the moment these are struct schemas used
 /// by query parameters and path placeholders.
 fn remove_unneeded_schemas(openapi: &mut OpenApi) {
-    if let Some(components) = openapi.components.as_mut() {
+    if let Some(components) = &mut openapi.components {
         components.schemas.retain(|name, _| {
             !(name.ends_with("Path")
                 || name.ends_with("QueryParams")
@@ -222,8 +222,8 @@ fn replace_multiple_examples(openapi: &mut OpenApi) {
         retain_examples: false,
     };
 
-    if let Some(components) = openapi.components.as_mut() {
-        for (_, schema_object) in components.schemas.iter_mut() {
+    if let Some(components) = &mut openapi.components {
+        for (_, schema_object) in &mut components.schemas {
             visitor.visit_schema(&mut schema_object.json_schema);
         }
     }
