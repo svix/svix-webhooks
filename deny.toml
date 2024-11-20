@@ -8,17 +8,13 @@ targets = [
 [advisories]
 db-path = "~/.cargo/advisory-db"
 db-urls = ["https://github.com/rustsec/advisory-db"]
-vulnerability = "deny"
-unmaintained = "warn"
 yanked = "deny"
-notice = "warn"
 ignore = [
     # TODO: Update dependencies that use rsa crate
     "RUSTSEC-2023-0071"
 ]
 
 [licenses]
-unlicensed = "deny"
 allow = [
     "Apache-2.0",
     "BSD-2-Clause",
@@ -31,10 +27,6 @@ allow = [
     "Unicode-DFS-2016",
     "CC0-1.0",
 ]
-deny = []
-copyleft = "deny"
-allow-osi-fsf-free = "neither"
-default = "deny"
 confidence-threshold = 0.8
 exceptions = [
     #{ allow = ["Zlib"], name = "adler32", version = "*" },
