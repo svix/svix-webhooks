@@ -156,7 +156,7 @@ pub async fn run_with_prefix(
         .nest_api_service("/api/v1", v1_router)
         .finish_api(&mut openapi);
 
-    let openapi = openapi::postprocess_spec(openapi);
+    openapi::postprocess_spec(&mut openapi);
     let docs_router = docs::router(openapi);
     let app = app.merge(docs_router).layer((
         layer_fn(move |service| IdempotencyService {

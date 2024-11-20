@@ -189,7 +189,7 @@ async fn main() -> anyhow::Result<()> {
                 .nest("/api/v1", router)
                 .finish_api(&mut openapi);
 
-            let openapi = svix_server::openapi::postprocess_spec(openapi);
+            svix_server::openapi::postprocess_spec(&mut openapi);
             println!(
                 "{}",
                 serde_json::to_string_pretty(&openapi).expect("Failed to serialize JSON spec")

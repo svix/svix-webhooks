@@ -101,7 +101,7 @@ pub fn initialize_openapi() -> OpenApi {
 
 /// Replaces OpenAPI 3.1 style `"foo": true` schemas with OpenAPI 3.0 style
 /// `"foo": {"type": "object"}` schemas.
-fn replace_true_schemas(mut openapi: OpenApi) -> OpenApi {
+fn replace_true_schemas(openapi: &mut OpenApi) {
     use schemars::schema::{InstanceType, ObjectValidation, Schema, SchemaObject, SingleOrVec};
 
     // Checks if it's a plain boolean schema, and if yes replaces it with a
@@ -152,12 +152,10 @@ fn replace_true_schemas(mut openapi: OpenApi) -> OpenApi {
             visit_schema(&mut schema.json_schema)
         }
     }
-
-    openapi
 }
 
 /// Adds the `Idempotency-Key` header parameter to all `POST` operations in the schema.
-fn add_idempotency_to_post(mut openapi: OpenApi) -> OpenApi {
+fn add_idempotency_to_post(openapi: &mut OpenApi) {
     // The header's value can be any valid string
     let string_schema = aide::gen::in_context(|ctx| String::json_schema(&mut ctx.schema));
 
@@ -201,29 +199,25 @@ fn add_idempotency_to_post(mut openapi: OpenApi) -> OpenApi {
             }
         }
     }
-
-    openapi
 }
 
 /// Remove schemas from `components.schemas` of the spec which are under normal
 /// circumstances not referenced. At the moment these are struct schemas used
 /// by query parameters and path placeholders.
-fn remove_unneeded_schemas(mut openapi: OpenApi) -> OpenApi {
+fn remove_unneeded_schemas(openapi: &mut OpenApi) {
     if let Some(components) = openapi.components.as_mut() {
         components.schemas.retain(|name, _| {
             !(name.ends_with("Path")
                 || name.ends_with("QueryParams")
                 || name.starts_with("Pagination"))
         });
-    };
-
-    openapi
+    }
 }
 
 /// Replaces the `examples` property of a schema with a singular `example`
 /// property.
 /// OpenAPI <=3.0 used `example` as an extension, >=3.1 standardized `examples`.
-fn replace_multiple_examples(mut openapi: OpenApi) -> OpenApi {
+fn replace_multiple_examples(openapi: &mut OpenApi) {
     let mut visitor = schemars::visit::SetSingleExample {
         retain_examples: false,
     };
@@ -233,13 +227,11 @@ fn replace_multiple_examples(mut openapi: OpenApi) -> OpenApi {
             visitor.visit_schema(&mut schema_object.json_schema);
         }
     }
-
-    openapi
 }
 
 /// Applies a list of hacks to the finished OpenAPI spec to make it usable with
 /// our tooling.
-pub fn postprocess_spec(mut openapi: OpenApi) -> OpenApi {
+pub fn postprocess_spec(openapi: &mut OpenApi) {
     let hacks = [
         add_idempotency_to_post,
         remove_unneeded_schemas,
@@ -248,10 +240,8 @@ pub fn postprocess_spec(mut openapi: OpenApi) -> OpenApi {
     ];
 
     for hack in hacks {
-        openapi = hack(openapi);
+        hack(openapi);
     }
-
-    openapi
 }
 
 /// This module documents operational webhooks. To document one define a data
