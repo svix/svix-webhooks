@@ -521,7 +521,7 @@ async fn test_message_validation() {
     let (client, _jh) = start_svix_server().await;
 
     let app_id = create_test_app(&client, "testApp").await.unwrap().id;
-    let payload = serde_json::json!({"large_payload": std::iter::repeat("payload-").take(1_000_000).collect::<String>()});
+    let payload = serde_json::json!({"large_payload": "payload-".repeat(1_000_000)});
 
     client
         .post::<_, IgnoredAny>(

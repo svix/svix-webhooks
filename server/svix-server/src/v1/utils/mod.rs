@@ -13,11 +13,13 @@ use aide::{
     transform::{TransformOperation, TransformPathItem},
     OperationInput, OperationIo, OperationOutput,
 };
-use axum::extract::rejection::{BytesRejection, FailedToBufferBody};
 use axum::{
     async_trait,
     body::HttpBody,
-    extract::{FromRequest, FromRequestParts, Query},
+    extract::{
+        rejection::{BytesRejection, FailedToBufferBody},
+        FromRequest, FromRequestParts, Query,
+    },
     response::IntoResponse,
     BoxError,
 };
