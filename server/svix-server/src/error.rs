@@ -379,6 +379,14 @@ impl HttpError {
             detail.unwrap_or_else(|| "This API endpoint is not yet implemented.".to_owned()),
         )
     }
+
+    pub fn too_large(code: Option<String>, detail: Option<String>) -> Self {
+        Self::new_standard(
+            StatusCode::PAYLOAD_TOO_LARGE,
+            code.unwrap_or_else(|| "payload_too_large".to_owned()),
+            detail.unwrap_or_else(|| "Request payload is too large.".to_owned()),
+        )
+    }
 }
 
 impl From<HttpError> for Error {
