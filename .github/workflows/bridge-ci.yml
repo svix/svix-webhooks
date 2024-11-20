@@ -91,20 +91,3 @@ jobs:
     - name: Idle Test
       working-directory: bridge
       run: ./run-idle-test.sh
-
-
-#  deny-check:
-#    name: cargo-deny check
-#    runs-on: ubuntu-24.04
-#    continue-on-error: ${{ matrix.checks == 'advisories' }}
-#    strategy:
-#      matrix:
-#        checks:
-#          - advisories
-#          - bans licenses sources
-#    steps:
-#      - uses: actions/checkout@v4
-#      - uses: EmbarkStudios/cargo-deny-action@v1
-#        with:
-#          command: check ${{ matrix.checks }}
-#          arguments: --all-features --manifest-path axum/Cargo.toml
