@@ -4,7 +4,7 @@
   "description": "Svix webhooks API client and webhook verification library",
   "author": "svix",
   "repository": "https://github.com/svix/svix-libs",
-  "type": "commonjs",
+  "type": "module",
   "keywords": [
     "svix",
     "diahook",
@@ -12,14 +12,21 @@
     "typescript"
   ],
   "license": "MIT",
-  "main": "./dist/index.js",
-  "typings": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js",
+      "types": "./dist/esm/index.d.ts"
+    }
+  },
   "files": [
     "src",
     "dist"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "yarn run build:esm && yarn run build:cjs",
+    "build:esm": "tsc --project tsconfig.esm.json",
+    "build:cjs": "tsc --project tsconfig.cjs.json",
     "prepare": "yarn run build",
     "test": "jest",
     "prepublishOnly": "yarn lint",
