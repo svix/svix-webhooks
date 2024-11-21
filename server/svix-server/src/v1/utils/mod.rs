@@ -16,7 +16,10 @@ use aide::{
 use axum::{
     async_trait,
     body::HttpBody,
-    extract::{FromRequest, FromRequestParts, Query},
+    extract::{
+        rejection::{BytesRejection, FailedToBufferBody},
+        FromRequest, FromRequestParts, Query,
+    },
     response::IntoResponse,
     BoxError,
 };
@@ -555,7 +558,17 @@ where
     async fn from_request(req: Request<B>, state: &S) -> Result<Self> {
         let b = bytes::Bytes::from_request(req, state).await.map_err(|e| {
             tracing::error!("Error reading body as bytes: {}", e);
-            HttpError::internal_server_error(None, Some("Failed to read request body".to_owned()))
+
+            match e {
+                BytesRejection::FailedToBufferBody(FailedToBufferBody::LengthLimitError(_)) => {
+                    HttpError::too_large(None, None)
+                }
+
+                _ => HttpError::internal_server_error(
+                    None,
+                    Some("Failed to read request body".to_owned()),
+                ),
+            }
         })?;
         let mut de = serde_json::Deserializer::from_slice(&b);
 

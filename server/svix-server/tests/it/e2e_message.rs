@@ -515,3 +515,20 @@ async fn test_message_conflict() {
         .await
         .unwrap();
 }
+
+#[tokio::test]
+async fn test_message_validation() {
+    let (client, _jh) = start_svix_server().await;
+
+    let app_id = create_test_app(&client, "testApp").await.unwrap().id;
+    let payload = serde_json::json!({"large_payload": "payload-".repeat(1_000_000)});
+
+    client
+        .post::<_, IgnoredAny>(
+            &format!("api/v1/app/{}/msg/", &app_id),
+            message_in(&app_id, payload).unwrap(),
+            StatusCode::PAYLOAD_TOO_LARGE,
+        )
+        .await
+        .unwrap();
+}
