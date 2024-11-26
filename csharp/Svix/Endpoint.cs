@@ -16,10 +16,10 @@ namespace Svix
     {
         private readonly IEndpointApi _endpointApi;
 
-        public Endpoint(ISvixClient svixClient, IEndpointApi endpoingApi)
+        public Endpoint(ISvixClient svixClient, IEndpointApi endpointApi)
             : base(svixClient)
         {
-            _endpointApi = endpoingApi ?? throw new ArgumentNullException(nameof(_endpointApi));
+            _endpointApi = endpointApi ?? throw new ArgumentNullException(nameof(_endpointApi));
         }
 
         public EndpointOut Create(string appId, EndpointIn endpoint, string idempotencyKey = default)
