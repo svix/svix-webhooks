@@ -1657,8 +1657,8 @@ class Svix(ClientBase):
         return Statistics(self._client)
 
     @property
-    def operational_webhook_endpoint(self) -> OperationalWebhookEndpointAsync:
-        return OperationalWebhookEndpointAsync(self._client)
+    def operational_webhook_endpoint(self) -> OperationalWebhookEndpoint:
+        return OperationalWebhookEndpoint(self._client)
 
 
 __all__ = [
