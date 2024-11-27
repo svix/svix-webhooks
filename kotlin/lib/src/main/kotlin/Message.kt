@@ -76,10 +76,15 @@ class Message internal constructor(token: String, options: SvixOptions) {
 /**
  * Creates a [MessageIn] with the payload already being serialized.
  *
+ * The payload is not normalized on the server (usually whitespace outside
+ * of string literals, unnecessarily escaped characters in string and such
+ * are fixed up by the server), and is not even required to be JSON.
+ *
  * @param payload Serialized message payload
  * @param contentType Content type of the payload to send as a header. Defaults to `application/json`.
  *
  * See the class documentation for details about the other parameters.
+ *
  */
 fun messageInRaw(
     eventType: String,
