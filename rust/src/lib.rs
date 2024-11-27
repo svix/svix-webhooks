@@ -19,6 +19,7 @@ extern crate serde_derive;
 
 pub mod api;
 pub mod error;
+mod model_ext;
 mod request;
 pub mod webhooks;
 
