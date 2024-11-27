@@ -31,7 +31,7 @@ yarn openapi-generator-cli generate -i openapi.json -g csharp -o csharp/ -c csha
 jq --indent 4 '.components.schemas |= with_entries(
         if .key | endswith("Patch") then .
         else
-            (.required // []) as $required |
+            (.value.required // []) as $required |
             if .value | has("properties") then
                 .value.properties |= with_entries(
                     if .key | IN($required[]) then .
