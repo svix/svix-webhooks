@@ -96,3 +96,29 @@ func (m *Message) ExpungeContent(ctx context.Context, appId string, msgId string
 	res, err := req.Execute()
 	return wrapError(err, res)
 }
+
+// Instantiates a new MessageIn object with a pre-serialized payload.
+//
+// The payload is not normalized on the server (usually whitespace outside
+// of string literals, unnecessarily escaped characters in string and such
+// are fixed up by the server), and is not even required to be JSON.
+//
+// The last parameter can be used to change the `content-type` header to send,
+// overriding the default of `application/json`.
+//
+// See the class documentation for details about the other parameters.
+func NewMessageInRaw(eventType string, payload string, contentType openapi.NullableString) *MessageIn {
+	msgIn := openapi.NewMessageIn(eventType, make(map[string]interface{}))
+
+	transformationsParams := map[string]interface{}{
+		"rawPayload": payload,
+	}
+	if contentType.IsSet() {
+		transformationsParams["headers"] = map[string]string{
+			"content-type": *contentType.Get(),
+		}
+	}
+	msgIn.SetTransformationsParams(transformationsParams)
+
+	return msgIn
+}
