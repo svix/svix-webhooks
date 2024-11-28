@@ -12,7 +12,6 @@ package openapi
 
 import (
 	"encoding/json"
-	"time"
 	"bytes"
 	"fmt"
 )
@@ -22,11 +21,9 @@ var _ MappedNullable = &EnvironmentIn{}
 
 // EnvironmentIn struct for EnvironmentIn
 type EnvironmentIn struct {
-	CreatedAt time.Time `json:"createdAt"`
 	EventTypes []EventTypeIn `json:"eventTypes,omitempty"`
-	Settings *SettingsIn `json:"settings,omitempty"`
+	Settings map[string]map[string]interface{} `json:"settings"`
 	TransformationTemplates []TemplateIn `json:"transformationTemplates,omitempty"`
-	Version int32 `json:"version"`
 }
 
 type _EnvironmentIn EnvironmentIn
@@ -35,10 +32,9 @@ type _EnvironmentIn EnvironmentIn
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewEnvironmentIn(createdAt time.Time, version int32) *EnvironmentIn {
+func NewEnvironmentIn(settings map[string]map[string]interface{}) *EnvironmentIn {
 	this := EnvironmentIn{}
-	this.CreatedAt = createdAt
-	this.Version = version
+	this.Settings = settings
 	return &this
 }
 
@@ -48,30 +44,6 @@ func NewEnvironmentIn(createdAt time.Time, version int32) *EnvironmentIn {
 func NewEnvironmentInWithDefaults() *EnvironmentIn {
 	this := EnvironmentIn{}
 	return &this
-}
-
-// GetCreatedAt returns the CreatedAt field value
-func (o *EnvironmentIn) GetCreatedAt() time.Time {
-	if o == nil {
-		var ret time.Time
-		return ret
-	}
-
-	return o.CreatedAt
-}
-
-// GetCreatedAtOk returns a tuple with the CreatedAt field value
-// and a boolean to check if the value has been set.
-func (o *EnvironmentIn) GetCreatedAtOk() (*time.Time, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.CreatedAt, true
-}
-
-// SetCreatedAt sets field value
-func (o *EnvironmentIn) SetCreatedAt(v time.Time) {
-	o.CreatedAt = v
 }
 
 // GetEventTypes returns the EventTypes field value if set, zero value otherwise (both if not set or set to explicit null).
@@ -107,36 +79,30 @@ func (o *EnvironmentIn) SetEventTypes(v []EventTypeIn) {
 	o.EventTypes = v
 }
 
-// GetSettings returns the Settings field value if set, zero value otherwise.
-func (o *EnvironmentIn) GetSettings() SettingsIn {
-	if o == nil || IsNil(o.Settings) {
-		var ret SettingsIn
+// GetSettings returns the Settings field value
+// If the value is explicit nil, the zero value for map[string]map[string]interface{} will be returned
+func (o *EnvironmentIn) GetSettings() map[string]map[string]interface{} {
+	if o == nil {
+		var ret map[string]map[string]interface{}
 		return ret
 	}
-	return *o.Settings
+
+	return o.Settings
 }
 
-// GetSettingsOk returns a tuple with the Settings field value if set, nil otherwise
+// GetSettingsOk returns a tuple with the Settings field value
 // and a boolean to check if the value has been set.
-func (o *EnvironmentIn) GetSettingsOk() (*SettingsIn, bool) {
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *EnvironmentIn) GetSettingsOk() (map[string]map[string]interface{}, bool) {
 	if o == nil || IsNil(o.Settings) {
-		return nil, false
+		return map[string]map[string]interface{}{}, false
 	}
 	return o.Settings, true
 }
 
-// HasSettings returns a boolean if a field has been set.
-func (o *EnvironmentIn) HasSettings() bool {
-	if o != nil && !IsNil(o.Settings) {
-		return true
-	}
-
-	return false
-}
-
-// SetSettings gets a reference to the given SettingsIn and assigns it to the Settings field.
-func (o *EnvironmentIn) SetSettings(v SettingsIn) {
-	o.Settings = &v
+// SetSettings sets field value
+func (o *EnvironmentIn) SetSettings(v map[string]map[string]interface{}) {
+	o.Settings = v
 }
 
 // GetTransformationTemplates returns the TransformationTemplates field value if set, zero value otherwise (both if not set or set to explicit null).
@@ -172,30 +138,6 @@ func (o *EnvironmentIn) SetTransformationTemplates(v []TemplateIn) {
 	o.TransformationTemplates = v
 }
 
-// GetVersion returns the Version field value
-func (o *EnvironmentIn) GetVersion() int32 {
-	if o == nil {
-		var ret int32
-		return ret
-	}
-
-	return o.Version
-}
-
-// GetVersionOk returns a tuple with the Version field value
-// and a boolean to check if the value has been set.
-func (o *EnvironmentIn) GetVersionOk() (*int32, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.Version, true
-}
-
-// SetVersion sets field value
-func (o *EnvironmentIn) SetVersion(v int32) {
-	o.Version = v
-}
-
 func (o EnvironmentIn) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -206,17 +148,15 @@ func (o EnvironmentIn) MarshalJSON() ([]byte, error) {
 
 func (o EnvironmentIn) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["createdAt"] = o.CreatedAt
 	if o.EventTypes != nil {
 		toSerialize["eventTypes"] = o.EventTypes
 	}
-	if !IsNil(o.Settings) {
+	if o.Settings != nil {
 		toSerialize["settings"] = o.Settings
 	}
 	if o.TransformationTemplates != nil {
 		toSerialize["transformationTemplates"] = o.TransformationTemplates
 	}
-	toSerialize["version"] = o.Version
 	return toSerialize, nil
 }
 
@@ -225,8 +165,7 @@ func (o *EnvironmentIn) UnmarshalJSON(data []byte) (err error) {
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
-		"createdAt",
-		"version",
+		"settings",
 	}
 
 	allProperties := make(map[string]interface{})
