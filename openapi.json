@@ -559,6 +559,25 @@
                 ],
                 "type": "object"
             },
+            "CountOut": {
+                "properties": {
+                    "approximated": {
+                        "description": "There's a ceiling to how many attempts we count. When the limit is reached, this will be `true` to indicate the actual count is higher than given.",
+                        "type": "boolean"
+                    },
+                    "count": {
+                        "description": "The count of attempts matching the query.",
+                        "format": "uint64",
+                        "minimum": 0,
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "approximated",
+                    "count"
+                ],
+                "type": "object"
+            },
             "CreateMessageTokenIn": {
                 "properties": {
                     "expiry": {
@@ -1692,10 +1711,6 @@
             },
             "EnvironmentIn": {
                 "properties": {
-                    "createdAt": {
-                        "format": "date-time",
-                        "type": "string"
-                    },
                     "eventTypes": {
                         "items": {
                             "$ref": "#/components/schemas/EventTypeIn"
@@ -1704,8 +1719,11 @@
                         "type": "array"
                     },
                     "settings": {
-                        "$ref": "#/components/schemas/SettingsIn",
-                        "nullable": true
+                        "additionalProperties": {
+                            "type": "object"
+                        },
+                        "nullable": true,
+                        "type": "object"
                     },
                     "transformationTemplates": {
                         "items": {
@@ -1713,15 +1731,10 @@
                         },
                         "nullable": true,
                         "type": "array"
-                    },
-                    "version": {
-                        "format": "int",
-                        "type": "integer"
                     }
                 },
                 "required": [
-                    "createdAt",
-                    "version"
+                    "settings"
                 ],
                 "type": "object"
             },
@@ -1738,8 +1751,11 @@
                         "type": "array"
                     },
                     "settings": {
-                        "$ref": "#/components/schemas/SettingsOut",
-                        "nullable": true
+                        "additionalProperties": {
+                            "type": "object"
+                        },
+                        "nullable": true,
+                        "type": "object"
                     },
                     "transformationTemplates": {
                         "items": {
@@ -1756,6 +1772,7 @@
                 "required": [
                     "createdAt",
                     "eventTypes",
+                    "settings",
                     "transformationTemplates"
                 ],
                 "type": "object"
@@ -4517,188 +4534,6 @@
                     "region",
                     "secretAccessKey"
                 ],
-                "type": "object"
-            },
-            "SettingsIn": {
-                "properties": {
-                    "colorPaletteDark": {
-                        "$ref": "#/components/schemas/CustomColorPalette",
-                        "nullable": true
-                    },
-                    "colorPaletteLight": {
-                        "$ref": "#/components/schemas/CustomColorPalette",
-                        "nullable": true
-                    },
-                    "customBaseFontSize": {
-                        "format": "int",
-                        "nullable": true,
-                        "type": "integer"
-                    },
-                    "customColor": {
-                        "format": "color",
-                        "nullable": true,
-                        "type": "string"
-                    },
-                    "customFontFamily": {
-                        "example": "Open Sans",
-                        "nullable": true,
-                        "pattern": "^[a-zA-Z0-9\\-_ ]+$",
-                        "type": "string"
-                    },
-                    "customFontFamilyUrl": {
-                        "format": "uri",
-                        "maxLength": 65536,
-                        "minLength": 1,
-                        "nullable": true,
-                        "type": "string"
-                    },
-                    "customLogoUrl": {
-                        "format": "uri",
-                        "maxLength": 65536,
-                        "minLength": 1,
-                        "nullable": true,
-                        "type": "string"
-                    },
-                    "customStringsOverride": {
-                        "$ref": "#/components/schemas/CustomStringsOverride",
-                        "nullable": true
-                    },
-                    "customThemeOverride": {
-                        "$ref": "#/components/schemas/CustomThemeOverride",
-                        "nullable": true
-                    },
-                    "disableEndpointOnFailure": {
-                        "default": true,
-                        "type": "boolean"
-                    },
-                    "displayName": {
-                        "nullable": true,
-                        "type": "string"
-                    },
-                    "enableChannels": {
-                        "default": false,
-                        "type": "boolean"
-                    },
-                    "enableIntegrationManagement": {
-                        "default": false,
-                        "type": "boolean"
-                    },
-                    "enableTransformations": {
-                        "default": false,
-                        "type": "boolean"
-                    },
-                    "enforceHttps": {
-                        "default": true,
-                        "type": "boolean"
-                    },
-                    "eventCatalogPublished": {
-                        "default": false,
-                        "type": "boolean"
-                    },
-                    "readOnly": {
-                        "default": false,
-                        "type": "boolean"
-                    },
-                    "showUseSvixPlay": {
-                        "default": true,
-                        "type": "boolean"
-                    },
-                    "wipeSuccessfulPayload": {
-                        "default": false,
-                        "type": "boolean"
-                    }
-                },
-                "type": "object"
-            },
-            "SettingsOut": {
-                "properties": {
-                    "colorPaletteDark": {
-                        "$ref": "#/components/schemas/CustomColorPalette",
-                        "nullable": true
-                    },
-                    "colorPaletteLight": {
-                        "$ref": "#/components/schemas/CustomColorPalette",
-                        "nullable": true
-                    },
-                    "customBaseFontSize": {
-                        "format": "int",
-                        "nullable": true,
-                        "type": "integer"
-                    },
-                    "customColor": {
-                        "format": "color",
-                        "nullable": true,
-                        "type": "string"
-                    },
-                    "customFontFamily": {
-                        "example": "Open Sans",
-                        "nullable": true,
-                        "pattern": "^[a-zA-Z0-9\\-_ ]+$",
-                        "type": "string"
-                    },
-                    "customFontFamilyUrl": {
-                        "format": "uri",
-                        "maxLength": 65536,
-                        "minLength": 1,
-                        "nullable": true,
-                        "type": "string"
-                    },
-                    "customLogoUrl": {
-                        "format": "uri",
-                        "maxLength": 65536,
-                        "minLength": 1,
-                        "nullable": true,
-                        "type": "string"
-                    },
-                    "customStringsOverride": {
-                        "$ref": "#/components/schemas/CustomStringsOverride",
-                        "nullable": true
-                    },
-                    "customThemeOverride": {
-                        "$ref": "#/components/schemas/CustomThemeOverride",
-                        "nullable": true
-                    },
-                    "disableEndpointOnFailure": {
-                        "default": true,
-                        "type": "boolean"
-                    },
-                    "displayName": {
-                        "nullable": true,
-                        "type": "string"
-                    },
-                    "enableChannels": {
-                        "default": false,
-                        "type": "boolean"
-                    },
-                    "enableIntegrationManagement": {
-                        "default": false,
-                        "type": "boolean"
-                    },
-                    "enableTransformations": {
-                        "default": false,
-                        "type": "boolean"
-                    },
-                    "enforceHttps": {
-                        "default": true,
-                        "type": "boolean"
-                    },
-                    "eventCatalogPublished": {
-                        "default": false,
-                        "type": "boolean"
-                    },
-                    "readOnly": {
-                        "default": false,
-                        "type": "boolean"
-                    },
-                    "showUseSvixPlay": {
-                        "default": true,
-                        "type": "boolean"
-                    },
-                    "wipeSuccessfulPayload": {
-                        "default": false,
-                        "type": "boolean"
-                    }
-                },
                 "type": "object"
             },
             "SinkHttpConfig": {
@@ -7659,6 +7494,7 @@
                     },
                     {
                         "description": "Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)",
+                        "explode": false,
                         "in": "query",
                         "name": "status",
                         "schema": {
@@ -7666,11 +7502,11 @@
                             "description": "Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)",
                             "nullable": true
                         },
-                        "style": "form",
-                        "explode": false
+                        "style": "form"
                     },
                     {
                         "description": "Filter response based on the HTTP status code",
+                        "explode": false,
                         "in": "query",
                         "name": "status_code_class",
                         "schema": {
@@ -7959,6 +7795,292 @@
                 ]
             }
         },
+        "/api/v1/app/{app_id}/attempt/endpoint/{endpoint_id}/count": {
+            "get": {
+                "description": "Like `v1.message-attempt.list-by-endpoint` but returning a count only.",
+                "operationId": "v1.message-attempt.count-by-endpoint",
+                "parameters": [
+                    {
+                        "description": "Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)",
+                        "explode": false,
+                        "in": "query",
+                        "name": "status",
+                        "schema": {
+                            "$ref": "#/components/schemas/MessageStatus",
+                            "description": "Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)",
+                            "nullable": true
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "description": "Filter response based on the HTTP status code",
+                        "explode": false,
+                        "in": "query",
+                        "name": "status_code_class",
+                        "schema": {
+                            "$ref": "#/components/schemas/StatusCodeClass",
+                            "description": "Filter response based on the HTTP status code",
+                            "nullable": true
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "description": "Filter response based on the channel",
+                        "in": "query",
+                        "name": "channel",
+                        "schema": {
+                            "description": "Filter response based on the channel",
+                            "example": "project_1337",
+                            "maxLength": 128,
+                            "nullable": true,
+                            "pattern": "^[a-zA-Z0-9\\-_.:]+$",
+                            "type": "string"
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "description": "Filter response based on the tag",
+                        "in": "query",
+                        "name": "tag",
+                        "schema": {
+                            "description": "Filter response based on the tag",
+                            "example": "project_1337",
+                            "maxLength": 128,
+                            "nullable": true,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "description": "Only include items created before a certain date",
+                        "in": "query",
+                        "name": "before",
+                        "schema": {
+                            "description": "Only include items created before a certain date",
+                            "format": "date-time",
+                            "nullable": true,
+                            "type": "string"
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "description": "Only include items created after a certain date",
+                        "in": "query",
+                        "name": "after",
+                        "schema": {
+                            "description": "Only include items created after a certain date",
+                            "format": "date-time",
+                            "nullable": true,
+                            "type": "string"
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "description": "Filter response based on the event type",
+                        "in": "query",
+                        "name": "event_types",
+                        "schema": {
+                            "description": "Filter response based on the event type",
+                            "items": {
+                                "description": "The event type's name",
+                                "example": "user.signup",
+                                "maxLength": 256,
+                                "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                                "type": "string"
+                            },
+                            "nullable": true,
+                            "type": "array",
+                            "uniqueItems": true
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "description": "The app's ID or UID",
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The app's ID or UID",
+                            "example": "unique-app-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The ep's ID or UID",
+                        "in": "path",
+                        "name": "endpoint_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The ep's ID or UID",
+                            "example": "unique-ep-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CountOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Count Attempts By Endpoint",
+                "tags": [
+                    "Message Attempt"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const countOut = await svix.messageAttempt.countByEndpoint(\"app_id\", \"endpoint_id\");"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const countOut = await svix.messageAttempt.countByEndpoint(\"app_id\", \"endpoint_id\");"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "count_out = svix.message_attempt.count_by_endpoint(\"app_id\", \"endpoint_id\")"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "count_out = await svix.message_attempt.count_by_endpoint(\"app_id\", \"endpoint_id\")"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "countOut, err := svixClient.MessageAttempt.CountByEndpoint(ctx, \"app_id\", \"endpoint_id\")"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val countOut = svix.messageAttempt.countByEndpoint(\"app_id\", \"endpoint_id\")"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "CountOut countOut = svix.getMessageAttempt().countByEndpoint(\"app_id\", \"endpoint_id\")"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "count_out = svix.message_attempt.count_by_endpoint(\"app_id\", \"endpoint_id\")"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let count_out = svix.message_attempt().count_by_endpoint(\"app_id\", \"endpoint_id\").await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var countOut = await svix.MessageAttempt.CountByEndpointAsync(\"app_id\", \"endpoint_id\")"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix message-attempt count-by-endpoint \"app_id\" \"endpoint_id\""
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/attempt/endpoint/{endpoint_id}/count' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ]
+            }
+        },
         "/api/v1/app/{app_id}/attempt/msg/{msg_id}": {
             "get": {
                 "description": "List attempts by message id\n\nNote that by default this endpoint is limited to retrieving 90 days' worth of data\nrelative to now or, if an iterator is provided, 90 days before/after the time indicated\nby the iterator ID. If you require data beyond those time ranges, you will need to explicitly\nset the `before` or `after` parameter as appropriate.\n",
@@ -7991,6 +8113,7 @@
                     },
                     {
                         "description": "Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)",
+                        "explode": false,
                         "in": "query",
                         "name": "status",
                         "schema": {
@@ -7998,11 +8121,11 @@
                             "description": "Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)",
                             "nullable": true
                         },
-                        "style": "form",
-                        "explode": false
+                        "style": "form"
                     },
                     {
                         "description": "Filter response based on the HTTP status code",
+                        "explode": false,
                         "in": "query",
                         "name": "status_code_class",
                         "schema": {
@@ -10116,6 +10239,7 @@
                     },
                     {
                         "description": "Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)",
+                        "explode": false,
                         "in": "query",
                         "name": "status",
                         "schema": {
@@ -10123,8 +10247,7 @@
                             "description": "Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)",
                             "nullable": true
                         },
-                        "style": "form",
-                        "explode": false
+                        "style": "form"
                     },
                     {
                         "description": "Only include items created before a certain date",
@@ -16485,6 +16608,7 @@
                     },
                     {
                         "description": "Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)",
+                        "explode": false,
                         "in": "query",
                         "name": "status",
                         "schema": {
@@ -16492,8 +16616,7 @@
                             "description": "Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)",
                             "nullable": true
                         },
-                        "style": "form",
-                        "explode": false
+                        "style": "form"
                     },
                     {
                         "description": "Only include items created before a certain date",
@@ -16521,6 +16644,7 @@
                     },
                     {
                         "description": "Filter response based on the HTTP status code",
+                        "explode": false,
                         "in": "query",
                         "name": "status_code_class",
                         "schema": {
@@ -17798,6 +17922,7 @@
                     },
                     {
                         "description": "Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)",
+                        "explode": false,
                         "in": "query",
                         "name": "status",
                         "schema": {
@@ -17805,8 +17930,7 @@
                             "description": "Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)",
                             "nullable": true
                         },
-                        "style": "form",
-                        "explode": false
+                        "style": "form"
                     },
                     {
                         "description": "Only include items created before a certain date",
@@ -20633,108 +20757,6 @@
             }
         },
         "/api/v1/environment/export": {
-            "get": {
-                "description": "Download a JSON file containing all org-settings and event types",
-                "operationId": "v1.environment.export.get",
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/EnvironmentOut"
-                                }
-                            }
-                        },
-                        "description": ""
-                    },
-                    "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Bad request"
-                    },
-                    "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Forbidden"
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Not Found"
-                    },
-                    "409": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Conflict"
-                    },
-                    "422": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        },
-                        "description": "Validation Error"
-                    },
-                    "429": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Too Many Requests"
-                    }
-                },
-                "security": [
-                    {
-                        "HTTPBearer": []
-                    }
-                ],
-                "summary": "Export Environment Configuration",
-                "tags": [
-                    "Environment"
-                ],
-                "x-codeSamples": [
-                    {
-                        "label": "cURL",
-                        "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/environment/export' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
-                    }
-                ]
-            },
             "post": {
                 "description": "Download a JSON file containing all org-settings and event types",
                 "operationId": "v1.environment.export",
@@ -29382,6 +29404,10 @@
         {
             "description": "Configure where operational webhooks are sent to.",
             "name": "Webhook Endpoint"
+        },
+        {
+            "description": "Manage your environments like development, staging and production.",
+            "name": "Environment"
         }
     ],
     "x-tagGroups": [
@@ -29390,7 +29416,8 @@
             "tags": [
                 "Application",
                 "Event Type",
-                "Background Tasks"
+                "Background Tasks",
+                "Environment"
             ]
         },
         {
