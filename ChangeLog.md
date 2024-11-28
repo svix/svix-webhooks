@@ -3,6 +3,19 @@
 ## Next
 * 
 
+## Version 1.42.0
+* Server: Return 413 on large payloads ([#1530])
+* Libs/Python: Fix sync / async mismatch for op-webhook-endpoint API ([#1535])
+* Libs/Rust: Fix types of `iterator` fields ([#1534])
+* Libs/Kotlin: Add convenient construction of messages with pre-serialized payload ([#1531])
+* Libs/Rust: Add convenient construction of messages with pre-serialized payload ([#1533])
+
+[#1530]: https://github.com/svix/svix-webhooks/pull/1530
+[#1531]: https://github.com/svix/svix-webhooks/pull/1531
+[#1533]: https://github.com/svix/svix-webhooks/pull/1533
+[#1534]: https://github.com/svix/svix-webhooks/pull/1534
+[#1535]: https://github.com/svix/svix-webhooks/pull/1535
+
 ## Version 1.41.0
 * Libs/JS: Allow `iterator` and date parameters on list endpoints to be `null` (in addition to `undefined`)
 * Libs/JS: Fix serialization of message `status` query parameters
