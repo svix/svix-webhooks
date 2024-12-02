@@ -39,18 +39,27 @@ var defaultHTTPClient = &http.Client{
 func String(s string) *string {
 	return &s
 }
+
 func NullableString(s *string) *openapi.NullableString {
 	return openapi.NewNullableString(s)
 }
+
 func StaticNullableString(s string) openapi.NullableString {
 	return *NullableString(String(s))
 }
+
 func NullableInt32(num *int32) *openapi.NullableInt32 {
 	return openapi.NewNullableInt32(num)
 }
+
+func NullableInt64(num *int64) *openapi.NullableInt64 {
+	return openapi.NewNullableInt64(num)
+}
+
 func Int32(i int32) *int32 {
 	return &i
 }
+
 func NullableBool(b *bool) *openapi.NullableBool {
 	return openapi.NewNullableBool(b)
 }
