@@ -18,7 +18,7 @@ jobs:
       - name: Setup .NET Core SDK
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 6.0.x
+          dotnet-version: 8.0.x
 
       - name: Regen openapi libs
         run: |
@@ -31,6 +31,9 @@ jobs:
           dotnet restore
 
       - name: Build
-        run: |
-          cd csharp
-          dotnet build --configuration Release Svix --no-restore
+        run: dotnet build --configuration Release --no-restore
+        working-directory: ./csharp
+
+      - name: Test
+        run: dotnet test Svix.Tests
+        working-directory: ./csharp
