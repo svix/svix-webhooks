@@ -23,6 +23,54 @@ namespace Svix
             _messageApi = messageApi ?? throw new ArgumentException(nameof(messageApi));
         }
 
+
+        /// <summary>Creates a [MessageIn] with the payload already being serialized.
+        /// <para>
+        /// The payload is not normalized on the server (usually whitespace outside
+        /// of string literals, unnecessarily escaped characters in string and such
+        /// are fixed up by the server), and is not even required to be JSON.
+        /// </para>
+        /// </summary>
+        /// <param name="payload">Serialized message payload</param>
+        /// <param name="contentType">Content type of the payload to send as a header. Defaults to `application/json`.</param>
+        public static MessageIn messageInRaw(
+            string eventType,
+            string payload,
+            string? contentType = null,
+            ApplicationIn application = default(ApplicationIn),
+            List<string> channels = default(List<string>),
+            string eventId = default(string),
+            long? payloadRetentionHours = default(long?),
+            long? payloadRetentionPeriod = 90,
+            List<string> tags = default(List<string>),
+            Dictionary<string, Object> transformationsParams = default(Dictionary<string, Object>)
+        )
+        {
+            if (transformationsParams == null)
+            {
+                transformationsParams = new Dictionary<string, object>();
+            }
+
+            transformationsParams["rawPayload"] = payload;
+            if (contentType != null)
+            {
+                transformationsParams["headers"] =
+                    new Dictionary<string, string> { ["content-type"] = contentType };
+            }
+
+            return new MessageIn(
+                eventType: eventType,
+                payload: new { },
+                application: application,
+                channels: channels,
+                eventId: eventId,
+                payloadRetentionHours: payloadRetentionHours,
+                payloadRetentionPeriod: payloadRetentionPeriod,
+                tags: tags,
+                transformationsParams: transformationsParams
+            );
+        }
+
         public MessageOut Create(string appId, MessageIn message, MessageCreateOptions options = null, string idempotencyKey = default)
         {
             try
