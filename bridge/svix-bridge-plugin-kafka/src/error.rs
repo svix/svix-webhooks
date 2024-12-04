@@ -5,7 +5,7 @@ use svix_bridge_types::svix::error::Error as SvixClientError;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
-    #[error("kafka error")]
+    #[error("kafka error: {0}")]
     Kafka(#[from] KafkaError),
 
     #[error("svix client error")]
