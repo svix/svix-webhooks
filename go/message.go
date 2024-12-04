@@ -99,12 +99,14 @@ func (m *Message) ExpungeContent(ctx context.Context, appId string, msgId string
 
 // Instantiates a new MessageIn object with a pre-serialized payload.
 //
-// The payload is not normalized on the server (usually whitespace outside
-// of string literals, unnecessarily escaped characters in string and such
-// are fixed up by the server), and is not even required to be JSON.
+// The payload is not normalized on the server. Normally, payloads are required
+// to be JSON, and Svix will minify the payload before sending the webhook
+// (for example, by removing extraneous whitespace or unnecessarily escaped
+// characters in strings). With this function, the payload will be sent
+// "as is", without any minification or other processing.
 //
-// The last parameter can be used to change the `content-type` header to send,
-// overriding the default of `application/json`.
+// The `contentType` parameter can be used to change the `content-type` header
+// of the webhook sent by Svix overriding the default of `application/json`.
 //
 // See the class documentation for details about the other parameters.
 func NewMessageInRaw(eventType string, payload string, contentType openapi.NullableString) *MessageIn {
