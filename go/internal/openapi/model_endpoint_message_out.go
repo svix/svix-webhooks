@@ -25,12 +25,12 @@ type EndpointMessageOut struct {
 	// List of free-form identifiers that endpoints can filter by
 	Channels []string `json:"channels,omitempty"`
 	// Optional unique identifier for the message
-	EventId NullableString `json:"eventId,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
+	EventId *string `json:"eventId,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
 	// The event type's name
 	EventType string `json:"eventType" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
 	// The msg's ID
 	Id string `json:"id"`
-	NextAttempt NullableTime `json:"nextAttempt,omitempty"`
+	NextAttempt *time.Time `json:"nextAttempt,omitempty"`
 	Payload map[string]interface{} `json:"payload"`
 	Status MessageStatus `json:"status"`
 	Tags []string `json:"tags,omitempty"`
@@ -61,9 +61,9 @@ func NewEndpointMessageOutWithDefaults() *EndpointMessageOut {
 	return &this
 }
 
-// GetChannels returns the Channels field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetChannels returns the Channels field value if set, zero value otherwise.
 func (o *EndpointMessageOut) GetChannels() []string {
-	if o == nil {
+	if o == nil || IsNil(o.Channels) {
 		var ret []string
 		return ret
 	}
@@ -72,7 +72,6 @@ func (o *EndpointMessageOut) GetChannels() []string {
 
 // GetChannelsOk returns a tuple with the Channels field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *EndpointMessageOut) GetChannelsOk() ([]string, bool) {
 	if o == nil || IsNil(o.Channels) {
 		return nil, false
@@ -94,46 +93,36 @@ func (o *EndpointMessageOut) SetChannels(v []string) {
 	o.Channels = v
 }
 
-// GetEventId returns the EventId field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetEventId returns the EventId field value if set, zero value otherwise.
 func (o *EndpointMessageOut) GetEventId() string {
-	if o == nil || IsNil(o.EventId.Get()) {
+	if o == nil || IsNil(o.EventId) {
 		var ret string
 		return ret
 	}
-	return *o.EventId.Get()
+	return *o.EventId
 }
 
 // GetEventIdOk returns a tuple with the EventId field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *EndpointMessageOut) GetEventIdOk() (*string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.EventId) {
 		return nil, false
 	}
-	return o.EventId.Get(), o.EventId.IsSet()
+	return o.EventId, true
 }
 
 // HasEventId returns a boolean if a field has been set.
 func (o *EndpointMessageOut) HasEventId() bool {
-	if o != nil && o.EventId.IsSet() {
+	if o != nil && !IsNil(o.EventId) {
 		return true
 	}
 
 	return false
 }
 
-// SetEventId gets a reference to the given NullableString and assigns it to the EventId field.
+// SetEventId gets a reference to the given string and assigns it to the EventId field.
 func (o *EndpointMessageOut) SetEventId(v string) {
-	o.EventId.Set(&v)
-}
-// SetEventIdNil sets the value for EventId to be an explicit nil
-func (o *EndpointMessageOut) SetEventIdNil() {
-	o.EventId.Set(nil)
-}
-
-// UnsetEventId ensures that no value is present for EventId, not even an explicit nil
-func (o *EndpointMessageOut) UnsetEventId() {
-	o.EventId.Unset()
+	o.EventId = &v
 }
 
 // GetEventType returns the EventType field value
@@ -184,46 +173,36 @@ func (o *EndpointMessageOut) SetId(v string) {
 	o.Id = v
 }
 
-// GetNextAttempt returns the NextAttempt field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetNextAttempt returns the NextAttempt field value if set, zero value otherwise.
 func (o *EndpointMessageOut) GetNextAttempt() time.Time {
-	if o == nil || IsNil(o.NextAttempt.Get()) {
+	if o == nil || IsNil(o.NextAttempt) {
 		var ret time.Time
 		return ret
 	}
-	return *o.NextAttempt.Get()
+	return *o.NextAttempt
 }
 
 // GetNextAttemptOk returns a tuple with the NextAttempt field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *EndpointMessageOut) GetNextAttemptOk() (*time.Time, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.NextAttempt) {
 		return nil, false
 	}
-	return o.NextAttempt.Get(), o.NextAttempt.IsSet()
+	return o.NextAttempt, true
 }
 
 // HasNextAttempt returns a boolean if a field has been set.
 func (o *EndpointMessageOut) HasNextAttempt() bool {
-	if o != nil && o.NextAttempt.IsSet() {
+	if o != nil && !IsNil(o.NextAttempt) {
 		return true
 	}
 
 	return false
 }
 
-// SetNextAttempt gets a reference to the given NullableTime and assigns it to the NextAttempt field.
+// SetNextAttempt gets a reference to the given time.Time and assigns it to the NextAttempt field.
 func (o *EndpointMessageOut) SetNextAttempt(v time.Time) {
-	o.NextAttempt.Set(&v)
-}
-// SetNextAttemptNil sets the value for NextAttempt to be an explicit nil
-func (o *EndpointMessageOut) SetNextAttemptNil() {
-	o.NextAttempt.Set(nil)
-}
-
-// UnsetNextAttempt ensures that no value is present for NextAttempt, not even an explicit nil
-func (o *EndpointMessageOut) UnsetNextAttempt() {
-	o.NextAttempt.Unset()
+	o.NextAttempt = &v
 }
 
 // GetPayload returns the Payload field value
@@ -274,9 +253,9 @@ func (o *EndpointMessageOut) SetStatus(v MessageStatus) {
 	o.Status = v
 }
 
-// GetTags returns the Tags field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetTags returns the Tags field value if set, zero value otherwise.
 func (o *EndpointMessageOut) GetTags() []string {
-	if o == nil {
+	if o == nil || IsNil(o.Tags) {
 		var ret []string
 		return ret
 	}
@@ -285,7 +264,6 @@ func (o *EndpointMessageOut) GetTags() []string {
 
 // GetTagsOk returns a tuple with the Tags field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *EndpointMessageOut) GetTagsOk() ([]string, bool) {
 	if o == nil || IsNil(o.Tags) {
 		return nil, false
@@ -341,20 +319,20 @@ func (o EndpointMessageOut) MarshalJSON() ([]byte, error) {
 
 func (o EndpointMessageOut) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if o.Channels != nil {
+	if !IsNil(o.Channels) {
 		toSerialize["channels"] = o.Channels
 	}
-	if o.EventId.IsSet() {
-		toSerialize["eventId"] = o.EventId.Get()
+	if !IsNil(o.EventId) {
+		toSerialize["eventId"] = o.EventId
 	}
 	toSerialize["eventType"] = o.EventType
 	toSerialize["id"] = o.Id
-	if o.NextAttempt.IsSet() {
-		toSerialize["nextAttempt"] = o.NextAttempt.Get()
+	if !IsNil(o.NextAttempt) {
+		toSerialize["nextAttempt"] = o.NextAttempt
 	}
 	toSerialize["payload"] = o.Payload
 	toSerialize["status"] = o.Status
-	if o.Tags != nil {
+	if !IsNil(o.Tags) {
 		toSerialize["tags"] = o.Tags
 	}
 	toSerialize["timestamp"] = o.Timestamp

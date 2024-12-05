@@ -22,7 +22,7 @@ var _ MappedNullable = &EventIn{}
 // EventIn struct for EventIn
 type EventIn struct {
 	// The event type's name
-	EventType NullableString `json:"eventType,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
+	EventType *string `json:"eventType,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
 	Payload string `json:"payload"`
 }
 
@@ -46,46 +46,36 @@ func NewEventInWithDefaults() *EventIn {
 	return &this
 }
 
-// GetEventType returns the EventType field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetEventType returns the EventType field value if set, zero value otherwise.
 func (o *EventIn) GetEventType() string {
-	if o == nil || IsNil(o.EventType.Get()) {
+	if o == nil || IsNil(o.EventType) {
 		var ret string
 		return ret
 	}
-	return *o.EventType.Get()
+	return *o.EventType
 }
 
 // GetEventTypeOk returns a tuple with the EventType field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *EventIn) GetEventTypeOk() (*string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.EventType) {
 		return nil, false
 	}
-	return o.EventType.Get(), o.EventType.IsSet()
+	return o.EventType, true
 }
 
 // HasEventType returns a boolean if a field has been set.
 func (o *EventIn) HasEventType() bool {
-	if o != nil && o.EventType.IsSet() {
+	if o != nil && !IsNil(o.EventType) {
 		return true
 	}
 
 	return false
 }
 
-// SetEventType gets a reference to the given NullableString and assigns it to the EventType field.
+// SetEventType gets a reference to the given string and assigns it to the EventType field.
 func (o *EventIn) SetEventType(v string) {
-	o.EventType.Set(&v)
-}
-// SetEventTypeNil sets the value for EventType to be an explicit nil
-func (o *EventIn) SetEventTypeNil() {
-	o.EventType.Set(nil)
-}
-
-// UnsetEventType ensures that no value is present for EventType, not even an explicit nil
-func (o *EventIn) UnsetEventType() {
-	o.EventType.Unset()
+	o.EventType = &v
 }
 
 // GetPayload returns the Payload field value
@@ -122,8 +112,8 @@ func (o EventIn) MarshalJSON() ([]byte, error) {
 
 func (o EventIn) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if o.EventType.IsSet() {
-		toSerialize["eventType"] = o.EventType.Get()
+	if !IsNil(o.EventType) {
+		toSerialize["eventType"] = o.EventType
 	}
 	toSerialize["payload"] = o.Payload
 	return toSerialize, nil

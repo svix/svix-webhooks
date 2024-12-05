@@ -20,7 +20,7 @@ var _ MappedNullable = &ApplicationTokenExpireIn{}
 // ApplicationTokenExpireIn struct for ApplicationTokenExpireIn
 type ApplicationTokenExpireIn struct {
 	// How many seconds until the old key is expired.
-	Expiry NullableInt64 `json:"expiry,omitempty"`
+	Expiry *int64 `json:"expiry,omitempty"`
 }
 
 // NewApplicationTokenExpireIn instantiates a new ApplicationTokenExpireIn object
@@ -40,46 +40,36 @@ func NewApplicationTokenExpireInWithDefaults() *ApplicationTokenExpireIn {
 	return &this
 }
 
-// GetExpiry returns the Expiry field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetExpiry returns the Expiry field value if set, zero value otherwise.
 func (o *ApplicationTokenExpireIn) GetExpiry() int64 {
-	if o == nil || IsNil(o.Expiry.Get()) {
+	if o == nil || IsNil(o.Expiry) {
 		var ret int64
 		return ret
 	}
-	return *o.Expiry.Get()
+	return *o.Expiry
 }
 
 // GetExpiryOk returns a tuple with the Expiry field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *ApplicationTokenExpireIn) GetExpiryOk() (*int64, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.Expiry) {
 		return nil, false
 	}
-	return o.Expiry.Get(), o.Expiry.IsSet()
+	return o.Expiry, true
 }
 
 // HasExpiry returns a boolean if a field has been set.
 func (o *ApplicationTokenExpireIn) HasExpiry() bool {
-	if o != nil && o.Expiry.IsSet() {
+	if o != nil && !IsNil(o.Expiry) {
 		return true
 	}
 
 	return false
 }
 
-// SetExpiry gets a reference to the given NullableInt64 and assigns it to the Expiry field.
+// SetExpiry gets a reference to the given int64 and assigns it to the Expiry field.
 func (o *ApplicationTokenExpireIn) SetExpiry(v int64) {
-	o.Expiry.Set(&v)
-}
-// SetExpiryNil sets the value for Expiry to be an explicit nil
-func (o *ApplicationTokenExpireIn) SetExpiryNil() {
-	o.Expiry.Set(nil)
-}
-
-// UnsetExpiry ensures that no value is present for Expiry, not even an explicit nil
-func (o *ApplicationTokenExpireIn) UnsetExpiry() {
-	o.Expiry.Unset()
+	o.Expiry = &v
 }
 
 func (o ApplicationTokenExpireIn) MarshalJSON() ([]byte, error) {
@@ -92,8 +82,8 @@ func (o ApplicationTokenExpireIn) MarshalJSON() ([]byte, error) {
 
 func (o ApplicationTokenExpireIn) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if o.Expiry.IsSet() {
-		toSerialize["expiry"] = o.Expiry.Get()
+	if !IsNil(o.Expiry) {
+		toSerialize["expiry"] = o.Expiry
 	}
 	return toSerialize, nil
 }

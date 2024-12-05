@@ -50,9 +50,9 @@ func NewEndpointTransformationSimulateInWithDefaults() *EndpointTransformationSi
 	return &this
 }
 
-// GetChannels returns the Channels field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetChannels returns the Channels field value if set, zero value otherwise.
 func (o *EndpointTransformationSimulateIn) GetChannels() []string {
-	if o == nil {
+	if o == nil || IsNil(o.Channels) {
 		var ret []string
 		return ret
 	}
@@ -61,7 +61,6 @@ func (o *EndpointTransformationSimulateIn) GetChannels() []string {
 
 // GetChannelsOk returns a tuple with the Channels field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *EndpointTransformationSimulateIn) GetChannelsOk() ([]string, bool) {
 	if o == nil || IsNil(o.Channels) {
 		return nil, false
@@ -165,7 +164,7 @@ func (o EndpointTransformationSimulateIn) MarshalJSON() ([]byte, error) {
 
 func (o EndpointTransformationSimulateIn) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if o.Channels != nil {
+	if !IsNil(o.Channels) {
 		toSerialize["channels"] = o.Channels
 	}
 	toSerialize["code"] = o.Code

@@ -19,9 +19,9 @@ var _ MappedNullable = &IncomingWebhookPayloadOut{}
 
 // IncomingWebhookPayloadOut struct for IncomingWebhookPayloadOut
 type IncomingWebhookPayloadOut struct {
-	Channel NullableString `json:"channel,omitempty"`
-	Error NullableString `json:"error,omitempty"`
-	IncomingWebhookUrl NullableString `json:"incomingWebhookUrl,omitempty"`
+	Channel *string `json:"channel,omitempty"`
+	Error *string `json:"error,omitempty"`
+	IncomingWebhookUrl *string `json:"incomingWebhookUrl,omitempty"`
 }
 
 // NewIncomingWebhookPayloadOut instantiates a new IncomingWebhookPayloadOut object
@@ -41,130 +41,100 @@ func NewIncomingWebhookPayloadOutWithDefaults() *IncomingWebhookPayloadOut {
 	return &this
 }
 
-// GetChannel returns the Channel field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetChannel returns the Channel field value if set, zero value otherwise.
 func (o *IncomingWebhookPayloadOut) GetChannel() string {
-	if o == nil || IsNil(o.Channel.Get()) {
+	if o == nil || IsNil(o.Channel) {
 		var ret string
 		return ret
 	}
-	return *o.Channel.Get()
+	return *o.Channel
 }
 
 // GetChannelOk returns a tuple with the Channel field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *IncomingWebhookPayloadOut) GetChannelOk() (*string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.Channel) {
 		return nil, false
 	}
-	return o.Channel.Get(), o.Channel.IsSet()
+	return o.Channel, true
 }
 
 // HasChannel returns a boolean if a field has been set.
 func (o *IncomingWebhookPayloadOut) HasChannel() bool {
-	if o != nil && o.Channel.IsSet() {
+	if o != nil && !IsNil(o.Channel) {
 		return true
 	}
 
 	return false
 }
 
-// SetChannel gets a reference to the given NullableString and assigns it to the Channel field.
+// SetChannel gets a reference to the given string and assigns it to the Channel field.
 func (o *IncomingWebhookPayloadOut) SetChannel(v string) {
-	o.Channel.Set(&v)
-}
-// SetChannelNil sets the value for Channel to be an explicit nil
-func (o *IncomingWebhookPayloadOut) SetChannelNil() {
-	o.Channel.Set(nil)
+	o.Channel = &v
 }
 
-// UnsetChannel ensures that no value is present for Channel, not even an explicit nil
-func (o *IncomingWebhookPayloadOut) UnsetChannel() {
-	o.Channel.Unset()
-}
-
-// GetError returns the Error field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetError returns the Error field value if set, zero value otherwise.
 func (o *IncomingWebhookPayloadOut) GetError() string {
-	if o == nil || IsNil(o.Error.Get()) {
+	if o == nil || IsNil(o.Error) {
 		var ret string
 		return ret
 	}
-	return *o.Error.Get()
+	return *o.Error
 }
 
 // GetErrorOk returns a tuple with the Error field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *IncomingWebhookPayloadOut) GetErrorOk() (*string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.Error) {
 		return nil, false
 	}
-	return o.Error.Get(), o.Error.IsSet()
+	return o.Error, true
 }
 
 // HasError returns a boolean if a field has been set.
 func (o *IncomingWebhookPayloadOut) HasError() bool {
-	if o != nil && o.Error.IsSet() {
+	if o != nil && !IsNil(o.Error) {
 		return true
 	}
 
 	return false
 }
 
-// SetError gets a reference to the given NullableString and assigns it to the Error field.
+// SetError gets a reference to the given string and assigns it to the Error field.
 func (o *IncomingWebhookPayloadOut) SetError(v string) {
-	o.Error.Set(&v)
-}
-// SetErrorNil sets the value for Error to be an explicit nil
-func (o *IncomingWebhookPayloadOut) SetErrorNil() {
-	o.Error.Set(nil)
+	o.Error = &v
 }
 
-// UnsetError ensures that no value is present for Error, not even an explicit nil
-func (o *IncomingWebhookPayloadOut) UnsetError() {
-	o.Error.Unset()
-}
-
-// GetIncomingWebhookUrl returns the IncomingWebhookUrl field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetIncomingWebhookUrl returns the IncomingWebhookUrl field value if set, zero value otherwise.
 func (o *IncomingWebhookPayloadOut) GetIncomingWebhookUrl() string {
-	if o == nil || IsNil(o.IncomingWebhookUrl.Get()) {
+	if o == nil || IsNil(o.IncomingWebhookUrl) {
 		var ret string
 		return ret
 	}
-	return *o.IncomingWebhookUrl.Get()
+	return *o.IncomingWebhookUrl
 }
 
 // GetIncomingWebhookUrlOk returns a tuple with the IncomingWebhookUrl field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *IncomingWebhookPayloadOut) GetIncomingWebhookUrlOk() (*string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.IncomingWebhookUrl) {
 		return nil, false
 	}
-	return o.IncomingWebhookUrl.Get(), o.IncomingWebhookUrl.IsSet()
+	return o.IncomingWebhookUrl, true
 }
 
 // HasIncomingWebhookUrl returns a boolean if a field has been set.
 func (o *IncomingWebhookPayloadOut) HasIncomingWebhookUrl() bool {
-	if o != nil && o.IncomingWebhookUrl.IsSet() {
+	if o != nil && !IsNil(o.IncomingWebhookUrl) {
 		return true
 	}
 
 	return false
 }
 
-// SetIncomingWebhookUrl gets a reference to the given NullableString and assigns it to the IncomingWebhookUrl field.
+// SetIncomingWebhookUrl gets a reference to the given string and assigns it to the IncomingWebhookUrl field.
 func (o *IncomingWebhookPayloadOut) SetIncomingWebhookUrl(v string) {
-	o.IncomingWebhookUrl.Set(&v)
-}
-// SetIncomingWebhookUrlNil sets the value for IncomingWebhookUrl to be an explicit nil
-func (o *IncomingWebhookPayloadOut) SetIncomingWebhookUrlNil() {
-	o.IncomingWebhookUrl.Set(nil)
-}
-
-// UnsetIncomingWebhookUrl ensures that no value is present for IncomingWebhookUrl, not even an explicit nil
-func (o *IncomingWebhookPayloadOut) UnsetIncomingWebhookUrl() {
-	o.IncomingWebhookUrl.Unset()
+	o.IncomingWebhookUrl = &v
 }
 
 func (o IncomingWebhookPayloadOut) MarshalJSON() ([]byte, error) {
@@ -177,14 +147,14 @@ func (o IncomingWebhookPayloadOut) MarshalJSON() ([]byte, error) {
 
 func (o IncomingWebhookPayloadOut) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if o.Channel.IsSet() {
-		toSerialize["channel"] = o.Channel.Get()
+	if !IsNil(o.Channel) {
+		toSerialize["channel"] = o.Channel
 	}
-	if o.Error.IsSet() {
-		toSerialize["error"] = o.Error.Get()
+	if !IsNil(o.Error) {
+		toSerialize["error"] = o.Error
 	}
-	if o.IncomingWebhookUrl.IsSet() {
-		toSerialize["incomingWebhookUrl"] = o.IncomingWebhookUrl.Get()
+	if !IsNil(o.IncomingWebhookUrl) {
+		toSerialize["incomingWebhookUrl"] = o.IncomingWebhookUrl
 	}
 	return toSerialize, nil
 }

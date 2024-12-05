@@ -47,9 +47,9 @@ func NewMessageAttemptHeadersOutWithDefaults() *MessageAttemptHeadersOut {
 	return &this
 }
 
-// GetResponseHeaders returns the ResponseHeaders field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetResponseHeaders returns the ResponseHeaders field value if set, zero value otherwise.
 func (o *MessageAttemptHeadersOut) GetResponseHeaders() [][]string {
-	if o == nil {
+	if o == nil || IsNil(o.ResponseHeaders) {
 		var ret [][]string
 		return ret
 	}
@@ -58,7 +58,6 @@ func (o *MessageAttemptHeadersOut) GetResponseHeaders() [][]string {
 
 // GetResponseHeadersOk returns a tuple with the ResponseHeaders field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *MessageAttemptHeadersOut) GetResponseHeadersOk() ([][]string, bool) {
 	if o == nil || IsNil(o.ResponseHeaders) {
 		return nil, false
@@ -138,7 +137,7 @@ func (o MessageAttemptHeadersOut) MarshalJSON() ([]byte, error) {
 
 func (o MessageAttemptHeadersOut) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if o.ResponseHeaders != nil {
+	if !IsNil(o.ResponseHeaders) {
 		toSerialize["responseHeaders"] = o.ResponseHeaders
 	}
 	toSerialize["sensitive"] = o.Sensitive

@@ -22,7 +22,7 @@ var _ MappedNullable = &SinkHttpConfig{}
 // SinkHttpConfig struct for SinkHttpConfig
 type SinkHttpConfig struct {
 	Headers *map[string]string `json:"headers,omitempty"`
-	Key NullableString `json:"key,omitempty"`
+	Key *string `json:"key,omitempty"`
 	Url string `json:"url"`
 }
 
@@ -78,46 +78,36 @@ func (o *SinkHttpConfig) SetHeaders(v map[string]string) {
 	o.Headers = &v
 }
 
-// GetKey returns the Key field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetKey returns the Key field value if set, zero value otherwise.
 func (o *SinkHttpConfig) GetKey() string {
-	if o == nil || IsNil(o.Key.Get()) {
+	if o == nil || IsNil(o.Key) {
 		var ret string
 		return ret
 	}
-	return *o.Key.Get()
+	return *o.Key
 }
 
 // GetKeyOk returns a tuple with the Key field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *SinkHttpConfig) GetKeyOk() (*string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.Key) {
 		return nil, false
 	}
-	return o.Key.Get(), o.Key.IsSet()
+	return o.Key, true
 }
 
 // HasKey returns a boolean if a field has been set.
 func (o *SinkHttpConfig) HasKey() bool {
-	if o != nil && o.Key.IsSet() {
+	if o != nil && !IsNil(o.Key) {
 		return true
 	}
 
 	return false
 }
 
-// SetKey gets a reference to the given NullableString and assigns it to the Key field.
+// SetKey gets a reference to the given string and assigns it to the Key field.
 func (o *SinkHttpConfig) SetKey(v string) {
-	o.Key.Set(&v)
-}
-// SetKeyNil sets the value for Key to be an explicit nil
-func (o *SinkHttpConfig) SetKeyNil() {
-	o.Key.Set(nil)
-}
-
-// UnsetKey ensures that no value is present for Key, not even an explicit nil
-func (o *SinkHttpConfig) UnsetKey() {
-	o.Key.Unset()
+	o.Key = &v
 }
 
 // GetUrl returns the Url field value
@@ -157,8 +147,8 @@ func (o SinkHttpConfig) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Headers) {
 		toSerialize["headers"] = o.Headers
 	}
-	if o.Key.IsSet() {
-		toSerialize["key"] = o.Key.Get()
+	if !IsNil(o.Key) {
+		toSerialize["key"] = o.Key
 	}
 	toSerialize["url"] = o.Url
 	return toSerialize, nil

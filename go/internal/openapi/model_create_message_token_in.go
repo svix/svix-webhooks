@@ -22,7 +22,7 @@ var _ MappedNullable = &CreateMessageTokenIn{}
 // CreateMessageTokenIn struct for CreateMessageTokenIn
 type CreateMessageTokenIn struct {
 	// How long the token will be valid for, in seconds.
-	Expiry NullableInt32 `json:"expiry,omitempty"`
+	Expiry *int32 `json:"expiry,omitempty"`
 	// The name of the token.
 	Name string `json:"name"`
 }
@@ -47,46 +47,36 @@ func NewCreateMessageTokenInWithDefaults() *CreateMessageTokenIn {
 	return &this
 }
 
-// GetExpiry returns the Expiry field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetExpiry returns the Expiry field value if set, zero value otherwise.
 func (o *CreateMessageTokenIn) GetExpiry() int32 {
-	if o == nil || IsNil(o.Expiry.Get()) {
+	if o == nil || IsNil(o.Expiry) {
 		var ret int32
 		return ret
 	}
-	return *o.Expiry.Get()
+	return *o.Expiry
 }
 
 // GetExpiryOk returns a tuple with the Expiry field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *CreateMessageTokenIn) GetExpiryOk() (*int32, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.Expiry) {
 		return nil, false
 	}
-	return o.Expiry.Get(), o.Expiry.IsSet()
+	return o.Expiry, true
 }
 
 // HasExpiry returns a boolean if a field has been set.
 func (o *CreateMessageTokenIn) HasExpiry() bool {
-	if o != nil && o.Expiry.IsSet() {
+	if o != nil && !IsNil(o.Expiry) {
 		return true
 	}
 
 	return false
 }
 
-// SetExpiry gets a reference to the given NullableInt32 and assigns it to the Expiry field.
+// SetExpiry gets a reference to the given int32 and assigns it to the Expiry field.
 func (o *CreateMessageTokenIn) SetExpiry(v int32) {
-	o.Expiry.Set(&v)
-}
-// SetExpiryNil sets the value for Expiry to be an explicit nil
-func (o *CreateMessageTokenIn) SetExpiryNil() {
-	o.Expiry.Set(nil)
-}
-
-// UnsetExpiry ensures that no value is present for Expiry, not even an explicit nil
-func (o *CreateMessageTokenIn) UnsetExpiry() {
-	o.Expiry.Unset()
+	o.Expiry = &v
 }
 
 // GetName returns the Name field value
@@ -123,8 +113,8 @@ func (o CreateMessageTokenIn) MarshalJSON() ([]byte, error) {
 
 func (o CreateMessageTokenIn) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if o.Expiry.IsSet() {
-		toSerialize["expiry"] = o.Expiry.Get()
+	if !IsNil(o.Expiry) {
+		toSerialize["expiry"] = o.Expiry
 	}
 	toSerialize["name"] = o.Name
 	return toSerialize, nil

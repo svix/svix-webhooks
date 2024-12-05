@@ -27,9 +27,9 @@ type ApplicationOut struct {
 	Id string `json:"id"`
 	Metadata map[string]string `json:"metadata"`
 	Name string `json:"name"`
-	RateLimit NullableInt32 `json:"rateLimit,omitempty"`
+	RateLimit *int32 `json:"rateLimit,omitempty"`
 	// The app's UID
-	Uid NullableString `json:"uid,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
+	Uid *string `json:"uid,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
@@ -153,88 +153,68 @@ func (o *ApplicationOut) SetName(v string) {
 	o.Name = v
 }
 
-// GetRateLimit returns the RateLimit field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetRateLimit returns the RateLimit field value if set, zero value otherwise.
 func (o *ApplicationOut) GetRateLimit() int32 {
-	if o == nil || IsNil(o.RateLimit.Get()) {
+	if o == nil || IsNil(o.RateLimit) {
 		var ret int32
 		return ret
 	}
-	return *o.RateLimit.Get()
+	return *o.RateLimit
 }
 
 // GetRateLimitOk returns a tuple with the RateLimit field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *ApplicationOut) GetRateLimitOk() (*int32, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.RateLimit) {
 		return nil, false
 	}
-	return o.RateLimit.Get(), o.RateLimit.IsSet()
+	return o.RateLimit, true
 }
 
 // HasRateLimit returns a boolean if a field has been set.
 func (o *ApplicationOut) HasRateLimit() bool {
-	if o != nil && o.RateLimit.IsSet() {
+	if o != nil && !IsNil(o.RateLimit) {
 		return true
 	}
 
 	return false
 }
 
-// SetRateLimit gets a reference to the given NullableInt32 and assigns it to the RateLimit field.
+// SetRateLimit gets a reference to the given int32 and assigns it to the RateLimit field.
 func (o *ApplicationOut) SetRateLimit(v int32) {
-	o.RateLimit.Set(&v)
-}
-// SetRateLimitNil sets the value for RateLimit to be an explicit nil
-func (o *ApplicationOut) SetRateLimitNil() {
-	o.RateLimit.Set(nil)
+	o.RateLimit = &v
 }
 
-// UnsetRateLimit ensures that no value is present for RateLimit, not even an explicit nil
-func (o *ApplicationOut) UnsetRateLimit() {
-	o.RateLimit.Unset()
-}
-
-// GetUid returns the Uid field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetUid returns the Uid field value if set, zero value otherwise.
 func (o *ApplicationOut) GetUid() string {
-	if o == nil || IsNil(o.Uid.Get()) {
+	if o == nil || IsNil(o.Uid) {
 		var ret string
 		return ret
 	}
-	return *o.Uid.Get()
+	return *o.Uid
 }
 
 // GetUidOk returns a tuple with the Uid field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *ApplicationOut) GetUidOk() (*string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.Uid) {
 		return nil, false
 	}
-	return o.Uid.Get(), o.Uid.IsSet()
+	return o.Uid, true
 }
 
 // HasUid returns a boolean if a field has been set.
 func (o *ApplicationOut) HasUid() bool {
-	if o != nil && o.Uid.IsSet() {
+	if o != nil && !IsNil(o.Uid) {
 		return true
 	}
 
 	return false
 }
 
-// SetUid gets a reference to the given NullableString and assigns it to the Uid field.
+// SetUid gets a reference to the given string and assigns it to the Uid field.
 func (o *ApplicationOut) SetUid(v string) {
-	o.Uid.Set(&v)
-}
-// SetUidNil sets the value for Uid to be an explicit nil
-func (o *ApplicationOut) SetUidNil() {
-	o.Uid.Set(nil)
-}
-
-// UnsetUid ensures that no value is present for Uid, not even an explicit nil
-func (o *ApplicationOut) UnsetUid() {
-	o.Uid.Unset()
+	o.Uid = &v
 }
 
 // GetUpdatedAt returns the UpdatedAt field value
@@ -275,11 +255,11 @@ func (o ApplicationOut) ToMap() (map[string]interface{}, error) {
 	toSerialize["id"] = o.Id
 	toSerialize["metadata"] = o.Metadata
 	toSerialize["name"] = o.Name
-	if o.RateLimit.IsSet() {
-		toSerialize["rateLimit"] = o.RateLimit.Get()
+	if !IsNil(o.RateLimit) {
+		toSerialize["rateLimit"] = o.RateLimit
 	}
-	if o.Uid.IsSet() {
-		toSerialize["uid"] = o.Uid.Get()
+	if !IsNil(o.Uid) {
+		toSerialize["uid"] = o.Uid
 	}
 	toSerialize["updatedAt"] = o.UpdatedAt
 	return toSerialize, nil

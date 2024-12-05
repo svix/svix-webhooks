@@ -28,7 +28,7 @@ type RedshiftConfig struct {
 	DbUser string `json:"dbUser"`
 	Region string `json:"region"`
 	// Schema name.  Only used if not using transformations.
-	SchemaName NullableString `json:"schemaName,omitempty"`
+	SchemaName *string `json:"schemaName,omitempty"`
 	SecretAccessKey string `json:"secretAccessKey"`
 	// Table name.  Only required if not using transformations.
 	TableName *string `json:"tableName,omitempty"`
@@ -186,46 +186,36 @@ func (o *RedshiftConfig) SetRegion(v string) {
 	o.Region = v
 }
 
-// GetSchemaName returns the SchemaName field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetSchemaName returns the SchemaName field value if set, zero value otherwise.
 func (o *RedshiftConfig) GetSchemaName() string {
-	if o == nil || IsNil(o.SchemaName.Get()) {
+	if o == nil || IsNil(o.SchemaName) {
 		var ret string
 		return ret
 	}
-	return *o.SchemaName.Get()
+	return *o.SchemaName
 }
 
 // GetSchemaNameOk returns a tuple with the SchemaName field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *RedshiftConfig) GetSchemaNameOk() (*string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.SchemaName) {
 		return nil, false
 	}
-	return o.SchemaName.Get(), o.SchemaName.IsSet()
+	return o.SchemaName, true
 }
 
 // HasSchemaName returns a boolean if a field has been set.
 func (o *RedshiftConfig) HasSchemaName() bool {
-	if o != nil && o.SchemaName.IsSet() {
+	if o != nil && !IsNil(o.SchemaName) {
 		return true
 	}
 
 	return false
 }
 
-// SetSchemaName gets a reference to the given NullableString and assigns it to the SchemaName field.
+// SetSchemaName gets a reference to the given string and assigns it to the SchemaName field.
 func (o *RedshiftConfig) SetSchemaName(v string) {
-	o.SchemaName.Set(&v)
-}
-// SetSchemaNameNil sets the value for SchemaName to be an explicit nil
-func (o *RedshiftConfig) SetSchemaNameNil() {
-	o.SchemaName.Set(nil)
-}
-
-// UnsetSchemaName ensures that no value is present for SchemaName, not even an explicit nil
-func (o *RedshiftConfig) UnsetSchemaName() {
-	o.SchemaName.Unset()
+	o.SchemaName = &v
 }
 
 // GetSecretAccessKey returns the SecretAccessKey field value
@@ -301,8 +291,8 @@ func (o RedshiftConfig) ToMap() (map[string]interface{}, error) {
 	}
 	toSerialize["dbUser"] = o.DbUser
 	toSerialize["region"] = o.Region
-	if o.SchemaName.IsSet() {
-		toSerialize["schemaName"] = o.SchemaName.Get()
+	if !IsNil(o.SchemaName) {
+		toSerialize["schemaName"] = o.SchemaName
 	}
 	toSerialize["secretAccessKey"] = o.SecretAccessKey
 	if !IsNil(o.TableName) {

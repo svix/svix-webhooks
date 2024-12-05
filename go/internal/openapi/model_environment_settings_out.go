@@ -21,13 +21,13 @@ var _ MappedNullable = &EnvironmentSettingsOut{}
 type EnvironmentSettingsOut struct {
 	ColorPaletteDark *CustomColorPalette `json:"colorPaletteDark,omitempty"`
 	ColorPaletteLight *CustomColorPalette `json:"colorPaletteLight,omitempty"`
-	CustomColor NullableString `json:"customColor,omitempty"`
-	CustomFontFamily NullableString `json:"customFontFamily,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_ ]+$"`
-	CustomFontFamilyUrl NullableString `json:"customFontFamilyUrl,omitempty"`
-	CustomLogoUrl NullableString `json:"customLogoUrl,omitempty"`
+	CustomColor *string `json:"customColor,omitempty"`
+	CustomFontFamily *string `json:"customFontFamily,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_ ]+$"`
+	CustomFontFamilyUrl *string `json:"customFontFamilyUrl,omitempty"`
+	CustomLogoUrl *string `json:"customLogoUrl,omitempty"`
 	CustomStringsOverride *CustomStringsOverride `json:"customStringsOverride,omitempty"`
 	CustomThemeOverride *CustomThemeOverride `json:"customThemeOverride,omitempty"`
-	DisplayName NullableString `json:"displayName,omitempty"`
+	DisplayName *string `json:"displayName,omitempty"`
 	EnableChannels *bool `json:"enableChannels,omitempty"`
 	EnableIntegrationManagement *bool `json:"enableIntegrationManagement,omitempty"`
 	EnableMessageTags *bool `json:"enableMessageTags,omitempty"`
@@ -141,172 +141,132 @@ func (o *EnvironmentSettingsOut) SetColorPaletteLight(v CustomColorPalette) {
 	o.ColorPaletteLight = &v
 }
 
-// GetCustomColor returns the CustomColor field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetCustomColor returns the CustomColor field value if set, zero value otherwise.
 func (o *EnvironmentSettingsOut) GetCustomColor() string {
-	if o == nil || IsNil(o.CustomColor.Get()) {
+	if o == nil || IsNil(o.CustomColor) {
 		var ret string
 		return ret
 	}
-	return *o.CustomColor.Get()
+	return *o.CustomColor
 }
 
 // GetCustomColorOk returns a tuple with the CustomColor field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *EnvironmentSettingsOut) GetCustomColorOk() (*string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.CustomColor) {
 		return nil, false
 	}
-	return o.CustomColor.Get(), o.CustomColor.IsSet()
+	return o.CustomColor, true
 }
 
 // HasCustomColor returns a boolean if a field has been set.
 func (o *EnvironmentSettingsOut) HasCustomColor() bool {
-	if o != nil && o.CustomColor.IsSet() {
+	if o != nil && !IsNil(o.CustomColor) {
 		return true
 	}
 
 	return false
 }
 
-// SetCustomColor gets a reference to the given NullableString and assigns it to the CustomColor field.
+// SetCustomColor gets a reference to the given string and assigns it to the CustomColor field.
 func (o *EnvironmentSettingsOut) SetCustomColor(v string) {
-	o.CustomColor.Set(&v)
-}
-// SetCustomColorNil sets the value for CustomColor to be an explicit nil
-func (o *EnvironmentSettingsOut) SetCustomColorNil() {
-	o.CustomColor.Set(nil)
+	o.CustomColor = &v
 }
 
-// UnsetCustomColor ensures that no value is present for CustomColor, not even an explicit nil
-func (o *EnvironmentSettingsOut) UnsetCustomColor() {
-	o.CustomColor.Unset()
-}
-
-// GetCustomFontFamily returns the CustomFontFamily field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetCustomFontFamily returns the CustomFontFamily field value if set, zero value otherwise.
 func (o *EnvironmentSettingsOut) GetCustomFontFamily() string {
-	if o == nil || IsNil(o.CustomFontFamily.Get()) {
+	if o == nil || IsNil(o.CustomFontFamily) {
 		var ret string
 		return ret
 	}
-	return *o.CustomFontFamily.Get()
+	return *o.CustomFontFamily
 }
 
 // GetCustomFontFamilyOk returns a tuple with the CustomFontFamily field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *EnvironmentSettingsOut) GetCustomFontFamilyOk() (*string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.CustomFontFamily) {
 		return nil, false
 	}
-	return o.CustomFontFamily.Get(), o.CustomFontFamily.IsSet()
+	return o.CustomFontFamily, true
 }
 
 // HasCustomFontFamily returns a boolean if a field has been set.
 func (o *EnvironmentSettingsOut) HasCustomFontFamily() bool {
-	if o != nil && o.CustomFontFamily.IsSet() {
+	if o != nil && !IsNil(o.CustomFontFamily) {
 		return true
 	}
 
 	return false
 }
 
-// SetCustomFontFamily gets a reference to the given NullableString and assigns it to the CustomFontFamily field.
+// SetCustomFontFamily gets a reference to the given string and assigns it to the CustomFontFamily field.
 func (o *EnvironmentSettingsOut) SetCustomFontFamily(v string) {
-	o.CustomFontFamily.Set(&v)
-}
-// SetCustomFontFamilyNil sets the value for CustomFontFamily to be an explicit nil
-func (o *EnvironmentSettingsOut) SetCustomFontFamilyNil() {
-	o.CustomFontFamily.Set(nil)
+	o.CustomFontFamily = &v
 }
 
-// UnsetCustomFontFamily ensures that no value is present for CustomFontFamily, not even an explicit nil
-func (o *EnvironmentSettingsOut) UnsetCustomFontFamily() {
-	o.CustomFontFamily.Unset()
-}
-
-// GetCustomFontFamilyUrl returns the CustomFontFamilyUrl field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetCustomFontFamilyUrl returns the CustomFontFamilyUrl field value if set, zero value otherwise.
 func (o *EnvironmentSettingsOut) GetCustomFontFamilyUrl() string {
-	if o == nil || IsNil(o.CustomFontFamilyUrl.Get()) {
+	if o == nil || IsNil(o.CustomFontFamilyUrl) {
 		var ret string
 		return ret
 	}
-	return *o.CustomFontFamilyUrl.Get()
+	return *o.CustomFontFamilyUrl
 }
 
 // GetCustomFontFamilyUrlOk returns a tuple with the CustomFontFamilyUrl field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *EnvironmentSettingsOut) GetCustomFontFamilyUrlOk() (*string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.CustomFontFamilyUrl) {
 		return nil, false
 	}
-	return o.CustomFontFamilyUrl.Get(), o.CustomFontFamilyUrl.IsSet()
+	return o.CustomFontFamilyUrl, true
 }
 
 // HasCustomFontFamilyUrl returns a boolean if a field has been set.
 func (o *EnvironmentSettingsOut) HasCustomFontFamilyUrl() bool {
-	if o != nil && o.CustomFontFamilyUrl.IsSet() {
+	if o != nil && !IsNil(o.CustomFontFamilyUrl) {
 		return true
 	}
 
 	return false
 }
 
-// SetCustomFontFamilyUrl gets a reference to the given NullableString and assigns it to the CustomFontFamilyUrl field.
+// SetCustomFontFamilyUrl gets a reference to the given string and assigns it to the CustomFontFamilyUrl field.
 func (o *EnvironmentSettingsOut) SetCustomFontFamilyUrl(v string) {
-	o.CustomFontFamilyUrl.Set(&v)
-}
-// SetCustomFontFamilyUrlNil sets the value for CustomFontFamilyUrl to be an explicit nil
-func (o *EnvironmentSettingsOut) SetCustomFontFamilyUrlNil() {
-	o.CustomFontFamilyUrl.Set(nil)
+	o.CustomFontFamilyUrl = &v
 }
 
-// UnsetCustomFontFamilyUrl ensures that no value is present for CustomFontFamilyUrl, not even an explicit nil
-func (o *EnvironmentSettingsOut) UnsetCustomFontFamilyUrl() {
-	o.CustomFontFamilyUrl.Unset()
-}
-
-// GetCustomLogoUrl returns the CustomLogoUrl field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetCustomLogoUrl returns the CustomLogoUrl field value if set, zero value otherwise.
 func (o *EnvironmentSettingsOut) GetCustomLogoUrl() string {
-	if o == nil || IsNil(o.CustomLogoUrl.Get()) {
+	if o == nil || IsNil(o.CustomLogoUrl) {
 		var ret string
 		return ret
 	}
-	return *o.CustomLogoUrl.Get()
+	return *o.CustomLogoUrl
 }
 
 // GetCustomLogoUrlOk returns a tuple with the CustomLogoUrl field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *EnvironmentSettingsOut) GetCustomLogoUrlOk() (*string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.CustomLogoUrl) {
 		return nil, false
 	}
-	return o.CustomLogoUrl.Get(), o.CustomLogoUrl.IsSet()
+	return o.CustomLogoUrl, true
 }
 
 // HasCustomLogoUrl returns a boolean if a field has been set.
 func (o *EnvironmentSettingsOut) HasCustomLogoUrl() bool {
-	if o != nil && o.CustomLogoUrl.IsSet() {
+	if o != nil && !IsNil(o.CustomLogoUrl) {
 		return true
 	}
 
 	return false
 }
 
-// SetCustomLogoUrl gets a reference to the given NullableString and assigns it to the CustomLogoUrl field.
+// SetCustomLogoUrl gets a reference to the given string and assigns it to the CustomLogoUrl field.
 func (o *EnvironmentSettingsOut) SetCustomLogoUrl(v string) {
-	o.CustomLogoUrl.Set(&v)
-}
-// SetCustomLogoUrlNil sets the value for CustomLogoUrl to be an explicit nil
-func (o *EnvironmentSettingsOut) SetCustomLogoUrlNil() {
-	o.CustomLogoUrl.Set(nil)
-}
-
-// UnsetCustomLogoUrl ensures that no value is present for CustomLogoUrl, not even an explicit nil
-func (o *EnvironmentSettingsOut) UnsetCustomLogoUrl() {
-	o.CustomLogoUrl.Unset()
+	o.CustomLogoUrl = &v
 }
 
 // GetCustomStringsOverride returns the CustomStringsOverride field value if set, zero value otherwise.
@@ -373,46 +333,36 @@ func (o *EnvironmentSettingsOut) SetCustomThemeOverride(v CustomThemeOverride) {
 	o.CustomThemeOverride = &v
 }
 
-// GetDisplayName returns the DisplayName field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetDisplayName returns the DisplayName field value if set, zero value otherwise.
 func (o *EnvironmentSettingsOut) GetDisplayName() string {
-	if o == nil || IsNil(o.DisplayName.Get()) {
+	if o == nil || IsNil(o.DisplayName) {
 		var ret string
 		return ret
 	}
-	return *o.DisplayName.Get()
+	return *o.DisplayName
 }
 
 // GetDisplayNameOk returns a tuple with the DisplayName field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *EnvironmentSettingsOut) GetDisplayNameOk() (*string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.DisplayName) {
 		return nil, false
 	}
-	return o.DisplayName.Get(), o.DisplayName.IsSet()
+	return o.DisplayName, true
 }
 
 // HasDisplayName returns a boolean if a field has been set.
 func (o *EnvironmentSettingsOut) HasDisplayName() bool {
-	if o != nil && o.DisplayName.IsSet() {
+	if o != nil && !IsNil(o.DisplayName) {
 		return true
 	}
 
 	return false
 }
 
-// SetDisplayName gets a reference to the given NullableString and assigns it to the DisplayName field.
+// SetDisplayName gets a reference to the given string and assigns it to the DisplayName field.
 func (o *EnvironmentSettingsOut) SetDisplayName(v string) {
-	o.DisplayName.Set(&v)
-}
-// SetDisplayNameNil sets the value for DisplayName to be an explicit nil
-func (o *EnvironmentSettingsOut) SetDisplayNameNil() {
-	o.DisplayName.Set(nil)
-}
-
-// UnsetDisplayName ensures that no value is present for DisplayName, not even an explicit nil
-func (o *EnvironmentSettingsOut) UnsetDisplayName() {
-	o.DisplayName.Unset()
+	o.DisplayName = &v
 }
 
 // GetEnableChannels returns the EnableChannels field value if set, zero value otherwise.
@@ -623,17 +573,17 @@ func (o EnvironmentSettingsOut) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.ColorPaletteLight) {
 		toSerialize["colorPaletteLight"] = o.ColorPaletteLight
 	}
-	if o.CustomColor.IsSet() {
-		toSerialize["customColor"] = o.CustomColor.Get()
+	if !IsNil(o.CustomColor) {
+		toSerialize["customColor"] = o.CustomColor
 	}
-	if o.CustomFontFamily.IsSet() {
-		toSerialize["customFontFamily"] = o.CustomFontFamily.Get()
+	if !IsNil(o.CustomFontFamily) {
+		toSerialize["customFontFamily"] = o.CustomFontFamily
 	}
-	if o.CustomFontFamilyUrl.IsSet() {
-		toSerialize["customFontFamilyUrl"] = o.CustomFontFamilyUrl.Get()
+	if !IsNil(o.CustomFontFamilyUrl) {
+		toSerialize["customFontFamilyUrl"] = o.CustomFontFamilyUrl
 	}
-	if o.CustomLogoUrl.IsSet() {
-		toSerialize["customLogoUrl"] = o.CustomLogoUrl.Get()
+	if !IsNil(o.CustomLogoUrl) {
+		toSerialize["customLogoUrl"] = o.CustomLogoUrl
 	}
 	if !IsNil(o.CustomStringsOverride) {
 		toSerialize["customStringsOverride"] = o.CustomStringsOverride
@@ -641,8 +591,8 @@ func (o EnvironmentSettingsOut) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.CustomThemeOverride) {
 		toSerialize["customThemeOverride"] = o.CustomThemeOverride
 	}
-	if o.DisplayName.IsSet() {
-		toSerialize["displayName"] = o.DisplayName.Get()
+	if !IsNil(o.DisplayName) {
+		toSerialize["displayName"] = o.DisplayName
 	}
 	if !IsNil(o.EnableChannels) {
 		toSerialize["enableChannels"] = o.EnableChannels

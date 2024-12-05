@@ -22,10 +22,10 @@ var _ MappedNullable = &TemplateIn{}
 // TemplateIn struct for TemplateIn
 type TemplateIn struct {
 	Description *string `json:"description,omitempty"`
-	FeatureFlag NullableString `json:"featureFlag,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
+	FeatureFlag *string `json:"featureFlag,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
 	FilterTypes []string `json:"filterTypes,omitempty"`
 	Instructions *string `json:"instructions,omitempty"`
-	InstructionsLink NullableString `json:"instructionsLink,omitempty"`
+	InstructionsLink *string `json:"instructionsLink,omitempty"`
 	Kind *TransformationTemplateKind `json:"kind,omitempty"`
 	Logo string `json:"logo"`
 	Name string `json:"name"`
@@ -94,51 +94,41 @@ func (o *TemplateIn) SetDescription(v string) {
 	o.Description = &v
 }
 
-// GetFeatureFlag returns the FeatureFlag field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetFeatureFlag returns the FeatureFlag field value if set, zero value otherwise.
 func (o *TemplateIn) GetFeatureFlag() string {
-	if o == nil || IsNil(o.FeatureFlag.Get()) {
+	if o == nil || IsNil(o.FeatureFlag) {
 		var ret string
 		return ret
 	}
-	return *o.FeatureFlag.Get()
+	return *o.FeatureFlag
 }
 
 // GetFeatureFlagOk returns a tuple with the FeatureFlag field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *TemplateIn) GetFeatureFlagOk() (*string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.FeatureFlag) {
 		return nil, false
 	}
-	return o.FeatureFlag.Get(), o.FeatureFlag.IsSet()
+	return o.FeatureFlag, true
 }
 
 // HasFeatureFlag returns a boolean if a field has been set.
 func (o *TemplateIn) HasFeatureFlag() bool {
-	if o != nil && o.FeatureFlag.IsSet() {
+	if o != nil && !IsNil(o.FeatureFlag) {
 		return true
 	}
 
 	return false
 }
 
-// SetFeatureFlag gets a reference to the given NullableString and assigns it to the FeatureFlag field.
+// SetFeatureFlag gets a reference to the given string and assigns it to the FeatureFlag field.
 func (o *TemplateIn) SetFeatureFlag(v string) {
-	o.FeatureFlag.Set(&v)
-}
-// SetFeatureFlagNil sets the value for FeatureFlag to be an explicit nil
-func (o *TemplateIn) SetFeatureFlagNil() {
-	o.FeatureFlag.Set(nil)
+	o.FeatureFlag = &v
 }
 
-// UnsetFeatureFlag ensures that no value is present for FeatureFlag, not even an explicit nil
-func (o *TemplateIn) UnsetFeatureFlag() {
-	o.FeatureFlag.Unset()
-}
-
-// GetFilterTypes returns the FilterTypes field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetFilterTypes returns the FilterTypes field value if set, zero value otherwise.
 func (o *TemplateIn) GetFilterTypes() []string {
-	if o == nil {
+	if o == nil || IsNil(o.FilterTypes) {
 		var ret []string
 		return ret
 	}
@@ -147,7 +137,6 @@ func (o *TemplateIn) GetFilterTypes() []string {
 
 // GetFilterTypesOk returns a tuple with the FilterTypes field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *TemplateIn) GetFilterTypesOk() ([]string, bool) {
 	if o == nil || IsNil(o.FilterTypes) {
 		return nil, false
@@ -201,46 +190,36 @@ func (o *TemplateIn) SetInstructions(v string) {
 	o.Instructions = &v
 }
 
-// GetInstructionsLink returns the InstructionsLink field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetInstructionsLink returns the InstructionsLink field value if set, zero value otherwise.
 func (o *TemplateIn) GetInstructionsLink() string {
-	if o == nil || IsNil(o.InstructionsLink.Get()) {
+	if o == nil || IsNil(o.InstructionsLink) {
 		var ret string
 		return ret
 	}
-	return *o.InstructionsLink.Get()
+	return *o.InstructionsLink
 }
 
 // GetInstructionsLinkOk returns a tuple with the InstructionsLink field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *TemplateIn) GetInstructionsLinkOk() (*string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.InstructionsLink) {
 		return nil, false
 	}
-	return o.InstructionsLink.Get(), o.InstructionsLink.IsSet()
+	return o.InstructionsLink, true
 }
 
 // HasInstructionsLink returns a boolean if a field has been set.
 func (o *TemplateIn) HasInstructionsLink() bool {
-	if o != nil && o.InstructionsLink.IsSet() {
+	if o != nil && !IsNil(o.InstructionsLink) {
 		return true
 	}
 
 	return false
 }
 
-// SetInstructionsLink gets a reference to the given NullableString and assigns it to the InstructionsLink field.
+// SetInstructionsLink gets a reference to the given string and assigns it to the InstructionsLink field.
 func (o *TemplateIn) SetInstructionsLink(v string) {
-	o.InstructionsLink.Set(&v)
-}
-// SetInstructionsLinkNil sets the value for InstructionsLink to be an explicit nil
-func (o *TemplateIn) SetInstructionsLinkNil() {
-	o.InstructionsLink.Set(nil)
-}
-
-// UnsetInstructionsLink ensures that no value is present for InstructionsLink, not even an explicit nil
-func (o *TemplateIn) UnsetInstructionsLink() {
-	o.InstructionsLink.Unset()
+	o.InstructionsLink = &v
 }
 
 // GetKind returns the Kind field value if set, zero value otherwise.
@@ -360,17 +339,17 @@ func (o TemplateIn) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Description) {
 		toSerialize["description"] = o.Description
 	}
-	if o.FeatureFlag.IsSet() {
-		toSerialize["featureFlag"] = o.FeatureFlag.Get()
+	if !IsNil(o.FeatureFlag) {
+		toSerialize["featureFlag"] = o.FeatureFlag
 	}
-	if o.FilterTypes != nil {
+	if !IsNil(o.FilterTypes) {
 		toSerialize["filterTypes"] = o.FilterTypes
 	}
 	if !IsNil(o.Instructions) {
 		toSerialize["instructions"] = o.Instructions
 	}
-	if o.InstructionsLink.IsSet() {
-		toSerialize["instructionsLink"] = o.InstructionsLink.Get()
+	if !IsNil(o.InstructionsLink) {
+		toSerialize["instructionsLink"] = o.InstructionsLink
 	}
 	if !IsNil(o.Kind) {
 		toSerialize["kind"] = o.Kind

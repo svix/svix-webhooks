@@ -25,15 +25,15 @@ type MessageIn struct {
 	// List of free-form identifiers that endpoints can filter by
 	Channels []string `json:"channels,omitempty"`
 	// Optional unique identifier for the message
-	EventId NullableString `json:"eventId,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
+	EventId *string `json:"eventId,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
 	// The event type's name
 	EventType string `json:"eventType" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
 	// JSON payload to send as the request body of the webhook.  We also support sending non-JSON payloads. Please contact us for more information.
 	Payload map[string]interface{} `json:"payload"`
 	// Optional number of hours to retain the message payload. Note that this is mutually exclusive with `payloadRetentionPeriod`.
-	PayloadRetentionHours NullableInt64 `json:"payloadRetentionHours,omitempty"`
+	PayloadRetentionHours *int64 `json:"payloadRetentionHours,omitempty"`
 	// Optional number of days to retain the message payload. Defaults to 90. Note that this is mutually exclusive with `payloadRetentionHours`.
-	PayloadRetentionPeriod NullableInt64 `json:"payloadRetentionPeriod,omitempty"`
+	PayloadRetentionPeriod *int64 `json:"payloadRetentionPeriod,omitempty"`
 	// List of free-form tags that can be filtered by when listing messages
 	Tags []string `json:"tags,omitempty"`
 	// Extra parameters to pass to Transformations (for future use)
@@ -51,7 +51,7 @@ func NewMessageIn(eventType string, payload map[string]interface{}) *MessageIn {
 	this.EventType = eventType
 	this.Payload = payload
 	var payloadRetentionPeriod int64 = 90
-	this.PayloadRetentionPeriod = *NewNullableInt64(&payloadRetentionPeriod)
+	this.PayloadRetentionPeriod = &payloadRetentionPeriod
 	return &this
 }
 
@@ -61,7 +61,7 @@ func NewMessageIn(eventType string, payload map[string]interface{}) *MessageIn {
 func NewMessageInWithDefaults() *MessageIn {
 	this := MessageIn{}
 	var payloadRetentionPeriod int64 = 90
-	this.PayloadRetentionPeriod = *NewNullableInt64(&payloadRetentionPeriod)
+	this.PayloadRetentionPeriod = &payloadRetentionPeriod
 	return &this
 }
 
@@ -97,9 +97,9 @@ func (o *MessageIn) SetApplication(v ApplicationIn) {
 	o.Application = &v
 }
 
-// GetChannels returns the Channels field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetChannels returns the Channels field value if set, zero value otherwise.
 func (o *MessageIn) GetChannels() []string {
-	if o == nil {
+	if o == nil || IsNil(o.Channels) {
 		var ret []string
 		return ret
 	}
@@ -108,7 +108,6 @@ func (o *MessageIn) GetChannels() []string {
 
 // GetChannelsOk returns a tuple with the Channels field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *MessageIn) GetChannelsOk() ([]string, bool) {
 	if o == nil || IsNil(o.Channels) {
 		return nil, false
@@ -130,46 +129,36 @@ func (o *MessageIn) SetChannels(v []string) {
 	o.Channels = v
 }
 
-// GetEventId returns the EventId field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetEventId returns the EventId field value if set, zero value otherwise.
 func (o *MessageIn) GetEventId() string {
-	if o == nil || IsNil(o.EventId.Get()) {
+	if o == nil || IsNil(o.EventId) {
 		var ret string
 		return ret
 	}
-	return *o.EventId.Get()
+	return *o.EventId
 }
 
 // GetEventIdOk returns a tuple with the EventId field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *MessageIn) GetEventIdOk() (*string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.EventId) {
 		return nil, false
 	}
-	return o.EventId.Get(), o.EventId.IsSet()
+	return o.EventId, true
 }
 
 // HasEventId returns a boolean if a field has been set.
 func (o *MessageIn) HasEventId() bool {
-	if o != nil && o.EventId.IsSet() {
+	if o != nil && !IsNil(o.EventId) {
 		return true
 	}
 
 	return false
 }
 
-// SetEventId gets a reference to the given NullableString and assigns it to the EventId field.
+// SetEventId gets a reference to the given string and assigns it to the EventId field.
 func (o *MessageIn) SetEventId(v string) {
-	o.EventId.Set(&v)
-}
-// SetEventIdNil sets the value for EventId to be an explicit nil
-func (o *MessageIn) SetEventIdNil() {
-	o.EventId.Set(nil)
-}
-
-// UnsetEventId ensures that no value is present for EventId, not even an explicit nil
-func (o *MessageIn) UnsetEventId() {
-	o.EventId.Unset()
+	o.EventId = &v
 }
 
 // GetEventType returns the EventType field value
@@ -220,93 +209,73 @@ func (o *MessageIn) SetPayload(v map[string]interface{}) {
 	o.Payload = v
 }
 
-// GetPayloadRetentionHours returns the PayloadRetentionHours field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetPayloadRetentionHours returns the PayloadRetentionHours field value if set, zero value otherwise.
 func (o *MessageIn) GetPayloadRetentionHours() int64 {
-	if o == nil || IsNil(o.PayloadRetentionHours.Get()) {
+	if o == nil || IsNil(o.PayloadRetentionHours) {
 		var ret int64
 		return ret
 	}
-	return *o.PayloadRetentionHours.Get()
+	return *o.PayloadRetentionHours
 }
 
 // GetPayloadRetentionHoursOk returns a tuple with the PayloadRetentionHours field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *MessageIn) GetPayloadRetentionHoursOk() (*int64, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.PayloadRetentionHours) {
 		return nil, false
 	}
-	return o.PayloadRetentionHours.Get(), o.PayloadRetentionHours.IsSet()
+	return o.PayloadRetentionHours, true
 }
 
 // HasPayloadRetentionHours returns a boolean if a field has been set.
 func (o *MessageIn) HasPayloadRetentionHours() bool {
-	if o != nil && o.PayloadRetentionHours.IsSet() {
+	if o != nil && !IsNil(o.PayloadRetentionHours) {
 		return true
 	}
 
 	return false
 }
 
-// SetPayloadRetentionHours gets a reference to the given NullableInt64 and assigns it to the PayloadRetentionHours field.
+// SetPayloadRetentionHours gets a reference to the given int64 and assigns it to the PayloadRetentionHours field.
 func (o *MessageIn) SetPayloadRetentionHours(v int64) {
-	o.PayloadRetentionHours.Set(&v)
-}
-// SetPayloadRetentionHoursNil sets the value for PayloadRetentionHours to be an explicit nil
-func (o *MessageIn) SetPayloadRetentionHoursNil() {
-	o.PayloadRetentionHours.Set(nil)
+	o.PayloadRetentionHours = &v
 }
 
-// UnsetPayloadRetentionHours ensures that no value is present for PayloadRetentionHours, not even an explicit nil
-func (o *MessageIn) UnsetPayloadRetentionHours() {
-	o.PayloadRetentionHours.Unset()
-}
-
-// GetPayloadRetentionPeriod returns the PayloadRetentionPeriod field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetPayloadRetentionPeriod returns the PayloadRetentionPeriod field value if set, zero value otherwise.
 func (o *MessageIn) GetPayloadRetentionPeriod() int64 {
-	if o == nil || IsNil(o.PayloadRetentionPeriod.Get()) {
+	if o == nil || IsNil(o.PayloadRetentionPeriod) {
 		var ret int64
 		return ret
 	}
-	return *o.PayloadRetentionPeriod.Get()
+	return *o.PayloadRetentionPeriod
 }
 
 // GetPayloadRetentionPeriodOk returns a tuple with the PayloadRetentionPeriod field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *MessageIn) GetPayloadRetentionPeriodOk() (*int64, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.PayloadRetentionPeriod) {
 		return nil, false
 	}
-	return o.PayloadRetentionPeriod.Get(), o.PayloadRetentionPeriod.IsSet()
+	return o.PayloadRetentionPeriod, true
 }
 
 // HasPayloadRetentionPeriod returns a boolean if a field has been set.
 func (o *MessageIn) HasPayloadRetentionPeriod() bool {
-	if o != nil && o.PayloadRetentionPeriod.IsSet() {
+	if o != nil && !IsNil(o.PayloadRetentionPeriod) {
 		return true
 	}
 
 	return false
 }
 
-// SetPayloadRetentionPeriod gets a reference to the given NullableInt64 and assigns it to the PayloadRetentionPeriod field.
+// SetPayloadRetentionPeriod gets a reference to the given int64 and assigns it to the PayloadRetentionPeriod field.
 func (o *MessageIn) SetPayloadRetentionPeriod(v int64) {
-	o.PayloadRetentionPeriod.Set(&v)
-}
-// SetPayloadRetentionPeriodNil sets the value for PayloadRetentionPeriod to be an explicit nil
-func (o *MessageIn) SetPayloadRetentionPeriodNil() {
-	o.PayloadRetentionPeriod.Set(nil)
+	o.PayloadRetentionPeriod = &v
 }
 
-// UnsetPayloadRetentionPeriod ensures that no value is present for PayloadRetentionPeriod, not even an explicit nil
-func (o *MessageIn) UnsetPayloadRetentionPeriod() {
-	o.PayloadRetentionPeriod.Unset()
-}
-
-// GetTags returns the Tags field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetTags returns the Tags field value if set, zero value otherwise.
 func (o *MessageIn) GetTags() []string {
-	if o == nil {
+	if o == nil || IsNil(o.Tags) {
 		var ret []string
 		return ret
 	}
@@ -315,7 +284,6 @@ func (o *MessageIn) GetTags() []string {
 
 // GetTagsOk returns a tuple with the Tags field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *MessageIn) GetTagsOk() ([]string, bool) {
 	if o == nil || IsNil(o.Tags) {
 		return nil, false
@@ -337,9 +305,9 @@ func (o *MessageIn) SetTags(v []string) {
 	o.Tags = v
 }
 
-// GetTransformationsParams returns the TransformationsParams field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetTransformationsParams returns the TransformationsParams field value if set, zero value otherwise.
 func (o *MessageIn) GetTransformationsParams() map[string]interface{} {
-	if o == nil {
+	if o == nil || IsNil(o.TransformationsParams) {
 		var ret map[string]interface{}
 		return ret
 	}
@@ -348,7 +316,6 @@ func (o *MessageIn) GetTransformationsParams() map[string]interface{} {
 
 // GetTransformationsParamsOk returns a tuple with the TransformationsParams field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *MessageIn) GetTransformationsParamsOk() (map[string]interface{}, bool) {
 	if o == nil || IsNil(o.TransformationsParams) {
 		return map[string]interface{}{}, false
@@ -383,24 +350,24 @@ func (o MessageIn) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Application) {
 		toSerialize["application"] = o.Application
 	}
-	if o.Channels != nil {
+	if !IsNil(o.Channels) {
 		toSerialize["channels"] = o.Channels
 	}
-	if o.EventId.IsSet() {
-		toSerialize["eventId"] = o.EventId.Get()
+	if !IsNil(o.EventId) {
+		toSerialize["eventId"] = o.EventId
 	}
 	toSerialize["eventType"] = o.EventType
 	toSerialize["payload"] = o.Payload
-	if o.PayloadRetentionHours.IsSet() {
-		toSerialize["payloadRetentionHours"] = o.PayloadRetentionHours.Get()
+	if !IsNil(o.PayloadRetentionHours) {
+		toSerialize["payloadRetentionHours"] = o.PayloadRetentionHours
 	}
-	if o.PayloadRetentionPeriod.IsSet() {
-		toSerialize["payloadRetentionPeriod"] = o.PayloadRetentionPeriod.Get()
+	if !IsNil(o.PayloadRetentionPeriod) {
+		toSerialize["payloadRetentionPeriod"] = o.PayloadRetentionPeriod
 	}
-	if o.Tags != nil {
+	if !IsNil(o.Tags) {
 		toSerialize["tags"] = o.Tags
 	}
-	if o.TransformationsParams != nil {
+	if !IsNil(o.TransformationsParams) {
 		toSerialize["transformationsParams"] = o.TransformationsParams
 	}
 	return toSerialize, nil

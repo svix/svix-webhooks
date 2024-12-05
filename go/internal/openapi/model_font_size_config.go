@@ -19,7 +19,7 @@ var _ MappedNullable = &FontSizeConfig{}
 
 // FontSizeConfig struct for FontSizeConfig
 type FontSizeConfig struct {
-	Base NullableInt32 `json:"base,omitempty"`
+	Base *int32 `json:"base,omitempty"`
 }
 
 // NewFontSizeConfig instantiates a new FontSizeConfig object
@@ -39,46 +39,36 @@ func NewFontSizeConfigWithDefaults() *FontSizeConfig {
 	return &this
 }
 
-// GetBase returns the Base field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetBase returns the Base field value if set, zero value otherwise.
 func (o *FontSizeConfig) GetBase() int32 {
-	if o == nil || IsNil(o.Base.Get()) {
+	if o == nil || IsNil(o.Base) {
 		var ret int32
 		return ret
 	}
-	return *o.Base.Get()
+	return *o.Base
 }
 
 // GetBaseOk returns a tuple with the Base field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *FontSizeConfig) GetBaseOk() (*int32, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.Base) {
 		return nil, false
 	}
-	return o.Base.Get(), o.Base.IsSet()
+	return o.Base, true
 }
 
 // HasBase returns a boolean if a field has been set.
 func (o *FontSizeConfig) HasBase() bool {
-	if o != nil && o.Base.IsSet() {
+	if o != nil && !IsNil(o.Base) {
 		return true
 	}
 
 	return false
 }
 
-// SetBase gets a reference to the given NullableInt32 and assigns it to the Base field.
+// SetBase gets a reference to the given int32 and assigns it to the Base field.
 func (o *FontSizeConfig) SetBase(v int32) {
-	o.Base.Set(&v)
-}
-// SetBaseNil sets the value for Base to be an explicit nil
-func (o *FontSizeConfig) SetBaseNil() {
-	o.Base.Set(nil)
-}
-
-// UnsetBase ensures that no value is present for Base, not even an explicit nil
-func (o *FontSizeConfig) UnsetBase() {
-	o.Base.Unset()
+	o.Base = &v
 }
 
 func (o FontSizeConfig) MarshalJSON() ([]byte, error) {
@@ -91,8 +81,8 @@ func (o FontSizeConfig) MarshalJSON() ([]byte, error) {
 
 func (o FontSizeConfig) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if o.Base.IsSet() {
-		toSerialize["base"] = o.Base.Get()
+	if !IsNil(o.Base) {
+		toSerialize["base"] = o.Base
 	}
 	return toSerialize, nil
 }

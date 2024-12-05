@@ -3,11 +3,12 @@ package svix_test
 import (
 	"context"
 	"errors"
-	svix "github.com/svix/svix-webhooks/go"
 	"net/http"
 	"net/url"
 	"os"
 	"testing"
+
+	svix "github.com/svix/svix-webhooks/go"
 )
 
 // Builds an API client for testing against an arbitrary API server with an arbitrary token.
@@ -96,9 +97,8 @@ func TestKitchenSink(t *testing.T) {
 }
 
 func TestStaticNullableString(t *testing.T) {
-	app := &svix.ApplicationIn{
-		Name: "test",
-		Uid:  svix.StaticNullableString("my-uid"),
+	app := &svix.ApplicationPatch{
+		Uid: svix.StaticNullableString("my-uid"),
 	}
 
 	if !app.Uid.IsSet() {

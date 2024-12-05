@@ -19,7 +19,7 @@ var _ MappedNullable = &SinkTransformationOut{}
 
 // SinkTransformationOut struct for SinkTransformationOut
 type SinkTransformationOut struct {
-	Code NullableString `json:"code,omitempty"`
+	Code *string `json:"code,omitempty"`
 	Enabled *bool `json:"enabled,omitempty"`
 }
 
@@ -44,46 +44,36 @@ func NewSinkTransformationOutWithDefaults() *SinkTransformationOut {
 	return &this
 }
 
-// GetCode returns the Code field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetCode returns the Code field value if set, zero value otherwise.
 func (o *SinkTransformationOut) GetCode() string {
-	if o == nil || IsNil(o.Code.Get()) {
+	if o == nil || IsNil(o.Code) {
 		var ret string
 		return ret
 	}
-	return *o.Code.Get()
+	return *o.Code
 }
 
 // GetCodeOk returns a tuple with the Code field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *SinkTransformationOut) GetCodeOk() (*string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.Code) {
 		return nil, false
 	}
-	return o.Code.Get(), o.Code.IsSet()
+	return o.Code, true
 }
 
 // HasCode returns a boolean if a field has been set.
 func (o *SinkTransformationOut) HasCode() bool {
-	if o != nil && o.Code.IsSet() {
+	if o != nil && !IsNil(o.Code) {
 		return true
 	}
 
 	return false
 }
 
-// SetCode gets a reference to the given NullableString and assigns it to the Code field.
+// SetCode gets a reference to the given string and assigns it to the Code field.
 func (o *SinkTransformationOut) SetCode(v string) {
-	o.Code.Set(&v)
-}
-// SetCodeNil sets the value for Code to be an explicit nil
-func (o *SinkTransformationOut) SetCodeNil() {
-	o.Code.Set(nil)
-}
-
-// UnsetCode ensures that no value is present for Code, not even an explicit nil
-func (o *SinkTransformationOut) UnsetCode() {
-	o.Code.Unset()
+	o.Code = &v
 }
 
 // GetEnabled returns the Enabled field value if set, zero value otherwise.
@@ -128,8 +118,8 @@ func (o SinkTransformationOut) MarshalJSON() ([]byte, error) {
 
 func (o SinkTransformationOut) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if o.Code.IsSet() {
-		toSerialize["code"] = o.Code.Get()
+	if !IsNil(o.Code) {
+		toSerialize["code"] = o.Code
 	}
 	if !IsNil(o.Enabled) {
 		toSerialize["enabled"] = o.Enabled

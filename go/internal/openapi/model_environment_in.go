@@ -46,9 +46,9 @@ func NewEnvironmentInWithDefaults() *EnvironmentIn {
 	return &this
 }
 
-// GetEventTypes returns the EventTypes field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetEventTypes returns the EventTypes field value if set, zero value otherwise.
 func (o *EnvironmentIn) GetEventTypes() []EventTypeIn {
-	if o == nil {
+	if o == nil || IsNil(o.EventTypes) {
 		var ret []EventTypeIn
 		return ret
 	}
@@ -57,7 +57,6 @@ func (o *EnvironmentIn) GetEventTypes() []EventTypeIn {
 
 // GetEventTypesOk returns a tuple with the EventTypes field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *EnvironmentIn) GetEventTypesOk() ([]EventTypeIn, bool) {
 	if o == nil || IsNil(o.EventTypes) {
 		return nil, false
@@ -105,9 +104,9 @@ func (o *EnvironmentIn) SetSettings(v map[string]map[string]interface{}) {
 	o.Settings = v
 }
 
-// GetTransformationTemplates returns the TransformationTemplates field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetTransformationTemplates returns the TransformationTemplates field value if set, zero value otherwise.
 func (o *EnvironmentIn) GetTransformationTemplates() []TemplateIn {
-	if o == nil {
+	if o == nil || IsNil(o.TransformationTemplates) {
 		var ret []TemplateIn
 		return ret
 	}
@@ -116,7 +115,6 @@ func (o *EnvironmentIn) GetTransformationTemplates() []TemplateIn {
 
 // GetTransformationTemplatesOk returns a tuple with the TransformationTemplates field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *EnvironmentIn) GetTransformationTemplatesOk() ([]TemplateIn, bool) {
 	if o == nil || IsNil(o.TransformationTemplates) {
 		return nil, false
@@ -148,13 +146,13 @@ func (o EnvironmentIn) MarshalJSON() ([]byte, error) {
 
 func (o EnvironmentIn) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if o.EventTypes != nil {
+	if !IsNil(o.EventTypes) {
 		toSerialize["eventTypes"] = o.EventTypes
 	}
 	if o.Settings != nil {
 		toSerialize["settings"] = o.Settings
 	}
-	if o.TransformationTemplates != nil {
+	if !IsNil(o.TransformationTemplates) {
 		toSerialize["transformationTemplates"] = o.TransformationTemplates
 	}
 	return toSerialize, nil
