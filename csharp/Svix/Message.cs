@@ -23,16 +23,18 @@ namespace Svix
             _messageApi = messageApi ?? throw new ArgumentException(nameof(messageApi));
         }
 
-
-        /// <summary>Creates a [MessageIn] with the payload already being serialized.
+        /// <summary>Creates a [MessageIn] with a pre-serialized payload.
         /// <para>
-        /// The payload is not normalized on the server (usually whitespace outside
-        /// of string literals, unnecessarily escaped characters in string and such
-        /// are fixed up by the server), and is not even required to be JSON.
+        /// The payload is not normalized on the server. Normally, payloads are
+        /// required to be JSON, and Svix will minify the payload before sending the
+        /// webhooks (for example, by removing extraneous whitespace or unnecessarily
+        /// escaped characters in strings). With this function, the payload will be
+        /// sent "as is", without any minification or other processing.
         /// </para>
         /// </summary>
         /// <param name="payload">Serialized message payload</param>
-        /// <param name="contentType">Content type of the payload to send as a header. Defaults to `application/json`.</param>
+        /// <param name="contentType">The `content-type` header of the webhook sent by Svix,
+        /// overwriting the default of `application/json` if specified</param>
         public static MessageIn messageInRaw(
             string eventType,
             string payload,

@@ -25,7 +25,7 @@ module Svix
     end
   end
 
-  # Creates a [`MessageIn`] with the payload already being serialized.
+  # Creates a [`MessageIn`] with a pre-serialized payload.
   #
   # The payload is not normalized on the server. Normally, payloads are required
   # to be JSON, and Svix will minify the payload before sending the webhook
@@ -34,9 +34,9 @@ module Svix
   # "as is", without any minification or other processing.
   #
   # `attributes[:payload]` must be a string. An extra attribute `content_type`
-  # is accepted that sets the `content-type` header of the webhook, overwriting
-  # the default of `application/json` if specified. Other than that, the
-  # attributes are forwarded [`MessageIn.new`], so all the same ones are
+  # is accepted that sets the `content-type` header of the webhook sent by Svix,
+  # overwriting the default of `application/json` if specified. Other than that,
+  # the attributes are forwarded [`MessageIn.new`], so all the same ones are
   # accepted.
   def message_in_raw(attributes = {})
     attributes[:transformations_params] ||= {}
