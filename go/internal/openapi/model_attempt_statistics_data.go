@@ -40,9 +40,9 @@ func NewAttemptStatisticsDataWithDefaults() *AttemptStatisticsData {
 	return &this
 }
 
-// GetFailureCount returns the FailureCount field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetFailureCount returns the FailureCount field value if set, zero value otherwise.
 func (o *AttemptStatisticsData) GetFailureCount() []int32 {
-	if o == nil {
+	if o == nil || IsNil(o.FailureCount) {
 		var ret []int32
 		return ret
 	}
@@ -51,7 +51,6 @@ func (o *AttemptStatisticsData) GetFailureCount() []int32 {
 
 // GetFailureCountOk returns a tuple with the FailureCount field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *AttemptStatisticsData) GetFailureCountOk() ([]int32, bool) {
 	if o == nil || IsNil(o.FailureCount) {
 		return nil, false
@@ -73,9 +72,9 @@ func (o *AttemptStatisticsData) SetFailureCount(v []int32) {
 	o.FailureCount = v
 }
 
-// GetSuccessCount returns the SuccessCount field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetSuccessCount returns the SuccessCount field value if set, zero value otherwise.
 func (o *AttemptStatisticsData) GetSuccessCount() []int32 {
-	if o == nil {
+	if o == nil || IsNil(o.SuccessCount) {
 		var ret []int32
 		return ret
 	}
@@ -84,7 +83,6 @@ func (o *AttemptStatisticsData) GetSuccessCount() []int32 {
 
 // GetSuccessCountOk returns a tuple with the SuccessCount field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *AttemptStatisticsData) GetSuccessCountOk() ([]int32, bool) {
 	if o == nil || IsNil(o.SuccessCount) {
 		return nil, false
@@ -116,10 +114,10 @@ func (o AttemptStatisticsData) MarshalJSON() ([]byte, error) {
 
 func (o AttemptStatisticsData) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if o.FailureCount != nil {
+	if !IsNil(o.FailureCount) {
 		toSerialize["failureCount"] = o.FailureCount
 	}
-	if o.SuccessCount != nil {
+	if !IsNil(o.SuccessCount) {
 		toSerialize["successCount"] = o.SuccessCount
 	}
 	return toSerialize, nil

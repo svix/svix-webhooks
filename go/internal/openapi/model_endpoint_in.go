@@ -27,14 +27,14 @@ type EndpointIn struct {
 	Disabled *bool `json:"disabled,omitempty"`
 	FilterTypes []string `json:"filterTypes,omitempty"`
 	Metadata *map[string]string `json:"metadata,omitempty"`
-	RateLimit NullableInt32 `json:"rateLimit,omitempty"`
+	RateLimit *int32 `json:"rateLimit,omitempty"`
 	// The endpoint's verification secret. If `null` is passed, a secret is automatically generated. Format: `base64` encoded random bytes optionally prefixed with `whsec_`. Recommended size: 24.
-	Secret NullableString `json:"secret,omitempty" validate:"regexp=^(whsec_)?[a-zA-Z0-9+\\/=]{32,100}$"`
+	Secret *string `json:"secret,omitempty" validate:"regexp=^(whsec_)?[a-zA-Z0-9+\\/=]{32,100}$"`
 	// Optional unique identifier for the endpoint
-	Uid NullableString `json:"uid,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
+	Uid *string `json:"uid,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
 	Url string `json:"url"`
 	// Deprecated
-	Version NullableInt32 `json:"version,omitempty"`
+	Version *int32 `json:"version,omitempty"`
 }
 
 type _EndpointIn EndpointIn
@@ -51,7 +51,7 @@ func NewEndpointIn(url string) *EndpointIn {
 	this.Disabled = &disabled
 	this.Url = url
 	var version int32 = 1
-	this.Version = *NewNullableInt32(&version)
+	this.Version = &version
 	return &this
 }
 
@@ -65,13 +65,13 @@ func NewEndpointInWithDefaults() *EndpointIn {
 	var disabled bool = false
 	this.Disabled = &disabled
 	var version int32 = 1
-	this.Version = *NewNullableInt32(&version)
+	this.Version = &version
 	return &this
 }
 
-// GetChannels returns the Channels field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetChannels returns the Channels field value if set, zero value otherwise.
 func (o *EndpointIn) GetChannels() []string {
-	if o == nil {
+	if o == nil || IsNil(o.Channels) {
 		var ret []string
 		return ret
 	}
@@ -80,7 +80,6 @@ func (o *EndpointIn) GetChannels() []string {
 
 // GetChannelsOk returns a tuple with the Channels field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *EndpointIn) GetChannelsOk() ([]string, bool) {
 	if o == nil || IsNil(o.Channels) {
 		return nil, false
@@ -166,9 +165,9 @@ func (o *EndpointIn) SetDisabled(v bool) {
 	o.Disabled = &v
 }
 
-// GetFilterTypes returns the FilterTypes field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetFilterTypes returns the FilterTypes field value if set, zero value otherwise.
 func (o *EndpointIn) GetFilterTypes() []string {
-	if o == nil {
+	if o == nil || IsNil(o.FilterTypes) {
 		var ret []string
 		return ret
 	}
@@ -177,7 +176,6 @@ func (o *EndpointIn) GetFilterTypes() []string {
 
 // GetFilterTypesOk returns a tuple with the FilterTypes field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *EndpointIn) GetFilterTypesOk() ([]string, bool) {
 	if o == nil || IsNil(o.FilterTypes) {
 		return nil, false
@@ -231,130 +229,100 @@ func (o *EndpointIn) SetMetadata(v map[string]string) {
 	o.Metadata = &v
 }
 
-// GetRateLimit returns the RateLimit field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetRateLimit returns the RateLimit field value if set, zero value otherwise.
 func (o *EndpointIn) GetRateLimit() int32 {
-	if o == nil || IsNil(o.RateLimit.Get()) {
+	if o == nil || IsNil(o.RateLimit) {
 		var ret int32
 		return ret
 	}
-	return *o.RateLimit.Get()
+	return *o.RateLimit
 }
 
 // GetRateLimitOk returns a tuple with the RateLimit field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *EndpointIn) GetRateLimitOk() (*int32, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.RateLimit) {
 		return nil, false
 	}
-	return o.RateLimit.Get(), o.RateLimit.IsSet()
+	return o.RateLimit, true
 }
 
 // HasRateLimit returns a boolean if a field has been set.
 func (o *EndpointIn) HasRateLimit() bool {
-	if o != nil && o.RateLimit.IsSet() {
+	if o != nil && !IsNil(o.RateLimit) {
 		return true
 	}
 
 	return false
 }
 
-// SetRateLimit gets a reference to the given NullableInt32 and assigns it to the RateLimit field.
+// SetRateLimit gets a reference to the given int32 and assigns it to the RateLimit field.
 func (o *EndpointIn) SetRateLimit(v int32) {
-	o.RateLimit.Set(&v)
-}
-// SetRateLimitNil sets the value for RateLimit to be an explicit nil
-func (o *EndpointIn) SetRateLimitNil() {
-	o.RateLimit.Set(nil)
+	o.RateLimit = &v
 }
 
-// UnsetRateLimit ensures that no value is present for RateLimit, not even an explicit nil
-func (o *EndpointIn) UnsetRateLimit() {
-	o.RateLimit.Unset()
-}
-
-// GetSecret returns the Secret field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetSecret returns the Secret field value if set, zero value otherwise.
 func (o *EndpointIn) GetSecret() string {
-	if o == nil || IsNil(o.Secret.Get()) {
+	if o == nil || IsNil(o.Secret) {
 		var ret string
 		return ret
 	}
-	return *o.Secret.Get()
+	return *o.Secret
 }
 
 // GetSecretOk returns a tuple with the Secret field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *EndpointIn) GetSecretOk() (*string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.Secret) {
 		return nil, false
 	}
-	return o.Secret.Get(), o.Secret.IsSet()
+	return o.Secret, true
 }
 
 // HasSecret returns a boolean if a field has been set.
 func (o *EndpointIn) HasSecret() bool {
-	if o != nil && o.Secret.IsSet() {
+	if o != nil && !IsNil(o.Secret) {
 		return true
 	}
 
 	return false
 }
 
-// SetSecret gets a reference to the given NullableString and assigns it to the Secret field.
+// SetSecret gets a reference to the given string and assigns it to the Secret field.
 func (o *EndpointIn) SetSecret(v string) {
-	o.Secret.Set(&v)
-}
-// SetSecretNil sets the value for Secret to be an explicit nil
-func (o *EndpointIn) SetSecretNil() {
-	o.Secret.Set(nil)
+	o.Secret = &v
 }
 
-// UnsetSecret ensures that no value is present for Secret, not even an explicit nil
-func (o *EndpointIn) UnsetSecret() {
-	o.Secret.Unset()
-}
-
-// GetUid returns the Uid field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetUid returns the Uid field value if set, zero value otherwise.
 func (o *EndpointIn) GetUid() string {
-	if o == nil || IsNil(o.Uid.Get()) {
+	if o == nil || IsNil(o.Uid) {
 		var ret string
 		return ret
 	}
-	return *o.Uid.Get()
+	return *o.Uid
 }
 
 // GetUidOk returns a tuple with the Uid field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *EndpointIn) GetUidOk() (*string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.Uid) {
 		return nil, false
 	}
-	return o.Uid.Get(), o.Uid.IsSet()
+	return o.Uid, true
 }
 
 // HasUid returns a boolean if a field has been set.
 func (o *EndpointIn) HasUid() bool {
-	if o != nil && o.Uid.IsSet() {
+	if o != nil && !IsNil(o.Uid) {
 		return true
 	}
 
 	return false
 }
 
-// SetUid gets a reference to the given NullableString and assigns it to the Uid field.
+// SetUid gets a reference to the given string and assigns it to the Uid field.
 func (o *EndpointIn) SetUid(v string) {
-	o.Uid.Set(&v)
-}
-// SetUidNil sets the value for Uid to be an explicit nil
-func (o *EndpointIn) SetUidNil() {
-	o.Uid.Set(nil)
-}
-
-// UnsetUid ensures that no value is present for Uid, not even an explicit nil
-func (o *EndpointIn) UnsetUid() {
-	o.Uid.Unset()
+	o.Uid = &v
 }
 
 // GetUrl returns the Url field value
@@ -381,49 +349,39 @@ func (o *EndpointIn) SetUrl(v string) {
 	o.Url = v
 }
 
-// GetVersion returns the Version field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetVersion returns the Version field value if set, zero value otherwise.
 // Deprecated
 func (o *EndpointIn) GetVersion() int32 {
-	if o == nil || IsNil(o.Version.Get()) {
+	if o == nil || IsNil(o.Version) {
 		var ret int32
 		return ret
 	}
-	return *o.Version.Get()
+	return *o.Version
 }
 
 // GetVersionOk returns a tuple with the Version field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 // Deprecated
 func (o *EndpointIn) GetVersionOk() (*int32, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.Version) {
 		return nil, false
 	}
-	return o.Version.Get(), o.Version.IsSet()
+	return o.Version, true
 }
 
 // HasVersion returns a boolean if a field has been set.
 func (o *EndpointIn) HasVersion() bool {
-	if o != nil && o.Version.IsSet() {
+	if o != nil && !IsNil(o.Version) {
 		return true
 	}
 
 	return false
 }
 
-// SetVersion gets a reference to the given NullableInt32 and assigns it to the Version field.
+// SetVersion gets a reference to the given int32 and assigns it to the Version field.
 // Deprecated
 func (o *EndpointIn) SetVersion(v int32) {
-	o.Version.Set(&v)
-}
-// SetVersionNil sets the value for Version to be an explicit nil
-func (o *EndpointIn) SetVersionNil() {
-	o.Version.Set(nil)
-}
-
-// UnsetVersion ensures that no value is present for Version, not even an explicit nil
-func (o *EndpointIn) UnsetVersion() {
-	o.Version.Unset()
+	o.Version = &v
 }
 
 func (o EndpointIn) MarshalJSON() ([]byte, error) {
@@ -436,7 +394,7 @@ func (o EndpointIn) MarshalJSON() ([]byte, error) {
 
 func (o EndpointIn) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if o.Channels != nil {
+	if !IsNil(o.Channels) {
 		toSerialize["channels"] = o.Channels
 	}
 	if !IsNil(o.Description) {
@@ -445,24 +403,24 @@ func (o EndpointIn) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Disabled) {
 		toSerialize["disabled"] = o.Disabled
 	}
-	if o.FilterTypes != nil {
+	if !IsNil(o.FilterTypes) {
 		toSerialize["filterTypes"] = o.FilterTypes
 	}
 	if !IsNil(o.Metadata) {
 		toSerialize["metadata"] = o.Metadata
 	}
-	if o.RateLimit.IsSet() {
-		toSerialize["rateLimit"] = o.RateLimit.Get()
+	if !IsNil(o.RateLimit) {
+		toSerialize["rateLimit"] = o.RateLimit
 	}
-	if o.Secret.IsSet() {
-		toSerialize["secret"] = o.Secret.Get()
+	if !IsNil(o.Secret) {
+		toSerialize["secret"] = o.Secret
 	}
-	if o.Uid.IsSet() {
-		toSerialize["uid"] = o.Uid.Get()
+	if !IsNil(o.Uid) {
+		toSerialize["uid"] = o.Uid
 	}
 	toSerialize["url"] = o.Url
-	if o.Version.IsSet() {
-		toSerialize["version"] = o.Version.Get()
+	if !IsNil(o.Version) {
+		toSerialize["version"] = o.Version
 	}
 	return toSerialize, nil
 }

@@ -21,11 +21,11 @@ var _ MappedNullable = &AppPortalAccessIn{}
 type AppPortalAccessIn struct {
 	Application *ApplicationIn `json:"application,omitempty"`
 	// How long the token will be valid for, in seconds.  Valid values are between 1 hour and 7 days. The default is 7 days.
-	Expiry NullableInt32 `json:"expiry,omitempty"`
+	Expiry *int32 `json:"expiry,omitempty"`
 	// The set of feature flags the created token will have access to.
 	FeatureFlags []string `json:"featureFlags,omitempty"`
 	// Whether the app portal should be in read-only mode.
-	ReadOnly NullableBool `json:"readOnly,omitempty"`
+	ReadOnly *bool `json:"readOnly,omitempty"`
 }
 
 // NewAppPortalAccessIn instantiates a new AppPortalAccessIn object
@@ -35,7 +35,7 @@ type AppPortalAccessIn struct {
 func NewAppPortalAccessIn() *AppPortalAccessIn {
 	this := AppPortalAccessIn{}
 	var expiry int32 = 604800
-	this.Expiry = *NewNullableInt32(&expiry)
+	this.Expiry = &expiry
 	return &this
 }
 
@@ -45,7 +45,7 @@ func NewAppPortalAccessIn() *AppPortalAccessIn {
 func NewAppPortalAccessInWithDefaults() *AppPortalAccessIn {
 	this := AppPortalAccessIn{}
 	var expiry int32 = 604800
-	this.Expiry = *NewNullableInt32(&expiry)
+	this.Expiry = &expiry
 	return &this
 }
 
@@ -81,46 +81,36 @@ func (o *AppPortalAccessIn) SetApplication(v ApplicationIn) {
 	o.Application = &v
 }
 
-// GetExpiry returns the Expiry field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetExpiry returns the Expiry field value if set, zero value otherwise.
 func (o *AppPortalAccessIn) GetExpiry() int32 {
-	if o == nil || IsNil(o.Expiry.Get()) {
+	if o == nil || IsNil(o.Expiry) {
 		var ret int32
 		return ret
 	}
-	return *o.Expiry.Get()
+	return *o.Expiry
 }
 
 // GetExpiryOk returns a tuple with the Expiry field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *AppPortalAccessIn) GetExpiryOk() (*int32, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.Expiry) {
 		return nil, false
 	}
-	return o.Expiry.Get(), o.Expiry.IsSet()
+	return o.Expiry, true
 }
 
 // HasExpiry returns a boolean if a field has been set.
 func (o *AppPortalAccessIn) HasExpiry() bool {
-	if o != nil && o.Expiry.IsSet() {
+	if o != nil && !IsNil(o.Expiry) {
 		return true
 	}
 
 	return false
 }
 
-// SetExpiry gets a reference to the given NullableInt32 and assigns it to the Expiry field.
+// SetExpiry gets a reference to the given int32 and assigns it to the Expiry field.
 func (o *AppPortalAccessIn) SetExpiry(v int32) {
-	o.Expiry.Set(&v)
-}
-// SetExpiryNil sets the value for Expiry to be an explicit nil
-func (o *AppPortalAccessIn) SetExpiryNil() {
-	o.Expiry.Set(nil)
-}
-
-// UnsetExpiry ensures that no value is present for Expiry, not even an explicit nil
-func (o *AppPortalAccessIn) UnsetExpiry() {
-	o.Expiry.Unset()
+	o.Expiry = &v
 }
 
 // GetFeatureFlags returns the FeatureFlags field value if set, zero value otherwise.
@@ -155,46 +145,36 @@ func (o *AppPortalAccessIn) SetFeatureFlags(v []string) {
 	o.FeatureFlags = v
 }
 
-// GetReadOnly returns the ReadOnly field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetReadOnly returns the ReadOnly field value if set, zero value otherwise.
 func (o *AppPortalAccessIn) GetReadOnly() bool {
-	if o == nil || IsNil(o.ReadOnly.Get()) {
+	if o == nil || IsNil(o.ReadOnly) {
 		var ret bool
 		return ret
 	}
-	return *o.ReadOnly.Get()
+	return *o.ReadOnly
 }
 
 // GetReadOnlyOk returns a tuple with the ReadOnly field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *AppPortalAccessIn) GetReadOnlyOk() (*bool, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.ReadOnly) {
 		return nil, false
 	}
-	return o.ReadOnly.Get(), o.ReadOnly.IsSet()
+	return o.ReadOnly, true
 }
 
 // HasReadOnly returns a boolean if a field has been set.
 func (o *AppPortalAccessIn) HasReadOnly() bool {
-	if o != nil && o.ReadOnly.IsSet() {
+	if o != nil && !IsNil(o.ReadOnly) {
 		return true
 	}
 
 	return false
 }
 
-// SetReadOnly gets a reference to the given NullableBool and assigns it to the ReadOnly field.
+// SetReadOnly gets a reference to the given bool and assigns it to the ReadOnly field.
 func (o *AppPortalAccessIn) SetReadOnly(v bool) {
-	o.ReadOnly.Set(&v)
-}
-// SetReadOnlyNil sets the value for ReadOnly to be an explicit nil
-func (o *AppPortalAccessIn) SetReadOnlyNil() {
-	o.ReadOnly.Set(nil)
-}
-
-// UnsetReadOnly ensures that no value is present for ReadOnly, not even an explicit nil
-func (o *AppPortalAccessIn) UnsetReadOnly() {
-	o.ReadOnly.Unset()
+	o.ReadOnly = &v
 }
 
 func (o AppPortalAccessIn) MarshalJSON() ([]byte, error) {
@@ -210,14 +190,14 @@ func (o AppPortalAccessIn) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Application) {
 		toSerialize["application"] = o.Application
 	}
-	if o.Expiry.IsSet() {
-		toSerialize["expiry"] = o.Expiry.Get()
+	if !IsNil(o.Expiry) {
+		toSerialize["expiry"] = o.Expiry
 	}
 	if !IsNil(o.FeatureFlags) {
 		toSerialize["featureFlags"] = o.FeatureFlags
 	}
-	if o.ReadOnly.IsSet() {
-		toSerialize["readOnly"] = o.ReadOnly.Get()
+	if !IsNil(o.ReadOnly) {
+		toSerialize["readOnly"] = o.ReadOnly
 	}
 	return toSerialize, nil
 }

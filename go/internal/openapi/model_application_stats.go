@@ -24,7 +24,7 @@ type ApplicationStats struct {
 	// The app's ID
 	AppId string `json:"appId"`
 	// The app's UID
-	AppUid NullableString `json:"appUid,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
+	AppUid *string `json:"appUid,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
 	MessageDestinations int32 `json:"messageDestinations"`
 }
 
@@ -73,46 +73,36 @@ func (o *ApplicationStats) SetAppId(v string) {
 	o.AppId = v
 }
 
-// GetAppUid returns the AppUid field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetAppUid returns the AppUid field value if set, zero value otherwise.
 func (o *ApplicationStats) GetAppUid() string {
-	if o == nil || IsNil(o.AppUid.Get()) {
+	if o == nil || IsNil(o.AppUid) {
 		var ret string
 		return ret
 	}
-	return *o.AppUid.Get()
+	return *o.AppUid
 }
 
 // GetAppUidOk returns a tuple with the AppUid field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *ApplicationStats) GetAppUidOk() (*string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.AppUid) {
 		return nil, false
 	}
-	return o.AppUid.Get(), o.AppUid.IsSet()
+	return o.AppUid, true
 }
 
 // HasAppUid returns a boolean if a field has been set.
 func (o *ApplicationStats) HasAppUid() bool {
-	if o != nil && o.AppUid.IsSet() {
+	if o != nil && !IsNil(o.AppUid) {
 		return true
 	}
 
 	return false
 }
 
-// SetAppUid gets a reference to the given NullableString and assigns it to the AppUid field.
+// SetAppUid gets a reference to the given string and assigns it to the AppUid field.
 func (o *ApplicationStats) SetAppUid(v string) {
-	o.AppUid.Set(&v)
-}
-// SetAppUidNil sets the value for AppUid to be an explicit nil
-func (o *ApplicationStats) SetAppUidNil() {
-	o.AppUid.Set(nil)
-}
-
-// UnsetAppUid ensures that no value is present for AppUid, not even an explicit nil
-func (o *ApplicationStats) UnsetAppUid() {
-	o.AppUid.Unset()
+	o.AppUid = &v
 }
 
 // GetMessageDestinations returns the MessageDestinations field value
@@ -150,8 +140,8 @@ func (o ApplicationStats) MarshalJSON() ([]byte, error) {
 func (o ApplicationStats) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["appId"] = o.AppId
-	if o.AppUid.IsSet() {
-		toSerialize["appUid"] = o.AppUid.Get()
+	if !IsNil(o.AppUid) {
+		toSerialize["appUid"] = o.AppUid
 	}
 	toSerialize["messageDestinations"] = o.MessageDestinations
 	return toSerialize, nil

@@ -30,9 +30,9 @@ type OperationalWebhookEndpointOut struct {
 	// The ep's ID
 	Id string `json:"id"`
 	Metadata map[string]string `json:"metadata"`
-	RateLimit NullableInt32 `json:"rateLimit,omitempty"`
+	RateLimit *int32 `json:"rateLimit,omitempty"`
 	// Optional unique identifier for the endpoint
-	Uid NullableString `json:"uid,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
+	Uid *string `json:"uid,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
 	UpdatedAt time.Time `json:"updatedAt"`
 	Url string `json:"url"`
 }
@@ -146,9 +146,9 @@ func (o *OperationalWebhookEndpointOut) SetDisabled(v bool) {
 	o.Disabled = &v
 }
 
-// GetFilterTypes returns the FilterTypes field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetFilterTypes returns the FilterTypes field value if set, zero value otherwise.
 func (o *OperationalWebhookEndpointOut) GetFilterTypes() []string {
-	if o == nil {
+	if o == nil || IsNil(o.FilterTypes) {
 		var ret []string
 		return ret
 	}
@@ -157,7 +157,6 @@ func (o *OperationalWebhookEndpointOut) GetFilterTypes() []string {
 
 // GetFilterTypesOk returns a tuple with the FilterTypes field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *OperationalWebhookEndpointOut) GetFilterTypesOk() ([]string, bool) {
 	if o == nil || IsNil(o.FilterTypes) {
 		return nil, false
@@ -227,88 +226,68 @@ func (o *OperationalWebhookEndpointOut) SetMetadata(v map[string]string) {
 	o.Metadata = v
 }
 
-// GetRateLimit returns the RateLimit field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetRateLimit returns the RateLimit field value if set, zero value otherwise.
 func (o *OperationalWebhookEndpointOut) GetRateLimit() int32 {
-	if o == nil || IsNil(o.RateLimit.Get()) {
+	if o == nil || IsNil(o.RateLimit) {
 		var ret int32
 		return ret
 	}
-	return *o.RateLimit.Get()
+	return *o.RateLimit
 }
 
 // GetRateLimitOk returns a tuple with the RateLimit field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *OperationalWebhookEndpointOut) GetRateLimitOk() (*int32, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.RateLimit) {
 		return nil, false
 	}
-	return o.RateLimit.Get(), o.RateLimit.IsSet()
+	return o.RateLimit, true
 }
 
 // HasRateLimit returns a boolean if a field has been set.
 func (o *OperationalWebhookEndpointOut) HasRateLimit() bool {
-	if o != nil && o.RateLimit.IsSet() {
+	if o != nil && !IsNil(o.RateLimit) {
 		return true
 	}
 
 	return false
 }
 
-// SetRateLimit gets a reference to the given NullableInt32 and assigns it to the RateLimit field.
+// SetRateLimit gets a reference to the given int32 and assigns it to the RateLimit field.
 func (o *OperationalWebhookEndpointOut) SetRateLimit(v int32) {
-	o.RateLimit.Set(&v)
-}
-// SetRateLimitNil sets the value for RateLimit to be an explicit nil
-func (o *OperationalWebhookEndpointOut) SetRateLimitNil() {
-	o.RateLimit.Set(nil)
+	o.RateLimit = &v
 }
 
-// UnsetRateLimit ensures that no value is present for RateLimit, not even an explicit nil
-func (o *OperationalWebhookEndpointOut) UnsetRateLimit() {
-	o.RateLimit.Unset()
-}
-
-// GetUid returns the Uid field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetUid returns the Uid field value if set, zero value otherwise.
 func (o *OperationalWebhookEndpointOut) GetUid() string {
-	if o == nil || IsNil(o.Uid.Get()) {
+	if o == nil || IsNil(o.Uid) {
 		var ret string
 		return ret
 	}
-	return *o.Uid.Get()
+	return *o.Uid
 }
 
 // GetUidOk returns a tuple with the Uid field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *OperationalWebhookEndpointOut) GetUidOk() (*string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.Uid) {
 		return nil, false
 	}
-	return o.Uid.Get(), o.Uid.IsSet()
+	return o.Uid, true
 }
 
 // HasUid returns a boolean if a field has been set.
 func (o *OperationalWebhookEndpointOut) HasUid() bool {
-	if o != nil && o.Uid.IsSet() {
+	if o != nil && !IsNil(o.Uid) {
 		return true
 	}
 
 	return false
 }
 
-// SetUid gets a reference to the given NullableString and assigns it to the Uid field.
+// SetUid gets a reference to the given string and assigns it to the Uid field.
 func (o *OperationalWebhookEndpointOut) SetUid(v string) {
-	o.Uid.Set(&v)
-}
-// SetUidNil sets the value for Uid to be an explicit nil
-func (o *OperationalWebhookEndpointOut) SetUidNil() {
-	o.Uid.Set(nil)
-}
-
-// UnsetUid ensures that no value is present for Uid, not even an explicit nil
-func (o *OperationalWebhookEndpointOut) UnsetUid() {
-	o.Uid.Unset()
+	o.Uid = &v
 }
 
 // GetUpdatedAt returns the UpdatedAt field value
@@ -374,16 +353,16 @@ func (o OperationalWebhookEndpointOut) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Disabled) {
 		toSerialize["disabled"] = o.Disabled
 	}
-	if o.FilterTypes != nil {
+	if !IsNil(o.FilterTypes) {
 		toSerialize["filterTypes"] = o.FilterTypes
 	}
 	toSerialize["id"] = o.Id
 	toSerialize["metadata"] = o.Metadata
-	if o.RateLimit.IsSet() {
-		toSerialize["rateLimit"] = o.RateLimit.Get()
+	if !IsNil(o.RateLimit) {
+		toSerialize["rateLimit"] = o.RateLimit
 	}
-	if o.Uid.IsSet() {
-		toSerialize["uid"] = o.Uid.Get()
+	if !IsNil(o.Uid) {
+		toSerialize["uid"] = o.Uid
 	}
 	toSerialize["updatedAt"] = o.UpdatedAt
 	toSerialize["url"] = o.Url

@@ -26,9 +26,9 @@ type EventTypeOut struct {
 	CreatedAt time.Time `json:"createdAt"`
 	Deprecated bool `json:"deprecated"`
 	Description string `json:"description"`
-	FeatureFlag NullableString `json:"featureFlag,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
+	FeatureFlag *string `json:"featureFlag,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
 	// The event type group's name
-	GroupName NullableString `json:"groupName,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
+	GroupName *string `json:"groupName,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
 	// The event type's name
 	Name string `json:"name" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
 	// The schema for the event type for a specific version as a JSON schema.
@@ -168,88 +168,68 @@ func (o *EventTypeOut) SetDescription(v string) {
 	o.Description = v
 }
 
-// GetFeatureFlag returns the FeatureFlag field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetFeatureFlag returns the FeatureFlag field value if set, zero value otherwise.
 func (o *EventTypeOut) GetFeatureFlag() string {
-	if o == nil || IsNil(o.FeatureFlag.Get()) {
+	if o == nil || IsNil(o.FeatureFlag) {
 		var ret string
 		return ret
 	}
-	return *o.FeatureFlag.Get()
+	return *o.FeatureFlag
 }
 
 // GetFeatureFlagOk returns a tuple with the FeatureFlag field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *EventTypeOut) GetFeatureFlagOk() (*string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.FeatureFlag) {
 		return nil, false
 	}
-	return o.FeatureFlag.Get(), o.FeatureFlag.IsSet()
+	return o.FeatureFlag, true
 }
 
 // HasFeatureFlag returns a boolean if a field has been set.
 func (o *EventTypeOut) HasFeatureFlag() bool {
-	if o != nil && o.FeatureFlag.IsSet() {
+	if o != nil && !IsNil(o.FeatureFlag) {
 		return true
 	}
 
 	return false
 }
 
-// SetFeatureFlag gets a reference to the given NullableString and assigns it to the FeatureFlag field.
+// SetFeatureFlag gets a reference to the given string and assigns it to the FeatureFlag field.
 func (o *EventTypeOut) SetFeatureFlag(v string) {
-	o.FeatureFlag.Set(&v)
-}
-// SetFeatureFlagNil sets the value for FeatureFlag to be an explicit nil
-func (o *EventTypeOut) SetFeatureFlagNil() {
-	o.FeatureFlag.Set(nil)
+	o.FeatureFlag = &v
 }
 
-// UnsetFeatureFlag ensures that no value is present for FeatureFlag, not even an explicit nil
-func (o *EventTypeOut) UnsetFeatureFlag() {
-	o.FeatureFlag.Unset()
-}
-
-// GetGroupName returns the GroupName field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetGroupName returns the GroupName field value if set, zero value otherwise.
 func (o *EventTypeOut) GetGroupName() string {
-	if o == nil || IsNil(o.GroupName.Get()) {
+	if o == nil || IsNil(o.GroupName) {
 		var ret string
 		return ret
 	}
-	return *o.GroupName.Get()
+	return *o.GroupName
 }
 
 // GetGroupNameOk returns a tuple with the GroupName field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *EventTypeOut) GetGroupNameOk() (*string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.GroupName) {
 		return nil, false
 	}
-	return o.GroupName.Get(), o.GroupName.IsSet()
+	return o.GroupName, true
 }
 
 // HasGroupName returns a boolean if a field has been set.
 func (o *EventTypeOut) HasGroupName() bool {
-	if o != nil && o.GroupName.IsSet() {
+	if o != nil && !IsNil(o.GroupName) {
 		return true
 	}
 
 	return false
 }
 
-// SetGroupName gets a reference to the given NullableString and assigns it to the GroupName field.
+// SetGroupName gets a reference to the given string and assigns it to the GroupName field.
 func (o *EventTypeOut) SetGroupName(v string) {
-	o.GroupName.Set(&v)
-}
-// SetGroupNameNil sets the value for GroupName to be an explicit nil
-func (o *EventTypeOut) SetGroupNameNil() {
-	o.GroupName.Set(nil)
-}
-
-// UnsetGroupName ensures that no value is present for GroupName, not even an explicit nil
-func (o *EventTypeOut) UnsetGroupName() {
-	o.GroupName.Unset()
+	o.GroupName = &v
 }
 
 // GetName returns the Name field value
@@ -276,9 +256,9 @@ func (o *EventTypeOut) SetName(v string) {
 	o.Name = v
 }
 
-// GetSchemas returns the Schemas field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetSchemas returns the Schemas field value if set, zero value otherwise.
 func (o *EventTypeOut) GetSchemas() map[string]map[string]interface{} {
-	if o == nil {
+	if o == nil || IsNil(o.Schemas) {
 		var ret map[string]map[string]interface{}
 		return ret
 	}
@@ -287,7 +267,6 @@ func (o *EventTypeOut) GetSchemas() map[string]map[string]interface{} {
 
 // GetSchemasOk returns a tuple with the Schemas field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *EventTypeOut) GetSchemasOk() (map[string]map[string]interface{}, bool) {
 	if o == nil || IsNil(o.Schemas) {
 		return map[string]map[string]interface{}{}, false
@@ -349,14 +328,14 @@ func (o EventTypeOut) ToMap() (map[string]interface{}, error) {
 	toSerialize["createdAt"] = o.CreatedAt
 	toSerialize["deprecated"] = o.Deprecated
 	toSerialize["description"] = o.Description
-	if o.FeatureFlag.IsSet() {
-		toSerialize["featureFlag"] = o.FeatureFlag.Get()
+	if !IsNil(o.FeatureFlag) {
+		toSerialize["featureFlag"] = o.FeatureFlag
 	}
-	if o.GroupName.IsSet() {
-		toSerialize["groupName"] = o.GroupName.Get()
+	if !IsNil(o.GroupName) {
+		toSerialize["groupName"] = o.GroupName
 	}
 	toSerialize["name"] = o.Name
-	if o.Schemas != nil {
+	if !IsNil(o.Schemas) {
 		toSerialize["schemas"] = o.Schemas
 	}
 	toSerialize["updatedAt"] = o.UpdatedAt

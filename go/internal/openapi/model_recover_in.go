@@ -23,7 +23,7 @@ var _ MappedNullable = &RecoverIn{}
 // RecoverIn struct for RecoverIn
 type RecoverIn struct {
 	Since time.Time `json:"since"`
-	Until NullableTime `json:"until,omitempty"`
+	Until *time.Time `json:"until,omitempty"`
 }
 
 type _RecoverIn RecoverIn
@@ -70,46 +70,36 @@ func (o *RecoverIn) SetSince(v time.Time) {
 	o.Since = v
 }
 
-// GetUntil returns the Until field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetUntil returns the Until field value if set, zero value otherwise.
 func (o *RecoverIn) GetUntil() time.Time {
-	if o == nil || IsNil(o.Until.Get()) {
+	if o == nil || IsNil(o.Until) {
 		var ret time.Time
 		return ret
 	}
-	return *o.Until.Get()
+	return *o.Until
 }
 
 // GetUntilOk returns a tuple with the Until field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *RecoverIn) GetUntilOk() (*time.Time, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.Until) {
 		return nil, false
 	}
-	return o.Until.Get(), o.Until.IsSet()
+	return o.Until, true
 }
 
 // HasUntil returns a boolean if a field has been set.
 func (o *RecoverIn) HasUntil() bool {
-	if o != nil && o.Until.IsSet() {
+	if o != nil && !IsNil(o.Until) {
 		return true
 	}
 
 	return false
 }
 
-// SetUntil gets a reference to the given NullableTime and assigns it to the Until field.
+// SetUntil gets a reference to the given time.Time and assigns it to the Until field.
 func (o *RecoverIn) SetUntil(v time.Time) {
-	o.Until.Set(&v)
-}
-// SetUntilNil sets the value for Until to be an explicit nil
-func (o *RecoverIn) SetUntilNil() {
-	o.Until.Set(nil)
-}
-
-// UnsetUntil ensures that no value is present for Until, not even an explicit nil
-func (o *RecoverIn) UnsetUntil() {
-	o.Until.Unset()
+	o.Until = &v
 }
 
 func (o RecoverIn) MarshalJSON() ([]byte, error) {
@@ -123,8 +113,8 @@ func (o RecoverIn) MarshalJSON() ([]byte, error) {
 func (o RecoverIn) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["since"] = o.Since
-	if o.Until.IsSet() {
-		toSerialize["until"] = o.Until.Get()
+	if !IsNil(o.Until) {
+		toSerialize["until"] = o.Until
 	}
 	return toSerialize, nil
 }

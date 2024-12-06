@@ -24,10 +24,10 @@ type ClientSecretJwtParamsIn struct {
 	// The base64-encoded secret used for signing the JWT.
 	SecretBase64 string `json:"secretBase64"`
 	// Optional secret identifier. If supplied, this will be populated in the JWT header in the `kid` field.
-	SecretId NullableString `json:"secretId,omitempty"`
+	SecretId *string `json:"secretId,omitempty"`
 	SigningAlgorithm OauthJwsSigningAlgorithm `json:"signingAlgorithm"`
 	// Optional number of seconds after which the JWT should expire. Defaults to 300 seconds.
-	TokenExpirySecs NullableInt32 `json:"tokenExpirySecs,omitempty"`
+	TokenExpirySecs *int32 `json:"tokenExpirySecs,omitempty"`
 }
 
 type _ClientSecretJwtParamsIn ClientSecretJwtParamsIn
@@ -75,46 +75,36 @@ func (o *ClientSecretJwtParamsIn) SetSecretBase64(v string) {
 	o.SecretBase64 = v
 }
 
-// GetSecretId returns the SecretId field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetSecretId returns the SecretId field value if set, zero value otherwise.
 func (o *ClientSecretJwtParamsIn) GetSecretId() string {
-	if o == nil || IsNil(o.SecretId.Get()) {
+	if o == nil || IsNil(o.SecretId) {
 		var ret string
 		return ret
 	}
-	return *o.SecretId.Get()
+	return *o.SecretId
 }
 
 // GetSecretIdOk returns a tuple with the SecretId field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *ClientSecretJwtParamsIn) GetSecretIdOk() (*string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.SecretId) {
 		return nil, false
 	}
-	return o.SecretId.Get(), o.SecretId.IsSet()
+	return o.SecretId, true
 }
 
 // HasSecretId returns a boolean if a field has been set.
 func (o *ClientSecretJwtParamsIn) HasSecretId() bool {
-	if o != nil && o.SecretId.IsSet() {
+	if o != nil && !IsNil(o.SecretId) {
 		return true
 	}
 
 	return false
 }
 
-// SetSecretId gets a reference to the given NullableString and assigns it to the SecretId field.
+// SetSecretId gets a reference to the given string and assigns it to the SecretId field.
 func (o *ClientSecretJwtParamsIn) SetSecretId(v string) {
-	o.SecretId.Set(&v)
-}
-// SetSecretIdNil sets the value for SecretId to be an explicit nil
-func (o *ClientSecretJwtParamsIn) SetSecretIdNil() {
-	o.SecretId.Set(nil)
-}
-
-// UnsetSecretId ensures that no value is present for SecretId, not even an explicit nil
-func (o *ClientSecretJwtParamsIn) UnsetSecretId() {
-	o.SecretId.Unset()
+	o.SecretId = &v
 }
 
 // GetSigningAlgorithm returns the SigningAlgorithm field value
@@ -141,46 +131,36 @@ func (o *ClientSecretJwtParamsIn) SetSigningAlgorithm(v OauthJwsSigningAlgorithm
 	o.SigningAlgorithm = v
 }
 
-// GetTokenExpirySecs returns the TokenExpirySecs field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetTokenExpirySecs returns the TokenExpirySecs field value if set, zero value otherwise.
 func (o *ClientSecretJwtParamsIn) GetTokenExpirySecs() int32 {
-	if o == nil || IsNil(o.TokenExpirySecs.Get()) {
+	if o == nil || IsNil(o.TokenExpirySecs) {
 		var ret int32
 		return ret
 	}
-	return *o.TokenExpirySecs.Get()
+	return *o.TokenExpirySecs
 }
 
 // GetTokenExpirySecsOk returns a tuple with the TokenExpirySecs field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *ClientSecretJwtParamsIn) GetTokenExpirySecsOk() (*int32, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.TokenExpirySecs) {
 		return nil, false
 	}
-	return o.TokenExpirySecs.Get(), o.TokenExpirySecs.IsSet()
+	return o.TokenExpirySecs, true
 }
 
 // HasTokenExpirySecs returns a boolean if a field has been set.
 func (o *ClientSecretJwtParamsIn) HasTokenExpirySecs() bool {
-	if o != nil && o.TokenExpirySecs.IsSet() {
+	if o != nil && !IsNil(o.TokenExpirySecs) {
 		return true
 	}
 
 	return false
 }
 
-// SetTokenExpirySecs gets a reference to the given NullableInt32 and assigns it to the TokenExpirySecs field.
+// SetTokenExpirySecs gets a reference to the given int32 and assigns it to the TokenExpirySecs field.
 func (o *ClientSecretJwtParamsIn) SetTokenExpirySecs(v int32) {
-	o.TokenExpirySecs.Set(&v)
-}
-// SetTokenExpirySecsNil sets the value for TokenExpirySecs to be an explicit nil
-func (o *ClientSecretJwtParamsIn) SetTokenExpirySecsNil() {
-	o.TokenExpirySecs.Set(nil)
-}
-
-// UnsetTokenExpirySecs ensures that no value is present for TokenExpirySecs, not even an explicit nil
-func (o *ClientSecretJwtParamsIn) UnsetTokenExpirySecs() {
-	o.TokenExpirySecs.Unset()
+	o.TokenExpirySecs = &v
 }
 
 func (o ClientSecretJwtParamsIn) MarshalJSON() ([]byte, error) {
@@ -194,12 +174,12 @@ func (o ClientSecretJwtParamsIn) MarshalJSON() ([]byte, error) {
 func (o ClientSecretJwtParamsIn) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["secretBase64"] = o.SecretBase64
-	if o.SecretId.IsSet() {
-		toSerialize["secretId"] = o.SecretId.Get()
+	if !IsNil(o.SecretId) {
+		toSerialize["secretId"] = o.SecretId
 	}
 	toSerialize["signingAlgorithm"] = o.SigningAlgorithm
-	if o.TokenExpirySecs.IsSet() {
-		toSerialize["tokenExpirySecs"] = o.TokenExpirySecs.Get()
+	if !IsNil(o.TokenExpirySecs) {
+		toSerialize["tokenExpirySecs"] = o.TokenExpirySecs
 	}
 	return toSerialize, nil
 }

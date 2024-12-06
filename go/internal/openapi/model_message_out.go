@@ -25,7 +25,7 @@ type MessageOut struct {
 	// List of free-form identifiers that endpoints can filter by
 	Channels []string `json:"channels,omitempty"`
 	// Optional unique identifier for the message
-	EventId NullableString `json:"eventId,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
+	EventId *string `json:"eventId,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
 	// The event type's name
 	EventType string `json:"eventType" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
 	// The msg's ID
@@ -58,9 +58,9 @@ func NewMessageOutWithDefaults() *MessageOut {
 	return &this
 }
 
-// GetChannels returns the Channels field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetChannels returns the Channels field value if set, zero value otherwise.
 func (o *MessageOut) GetChannels() []string {
-	if o == nil {
+	if o == nil || IsNil(o.Channels) {
 		var ret []string
 		return ret
 	}
@@ -69,7 +69,6 @@ func (o *MessageOut) GetChannels() []string {
 
 // GetChannelsOk returns a tuple with the Channels field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *MessageOut) GetChannelsOk() ([]string, bool) {
 	if o == nil || IsNil(o.Channels) {
 		return nil, false
@@ -91,46 +90,36 @@ func (o *MessageOut) SetChannels(v []string) {
 	o.Channels = v
 }
 
-// GetEventId returns the EventId field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetEventId returns the EventId field value if set, zero value otherwise.
 func (o *MessageOut) GetEventId() string {
-	if o == nil || IsNil(o.EventId.Get()) {
+	if o == nil || IsNil(o.EventId) {
 		var ret string
 		return ret
 	}
-	return *o.EventId.Get()
+	return *o.EventId
 }
 
 // GetEventIdOk returns a tuple with the EventId field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *MessageOut) GetEventIdOk() (*string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.EventId) {
 		return nil, false
 	}
-	return o.EventId.Get(), o.EventId.IsSet()
+	return o.EventId, true
 }
 
 // HasEventId returns a boolean if a field has been set.
 func (o *MessageOut) HasEventId() bool {
-	if o != nil && o.EventId.IsSet() {
+	if o != nil && !IsNil(o.EventId) {
 		return true
 	}
 
 	return false
 }
 
-// SetEventId gets a reference to the given NullableString and assigns it to the EventId field.
+// SetEventId gets a reference to the given string and assigns it to the EventId field.
 func (o *MessageOut) SetEventId(v string) {
-	o.EventId.Set(&v)
-}
-// SetEventIdNil sets the value for EventId to be an explicit nil
-func (o *MessageOut) SetEventIdNil() {
-	o.EventId.Set(nil)
-}
-
-// UnsetEventId ensures that no value is present for EventId, not even an explicit nil
-func (o *MessageOut) UnsetEventId() {
-	o.EventId.Unset()
+	o.EventId = &v
 }
 
 // GetEventType returns the EventType field value
@@ -205,9 +194,9 @@ func (o *MessageOut) SetPayload(v map[string]interface{}) {
 	o.Payload = v
 }
 
-// GetTags returns the Tags field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetTags returns the Tags field value if set, zero value otherwise.
 func (o *MessageOut) GetTags() []string {
-	if o == nil {
+	if o == nil || IsNil(o.Tags) {
 		var ret []string
 		return ret
 	}
@@ -216,7 +205,6 @@ func (o *MessageOut) GetTags() []string {
 
 // GetTagsOk returns a tuple with the Tags field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *MessageOut) GetTagsOk() ([]string, bool) {
 	if o == nil || IsNil(o.Tags) {
 		return nil, false
@@ -272,16 +260,16 @@ func (o MessageOut) MarshalJSON() ([]byte, error) {
 
 func (o MessageOut) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if o.Channels != nil {
+	if !IsNil(o.Channels) {
 		toSerialize["channels"] = o.Channels
 	}
-	if o.EventId.IsSet() {
-		toSerialize["eventId"] = o.EventId.Get()
+	if !IsNil(o.EventId) {
+		toSerialize["eventId"] = o.EventId
 	}
 	toSerialize["eventType"] = o.EventType
 	toSerialize["id"] = o.Id
 	toSerialize["payload"] = o.Payload
-	if o.Tags != nil {
+	if !IsNil(o.Tags) {
 		toSerialize["tags"] = o.Tags
 	}
 	toSerialize["timestamp"] = o.Timestamp

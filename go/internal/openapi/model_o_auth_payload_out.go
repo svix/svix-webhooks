@@ -19,9 +19,9 @@ var _ MappedNullable = &OAuthPayloadOut{}
 
 // OAuthPayloadOut struct for OAuthPayloadOut
 type OAuthPayloadOut struct {
-	AccessToken NullableString `json:"accessToken,omitempty"`
-	Error NullableString `json:"error,omitempty"`
-	RefreshToken NullableString `json:"refreshToken,omitempty"`
+	AccessToken *string `json:"accessToken,omitempty"`
+	Error *string `json:"error,omitempty"`
+	RefreshToken *string `json:"refreshToken,omitempty"`
 }
 
 // NewOAuthPayloadOut instantiates a new OAuthPayloadOut object
@@ -41,130 +41,100 @@ func NewOAuthPayloadOutWithDefaults() *OAuthPayloadOut {
 	return &this
 }
 
-// GetAccessToken returns the AccessToken field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetAccessToken returns the AccessToken field value if set, zero value otherwise.
 func (o *OAuthPayloadOut) GetAccessToken() string {
-	if o == nil || IsNil(o.AccessToken.Get()) {
+	if o == nil || IsNil(o.AccessToken) {
 		var ret string
 		return ret
 	}
-	return *o.AccessToken.Get()
+	return *o.AccessToken
 }
 
 // GetAccessTokenOk returns a tuple with the AccessToken field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *OAuthPayloadOut) GetAccessTokenOk() (*string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.AccessToken) {
 		return nil, false
 	}
-	return o.AccessToken.Get(), o.AccessToken.IsSet()
+	return o.AccessToken, true
 }
 
 // HasAccessToken returns a boolean if a field has been set.
 func (o *OAuthPayloadOut) HasAccessToken() bool {
-	if o != nil && o.AccessToken.IsSet() {
+	if o != nil && !IsNil(o.AccessToken) {
 		return true
 	}
 
 	return false
 }
 
-// SetAccessToken gets a reference to the given NullableString and assigns it to the AccessToken field.
+// SetAccessToken gets a reference to the given string and assigns it to the AccessToken field.
 func (o *OAuthPayloadOut) SetAccessToken(v string) {
-	o.AccessToken.Set(&v)
-}
-// SetAccessTokenNil sets the value for AccessToken to be an explicit nil
-func (o *OAuthPayloadOut) SetAccessTokenNil() {
-	o.AccessToken.Set(nil)
+	o.AccessToken = &v
 }
 
-// UnsetAccessToken ensures that no value is present for AccessToken, not even an explicit nil
-func (o *OAuthPayloadOut) UnsetAccessToken() {
-	o.AccessToken.Unset()
-}
-
-// GetError returns the Error field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetError returns the Error field value if set, zero value otherwise.
 func (o *OAuthPayloadOut) GetError() string {
-	if o == nil || IsNil(o.Error.Get()) {
+	if o == nil || IsNil(o.Error) {
 		var ret string
 		return ret
 	}
-	return *o.Error.Get()
+	return *o.Error
 }
 
 // GetErrorOk returns a tuple with the Error field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *OAuthPayloadOut) GetErrorOk() (*string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.Error) {
 		return nil, false
 	}
-	return o.Error.Get(), o.Error.IsSet()
+	return o.Error, true
 }
 
 // HasError returns a boolean if a field has been set.
 func (o *OAuthPayloadOut) HasError() bool {
-	if o != nil && o.Error.IsSet() {
+	if o != nil && !IsNil(o.Error) {
 		return true
 	}
 
 	return false
 }
 
-// SetError gets a reference to the given NullableString and assigns it to the Error field.
+// SetError gets a reference to the given string and assigns it to the Error field.
 func (o *OAuthPayloadOut) SetError(v string) {
-	o.Error.Set(&v)
-}
-// SetErrorNil sets the value for Error to be an explicit nil
-func (o *OAuthPayloadOut) SetErrorNil() {
-	o.Error.Set(nil)
+	o.Error = &v
 }
 
-// UnsetError ensures that no value is present for Error, not even an explicit nil
-func (o *OAuthPayloadOut) UnsetError() {
-	o.Error.Unset()
-}
-
-// GetRefreshToken returns the RefreshToken field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetRefreshToken returns the RefreshToken field value if set, zero value otherwise.
 func (o *OAuthPayloadOut) GetRefreshToken() string {
-	if o == nil || IsNil(o.RefreshToken.Get()) {
+	if o == nil || IsNil(o.RefreshToken) {
 		var ret string
 		return ret
 	}
-	return *o.RefreshToken.Get()
+	return *o.RefreshToken
 }
 
 // GetRefreshTokenOk returns a tuple with the RefreshToken field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *OAuthPayloadOut) GetRefreshTokenOk() (*string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.RefreshToken) {
 		return nil, false
 	}
-	return o.RefreshToken.Get(), o.RefreshToken.IsSet()
+	return o.RefreshToken, true
 }
 
 // HasRefreshToken returns a boolean if a field has been set.
 func (o *OAuthPayloadOut) HasRefreshToken() bool {
-	if o != nil && o.RefreshToken.IsSet() {
+	if o != nil && !IsNil(o.RefreshToken) {
 		return true
 	}
 
 	return false
 }
 
-// SetRefreshToken gets a reference to the given NullableString and assigns it to the RefreshToken field.
+// SetRefreshToken gets a reference to the given string and assigns it to the RefreshToken field.
 func (o *OAuthPayloadOut) SetRefreshToken(v string) {
-	o.RefreshToken.Set(&v)
-}
-// SetRefreshTokenNil sets the value for RefreshToken to be an explicit nil
-func (o *OAuthPayloadOut) SetRefreshTokenNil() {
-	o.RefreshToken.Set(nil)
-}
-
-// UnsetRefreshToken ensures that no value is present for RefreshToken, not even an explicit nil
-func (o *OAuthPayloadOut) UnsetRefreshToken() {
-	o.RefreshToken.Unset()
+	o.RefreshToken = &v
 }
 
 func (o OAuthPayloadOut) MarshalJSON() ([]byte, error) {
@@ -177,14 +147,14 @@ func (o OAuthPayloadOut) MarshalJSON() ([]byte, error) {
 
 func (o OAuthPayloadOut) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if o.AccessToken.IsSet() {
-		toSerialize["accessToken"] = o.AccessToken.Get()
+	if !IsNil(o.AccessToken) {
+		toSerialize["accessToken"] = o.AccessToken
 	}
-	if o.Error.IsSet() {
-		toSerialize["error"] = o.Error.Get()
+	if !IsNil(o.Error) {
+		toSerialize["error"] = o.Error
 	}
-	if o.RefreshToken.IsSet() {
-		toSerialize["refreshToken"] = o.RefreshToken.Get()
+	if !IsNil(o.RefreshToken) {
+		toSerialize["refreshToken"] = o.RefreshToken
 	}
 	return toSerialize, nil
 }

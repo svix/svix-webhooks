@@ -69,9 +69,9 @@ func (o *EventTypeImportOpenApiOutData) SetModified(v []string) {
 	o.Modified = v
 }
 
-// GetToModify returns the ToModify field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetToModify returns the ToModify field value if set, zero value otherwise.
 func (o *EventTypeImportOpenApiOutData) GetToModify() []EventTypeFromOpenApi {
-	if o == nil {
+	if o == nil || IsNil(o.ToModify) {
 		var ret []EventTypeFromOpenApi
 		return ret
 	}
@@ -80,7 +80,6 @@ func (o *EventTypeImportOpenApiOutData) GetToModify() []EventTypeFromOpenApi {
 
 // GetToModifyOk returns a tuple with the ToModify field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *EventTypeImportOpenApiOutData) GetToModifyOk() ([]EventTypeFromOpenApi, bool) {
 	if o == nil || IsNil(o.ToModify) {
 		return nil, false
@@ -113,7 +112,7 @@ func (o EventTypeImportOpenApiOutData) MarshalJSON() ([]byte, error) {
 func (o EventTypeImportOpenApiOutData) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["modified"] = o.Modified
-	if o.ToModify != nil {
+	if !IsNil(o.ToModify) {
 		toSerialize["to_modify"] = o.ToModify
 	}
 	return toSerialize, nil

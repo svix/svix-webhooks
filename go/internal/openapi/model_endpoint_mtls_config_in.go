@@ -24,7 +24,7 @@ type EndpointMtlsConfigIn struct {
 	// A PEM encoded private key and X509 certificate to identify the webhook sender.
 	Identity string `json:"identity"`
 	// A PEM encoded X509 certificate used to verify the webhook receiver's certificate.
-	ServerCaCert NullableString `json:"serverCaCert,omitempty"`
+	ServerCaCert *string `json:"serverCaCert,omitempty"`
 }
 
 type _EndpointMtlsConfigIn EndpointMtlsConfigIn
@@ -71,46 +71,36 @@ func (o *EndpointMtlsConfigIn) SetIdentity(v string) {
 	o.Identity = v
 }
 
-// GetServerCaCert returns the ServerCaCert field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetServerCaCert returns the ServerCaCert field value if set, zero value otherwise.
 func (o *EndpointMtlsConfigIn) GetServerCaCert() string {
-	if o == nil || IsNil(o.ServerCaCert.Get()) {
+	if o == nil || IsNil(o.ServerCaCert) {
 		var ret string
 		return ret
 	}
-	return *o.ServerCaCert.Get()
+	return *o.ServerCaCert
 }
 
 // GetServerCaCertOk returns a tuple with the ServerCaCert field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *EndpointMtlsConfigIn) GetServerCaCertOk() (*string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.ServerCaCert) {
 		return nil, false
 	}
-	return o.ServerCaCert.Get(), o.ServerCaCert.IsSet()
+	return o.ServerCaCert, true
 }
 
 // HasServerCaCert returns a boolean if a field has been set.
 func (o *EndpointMtlsConfigIn) HasServerCaCert() bool {
-	if o != nil && o.ServerCaCert.IsSet() {
+	if o != nil && !IsNil(o.ServerCaCert) {
 		return true
 	}
 
 	return false
 }
 
-// SetServerCaCert gets a reference to the given NullableString and assigns it to the ServerCaCert field.
+// SetServerCaCert gets a reference to the given string and assigns it to the ServerCaCert field.
 func (o *EndpointMtlsConfigIn) SetServerCaCert(v string) {
-	o.ServerCaCert.Set(&v)
-}
-// SetServerCaCertNil sets the value for ServerCaCert to be an explicit nil
-func (o *EndpointMtlsConfigIn) SetServerCaCertNil() {
-	o.ServerCaCert.Set(nil)
-}
-
-// UnsetServerCaCert ensures that no value is present for ServerCaCert, not even an explicit nil
-func (o *EndpointMtlsConfigIn) UnsetServerCaCert() {
-	o.ServerCaCert.Unset()
+	o.ServerCaCert = &v
 }
 
 func (o EndpointMtlsConfigIn) MarshalJSON() ([]byte, error) {
@@ -124,8 +114,8 @@ func (o EndpointMtlsConfigIn) MarshalJSON() ([]byte, error) {
 func (o EndpointMtlsConfigIn) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["identity"] = o.Identity
-	if o.ServerCaCert.IsSet() {
-		toSerialize["serverCaCert"] = o.ServerCaCert.Get()
+	if !IsNil(o.ServerCaCert) {
+		toSerialize["serverCaCert"] = o.ServerCaCert
 	}
 	return toSerialize, nil
 }

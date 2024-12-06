@@ -49,9 +49,9 @@ func NewAppUsageStatsInWithDefaults() *AppUsageStatsIn {
 	return &this
 }
 
-// GetAppIds returns the AppIds field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetAppIds returns the AppIds field value if set, zero value otherwise.
 func (o *AppUsageStatsIn) GetAppIds() []string {
-	if o == nil {
+	if o == nil || IsNil(o.AppIds) {
 		var ret []string
 		return ret
 	}
@@ -60,7 +60,6 @@ func (o *AppUsageStatsIn) GetAppIds() []string {
 
 // GetAppIdsOk returns a tuple with the AppIds field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *AppUsageStatsIn) GetAppIdsOk() ([]string, bool) {
 	if o == nil || IsNil(o.AppIds) {
 		return nil, false
@@ -140,7 +139,7 @@ func (o AppUsageStatsIn) MarshalJSON() ([]byte, error) {
 
 func (o AppUsageStatsIn) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if o.AppIds != nil {
+	if !IsNil(o.AppIds) {
 		toSerialize["appIds"] = o.AppIds
 	}
 	toSerialize["since"] = o.Since

@@ -24,7 +24,7 @@ type EventTypeImportOpenApiIn struct {
 	// A pre-parsed JSON spec.
 	Spec map[string]map[string]interface{} `json:"spec,omitempty"`
 	// A string, parsed by the server as YAML or JSON.
-	SpecRaw NullableString `json:"specRaw,omitempty"`
+	SpecRaw *string `json:"specRaw,omitempty"`
 }
 
 // NewEventTypeImportOpenApiIn instantiates a new EventTypeImportOpenApiIn object
@@ -80,9 +80,9 @@ func (o *EventTypeImportOpenApiIn) SetDryRun(v bool) {
 	o.DryRun = &v
 }
 
-// GetSpec returns the Spec field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetSpec returns the Spec field value if set, zero value otherwise.
 func (o *EventTypeImportOpenApiIn) GetSpec() map[string]map[string]interface{} {
-	if o == nil {
+	if o == nil || IsNil(o.Spec) {
 		var ret map[string]map[string]interface{}
 		return ret
 	}
@@ -91,7 +91,6 @@ func (o *EventTypeImportOpenApiIn) GetSpec() map[string]map[string]interface{} {
 
 // GetSpecOk returns a tuple with the Spec field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *EventTypeImportOpenApiIn) GetSpecOk() (map[string]map[string]interface{}, bool) {
 	if o == nil || IsNil(o.Spec) {
 		return map[string]map[string]interface{}{}, false
@@ -113,46 +112,36 @@ func (o *EventTypeImportOpenApiIn) SetSpec(v map[string]map[string]interface{}) 
 	o.Spec = v
 }
 
-// GetSpecRaw returns the SpecRaw field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetSpecRaw returns the SpecRaw field value if set, zero value otherwise.
 func (o *EventTypeImportOpenApiIn) GetSpecRaw() string {
-	if o == nil || IsNil(o.SpecRaw.Get()) {
+	if o == nil || IsNil(o.SpecRaw) {
 		var ret string
 		return ret
 	}
-	return *o.SpecRaw.Get()
+	return *o.SpecRaw
 }
 
 // GetSpecRawOk returns a tuple with the SpecRaw field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *EventTypeImportOpenApiIn) GetSpecRawOk() (*string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.SpecRaw) {
 		return nil, false
 	}
-	return o.SpecRaw.Get(), o.SpecRaw.IsSet()
+	return o.SpecRaw, true
 }
 
 // HasSpecRaw returns a boolean if a field has been set.
 func (o *EventTypeImportOpenApiIn) HasSpecRaw() bool {
-	if o != nil && o.SpecRaw.IsSet() {
+	if o != nil && !IsNil(o.SpecRaw) {
 		return true
 	}
 
 	return false
 }
 
-// SetSpecRaw gets a reference to the given NullableString and assigns it to the SpecRaw field.
+// SetSpecRaw gets a reference to the given string and assigns it to the SpecRaw field.
 func (o *EventTypeImportOpenApiIn) SetSpecRaw(v string) {
-	o.SpecRaw.Set(&v)
-}
-// SetSpecRawNil sets the value for SpecRaw to be an explicit nil
-func (o *EventTypeImportOpenApiIn) SetSpecRawNil() {
-	o.SpecRaw.Set(nil)
-}
-
-// UnsetSpecRaw ensures that no value is present for SpecRaw, not even an explicit nil
-func (o *EventTypeImportOpenApiIn) UnsetSpecRaw() {
-	o.SpecRaw.Unset()
+	o.SpecRaw = &v
 }
 
 func (o EventTypeImportOpenApiIn) MarshalJSON() ([]byte, error) {
@@ -168,11 +157,11 @@ func (o EventTypeImportOpenApiIn) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.DryRun) {
 		toSerialize["dry_run"] = o.DryRun
 	}
-	if o.Spec != nil {
+	if !IsNil(o.Spec) {
 		toSerialize["spec"] = o.Spec
 	}
-	if o.SpecRaw.IsSet() {
-		toSerialize["specRaw"] = o.SpecRaw.Get()
+	if !IsNil(o.SpecRaw) {
+		toSerialize["specRaw"] = o.SpecRaw
 	}
 	return toSerialize, nil
 }

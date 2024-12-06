@@ -24,7 +24,7 @@ type ListResponseStreamEventTypeOut struct {
 	Data []StreamEventTypeOut `json:"data"`
 	Done bool `json:"done"`
 	Iterator NullableString `json:"iterator"`
-	PrevIterator NullableString `json:"prevIterator,omitempty"`
+	PrevIterator *string `json:"prevIterator,omitempty"`
 }
 
 type _ListResponseStreamEventTypeOut ListResponseStreamEventTypeOut
@@ -123,46 +123,36 @@ func (o *ListResponseStreamEventTypeOut) SetIterator(v string) {
 	o.Iterator.Set(&v)
 }
 
-// GetPrevIterator returns the PrevIterator field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetPrevIterator returns the PrevIterator field value if set, zero value otherwise.
 func (o *ListResponseStreamEventTypeOut) GetPrevIterator() string {
-	if o == nil || IsNil(o.PrevIterator.Get()) {
+	if o == nil || IsNil(o.PrevIterator) {
 		var ret string
 		return ret
 	}
-	return *o.PrevIterator.Get()
+	return *o.PrevIterator
 }
 
 // GetPrevIteratorOk returns a tuple with the PrevIterator field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *ListResponseStreamEventTypeOut) GetPrevIteratorOk() (*string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.PrevIterator) {
 		return nil, false
 	}
-	return o.PrevIterator.Get(), o.PrevIterator.IsSet()
+	return o.PrevIterator, true
 }
 
 // HasPrevIterator returns a boolean if a field has been set.
 func (o *ListResponseStreamEventTypeOut) HasPrevIterator() bool {
-	if o != nil && o.PrevIterator.IsSet() {
+	if o != nil && !IsNil(o.PrevIterator) {
 		return true
 	}
 
 	return false
 }
 
-// SetPrevIterator gets a reference to the given NullableString and assigns it to the PrevIterator field.
+// SetPrevIterator gets a reference to the given string and assigns it to the PrevIterator field.
 func (o *ListResponseStreamEventTypeOut) SetPrevIterator(v string) {
-	o.PrevIterator.Set(&v)
-}
-// SetPrevIteratorNil sets the value for PrevIterator to be an explicit nil
-func (o *ListResponseStreamEventTypeOut) SetPrevIteratorNil() {
-	o.PrevIterator.Set(nil)
-}
-
-// UnsetPrevIterator ensures that no value is present for PrevIterator, not even an explicit nil
-func (o *ListResponseStreamEventTypeOut) UnsetPrevIterator() {
-	o.PrevIterator.Unset()
+	o.PrevIterator = &v
 }
 
 func (o ListResponseStreamEventTypeOut) MarshalJSON() ([]byte, error) {
@@ -178,8 +168,8 @@ func (o ListResponseStreamEventTypeOut) ToMap() (map[string]interface{}, error) 
 	toSerialize["data"] = o.Data
 	toSerialize["done"] = o.Done
 	toSerialize["iterator"] = o.Iterator.Get()
-	if o.PrevIterator.IsSet() {
-		toSerialize["prevIterator"] = o.PrevIterator.Get()
+	if !IsNil(o.PrevIterator) {
+		toSerialize["prevIterator"] = o.PrevIterator
 	}
 	return toSerialize, nil
 }

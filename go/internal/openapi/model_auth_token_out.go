@@ -23,10 +23,10 @@ var _ MappedNullable = &AuthTokenOut{}
 // AuthTokenOut struct for AuthTokenOut
 type AuthTokenOut struct {
 	CreatedAt time.Time `json:"createdAt"`
-	ExpiresAt NullableTime `json:"expiresAt,omitempty"`
+	ExpiresAt *time.Time `json:"expiresAt,omitempty"`
 	// The key's ID
 	Id string `json:"id"`
-	Name NullableString `json:"name,omitempty"`
+	Name *string `json:"name,omitempty"`
 	Scopes []string `json:"scopes,omitempty"`
 	Token string `json:"token"`
 }
@@ -77,46 +77,36 @@ func (o *AuthTokenOut) SetCreatedAt(v time.Time) {
 	o.CreatedAt = v
 }
 
-// GetExpiresAt returns the ExpiresAt field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetExpiresAt returns the ExpiresAt field value if set, zero value otherwise.
 func (o *AuthTokenOut) GetExpiresAt() time.Time {
-	if o == nil || IsNil(o.ExpiresAt.Get()) {
+	if o == nil || IsNil(o.ExpiresAt) {
 		var ret time.Time
 		return ret
 	}
-	return *o.ExpiresAt.Get()
+	return *o.ExpiresAt
 }
 
 // GetExpiresAtOk returns a tuple with the ExpiresAt field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *AuthTokenOut) GetExpiresAtOk() (*time.Time, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.ExpiresAt) {
 		return nil, false
 	}
-	return o.ExpiresAt.Get(), o.ExpiresAt.IsSet()
+	return o.ExpiresAt, true
 }
 
 // HasExpiresAt returns a boolean if a field has been set.
 func (o *AuthTokenOut) HasExpiresAt() bool {
-	if o != nil && o.ExpiresAt.IsSet() {
+	if o != nil && !IsNil(o.ExpiresAt) {
 		return true
 	}
 
 	return false
 }
 
-// SetExpiresAt gets a reference to the given NullableTime and assigns it to the ExpiresAt field.
+// SetExpiresAt gets a reference to the given time.Time and assigns it to the ExpiresAt field.
 func (o *AuthTokenOut) SetExpiresAt(v time.Time) {
-	o.ExpiresAt.Set(&v)
-}
-// SetExpiresAtNil sets the value for ExpiresAt to be an explicit nil
-func (o *AuthTokenOut) SetExpiresAtNil() {
-	o.ExpiresAt.Set(nil)
-}
-
-// UnsetExpiresAt ensures that no value is present for ExpiresAt, not even an explicit nil
-func (o *AuthTokenOut) UnsetExpiresAt() {
-	o.ExpiresAt.Unset()
+	o.ExpiresAt = &v
 }
 
 // GetId returns the Id field value
@@ -143,51 +133,41 @@ func (o *AuthTokenOut) SetId(v string) {
 	o.Id = v
 }
 
-// GetName returns the Name field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetName returns the Name field value if set, zero value otherwise.
 func (o *AuthTokenOut) GetName() string {
-	if o == nil || IsNil(o.Name.Get()) {
+	if o == nil || IsNil(o.Name) {
 		var ret string
 		return ret
 	}
-	return *o.Name.Get()
+	return *o.Name
 }
 
 // GetNameOk returns a tuple with the Name field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *AuthTokenOut) GetNameOk() (*string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.Name) {
 		return nil, false
 	}
-	return o.Name.Get(), o.Name.IsSet()
+	return o.Name, true
 }
 
 // HasName returns a boolean if a field has been set.
 func (o *AuthTokenOut) HasName() bool {
-	if o != nil && o.Name.IsSet() {
+	if o != nil && !IsNil(o.Name) {
 		return true
 	}
 
 	return false
 }
 
-// SetName gets a reference to the given NullableString and assigns it to the Name field.
+// SetName gets a reference to the given string and assigns it to the Name field.
 func (o *AuthTokenOut) SetName(v string) {
-	o.Name.Set(&v)
-}
-// SetNameNil sets the value for Name to be an explicit nil
-func (o *AuthTokenOut) SetNameNil() {
-	o.Name.Set(nil)
+	o.Name = &v
 }
 
-// UnsetName ensures that no value is present for Name, not even an explicit nil
-func (o *AuthTokenOut) UnsetName() {
-	o.Name.Unset()
-}
-
-// GetScopes returns the Scopes field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetScopes returns the Scopes field value if set, zero value otherwise.
 func (o *AuthTokenOut) GetScopes() []string {
-	if o == nil {
+	if o == nil || IsNil(o.Scopes) {
 		var ret []string
 		return ret
 	}
@@ -196,7 +176,6 @@ func (o *AuthTokenOut) GetScopes() []string {
 
 // GetScopesOk returns a tuple with the Scopes field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *AuthTokenOut) GetScopesOk() ([]string, bool) {
 	if o == nil || IsNil(o.Scopes) {
 		return nil, false
@@ -253,14 +232,14 @@ func (o AuthTokenOut) MarshalJSON() ([]byte, error) {
 func (o AuthTokenOut) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["createdAt"] = o.CreatedAt
-	if o.ExpiresAt.IsSet() {
-		toSerialize["expiresAt"] = o.ExpiresAt.Get()
+	if !IsNil(o.ExpiresAt) {
+		toSerialize["expiresAt"] = o.ExpiresAt
 	}
 	toSerialize["id"] = o.Id
-	if o.Name.IsSet() {
-		toSerialize["name"] = o.Name.Get()
+	if !IsNil(o.Name) {
+		toSerialize["name"] = o.Name
 	}
-	if o.Scopes != nil {
+	if !IsNil(o.Scopes) {
 		toSerialize["scopes"] = o.Scopes
 	}
 	toSerialize["token"] = o.Token

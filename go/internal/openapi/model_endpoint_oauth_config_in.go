@@ -25,13 +25,13 @@ type EndpointOauthConfigIn struct {
 	// The client ID. Required for all authentication types.
 	ClientId string `json:"clientId"`
 	// Optional client secret. This is only used for `clientSecretBasic` and `clientSecretPost`.  For `clientSecretBasic`, the secret will be appended to the `Authorization` header. For `clientSecretPost`, this will be added to the body in a `client_secret` parameter.
-	ClientSecret NullableString `json:"clientSecret,omitempty"`
+	ClientSecret *string `json:"clientSecret,omitempty"`
 	// Extra parameters added to the request body as key-value pairs.
-	ExtraParams map[string]string `json:"extraParams,omitempty"`
+	ExtraParams *map[string]string `json:"extraParams,omitempty"`
 	GrantType Oauth2GrantTypeIn `json:"grantType"`
 	JwtParams *ClientSecretJwtParamsIn `json:"jwtParams,omitempty"`
 	// For `refreshToken` grant type
-	RefreshToken NullableString `json:"refreshToken,omitempty"`
+	RefreshToken *string `json:"refreshToken,omitempty"`
 	// Optional OAuth scopes added to the request body.
 	Scopes []string `json:"scopes,omitempty"`
 	// The URL of the authorization server.
@@ -109,65 +109,54 @@ func (o *EndpointOauthConfigIn) SetClientId(v string) {
 	o.ClientId = v
 }
 
-// GetClientSecret returns the ClientSecret field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetClientSecret returns the ClientSecret field value if set, zero value otherwise.
 func (o *EndpointOauthConfigIn) GetClientSecret() string {
-	if o == nil || IsNil(o.ClientSecret.Get()) {
+	if o == nil || IsNil(o.ClientSecret) {
 		var ret string
 		return ret
 	}
-	return *o.ClientSecret.Get()
+	return *o.ClientSecret
 }
 
 // GetClientSecretOk returns a tuple with the ClientSecret field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *EndpointOauthConfigIn) GetClientSecretOk() (*string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.ClientSecret) {
 		return nil, false
 	}
-	return o.ClientSecret.Get(), o.ClientSecret.IsSet()
+	return o.ClientSecret, true
 }
 
 // HasClientSecret returns a boolean if a field has been set.
 func (o *EndpointOauthConfigIn) HasClientSecret() bool {
-	if o != nil && o.ClientSecret.IsSet() {
+	if o != nil && !IsNil(o.ClientSecret) {
 		return true
 	}
 
 	return false
 }
 
-// SetClientSecret gets a reference to the given NullableString and assigns it to the ClientSecret field.
+// SetClientSecret gets a reference to the given string and assigns it to the ClientSecret field.
 func (o *EndpointOauthConfigIn) SetClientSecret(v string) {
-	o.ClientSecret.Set(&v)
-}
-// SetClientSecretNil sets the value for ClientSecret to be an explicit nil
-func (o *EndpointOauthConfigIn) SetClientSecretNil() {
-	o.ClientSecret.Set(nil)
+	o.ClientSecret = &v
 }
 
-// UnsetClientSecret ensures that no value is present for ClientSecret, not even an explicit nil
-func (o *EndpointOauthConfigIn) UnsetClientSecret() {
-	o.ClientSecret.Unset()
-}
-
-// GetExtraParams returns the ExtraParams field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetExtraParams returns the ExtraParams field value if set, zero value otherwise.
 func (o *EndpointOauthConfigIn) GetExtraParams() map[string]string {
-	if o == nil {
+	if o == nil || IsNil(o.ExtraParams) {
 		var ret map[string]string
 		return ret
 	}
-	return o.ExtraParams
+	return *o.ExtraParams
 }
 
 // GetExtraParamsOk returns a tuple with the ExtraParams field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *EndpointOauthConfigIn) GetExtraParamsOk() (*map[string]string, bool) {
 	if o == nil || IsNil(o.ExtraParams) {
 		return nil, false
 	}
-	return &o.ExtraParams, true
+	return o.ExtraParams, true
 }
 
 // HasExtraParams returns a boolean if a field has been set.
@@ -181,7 +170,7 @@ func (o *EndpointOauthConfigIn) HasExtraParams() bool {
 
 // SetExtraParams gets a reference to the given map[string]string and assigns it to the ExtraParams field.
 func (o *EndpointOauthConfigIn) SetExtraParams(v map[string]string) {
-	o.ExtraParams = v
+	o.ExtraParams = &v
 }
 
 // GetGrantType returns the GrantType field value
@@ -240,51 +229,41 @@ func (o *EndpointOauthConfigIn) SetJwtParams(v ClientSecretJwtParamsIn) {
 	o.JwtParams = &v
 }
 
-// GetRefreshToken returns the RefreshToken field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetRefreshToken returns the RefreshToken field value if set, zero value otherwise.
 func (o *EndpointOauthConfigIn) GetRefreshToken() string {
-	if o == nil || IsNil(o.RefreshToken.Get()) {
+	if o == nil || IsNil(o.RefreshToken) {
 		var ret string
 		return ret
 	}
-	return *o.RefreshToken.Get()
+	return *o.RefreshToken
 }
 
 // GetRefreshTokenOk returns a tuple with the RefreshToken field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *EndpointOauthConfigIn) GetRefreshTokenOk() (*string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.RefreshToken) {
 		return nil, false
 	}
-	return o.RefreshToken.Get(), o.RefreshToken.IsSet()
+	return o.RefreshToken, true
 }
 
 // HasRefreshToken returns a boolean if a field has been set.
 func (o *EndpointOauthConfigIn) HasRefreshToken() bool {
-	if o != nil && o.RefreshToken.IsSet() {
+	if o != nil && !IsNil(o.RefreshToken) {
 		return true
 	}
 
 	return false
 }
 
-// SetRefreshToken gets a reference to the given NullableString and assigns it to the RefreshToken field.
+// SetRefreshToken gets a reference to the given string and assigns it to the RefreshToken field.
 func (o *EndpointOauthConfigIn) SetRefreshToken(v string) {
-	o.RefreshToken.Set(&v)
-}
-// SetRefreshTokenNil sets the value for RefreshToken to be an explicit nil
-func (o *EndpointOauthConfigIn) SetRefreshTokenNil() {
-	o.RefreshToken.Set(nil)
+	o.RefreshToken = &v
 }
 
-// UnsetRefreshToken ensures that no value is present for RefreshToken, not even an explicit nil
-func (o *EndpointOauthConfigIn) UnsetRefreshToken() {
-	o.RefreshToken.Unset()
-}
-
-// GetScopes returns the Scopes field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetScopes returns the Scopes field value if set, zero value otherwise.
 func (o *EndpointOauthConfigIn) GetScopes() []string {
-	if o == nil {
+	if o == nil || IsNil(o.Scopes) {
 		var ret []string
 		return ret
 	}
@@ -293,7 +272,6 @@ func (o *EndpointOauthConfigIn) GetScopes() []string {
 
 // GetScopesOk returns a tuple with the Scopes field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *EndpointOauthConfigIn) GetScopesOk() ([]string, bool) {
 	if o == nil || IsNil(o.Scopes) {
 		return nil, false
@@ -351,20 +329,20 @@ func (o EndpointOauthConfigIn) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["authMethod"] = o.AuthMethod
 	toSerialize["clientId"] = o.ClientId
-	if o.ClientSecret.IsSet() {
-		toSerialize["clientSecret"] = o.ClientSecret.Get()
+	if !IsNil(o.ClientSecret) {
+		toSerialize["clientSecret"] = o.ClientSecret
 	}
-	if o.ExtraParams != nil {
+	if !IsNil(o.ExtraParams) {
 		toSerialize["extraParams"] = o.ExtraParams
 	}
 	toSerialize["grantType"] = o.GrantType
 	if !IsNil(o.JwtParams) {
 		toSerialize["jwtParams"] = o.JwtParams
 	}
-	if o.RefreshToken.IsSet() {
-		toSerialize["refreshToken"] = o.RefreshToken.Get()
+	if !IsNil(o.RefreshToken) {
+		toSerialize["refreshToken"] = o.RefreshToken
 	}
-	if o.Scopes != nil {
+	if !IsNil(o.Scopes) {
 		toSerialize["scopes"] = o.Scopes
 	}
 	toSerialize["tokenUrl"] = o.TokenUrl

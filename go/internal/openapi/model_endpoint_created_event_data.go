@@ -24,11 +24,11 @@ type EndpointCreatedEventData struct {
 	// The app's ID
 	AppId string `json:"appId"`
 	// The app's UID
-	AppUid NullableString `json:"appUid,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
+	AppUid *string `json:"appUid,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
 	// The ep's ID
 	EndpointId string `json:"endpointId"`
 	// The ep's UID
-	EndpointUid NullableString `json:"endpointUid,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
+	EndpointUid *string `json:"endpointUid,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
 }
 
 type _EndpointCreatedEventData EndpointCreatedEventData
@@ -76,46 +76,36 @@ func (o *EndpointCreatedEventData) SetAppId(v string) {
 	o.AppId = v
 }
 
-// GetAppUid returns the AppUid field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetAppUid returns the AppUid field value if set, zero value otherwise.
 func (o *EndpointCreatedEventData) GetAppUid() string {
-	if o == nil || IsNil(o.AppUid.Get()) {
+	if o == nil || IsNil(o.AppUid) {
 		var ret string
 		return ret
 	}
-	return *o.AppUid.Get()
+	return *o.AppUid
 }
 
 // GetAppUidOk returns a tuple with the AppUid field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *EndpointCreatedEventData) GetAppUidOk() (*string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.AppUid) {
 		return nil, false
 	}
-	return o.AppUid.Get(), o.AppUid.IsSet()
+	return o.AppUid, true
 }
 
 // HasAppUid returns a boolean if a field has been set.
 func (o *EndpointCreatedEventData) HasAppUid() bool {
-	if o != nil && o.AppUid.IsSet() {
+	if o != nil && !IsNil(o.AppUid) {
 		return true
 	}
 
 	return false
 }
 
-// SetAppUid gets a reference to the given NullableString and assigns it to the AppUid field.
+// SetAppUid gets a reference to the given string and assigns it to the AppUid field.
 func (o *EndpointCreatedEventData) SetAppUid(v string) {
-	o.AppUid.Set(&v)
-}
-// SetAppUidNil sets the value for AppUid to be an explicit nil
-func (o *EndpointCreatedEventData) SetAppUidNil() {
-	o.AppUid.Set(nil)
-}
-
-// UnsetAppUid ensures that no value is present for AppUid, not even an explicit nil
-func (o *EndpointCreatedEventData) UnsetAppUid() {
-	o.AppUid.Unset()
+	o.AppUid = &v
 }
 
 // GetEndpointId returns the EndpointId field value
@@ -142,46 +132,36 @@ func (o *EndpointCreatedEventData) SetEndpointId(v string) {
 	o.EndpointId = v
 }
 
-// GetEndpointUid returns the EndpointUid field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetEndpointUid returns the EndpointUid field value if set, zero value otherwise.
 func (o *EndpointCreatedEventData) GetEndpointUid() string {
-	if o == nil || IsNil(o.EndpointUid.Get()) {
+	if o == nil || IsNil(o.EndpointUid) {
 		var ret string
 		return ret
 	}
-	return *o.EndpointUid.Get()
+	return *o.EndpointUid
 }
 
 // GetEndpointUidOk returns a tuple with the EndpointUid field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *EndpointCreatedEventData) GetEndpointUidOk() (*string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.EndpointUid) {
 		return nil, false
 	}
-	return o.EndpointUid.Get(), o.EndpointUid.IsSet()
+	return o.EndpointUid, true
 }
 
 // HasEndpointUid returns a boolean if a field has been set.
 func (o *EndpointCreatedEventData) HasEndpointUid() bool {
-	if o != nil && o.EndpointUid.IsSet() {
+	if o != nil && !IsNil(o.EndpointUid) {
 		return true
 	}
 
 	return false
 }
 
-// SetEndpointUid gets a reference to the given NullableString and assigns it to the EndpointUid field.
+// SetEndpointUid gets a reference to the given string and assigns it to the EndpointUid field.
 func (o *EndpointCreatedEventData) SetEndpointUid(v string) {
-	o.EndpointUid.Set(&v)
-}
-// SetEndpointUidNil sets the value for EndpointUid to be an explicit nil
-func (o *EndpointCreatedEventData) SetEndpointUidNil() {
-	o.EndpointUid.Set(nil)
-}
-
-// UnsetEndpointUid ensures that no value is present for EndpointUid, not even an explicit nil
-func (o *EndpointCreatedEventData) UnsetEndpointUid() {
-	o.EndpointUid.Unset()
+	o.EndpointUid = &v
 }
 
 func (o EndpointCreatedEventData) MarshalJSON() ([]byte, error) {
@@ -195,12 +175,12 @@ func (o EndpointCreatedEventData) MarshalJSON() ([]byte, error) {
 func (o EndpointCreatedEventData) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["appId"] = o.AppId
-	if o.AppUid.IsSet() {
-		toSerialize["appUid"] = o.AppUid.Get()
+	if !IsNil(o.AppUid) {
+		toSerialize["appUid"] = o.AppUid
 	}
 	toSerialize["endpointId"] = o.EndpointId
-	if o.EndpointUid.IsSet() {
-		toSerialize["endpointUid"] = o.EndpointUid.Get()
+	if !IsNil(o.EndpointUid) {
+		toSerialize["endpointUid"] = o.EndpointUid
 	}
 	return toSerialize, nil
 }
