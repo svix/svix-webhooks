@@ -3,6 +3,27 @@
 ## Next
 * 
 
+## Version 1.43.0
+* Libs/Go: Add convenient construction of messages with pre-serialized payload ([#1538])
+* Libs/Go: Reduce the use of `NullableX` types to where they actually have a use ([#1543])
+* Libs/JavaScript: Add convenient construction of messages with pre-serialized payload ([#1539])
+* Libs/Java: Add convenient construction of messages with pre-serialized payload ([#1544])
+* Libs/C#: Bump .NET target to 8.0 ([#1546])
+* Libs/C#: Add convenient construction of messages with pre-serialized payload ([#1545])
+* Libs/Python: Add convenient construction of messages with pre-serialized payload ([#1540])
+* Libs/Ruby: Add convenient construction of messages with pre-serialized payload ([#1541])
+* Libs/JavaScript: Compile svix package for ESM and CommonJS, reducing bundle sizes ([#1549])
+
+[#1538]: https://github.com/svix/svix-webhooks/pull/1538
+[#1543]: https://github.com/svix/svix-webhooks/pull/1543
+[#1539]: https://github.com/svix/svix-webhooks/pull/1539
+[#1540]: https://github.com/svix/svix-webhooks/pull/1540
+[#1541]: https://github.com/svix/svix-webhooks/pull/1541
+[#1544]: https://github.com/svix/svix-webhooks/pull/1544
+[#1545]: https://github.com/svix/svix-webhooks/pull/1545
+[#1546]: https://github.com/svix/svix-webhooks/pull/1546
+[#1549]: https://github.com/svix/svix-webhooks/pull/1549
+
 ## Version 1.42.0
 * Server: Return 413 on large payloads ([#1530])
 * Libs/Python: Fix sync / async mismatch for op-webhook-endpoint API ([#1535])
