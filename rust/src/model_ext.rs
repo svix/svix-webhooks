@@ -7,12 +7,16 @@ use crate::models::MessageIn;
 impl MessageIn {
     /// Create a new message with a pre-serialized payload.
     ///
-    /// The payload is not normalized on the server (usually whitespace outside
-    /// of string literals, unnecessarily escaped characters in string and such
-    /// are fixed up by the server), and is not even required to be JSON.
+    /// The payload is not normalized on the server. Normally, payloads are
+    /// required to be JSON, and Svix will minify the payload before sending
+    /// the webhook (for example, by removing extraneous whitespace or
+    /// unnecessarily escaped characters in strings). With this constructor,
+    /// the payload will be sent "as is", without any minification or other
+    /// processing.
     ///
-    /// The default `content-type` of `application/json` will still be used,
-    /// unless overwritten with [`with_content_type`][Self::with_content_type].
+    /// The default `content-type` of `application/json` will still be used for
+    /// the webhook sent by Svix, unless overwritten with
+    /// [`with_content_type`][Self::with_content_type].
     pub fn new_raw_payload(event_type: String, payload: String) -> Self {
         Self {
             transformations_params: Some(json!({ "rawPayload": payload })),
@@ -20,7 +24,7 @@ impl MessageIn {
         }
     }
 
-    /// Set the `content-type` header to use for the message.
+    /// Set the `content-type` header to use for the webhook sent by Svix.
     pub fn with_content_type(mut self, content_type: String) -> Self {
         let transformations_params = self.transformations_params.get_or_insert_with(|| json!({}));
 

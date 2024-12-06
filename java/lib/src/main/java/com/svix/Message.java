@@ -25,12 +25,13 @@ public final class Message {
 	}
 
 	/**
-	 * Creates a MessageIn with the payload already being serialized.
+	 * Creates a MessageIn with a pre-serialized payload.
 	 *
-	 * The payload is not normalized on the server (usually whitespace outside
-	 * of string literals, unnecessarily escaped characters in string and such
-	 * are fixed up by the server). The default Content-Type of application/json
-	 * is used. See the other overload if you want to send non-JSON payloads.
+	 * The payload is not normalized on the server. Normally, payloads are
+	 * required to be JSON, and Svix will minify the payload before sending the
+	 * webhooks (for example, by removing extraneous whitespace or unnecessarily
+	 * escaped characters in strings). With this function, the payload will be
+	 * sent "as is", without any minification or other processing.
 	 *
 	 * @param payload Serialized message payload
 	 */
@@ -41,12 +42,12 @@ public final class Message {
 	}
 
 	/**
-	 * Creates a MessageIn with the payload already being serialized.
+	 * Creates a MessageIn with a pre-serialized payload.
 	 *
 	 * This overload is intended for non-JSON payloads.
 	 *
 	 * @param payload Serialized message payload
-	 * @param contentType The value to use for the Content-Type header
+	 * @param contentType The value to use for the Content-Type header of the webhook sent by Svix
 	 */
 	public static MessageIn messageInRaw(final String payload, final String contentType) {
 		HashMap<String, Object> trParam = new HashMap<>();

@@ -1166,7 +1166,7 @@ def message_in_raw(
     event_type: str, payload: str, content_type: t.Optional[str] = None
 ) -> MessageIn:
     """
-    Creates a `MessageIn` with the payload already being serialized.
+    Creates a `MessageIn` with a pre-serialized payload.
 
     The payload is not normalized on the server. Normally, payloads are required
     to be JSON, and Svix will minify the payload before sending the webhook
@@ -1177,8 +1177,9 @@ def message_in_raw(
     Args:
         event_type (str): The event type's name Example: `user.signup`.
         payload (str): Serialized message payload.
-        content_type (str?): The `content-type` header value Svix uses for
-            the webhook request. If not specified, `application/json` is used.
+        content_type (str?): The value to use for the Content-Type header of the
+            webhook sent by Svix, overwriting the default of `application/json`
+            if specified.
     """
     transformations_params: t.Dict[str, t.Any] = {
         "rawPayload": payload,
