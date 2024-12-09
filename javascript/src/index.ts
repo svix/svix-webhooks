@@ -713,7 +713,11 @@ class Message {
  *
  * See the class documentation for details about the other parameters.
  */
-export function messageInRaw(eventType: string, payload: string, contentType?: string): MessageIn {
+export function messageInRaw(
+  eventType: string,
+  payload: string,
+  contentType?: string
+): MessageIn {
   const headers = contentType ? { "content-type": contentType } : undefined;
 
   return {
@@ -722,7 +726,7 @@ export function messageInRaw(eventType: string, payload: string, contentType?: s
     transformationsParams: {
       rawPayload: payload,
       headers,
-    }
+    },
   };
 }
 
@@ -1045,7 +1049,7 @@ class OperationalWebhookEndpoint {
   }
 
   public list(
-    options?: OperationalWebhookEndpointListOptions,
+    options?: OperationalWebhookEndpointListOptions
   ): Promise<ListResponseOperationalWebhookEndpointOut> {
     const iterator = options?.iterator ?? undefined;
     return this.api.listOperationalWebhookEndpoints({ ...options, iterator });
@@ -1053,7 +1057,7 @@ class OperationalWebhookEndpoint {
 
   public create(
     endpointIn: OperationalWebhookEndpointIn,
-    options?: PostOptions,
+    options?: PostOptions
   ): Promise<OperationalWebhookEndpointOut> {
     return this.api.createOperationalWebhookEndpoint({
       operationalWebhookEndpointIn: endpointIn,
@@ -1067,7 +1071,7 @@ class OperationalWebhookEndpoint {
 
   public update(
     endpointId: string,
-    endpointUpdate: OperationalWebhookEndpointUpdate,
+    endpointUpdate: OperationalWebhookEndpointUpdate
   ): Promise<OperationalWebhookEndpointOut> {
     return this.api.updateOperationalWebhookEndpoint({
       endpointId,
@@ -1086,7 +1090,7 @@ class OperationalWebhookEndpoint {
   public rotateSecret(
     endpointId: string,
     endpointSecretIn: OperationalWebhookEndpointSecretIn,
-    options?: PostOptions,
+    options?: PostOptions
   ): Promise<void> {
     return this.api.rotateOperationalWebhookEndpointSecret({
       endpointId,
