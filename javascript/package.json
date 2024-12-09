@@ -11,21 +11,9 @@
     "typescript"
   ],
   "license": "MIT",
+  "type": "commonjs",
   "main": "./dist/cjs/index.js",
-  "types": "./dist/esm/index.d.ts",
-  "type": "module",
-  "exports": {
-    ".": {
-      "types": "./dist/esm/index.d.ts",
-      "import": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.js"
-    },
-    "./dist/*": {
-      "types": "./dist/esm/*/index.d.ts",
-      "import": "./dist/esm/*/index.js",
-      "require": "./dist/cjs/*/index.js"
-    }
-  },
+  "typings": "./dist/cjs/index.d.ts",
   "files": [
     "src",
     "dist"
