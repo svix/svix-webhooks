@@ -312,7 +312,6 @@ impl<'a> Application<'a> {
         &self,
         app_id: String,
         application_in: ApplicationIn,
-        _: Option<PostOptions>,
     ) -> Result<ApplicationOut> {
         application_api::v1_period_application_period_update(
             self.cfg,
@@ -328,7 +327,6 @@ impl<'a> Application<'a> {
         &self,
         app_id: String,
         application_patch: ApplicationPatch,
-        _: Option<PostOptions>,
     ) -> Result<ApplicationOut> {
         application_api::v1_period_application_period_patch(
             self.cfg,
@@ -427,7 +425,6 @@ impl<'a> Endpoint<'a> {
         app_id: String,
         endpoint_id: String,
         endpoint_update: EndpointUpdate,
-        _: Option<PostOptions>,
     ) -> Result<EndpointOut> {
         endpoint_api::v1_period_endpoint_period_update(
             self.cfg,
@@ -445,7 +442,6 @@ impl<'a> Endpoint<'a> {
         app_id: String,
         endpoint_id: String,
         endpoint_patch: EndpointPatch,
-        _: Option<PostOptions>,
     ) -> Result<EndpointOut> {
         endpoint_api::v1_period_endpoint_period_patch(
             self.cfg,
@@ -733,7 +729,6 @@ impl<'a> Integration<'a> {
         app_id: String,
         integ_id: String,
         integration_update: IntegrationUpdate,
-        _: Option<PostOptions>,
     ) -> Result<IntegrationOut> {
         integration_api::v1_period_integration_period_update(
             self.cfg,
@@ -843,7 +838,6 @@ impl<'a> EventType<'a> {
         &self,
         event_type_name: String,
         event_type_update: EventTypeUpdate,
-        _: Option<PostOptions>,
     ) -> Result<EventTypeOut> {
         event_type_api::v1_period_event_type_period_update(
             self.cfg,
@@ -859,7 +853,6 @@ impl<'a> EventType<'a> {
         &self,
         event_type_name: String,
         event_type_patch: EventTypePatch,
-        _: Option<PostOptions>,
     ) -> Result<EventTypeOut> {
         event_type_api::v1_period_event_type_period_patch(
             self.cfg,
@@ -1346,7 +1339,6 @@ impl<'a> OperationalWebhookEndpoint<'a> {
         &self,
         endpoint_id: String,
         endpoint_update: OperationalWebhookEndpointUpdate,
-        _: Option<PostOptions>,
     ) -> Result<OperationalWebhookEndpointOut> {
         operational_webhook_endpoint_api::update_operational_webhook_endpoint(
             self.cfg,

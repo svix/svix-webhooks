@@ -111,7 +111,6 @@ async fn test_endpoint_crud() {
                 ])),
                 ..Default::default()
             },
-            None,
         )
         .await
         .unwrap();

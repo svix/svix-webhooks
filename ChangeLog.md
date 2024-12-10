@@ -1,7 +1,9 @@
 # Changelog
 
 ## Next
-* 
+* Libs/Rust: Remove unused optional `PostOptions` parameters from non-POST methods ([#1557])
+
+[#1557]: https://github.com/svix/svix-webhooks/pull/1557
 
 ## Version 1.43.0
 * Libs/Go: Add convenient construction of messages with pre-serialized payload ([#1538])
