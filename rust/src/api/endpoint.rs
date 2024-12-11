@@ -3,19 +3,31 @@ use crate::{apis::endpoint_api, error::Result, models::*, Configuration};
 
 #[derive(Default)]
 pub struct EndpointListOptions {
-    pub iterator: Option<String>,
+    /// Limit the number of returned items
     pub limit: Option<i32>,
-    pub order: Option<Ordering>,
-}
 
-pub struct Endpoint<'a> {
-    cfg: &'a Configuration,
+    /// The iterator returned from a prior invocation
+    pub iterator: Option<String>,
+
+    /// The sorting order of the returned items
+    pub order: Option<Ordering>,
 }
 
 #[derive(Default)]
 pub struct EndpointStatsOptions {
+    /// Filter the range to data starting from this date
+    ///
+    /// RFC3339 date string.
     pub since: Option<String>,
+
+    /// Filter the range to data ending by this date
+    ///
+    /// RFC3339 date string.
     pub until: Option<String>,
+}
+
+pub struct Endpoint<'a> {
+    cfg: &'a Configuration,
 }
 
 impl<'a> Endpoint<'a> {
@@ -29,17 +41,18 @@ impl<'a> Endpoint<'a> {
         options: Option<EndpointListOptions>,
     ) -> Result<ListResponseEndpointOut> {
         let EndpointListOptions {
-            iterator,
             limit,
+            iterator,
             order,
         } = options.unwrap_or_default();
+
         endpoint_api::v1_period_endpoint_period_list(
             self.cfg,
             endpoint_api::V1PeriodEndpointPeriodListParams {
                 app_id,
-                order,
-                iterator,
                 limit,
+                iterator,
+                order,
             },
         )
         .await
@@ -52,6 +65,7 @@ impl<'a> Endpoint<'a> {
         options: Option<PostOptions>,
     ) -> Result<EndpointOut> {
         let PostOptions { idempotency_key } = options.unwrap_or_default();
+
         endpoint_api::v1_period_endpoint_period_create(
             self.cfg,
             endpoint_api::V1PeriodEndpointPeriodCreateParams {
@@ -91,6 +105,17 @@ impl<'a> Endpoint<'a> {
         .await
     }
 
+    pub async fn delete(&self, app_id: String, endpoint_id: String) -> Result<()> {
+        endpoint_api::v1_period_endpoint_period_delete(
+            self.cfg,
+            endpoint_api::V1PeriodEndpointPeriodDeleteParams {
+                app_id,
+                endpoint_id,
+            },
+        )
+        .await
+    }
+
     pub async fn patch(
         &self,
         app_id: String,
@@ -103,17 +128,6 @@ impl<'a> Endpoint<'a> {
                 app_id,
                 endpoint_id,
                 endpoint_patch,
-            },
-        )
-        .await
-    }
-
-    pub async fn delete(&self, app_id: String, endpoint_id: String) -> Result<()> {
-        endpoint_api::v1_period_endpoint_period_delete(
-            self.cfg,
-            endpoint_api::V1PeriodEndpointPeriodDeleteParams {
-                app_id,
-                endpoint_id,
             },
         )
         .await

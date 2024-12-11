@@ -3,8 +3,13 @@ use crate::{apis::application_api, error::Result, models::*, Configuration};
 
 #[derive(Default)]
 pub struct ApplicationListOptions {
-    pub iterator: Option<String>,
+    /// Limit the number of returned items
     pub limit: Option<i32>,
+
+    /// The iterator returned from a prior invocation
+    pub iterator: Option<String>,
+
+    /// The sorting order of the returned items
     pub order: Option<Ordering>,
 }
 
@@ -22,15 +27,16 @@ impl<'a> Application<'a> {
         options: Option<ApplicationListOptions>,
     ) -> Result<ListResponseApplicationOut> {
         let ApplicationListOptions {
-            iterator,
             limit,
+            iterator,
             order,
         } = options.unwrap_or_default();
+
         application_api::v1_period_application_period_list(
             self.cfg,
             application_api::V1PeriodApplicationPeriodListParams {
-                iterator,
                 limit,
+                iterator,
                 order,
             },
         )
@@ -94,6 +100,14 @@ impl<'a> Application<'a> {
         .await
     }
 
+    pub async fn delete(&self, app_id: String) -> Result<()> {
+        application_api::v1_period_application_period_delete(
+            self.cfg,
+            application_api::V1PeriodApplicationPeriodDeleteParams { app_id },
+        )
+        .await
+    }
+
     pub async fn patch(
         &self,
         app_id: String,
@@ -105,14 +119,6 @@ impl<'a> Application<'a> {
                 app_id,
                 application_patch,
             },
-        )
-        .await
-    }
-
-    pub async fn delete(&self, app_id: String) -> Result<()> {
-        application_api::v1_period_application_period_delete(
-            self.cfg,
-            application_api::V1PeriodApplicationPeriodDeleteParams { app_id },
         )
         .await
     }
