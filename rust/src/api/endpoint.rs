@@ -35,6 +35,7 @@ impl<'a> Endpoint<'a> {
         Self { cfg }
     }
 
+    /// List the application's endpoints.
     pub async fn list(
         &self,
         app_id: String,
@@ -58,6 +59,10 @@ impl<'a> Endpoint<'a> {
         .await
     }
 
+    /// Create a new endpoint for the application.
+    ///
+    /// When `secret` is `null` the secret is automatically generated
+    /// (recommended)
     pub async fn create(
         &self,
         app_id: String,
@@ -77,6 +82,7 @@ impl<'a> Endpoint<'a> {
         .await
     }
 
+    /// Get an endpoint.
     pub async fn get(&self, app_id: String, endpoint_id: String) -> Result<EndpointOut> {
         endpoint_api::v1_period_endpoint_period_get(
             self.cfg,
@@ -88,6 +94,7 @@ impl<'a> Endpoint<'a> {
         .await
     }
 
+    /// Update an endpoint.
     pub async fn update(
         &self,
         app_id: String,
@@ -105,6 +112,7 @@ impl<'a> Endpoint<'a> {
         .await
     }
 
+    /// Delete an endpoint.
     pub async fn delete(&self, app_id: String, endpoint_id: String) -> Result<()> {
         endpoint_api::v1_period_endpoint_period_delete(
             self.cfg,
@@ -116,6 +124,7 @@ impl<'a> Endpoint<'a> {
         .await
     }
 
+    /// Partially update an endpoint.
     pub async fn patch(
         &self,
         app_id: String,
@@ -133,6 +142,11 @@ impl<'a> Endpoint<'a> {
         .await
     }
 
+    /// Get the endpoint's signing secret.
+    ///
+    /// This is used to verify the authenticity of the webhook.
+    /// For more information please refer to
+    /// [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
     pub async fn get_secret(
         &self,
         app_id: String,
@@ -148,6 +162,9 @@ impl<'a> Endpoint<'a> {
         .await
     }
 
+    /// Rotates the endpoint's signing secret.
+    ///
+    /// The previous secret will remain valid for the next 24 hours.
     pub async fn rotate_secret(
         &self,
         app_id: String,
@@ -166,6 +183,10 @@ impl<'a> Endpoint<'a> {
         .await
     }
 
+    /// Resend all failed messages since a given time.
+    ///
+    /// Messages that were sent successfully, even if failed initially, are not
+    /// resent.
     pub async fn recover(
         &self,
         app_id: String,
@@ -185,6 +206,7 @@ impl<'a> Endpoint<'a> {
         Ok(())
     }
 
+    /// Get the additional headers to be sent with the webhook
     pub async fn get_headers(
         &self,
         app_id: String,
@@ -200,6 +222,7 @@ impl<'a> Endpoint<'a> {
         .await
     }
 
+    /// Set the additional headers to be sent with the webhook
     pub async fn update_headers(
         &self,
         app_id: String,
@@ -217,6 +240,7 @@ impl<'a> Endpoint<'a> {
         .await
     }
 
+    /// Partially set the additional headers to be sent with the webhook
     pub async fn patch_headers(
         &self,
         app_id: String,
@@ -234,6 +258,7 @@ impl<'a> Endpoint<'a> {
         .await
     }
 
+    /// Get basic statistics for the endpoint.
     pub async fn get_stats(
         &self,
         app_id: String,
@@ -241,6 +266,7 @@ impl<'a> Endpoint<'a> {
         options: Option<EndpointStatsOptions>,
     ) -> Result<EndpointStats> {
         let EndpointStatsOptions { since, until } = options.unwrap_or_default();
+
         endpoint_api::v1_period_endpoint_period_get_stats(
             self.cfg,
             endpoint_api::V1PeriodEndpointPeriodGetStatsParams {
@@ -253,6 +279,10 @@ impl<'a> Endpoint<'a> {
         .await
     }
 
+    /// Replays messages to the endpoint.
+    ///
+    /// Only messages that were created after `since` will be sent. Messages
+    /// that were previously sent to the endpoint are not resent.
     pub async fn replay_missing(
         &self,
         app_id: String,
@@ -274,6 +304,7 @@ impl<'a> Endpoint<'a> {
         Ok(())
     }
 
+    /// Get the transformation code associated with this endpoint
     pub async fn transformation_get(
         &self,
         app_id: String,
@@ -289,6 +320,7 @@ impl<'a> Endpoint<'a> {
         .await
     }
 
+    /// Set or unset the transformation code associated with this endpoint
     pub async fn transformation_partial_update(
         &self,
         app_id: String,
@@ -303,10 +335,10 @@ impl<'a> Endpoint<'a> {
                 endpoint_transformation_in,
             },
         )
-        .await?;
-        Ok(())
+        .await
     }
 
+    /// Send an example message for an event
     pub async fn send_example(
         &self,
         app_id: String,

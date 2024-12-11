@@ -27,6 +27,7 @@ impl<'a> EventType<'a> {
         Self { cfg }
     }
 
+    /// Return the list of event types.
     pub async fn list(
         &self,
         options: Option<EventTypeListOptions>,
@@ -52,6 +53,12 @@ impl<'a> EventType<'a> {
         .await
     }
 
+    /// Create new or unarchive existing event type.
+    ///
+    /// Unarchiving an event type will allow endpoints to filter on it and
+    /// messages to be sent with it. Endpoints filtering on the event type
+    /// before archival will continue to filter on it. This operation does
+    /// not preserve the description and schemas.
     pub async fn create(
         &self,
         event_type_in: EventTypeIn,
@@ -69,6 +76,7 @@ impl<'a> EventType<'a> {
         .await
     }
 
+    /// Get an event type.
     pub async fn get(&self, event_type_name: String) -> Result<EventTypeOut> {
         event_type_api::v1_period_event_type_period_get(
             self.cfg,
@@ -77,6 +85,7 @@ impl<'a> EventType<'a> {
         .await
     }
 
+    /// Update an event type.
     pub async fn update(
         &self,
         event_type_name: String,
@@ -92,6 +101,7 @@ impl<'a> EventType<'a> {
         .await
     }
 
+    /// Partially update an event type.
     pub async fn patch(
         &self,
         event_type_name: String,
@@ -107,6 +117,12 @@ impl<'a> EventType<'a> {
         .await
     }
 
+    /// Archive an event type.
+    ///
+    /// Endpoints already configured to filter on an event type will continue to
+    /// do so after archival. However, new messages can not be sent with it
+    /// and endpoints can not filter on it. An event type can be unarchived
+    /// with the create operation.
     pub async fn delete(&self, event_type_name: String) -> Result<()> {
         event_type_api::v1_period_event_type_period_delete(
             self.cfg,
@@ -118,6 +134,12 @@ impl<'a> EventType<'a> {
         .await
     }
 
+    /// Given an OpenAPI spec, create new or update existing event types.
+    ///
+    /// If an existing `archived` event type is updated, it will be unarchived.
+    ///
+    /// The importer will convert all webhooks found in the either the
+    /// `webhooks` or `x-webhooks` top-level.
     pub async fn import_openapi(
         &self,
         event_type_import_open_api_in: EventTypeImportOpenApiIn,

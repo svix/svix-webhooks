@@ -16,6 +16,11 @@ impl<'a> Statistics<'a> {
         Self { cfg }
     }
 
+    /// Creates a background task to calculate the message destinations for all
+    /// applications in the environment.
+    ///
+    /// Note that this endpoint is asynchronous. You will need to poll the `Get
+    /// Background Task` endpoint to retrieve the results of the operation.
     pub async fn aggregate_app_stats(
         &self,
         AggregateAppStatsOptions {
@@ -37,6 +42,11 @@ impl<'a> Statistics<'a> {
         statistics_api::v1_period_statistics_period_aggregate_app_stats(self.cfg, params).await
     }
 
+    /// Creates a background task to calculate the listed event types for all
+    /// apps in the organization.
+    ///
+    /// Note that this endpoint is asynchronous. You will need to poll the `Get
+    /// Background Task` endpoint to retrieve the results of the operation.
     pub async fn aggregate_event_types(&self) -> Result<AggregateEventTypesOut> {
         statistics_api::v1_period_statistics_period_aggregate_event_types(self.cfg).await
     }

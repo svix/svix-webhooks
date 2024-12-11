@@ -1,5 +1,6 @@
 use super::PostOptions;
 use crate::{apis::authentication_api, error::Result, models::*, Configuration};
+
 pub struct Authentication<'a> {
     cfg: &'a Configuration,
 }
@@ -25,26 +26,33 @@ impl<'a> Authentication<'a> {
         .await
     }
 
+    /// Use this function to get magic links (and authentication codes) for
+    /// connecting your users to the Consumer Application Portal.
     pub async fn app_portal_access(
         &self,
         app_id: String,
         app_portal_access_in: AppPortalAccessIn,
         options: Option<PostOptions>,
     ) -> Result<AppPortalAccessOut> {
-        let options = options.unwrap_or_default();
+        let PostOptions { idempotency_key } = options.unwrap_or_default();
+
         authentication_api::v1_period_authentication_period_app_portal_access(
             self.cfg,
             authentication_api::V1PeriodAuthenticationPeriodAppPortalAccessParams {
                 app_id,
                 app_portal_access_in,
-                idempotency_key: options.idempotency_key,
+                idempotency_key,
             },
         )
         .await
     }
 
+    /// Logout an app token.
+    ///
+    /// Trying to log out other tokens will fail.
     pub async fn logout(&self, options: Option<PostOptions>) -> Result<()> {
         let PostOptions { idempotency_key } = options.unwrap_or_default();
+
         authentication_api::v1_period_authentication_period_logout(
             self.cfg,
             authentication_api::V1PeriodAuthenticationPeriodLogoutParams { idempotency_key },
