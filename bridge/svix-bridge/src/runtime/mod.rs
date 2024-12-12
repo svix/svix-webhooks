@@ -1,10 +1,10 @@
-use std::num::NonZeroUsize;
+use std::{num::NonZeroUsize, str::FromStr};
 
 use anyhow::Result;
 use deadpool::unmanaged::Pool;
-use deno_ast::{MediaType, ParseParams, SourceTextInfo};
+use deno_ast::{MediaType, ParseParams};
 use deno_core::{
-    serde_v8,
+    serde_v8, url,
     v8::{self},
     JsRuntime,
 };
@@ -92,8 +92,8 @@ impl JsPooler {
 /// Checks that the input parses as valid JavaScript, giving the parser's error back on failure.
 pub fn validate_script(src: &str) -> Result<()> {
     Ok(deno_ast::parse_script(ParseParams {
-        specifier: "file:///x.js".to_string(),
-        text_info: SourceTextInfo::new(src.into()),
+        specifier: url::Url::from_str("file:///x.js").expect("static string"),
+        text: src.into(),
         media_type: MediaType::JavaScript,
         capture_tokens: false,
         scope_analysis: false,
@@ -119,8 +119,7 @@ fn run_script_inner(
         return handler({input});
     }})()
     "#,
-        )
-        .into(),
+        ),
     );
     match res {
         Ok(global) => {
@@ -128,11 +127,14 @@ fn run_script_inner(
             let local = v8::Local::new(scope, global);
             match serde_v8::from_v8::<JsObject>(scope, local) {
                 Ok(v) => Ok(TransformerOutput::Object(v)),
-                Err(serde_v8::Error::ExpectedObject(msg)) => {
-                    tracing::error!("{msg}");
+                Err(e @ serde_v8::Error::ExpectedObject(_)) => {
+                    tracing::error!("{e}");
                     Ok(TransformerOutput::Invalid)
                 }
-                Err(e) => Err(e)?,
+                Err(e) => {
+                    tracing::error!("{e}");
+                    Err(e)?
+                }
             }
         }
         Err(err) => Err(anyhow::format_err!("Evaling error: {:?}", err)),
