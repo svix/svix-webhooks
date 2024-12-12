@@ -1,8 +1,13 @@
 # Changelog
 
 ## Next
+* 
+
+## Version 1.44.0
+* Libs/JavaScript: Revert packaging-related change because it broke for some users ([#1556])
 * Libs/Rust: Remove unused optional `PostOptions` parameters from non-POST methods ([#1557])
 
+[#1556]: https://github.com/svix/svix-webhooks/pull/1556
 [#1557]: https://github.com/svix/svix-webhooks/pull/1557
 
 ## Version 1.43.0
