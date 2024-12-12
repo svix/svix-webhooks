@@ -28,7 +28,7 @@ type EventTypeUpdate struct {
 	// The event type group's name
 	GroupName *string `json:"groupName,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
 	// The schema for the event type for a specific version as a JSON schema.
-	Schemas map[string]map[string]interface{} `json:"schemas,omitempty"`
+	Schemas map[string]interface{} `json:"schemas,omitempty"`
 }
 
 type _EventTypeUpdate EventTypeUpdate
@@ -212,9 +212,9 @@ func (o *EventTypeUpdate) SetGroupName(v string) {
 }
 
 // GetSchemas returns the Schemas field value if set, zero value otherwise.
-func (o *EventTypeUpdate) GetSchemas() map[string]map[string]interface{} {
+func (o *EventTypeUpdate) GetSchemas() map[string]interface{} {
 	if o == nil || IsNil(o.Schemas) {
-		var ret map[string]map[string]interface{}
+		var ret map[string]interface{}
 		return ret
 	}
 	return o.Schemas
@@ -222,9 +222,9 @@ func (o *EventTypeUpdate) GetSchemas() map[string]map[string]interface{} {
 
 // GetSchemasOk returns a tuple with the Schemas field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *EventTypeUpdate) GetSchemasOk() (map[string]map[string]interface{}, bool) {
+func (o *EventTypeUpdate) GetSchemasOk() (map[string]interface{}, bool) {
 	if o == nil || IsNil(o.Schemas) {
-		return map[string]map[string]interface{}{}, false
+		return map[string]interface{}{}, false
 	}
 	return o.Schemas, true
 }
@@ -238,8 +238,8 @@ func (o *EventTypeUpdate) HasSchemas() bool {
 	return false
 }
 
-// SetSchemas gets a reference to the given map[string]map[string]interface{} and assigns it to the Schemas field.
-func (o *EventTypeUpdate) SetSchemas(v map[string]map[string]interface{}) {
+// SetSchemas gets a reference to the given map[string]interface{} and assigns it to the Schemas field.
+func (o *EventTypeUpdate) SetSchemas(v map[string]interface{}) {
 	o.Schemas = v
 }
 

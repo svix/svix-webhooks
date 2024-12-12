@@ -24,7 +24,7 @@ var _ MappedNullable = &EnvironmentOut{}
 type EnvironmentOut struct {
 	CreatedAt time.Time `json:"createdAt"`
 	EventTypes []EventTypeOut `json:"eventTypes"`
-	Settings map[string]map[string]interface{} `json:"settings"`
+	Settings map[string]interface{} `json:"settings"`
 	TransformationTemplates []TemplateOut `json:"transformationTemplates"`
 	Version *int32 `json:"version,omitempty"`
 }
@@ -35,7 +35,7 @@ type _EnvironmentOut EnvironmentOut
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewEnvironmentOut(createdAt time.Time, eventTypes []EventTypeOut, settings map[string]map[string]interface{}, transformationTemplates []TemplateOut) *EnvironmentOut {
+func NewEnvironmentOut(createdAt time.Time, eventTypes []EventTypeOut, settings map[string]interface{}, transformationTemplates []TemplateOut) *EnvironmentOut {
 	this := EnvironmentOut{}
 	this.CreatedAt = createdAt
 	this.EventTypes = eventTypes
@@ -105,10 +105,10 @@ func (o *EnvironmentOut) SetEventTypes(v []EventTypeOut) {
 }
 
 // GetSettings returns the Settings field value
-// If the value is explicit nil, the zero value for map[string]map[string]interface{} will be returned
-func (o *EnvironmentOut) GetSettings() map[string]map[string]interface{} {
+// If the value is explicit nil, the zero value for map[string]interface{} will be returned
+func (o *EnvironmentOut) GetSettings() map[string]interface{} {
 	if o == nil {
-		var ret map[string]map[string]interface{}
+		var ret map[string]interface{}
 		return ret
 	}
 
@@ -118,15 +118,15 @@ func (o *EnvironmentOut) GetSettings() map[string]map[string]interface{} {
 // GetSettingsOk returns a tuple with the Settings field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *EnvironmentOut) GetSettingsOk() (map[string]map[string]interface{}, bool) {
+func (o *EnvironmentOut) GetSettingsOk() (map[string]interface{}, bool) {
 	if o == nil || IsNil(o.Settings) {
-		return map[string]map[string]interface{}{}, false
+		return map[string]interface{}{}, false
 	}
 	return o.Settings, true
 }
 
 // SetSettings sets field value
-func (o *EnvironmentOut) SetSettings(v map[string]map[string]interface{}) {
+func (o *EnvironmentOut) SetSettings(v map[string]interface{}) {
 	o.Settings = v
 }
 

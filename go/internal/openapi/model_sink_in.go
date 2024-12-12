@@ -22,6 +22,7 @@ type SinkIn struct {
 	SinkInOneOf1 *SinkInOneOf1
 	SinkInOneOf2 *SinkInOneOf2
 	SinkInOneOf3 *SinkInOneOf3
+	SinkInOneOf4 *SinkInOneOf4
 }
 
 // SinkInOneOfAsSinkIn is a convenience function that returns SinkInOneOf wrapped in SinkIn
@@ -49,6 +50,13 @@ func SinkInOneOf2AsSinkIn(v *SinkInOneOf2) SinkIn {
 func SinkInOneOf3AsSinkIn(v *SinkInOneOf3) SinkIn {
 	return SinkIn{
 		SinkInOneOf3: v,
+	}
+}
+
+// SinkInOneOf4AsSinkIn is a convenience function that returns SinkInOneOf4 wrapped in SinkIn
+func SinkInOneOf4AsSinkIn(v *SinkInOneOf4) SinkIn {
+	return SinkIn{
+		SinkInOneOf4: v,
 	}
 }
 
@@ -125,12 +133,30 @@ func (dst *SinkIn) UnmarshalJSON(data []byte) error {
 		dst.SinkInOneOf3 = nil
 	}
 
+	// try to unmarshal data into SinkInOneOf4
+	err = newStrictDecoder(data).Decode(&dst.SinkInOneOf4)
+	if err == nil {
+		jsonSinkInOneOf4, _ := json.Marshal(dst.SinkInOneOf4)
+		if string(jsonSinkInOneOf4) == "{}" { // empty struct
+			dst.SinkInOneOf4 = nil
+		} else {
+			if err = validator.Validate(dst.SinkInOneOf4); err != nil {
+				dst.SinkInOneOf4 = nil
+			} else {
+				match++
+			}
+		}
+	} else {
+		dst.SinkInOneOf4 = nil
+	}
+
 	if match > 1 { // more than 1 match
 		// reset to nil
 		dst.SinkInOneOf = nil
 		dst.SinkInOneOf1 = nil
 		dst.SinkInOneOf2 = nil
 		dst.SinkInOneOf3 = nil
+		dst.SinkInOneOf4 = nil
 
 		return fmt.Errorf("data matches more than one schema in oneOf(SinkIn)")
 	} else if match == 1 {
@@ -158,6 +184,10 @@ func (src SinkIn) MarshalJSON() ([]byte, error) {
 		return json.Marshal(&src.SinkInOneOf3)
 	}
 
+	if src.SinkInOneOf4 != nil {
+		return json.Marshal(&src.SinkInOneOf4)
+	}
+
 	return nil, nil // no data in oneOf schemas
 }
 
@@ -180,6 +210,10 @@ func (obj *SinkIn) GetActualInstance() (interface{}) {
 
 	if obj.SinkInOneOf3 != nil {
 		return obj.SinkInOneOf3
+	}
+
+	if obj.SinkInOneOf4 != nil {
+		return obj.SinkInOneOf4
 	}
 
 	// all schemas are nil

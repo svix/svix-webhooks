@@ -16,39 +16,39 @@ import (
 	"fmt"
 )
 
-// checks if the CreateMessageTokenIn type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &CreateMessageTokenIn{}
+// checks if the CreateTokenIn type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &CreateTokenIn{}
 
-// CreateMessageTokenIn struct for CreateMessageTokenIn
-type CreateMessageTokenIn struct {
+// CreateTokenIn struct for CreateTokenIn
+type CreateTokenIn struct {
 	// How long the token will be valid for, in seconds.
 	Expiry *int32 `json:"expiry,omitempty"`
 	// The name of the token.
 	Name string `json:"name"`
 }
 
-type _CreateMessageTokenIn CreateMessageTokenIn
+type _CreateTokenIn CreateTokenIn
 
-// NewCreateMessageTokenIn instantiates a new CreateMessageTokenIn object
+// NewCreateTokenIn instantiates a new CreateTokenIn object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewCreateMessageTokenIn(name string) *CreateMessageTokenIn {
-	this := CreateMessageTokenIn{}
+func NewCreateTokenIn(name string) *CreateTokenIn {
+	this := CreateTokenIn{}
 	this.Name = name
 	return &this
 }
 
-// NewCreateMessageTokenInWithDefaults instantiates a new CreateMessageTokenIn object
+// NewCreateTokenInWithDefaults instantiates a new CreateTokenIn object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewCreateMessageTokenInWithDefaults() *CreateMessageTokenIn {
-	this := CreateMessageTokenIn{}
+func NewCreateTokenInWithDefaults() *CreateTokenIn {
+	this := CreateTokenIn{}
 	return &this
 }
 
 // GetExpiry returns the Expiry field value if set, zero value otherwise.
-func (o *CreateMessageTokenIn) GetExpiry() int32 {
+func (o *CreateTokenIn) GetExpiry() int32 {
 	if o == nil || IsNil(o.Expiry) {
 		var ret int32
 		return ret
@@ -58,7 +58,7 @@ func (o *CreateMessageTokenIn) GetExpiry() int32 {
 
 // GetExpiryOk returns a tuple with the Expiry field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *CreateMessageTokenIn) GetExpiryOk() (*int32, bool) {
+func (o *CreateTokenIn) GetExpiryOk() (*int32, bool) {
 	if o == nil || IsNil(o.Expiry) {
 		return nil, false
 	}
@@ -66,7 +66,7 @@ func (o *CreateMessageTokenIn) GetExpiryOk() (*int32, bool) {
 }
 
 // HasExpiry returns a boolean if a field has been set.
-func (o *CreateMessageTokenIn) HasExpiry() bool {
+func (o *CreateTokenIn) HasExpiry() bool {
 	if o != nil && !IsNil(o.Expiry) {
 		return true
 	}
@@ -75,12 +75,12 @@ func (o *CreateMessageTokenIn) HasExpiry() bool {
 }
 
 // SetExpiry gets a reference to the given int32 and assigns it to the Expiry field.
-func (o *CreateMessageTokenIn) SetExpiry(v int32) {
+func (o *CreateTokenIn) SetExpiry(v int32) {
 	o.Expiry = &v
 }
 
 // GetName returns the Name field value
-func (o *CreateMessageTokenIn) GetName() string {
+func (o *CreateTokenIn) GetName() string {
 	if o == nil {
 		var ret string
 		return ret
@@ -91,7 +91,7 @@ func (o *CreateMessageTokenIn) GetName() string {
 
 // GetNameOk returns a tuple with the Name field value
 // and a boolean to check if the value has been set.
-func (o *CreateMessageTokenIn) GetNameOk() (*string, bool) {
+func (o *CreateTokenIn) GetNameOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -99,11 +99,11 @@ func (o *CreateMessageTokenIn) GetNameOk() (*string, bool) {
 }
 
 // SetName sets field value
-func (o *CreateMessageTokenIn) SetName(v string) {
+func (o *CreateTokenIn) SetName(v string) {
 	o.Name = v
 }
 
-func (o CreateMessageTokenIn) MarshalJSON() ([]byte, error) {
+func (o CreateTokenIn) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -111,7 +111,7 @@ func (o CreateMessageTokenIn) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o CreateMessageTokenIn) ToMap() (map[string]interface{}, error) {
+func (o CreateTokenIn) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Expiry) {
 		toSerialize["expiry"] = o.Expiry
@@ -120,7 +120,7 @@ func (o CreateMessageTokenIn) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-func (o *CreateMessageTokenIn) UnmarshalJSON(data []byte) (err error) {
+func (o *CreateTokenIn) UnmarshalJSON(data []byte) (err error) {
 	// This validates that all required properties are included in the JSON object
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
@@ -142,53 +142,53 @@ func (o *CreateMessageTokenIn) UnmarshalJSON(data []byte) (err error) {
 		}
 	}
 
-	varCreateMessageTokenIn := _CreateMessageTokenIn{}
+	varCreateTokenIn := _CreateTokenIn{}
 
 	decoder := json.NewDecoder(bytes.NewReader(data))
 	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varCreateMessageTokenIn)
+	err = decoder.Decode(&varCreateTokenIn)
 
 	if err != nil {
 		return err
 	}
 
-	*o = CreateMessageTokenIn(varCreateMessageTokenIn)
+	*o = CreateTokenIn(varCreateTokenIn)
 
 	return err
 }
 
-type NullableCreateMessageTokenIn struct {
-	value *CreateMessageTokenIn
+type NullableCreateTokenIn struct {
+	value *CreateTokenIn
 	isSet bool
 }
 
-func (v NullableCreateMessageTokenIn) Get() *CreateMessageTokenIn {
+func (v NullableCreateTokenIn) Get() *CreateTokenIn {
 	return v.value
 }
 
-func (v *NullableCreateMessageTokenIn) Set(val *CreateMessageTokenIn) {
+func (v *NullableCreateTokenIn) Set(val *CreateTokenIn) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableCreateMessageTokenIn) IsSet() bool {
+func (v NullableCreateTokenIn) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableCreateMessageTokenIn) Unset() {
+func (v *NullableCreateTokenIn) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableCreateMessageTokenIn(val *CreateMessageTokenIn) *NullableCreateMessageTokenIn {
-	return &NullableCreateMessageTokenIn{value: val, isSet: true}
+func NewNullableCreateTokenIn(val *CreateTokenIn) *NullableCreateTokenIn {
+	return &NullableCreateTokenIn{value: val, isSet: true}
 }
 
-func (v NullableCreateMessageTokenIn) MarshalJSON() ([]byte, error) {
+func (v NullableCreateTokenIn) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableCreateMessageTokenIn) UnmarshalJSON(src []byte) error {
+func (v *NullableCreateTokenIn) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
