@@ -15,6 +15,10 @@ ignore = [
     "RUSTSEC-2023-0071",
     # TODO: Wait for dependencies to upgrade off of proc-macro-error
     "RUSTSEC-2024-0370",
+    # Doesn't affect us, we only use the vulnerable version through validator
+    # and don't use that for any sensitive auth checks.
+    # Details: https://github.com/svix/monorepo-private/issues/9541
+    "RUSTSEC-2024-0421",
 ]
 
 [licenses]
