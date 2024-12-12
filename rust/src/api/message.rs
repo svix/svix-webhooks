@@ -31,27 +31,28 @@ impl<'a> Message<'a> {
         options: Option<MessageListOptions>,
     ) -> Result<ListResponseMessageOut> {
         let MessageListOptions {
-            iterator,
             limit,
-            event_types,
+            iterator,
+            channel,
             before,
             after,
-            channel,
             with_content,
             tag,
+            event_types,
         } = options.unwrap_or_default();
+
         message_api::v1_period_message_period_list(
             self.cfg,
             message_api::V1PeriodMessagePeriodListParams {
                 app_id,
-                iterator,
                 limit,
-                event_types,
+                iterator,
+                channel,
                 before,
                 after,
-                channel,
                 with_content,
                 tag,
+                event_types,
             },
         )
         .await

@@ -3,8 +3,13 @@ use crate::{apis::integration_api, error::Result, models::*, Configuration};
 
 #[derive(Default)]
 pub struct IntegrationListOptions {
-    pub iterator: Option<String>,
+    /// Limit the number of returned items
     pub limit: Option<i32>,
+
+    /// The iterator returned from a prior invocation
+    pub iterator: Option<String>,
+
+    /// The sorting order of the returned items
     pub order: Option<Ordering>,
 }
 
@@ -23,16 +28,17 @@ impl<'a> Integration<'a> {
         options: Option<IntegrationListOptions>,
     ) -> Result<ListResponseIntegrationOut> {
         let IntegrationListOptions {
-            iterator,
             limit,
+            iterator,
             order,
         } = options.unwrap_or_default();
+
         integration_api::v1_period_integration_period_list(
             self.cfg,
             integration_api::V1PeriodIntegrationPeriodListParams {
                 app_id,
-                iterator,
                 limit,
+                iterator,
                 order,
             },
         )
@@ -46,6 +52,7 @@ impl<'a> Integration<'a> {
         options: Option<PostOptions>,
     ) -> Result<IntegrationOut> {
         let PostOptions { idempotency_key } = options.unwrap_or_default();
+
         integration_api::v1_period_integration_period_create(
             self.cfg,
             integration_api::V1PeriodIntegrationPeriodCreateParams {

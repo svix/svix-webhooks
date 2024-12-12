@@ -3,10 +3,19 @@ use crate::{apis::event_type_api, error::Result, models::*, Configuration};
 
 #[derive(Default)]
 pub struct EventTypeListOptions {
-    pub iterator: Option<String>,
+    /// Limit the number of returned items
     pub limit: Option<i32>,
-    pub with_content: Option<bool>,
+
+    /// The iterator returned from a prior invocation
+    pub iterator: Option<String>,
+
+    /// When `true` archived (deleted but not expunged) items are included in
+    /// the response
     pub include_archived: Option<bool>,
+
+    /// When `true` the full item (including the schema) is included in the
+    /// response
+    pub with_content: Option<bool>,
 }
 
 pub struct EventType<'a> {
@@ -23,19 +32,21 @@ impl<'a> EventType<'a> {
         options: Option<EventTypeListOptions>,
     ) -> Result<ListResponseEventTypeOut> {
         let EventTypeListOptions {
-            iterator,
             limit,
-            with_content,
+            iterator,
             include_archived,
+            with_content,
         } = options.unwrap_or_default();
+
         event_type_api::v1_period_event_type_period_list(
             self.cfg,
             event_type_api::V1PeriodEventTypePeriodListParams {
-                iterator,
                 limit,
-                with_content,
-                include_archived,
+                iterator,
+                // FIXME: not included for backwards compatibility, for now
                 order: None,
+                include_archived,
+                with_content,
             },
         )
         .await
@@ -47,6 +58,7 @@ impl<'a> EventType<'a> {
         options: Option<PostOptions>,
     ) -> Result<EventTypeOut> {
         let PostOptions { idempotency_key } = options.unwrap_or_default();
+
         event_type_api::v1_period_event_type_period_create(
             self.cfg,
             event_type_api::V1PeriodEventTypePeriodCreateParams {
@@ -112,6 +124,7 @@ impl<'a> EventType<'a> {
         options: Option<PostOptions>,
     ) -> Result<EventTypeImportOpenApiOut> {
         let PostOptions { idempotency_key } = options.unwrap_or_default();
+
         event_type_api::v1_period_event_type_period_import_openapi(
             self.cfg,
             event_type_api::V1PeriodEventTypePeriodImportOpenapiParams {
