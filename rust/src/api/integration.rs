@@ -22,6 +22,7 @@ impl<'a> Integration<'a> {
         Self { cfg }
     }
 
+    /// List the application's integrations.
     pub async fn list(
         &self,
         app_id: String,
@@ -45,6 +46,7 @@ impl<'a> Integration<'a> {
         .await
     }
 
+    /// Create an integration.
     pub async fn create(
         &self,
         app_id: String,
@@ -64,6 +66,7 @@ impl<'a> Integration<'a> {
         .await
     }
 
+    /// Get an integration.
     pub async fn get(&self, app_id: String, integ_id: String) -> Result<IntegrationOut> {
         integration_api::v1_period_integration_period_get(
             self.cfg,
@@ -72,6 +75,7 @@ impl<'a> Integration<'a> {
         .await
     }
 
+    /// Update an integration.
     pub async fn update(
         &self,
         app_id: String,
@@ -89,6 +93,7 @@ impl<'a> Integration<'a> {
         .await
     }
 
+    /// Delete an integration.
     pub async fn delete(&self, app_id: String, integ_id: String) -> Result<()> {
         integration_api::v1_period_integration_period_delete(
             self.cfg,
@@ -97,6 +102,7 @@ impl<'a> Integration<'a> {
         .await
     }
 
+    /// Get an integration's key.
     pub async fn get_key(&self, app_id: String, integ_id: String) -> Result<IntegrationKeyOut> {
         integration_api::v1_period_integration_period_get_key(
             self.cfg,
@@ -105,6 +111,8 @@ impl<'a> Integration<'a> {
         .await
     }
 
+    /// Rotate the integration's key. The previous key will be immediately
+    /// revoked.
     pub async fn rotate_key(&self, app_id: String, integ_id: String) -> Result<IntegrationKeyOut> {
         integration_api::v1_period_integration_period_rotate_key(
             self.cfg,

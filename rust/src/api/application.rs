@@ -22,6 +22,7 @@ impl<'a> Application<'a> {
         Self { cfg }
     }
 
+    /// List of all the organization's applications.
     pub async fn list(
         &self,
         options: Option<ApplicationListOptions>,
@@ -43,6 +44,7 @@ impl<'a> Application<'a> {
         .await
     }
 
+    /// Create a new application.
     pub async fn create(
         &self,
         application_in: ApplicationIn,
@@ -60,6 +62,8 @@ impl<'a> Application<'a> {
         .await
     }
 
+    /// Create the application with the given ID, or create a new one if it
+    /// doesn't exist yet.
     pub async fn get_or_create(
         &self,
         application_in: ApplicationIn,
@@ -77,6 +81,7 @@ impl<'a> Application<'a> {
         .await
     }
 
+    /// Get an application.
     pub async fn get(&self, app_id: String) -> Result<ApplicationOut> {
         application_api::v1_period_application_period_get(
             self.cfg,
@@ -85,6 +90,7 @@ impl<'a> Application<'a> {
         .await
     }
 
+    /// Update an application.
     pub async fn update(
         &self,
         app_id: String,
@@ -100,6 +106,7 @@ impl<'a> Application<'a> {
         .await
     }
 
+    /// Delete an application.
     pub async fn delete(&self, app_id: String) -> Result<()> {
         application_api::v1_period_application_period_delete(
             self.cfg,
@@ -108,6 +115,7 @@ impl<'a> Application<'a> {
         .await
     }
 
+    /// Partially update an application.
     pub async fn patch(
         &self,
         app_id: String,
