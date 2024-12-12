@@ -315,7 +315,10 @@ async fn main() -> Result<()> {
             "Starting JS Transformation Workers: {}",
             cfg.transformation_worker_count
         );
-        let pooler = runtime::JsPooler::new(cfg.transformation_worker_count);
+
+        deno_core::JsRuntime::init_platform(None, false);
+        let pooler: runtime::JsPooler = runtime::JsPooler::new(cfg.transformation_worker_count);
+
         while let Some(TransformerJob {
             input,
             script,
