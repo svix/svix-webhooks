@@ -28,7 +28,7 @@ type EndpointIn struct {
 	FilterTypes []string `json:"filterTypes,omitempty"`
 	Metadata *map[string]string `json:"metadata,omitempty"`
 	RateLimit *int32 `json:"rateLimit,omitempty"`
-	// The endpoint's verification secret. If `null` is passed, a secret is automatically generated. Format: `base64` encoded random bytes optionally prefixed with `whsec_`. Recommended size: 24.
+	// The endpoint's verification secret.  Format: `base64` encoded random bytes optionally prefixed with `whsec_`. It is recommended to not set this and let the server generate the secret.
 	Secret *string `json:"secret,omitempty" validate:"regexp=^(whsec_)?[a-zA-Z0-9+\\/=]{32,100}$"`
 	// Optional unique identifier for the endpoint
 	Uid *string `json:"uid,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`

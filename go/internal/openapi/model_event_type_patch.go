@@ -25,7 +25,7 @@ type EventTypePatch struct {
 	FeatureFlag NullableString `json:"featureFlag,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
 	// The event type group's name
 	GroupName NullableString `json:"groupName,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
-	Schemas map[string]map[string]interface{} `json:"schemas,omitempty"`
+	Schemas map[string]interface{} `json:"schemas,omitempty"`
 }
 
 // NewEventTypePatch instantiates a new EventTypePatch object
@@ -226,9 +226,9 @@ func (o *EventTypePatch) UnsetGroupName() {
 }
 
 // GetSchemas returns the Schemas field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *EventTypePatch) GetSchemas() map[string]map[string]interface{} {
+func (o *EventTypePatch) GetSchemas() map[string]interface{} {
 	if o == nil {
-		var ret map[string]map[string]interface{}
+		var ret map[string]interface{}
 		return ret
 	}
 	return o.Schemas
@@ -237,9 +237,9 @@ func (o *EventTypePatch) GetSchemas() map[string]map[string]interface{} {
 // GetSchemasOk returns a tuple with the Schemas field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *EventTypePatch) GetSchemasOk() (map[string]map[string]interface{}, bool) {
+func (o *EventTypePatch) GetSchemasOk() (map[string]interface{}, bool) {
 	if o == nil || IsNil(o.Schemas) {
-		return map[string]map[string]interface{}{}, false
+		return map[string]interface{}{}, false
 	}
 	return o.Schemas, true
 }
@@ -253,8 +253,8 @@ func (o *EventTypePatch) HasSchemas() bool {
 	return false
 }
 
-// SetSchemas gets a reference to the given map[string]map[string]interface{} and assigns it to the Schemas field.
-func (o *EventTypePatch) SetSchemas(v map[string]map[string]interface{}) {
+// SetSchemas gets a reference to the given map[string]interface{} and assigns it to the Schemas field.
+func (o *EventTypePatch) SetSchemas(v map[string]interface{}) {
 	o.Schemas = v
 }
 

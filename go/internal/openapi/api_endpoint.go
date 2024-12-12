@@ -2448,7 +2448,10 @@ func (r ApiV1EndpointReplayRequest) Execute() (*ReplayOut, *http.Response, error
 /*
 V1EndpointReplay Replay Missing Webhooks
 
-Replays messages to the endpoint. Only messages that were created after `since` will be sent. Messages that were previously sent to the endpoint are not resent.
+Replays messages to the endpoint.
+
+Only messages that were created after `since` will be sent.
+Messages that were previously sent to the endpoint are not resent.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param appId The app's ID or UID

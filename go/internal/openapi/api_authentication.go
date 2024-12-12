@@ -233,12 +233,12 @@ type ApiV1AuthenticationCreateMessageTokenRequest struct {
 	ctx context.Context
 	ApiService *AuthenticationAPIService
 	appId string
-	createMessageTokenIn *CreateMessageTokenIn
+	createTokenIn *CreateTokenIn
 	idempotencyKey *string
 }
 
-func (r ApiV1AuthenticationCreateMessageTokenRequest) CreateMessageTokenIn(createMessageTokenIn CreateMessageTokenIn) ApiV1AuthenticationCreateMessageTokenRequest {
-	r.createMessageTokenIn = &createMessageTokenIn
+func (r ApiV1AuthenticationCreateMessageTokenRequest) CreateTokenIn(createTokenIn CreateTokenIn) ApiV1AuthenticationCreateMessageTokenRequest {
+	r.createTokenIn = &createTokenIn
 	return r
 }
 
@@ -296,8 +296,8 @@ func (a *AuthenticationAPIService) V1AuthenticationCreateMessageTokenExecute(r A
 	if strlen(r.appId) > 256 {
 		return localVarReturnValue, nil, reportError("appId must have less than 256 elements")
 	}
-	if r.createMessageTokenIn == nil {
-		return localVarReturnValue, nil, reportError("createMessageTokenIn is required and must be specified")
+	if r.createTokenIn == nil {
+		return localVarReturnValue, nil, reportError("createTokenIn is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -321,7 +321,7 @@ func (a *AuthenticationAPIService) V1AuthenticationCreateMessageTokenExecute(r A
 		parameterAddToHeaderOrQuery(localVarHeaderParams, "idempotency-key", r.idempotencyKey, "simple", "")
 	}
 	// body params
-	localVarPostBody = r.createMessageTokenIn
+	localVarPostBody = r.createTokenIn
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return localVarReturnValue, nil, err

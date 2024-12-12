@@ -43,7 +43,7 @@ func (r ApiV1EndpointUpdateHubspotOauthConfigRequest) Execute() (*http.Response,
 /*
 V1EndpointUpdateHubspotOauthConfig Update Hubspot Oauth Config
 
-Create/update endpoint Hubsport OAuth configuration
+Create/update endpoint Hubspot OAuth configuration
 Specific private endpoint just for us, to avoid exposing the Hubspot secret to the client.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
