@@ -245,9 +245,9 @@ You can see more in [these instructions](./OpenTelemetry.md).
 
 ### Connection Pool Size
 
-There are two configuration variables `db_pool_max_size` and `redis_pool_max_size` which control the maximum allowed size of the connection pool for PostgreSQL and Redis respectively.
+The `db_pool_max_size` configuration parameter controls the maximum allowed size of the connection pool for PostgreSQL. This value defaults to a max size of 100, but you can potentially increase application performance significantly by increasing this value. You may need to consider Postgres and PGBouncer configuration parameters as well when tuning these parameters.
 
-They default to a max size of 20, but higher values can significantly increase performance if your database can handle it.
+The `redis_pool_max_size` parameter controls the maximum size of each Svix instance's Redis connection pool. Its default is 100. Note that only redis _queuing_ leverages connection pooling -- caching is fully asynchronous and so does not otherwise benefit from pooling. Therefore, you probably won't need to tune this parameter.
 
 ### SSRF Attacks and Internal IP Addresses
 To prevent SSRF attacks, message dispatches to internal IP addresses are blocked by default. However we understand that this doesn't meet the needs of every user say, for example, the service can only be accessed internally. To bypass these restrictions, see the `whitelist_subnets` configuration option, which accepts an array of CIDR-notation subnets to allow messages to be dispatched to.
