@@ -4,7 +4,10 @@ use std::str::FromStr;
 
 use serde_json::json;
 
-use crate::{api::Ordering, models::MessageIn};
+use crate::{
+    api::{MessageStatus, Ordering, StatusCodeClass},
+    models::MessageIn,
+};
 
 impl MessageIn {
     /// Create a new message with a pre-serialized payload.
@@ -53,6 +56,44 @@ impl FromStr for Ordering {
             "ascending" => Ok(Self::Ascending),
             "descending" => Ok(Self::Descending),
             _ => Err(OrderingFromStrError),
+        }
+    }
+}
+
+#[derive(Debug, thiserror::Error)]
+#[error("invalid value for messageStatus")]
+pub struct MessageStatusFromStrError;
+
+impl FromStr for MessageStatus {
+    type Err = MessageStatusFromStrError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "0" | "success" => Ok(Self::Success),
+            "1" | "pending" => Ok(Self::Pending),
+            "2" | "fail" => Ok(Self::Fail),
+            "3" | "sending" => Ok(Self::Sending),
+            _ => Err(MessageStatusFromStrError),
+        }
+    }
+}
+
+#[derive(Debug, thiserror::Error)]
+#[error("invalid value for statusCodeClass")]
+pub struct StatusCodeClassFromStrError;
+
+impl FromStr for StatusCodeClass {
+    type Err = StatusCodeClassFromStrError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "0" => Ok(Self::CodeNone),
+            "100" => Ok(Self::Code1xx),
+            "200" => Ok(Self::Code2xx),
+            "300" => Ok(Self::Code3xx),
+            "400" => Ok(Self::Code4xx),
+            "500" => Ok(Self::Code5xx),
+            _ => Err(StatusCodeClassFromStrError),
         }
     }
 }
