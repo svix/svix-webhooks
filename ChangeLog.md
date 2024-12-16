@@ -1,7 +1,11 @@
 # Changelog
 
 ## Next
-* 
+* Libs/Rust: Add `api::MessageAttemptListAttemptedMessagesOptions` and use it for
+  `MessageAttempt::list_attempted_messages`, replacing `MessageAttemptListOptions` which contained
+  some extra parameters never used with this method / endpoint ([#1568])
+
+[#1568]: https://github.com/svix/svix-webhooks/pull/1568
 
 ## Version 1.44.0
 * Libs/JavaScript: Revert packaging-related change because it broke for some users ([#1556])

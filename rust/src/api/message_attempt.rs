@@ -83,6 +83,41 @@ pub struct MessageAttemptListOptions {
     pub event_types: Option<Vec<String>>,
 }
 
+#[derive(Default)]
+pub struct MessageAttemptListAttemptedMessagesOptions {
+    /// Limit the number of returned items
+    pub limit: Option<i32>,
+
+    /// The iterator returned from a prior invocation
+    pub iterator: Option<String>,
+
+    /// Filter response based on the channel
+    pub channel: Option<String>,
+
+    /// Filter response based on the message tags
+    pub tag: Option<String>,
+
+    /// Filter response based on the status of the attempt: Success (0), Pending
+    /// (1), Failed (2), or Sending (3)
+    pub status: Option<MessageStatus>,
+
+    /// Only include items created before a certain date
+    ///
+    /// RFC3339 date string.
+    pub before: Option<String>,
+
+    /// Only include items created after a certain date
+    ///
+    /// RFC3339 date string.
+    pub after: Option<String>,
+
+    /// When `true` message payloads are included in the response
+    pub with_content: Option<bool>,
+
+    /// Filter response based on the event type
+    pub event_types: Option<Vec<String>>,
+}
+
 pub struct MessageAttempt<'a> {
     cfg: &'a Configuration,
 }
@@ -203,20 +238,18 @@ impl<'a> MessageAttempt<'a> {
         &self,
         app_id: String,
         endpoint_id: String,
-        options: Option<MessageAttemptListOptions>,
+        options: Option<MessageAttemptListAttemptedMessagesOptions>,
     ) -> Result<ListResponseEndpointMessageOut> {
-        let MessageAttemptListOptions {
-            iterator,
+        let MessageAttemptListAttemptedMessagesOptions {
             limit,
-            event_types,
-            before,
-            after,
+            iterator,
             channel,
             tag,
             status,
-            status_code_class: _,
+            before,
+            after,
             with_content,
-            endpoint_id: _,
+            event_types,
         } = options.unwrap_or_default();
 
         message_attempt_api::v1_period_message_attempt_period_list_attempted_messages(
