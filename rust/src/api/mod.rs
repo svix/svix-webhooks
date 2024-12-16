@@ -44,7 +44,8 @@ pub use self::{
     integration::{Integration, IntegrationListOptions},
     message::{Message, MessageListOptions},
     message_attempt::{
-        MessageAttempt, MessageAttemptListByEndpointOptions, MessageAttemptListOptions,
+        MessageAttempt, MessageAttemptListAttemptedMessagesOptions,
+        MessageAttemptListByEndpointOptions, MessageAttemptListOptions,
     },
     operational_webhook_endpoint::{
         OperationalWebhookEndpoint, OperationalWebhookEndpointListOptions,
