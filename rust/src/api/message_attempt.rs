@@ -293,6 +293,7 @@ impl<'a> MessageAttempt<'a> {
         .await
     }
 
+    #[deprecated = "Use `list_by_msg` instead, setting the `endpoint_id` in `options`."]
     pub async fn list_attempts_for_endpoint(
         &self,
         app_id: String,
