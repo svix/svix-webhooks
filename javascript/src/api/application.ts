@@ -1,7 +1,12 @@
 import { ApplicationApi, ApplicationIn, ApplicationOut, ApplicationPatch, Configuration, ListResponseApplicationOut, Ordering } from "../openapi";
-import { ListOptions, PostOptions } from "../util";
+import { PostOptions } from "../util";
 
-export interface ApplicationListOptions extends ListOptions {
+export interface ApplicationListOptions {
+    /// Limit the number of returned items
+    limit?: number;
+    /// The iterator returned from a prior invocation
+    iterator?: string | null;
+    /// The sorting order of the returned items
     order?: Ordering;
 }
 

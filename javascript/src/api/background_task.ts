@@ -6,9 +6,10 @@ import {
     ListResponseBackgroundTaskOut,
     BackgroundTasksApi,
 } from "../openapi";
-import { ListOptions } from "../util";
 
-export interface BackgroundTaskListOptions extends ListOptions {
+export interface BackgroundTaskListOptions {
+    iterator?: string | null;
+    limit?: number;
     status?: BackgroundTaskStatus;
     task?: BackgroundTaskType;
 }

@@ -8,12 +8,21 @@ import {
     EventTypePatch,
     EventTypeImportOpenApiIn,
     EventTypeImportOpenApiOut,
+    Ordering,
 } from "../openapi";
-import { ListOptions, PostOptions } from "../util";
+import { PostOptions } from "../util";
 
-export interface EventTypeListOptions extends ListOptions {
-    withContent?: boolean;
+export interface EventTypeListOptions {
+    /// Limit the number of returned items
+    limit?: number;
+    /// The iterator returned from a prior invocation
+    iterator?: string | null;
+    /// The sorting order of the returned items
+    order?: Ordering;
+    /// When `true` archived (deleted but not expunged) items are included in the response
     includeArchived?: boolean;
+    /// When `true` the full item (including the schema) is included in the response
+    withContent?: boolean;
 }
 
 export class EventType {

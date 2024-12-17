@@ -5,15 +5,25 @@ import {
     MessageIn,
     ListResponseMessageOut,
 } from "../openapi";
-import { ListOptions, PostOptions } from "../util";
+import { PostOptions } from "../util";
 
-export interface MessageListOptions extends ListOptions {
-    eventTypes?: string[];
-    before?: Date | null;
-    after?: Date | null;
+export interface MessageListOptions {
+    /// Limit the number of returned items
+    limit?: number;
+    /// The iterator returned from a prior invocation
+    iterator?: string | null;
+    /// Filter response based on the channel
     channel?: string;
+    /// Only include items created before a certain date
+    before?: Date | null;
+    /// Only include items created after a certain date
+    after?: Date | null;
+    /// When `true` message payloads are included in the response
     withContent?: boolean;
+    /// Filter messages matching the provided tag
     tag?: string;
+    /// Filter response based on the event type
+    eventTypes?: string[];
 }
 
 export class Message {
