@@ -18,9 +18,12 @@ type Application struct {
 }
 
 type ApplicationListOptions struct {
+	// Limit the number of returned items
+	Limit *int32
+	// The iterator returned from a prior invocation
 	Iterator *string
-	Limit    *int32
-	Order    *Ordering
+	// The sorting order of the returned items
+	Order *Ordering
 }
 
 func (a *Application) List(ctx context.Context, options *ApplicationListOptions) (*ListResponseApplicationOut, error) {
