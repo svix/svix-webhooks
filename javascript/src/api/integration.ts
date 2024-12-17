@@ -6,10 +6,18 @@ import {
     IntegrationIn,
     IntegrationUpdate,
     IntegrationKeyOut,
+    Ordering,
 } from "../openapi";
-import { ListOptions, PostOptions } from "../util";
+import { PostOptions } from "../util";
 
-export type IntegrationListOptions = ListOptions;
+export interface IntegrationListOptions {
+    /// Limit the number of returned items
+    limit?: number;
+    /// The iterator returned from a prior invocation
+    iterator?: string | null;
+    /// The sorting order of the returned items
+    order?: Ordering;
+}
 
 export class Integration {
     private readonly api: IntegrationApi;

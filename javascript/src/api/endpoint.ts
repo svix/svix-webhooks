@@ -21,9 +21,14 @@ import {
     EndpointPatch,
     EndpointOauthConfigIn,
 } from "../openapi";
-import { ListOptions, PostOptions } from "../util";
+import { PostOptions } from "../util";
 
-export interface EndpointListOptions extends ListOptions {
+export interface EndpointListOptions {
+    /// Limit the number of returned items
+    limit?: number;
+    /// The iterator returned from a prior invocation
+    iterator?: string | null;
+    /// The sorting order of the returned items
     order?: Ordering;
 }
 
