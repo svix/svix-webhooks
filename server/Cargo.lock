@@ -1783,7 +1783,7 @@ dependencies = [
  "futures-channel",
  "futures-io",
  "futures-util",
- "idna 1.0.3",
+ "idna",
  "ipnet",
  "once_cell",
  "rand",
@@ -2175,16 +2175,6 @@ name = "ident_case"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b9e0384b61958566e926dc50660321d12159025e767c18e043daf26b70104c39"
-
-[[package]]
-name = "idna"
-version = "0.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7d20d6b07bfbc108882d88ed8e37d39636dcc260e15e30c45e6ba089610b917c"
-dependencies = [
- "unicode-bidi",
- "unicode-normalization",
-]
 
 [[package]]
 name = "idna"
@@ -5526,7 +5516,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "32f8b686cadd1473f4bd0117a5d28d36b1ade384ea9b5069a1c40aefed7fda60"
 dependencies = [
  "form_urlencoded",
- "idna 1.0.3",
+ "idna",
  "percent-encoding",
  "serde",
 ]
@@ -5562,15 +5552,15 @@ dependencies = [
 [[package]]
 name = "validator"
 version = "0.16.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b92f40481c04ff1f4f61f304d61793c7b56ff76ac1469f1beb199b1445b253bd"
+source = "git+https://github.com/svix/validator.git?rev=aebdc34a4ed72524902ff6d63397b9c435b0578f#aebdc34a4ed72524902ff6d63397b9c435b0578f"
 dependencies = [
- "idna 0.4.0",
+ "idna",
  "lazy_static",
  "regex",
  "serde",
  "serde_derive",
  "serde_json",
+ "tracing",
  "url",
  "validator_derive",
 ]
@@ -5578,8 +5568,7 @@ dependencies = [
 [[package]]
 name = "validator_derive"
 version = "0.16.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bc44ca3088bb3ba384d9aecf40c6a23a676ce23e09bdaca2073d99c207f864af"
+source = "git+https://github.com/svix/validator.git?rev=aebdc34a4ed72524902ff6d63397b9c435b0578f#aebdc34a4ed72524902ff6d63397b9c435b0578f"
 dependencies = [
  "if_chain",
  "lazy_static",
@@ -5594,8 +5583,7 @@ dependencies = [
 [[package]]
 name = "validator_types"
 version = "0.16.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "111abfe30072511849c5910134e8baf8dc05de4c0e5903d681cbd5c9c4d611e3"
+source = "git+https://github.com/svix/validator.git?rev=aebdc34a4ed72524902ff6d63397b9c435b0578f#aebdc34a4ed72524902ff6d63397b9c435b0578f"
 dependencies = [
  "proc-macro2",
  "syn 1.0.109",
