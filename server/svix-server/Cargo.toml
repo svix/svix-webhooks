@@ -41,7 +41,10 @@ opentelemetry = { version = "0.23.0", features = ["metrics"] }
 opentelemetry_sdk = { version = "0.23.0", features = ["rt-tokio"] }
 opentelemetry-http = "0.12.0"
 opentelemetry-otlp = { version = "0.16.0", features = ["metrics"] }
-validator = { version = "0.16.0", features = ["derive"] }
+# Forked version of 0.16 with a small fix and dependency upgrades, since we
+# haven't gotten around to doing a proper upgrade yet (0.17 is a large
+# rewrite with a barely-useful changelog)
+validator = { git = "https://github.com/svix/validator.git", rev = "aebdc34a4ed72524902ff6d63397b9c435b0578f", features = ["derive"] }
 jwt-simple = "0.11.6"
 ed25519-compact = "2.1.1"
 chrono = { version="0.4.26", features = ["serde"] }
