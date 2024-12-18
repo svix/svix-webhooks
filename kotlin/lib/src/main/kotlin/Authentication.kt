@@ -22,7 +22,11 @@ class Authentication internal constructor(token: String, options: SvixOptions) {
         options: PostOptions = PostOptions(),
     ): AppPortalAccessOut {
         try {
-            return api.v1AuthenticationAppPortalAccess(appId, appPortalAccessIn, options.idempotencyKey)
+            return api.v1AuthenticationAppPortalAccess(
+                appId,
+                appPortalAccessIn,
+                options.idempotencyKey,
+            )
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }

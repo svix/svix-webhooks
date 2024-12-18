@@ -6,9 +6,9 @@ import com.svix.kotlin.internal.infrastructure.Response
 import com.svix.kotlin.internal.infrastructure.ServerError
 import com.svix.kotlin.internal.infrastructure.ServerException
 
-class ApiException internal constructor(message: String? = null, val statusCode: Int = -1, val body: String? = null) : RuntimeException(
-    message,
-) {
+class ApiException
+internal constructor(message: String? = null, val statusCode: Int = -1, val body: String? = null) :
+    RuntimeException(message) {
     companion object {
         private fun extractBody(response: Response?): String? {
             return when (response) {

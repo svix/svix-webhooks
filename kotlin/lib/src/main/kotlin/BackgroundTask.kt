@@ -15,9 +15,17 @@ class BackgroundTask internal constructor(token: String, options: SvixOptions) {
         options.numRetries?.let { api.numRetries = it }
     }
 
-    suspend fun list(options: BackgroundTaskListOptions = BackgroundTaskListOptions()): ListResponseBackgroundTaskOut {
+    suspend fun list(
+        options: BackgroundTaskListOptions = BackgroundTaskListOptions()
+    ): ListResponseBackgroundTaskOut {
         try {
-            return api.listBackgroundTasks(options.status, options.task, options.limit, options.iterator, options.order)
+            return api.listBackgroundTasks(
+                options.status,
+                options.task,
+                options.limit,
+                options.iterator,
+                options.order,
+            )
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }

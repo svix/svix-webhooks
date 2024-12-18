@@ -7,7 +7,9 @@ class ApplicationListOptions : ListOptions() {
 
     fun order(order: Ordering) = apply { this.order = order }
 
-    override fun iterator(iterator: String): ApplicationListOptions = apply { super.iterator(iterator) }
+    override fun iterator(iterator: String): ApplicationListOptions = apply {
+        super.iterator(iterator)
+    }
 
     override fun limit(limit: Int) = apply { super.limit(limit) }
 }

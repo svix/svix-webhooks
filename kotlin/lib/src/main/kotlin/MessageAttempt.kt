@@ -18,9 +18,7 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
         options.numRetries?.let { api.numRetries = it }
     }
 
-    /**
-     * @deprecated use listByMsg or listByEndpoint instead.
-     */
+    /** @deprecated use listByMsg or listByEndpoint instead. */
     @Deprecated(message = "use listByMsg or listByEndpoint instead.")
     suspend fun list(
         appId: String,
@@ -82,11 +80,7 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun get(
-        appId: String,
-        msgId: String,
-        attemptId: String,
-    ): MessageAttemptOut {
+    suspend fun get(appId: String, msgId: String, attemptId: String): MessageAttemptOut {
         try {
             return api.v1MessageAttemptGet(appId, msgId, attemptId)
         } catch (e: Exception) {
@@ -101,12 +95,7 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
         options: PostOptions = PostOptions(),
     ) {
         try {
-            api.v1MessageAttemptResend(
-                appId,
-                msgId,
-                endpointId,
-                options.idempotencyKey,
-            )
+            api.v1MessageAttemptResend(appId, msgId, endpointId, options.idempotencyKey)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -178,11 +167,7 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun expungeContent(
-        appId: String,
-        msgId: String,
-        attemptId: String,
-    ) {
+    suspend fun expungeContent(appId: String, msgId: String, attemptId: String) {
         try {
             return api.v1MessageAttemptExpungeContent(appId, msgId, attemptId)
         } catch (e: Exception) {

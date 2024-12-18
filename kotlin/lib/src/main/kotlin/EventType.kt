@@ -20,9 +20,17 @@ class EventType internal constructor(token: String, options: SvixOptions) {
         options.numRetries?.let { api.numRetries = it }
     }
 
-    suspend fun list(options: EventTypeListOptions = EventTypeListOptions()): ListResponseEventTypeOut {
+    suspend fun list(
+        options: EventTypeListOptions = EventTypeListOptions()
+    ): ListResponseEventTypeOut {
         try {
-            return api.v1EventTypeList(options.limit, options.iterator, null, options.includeAchived, options.withContent)
+            return api.v1EventTypeList(
+                options.limit,
+                options.iterator,
+                null,
+                options.includeAchived,
+                options.withContent,
+            )
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -47,10 +55,7 @@ class EventType internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun update(
-        eventTypeName: String,
-        eventTypeUpdate: EventTypeUpdate,
-    ): EventTypeOut {
+    suspend fun update(eventTypeName: String, eventTypeUpdate: EventTypeUpdate): EventTypeOut {
         try {
             return api.v1EventTypeUpdate(eventTypeName, eventTypeUpdate)
         } catch (e: Exception) {
@@ -58,10 +63,7 @@ class EventType internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun patch(
-        eventTypeName: String,
-        eventTypePatch: EventTypePatch,
-    ): EventTypeOut {
+    suspend fun patch(eventTypeName: String, eventTypePatch: EventTypePatch): EventTypeOut {
         try {
             return api.v1EventTypePatch(eventTypeName, eventTypePatch)
         } catch (e: Exception) {
