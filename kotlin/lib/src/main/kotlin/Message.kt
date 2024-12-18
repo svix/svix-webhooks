@@ -2,8 +2,8 @@ package com.svix.kotlin
 
 import com.svix.kotlin.exceptions.ApiException
 import com.svix.kotlin.internal.apis.MessageApi
-import com.svix.kotlin.models.ListResponseMessageOut
 import com.svix.kotlin.models.ApplicationIn
+import com.svix.kotlin.models.ListResponseMessageOut
 import com.svix.kotlin.models.MessageIn
 import com.svix.kotlin.models.MessageOut
 
@@ -50,10 +50,7 @@ class Message internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun get(
-        msgId: String,
-        appId: String,
-    ): MessageOut {
+    suspend fun get(msgId: String, appId: String): MessageOut {
         try {
             return api.v1MessageGet(appId, msgId, null)
         } catch (e: Exception) {
@@ -61,10 +58,7 @@ class Message internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun expungeContent(
-        msgId: String,
-        appId: String,
-    ) {
+    suspend fun expungeContent(msgId: String, appId: String) {
         try {
             return api.v1MessageExpungeContent(appId, msgId)
         } catch (e: Exception) {
@@ -76,14 +70,14 @@ class Message internal constructor(token: String, options: SvixOptions) {
 /**
  * Creates a [MessageIn] with a pre-serialized payload.
  *
- * The payload is not normalized on the server. Normally, payloads are
- * required to be JSON, and Svix will minify the payload before sending the
- * webhooks (for example, by removing extraneous whitespace or unnecessarily
- * escaped characters in strings). With this function, the payload will be
- * sent "as is", without any minification or other processing.
+ * The payload is not normalized on the server. Normally, payloads are required to be JSON, and Svix
+ * will minify the payload before sending the webhooks (for example, by removing extraneous
+ * whitespace or unnecessarily escaped characters in strings). With this function, the payload will
+ * be sent "as is", without any minification or other processing.
  *
  * @param payload Serialized message payload
- * @param contentType The value to use for the Content-Type header of the webhook sent by Svix, overwriting the default of `application/json` if specified
+ * @param contentType The value to use for the Content-Type header of the webhook sent by Svix,
+ *   overwriting the default of `application/json` if specified
  *
  * See the class documentation for details about the other parameters.
  */

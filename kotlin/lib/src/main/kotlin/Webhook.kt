@@ -15,10 +15,7 @@ class Webhook {
     private val key: ByteArray
 
     @Throws(WebhookVerificationException::class)
-    fun verify(
-        payload: String?,
-        headers: HttpHeaders,
-    ) {
+    fun verify(payload: String?, headers: HttpHeaders) {
         var msgId = headers.firstValue(SVIX_MSG_ID_KEY)
         var msgSignature = headers.firstValue(SVIX_MSG_SIGNATURE_KEY)
         var msgTimestamp = headers.firstValue(SVIX_MSG_TIMESTAMP_KEY)
@@ -57,11 +54,7 @@ class Webhook {
     }
 
     @Throws(WebhookSigningException::class)
-    fun sign(
-        msgId: String?,
-        timestamp: Long,
-        payload: String?,
-    ): String {
+    fun sign(msgId: String?, timestamp: Long, payload: String?): String {
         return try {
             val toSign = String.format("%s.%s.%s", msgId, timestamp, payload)
             val sha512Hmac: Mac = Mac.getInstance(HMAC_SHA256)

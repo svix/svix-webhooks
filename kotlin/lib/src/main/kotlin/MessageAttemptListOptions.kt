@@ -22,7 +22,9 @@ class MessageAttemptListOptions(
 
     fun after(after: OffsetDateTime) = apply { this.after = after }
 
-    fun statusCodeClass(statusCodeClass: StatusCodeClass) = apply { this.statusCodeClass = statusCodeClass }
+    fun statusCodeClass(statusCodeClass: StatusCodeClass) = apply {
+        this.statusCodeClass = statusCodeClass
+    }
 
     fun eventTypes(eventTypes: List<String>) = apply { this.eventTypes = eventTypes }
 

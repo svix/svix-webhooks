@@ -6,10 +6,10 @@ import com.svix.kotlin.models.EndpointIn
 import com.svix.kotlin.models.EndpointPatch
 import com.svix.kotlin.models.EventTypeIn
 import com.svix.kotlin.models.MessageIn
-import kotlinx.coroutines.runBlocking
 import java.net.URI
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlinx.coroutines.runBlocking
 
 class BasicTest {
     companion object {
@@ -19,8 +19,8 @@ class BasicTest {
 
     private fun getTestClient(): Svix? =
         if (AUTH_TOKEN == null || SERVER_URL == null) {
-            // TODO: figure out how to log a warning here to help teach about tests that skip when the env
-            // vars are unset.
+            // TODO: figure out how to log a warning here to help teach about tests that skip when
+            // the env vars are unset.
             null
         } else {
             Svix(AUTH_TOKEN, SvixOptions(SERVER_URL))
@@ -56,21 +56,34 @@ class BasicTest {
             val appOut = svix.application.create(ApplicationIn(name = "App2"))
             try {
                 svix.eventType.create(
-                    EventTypeIn(name = "event.started", description = "Something started"),
+                    EventTypeIn(name = "event.started", description = "Something started")
                 )
             } catch (e: ApiException) {
-                assertEquals(409, e.statusCode, "conflicts are expected but other bad statuses are not")
+                assertEquals(
+                    409,
+                    e.statusCode,
+                    "conflicts are expected but other bad statuses are not",
+                )
             }
             try {
-                svix.eventType.create(EventTypeIn(name = "event.ended", description = "Something ended"))
+                svix.eventType.create(
+                    EventTypeIn(name = "event.ended", description = "Something ended")
+                )
             } catch (e: ApiException) {
-                assertEquals(409, e.statusCode, "conflicts are expected but other bad statuses are not")
+                assertEquals(
+                    409,
+                    e.statusCode,
+                    "conflicts are expected but other bad statuses are not",
+                )
             }
 
             val epOut =
                 svix.endpoint.create(
                     appOut.id,
-                    EndpointIn(url = URI("https://example.svix.com"), channels = setOf("ch0", "ch1")),
+                    EndpointIn(
+                        url = URI("https://example.svix.com"),
+                        channels = setOf("ch0", "ch1"),
+                    ),
                 )
             assertEquals(setOf("ch0", "ch1"), epOut.channels, "initial ep should have 2 channels")
             assertEquals(0, epOut.filterTypes?.size ?: 0, "initial ep should have 0 filter types")
@@ -80,7 +93,11 @@ class BasicTest {
                     epOut.id,
                     EndpointPatch(filterTypes = setOf("event.started", "event.ended")),
                 )
-            assertEquals(setOf("ch0", "ch1"), epPatched.channels, "patched ep should have 2 channels")
+            assertEquals(
+                setOf("ch0", "ch1"),
+                epPatched.channels,
+                "patched ep should have 2 channels",
+            )
             assertEquals(
                 setOf("event.started", "event.ended"),
                 epPatched.filterTypes,

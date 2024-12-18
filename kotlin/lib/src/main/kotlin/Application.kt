@@ -17,7 +17,9 @@ class Application internal constructor(token: String, options: SvixOptions) {
         options.numRetries?.let { api.numRetries = it }
     }
 
-    suspend fun list(options: ApplicationListOptions = ApplicationListOptions()): ListResponseApplicationOut {
+    suspend fun list(
+        options: ApplicationListOptions = ApplicationListOptions()
+    ): ListResponseApplicationOut {
         try {
             return api.v1ApplicationList(options.limit, options.iterator, options.order)
         } catch (e: Exception) {
@@ -55,10 +57,7 @@ class Application internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun update(
-        appId: String,
-        applicationIn: ApplicationIn,
-    ): ApplicationOut {
+    suspend fun update(appId: String, applicationIn: ApplicationIn): ApplicationOut {
         try {
             return api.v1ApplicationUpdate(appId, applicationIn)
         } catch (e: Exception) {
@@ -66,10 +65,7 @@ class Application internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun patch(
-        appId: String,
-        applicationPatch: ApplicationPatch,
-    ): ApplicationOut {
+    suspend fun patch(appId: String, applicationPatch: ApplicationPatch): ApplicationOut {
         try {
             return api.v1ApplicationPatch(appId, applicationPatch)
         } catch (e: Exception) {

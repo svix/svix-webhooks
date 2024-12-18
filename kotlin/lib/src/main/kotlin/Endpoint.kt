@@ -34,12 +34,7 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
         options: EndpointListOptions = EndpointListOptions(),
     ): ListResponseEndpointOut {
         try {
-            return api.v1EndpointList(
-                appId,
-                options.limit,
-                options.iterator,
-                options.order,
-            )
+            return api.v1EndpointList(appId, options.limit, options.iterator, options.order)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -51,20 +46,13 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
         options: PostOptions = PostOptions(),
     ): EndpointOut {
         try {
-            return api.v1EndpointCreate(
-                appId,
-                endpointIn,
-                options.idempotencyKey,
-            )
+            return api.v1EndpointCreate(appId, endpointIn, options.idempotencyKey)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
     }
 
-    suspend fun get(
-        appId: String,
-        endpointId: String,
-    ): EndpointOut {
+    suspend fun get(appId: String, endpointId: String): EndpointOut {
         try {
             return api.v1EndpointGet(endpointId, appId)
         } catch (e: Exception) {
@@ -78,11 +66,7 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
         endpointUpdate: EndpointUpdate,
     ): EndpointOut {
         try {
-            return api.v1EndpointUpdate(
-                appId,
-                endpointId,
-                endpointUpdate,
-            )
+            return api.v1EndpointUpdate(appId, endpointId, endpointUpdate)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -94,20 +78,13 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
         endpointPatch: EndpointPatch,
     ): EndpointOut {
         try {
-            return api.v1EndpointPatch(
-                appId,
-                endpointId,
-                endpointPatch,
-            )
+            return api.v1EndpointPatch(appId, endpointId, endpointPatch)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
     }
 
-    suspend fun delete(
-        appId: String,
-        endpointId: String,
-    ) {
+    suspend fun delete(appId: String, endpointId: String) {
         try {
             api.v1EndpointDelete(appId, endpointId)
         } catch (e: Exception) {
@@ -115,15 +92,9 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun getSecret(
-        appId: String,
-        endpointId: String,
-    ): EndpointSecretOut {
+    suspend fun getSecret(appId: String, endpointId: String): EndpointSecretOut {
         try {
-            return api.v1EndpointGetSecret(
-                appId,
-                endpointId,
-            )
+            return api.v1EndpointGetSecret(appId, endpointId)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -154,26 +125,15 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
         options: PostOptions = PostOptions(),
     ) {
         try {
-            api.v1EndpointRecover(
-                appId,
-                endpointId,
-                recoverIn,
-                options.idempotencyKey,
-            )
+            api.v1EndpointRecover(appId, endpointId, recoverIn, options.idempotencyKey)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
     }
 
-    suspend fun getHeaders(
-        appId: String,
-        endpointId: String,
-    ): EndpointHeadersOut {
+    suspend fun getHeaders(appId: String, endpointId: String): EndpointHeadersOut {
         try {
-            return api.v1EndpointGetHeaders(
-                appId,
-                endpointId,
-            )
+            return api.v1EndpointGetHeaders(appId, endpointId)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -185,11 +145,7 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
         endpointHeadersIn: EndpointHeadersIn,
     ) {
         try {
-            api.v1EndpointUpdateHeaders(
-                appId,
-                endpointId,
-                endpointHeadersIn,
-            )
+            api.v1EndpointUpdateHeaders(appId, endpointId, endpointHeadersIn)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -201,11 +157,7 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
         endpointHeadersIn: EndpointHeadersPatchIn,
     ) {
         try {
-            api.v1EndpointPatchHeaders(
-                appId,
-                endpointId,
-                endpointHeadersIn,
-            )
+            api.v1EndpointPatchHeaders(appId, endpointId, endpointHeadersIn)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -217,12 +169,7 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
         options: EndpointStatsOptions = EndpointStatsOptions(),
     ): EndpointStats {
         try {
-            return api.v1EndpointGetStats(
-                appId,
-                endpointId,
-                options.since,
-                options.until,
-            )
+            return api.v1EndpointGetStats(appId, endpointId, options.since, options.until)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -235,26 +182,15 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
         options: PostOptions = PostOptions(),
     ) {
         try {
-            api.v1EndpointReplay(
-                appId,
-                endpointId,
-                replayIn,
-                options.idempotencyKey,
-            )
+            api.v1EndpointReplay(appId, endpointId, replayIn, options.idempotencyKey)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
     }
 
-    suspend fun transformationGet(
-        appId: String,
-        endpointId: String,
-    ): EndpointTransformationOut {
+    suspend fun transformationGet(appId: String, endpointId: String): EndpointTransformationOut {
         try {
-            return api.v1EndpointTransformationGet(
-                appId,
-                endpointId,
-            )
+            return api.v1EndpointTransformationGet(appId, endpointId)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -266,11 +202,7 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
         endpointTransformationIn: EndpointTransformationIn,
     ) {
         try {
-            api.v1EndpointTransformationPartialUpdate(
-                appId,
-                endpointId,
-                endpointTransformationIn,
-            )
+            api.v1EndpointTransformationPartialUpdate(appId, endpointId, endpointTransformationIn)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -283,12 +215,7 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
         options: PostOptions = PostOptions(),
     ) {
         try {
-            api.v1EndpointSendExample(
-                appId,
-                endpointId,
-                eventExampleIn,
-                options.idempotencyKey,
-            )
+            api.v1EndpointSendExample(appId, endpointId, eventExampleIn, options.idempotencyKey)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
