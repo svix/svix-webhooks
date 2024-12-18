@@ -68,7 +68,7 @@ class Message internal constructor(token: String, options: SvixOptions) {
 }
 
 /**
- * Creates a [MessageIn] with a pre-serialized payload.
+ * Creates a [MessageIn] with a raw string payload.
  *
  * The payload is not normalized on the server. Normally, payloads are required to be JSON, and Svix
  * will minify the payload before sending the webhooks (for example, by removing extraneous

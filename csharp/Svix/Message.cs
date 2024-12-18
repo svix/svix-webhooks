@@ -23,7 +23,7 @@ namespace Svix
             _messageApi = messageApi ?? throw new ArgumentException(nameof(messageApi));
         }
 
-        /// <summary>Creates a [MessageIn] with a pre-serialized payload.
+        /// <summary>Creates a [MessageIn] with a raw string payload.
         /// <para>
         /// The payload is not normalized on the server. Normally, payloads are
         /// required to be JSON, and Svix will minify the payload before sending the

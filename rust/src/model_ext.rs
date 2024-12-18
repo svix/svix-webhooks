@@ -10,7 +10,7 @@ use crate::{
 };
 
 impl MessageIn {
-    /// Create a new message with a pre-serialized payload.
+    /// Create a new message with a raw string payload.
     ///
     /// The payload is not normalized on the server. Normally, payloads are
     /// required to be JSON, and Svix will minify the payload before sending
