@@ -1,3 +1,3 @@
 export interface PostOptions {
-    idempotencyKey?: string;
+  idempotencyKey?: string;
 }

@@ -29,8 +29,11 @@ export { BackgroundTaskListOptions } from "./api/background_task";
 export { EndpointListOptions, EndpointStatsOptions } from "./api/endpoint";
 export { EventTypeListOptions } from "./api/event_type";
 export { IntegrationListOptions } from "./api/integration";
-export { MessageListOptions, messageInRaw } from "./api/message"
-export { MessageAttemptListByEndpointOptions, MessageAttemptListOptions } from "./api/message_attempt";
+export { MessageListOptions, messageInRaw } from "./api/message";
+export {
+  MessageAttemptListByEndpointOptions,
+  MessageAttemptListOptions,
+} from "./api/message_attempt";
 export { OperationalWebhookEndpointListOptions } from "./api/op_webhook_endpoint";
 
 const VERSION = "1.44.0";
