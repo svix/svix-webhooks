@@ -19,9 +19,11 @@ type Integration struct {
 }
 
 type IntegrationListOptions struct {
+	// Limit the number of returned items
+	Limit *int32
+	// The iterator returned from a prior invocation
 	Iterator *string
-	Limit    *int32
-	// N.b. `openapi.Ordering` aliased for re-export via `endpoint.go`
+	// The sorting order of the returned items
 	Order *Ordering
 }
 

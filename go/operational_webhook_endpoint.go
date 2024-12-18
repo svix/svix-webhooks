@@ -20,9 +20,12 @@ type OperationalWebhookEndpoint struct {
 }
 
 type OperationalWebhookEndpointListOptions struct {
+	// Limit the number of returned items
+	Limit *int32
+	// The iterator returned from a prior invocation
 	Iterator *string
-	Limit    *int32
-	Order    *openapi.Ordering
+	// The sorting order of the returned items
+	Order *Ordering
 }
 
 func (e *OperationalWebhookEndpoint) List(ctx context.Context, options *OperationalWebhookEndpointListOptions) (*ListResponseOperationalWebhookEndpointOut, error) {

@@ -34,13 +34,18 @@ type Endpoint struct {
 }
 
 type EndpointListOptions struct {
+	// Limit the number of returned items
+	Limit *int32
+	// The iterator returned from a prior invocation
 	Iterator *string
-	Limit    *int32
-	Order    *Ordering
+	// The sorting order of the returned items
+	Order *Ordering
 }
 
 type EndpointStatsOptions struct {
+	// Filter the range to data starting from this date
 	Since *time.Time
+	// Filter the range to data ending by this date
 	Until *time.Time
 }
 

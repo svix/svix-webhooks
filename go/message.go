@@ -18,14 +18,22 @@ type (
 )
 
 type MessageListOptions struct {
-	Iterator    *string
-	Limit       *int32
-	EventTypes  *[]string
-	Before      *time.Time
-	After       *time.Time
-	Channel     *string
-	Tag         *string
+	// Limit the number of returned items
+	Limit *int32
+	// The iterator returned from a prior invocation
+	Iterator *string
+	// Filter response based on the channel
+	Channel *string
+	// Only include items created before a certain date
+	Before *time.Time
+	// Only include items created after a certain date
+	After *time.Time
+	// When `true` message payloads are included in the response
 	WithContent *bool
+	// Filter messages matching the provided tag
+	Tag *string
+	// Filter response based on the event type
+	EventTypes *[]string
 }
 
 func (m *Message) List(ctx context.Context, appId string, options *MessageListOptions) (*ListResponseMessageOut, error) {

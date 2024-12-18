@@ -22,12 +22,16 @@ type (
 )
 
 type EventTypeListOptions struct {
-	Iterator        *string
-	Limit           *int32
-	WithContent     *bool
-	IncludeArchived *bool
-	// N.b. `openapi.Ordering` aliased for re-export via `endpoint.go`
+	// Limit the number of returned items
+	Limit *int32
+	// The iterator returned from a prior invocation
+	Iterator *string
+	// The sorting order of the returned items
 	Order *Ordering
+	// When `true` archived (deleted but not expunged) items are included in the response
+	IncludeArchived *bool
+	// When `true` the full item (including the schema) is included in the response
+	WithContent *bool
 }
 
 func (e *EventType) List(ctx context.Context, options *EventTypeListOptions) (*ListResponseEventTypeOut, error) {
