@@ -52,8 +52,9 @@ func (r ApiCreateMessageAttemptForEndpointRequest) Execute() (*MessageAttemptOut
 /*
 CreateMessageAttemptForEndpoint Create Message Attempt For Endpoint
 
-Creates and sends a message to the specified endpoint. The message attempt and response from the endpoint is returned.
-FIXME: use MessageIn for expediency, even though the `application` parameter is unused. Since this endpoint isn't publicly documented anyway, it should be fine
+Creates and sends a message to the specified endpoint.
+
+The message attempt and response from the endpoint is returned.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param appId The app's ID or UID
@@ -293,8 +294,8 @@ V1EventsPublic Public Events
 Reads the stream of created messages for an application, filtered on the Sink's event types and Channels.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param appId The app's ID
- @param sinkId The ep's ID
+ @param appId The app's ID or UID
+ @param sinkId The ep's ID or UID
  @return ApiV1EventsPublicRequest
 */
 func (a *MessageAPIService) V1EventsPublic(ctx context.Context, appId string, sinkId string) ApiV1EventsPublicRequest {
@@ -321,13 +322,25 @@ func (a *MessageAPIService) V1EventsPublicExecute(r ApiV1EventsPublicRequest) (*
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/app/{app_id}/events/{sink_id}"
+	localVarPath := localBasePath + "/api/v1/app/{app_id}/poller/{sink_id}"
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", url.PathEscape(parameterValueToString(r.appId, "appId")), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"sink_id"+"}", url.PathEscape(parameterValueToString(r.sinkId, "sinkId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
+	if strlen(r.appId) < 1 {
+		return localVarReturnValue, nil, reportError("appId must have at least 1 elements")
+	}
+	if strlen(r.appId) > 256 {
+		return localVarReturnValue, nil, reportError("appId must have less than 256 elements")
+	}
+	if strlen(r.sinkId) < 1 {
+		return localVarReturnValue, nil, reportError("sinkId must have at least 1 elements")
+	}
+	if strlen(r.sinkId) > 256 {
+		return localVarReturnValue, nil, reportError("sinkId must have less than 256 elements")
+	}
 
 	if r.limit != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "limit", r.limit, "form", "")
@@ -488,7 +501,7 @@ func (r ApiV1MessageCreateRequest) MessageIn(messageIn MessageIn) ApiV1MessageCr
 	return r
 }
 
-// When &#x60;true&#x60; message payloads are included in the response
+// When &#x60;true&#x60;, message payloads are included in the response.
 func (r ApiV1MessageCreateRequest) WithContent(withContent bool) ApiV1MessageCreateRequest {
 	r.withContent = &withContent
 	return r
@@ -741,7 +754,7 @@ func (r ApiV1MessageEventsRequest) EventTypes(eventTypes []string) ApiV1MessageE
 	return r
 }
 
-// Filter response based on the event type
+// Filter response based on the event type.
 func (r ApiV1MessageEventsRequest) Channels(channels []string) ApiV1MessageEventsRequest {
 	r.channels = &channels
 	return r
@@ -759,7 +772,7 @@ func (r ApiV1MessageEventsRequest) Execute() (*MessageEventsOut, *http.Response,
 /*
 V1MessageEvents Message Events
 
-Reads the stream of created messages for an application
+Reads the stream of created messages for an application.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param appId The app's ID or UID
@@ -992,7 +1005,7 @@ func (r ApiV1MessageEventsSubscriptionRequest) EventTypes(eventTypes []string) A
 	return r
 }
 
-// Filter response based on the event type
+// Filter response based on the event type.
 func (r ApiV1MessageEventsSubscriptionRequest) Channels(channels []string) ApiV1MessageEventsSubscriptionRequest {
 	r.channels = &channels
 	return r
@@ -1243,7 +1256,7 @@ func (r ApiV1MessageEventsSubscriptionCreateTokenRequest) Execute() (*MessageSub
 /*
 V1MessageEventsSubscriptionCreateToken Message Events Create Token
 
-Creates an auth token that can be used with the `v1.message.events-subscription` endpoint
+Creates an auth token that can be used with the `v1.message.events-subscription` endpoint.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param appId The app's ID or UID
@@ -1621,7 +1634,7 @@ type ApiV1MessageGetRequest struct {
 	withContent *bool
 }
 
-// When &#x60;true&#x60; message payloads are included in the response
+// When &#x60;true&#x60; message payloads are included in the response.
 func (r ApiV1MessageGetRequest) WithContent(withContent bool) ApiV1MessageGetRequest {
 	r.withContent = &withContent
 	return r
@@ -2042,31 +2055,31 @@ func (r ApiV1MessageListRequest) Iterator(iterator string) ApiV1MessageListReque
 	return r
 }
 
-// Filter response based on the channel
+// Filter response based on the channel.
 func (r ApiV1MessageListRequest) Channel(channel string) ApiV1MessageListRequest {
 	r.channel = &channel
 	return r
 }
 
-// Only include items created before a certain date
+// Only include items created before a certain date.
 func (r ApiV1MessageListRequest) Before(before time.Time) ApiV1MessageListRequest {
 	r.before = &before
 	return r
 }
 
-// Only include items created after a certain date
+// Only include items created after a certain date.
 func (r ApiV1MessageListRequest) After(after time.Time) ApiV1MessageListRequest {
 	r.after = &after
 	return r
 }
 
-// When &#x60;true&#x60; message payloads are included in the response
+// When &#x60;true&#x60; message payloads are included in the response.
 func (r ApiV1MessageListRequest) WithContent(withContent bool) ApiV1MessageListRequest {
 	r.withContent = &withContent
 	return r
 }
 
-// Filter messages matching the provided tag
+// Filter messages matching the provided tag.
 func (r ApiV1MessageListRequest) Tag(tag string) ApiV1MessageListRequest {
 	r.tag = &tag
 	return r

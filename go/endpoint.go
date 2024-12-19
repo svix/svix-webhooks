@@ -229,7 +229,7 @@ func (e *Endpoint) ReplayMissingWithOptions(
 	replayIn *ReplayIn,
 	options *PostOptions,
 ) (*ReplayOut, error) {
-	req := e.api.EndpointAPI.V1EndpointReplay(ctx, appId, endpointId)
+	req := e.api.EndpointAPI.V1EndpointReplayMissing(ctx, appId, endpointId)
 	req.ReplayIn(*replayIn)
 	if options != nil {
 		if options.IdempotencyKey != nil {

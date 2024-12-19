@@ -15,7 +15,7 @@ import (
 	"fmt"
 )
 
-// StatisticsPeriod Period length for a statistics data point
+// StatisticsPeriod Period length for a statistics data point.
 type StatisticsPeriod string
 
 // List of StatisticsPeriod

@@ -21,9 +21,9 @@ var _ MappedNullable = &MessageBroadcastIn{}
 
 // MessageBroadcastIn struct for MessageBroadcastIn
 type MessageBroadcastIn struct {
-	// List of free-form identifiers that endpoints can filter by
+	// List of free-form identifiers that endpoints can filter by.
 	Channels []string `json:"channels,omitempty"`
-	// Optional unique identifier for the message
+	// Optional unique identifier for the message.
 	EventId *string `json:"eventId,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
 	// The event type's name
 	EventType string `json:"eventType" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`

@@ -38,7 +38,7 @@ from .internal.openapi_client.api.endpoint import (
     v1_endpoint_patch,
     v1_endpoint_patch_headers,
     v1_endpoint_recover,
-    v1_endpoint_replay,
+    v1_endpoint_replay_missing,
     v1_endpoint_rotate_secret,
     v1_endpoint_send_example,
     v1_endpoint_transformation_get,
@@ -617,7 +617,7 @@ class EndpointAsync(ApiBase):
         replay_in: ReplayIn,
         options: PostOptions = PostOptions(),
     ) -> ReplayOut:
-        return await v1_endpoint_replay.request_asyncio(
+        return await v1_endpoint_replay_missing.request_asyncio(
             client=self._client,
             app_id=app_id,
             endpoint_id=endpoint_id,
@@ -798,7 +798,7 @@ class Endpoint(ApiBase):
         replay_in: ReplayIn,
         options: PostOptions = PostOptions(),
     ) -> ReplayOut:
-        return v1_endpoint_replay.request_sync(
+        return v1_endpoint_replay_missing.request_sync(
             client=self._client,
             app_id=app_id,
             endpoint_id=endpoint_id,
