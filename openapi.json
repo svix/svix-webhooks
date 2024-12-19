@@ -161,7 +161,7 @@
                         "type": "integer"
                     },
                     "uid": {
-                        "description": "Optional unique identifier for the application",
+                        "description": "Optional unique identifier for the application.",
                         "example": "unique-app-identifier",
                         "maxLength": 256,
                         "minLength": 1,
@@ -987,7 +987,7 @@
             "EndpointIn": {
                 "properties": {
                     "channels": {
-                        "description": "List of message channels this endpoint listens to (omit for all)",
+                        "description": "List of message channels this endpoint listens to (omit for all).",
                         "example": [
                             "project_123",
                             "group_2"
@@ -1052,7 +1052,7 @@
                         "type": "string"
                     },
                     "uid": {
-                        "description": "Optional unique identifier for the endpoint",
+                        "description": "Optional unique identifier for the endpoint.",
                         "example": "unique-ep-identifier",
                         "maxLength": 256,
                         "minLength": 1,
@@ -1214,7 +1214,7 @@
                         "nullable": true
                     },
                     "refreshToken": {
-                        "description": "For `refreshToken` grant type",
+                        "description": "For `refreshToken` grant type.",
                         "nullable": true,
                         "type": "string"
                     },
@@ -1243,7 +1243,7 @@
             "EndpointOut": {
                 "properties": {
                     "channels": {
-                        "description": "List of message channels this endpoint listens to (omit for all)",
+                        "description": "List of message channels this endpoint listens to (omit for all).",
                         "example": [
                             "project_123",
                             "group_2"
@@ -1265,7 +1265,7 @@
                         "type": "string"
                     },
                     "description": {
-                        "description": "An example endpoint name",
+                        "description": "An example endpoint name.",
                         "type": "string"
                     },
                     "disabled": {
@@ -1308,7 +1308,7 @@
                         "type": "integer"
                     },
                     "uid": {
-                        "description": "Optional unique identifier for the endpoint",
+                        "description": "Optional unique identifier for the endpoint.",
                         "example": "unique-ep-identifier",
                         "maxLength": 256,
                         "minLength": 1,
@@ -1563,7 +1563,7 @@
             "EndpointUpdate": {
                 "properties": {
                     "channels": {
-                        "description": "List of message channels this endpoint listens to (omit for all)",
+                        "description": "List of message channels this endpoint listens to (omit for all).",
                         "example": [
                             "project_123",
                             "group_2"
@@ -1621,7 +1621,7 @@
                         "type": "integer"
                     },
                     "uid": {
-                        "description": "Optional unique identifier for the endpoint",
+                        "description": "Optional unique identifier for the endpoint.",
                         "example": "unique-ep-identifier",
                         "maxLength": 256,
                         "minLength": 1,
@@ -3592,7 +3592,7 @@
             "MessageBroadcastIn": {
                 "properties": {
                     "channels": {
-                        "description": "List of free-form identifiers that endpoints can filter by",
+                        "description": "List of free-form identifiers that endpoints can filter by.",
                         "example": [
                             "project_123",
                             "group_2"
@@ -3610,7 +3610,7 @@
                         "uniqueItems": true
                     },
                     "eventId": {
-                        "description": "Optional unique identifier for the message",
+                        "description": "Optional unique identifier for the message.",
                         "example": "unique-msg-identifier",
                         "maxLength": 256,
                         "minLength": 1,
@@ -3681,7 +3681,7 @@
             "MessageEndpointOut": {
                 "properties": {
                     "channels": {
-                        "description": "List of message channels this endpoint listens to (omit for all)",
+                        "description": "List of message channels this endpoint listens to (omit for all).",
                         "example": [
                             "project_123",
                             "group_2"
@@ -3703,7 +3703,7 @@
                         "type": "string"
                     },
                     "description": {
-                        "description": "An example endpoint name",
+                        "description": "An example endpoint name.",
                         "type": "string"
                     },
                     "disabled": {
@@ -3748,7 +3748,7 @@
                         "$ref": "#/components/schemas/MessageStatus"
                     },
                     "uid": {
-                        "description": "Optional unique identifier for the endpoint",
+                        "description": "Optional unique identifier for the endpoint.",
                         "example": "unique-ep-identifier",
                         "maxLength": 256,
                         "minLength": 1,
@@ -3890,7 +3890,6 @@
                             "type": "string"
                         },
                         "maxItems": 5,
-                        "minItems": 1,
                         "nullable": true,
                         "type": "array",
                         "uniqueItems": true
@@ -4149,7 +4148,7 @@
                         "type": "string"
                     },
                     "uid": {
-                        "description": "Optional unique identifier for the endpoint",
+                        "description": "Optional unique identifier for the endpoint.",
                         "example": "unique-ep-identifier",
                         "maxLength": 256,
                         "minLength": 1,
@@ -4177,7 +4176,7 @@
                         "type": "string"
                     },
                     "description": {
-                        "description": "An example endpoint name",
+                        "description": "An example endpoint name.",
                         "type": "string"
                     },
                     "disabled": {
@@ -4219,7 +4218,7 @@
                         "type": "integer"
                     },
                     "uid": {
-                        "description": "Optional unique identifier for the endpoint",
+                        "description": "Optional unique identifier for the endpoint.",
                         "example": "unique-ep-identifier",
                         "maxLength": 256,
                         "minLength": 1,
@@ -4318,7 +4317,7 @@
                         "type": "integer"
                     },
                     "uid": {
-                        "description": "Optional unique identifier for the endpoint",
+                        "description": "Optional unique identifier for the endpoint.",
                         "example": "unique-ep-identifier",
                         "maxLength": 256,
                         "minLength": 1,
@@ -4471,6 +4470,27 @@
                     "retrySchedule": {
                         "$ref": "#/components/schemas/RetrySchedule",
                         "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "RotatePollerTokenIn": {
+                "properties": {
+                    "expiry": {
+                        "description": "How long the token will be valid for, in seconds. Can be up to 31,536,000 seconds (1 year).",
+                        "format": "int64",
+                        "maximum": 31536000,
+                        "minimum": 1,
+                        "nullable": true,
+                        "type": "integer"
+                    },
+                    "oldTokenExpiry": {
+                        "default": 300,
+                        "description": "Updates the previous token's expiration, in seconds. If set to 0, the old token will immediately be revoked. Must be between 0 and 86,400 seconds (1 day).\n\nDefaults to 300 seconds (5 minutes).",
+                        "format": "int64",
+                        "maximum": 86400,
+                        "minimum": 0,
+                        "type": "integer"
                     }
                 },
                 "type": "object"
@@ -4660,7 +4680,7 @@
                 ],
                 "properties": {
                     "channels": {
-                        "description": "List of message channels this sink listens to (omit for all)",
+                        "description": "List of message channels this sink listens to (omit for all).",
                         "example": [
                             "project_123",
                             "group_2"
@@ -4725,7 +4745,7 @@
                         "type": "string"
                     },
                     "uid": {
-                        "description": "Optional unique identifier for the sink",
+                        "description": "Optional unique identifier for the sink.",
                         "example": "unique-ep-identifier",
                         "maxLength": 256,
                         "minLength": 1,
@@ -4875,7 +4895,7 @@
                 ],
                 "properties": {
                     "channels": {
-                        "description": "List of message channels this endpoint listens to (omit for all)",
+                        "description": "List of message channels this endpoint listens to (omit for all).",
                         "example": [
                             "project_123",
                             "group_2"
@@ -4897,7 +4917,7 @@
                         "type": "string"
                     },
                     "description": {
-                        "description": "An example endpoint name",
+                        "description": "An example endpoint name.",
                         "type": "string"
                     },
                     "disabled": {
@@ -4940,7 +4960,7 @@
                         "type": "integer"
                     },
                     "uid": {
-                        "description": "Optional unique identifier for the endpoint",
+                        "description": "Optional unique identifier for the endpoint.",
                         "example": "unique-ep-identifier",
                         "maxLength": 256,
                         "minLength": 1,
@@ -5046,7 +5066,7 @@
                 "type": "object"
             },
             "StatisticsPeriod": {
-                "description": "Period length for a statistics data point",
+                "description": "Period length for a statistics data point.",
                 "enum": [
                     "OneDay",
                     "FiveMinutes"
@@ -5150,7 +5170,7 @@
                     },
                     "uid": {
                         "$ref": "#/components/schemas/StreamUid",
-                        "description": "Optional unique identifier for the stream",
+                        "description": "Optional unique identifier for the stream.",
                         "nullable": true
                     }
                 },
@@ -5195,7 +5215,7 @@
                     },
                     "uid": {
                         "$ref": "#/components/schemas/StreamUid",
-                        "description": "Optional unique identifier for the stream",
+                        "description": "Optional unique identifier for the stream.",
                         "nullable": true
                     }
                 },
@@ -6064,7 +6084,8 @@
             "TransformationHttpMethod": {
                 "enum": [
                     "POST",
-                    "PUT"
+                    "PUT",
+                    "PATCH"
                 ],
                 "type": "string"
             },
@@ -6592,36 +6613,36 @@
                 "operationId": "get_app_usage_stats_api_v1_app_stats_usage__get",
                 "parameters": [
                     {
-                        "description": "Filter the range to data after this date",
+                        "description": "Filter the range to data after this date.",
                         "in": "query",
                         "name": "since",
                         "required": true,
                         "schema": {
-                            "description": "Filter the range to data after this date",
+                            "description": "Filter the range to data after this date.",
                             "format": "date-time",
                             "type": "string"
                         },
                         "style": "form"
                     },
                     {
-                        "description": "Filter the range to data before this date",
+                        "description": "Filter the range to data before this date.",
                         "in": "query",
                         "name": "until",
                         "required": true,
                         "schema": {
-                            "description": "Filter the range to data before this date",
+                            "description": "Filter the range to data before this date.",
                             "format": "date-time",
                             "type": "string"
                         },
                         "style": "form"
                     },
                     {
-                        "description": "Limit the number of returned items",
+                        "description": "Limit the number of returned items.",
                         "in": "query",
                         "name": "limit",
                         "schema": {
                             "default": 50,
-                            "description": "Limit the number of returned items",
+                            "description": "Limit the number of returned items.",
                             "format": "int",
                             "maximum": 250,
                             "nullable": true,
@@ -6630,11 +6651,11 @@
                         "style": "form"
                     },
                     {
-                        "description": "The iterator to use (depends on the chosen ordering)",
+                        "description": "The iterator to use (depends on the chosen ordering).",
                         "in": "query",
                         "name": "iterator",
                         "schema": {
-                            "description": "The iterator to use (depends on the chosen ordering)",
+                            "description": "The iterator to use (depends on the chosen ordering).",
                             "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                             "nullable": true,
                             "type": "string"
@@ -8084,7 +8105,7 @@
         },
         "/api/v1/app/{app_id}/attempt/msg/{msg_id}": {
             "get": {
-                "description": "List attempts by message id\n\nNote that by default this endpoint is limited to retrieving 90 days' worth of data\nrelative to now or, if an iterator is provided, 90 days before/after the time indicated\nby the iterator ID. If you require data beyond those time ranges, you will need to explicitly\nset the `before` or `after` parameter as appropriate.\n",
+                "description": "List attempts by message ID.\n\nNote that by default this endpoint is limited to retrieving 90 days' worth of data\nrelative to now or, if an iterator is provided, 90 days before/after the time indicated\nby the iterator ID. If you require data beyond those time ranges, you will need to explicitly\nset the `before` or `after` parameter as appropriate.",
                 "operationId": "v1.message-attempt.list-by-msg",
                 "parameters": [
                     {
@@ -8631,7 +8652,7 @@
                 ]
             },
             "post": {
-                "description": "Create a new endpoint for the application.\n\nWhen `secret` is `null` the secret is automatically generated (recommended)",
+                "description": "Create a new endpoint for the application.\n\nWhen `secret` is `null` the secret is automatically generated (recommended).",
                 "operationId": "v1.endpoint.create",
                 "parameters": [
                     {
@@ -9607,7 +9628,7 @@
         },
         "/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers": {
             "get": {
-                "description": "Get the additional headers to be sent with the webhook",
+                "description": "Get the additional headers to be sent with the webhook.",
                 "operationId": "v1.endpoint.get-headers",
                 "parameters": [
                     {
@@ -9796,7 +9817,7 @@
                 ]
             },
             "patch": {
-                "description": "Partially set the additional headers to be sent with the webhook",
+                "description": "Partially set the additional headers to be sent with the webhook.",
                 "operationId": "v1.endpoint.patch-headers",
                 "parameters": [
                     {
@@ -9988,7 +10009,7 @@
                 ]
             },
             "put": {
-                "description": "Set the additional headers to be sent with the webhook",
+                "description": "Set the additional headers to be sent with the webhook.",
                 "operationId": "v1.endpoint.update-headers",
                 "parameters": [
                     {
@@ -10492,7 +10513,7 @@
         },
         "/api/v1/app/{app_id}/endpoint/{endpoint_id}/msg/test-attempt": {
             "post": {
-                "description": "Creates and sends a message to the specified endpoint. The message attempt and response from the endpoint is returned.\nFIXME: use MessageIn for expediency, even though the `application` parameter is unused. Since this endpoint isn't publicly documented anyway, it should be fine",
+                "description": "Creates and sends a message to the specified endpoint.\n\nThe message attempt and response from the endpoint is returned.",
                 "operationId": "create_message_attempt_for_endpoint",
                 "parameters": [
                     {
@@ -10647,7 +10668,7 @@
         },
         "/api/v1/app/{app_id}/endpoint/{endpoint_id}/mtls": {
             "delete": {
-                "description": "Delete endpoint mTLS configuration",
+                "description": "Delete endpoint mTLS configuration.",
                 "operationId": "v1.endpoint.delete-mtls-config",
                 "parameters": [
                     {
@@ -10829,7 +10850,7 @@
                 ]
             },
             "put": {
-                "description": "Create/update endpoint mTLS configuration",
+                "description": "Create/update endpoint mTLS configuration.",
                 "operationId": "v1.endpoint.update-mtls-config",
                 "parameters": [
                     {
@@ -11023,7 +11044,7 @@
         },
         "/api/v1/app/{app_id}/endpoint/{endpoint_id}/oauth": {
             "delete": {
-                "description": "Delete endpoint OAuth configuration",
+                "description": "Delete endpoint OAuth configuration.",
                 "operationId": "v1.endpoint.delete-oauth-config",
                 "parameters": [
                     {
@@ -11205,7 +11226,7 @@
                 ]
             },
             "put": {
-                "description": "Create/update endpoint OAuth configuration",
+                "description": "Create/update endpoint OAuth configuration.",
                 "operationId": "v1.endpoint.update-oauth-config",
                 "parameters": [
                     {
@@ -11610,7 +11631,7 @@
         "/api/v1/app/{app_id}/endpoint/{endpoint_id}/replay-missing": {
             "post": {
                 "description": "Replays messages to the endpoint.\n\nOnly messages that were created after `since` will be sent.\nMessages that were previously sent to the endpoint are not resent.",
-                "operationId": "v1.endpoint.replay",
+                "operationId": "v1.endpoint.replay-missing",
                 "parameters": [
                     {
                         "description": "The app's ID or UID",
@@ -11757,57 +11778,57 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const replayOut = await svix.endpoint.replay(\"app_id\", \"endpoint_id\", {\n    until: null\n});"
+                        "source": "const replayOut = await svix.endpoint.replayMissing(\"app_id\", \"endpoint_id\", {\n    until: null\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const replayOut = await svix.endpoint.replay(\"app_id\", \"endpoint_id\", {\n    until: null\n});"
+                        "source": "const replayOut = await svix.endpoint.replayMissing(\"app_id\", \"endpoint_id\", {\n    until: null\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "replay_out = svix.endpoint.replay(\"app_id\", \"endpoint_id\", ReplayIn(\n    until=None\n), options=...)"
+                        "source": "replay_out = svix.endpoint.replay_missing(\"app_id\", \"endpoint_id\", ReplayIn(\n    until=None\n), options=...)"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "replay_out = await svix.endpoint.replay(\"app_id\", \"endpoint_id\", ReplayIn(\n    until=None\n), options=...)"
+                        "source": "replay_out = await svix.endpoint.replay_missing(\"app_id\", \"endpoint_id\", ReplayIn(\n    until=None\n), options=...)"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "replayOut, err := svixClient.Endpoint.Replay(ctx, \"app_id\", \"endpoint_id\", &ReplayIn{\n    Until: nil,\n})"
+                        "source": "replayOut, err := svixClient.Endpoint.ReplayMissing(ctx, \"app_id\", \"endpoint_id\", &ReplayIn{\n    Until: nil,\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val replayOut = svix.endpoint.replay(\"app_id\", \"endpoint_id\", ReplayIn()\n    .until(null)\n)"
+                        "source": "val replayOut = svix.endpoint.replayMissing(\"app_id\", \"endpoint_id\", ReplayIn()\n    .until(null)\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "ReplayOut replayOut = svix.getEndpoint().replay(\"app_id\", \"endpoint_id\", new ReplayIn()\n    .until(null)\n);"
+                        "source": "ReplayOut replayOut = svix.getEndpoint().replayMissing(\"app_id\", \"endpoint_id\", new ReplayIn()\n    .until(null)\n);"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "replay_out = svix.endpoint.replay(\"app_id\", \"endpoint_id\", Svix::ReplayIn.new({\n    \"until\": nil\n}))"
+                        "source": "replay_out = svix.endpoint.replay_missing(\"app_id\", \"endpoint_id\", Svix::ReplayIn.new({\n    \"until\": nil\n}))"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let replay_out = svix.endpoint().replay(\"app_id\", \"endpoint_id\", ReplayIn {\n    until: None,\n}, None).await?;"
+                        "source": "let replay_out = svix.endpoint().replay_missing(\"app_id\", \"endpoint_id\", ReplayIn {\n    until: None,\n}, None).await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var replayOut = await svix.Endpoint.ReplayAsync(\"app_id\", \"endpoint_id\", new ReplayIn{\n    until: null\n});"
+                        "source": "var replayOut = await svix.Endpoint.ReplayMissingAsync(\"app_id\", \"endpoint_id\", new ReplayIn{\n    until: null\n});"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix endpoint replay \"app_id\" \"endpoint_id\" '{\n    \"until\": null\n}'"
+                        "source": "svix endpoint replay-missing \"app_id\" \"endpoint_id\" '{\n    \"until\": null\n}'"
                     },
                     {
                         "label": "cURL",
@@ -12213,7 +12234,7 @@
         },
         "/api/v1/app/{app_id}/endpoint/{endpoint_id}/send-example": {
             "post": {
-                "description": "Send an example message for an event",
+                "description": "Send an example message for an event.",
                 "operationId": "v1.endpoint.send-example",
                 "parameters": [
                     {
@@ -12457,11 +12478,11 @@
                         "style": "simple"
                     },
                     {
-                        "description": "Filter the range to data starting from this date",
+                        "description": "Filter the range to data starting from this date.",
                         "in": "query",
                         "name": "since",
                         "schema": {
-                            "description": "Filter the range to data starting from this date",
+                            "description": "Filter the range to data starting from this date.",
                             "format": "date-time",
                             "nullable": true,
                             "type": "string"
@@ -12469,11 +12490,11 @@
                         "style": "form"
                     },
                     {
-                        "description": "Filter the range to data ending by this date",
+                        "description": "Filter the range to data ending by this date.",
                         "in": "query",
                         "name": "until",
                         "schema": {
-                            "description": "Filter the range to data ending by this date",
+                            "description": "Filter the range to data ending by this date.",
                             "format": "date-time",
                             "nullable": true,
                             "type": "string"
@@ -12638,7 +12659,7 @@
         },
         "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation": {
             "get": {
-                "description": "Get the transformation code associated with this endpoint",
+                "description": "Get the transformation code associated with this endpoint.",
                 "operationId": "v1.endpoint.transformation-get",
                 "parameters": [
                     {
@@ -12827,7 +12848,7 @@
                 ]
             },
             "patch": {
-                "description": "Set or unset the transformation code associated with this endpoint",
+                "description": "Set or unset the transformation code associated with this endpoint.",
                 "operationId": "v1.endpoint.transformation-partial-update",
                 "parameters": [
                     {
@@ -13215,7 +13236,7 @@
         },
         "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation/simulate": {
             "post": {
-                "description": "Simulate running the transformation on the payload and code",
+                "description": "Simulate running the transformation on the payload and code.",
                 "operationId": "v1.endpoint.transformation-simulate",
                 "parameters": [
                     {
@@ -13425,7 +13446,7 @@
         },
         "/api/v1/app/{app_id}/events": {
             "get": {
-                "description": "Reads the stream of created messages for an application",
+                "description": "Reads the stream of created messages for an application.",
                 "operationId": "v1.message.events",
                 "parameters": [
                     {
@@ -13487,11 +13508,11 @@
                         "style": "form"
                     },
                     {
-                        "description": "Filter response based on the event type",
+                        "description": "Filter response based on the event type.",
                         "in": "query",
                         "name": "channels",
                         "schema": {
-                            "description": "Filter response based on the event type",
+                            "description": "Filter response based on the event type.",
                             "items": {
                                 "example": "project_1337",
                                 "maxLength": 128,
@@ -13749,11 +13770,11 @@
                         "style": "form"
                     },
                     {
-                        "description": "Filter response based on the event type",
+                        "description": "Filter response based on the event type.",
                         "in": "query",
                         "name": "channels",
                         "schema": {
-                            "description": "Filter response based on the event type",
+                            "description": "Filter response based on the event type.",
                             "items": {
                                 "example": "project_1337",
                                 "maxLength": 128,
@@ -13934,7 +13955,7 @@
         },
         "/api/v1/app/{app_id}/events/subscription/{subscription_id}/create-token": {
             "post": {
-                "description": "Creates an auth token that can be used with the `v1.message.events-subscription` endpoint",
+                "description": "Creates an auth token that can be used with the `v1.message.events-subscription` endpoint.",
                 "operationId": "v1.message.events-subscription.create-token",
                 "parameters": [
                     {
@@ -14073,198 +14094,6 @@
                         "label": "cURL",
                         "lang": "Shell",
                         "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/events/subscription/{subscription_id}/create-token' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
-                    }
-                ]
-            }
-        },
-        "/api/v1/app/{app_id}/events/{sink_id}": {
-            "get": {
-                "description": "Reads the stream of created messages for an application, filtered on the Sink's event types and Channels.",
-                "operationId": "v1.events-public",
-                "parameters": [
-                    {
-                        "description": "The app's ID",
-                        "in": "path",
-                        "name": "app_id",
-                        "required": true,
-                        "schema": {
-                            "description": "The app's ID",
-                            "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                            "type": "string"
-                        },
-                        "style": "simple"
-                    },
-                    {
-                        "description": "The ep's ID",
-                        "in": "path",
-                        "name": "sink_id",
-                        "required": true,
-                        "schema": {
-                            "description": "The ep's ID",
-                            "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                            "type": "string"
-                        },
-                        "style": "simple"
-                    },
-                    {
-                        "description": "Limit the number of returned items",
-                        "in": "query",
-                        "name": "limit",
-                        "schema": {
-                            "description": "Limit the number of returned items",
-                            "format": "uint64",
-                            "maximum": 250,
-                            "minimum": 1,
-                            "type": "integer"
-                        },
-                        "style": "form"
-                    },
-                    {
-                        "description": "The iterator returned from a prior invocation",
-                        "in": "query",
-                        "name": "iterator",
-                        "schema": {
-                            "description": "The iterator returned from a prior invocation",
-                            "nullable": true,
-                            "type": "string"
-                        },
-                        "style": "form"
-                    },
-                    {
-                        "description": "Filters messages sent with this event type (optional).",
-                        "in": "query",
-                        "name": "event_type",
-                        "schema": {
-                            "description": "Filters messages sent with this event type (optional).",
-                            "example": "user.signup",
-                            "maxLength": 256,
-                            "nullable": true,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                            "type": "string"
-                        },
-                        "style": "form"
-                    },
-                    {
-                        "description": "Filters messages sent with this channel (optional).",
-                        "in": "query",
-                        "name": "channel",
-                        "schema": {
-                            "description": "Filters messages sent with this channel (optional).",
-                            "example": "project_1337",
-                            "maxLength": 128,
-                            "nullable": true,
-                            "pattern": "^[a-zA-Z0-9\\-_.:]+$",
-                            "type": "string"
-                        },
-                        "style": "form"
-                    },
-                    {
-                        "in": "query",
-                        "name": "after",
-                        "schema": {
-                            "format": "date-time",
-                            "nullable": true,
-                            "type": "string"
-                        },
-                        "style": "form"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/MessageEventsOut"
-                                }
-                            }
-                        },
-                        "description": ""
-                    },
-                    "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Bad request"
-                    },
-                    "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Forbidden"
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Not Found"
-                    },
-                    "409": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Conflict"
-                    },
-                    "422": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        },
-                        "description": "Validation Error"
-                    },
-                    "429": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Too Many Requests"
-                    }
-                },
-                "security": [
-                    {
-                        "HTTPBearer": []
-                    }
-                ],
-                "summary": "Public Events",
-                "tags": [
-                    "Message"
-                ],
-                "x-codeSamples": [
-                    {
-                        "label": "cURL",
-                        "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/events/{sink_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
                     }
                 ]
             }
@@ -14489,7 +14318,7 @@
         },
         "/api/v1/app/{app_id}/inbound/rotate-url": {
             "post": {
-                "description": "Invalidates the previous inbound url (if one exists), producing a new inbound\nURL for this app",
+                "description": "Invalidates the previous inbound url (if one exists), producing a new inbound\nURL for this app.",
                 "operationId": "v1.inbound.rotate-url",
                 "parameters": [
                     {
@@ -16072,11 +15901,11 @@
                         "style": "form"
                     },
                     {
-                        "description": "Filter response based on the channel",
+                        "description": "Filter response based on the channel.",
                         "in": "query",
                         "name": "channel",
                         "schema": {
-                            "description": "Filter response based on the channel",
+                            "description": "Filter response based on the channel.",
                             "example": "project_1337",
                             "maxLength": 128,
                             "nullable": true,
@@ -16086,11 +15915,11 @@
                         "style": "form"
                     },
                     {
-                        "description": "Only include items created before a certain date",
+                        "description": "Only include items created before a certain date.",
                         "in": "query",
                         "name": "before",
                         "schema": {
-                            "description": "Only include items created before a certain date",
+                            "description": "Only include items created before a certain date.",
                             "format": "date-time",
                             "nullable": true,
                             "type": "string"
@@ -16098,11 +15927,11 @@
                         "style": "form"
                     },
                     {
-                        "description": "Only include items created after a certain date",
+                        "description": "Only include items created after a certain date.",
                         "in": "query",
                         "name": "after",
                         "schema": {
-                            "description": "Only include items created after a certain date",
+                            "description": "Only include items created after a certain date.",
                             "format": "date-time",
                             "nullable": true,
                             "type": "string"
@@ -16110,22 +15939,22 @@
                         "style": "form"
                     },
                     {
-                        "description": "When `true` message payloads are included in the response",
+                        "description": "When `true` message payloads are included in the response.",
                         "in": "query",
                         "name": "with_content",
                         "schema": {
                             "default": true,
-                            "description": "When `true` message payloads are included in the response",
+                            "description": "When `true` message payloads are included in the response.",
                             "type": "boolean"
                         },
                         "style": "form"
                     },
                     {
-                        "description": "Filter messages matching the provided tag",
+                        "description": "Filter messages matching the provided tag.",
                         "in": "query",
                         "name": "tag",
                         "schema": {
-                            "description": "Filter messages matching the provided tag",
+                            "description": "Filter messages matching the provided tag.",
                             "example": "project_1337",
                             "maxLength": 128,
                             "nullable": true,
@@ -16328,12 +16157,12 @@
                         "style": "simple"
                     },
                     {
-                        "description": "When `true` message payloads are included in the response",
+                        "description": "When `true`, message payloads are included in the response.",
                         "in": "query",
                         "name": "with_content",
                         "schema": {
                             "default": true,
-                            "description": "When `true` message payloads are included in the response",
+                            "description": "When `true`, message payloads are included in the response.",
                             "type": "boolean"
                         },
                         "style": "form"
@@ -16463,52 +16292,52 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const messageOut = await svix.message.create(\"app_id\", {\n    eventId: \"unique-msg-identifier\",\n    eventType: \"user.signup\",\n    payload: {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n    channels: [\"project_123\", \"group_2\"],\n    application: null,\n    tags: [\"my_tag\", \"other\"],\n    transformationsParams: null,\n    payloadRetentionPeriod: 90,\n    payloadRetentionHours: null\n});\n\n// Alternatively, with a pre-serialized payload.\nconst messageOut = await svix.message.create(\n    \"app_id\",\n    svix.messageInRaw(\"world.hello\", \"Hello, World\", \"text/plain\"),\n);\n"
+                        "source": "const messageOut = await svix.message.create(\"app_id\", {\n    eventId: \"unique-msg-identifier\",\n    eventType: \"user.signup\",\n    payload: {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n    channels: [\"project_123\", \"group_2\"],\n    application: null,\n    tags: [\"my_tag\", \"other\"],\n    transformationsParams: null,\n    payloadRetentionPeriod: 90,\n    payloadRetentionHours: null\n});\n\n// Alternatively, with a raw string payload.\nconst messageOut = await svix.message.create(\n    \"app_id\",\n    svix.messageInRaw(\"world.hello\", \"Hello, World\", \"text/plain\"),\n);\n"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const messageOut = await svix.message.create(\"app_id\", {\n    eventId: \"unique-msg-identifier\",\n    eventType: \"user.signup\",\n    payload: {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n    channels: [\"project_123\", \"group_2\"],\n    application: null,\n    tags: [\"my_tag\", \"other\"],\n    transformationsParams: null,\n    payloadRetentionPeriod: 90,\n    payloadRetentionHours: null\n});\n\n// Alternatively, with a pre-serialized payload.\nconst messageOut = await svix.message.create(\n    \"app_id\",\n    svix.messageInRaw(\"world.hello\", \"Hello, World\", \"text/plain\"),\n);\n"
+                        "source": "const messageOut = await svix.message.create(\"app_id\", {\n    eventId: \"unique-msg-identifier\",\n    eventType: \"user.signup\",\n    payload: {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n    channels: [\"project_123\", \"group_2\"],\n    application: null,\n    tags: [\"my_tag\", \"other\"],\n    transformationsParams: null,\n    payloadRetentionPeriod: 90,\n    payloadRetentionHours: null\n});\n\n// Alternatively, with a raw string payload.\nconst messageOut = await svix.message.create(\n    \"app_id\",\n    svix.messageInRaw(\"world.hello\", \"Hello, World\", \"text/plain\"),\n);\n"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "message_out = svix.message.create(\"app_id\", MessageIn(\n    event_id=\"unique-msg-identifier\",\n    event_type=\"user.signup\",\n    payload={\"email\": \"test@example.com\", \"type\": \"user.created\", \"username\": \"test_user\"},\n    channels=[\"project_123\", \"group_2\"],\n    application=None,\n    tags=[\"my_tag\", \"other\"],\n    transformations_params=None,\n    payload_retention_period=90,\n    payload_retention_hours=None\n), options=...)\n\n# Alternatively, with a pre-serialized payload.\nmessage_out = svix.message.create(\"app_id\", svix.message_in_raw(\n    event_type=\"user.signup\",\n    payload=\"Hello, World!\",\n    content_type=\"text/plain\",\n), options=...)\n"
+                        "source": "message_out = svix.message.create(\"app_id\", MessageIn(\n    event_id=\"unique-msg-identifier\",\n    event_type=\"user.signup\",\n    payload={\"email\": \"test@example.com\", \"type\": \"user.created\", \"username\": \"test_user\"},\n    channels=[\"project_123\", \"group_2\"],\n    application=None,\n    tags=[\"my_tag\", \"other\"],\n    transformations_params=None,\n    payload_retention_period=90,\n    payload_retention_hours=None\n), options=...)\n\n# Alternatively, with a raw string payload.\nmessage_out = svix.message.create(\"app_id\", svix.message_in_raw(\n    event_type=\"user.signup\",\n    payload=\"Hello, World!\",\n    content_type=\"text/plain\",\n), options=...)\n"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "message_out = await svix.message.create(\"app_id\", MessageIn(\n    event_id=\"unique-msg-identifier\",\n    event_type=\"user.signup\",\n    payload={\"email\": \"test@example.com\", \"type\": \"user.created\", \"username\": \"test_user\"},\n    channels=[\"project_123\", \"group_2\"],\n    application=None,\n    tags=[\"my_tag\", \"other\"],\n    transformations_params=None,\n    payload_retention_period=90,\n    payload_retention_hours=None\n), options=...)\n\n# Alternatively, with a pre-serialized payload.\nmessage_out = await svix.message.create(\"app_id\", await svix.message_in_raw(\n    event_type=\"user.signup\",\n    payload=\"Hello, World!\",\n    content_type=\"text/plain\",\n), options=...)\n"
+                        "source": "message_out = await svix.message.create(\"app_id\", MessageIn(\n    event_id=\"unique-msg-identifier\",\n    event_type=\"user.signup\",\n    payload={\"email\": \"test@example.com\", \"type\": \"user.created\", \"username\": \"test_user\"},\n    channels=[\"project_123\", \"group_2\"],\n    application=None,\n    tags=[\"my_tag\", \"other\"],\n    transformations_params=None,\n    payload_retention_period=90,\n    payload_retention_hours=None\n), options=...)\n\n# Alternatively, with a raw string payload.\nmessage_out = await svix.message.create(\"app_id\", await svix.message_in_raw(\n    event_type=\"user.signup\",\n    payload=\"Hello, World!\",\n    content_type=\"text/plain\",\n), options=...)\n"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "messageOut, err := svixClient.Message.Create(ctx, \"app_id\", &MessageIn{\n    EventId: \"unique-msg-identifier\",\n    EventType: \"user.signup\",\n    Payload: map[string]interface{}{\"email\": \"test@example.com\", \"type\": \"user.created\", \"username\": \"test_user\"},\n    Channels: []string{\"project_123\", \"group_2\"},\n    Application: nil,\n    Tags: []string{\"my_tag\", \"other\"},\n    TransformationsParams: nil,\n    PayloadRetentionPeriod: 90,\n    PayloadRetentionHours: nil,\n})\n\n// Alternatively, with a pre-serialized payload.\nmessageOut, err := svixClient.Message.Create(ctx, \"app_id\", &svix.NewMessageInRaw(\n    \"world.hello\",\n    \"Hello, World\",\n    svix.StaticNullableString(\"text/plain\"),\n))\n"
+                        "source": "messageOut, err := svixClient.Message.Create(ctx, \"app_id\", &MessageIn{\n    EventId: \"unique-msg-identifier\",\n    EventType: \"user.signup\",\n    Payload: map[string]interface{}{\"email\": \"test@example.com\", \"type\": \"user.created\", \"username\": \"test_user\"},\n    Channels: []string{\"project_123\", \"group_2\"},\n    Application: nil,\n    Tags: []string{\"my_tag\", \"other\"},\n    TransformationsParams: nil,\n    PayloadRetentionPeriod: 90,\n    PayloadRetentionHours: nil,\n})\n\n// Alternatively, with a raw string payload.\nmessageOut, err := svixClient.Message.Create(ctx, \"app_id\", &svix.NewMessageInRaw(\n    \"world.hello\",\n    \"Hello, World\",\n    svix.StaticNullableString(\"text/plain\"),\n))\n"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val messageOut = svix.message.create(\"app_id\", MessageIn()\n    .eventId(\"unique-msg-identifier\")\n    .eventType(\"user.signup\")\n    .payload(/* ... */)\n    .channels(arrayOf(\"project_123\", \"group_2\"))\n    .application(null)\n    .tags(arrayOf(\"my_tag\", \"other\"))\n    .transformationsParams(null)\n    .payloadRetentionPeriod(90)\n    .payloadRetentionHours(null)\n)\n\n// Alternatively, with a pre-serialized payload.\nval messageOut = svix.message.create(\"app_id\", svix.messageInRaw(\n    eventType = \"world.hello\",\n    payload = \"Hello, World!\",\n    contentType = \"text/plain\",\n))\n"
+                        "source": "val messageOut = svix.message.create(\"app_id\", MessageIn()\n    .eventId(\"unique-msg-identifier\")\n    .eventType(\"user.signup\")\n    .payload(/* ... */)\n    .channels(arrayOf(\"project_123\", \"group_2\"))\n    .application(null)\n    .tags(arrayOf(\"my_tag\", \"other\"))\n    .transformationsParams(null)\n    .payloadRetentionPeriod(90)\n    .payloadRetentionHours(null)\n)\n\n// Alternatively, with a raw string payload.\nval messageOut = svix.message.create(\"app_id\", svix.messageInRaw(\n    eventType = \"world.hello\",\n    payload = \"Hello, World!\",\n    contentType = \"text/plain\",\n))\n"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "MessageOut messageOut = svix.getMessage().create(\"app_id\", new MessageIn()\n    .eventId(\"unique-msg-identifier\")\n    .eventType(\"user.signup\")\n    .payload(/* ... */)\n    .channels(new String[]{\"project_123\", \"group_2\"})\n    .application(null)\n    .tags(new String[]{\"my_tag\", \"other\"})\n    .transformationsParams(null)\n    .payloadRetentionPeriod(90)\n    .payloadRetentionHours(null)\n);\n\n// Alternatively, with a pre-serialized payload.\nMessageOut messageOut = svix.getMessage().create(\n    \"app_id\",\n    Message.messageInRaw(\"Hello, World!\", \"text/plain\")\n        .eventType(\"world.hello\")\n);\n"
+                        "source": "MessageOut messageOut = svix.getMessage().create(\"app_id\", new MessageIn()\n    .eventId(\"unique-msg-identifier\")\n    .eventType(\"user.signup\")\n    .payload(/* ... */)\n    .channels(new String[]{\"project_123\", \"group_2\"})\n    .application(null)\n    .tags(new String[]{\"my_tag\", \"other\"})\n    .transformationsParams(null)\n    .payloadRetentionPeriod(90)\n    .payloadRetentionHours(null)\n);\n\n// Alternatively, with a raw string payload.\nMessageOut messageOut = svix.getMessage().create(\n    \"app_id\",\n    Message.messageInRaw(\"Hello, World!\", \"text/plain\")\n        .eventType(\"world.hello\")\n);\n"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "message_out = svix.message.create(\"app_id\", Svix::MessageIn.new({\n    \"event_id\": \"unique-msg-identifier\",\n    \"event_type\": \"user.signup\",\n    \"payload\": {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n    \"channels\": [\"project_123\", \"group_2\"],\n    \"application\": nil,\n    \"tags\": [\"my_tag\", \"other\"],\n    \"transformations_params\": nil,\n    \"payload_retention_period\": 90,\n    \"payload_retention_hours\": nil\n}))\n\n# Alternatively, with a pre-serialized payload.\nmessage_out = svix.message.create(\"app_id\", Svix.message_in_raw({\n    event_type: \"user.signup\",\n    payload: \"Hello, World!\",\n    content_type: \"text/plain\",\n}))\n"
+                        "source": "message_out = svix.message.create(\"app_id\", Svix::MessageIn.new({\n    \"event_id\": \"unique-msg-identifier\",\n    \"event_type\": \"user.signup\",\n    \"payload\": {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n    \"channels\": [\"project_123\", \"group_2\"],\n    \"application\": nil,\n    \"tags\": [\"my_tag\", \"other\"],\n    \"transformations_params\": nil,\n    \"payload_retention_period\": 90,\n    \"payload_retention_hours\": nil\n}))\n\n# Alternatively, with a raw string payload.\nmessage_out = svix.message.create(\"app_id\", Svix.message_in_raw({\n    event_type: \"user.signup\",\n    payload: \"Hello, World!\",\n    content_type: \"text/plain\",\n}))\n"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let message_out = svix.message().create(\"app_id\", MessageIn {\n    event_id: Some(\"unique-msg-identifier\".to_string()),\n    event_type: \"user.signup\".to_string(),\n    payload: json!({\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"}),\n    channels: Some(vec![\"project_123\".to_string(), \"group_2\".to_string()]),\n    application: None,\n    tags: Some(vec![\"my_tag\".to_string(), \"other\".to_string()]),\n    transformations_params: None,\n    payload_retention_period: Some(90),\n    payload_retention_hours: None,\n}, None).await?;\n\n// Alternatively, with a pre-serialized payload.\nlet message_out = svix.message().create(\n    \"app_id\",\n    MessageIn::new_raw_payload(\n        \"world.hello\".to_string(),\n        \"Hello, World!\".to_string(),\n    ).with_content_type(\"text/plain\".to_string()),\n    None,\n).await?;\n"
+                        "source": "let message_out = svix.message().create(\"app_id\", MessageIn {\n    event_id: Some(\"unique-msg-identifier\".to_string()),\n    event_type: \"user.signup\".to_string(),\n    payload: json!({\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"}),\n    channels: Some(vec![\"project_123\".to_string(), \"group_2\".to_string()]),\n    application: None,\n    tags: Some(vec![\"my_tag\".to_string(), \"other\".to_string()]),\n    transformations_params: None,\n    payload_retention_period: Some(90),\n    payload_retention_hours: None,\n}, None).await?;\n\n// Alternatively, with a raw string payload.\nlet message_out = svix.message().create(\n    \"app_id\",\n    MessageIn::new_raw_payload(\n        \"world.hello\".to_string(),\n        \"Hello, World!\".to_string(),\n    ).with_content_type(\"text/plain\".to_string()),\n    None,\n).await?;\n"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var messageOut = await svix.Message.CreateAsync(\"app_id\", new MessageIn{\n    eventId: \"unique-msg-identifier\",\n    eventType: \"user.signup\",\n    payload: /* ... */,\n    channels: new string[] {\"project_123\", \"group_2\"},\n    application: null,\n    tags: new string[] {\"my_tag\", \"other\"},\n    transformationsParams: null,\n    payloadRetentionPeriod: 90,\n    payloadRetentionHours: null\n});\n\n// Alternatively, with a pre-serialized payload.\nvar messageOut = await svix.Message.CreateAsync(\n    \"app_id\",\n    svix.Message.messageInRaw(\n        eventType: \"world.hello\",\n        payload: \"Hello, world!\",\n        contentType: \"text/plain\",\n    ),\n);\n"
+                        "source": "var messageOut = await svix.Message.CreateAsync(\"app_id\", new MessageIn{\n    eventId: \"unique-msg-identifier\",\n    eventType: \"user.signup\",\n    payload: /* ... */,\n    channels: new string[] {\"project_123\", \"group_2\"},\n    application: null,\n    tags: new string[] {\"my_tag\", \"other\"},\n    transformationsParams: null,\n    payloadRetentionPeriod: 90,\n    payloadRetentionHours: null\n});\n\n// Alternatively, with a raw string payload.\nvar messageOut = await svix.Message.CreateAsync(\n    \"app_id\",\n    svix.Message.messageInRaw(\n        eventType: \"world.hello\",\n        payload: \"Hello, world!\",\n        contentType: \"text/plain\",\n    ),\n);\n"
                     },
                     {
                         "label": "CLI",
@@ -16518,7 +16347,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"eventId\": \"unique-msg-identifier\",\n        \"eventType\": \"user.signup\",\n        \"payload\": {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n        \"channels\": [\"project_123\", \"group_2\"],\n        \"application\": null,\n        \"tags\": [\"my_tag\", \"other\"],\n        \"transformationsParams\": null,\n        \"payloadRetentionPeriod\": 90,\n        \"payloadRetentionHours\": null\n    }'\n\n# Alternatively, with a pre-serialized payload.\ncurl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n      \"eventType\": \"world.hello\",\n      \"payload\": {},\n      \"transformationsParams\": {\n          \"rawPayload\": \"Hello, World!\",\n          \"headers\": { \"content-type\": \"text/plain\" }\n      }\n  }'\n"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"eventId\": \"unique-msg-identifier\",\n        \"eventType\": \"user.signup\",\n        \"payload\": {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n        \"channels\": [\"project_123\", \"group_2\"],\n        \"application\": null,\n        \"tags\": [\"my_tag\", \"other\"],\n        \"transformationsParams\": null,\n        \"payloadRetentionPeriod\": 90,\n        \"payloadRetentionHours\": null\n    }'\n\n# Alternatively, with a raw string payload.\ncurl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n      \"eventType\": \"world.hello\",\n      \"payload\": {},\n      \"transformationsParams\": {\n          \"rawPayload\": \"Hello, World!\",\n          \"headers\": { \"content-type\": \"text/plain\" }\n      }\n  }'\n"
                     }
                 ]
             }
@@ -16559,12 +16388,12 @@
                         "style": "simple"
                     },
                     {
-                        "description": "When `true` message payloads are included in the response",
+                        "description": "When `true` message payloads are included in the response.",
                         "in": "query",
                         "name": "with_content",
                         "schema": {
                             "default": true,
-                            "description": "When `true` message payloads are included in the response",
+                            "description": "When `true` message payloads are included in the response.",
                             "type": "boolean"
                         },
                         "style": "form"
@@ -18768,6 +18597,204 @@
                 ]
             }
         },
+        "/api/v1/app/{app_id}/poller/{sink_id}": {
+            "get": {
+                "description": "Reads the stream of created messages for an application, filtered on the Sink's event types and Channels.",
+                "operationId": "v1.events-public",
+                "parameters": [
+                    {
+                        "description": "The app's ID or UID",
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The app's ID or UID",
+                            "example": "unique-app-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The ep's ID or UID",
+                        "in": "path",
+                        "name": "sink_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The ep's ID or UID",
+                            "example": "unique-ep-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "Limit the number of returned items",
+                        "in": "query",
+                        "name": "limit",
+                        "schema": {
+                            "description": "Limit the number of returned items",
+                            "format": "uint64",
+                            "maximum": 250,
+                            "minimum": 1,
+                            "type": "integer"
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "description": "The iterator returned from a prior invocation",
+                        "in": "query",
+                        "name": "iterator",
+                        "schema": {
+                            "description": "The iterator returned from a prior invocation",
+                            "nullable": true,
+                            "type": "string"
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "description": "Filters messages sent with this event type (optional).",
+                        "in": "query",
+                        "name": "event_type",
+                        "schema": {
+                            "description": "Filters messages sent with this event type (optional).",
+                            "example": "user.signup",
+                            "maxLength": 256,
+                            "nullable": true,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "description": "Filters messages sent with this channel (optional).",
+                        "in": "query",
+                        "name": "channel",
+                        "schema": {
+                            "description": "Filters messages sent with this channel (optional).",
+                            "example": "project_1337",
+                            "maxLength": 128,
+                            "nullable": true,
+                            "pattern": "^[a-zA-Z0-9\\-_.:]+$",
+                            "type": "string"
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "in": "query",
+                        "name": "after",
+                        "schema": {
+                            "format": "date-time",
+                            "nullable": true,
+                            "type": "string"
+                        },
+                        "style": "form"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MessageEventsOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Public Events",
+                "tags": [
+                    "Message"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/poller/{sink_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                    }
+                ]
+            }
+        },
         "/api/v1/app/{app_id}/sink": {
             "get": {
                 "description": "List the application's sinks.",
@@ -19366,28 +19393,28 @@
         },
         "/api/v1/app/{app_id}/stats": {
             "get": {
-                "description": "Get basic statistics for the application",
+                "description": "Get basic statistics for the application.",
                 "operationId": "v1.application.get-stats",
                 "parameters": [
                     {
-                        "description": "Filter the range to data starting from this date",
+                        "description": "Filter the range to data starting from this date.",
                         "in": "query",
                         "name": "since",
                         "required": true,
                         "schema": {
-                            "description": "Filter the range to data starting from this date",
+                            "description": "Filter the range to data starting from this date.",
                             "format": "date-time",
                             "type": "string"
                         },
                         "style": "form"
                     },
                     {
-                        "description": "Filter the range to data ending by this date",
+                        "description": "Filter the range to data ending by this date.",
                         "in": "query",
                         "name": "until",
                         "required": true,
                         "schema": {
-                            "description": "Filter the range to data ending by this date",
+                            "description": "Filter the range to data ending by this date.",
                             "format": "date-time",
                             "type": "string"
                         },
@@ -19956,7 +19983,7 @@
         },
         "/api/v1/auth/app/{app_id}/expire-all": {
             "post": {
-                "description": "Expire all of the tokens associated with a specific Application",
+                "description": "Expire all of the tokens associated with a specific application.",
                 "operationId": "v1.authentication.expire-all",
                 "parameters": [
                     {
@@ -20493,7 +20520,7 @@
         },
         "/api/v1/auth/one-time-token": {
             "post": {
-                "description": "This is a one time token",
+                "description": "This is a one time token.",
                 "operationId": "v1.authentication.exchange-one-time-token",
                 "parameters": [
                     {
@@ -20677,23 +20704,23 @@
                 "operationId": "list_background_tasks",
                 "parameters": [
                     {
-                        "description": "Filter the response based on the status",
+                        "description": "Filter the response based on the status.",
                         "in": "query",
                         "name": "status",
                         "schema": {
                             "$ref": "#/components/schemas/BackgroundTaskStatus",
-                            "description": "Filter the response based on the status",
+                            "description": "Filter the response based on the status.",
                             "nullable": true
                         },
                         "style": "form"
                     },
                     {
-                        "description": "Filter the response based on the type",
+                        "description": "Filter the response based on the type.",
                         "in": "query",
                         "name": "task",
                         "schema": {
                             "$ref": "#/components/schemas/BackgroundTaskType",
-                            "description": "Filter the response based on the type",
+                            "description": "Filter the response based on the type.",
                             "nullable": true
                         },
                         "style": "form"
@@ -20951,7 +20978,7 @@
         },
         "/api/v1/environment/export": {
             "post": {
-                "description": "Download a JSON file containing all org-settings and event types",
+                "description": "Download a JSON file containing all org-settings and event types.",
                 "operationId": "v1.environment.export",
                 "parameters": [
                     {
@@ -21294,7 +21321,7 @@
         },
         "/api/v1/environment/settings": {
             "get": {
-                "description": "Get the environment's settings",
+                "description": "Get the environment's settings.",
                 "operationId": "v1.environment.get-settings",
                 "responses": {
                     "200": {
@@ -21495,23 +21522,23 @@
                         "style": "form"
                     },
                     {
-                        "description": "When `true` archived (deleted but not expunged) items are included in the response",
+                        "description": "When `true` archived (deleted but not expunged) items are included in the response.",
                         "in": "query",
                         "name": "include_archived",
                         "schema": {
                             "default": false,
-                            "description": "When `true` archived (deleted but not expunged) items are included in the response",
+                            "description": "When `true` archived (deleted but not expunged) items are included in the response.",
                             "type": "boolean"
                         },
                         "style": "form"
                     },
                     {
-                        "description": "When `true` the full item (including the schema) is included in the response",
+                        "description": "When `true` the full item (including the schema) is included in the response.",
                         "in": "query",
                         "name": "with_content",
                         "schema": {
                             "default": false,
-                            "description": "When `true` the full item (including the schema) is included in the response",
+                            "description": "When `true` the full item (including the schema) is included in the response.",
                             "type": "boolean"
                         },
                         "style": "form"
@@ -21852,7 +21879,7 @@
         },
         "/api/v1/event-type/export/openapi": {
             "post": {
-                "description": "Exports event type definitions based on the OpenAPI schemas associated\nwith each existing event type",
+                "description": "Exports event type definitions based on the OpenAPI schemas associated\nwith each existing event type.",
                 "operationId": "v1.event-type.export-openapi",
                 "parameters": [
                     {
@@ -22203,7 +22230,7 @@
         },
         "/api/v1/event-type/schema/generate-example": {
             "post": {
-                "description": "Generates a fake example from the given JSONSchema",
+                "description": "Generates a fake example from the given JSONSchema.",
                 "operationId": "v1.event-type.generate-example",
                 "parameters": [
                     {
@@ -23111,7 +23138,7 @@
         },
         "/api/v1/event-type/{event_type_name}/retry-schedule": {
             "get": {
-                "description": "Gets the retry schedule for messages using the given event type",
+                "description": "Gets the retry schedule for messages using the given event type.",
                 "operationId": "v1.event-type.get-retry-schedule",
                 "parameters": [
                     {
@@ -23284,7 +23311,7 @@
                 ]
             },
             "put": {
-                "description": "Sets a retry schedule for all messages using the given event type",
+                "description": "Sets a retry schedule for all messages using the given event type.",
                 "operationId": "v1.event-type.update-retry-schedule",
                 "parameters": [
                     {
@@ -23469,7 +23496,7 @@
         },
         "/api/v1/events": {
             "get": {
-                "description": "Reads the stream of operational webhook events for this environment",
+                "description": "Reads the stream of operational webhook events for this environment.",
                 "operationId": "v1.events",
                 "parameters": [
                     {
@@ -23516,11 +23543,11 @@
                         "style": "form"
                     },
                     {
-                        "description": "Filter response based on the event type",
+                        "description": "Filter response based on the event type.",
                         "in": "query",
                         "name": "channels",
                         "schema": {
-                            "description": "Filter response based on the event type",
+                            "description": "Filter response based on the event type.",
                             "items": {
                                 "example": "project_1337",
                                 "maxLength": 128,
@@ -23738,7 +23765,7 @@
         },
         "/api/v1/msg/broadcast": {
             "post": {
-                "description": "Creates a background task to send the same message to each application in your organization",
+                "description": "Creates a background task to send the same message to each application in your organization.",
                 "operationId": "create_broadcast_message",
                 "parameters": [
                     {
@@ -24748,11 +24775,11 @@
                 "operationId": "v1.stats.app-attempts",
                 "parameters": [
                     {
-                        "description": "Filter the range to data starting from this date",
+                        "description": "Filter the range to data starting from this date.",
                         "in": "query",
                         "name": "startDate",
                         "schema": {
-                            "description": "Filter the range to data starting from this date",
+                            "description": "Filter the range to data starting from this date.",
                             "format": "date-time",
                             "nullable": true,
                             "type": "string"
@@ -24760,11 +24787,11 @@
                         "style": "form"
                     },
                     {
-                        "description": "Filter the range to data ending by this date",
+                        "description": "Filter the range to data ending by this date.",
                         "in": "query",
                         "name": "endDate",
                         "schema": {
-                            "description": "Filter the range to data ending by this date",
+                            "description": "Filter the range to data ending by this date.",
                             "format": "date-time",
                             "nullable": true,
                             "type": "string"
@@ -24944,15 +24971,15 @@
         },
         "/api/v1/stats/app/{app_id}/ep/{endpoint_id}/attempt": {
             "get": {
-                "description": "Returns endpoint-level statistics on message attempts",
+                "description": "Returns endpoint-level statistics on message attempts.",
                 "operationId": "v1.stats.endpoint-attempts",
                 "parameters": [
                     {
-                        "description": "Filter the range to data starting from this date",
+                        "description": "Filter the range to data starting from this date.",
                         "in": "query",
                         "name": "startDate",
                         "schema": {
-                            "description": "Filter the range to data starting from this date",
+                            "description": "Filter the range to data starting from this date.",
                             "format": "date-time",
                             "nullable": true,
                             "type": "string"
@@ -24960,11 +24987,11 @@
                         "style": "form"
                     },
                     {
-                        "description": "Filter the range to data ending by this date",
+                        "description": "Filter the range to data ending by this date.",
                         "in": "query",
                         "name": "endDate",
                         "schema": {
-                            "description": "Filter the range to data ending by this date",
+                            "description": "Filter the range to data ending by this date.",
                             "format": "date-time",
                             "nullable": true,
                             "type": "string"
@@ -27734,7 +27761,7 @@
         },
         "/api/v1/transformation-template": {
             "get": {
-                "description": "List all transformation templates for an application",
+                "description": "List all transformation templates for an application.",
                 "operationId": "v1.transformation-template.list",
                 "parameters": [
                     {
@@ -27928,7 +27955,7 @@
                 ]
             },
             "post": {
-                "description": "Create a new transformation template",
+                "description": "Create a new transformation template.",
                 "operationId": "v1.transformation-template.create",
                 "parameters": [
                     {
@@ -28108,7 +28135,7 @@
         },
         "/api/v1/transformation-template/generate": {
             "post": {
-                "description": "Use OpenAI's Completion API to generate code for a transformation template",
+                "description": "Use OpenAI's Completion API to generate code for a transformation template.",
                 "operationId": "v1.transformation-template.generate",
                 "parameters": [
                     {
@@ -28288,7 +28315,7 @@
         },
         "/api/v1/transformation-template/oauth/discord": {
             "post": {
-                "description": "Get Discord Incoming webhook URL",
+                "description": "Get Discord Incoming webhook URL.",
                 "operationId": "v1.transformation-template.oauth.discord",
                 "parameters": [
                     {
@@ -28413,7 +28440,7 @@
         },
         "/api/v1/transformation-template/oauth/hubspot": {
             "post": {
-                "description": "Get Hubspot access token using authorization code",
+                "description": "Get Hubspot access token using authorization code.",
                 "operationId": "v1.transformation-template.oauth.hubspot",
                 "parameters": [
                     {
@@ -28538,7 +28565,7 @@
         },
         "/api/v1/transformation-template/oauth/slack": {
             "post": {
-                "description": "Get Slack Incoming webhook URL",
+                "description": "Get Slack Incoming webhook URL.",
                 "operationId": "v1.transformation-template.oauth.slack",
                 "parameters": [
                     {
@@ -28663,7 +28690,7 @@
         },
         "/api/v1/transformation-template/simulate": {
             "post": {
-                "description": "Simulate running the transformation on the payload and code",
+                "description": "Simulate running the transformation on the payload and code.",
                 "operationId": "v1.transformation-template.simulate",
                 "parameters": [
                     {
@@ -28843,7 +28870,7 @@
         },
         "/api/v1/transformation-template/{transformation_template_id}": {
             "delete": {
-                "description": "Delete a transformation template",
+                "description": "Delete a transformation template.",
                 "operationId": "v1.transformation-template.delete",
                 "parameters": [
                     {
@@ -29004,7 +29031,7 @@
                 ]
             },
             "get": {
-                "description": "Get a transformation template",
+                "description": "Get a transformation template.",
                 "operationId": "v1.transformation-template.get",
                 "parameters": [
                     {
@@ -29172,7 +29199,7 @@
                 ]
             },
             "patch": {
-                "description": "Partially update a transformation template",
+                "description": "Partially update a transformation template.",
                 "operationId": "v1.transformation-template.patch",
                 "parameters": [
                     {
@@ -29350,7 +29377,7 @@
                 ]
             },
             "put": {
-                "description": "Update a transformation template",
+                "description": "Update a transformation template.",
                 "operationId": "v1.transformation-template.update",
                 "parameters": [
                     {

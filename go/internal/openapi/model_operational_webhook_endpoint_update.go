@@ -26,7 +26,7 @@ type OperationalWebhookEndpointUpdate struct {
 	FilterTypes []string `json:"filterTypes,omitempty"`
 	Metadata *map[string]string `json:"metadata,omitempty"`
 	RateLimit *int32 `json:"rateLimit,omitempty"`
-	// Optional unique identifier for the endpoint
+	// Optional unique identifier for the endpoint.
 	Uid *string `json:"uid,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
 	Url string `json:"url"`
 }

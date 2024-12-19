@@ -672,7 +672,7 @@ namespace Svix
         {
             try
             {
-                var response = _endpointApi.V1EndpointReplayWithHttpInfo(
+                var response = _endpointApi.V1EndpointReplayMissingWithHttpInfo(
                     appId,
                     endpointId,
                     replayIn,
@@ -696,7 +696,7 @@ namespace Svix
         {
             try
             {
-                var response = await _endpointApi.V1EndpointReplayWithHttpInfoAsync(
+                var response = await _endpointApi.V1EndpointReplayMissingWithHttpInfoAsync(
                     appId,
                     endpointId,
                     replayIn,

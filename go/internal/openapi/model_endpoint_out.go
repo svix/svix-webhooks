@@ -22,10 +22,10 @@ var _ MappedNullable = &EndpointOut{}
 
 // EndpointOut struct for EndpointOut
 type EndpointOut struct {
-	// List of message channels this endpoint listens to (omit for all)
+	// List of message channels this endpoint listens to (omit for all).
 	Channels []string `json:"channels,omitempty"`
 	CreatedAt time.Time `json:"createdAt"`
-	// An example endpoint name
+	// An example endpoint name.
 	Description string `json:"description"`
 	Disabled *bool `json:"disabled,omitempty"`
 	FilterTypes []string `json:"filterTypes,omitempty"`
@@ -33,7 +33,7 @@ type EndpointOut struct {
 	Id string `json:"id"`
 	Metadata map[string]string `json:"metadata"`
 	RateLimit *int32 `json:"rateLimit,omitempty"`
-	// Optional unique identifier for the endpoint
+	// Optional unique identifier for the endpoint.
 	Uid *string `json:"uid,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
 	UpdatedAt time.Time `json:"updatedAt"`
 	Url string `json:"url"`

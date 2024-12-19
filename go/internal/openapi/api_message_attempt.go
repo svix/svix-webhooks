@@ -2128,13 +2128,12 @@ func (r ApiV1MessageAttemptListByMsgRequest) Execute() (*ListResponseMessageAtte
 /*
 V1MessageAttemptListByMsg List Attempts By Msg
 
-List attempts by message id
+List attempts by message ID.
 
 Note that by default this endpoint is limited to retrieving 90 days' worth of data
 relative to now or, if an iterator is provided, 90 days before/after the time indicated
 by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
 set the `before` or `after` parameter as appropriate.
-
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param appId The app's ID or UID

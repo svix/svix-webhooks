@@ -34,7 +34,7 @@ func (r ApiV1EnvironmentGetSettingsRequest) Execute() (*EnvironmentSettingsOut, 
 /*
 V1EnvironmentGetSettings Get Org Settings
 
-Get the environment's settings
+Get the environment's settings.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiV1EnvironmentGetSettingsRequest

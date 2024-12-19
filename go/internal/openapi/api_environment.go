@@ -41,7 +41,7 @@ func (r ApiV1EnvironmentExportRequest) Execute() (*EnvironmentOut, *http.Respons
 /*
 V1EnvironmentExport Export Environment Configuration
 
-Download a JSON file containing all org-settings and event types
+Download a JSON file containing all org-settings and event types.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiV1EnvironmentExportRequest
