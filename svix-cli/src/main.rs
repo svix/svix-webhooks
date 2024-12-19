@@ -3,6 +3,7 @@ use crate::cmds::api::endpoint::EndpointArgs;
 use crate::cmds::api::event_type::EventTypeArgs;
 use crate::cmds::api::integration::IntegrationArgs;
 use crate::cmds::api::message::MessageArgs;
+use crate::cmds::listen::ListenArgs;
 use crate::cmds::signature::SignatureArgs;
 use crate::config::Config;
 use anyhow::Result;
@@ -19,6 +20,7 @@ mod cli_types;
 mod cmds;
 mod config;
 mod json;
+mod relay;
 
 #[derive(Parser)]
 #[command(version, about, long_about = None, bin_name = BIN_NAME)]
@@ -63,7 +65,7 @@ enum RootCommands {
     /// List integrations by app id
     Integration(IntegrationArgs),
     /// Forward webhook requests to a local url
-    Listen,
+    Listen(ListenArgs),
     /// Interactively configure your Svix API credentials
     Login,
     /// List & create messages
@@ -124,7 +126,7 @@ async fn main() -> Result<()> {
             args.command.exec(&client, color_mode).await?;
         }
 
-        RootCommands::Listen => todo!("Commands::Listen"),
+        RootCommands::Listen(args) => args.exec(&cfg?).await?,
         RootCommands::Login => cmds::login::prompt()?,
         RootCommands::Completion { shell } => cmds::completion::generate(&shell)?,
     }
