@@ -37,18 +37,6 @@ impl Config {
         Ok(config)
     }
 
-    /// Helper to allow construction in code of a config with a specific server url and auth token.
-    /// Useful for situations like the `login` command.
-    pub fn load_with_server_url_and_auth_token(
-        server_url: Option<String>,
-        auth_token: Option<String>,
-    ) -> Result<Config> {
-        let mut cfg = Self::load()?;
-        cfg.server_url = server_url;
-        cfg.auth_token = auth_token;
-        Ok(cfg)
-    }
-
     pub fn save_to_disk(&self, path: &Path) -> Result<()> {
         let mut fh = std::fs::OpenOptions::new()
             .create(true)
