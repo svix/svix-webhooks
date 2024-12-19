@@ -1,15 +1,19 @@
 # Changelog
 
 ## Next
-* Libs/Rust: Add `api::MessageAttemptListAttemptedMessagesOptions` and use it for
+* Libs/Rust **(Breaking)**: Add `api::MessageAttemptListAttemptedMessagesOptions` and use it for
   `MessageAttempt::list_attempted_messages`, replacing `MessageAttemptListOptions` which contained
   some extra parameters never used with this method / endpoint ([#1568])
+* Libs/JavaScript **(Breaking)**: Add more precise type annotations for `options` parameters on
+  `MessageAttempt.list`, `MessageAttempt.listByMsg`, `MessageAttempt.listAttemptedMessages` and
+  `MessageAttempt.listAttemptedDestinations` ([#1571])
 
 [#1568]: https://github.com/svix/svix-webhooks/pull/1568
+[#1571]: https://github.com/svix/svix-webhooks/pull/1571
 
 ## Version 1.44.0
 * Libs/JavaScript: Revert packaging-related change because it broke for some users ([#1556])
-* Libs/Rust: Remove unused optional `PostOptions` parameters from non-POST methods ([#1557])
+* Libs/Rust **(Breaking)**: Remove unused optional `PostOptions` parameters from non-POST methods ([#1557])
 
 [#1556]: https://github.com/svix/svix-webhooks/pull/1556
 [#1557]: https://github.com/svix/svix-webhooks/pull/1557
