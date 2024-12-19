@@ -1,9 +1,10 @@
+// this file is @generated (with minor manual changes)
 import {
   Configuration,
   MessageApi,
-  MessageOut,
-  MessageIn,
   ListResponseMessageOut,
+  MessageIn,
+  MessageOut,
 } from "../openapi";
 import { PostOptions } from "../util";
 
@@ -33,6 +34,15 @@ export class Message {
     this.api = new MessageApi(config);
   }
 
+  /// List all of the application's messages.
+  ///
+  /// The `before` and `after` parameters let you filter all items created before or after a certain date. These can be used alongside an iterator to paginate over results
+  /// within a certain window.
+  ///
+  /// Note that by default this endpoint is limited to retrieving 90 days' worth of data
+  /// relative to now or, if an iterator is provided, 90 days before/after the time indicated
+  /// by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
+  /// set the `before` or `after` parameter as appropriate.
   public list(
     appId: string,
     options?: MessageListOptions
@@ -46,20 +56,43 @@ export class Message {
     });
   }
 
+  /// Creates a new message and dispatches it to all of the application's endpoints.
+  ///
+  /// The `eventId` is an optional custom unique ID. It's verified to be unique only up to a day, after that no verification will be made.
+  /// If a message with the same `eventId` already exists for the application, a 409 conflict error will be returned.
+  ///
+  /// The `eventType` indicates the type and schema of the event. All messages of a certain `eventType` are expected to have the same schema. Endpoints can choose to only listen to specific event types.
+  /// Messages can also have `channels`, which similar to event types let endpoints filter by them. Unlike event types, messages can have multiple channels, and channels don't imply a specific message content or schema.
+  ///
+  /// The `payload` property is the webhook's body (the actual webhook message). Svix supports payload sizes of up to ~350kb, though it's generally a good idea to keep webhook payloads small, probably no larger than 40kb.
   public create(
     appId: string,
     messageIn: MessageIn,
     options?: PostOptions
   ): Promise<MessageOut> {
-    return this.api.v1MessageCreate({ appId, messageIn, ...options });
+    return this.api.v1MessageCreate({
+      appId,
+      messageIn,
+      ...options,
+    });
   }
 
+  /// Get a message by its ID or eventID.
   public get(appId: string, msgId: string): Promise<MessageOut> {
-    return this.api.v1MessageGet({ msgId, appId });
+    return this.api.v1MessageGet({
+      appId,
+      msgId,
+    });
   }
 
+  /// Delete the given message's payload. Useful in cases when a message was accidentally sent with sensitive content.
+  ///
+  /// The message can't be replayed or resent once its payload has been deleted or expired.
   public expungeContent(appId: string, msgId: string): Promise<void> {
-    return this.api.v1MessageExpungeContent({ appId, msgId });
+    return this.api.v1MessageExpungeContent({
+      appId,
+      msgId,
+    });
   }
 }
 

@@ -1,11 +1,12 @@
+// this file is @generated (with minor manual changes)
 import {
   Configuration,
   IntegrationApi,
-  ListResponseIntegrationOut,
-  IntegrationOut,
   IntegrationIn,
-  IntegrationUpdate,
   IntegrationKeyOut,
+  IntegrationOut,
+  IntegrationUpdate,
+  ListResponseIntegrationOut,
   Ordering,
 } from "../openapi";
 import { PostOptions } from "../util";
@@ -26,14 +27,19 @@ export class Integration {
     this.api = new IntegrationApi(config);
   }
 
+  /// List the application's integrations.
   public list(
     appId: string,
     options?: IntegrationListOptions
   ): Promise<ListResponseIntegrationOut> {
-    const iterator = options?.iterator ?? undefined;
-    return this.api.v1IntegrationList({ appId, ...options, iterator });
+    return this.api.v1IntegrationList({
+      appId,
+      ...options,
+      iterator: options?.iterator ?? undefined,
+    });
   }
 
+  /// Create an integration.
   public create(
     appId: string,
     integrationIn: IntegrationIn,
@@ -46,10 +52,15 @@ export class Integration {
     });
   }
 
+  /// Get an integration.
   public get(appId: string, integId: string): Promise<IntegrationOut> {
-    return this.api.v1IntegrationGet({ integId, appId });
+    return this.api.v1IntegrationGet({
+      appId,
+      integId,
+    });
   }
 
+  /// Update an integration.
   public update(
     appId: string,
     integId: string,
@@ -62,10 +73,11 @@ export class Integration {
     });
   }
 
+  /// Delete an integration.
   public delete(appId: string, integId: string): Promise<void> {
     return this.api.v1IntegrationDelete({
-      integId,
       appId,
+      integId,
     });
   }
 
@@ -76,14 +88,15 @@ export class Integration {
     });
   }
 
+  /// Rotate the integration's key. The previous key will be immediately revoked.
   public rotateKey(
     appId: string,
     integId: string,
     options?: PostOptions
   ): Promise<IntegrationKeyOut> {
     return this.api.v1IntegrationRotateKey({
-      integId,
       appId,
+      integId,
       ...options,
     });
   }
