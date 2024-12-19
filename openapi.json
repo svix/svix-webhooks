@@ -17086,7 +17086,7 @@
         },
         "/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/content": {
             "delete": {
-                "description": "Deletes the given attempt's response body. Useful when an endpoint accidentally returned sensitive content.",
+                "description": "Deletes the given attempt's response body.\n\nUseful when an endpoint accidentally returned sensitive content.\nThe message can't be replayed or resent once its payload has been deleted or expired.",
                 "operationId": "v1.message-attempt.expunge-content",
                 "parameters": [
                     {
@@ -17485,7 +17485,7 @@
         },
         "/api/v1/app/{app_id}/msg/{msg_id}/content": {
             "delete": {
-                "description": "Delete the given message's payload. Useful in cases when a message was accidentally sent with sensitive content.\n\nThe message can't be replayed or resent once its payload has been deleted or expired.",
+                "description": "Delete the given message's payload.\n\nUseful in cases when a message was accidentally sent with sensitive content.\nThe message can't be replayed or resent once its payload has been deleted or expired.",
                 "operationId": "v1.message.expunge-content",
                 "parameters": [
                     {
@@ -17669,7 +17669,7 @@
         },
         "/api/v1/app/{app_id}/msg/{msg_id}/endpoint": {
             "get": {
-                "description": "List endpoints attempted by a given message. Additionally includes metadata about the latest message attempt.\nBy default, endpoints are listed in ascending order by ID.",
+                "description": "List endpoints attempted by a given message.\n\nAdditionally includes metadata about the latest message attempt.\nBy default, endpoints are listed in ascending order by ID.",
                 "operationId": "v1.message-attempt.list-attempted-destinations",
                 "parameters": [
                     {
@@ -20165,6 +20165,407 @@
                         "label": "cURL",
                         "lang": "Shell",
                         "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/auth/app/{app_id}/expire-all' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"expiry\": 60\n    }'"
+                    }
+                ]
+            }
+        },
+        "/api/v1/auth/app/{app_id}/poller/{endpoint_id}/token": {
+            "get": {
+                "description": "Get the current auth token for the poller.",
+                "operationId": "v1.authentication.get-poller-token",
+                "parameters": [
+                    {
+                        "description": "The app's ID or UID",
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The app's ID or UID",
+                            "example": "unique-app-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The ep's ID or UID",
+                        "in": "path",
+                        "name": "endpoint_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The ep's ID or UID",
+                            "example": "unique-ep-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthTokenOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Get Poller Token",
+                "tags": [
+                    "Authentication"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const authTokenOut = await svix.authentication.getPollerToken(\"app_id\", \"endpoint_id\");"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const authTokenOut = await svix.authentication.getPollerToken(\"app_id\", \"endpoint_id\");"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "auth_token_out = svix.authentication.get_poller_token(\"app_id\", \"endpoint_id\")"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "auth_token_out = await svix.authentication.get_poller_token(\"app_id\", \"endpoint_id\")"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "authTokenOut, err := svixClient.Authentication.GetPollerToken(ctx, \"app_id\", \"endpoint_id\")"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val authTokenOut = svix.authentication.getPollerToken(\"app_id\", \"endpoint_id\")"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "AuthTokenOut authTokenOut = svix.getAuthentication().getPollerToken(\"app_id\", \"endpoint_id\");"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "auth_token_out = svix.authentication.get_poller_token(\"app_id\", \"endpoint_id\")"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let auth_token_out = svix.authentication().get_poller_token(\"app_id\", \"endpoint_id\").await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var authTokenOut = await svix.Authentication.GetPollerTokenAsync(\"app_id\", \"endpoint_id\");"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix authentication get-poller-token \"app_id\" \"endpoint_id\""
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/auth/app/{app_id}/poller/{endpoint_id}/token' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                    }
+                ]
+            }
+        },
+        "/api/v1/auth/app/{app_id}/poller/{endpoint_id}/token/rotate": {
+            "post": {
+                "description": "Create a new auth token that can for the poller API.",
+                "operationId": "v1.authentication.rotate-poller-token",
+                "parameters": [
+                    {
+                        "description": "The app's ID or UID",
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The app's ID or UID",
+                            "example": "unique-app-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The ep's ID or UID",
+                        "in": "path",
+                        "name": "endpoint_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The ep's ID or UID",
+                            "example": "unique-ep-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RotatePollerTokenIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthTokenOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Rotate Poller Token",
+                "tags": [
+                    "Authentication"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const authTokenOut = await svix.authentication.rotatePollerToken(\"app_id\", \"endpoint_id\", {\n    expiry: null\n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const authTokenOut = await svix.authentication.rotatePollerToken(\"app_id\", \"endpoint_id\", {\n    expiry: null\n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "auth_token_out = svix.authentication.rotate_poller_token(\"app_id\", \"endpoint_id\", RotatePollerTokenIn(\n    expiry=None\n), options=...)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "auth_token_out = await svix.authentication.rotate_poller_token(\"app_id\", \"endpoint_id\", RotatePollerTokenIn(\n    expiry=None\n), options=...)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "authTokenOut, err := svixClient.Authentication.RotatePollerToken(ctx, \"app_id\", \"endpoint_id\", &RotatePollerTokenIn{\n    Expiry: nil,\n})"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val authTokenOut = svix.authentication.rotatePollerToken(\"app_id\", \"endpoint_id\", RotatePollerTokenIn()\n    .expiry(null)\n)"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "AuthTokenOut authTokenOut = svix.getAuthentication().rotatePollerToken(\"app_id\", \"endpoint_id\", new RotatePollerTokenIn()\n    .expiry(null)\n);"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "auth_token_out = svix.authentication.rotate_poller_token(\"app_id\", \"endpoint_id\", Svix::RotatePollerTokenIn.new({\n    \"expiry\": nil\n}))"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let auth_token_out = svix.authentication().rotate_poller_token(\"app_id\", \"endpoint_id\", RotatePollerTokenIn {\n    expiry: None,\n}, None).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var authTokenOut = await svix.Authentication.RotatePollerTokenAsync(\"app_id\", \"endpoint_id\", new RotatePollerTokenIn{\n    expiry: null\n});"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix authentication rotate-poller-token \"app_id\" \"endpoint_id\" '{\n    \"expiry\": null\n}'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/auth/app/{app_id}/poller/{endpoint_id}/token/rotate' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"expiry\": null\n    }'"
                     }
                 ]
             }

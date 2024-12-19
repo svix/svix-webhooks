@@ -313,7 +313,10 @@ func (r ApiV1MessageAttemptExpungeContentRequest) Execute() (*http.Response, err
 /*
 V1MessageAttemptExpungeContent Delete attempt response body
 
-Deletes the given attempt's response body. Useful when an endpoint accidentally returned sensitive content.
+Deletes the given attempt's response body.
+
+Useful when an endpoint accidentally returned sensitive content.
+The message can't be replayed or resent once its payload has been deleted or expired.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param appId The app's ID or UID
@@ -912,7 +915,9 @@ func (r ApiV1MessageAttemptListAttemptedDestinationsRequest) Execute() (*ListRes
 /*
 V1MessageAttemptListAttemptedDestinations List Attempted Destinations
 
-List endpoints attempted by a given message. Additionally includes metadata about the latest message attempt.
+List endpoints attempted by a given message.
+
+Additionally includes metadata about the latest message attempt.
 By default, endpoints are listed in ascending order by ID.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
