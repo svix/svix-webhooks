@@ -8,10 +8,16 @@ use std::io::Write;
 use std::os::unix::fs::OpenOptionsExt;
 use std::path::{Path, PathBuf};
 
-#[derive(Debug, Default, Deserialize, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct Config {
     pub auth_token: Option<String>,
     pub server_url: Option<String>,
+
+    // Relay stuff relates to the `listen` command.
+    pub relay_token: Option<String>,
+    // FIXME: "url" isn't right. We expect a hostname, default is: `api.play.svix.com`
+    pub relay_debug_url: Option<String>,
+    pub relay_disable_security: Option<bool>,
 }
 
 impl Config {
