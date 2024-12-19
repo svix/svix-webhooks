@@ -10,13 +10,20 @@ use std::path::{Path, PathBuf};
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct Config {
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub auth_token: Option<String>,
-    pub server_url: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    server_url: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    debug_url: Option<String>,
 
     // Relay stuff relates to the `listen` command.
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub relay_token: Option<String>,
     // FIXME: "url" isn't right. We expect a hostname, default is: `api.play.svix.com`
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub relay_debug_url: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub relay_disable_security: Option<bool>,
 }
 
@@ -30,6 +37,18 @@ impl Config {
         Ok(config)
     }
 
+    /// Helper to allow construction in code of a config with a specific server url and auth token.
+    /// Useful for situations like the `login` command.
+    pub fn load_with_server_url_and_auth_token(
+        server_url: Option<String>,
+        auth_token: Option<String>,
+    ) -> Result<Config> {
+        let mut cfg = Self::load()?;
+        cfg.server_url = server_url;
+        cfg.auth_token = auth_token;
+        Ok(cfg)
+    }
+
     pub fn save_to_disk(&self, path: &Path) -> Result<()> {
         let mut fh = std::fs::OpenOptions::new()
             .create(true)
@@ -41,6 +60,15 @@ impl Config {
         let source = &toml::to_string_pretty(self)?;
         fh.write_all(source.as_bytes())?;
         Ok(())
+    }
+
+    /// Gives the `server_url` for a Svix client with fallback to the legacy `SVIX_DEBUG_URL` variable/config.
+    pub fn server_url(&self) -> Option<&str> {
+        match self.server_url.as_deref() {
+            Some(s) if s.trim().is_empty() => self.debug_url.as_deref(),
+            server_url @ Some(_) => server_url,
+            None => self.debug_url.as_deref(),
+        }
     }
 }
 
