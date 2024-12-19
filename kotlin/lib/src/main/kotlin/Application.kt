@@ -6,6 +6,19 @@ import com.svix.kotlin.models.ApplicationIn
 import com.svix.kotlin.models.ApplicationOut
 import com.svix.kotlin.models.ApplicationPatch
 import com.svix.kotlin.models.ListResponseApplicationOut
+import com.svix.kotlin.models.Ordering
+
+class ApplicationListOptions : ListOptions() {
+    var order: Ordering? = null
+
+    fun order(order: Ordering) = apply { this.order = order }
+
+    override fun iterator(iterator: String): ApplicationListOptions = apply {
+        super.iterator(iterator)
+    }
+
+    override fun limit(limit: Int) = apply { super.limit(limit) }
+}
 
 class Application internal constructor(token: String, options: SvixOptions) {
     private val api = ApplicationApi(options.serverUrl)
