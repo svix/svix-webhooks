@@ -1,10 +1,10 @@
+// this file is @generated (with minor manual changes)
 import {
   Configuration,
   MessageAttemptApi,
   ListResponseEndpointMessageOut,
-  ListResponseMessageEndpointOut,
-  ListResponseMessageAttemptEndpointOut,
   ListResponseMessageAttemptOut,
+  ListResponseMessageEndpointOut,
   MessageAttemptOut,
   MessageStatus,
   StatusCodeClass,
@@ -119,21 +119,12 @@ export class MessageAttempt {
     return this.listByMsg(appId, msgId, options);
   }
 
-  public listByMsg(
-    appId: string,
-    msgId: string,
-    options?: MessageAttemptListByMsgOptions
-  ): Promise<ListResponseMessageAttemptOut> {
-    return this.api.v1MessageAttemptListByMsg({
-      appId,
-      msgId,
-      ...options,
-      iterator: options?.iterator ?? undefined,
-      before: options?.before ?? undefined,
-      after: options?.after ?? undefined,
-    });
-  }
-
+  /// List attempts by endpoint id
+  ///
+  /// Note that by default this endpoint is limited to retrieving 90 days' worth of data
+  /// relative to now or, if an iterator is provided, 90 days before/after the time indicated
+  /// by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
+  /// set the `before` or `after` parameter as appropriate.
   public listByEndpoint(
     appId: string,
     endpointId: string,
@@ -149,32 +140,35 @@ export class MessageAttempt {
     });
   }
 
-  public get(
+  /// List attempts by message id
+  ///
+  /// Note that by default this endpoint is limited to retrieving 90 days' worth of data
+  /// relative to now or, if an iterator is provided, 90 days before/after the time indicated
+  /// by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
+  /// set the `before` or `after` parameter as appropriate.
+  public listByMsg(
     appId: string,
     msgId: string,
-    attemptId: string
-  ): Promise<MessageAttemptOut> {
-    return this.api.v1MessageAttemptGet({
-      attemptId,
-      msgId,
+    options?: MessageAttemptListByMsgOptions
+  ): Promise<ListResponseMessageAttemptOut> {
+    return this.api.v1MessageAttemptListByMsg({
       appId,
-    });
-  }
-
-  public resend(
-    appId: string,
-    msgId: string,
-    endpointId: string,
-    options?: PostOptions
-  ): Promise<void> {
-    return this.api.v1MessageAttemptResend({
-      endpointId,
       msgId,
-      appId,
       ...options,
+      iterator: options?.iterator ?? undefined,
+      before: options?.before ?? undefined,
+      after: options?.after ?? undefined,
     });
   }
 
+  /// List messages for a particular endpoint. Additionally includes metadata about the latest message attempt.
+  ///
+  /// The `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.
+  ///
+  /// Note that by default this endpoint is limited to retrieving 90 days' worth of data
+  /// relative to now or, if an iterator is provided, 90 days before/after the time indicated
+  /// by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
+  /// set the `before` or `after` parameter as appropriate.
   public listAttemptedMessages(
     appId: string,
     endpointId: string,
@@ -190,6 +184,30 @@ export class MessageAttempt {
     });
   }
 
+  /// `msg_id`: Use a message id or a message `eventId`
+  public get(
+    appId: string,
+    msgId: string,
+    attemptId: string
+  ): Promise<MessageAttemptOut> {
+    return this.api.v1MessageAttemptGet({
+      appId,
+      msgId,
+      attemptId,
+    });
+  }
+
+  /// Deletes the given attempt's response body. Useful when an endpoint accidentally returned sensitive content.
+  public expungeContent(appId: string, msgId: string, attemptId: string): Promise<void> {
+    return this.api.v1MessageAttemptExpungeContent({
+      appId,
+      msgId,
+      attemptId,
+    });
+  }
+
+  /// List endpoints attempted by a given message. Additionally includes metadata about the latest message attempt.
+  /// By default, endpoints are listed in ascending order by ID.
   public listAttemptedDestinations(
     appId: string,
     msgId: string,
@@ -203,28 +221,18 @@ export class MessageAttempt {
     });
   }
 
-  public listAttemptsForEndpoint(
+  /// Resend a message to the specified endpoint.
+  public resend(
     appId: string,
     msgId: string,
     endpointId: string,
-    options?: MessageAttemptListOptions
-  ): Promise<ListResponseMessageAttemptEndpointOut> {
-    return this.api.v1MessageAttemptListByEndpointDeprecated({
+    options?: PostOptions
+  ): Promise<void> {
+    return this.api.v1MessageAttemptResend({
       appId,
       msgId,
       endpointId,
       ...options,
-      iterator: options?.iterator ?? undefined,
-      before: options?.before ?? undefined,
-      after: options?.after ?? undefined,
-    });
-  }
-
-  public expungeContent(appId: string, msgId: string, attemptId: string): Promise<void> {
-    return this.api.v1MessageAttemptExpungeContent({
-      appId,
-      msgId,
-      attemptId,
     });
   }
 }
