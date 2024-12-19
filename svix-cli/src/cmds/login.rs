@@ -33,10 +33,12 @@ pub fn prompt() -> Result<()> {
         })
         .interact_text()?;
 
-    let cfg = Config {
-        server_url: Some(server_url),
-        auth_token: Some(auth_token),
-    };
+    // Load from disk and update the prompted fields.
+    // There are other fields (not prompted for) related to "relay" for the `listen` command
+    // that we'd rather not wipe out if `login` is invoked.
+    let mut cfg = Config::load()?;
+    cfg.server_url = Some(server_url);
+    cfg.auth_token = Some(auth_token);
 
     let fp = config::get_config_file_path()?;
     if let Err(e) = cfg.save_to_disk(&fp) {
