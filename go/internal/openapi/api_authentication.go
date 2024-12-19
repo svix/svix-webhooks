@@ -660,7 +660,7 @@ func (r ApiV1AuthenticationExchangeOneTimeTokenRequest) Execute() (*OneTimeToken
 /*
 V1AuthenticationExchangeOneTimeToken Exchange One Time Token
 
-This is a one time token
+This is a one time token.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiV1AuthenticationExchangeOneTimeTokenRequest
@@ -857,7 +857,7 @@ func (r ApiV1AuthenticationExpireAllRequest) Execute() (*http.Response, error) {
 /*
 V1AuthenticationExpireAll Expire All
 
-Expire all of the tokens associated with a specific Application
+Expire all of the tokens associated with a specific application.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param appId The app's ID or UID

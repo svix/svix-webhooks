@@ -21,7 +21,7 @@ var _ MappedNullable = &EndpointIn{}
 
 // EndpointIn struct for EndpointIn
 type EndpointIn struct {
-	// List of message channels this endpoint listens to (omit for all)
+	// List of message channels this endpoint listens to (omit for all).
 	Channels []string `json:"channels,omitempty"`
 	Description *string `json:"description,omitempty"`
 	Disabled *bool `json:"disabled,omitempty"`
@@ -30,7 +30,7 @@ type EndpointIn struct {
 	RateLimit *int32 `json:"rateLimit,omitempty"`
 	// The endpoint's verification secret.  Format: `base64` encoded random bytes optionally prefixed with `whsec_`. It is recommended to not set this and let the server generate the secret.
 	Secret *string `json:"secret,omitempty" validate:"regexp=^(whsec_)?[a-zA-Z0-9+\\/=]{32,100}$"`
-	// Optional unique identifier for the endpoint
+	// Optional unique identifier for the endpoint.
 	Uid *string `json:"uid,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
 	Url string `json:"url"`
 	// Deprecated

@@ -30,7 +30,7 @@ type EndpointOauthConfigIn struct {
 	ExtraParams *map[string]string `json:"extraParams,omitempty"`
 	GrantType Oauth2GrantTypeIn `json:"grantType"`
 	JwtParams *ClientSecretJwtParamsIn `json:"jwtParams,omitempty"`
-	// For `refreshToken` grant type
+	// For `refreshToken` grant type.
 	RefreshToken *string `json:"refreshToken,omitempty"`
 	// Optional OAuth scopes added to the request body.
 	Scopes []string `json:"scopes,omitempty"`

@@ -60,7 +60,7 @@ module Svix
     end
 
     def replay_missing(app_id, endpoint_id, replay_in, options = {})
-      @api.v1_endpoint_replay(app_id, endpoint_id, replay_in, options)
+      @api.v1_endpoint_replay_missing(app_id, endpoint_id, replay_in, options)
       nil
     end
 

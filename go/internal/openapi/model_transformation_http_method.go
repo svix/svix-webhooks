@@ -22,12 +22,14 @@ type TransformationHttpMethod string
 const (
 	TRANSFORMATIONHTTPMETHOD_POST TransformationHttpMethod = "POST"
 	TRANSFORMATIONHTTPMETHOD_PUT TransformationHttpMethod = "PUT"
+	TRANSFORMATIONHTTPMETHOD_PATCH TransformationHttpMethod = "PATCH"
 )
 
 // All allowed values of TransformationHttpMethod enum
 var AllowedTransformationHttpMethodEnumValues = []TransformationHttpMethod{
 	"POST",
 	"PUT",
+	"PATCH",
 }
 
 func (v *TransformationHttpMethod) UnmarshalJSON(src []byte) error {

@@ -24,7 +24,7 @@ type ApplicationIn struct {
 	Metadata *map[string]string `json:"metadata,omitempty"`
 	Name string `json:"name"`
 	RateLimit *int32 `json:"rateLimit,omitempty"`
-	// Optional unique identifier for the application
+	// Optional unique identifier for the application.
 	Uid *string `json:"uid,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
 }
 

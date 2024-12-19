@@ -244,7 +244,7 @@ func (r ApiV1TransformationTemplateCreateRequest) Execute() (*TemplateOut, *http
 /*
 V1TransformationTemplateCreate Create Transformation Template
 
-Create a new transformation template
+Create a new transformation template.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiV1TransformationTemplateCreateRequest
@@ -428,7 +428,7 @@ func (r ApiV1TransformationTemplateDeleteRequest) Execute() (*http.Response, err
 /*
 V1TransformationTemplateDelete Delete Transformation Template
 
-Delete a transformation template
+Delete a transformation template.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param transformationTemplateId
@@ -608,7 +608,7 @@ func (r ApiV1TransformationTemplateGenerateRequest) Execute() (*GenerateOut, *ht
 /*
 V1TransformationTemplateGenerate Generate
 
-Use OpenAI's Completion API to generate code for a transformation template
+Use OpenAI's Completion API to generate code for a transformation template.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiV1TransformationTemplateGenerateRequest
@@ -792,7 +792,7 @@ func (r ApiV1TransformationTemplateGetRequest) Execute() (*TemplateOut, *http.Re
 /*
 V1TransformationTemplateGet Get Transformation Template
 
-Get a transformation template
+Get a transformation template.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param transformationTemplateId
@@ -991,7 +991,7 @@ func (r ApiV1TransformationTemplateListRequest) Execute() (*ListResponseTemplate
 /*
 V1TransformationTemplateList List Transformation Templates
 
-List all transformation templates for an application
+List all transformation templates for an application.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiV1TransformationTemplateListRequest
@@ -1188,7 +1188,7 @@ func (r ApiV1TransformationTemplateOauthDiscordRequest) Execute() (*IncomingWebh
 /*
 V1TransformationTemplateOauthDiscord Authorize Discord
 
-Get Discord Incoming webhook URL
+Get Discord Incoming webhook URL.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiV1TransformationTemplateOauthDiscordRequest
@@ -1384,7 +1384,7 @@ func (r ApiV1TransformationTemplateOauthHubspotRequest) Execute() (*OAuthPayload
 /*
 V1TransformationTemplateOauthHubspot Authorize Hubspot
 
-Get Hubspot access token using authorization code
+Get Hubspot access token using authorization code.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiV1TransformationTemplateOauthHubspotRequest
@@ -1580,7 +1580,7 @@ func (r ApiV1TransformationTemplateOauthSlackRequest) Execute() (*IncomingWebhoo
 /*
 V1TransformationTemplateOauthSlack Authorize Slack
 
-Get Slack Incoming webhook URL
+Get Slack Incoming webhook URL.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiV1TransformationTemplateOauthSlackRequest
@@ -1770,7 +1770,7 @@ func (r ApiV1TransformationTemplatePatchRequest) Execute() (*TemplateOut, *http.
 /*
 V1TransformationTemplatePatch Patch Transformation Template
 
-Partially update a transformation template
+Partially update a transformation template.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param transformationTemplateId
@@ -1966,7 +1966,7 @@ func (r ApiV1TransformationTemplateSimulateRequest) Execute() (*TransformationSi
 /*
 V1TransformationTemplateSimulate Simulate
 
-Simulate running the transformation on the payload and code
+Simulate running the transformation on the payload and code.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiV1TransformationTemplateSimulateRequest
@@ -2156,7 +2156,7 @@ func (r ApiV1TransformationTemplateUpdateRequest) Execute() (*TemplateOut, *http
 /*
 V1TransformationTemplateUpdate Update Transformation Template
 
-Update a transformation template
+Update a transformation template.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param transformationTemplateId

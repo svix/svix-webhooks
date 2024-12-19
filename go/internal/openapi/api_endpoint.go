@@ -52,7 +52,7 @@ V1EndpointCreate Create Endpoint
 
 Create a new endpoint for the application.
 
-When `secret` is `null` the secret is automatically generated (recommended)
+When `secret` is `null` the secret is automatically generated (recommended).
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param appId The app's ID or UID
@@ -430,7 +430,7 @@ func (r ApiV1EndpointDeleteMtlsConfigRequest) Execute() (*http.Response, error) 
 /*
 V1EndpointDeleteMtlsConfig Delete Endpoint Mtls Config
 
-Delete endpoint mTLS configuration
+Delete endpoint mTLS configuration.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param appId The app's ID or UID
@@ -614,7 +614,7 @@ func (r ApiV1EndpointDeleteOauthConfigRequest) Execute() (*http.Response, error)
 /*
 V1EndpointDeleteOauthConfig Delete Endpoint Oauth Config
 
-Delete endpoint OAuth configuration
+Delete endpoint OAuth configuration.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param appId The app's ID or UID
@@ -993,7 +993,7 @@ func (r ApiV1EndpointGetHeadersRequest) Execute() (*EndpointHeadersOut, *http.Re
 /*
 V1EndpointGetHeaders Get Endpoint Headers
 
-Get the additional headers to be sent with the webhook
+Get the additional headers to be sent with the webhook.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param appId The app's ID or UID
@@ -1381,13 +1381,13 @@ type ApiV1EndpointGetStatsRequest struct {
 	until *time.Time
 }
 
-// Filter the range to data starting from this date
+// Filter the range to data starting from this date.
 func (r ApiV1EndpointGetStatsRequest) Since(since time.Time) ApiV1EndpointGetStatsRequest {
 	r.since = &since
 	return r
 }
 
-// Filter the range to data ending by this date
+// Filter the range to data ending by this date.
 func (r ApiV1EndpointGetStatsRequest) Until(until time.Time) ApiV1EndpointGetStatsRequest {
 	r.until = &until
 	return r
@@ -2028,7 +2028,7 @@ func (r ApiV1EndpointPatchHeadersRequest) Execute() (*http.Response, error) {
 /*
 V1EndpointPatchHeaders Patch Endpoint Headers
 
-Partially set the additional headers to be sent with the webhook
+Partially set the additional headers to be sent with the webhook.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param appId The app's ID or UID
@@ -2421,7 +2421,7 @@ func (a *EndpointAPIService) V1EndpointRecoverExecute(r ApiV1EndpointRecoverRequ
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiV1EndpointReplayRequest struct {
+type ApiV1EndpointReplayMissingRequest struct {
 	ctx context.Context
 	ApiService *EndpointAPIService
 	appId string
@@ -2430,23 +2430,23 @@ type ApiV1EndpointReplayRequest struct {
 	idempotencyKey *string
 }
 
-func (r ApiV1EndpointReplayRequest) ReplayIn(replayIn ReplayIn) ApiV1EndpointReplayRequest {
+func (r ApiV1EndpointReplayMissingRequest) ReplayIn(replayIn ReplayIn) ApiV1EndpointReplayMissingRequest {
 	r.replayIn = &replayIn
 	return r
 }
 
 // The request&#39;s idempotency key
-func (r ApiV1EndpointReplayRequest) IdempotencyKey(idempotencyKey string) ApiV1EndpointReplayRequest {
+func (r ApiV1EndpointReplayMissingRequest) IdempotencyKey(idempotencyKey string) ApiV1EndpointReplayMissingRequest {
 	r.idempotencyKey = &idempotencyKey
 	return r
 }
 
-func (r ApiV1EndpointReplayRequest) Execute() (*ReplayOut, *http.Response, error) {
-	return r.ApiService.V1EndpointReplayExecute(r)
+func (r ApiV1EndpointReplayMissingRequest) Execute() (*ReplayOut, *http.Response, error) {
+	return r.ApiService.V1EndpointReplayMissingExecute(r)
 }
 
 /*
-V1EndpointReplay Replay Missing Webhooks
+V1EndpointReplayMissing Replay Missing Webhooks
 
 Replays messages to the endpoint.
 
@@ -2456,10 +2456,10 @@ Messages that were previously sent to the endpoint are not resent.
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param appId The app's ID or UID
  @param endpointId The ep's ID or UID
- @return ApiV1EndpointReplayRequest
+ @return ApiV1EndpointReplayMissingRequest
 */
-func (a *EndpointAPIService) V1EndpointReplay(ctx context.Context, appId string, endpointId string) ApiV1EndpointReplayRequest {
-	return ApiV1EndpointReplayRequest{
+func (a *EndpointAPIService) V1EndpointReplayMissing(ctx context.Context, appId string, endpointId string) ApiV1EndpointReplayMissingRequest {
+	return ApiV1EndpointReplayMissingRequest{
 		ApiService: a,
 		ctx: ctx,
 		appId: appId,
@@ -2469,7 +2469,7 @@ func (a *EndpointAPIService) V1EndpointReplay(ctx context.Context, appId string,
 
 // Execute executes the request
 //  @return ReplayOut
-func (a *EndpointAPIService) V1EndpointReplayExecute(r ApiV1EndpointReplayRequest) (*ReplayOut, *http.Response, error) {
+func (a *EndpointAPIService) V1EndpointReplayMissingExecute(r ApiV1EndpointReplayMissingRequest) (*ReplayOut, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
@@ -2477,7 +2477,7 @@ func (a *EndpointAPIService) V1EndpointReplayExecute(r ApiV1EndpointReplayReques
 		localVarReturnValue  *ReplayOut
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "EndpointAPIService.V1EndpointReplay")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "EndpointAPIService.V1EndpointReplayMissing")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
@@ -2874,7 +2874,7 @@ func (r ApiV1EndpointSendExampleRequest) Execute() (*MessageOut, *http.Response,
 /*
 V1EndpointSendExample Send Event Type Example Message
 
-Send an example message for an event
+Send an example message for an event.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param appId The app's ID or UID
@@ -3077,7 +3077,7 @@ func (r ApiV1EndpointTransformationGetRequest) Execute() (*EndpointTransformatio
 /*
 V1EndpointTransformationGet Get Endpoint Transformation
 
-Get the transformation code associated with this endpoint
+Get the transformation code associated with this endpoint.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param appId The app's ID or UID
@@ -3278,7 +3278,7 @@ func (r ApiV1EndpointTransformationPartialUpdateRequest) Execute() (*http.Respon
 /*
 V1EndpointTransformationPartialUpdate Set Endpoint Transformation
 
-Set or unset the transformation code associated with this endpoint
+Set or unset the transformation code associated with this endpoint.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param appId The app's ID or UID
@@ -3480,7 +3480,7 @@ func (r ApiV1EndpointTransformationSimulateRequest) Execute() (*EndpointTransfor
 /*
 V1EndpointTransformationSimulate Simulate
 
-Simulate running the transformation on the payload and code
+Simulate running the transformation on the payload and code.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param appId The app's ID or UID
@@ -3895,7 +3895,7 @@ func (r ApiV1EndpointUpdateHeadersRequest) Execute() (*http.Response, error) {
 /*
 V1EndpointUpdateHeaders Update Endpoint Headers
 
-Set the additional headers to be sent with the webhook
+Set the additional headers to be sent with the webhook.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param appId The app's ID or UID
@@ -4090,7 +4090,7 @@ func (r ApiV1EndpointUpdateMtlsConfigRequest) Execute() (*http.Response, error) 
 /*
 V1EndpointUpdateMtlsConfig Update Endpoint Mtls Config
 
-Create/update endpoint mTLS configuration
+Create/update endpoint mTLS configuration.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param appId The app's ID or UID
@@ -4285,7 +4285,7 @@ func (r ApiV1EndpointUpdateOauthConfigRequest) Execute() (*http.Response, error)
 /*
 V1EndpointUpdateOauthConfig Update Endpoint Oauth Config
 
-Create/update endpoint OAuth configuration
+Create/update endpoint OAuth configuration.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param appId The app's ID or UID

@@ -291,9 +291,9 @@ impl<'a> Endpoint<'a> {
         options: Option<PostOptions>,
     ) -> Result<()> {
         let PostOptions { idempotency_key } = options.unwrap_or_default();
-        endpoint_api::v1_period_endpoint_period_replay(
+        endpoint_api::v1_period_endpoint_period_replay_missing(
             self.cfg,
-            endpoint_api::V1PeriodEndpointPeriodReplayParams {
+            endpoint_api::V1PeriodEndpointPeriodReplayMissingParams {
                 app_id,
                 endpoint_id,
                 replay_in,

@@ -212,13 +212,13 @@ type ApiListBackgroundTasksRequest struct {
 	order *Ordering
 }
 
-// Filter the response based on the status
+// Filter the response based on the status.
 func (r ApiListBackgroundTasksRequest) Status(status BackgroundTaskStatus) ApiListBackgroundTasksRequest {
 	r.status = &status
 	return r
 }
 
-// Filter the response based on the type
+// Filter the response based on the type.
 func (r ApiListBackgroundTasksRequest) Task(task BackgroundTaskType) ApiListBackgroundTasksRequest {
 	r.task = &task
 	return r

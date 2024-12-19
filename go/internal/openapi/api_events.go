@@ -52,7 +52,7 @@ func (r ApiV1EventsRequest) EventTypes(eventTypes []string) ApiV1EventsRequest {
 	return r
 }
 
-// Filter response based on the event type
+// Filter response based on the event type.
 func (r ApiV1EventsRequest) Channels(channels []string) ApiV1EventsRequest {
 	r.channels = &channels
 	return r
@@ -70,7 +70,7 @@ func (r ApiV1EventsRequest) Execute() (*MessageEventsOut, *http.Response, error)
 /*
 V1Events Events
 
-Reads the stream of operational webhook events for this environment
+Reads the stream of operational webhook events for this environment.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiV1EventsRequest

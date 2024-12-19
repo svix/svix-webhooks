@@ -264,7 +264,7 @@ func (r ApiV1InboundRotateUrlRequest) Execute() (*RotatedUrlOut, *http.Response,
 V1InboundRotateUrl Rotate Url
 
 Invalidates the previous inbound url (if one exists), producing a new inbound
-URL for this app
+URL for this app.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param appId The app's ID or UID

@@ -409,13 +409,13 @@ type ApiV1StatsAppAttemptsRequest struct {
 	endDate *time.Time
 }
 
-// Filter the range to data starting from this date
+// Filter the range to data starting from this date.
 func (r ApiV1StatsAppAttemptsRequest) StartDate(startDate time.Time) ApiV1StatsAppAttemptsRequest {
 	r.startDate = &startDate
 	return r
 }
 
-// Filter the range to data ending by this date
+// Filter the range to data ending by this date.
 func (r ApiV1StatsAppAttemptsRequest) EndDate(endDate time.Time) ApiV1StatsAppAttemptsRequest {
 	r.endDate = &endDate
 	return r
@@ -615,13 +615,13 @@ type ApiV1StatsEndpointAttemptsRequest struct {
 	endDate *time.Time
 }
 
-// Filter the range to data starting from this date
+// Filter the range to data starting from this date.
 func (r ApiV1StatsEndpointAttemptsRequest) StartDate(startDate time.Time) ApiV1StatsEndpointAttemptsRequest {
 	r.startDate = &startDate
 	return r
 }
 
-// Filter the range to data ending by this date
+// Filter the range to data ending by this date.
 func (r ApiV1StatsEndpointAttemptsRequest) EndDate(endDate time.Time) ApiV1StatsEndpointAttemptsRequest {
 	r.endDate = &endDate
 	return r
@@ -634,7 +634,7 @@ func (r ApiV1StatsEndpointAttemptsRequest) Execute() (*AttemptStatisticsResponse
 /*
 V1StatsEndpointAttempts Get Ep Stats
 
-Returns endpoint-level statistics on message attempts
+Returns endpoint-level statistics on message attempts.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param appId The app's ID or UID

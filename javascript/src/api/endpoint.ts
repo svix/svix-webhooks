@@ -143,7 +143,7 @@ export class Endpoint {
     options?: PostOptions
   ): Promise<void> {
     return this.api
-      .v1EndpointReplay({
+      .v1EndpointReplayMissing({
         appId,
         endpointId,
         replayIn,

@@ -164,7 +164,7 @@ public final class Endpoint {
 	public void replayMissing(final String appId, final String endpointId, final ReplayIn replayIn,
 			final PostOptions options) throws ApiException {
 		try {
-			api.v1EndpointReplay(appId, endpointId, replayIn, options.getIdempotencyKey());
+			api.v1EndpointReplayMissing(appId, endpointId, replayIn, options.getIdempotencyKey());
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}

@@ -47,7 +47,7 @@ func (r ApiCreateBroadcastMessageRequest) Execute() (*MessageBroadcastOut, *http
 /*
 CreateBroadcastMessage Create Broadcast Message
 
-Creates a background task to send the same message to each application in your organization
+Creates a background task to send the same message to each application in your organization.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiCreateBroadcastMessageRequest

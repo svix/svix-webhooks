@@ -182,7 +182,7 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
         options: PostOptions = PostOptions(),
     ) {
         try {
-            api.v1EndpointReplay(appId, endpointId, replayIn, options.idempotencyKey)
+            api.v1EndpointReplayMissing(appId, endpointId, replayIn, options.idempotencyKey)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }

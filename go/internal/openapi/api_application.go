@@ -33,25 +33,25 @@ type ApiGetAppUsageStatsApiV1AppStatsUsageGetRequest struct {
 	iterator *string
 }
 
-// Filter the range to data after this date
+// Filter the range to data after this date.
 func (r ApiGetAppUsageStatsApiV1AppStatsUsageGetRequest) Since(since time.Time) ApiGetAppUsageStatsApiV1AppStatsUsageGetRequest {
 	r.since = &since
 	return r
 }
 
-// Filter the range to data before this date
+// Filter the range to data before this date.
 func (r ApiGetAppUsageStatsApiV1AppStatsUsageGetRequest) Until(until time.Time) ApiGetAppUsageStatsApiV1AppStatsUsageGetRequest {
 	r.until = &until
 	return r
 }
 
-// Limit the number of returned items
+// Limit the number of returned items.
 func (r ApiGetAppUsageStatsApiV1AppStatsUsageGetRequest) Limit(limit int32) ApiGetAppUsageStatsApiV1AppStatsUsageGetRequest {
 	r.limit = &limit
 	return r
 }
 
-// The iterator to use (depends on the chosen ordering)
+// The iterator to use (depends on the chosen ordering).
 func (r ApiGetAppUsageStatsApiV1AppStatsUsageGetRequest) Iterator(iterator string) ApiGetAppUsageStatsApiV1AppStatsUsageGetRequest {
 	r.iterator = &iterator
 	return r
@@ -820,13 +820,13 @@ type ApiV1ApplicationGetStatsRequest struct {
 	appId string
 }
 
-// Filter the range to data starting from this date
+// Filter the range to data starting from this date.
 func (r ApiV1ApplicationGetStatsRequest) Since(since time.Time) ApiV1ApplicationGetStatsRequest {
 	r.since = &since
 	return r
 }
 
-// Filter the range to data ending by this date
+// Filter the range to data ending by this date.
 func (r ApiV1ApplicationGetStatsRequest) Until(until time.Time) ApiV1ApplicationGetStatsRequest {
 	r.until = &until
 	return r
@@ -839,7 +839,7 @@ func (r ApiV1ApplicationGetStatsRequest) Execute() (*ApplicationStats, *http.Res
 /*
 V1ApplicationGetStats Get App Stats
 
-Get basic statistics for the application
+Get basic statistics for the application.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param appId The app's ID or UID

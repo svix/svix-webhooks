@@ -432,7 +432,7 @@ func (r ApiV1EventTypeExportOpenapiRequest) Execute() (*ExportEventTypeOut, *htt
 V1EventTypeExportOpenapi Event Type Export From Openapi
 
 Exports event type definitions based on the OpenAPI schemas associated
-with each existing event type
+with each existing event type.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiV1EventTypeExportOpenapiRequest
@@ -623,7 +623,7 @@ func (r ApiV1EventTypeGenerateExampleRequest) Execute() (*EventTypeExampleOut, *
 /*
 V1EventTypeGenerateExample Generate Schema Example
 
-Generates a fake example from the given JSONSchema
+Generates a fake example from the given JSONSchema.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiV1EventTypeGenerateExampleRequest
@@ -989,7 +989,7 @@ func (r ApiV1EventTypeGetRetryScheduleRequest) Execute() (*RetryScheduleInOut, *
 /*
 V1EventTypeGetRetrySchedule Get Retry Schedule
 
-Gets the retry schedule for messages using the given event type
+Gets the retry schedule for messages using the given event type.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param eventTypeName The event type's name
@@ -1387,13 +1387,13 @@ func (r ApiV1EventTypeListRequest) Order(order Ordering) ApiV1EventTypeListReque
 	return r
 }
 
-// When &#x60;true&#x60; archived (deleted but not expunged) items are included in the response
+// When &#x60;true&#x60; archived (deleted but not expunged) items are included in the response.
 func (r ApiV1EventTypeListRequest) IncludeArchived(includeArchived bool) ApiV1EventTypeListRequest {
 	r.includeArchived = &includeArchived
 	return r
 }
 
-// When &#x60;true&#x60; the full item (including the schema) is included in the response
+// When &#x60;true&#x60; the full item (including the schema) is included in the response.
 func (r ApiV1EventTypeListRequest) WithContent(withContent bool) ApiV1EventTypeListRequest {
 	r.withContent = &withContent
 	return r
@@ -1995,7 +1995,7 @@ func (r ApiV1EventTypeUpdateRetryScheduleRequest) Execute() (*RetryScheduleInOut
 /*
 V1EventTypeUpdateRetrySchedule Update Retry Schedule
 
-Sets a retry schedule for all messages using the given event type
+Sets a retry schedule for all messages using the given event type.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param eventTypeName The event type's name

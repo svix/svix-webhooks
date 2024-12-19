@@ -23,7 +23,7 @@ var _ MappedNullable = &OperationalWebhookEndpointOut{}
 // OperationalWebhookEndpointOut struct for OperationalWebhookEndpointOut
 type OperationalWebhookEndpointOut struct {
 	CreatedAt time.Time `json:"createdAt"`
-	// An example endpoint name
+	// An example endpoint name.
 	Description string `json:"description"`
 	Disabled *bool `json:"disabled,omitempty"`
 	FilterTypes []string `json:"filterTypes,omitempty"`
@@ -31,7 +31,7 @@ type OperationalWebhookEndpointOut struct {
 	Id string `json:"id"`
 	Metadata map[string]string `json:"metadata"`
 	RateLimit *int32 `json:"rateLimit,omitempty"`
-	// Optional unique identifier for the endpoint
+	// Optional unique identifier for the endpoint.
 	Uid *string `json:"uid,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
 	UpdatedAt time.Time `json:"updatedAt"`
 	Url string `json:"url"`
