@@ -1,3 +1,4 @@
+use std::io::Write;
 use anyhow::{Error, Result};
 use colored_json::ColorMode;
 use serde::de::DeserializeOwned;
@@ -28,5 +29,6 @@ where
     // FIXME: factor the writer out? Will that help with testing?
     let mut writer = std::io::stdout().lock();
     colored_json::write_colored_json_with_mode(val, &mut writer, color_mode)?;
+    writer.write_all(b"\n")?;
     Ok(())
 }
