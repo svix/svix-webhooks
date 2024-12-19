@@ -4,6 +4,7 @@ use crate::cmds::api::event_type::EventTypeArgs;
 use crate::cmds::api::integration::IntegrationArgs;
 use crate::cmds::api::message::MessageArgs;
 use crate::cmds::listen::ListenArgs;
+use crate::cmds::open::OpenArgs;
 use crate::cmds::signature::SignatureArgs;
 use crate::config::Config;
 use anyhow::Result;
@@ -73,7 +74,7 @@ enum RootCommands {
     // FIXME: need codegen for this
     MessageAttempt,
     /// Quickly open Svix pages in your browser
-    Open,
+    Open(OpenArgs),
     /// Verifying and signing webhooks with the Svix signature scheme
     Signature(SignatureArgs),
     /// Get the version of the Svix CLI
@@ -93,7 +94,7 @@ async fn main() -> Result<()> {
         // Local-only things
         RootCommands::Version => println!("{VERSION}"),
         RootCommands::Signature(args) => args.command.exec().await?,
-        RootCommands::Open => todo!("Commands::Open"),
+        RootCommands::Open(args) => args.command.exec().await?,
         // Remote API calls
         RootCommands::Application(args) => {
             let client = get_client(&cfg?)?;
