@@ -146,9 +146,8 @@ fn get_client_options(cfg: &Config) -> Result<svix::api::SvixOptions> {
     Ok(svix::api::SvixOptions {
         debug: false,
         server_url: cfg
-            .server_url
-            .clone()
-            .or_else(|| Some(String::from(DEFAULT_SERVER_URL))),
+            .server_url()
+            .map(Into::into),
         timeout: None,
     })
 }

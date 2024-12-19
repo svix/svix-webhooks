@@ -36,9 +36,7 @@ pub fn prompt() -> Result<()> {
     // Load from disk and update the prompted fields.
     // There are other fields (not prompted for) related to "relay" for the `listen` command
     // that we'd rather not wipe out if `login` is invoked.
-    let mut cfg = Config::load()?;
-    cfg.server_url = Some(server_url);
-    cfg.auth_token = Some(auth_token);
+    let cfg = Config::load_with_server_url_and_auth_token(Some(server_url), Some(auth_token))?;
 
     let fp = config::get_config_file_path()?;
     if let Err(e) = cfg.save_to_disk(&fp) {
