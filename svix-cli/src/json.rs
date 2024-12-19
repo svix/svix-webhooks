@@ -1,6 +1,5 @@
-use std::io::Write;
 use anyhow::{Error, Result};
-use colored_json::ColorMode;
+use colored_json::{Color, ColorMode, ToColoredJson};
 use serde::de::DeserializeOwned;
 use serde::Serialize;
 use std::str::FromStr;
@@ -26,9 +25,16 @@ pub fn print_json_output<T>(val: &T, color_mode: ColorMode) -> Result<()>
 where
     T: Serialize,
 {
-    // FIXME: factor the writer out? Will that help with testing?
-    let mut writer = std::io::stdout().lock();
-    colored_json::write_colored_json_with_mode(val, &mut writer, color_mode)?;
-    writer.write_all(b"\n")?;
+    let styler = colored_json::Styler {
+        integer_value: Color::Green.foreground(),
+        float_value: Color::Green.foreground(),
+        bool_value: Color::Yellow.foreground(),
+        nil_value: Color::Magenta.foreground(),
+        string_include_quotation: true,
+        ..Default::default()
+    };
+    let s = serde_json::to_string_pretty(val)?.to_colored_json_with_styler(color_mode, styler)?;
+
+    println!("{s}");
     Ok(())
 }
