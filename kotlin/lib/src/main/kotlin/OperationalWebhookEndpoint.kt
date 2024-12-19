@@ -8,6 +8,17 @@ import com.svix.kotlin.models.OperationalWebhookEndpointOut
 import com.svix.kotlin.models.OperationalWebhookEndpointSecretIn
 import com.svix.kotlin.models.OperationalWebhookEndpointSecretOut
 import com.svix.kotlin.models.OperationalWebhookEndpointUpdate
+import com.svix.kotlin.models.Ordering
+
+class OperationalWebhookEndpointListOptions : ListOptions() {
+    var order: Ordering? = null
+
+    fun order(order: Ordering) = apply { this.order = order }
+
+    override fun iterator(iterator: String) = apply { super.iterator(iterator) }
+
+    override fun limit(limit: Int) = apply { super.limit(limit) }
+}
 
 class OperationalWebhookEndpoint internal constructor(token: String, options: SvixOptions) {
     val api = OperationalWebhookEndpointApi(options.serverUrl)

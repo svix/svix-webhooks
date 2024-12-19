@@ -7,6 +7,17 @@ import com.svix.kotlin.models.IntegrationKeyOut
 import com.svix.kotlin.models.IntegrationOut
 import com.svix.kotlin.models.IntegrationUpdate
 import com.svix.kotlin.models.ListResponseIntegrationOut
+import com.svix.kotlin.models.Ordering
+
+class IntegrationListOptions : ListOptions() {
+    var order: Ordering? = null
+
+    override fun iterator(iterator: String) = apply { super.iterator(iterator) }
+
+    override fun limit(limit: Int) = apply { super.limit(limit) }
+
+    fun order(order: Ordering) = apply { this.order = order }
+}
 
 class Integration internal constructor(token: String, options: SvixOptions) {
     val api = IntegrationApi(options.serverUrl)

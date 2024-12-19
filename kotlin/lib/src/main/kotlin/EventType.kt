@@ -10,6 +10,19 @@ import com.svix.kotlin.models.EventTypePatch
 import com.svix.kotlin.models.EventTypeUpdate
 import com.svix.kotlin.models.ListResponseEventTypeOut
 
+class EventTypeListOptions() : ListOptions() {
+    var withContent: Boolean? = null
+    var includeAchived: Boolean? = null
+
+    fun withContent(withContent: Boolean) = apply { this.withContent = withContent }
+
+    fun includeAchived(includeAchived: Boolean) = apply { this.includeAchived = includeAchived }
+
+    override fun iterator(iterator: String) = apply { super.iterator(iterator) }
+
+    override fun limit(limit: Int) = apply { super.limit(limit) }
+}
+
 class EventType internal constructor(token: String, options: SvixOptions) {
     val api = EventTypeApi(options.serverUrl)
 
