@@ -15,7 +15,6 @@ use concolor_clap::{Color, ColorChoice};
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 const BIN_NAME: &str = env!("CARGO_BIN_NAME");
-const DEFAULT_SERVER_URL: &str = "https://api.svix.com";
 mod cli_types;
 mod cmds;
 mod config;
@@ -145,9 +144,7 @@ fn get_client(cfg: &Config) -> Result<svix::api::Svix> {
 fn get_client_options(cfg: &Config) -> Result<svix::api::SvixOptions> {
     Ok(svix::api::SvixOptions {
         debug: false,
-        server_url: cfg
-            .server_url()
-            .map(Into::into),
+        server_url: cfg.server_url().map(Into::into),
         timeout: None,
     })
 }
