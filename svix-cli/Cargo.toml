@@ -1,0 +1,26 @@
+[package]
+name = "svix-cli"
+description = "A CLI to interact with the Svix API."
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "svix"
+path = "src/main.rs"
+
+[dependencies]
+anyhow = "1.0.94"
+chrono = "0.4.39"
+clap = { version = "4.5.23", features = ["derive"] }
+clap_complete = "4.5.38"
+colored_json = "5.0.0"
+concolor-clap = "0.1.0"
+dialoguer = "0.11.0"
+figment = { version = "0.10.19", features = ["toml", "env"] }
+http = "1.2.0"
+serde = { version = "1.0.215", features = ["derive"] }
+serde_json = "1.0.133"
+svix = "1.43.0"
+tokio = { version = "1.42.0", features = ["full"] }
+toml = "0.8.19"
+url = "2.5.4"
