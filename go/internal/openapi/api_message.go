@@ -1454,8 +1454,9 @@ func (r ApiV1MessageExpungeContentRequest) Execute() (*http.Response, error) {
 /*
 V1MessageExpungeContent Delete message payload
 
-Delete the given message's payload. Useful in cases when a message was accidentally sent with sensitive content.
+Delete the given message's payload.
 
+Useful in cases when a message was accidentally sent with sensitive content.
 The message can't be replayed or resent once its payload has been deleted or expired.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
