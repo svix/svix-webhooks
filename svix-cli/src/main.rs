@@ -76,7 +76,7 @@ enum RootCommands {
     /// Quickly open Svix pages in your browser
     Open,
     /// Verifying and signing webhooks with the Svix signature scheme
-    SvixSignature(SignatureArgs),
+    Signature(SignatureArgs),
     /// Get the version of the Svix CLI
     Version,
 }
@@ -93,7 +93,7 @@ async fn main() -> Result<()> {
     match cli.command {
         // Local-only things
         RootCommands::Version => println!("{VERSION}"),
-        RootCommands::SvixSignature(args) => args.command.exec().await?,
+        RootCommands::Signature(args) => args.command.exec().await?,
         RootCommands::Open => todo!("Commands::Open"),
         // Remote API calls
         RootCommands::Application(args) => {
