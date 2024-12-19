@@ -11,6 +11,7 @@ use tokio::sync::mpsc::{UnboundedReceiver, UnboundedSender};
 use tokio::task::JoinSet;
 use tokio::time::Instant;
 use tokio_tungstenite::tungstenite::client::IntoClientRequest;
+use tokio_tungstenite::tungstenite::Bytes;
 use tokio_tungstenite::{
     connect_async, tungstenite::protocol::Message, MaybeTlsStream, WebSocketStream,
 };
@@ -54,12 +55,15 @@ impl Client {
         let (remote_tx, remote_rx) = tokio::sync::mpsc::unbounded_channel::<MessageOut>();
 
         ws_tx
-            .send(Message::Binary(serde_json::to_vec(&MessageOut::Start {
-                version: message::VERSION,
-                data: MessageOutStart {
-                    token: self.token.clone(),
-                },
-            })?))
+            .send(Message::Binary(
+                serde_json::to_vec(&MessageOut::Start {
+                    version: message::VERSION,
+                    data: MessageOutStart {
+                        token: self.token.clone(),
+                    },
+                })?
+                .into(),
+            ))
             .await?;
         match ws_rx.next().await {
             None => anyhow::bail!("no response from server for start message"),
@@ -252,7 +256,7 @@ async fn read_from_ws_loop(
                     Message::Ping(_) | Message::Pong(_) | Message::Frame(_) => continue,
 
                     // Messages that carry data we care to process.
-                    Message::Text(s) => s.as_bytes().to_vec(),
+                    Message::Text(s) => s.into(),
                     Message::Binary(bytes) => bytes,
                 };
 
@@ -272,7 +276,9 @@ async fn send_to_ws_loop(
         tokio::time::timeout(
             WRITE_WAIT,
             tx.send(Message::Binary(
-                serde_json::to_vec(&msg).expect("trivial serialization"),
+                serde_json::to_vec(&msg)
+                    .expect("trivial serialization")
+                    .into(),
             )),
         )
         .await?
@@ -325,7 +331,7 @@ fn format_resp_headers(headers: &HeaderMap) -> Result<HashMap<String, String>> {
 //
 async fn handle_incoming_message(
     client: HttpClient,
-    bytes: Vec<u8>,
+    bytes: Bytes,
     local_url: &url::Url,
     tx: UnboundedSender<MessageOut>,
 ) {
