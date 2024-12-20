@@ -2,7 +2,7 @@ use clap::{Args, Subcommand};
 use colored_json::ColorMode;
 use svix::api::AppPortalAccessIn;
 
-use crate::{cli_types::PostOptions, config::Config, get_client_options, json::JsonOf};
+use crate::{cli_types::PostOptions, json::JsonOf};
 
 #[derive(Args)]
 #[command(args_conflicts_with_subcommands = true)]
@@ -32,12 +32,7 @@ pub enum AuthenticationCommands {
 }
 
 impl AuthenticationCommands {
-    pub async fn exec(
-        self,
-        client: &svix::api::Svix,
-        color_mode: ColorMode,
-        cfg: &Config,
-    ) -> anyhow::Result<()> {
+    pub async fn exec(self, client: &svix::api::Svix, color_mode: ColorMode) -> anyhow::Result<()> {
         match self {
             Self::AppPortalAccess {
                 app_id,
@@ -60,8 +55,7 @@ impl AuthenticationCommands {
             } => {
                 // We're not using the client received by `exec()` here since the token is an
                 // arg, not whatever is configured for the cli otherwise.
-                let client =
-                    svix::api::Svix::new(dashboard_auth_token, Some(get_client_options(cfg)?));
+                let client = client.with_token(dashboard_auth_token);
 
                 client
                     .authentication()
