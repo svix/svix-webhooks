@@ -57,6 +57,23 @@ impl Webhook {
     }
 
     pub fn verify<HM: HeaderMap>(&self, payload: &[u8], headers: &HM) -> Result<(), WebhookError> {
+        self.verify_inner(payload, headers, /* enforce_tolerance */ true)
+    }
+
+    pub fn verify_ignoring_timestamp<HM: HeaderMap>(
+        &self,
+        payload: &[u8],
+        headers: &HM,
+    ) -> Result<(), WebhookError> {
+        self.verify_inner(payload, headers, /* enforce_tolerance */ false)
+    }
+
+    fn verify_inner<HM: HeaderMap>(
+        &self,
+        payload: &[u8],
+        headers: &HM,
+        enforce_tolerance: bool,
+    ) -> Result<(), WebhookError> {
         let msg_id = Self::get_header(headers, SVIX_MSG_ID_KEY, UNBRANDED_MSG_ID_KEY, "id")?;
         let msg_signature = Self::get_header(
             headers,
@@ -72,7 +89,9 @@ impl Webhook {
         )
         .and_then(Self::parse_timestamp)?;
 
-        Self::verify_timestamp(msg_ts)?;
+        if enforce_tolerance {
+            Self::verify_timestamp(msg_ts)?;
+        }
 
         let versioned_signature = self.sign(msg_id, msg_ts, payload)?;
         let expected_signature = versioned_signature
@@ -317,22 +336,37 @@ mod tests {
         let payload = br#"{"email":"test@example.com","username":"test_user"}"#;
         let wh = Webhook::new(&secret).unwrap();
 
-        let signature = wh
-            .sign(msg_id, OffsetDateTime::now_utc().unix_timestamp(), payload)
-            .unwrap();
-
-        let mut headers = get_svix_headers(msg_id, &signature);
+        // Checks that timestamps that are in the future or too old are rejected by
+        // `verify` but okay for `verify_ignoring_timestamp`.
         for ts in [
             OffsetDateTime::now_utc().unix_timestamp() - (super::TOLERANCE_IN_SECONDS + 1),
             OffsetDateTime::now_utc().unix_timestamp() + (super::TOLERANCE_IN_SECONDS + 1),
         ] {
+            let signature = wh.sign(msg_id, ts, payload).unwrap();
+            let mut headers = get_svix_headers(msg_id, &signature);
             headers.insert(
                 super::SVIX_MSG_TIMESTAMP_KEY,
                 ts.to_string().parse().unwrap(),
             );
 
             assert!(wh.verify(payload, &headers,).is_err());
+            // Timestamp tolerance is not considered in this case.
+            assert!(wh.verify_ignoring_timestamp(payload, &headers,).is_ok());
         }
+
+        let ts = OffsetDateTime::now_utc().unix_timestamp();
+        let signature = wh.sign(msg_id, ts, payload).unwrap();
+        let mut headers = get_svix_headers(msg_id, &signature);
+        headers.insert(
+            super::SVIX_MSG_TIMESTAMP_KEY,
+            // Timestamp mismatch!
+            (ts + 1).to_string().parse().unwrap(),
+        );
+
+        // Both versions should reject the timestamp if it's not the same one used to
+        // produce the signature.
+        assert!(wh.verify(payload, &headers,).is_err());
+        assert!(wh.verify_ignoring_timestamp(payload, &headers,).is_err());
     }
 
     #[test]
