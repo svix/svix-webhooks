@@ -60,10 +60,6 @@ enum RootCommands {
     Endpoint(EndpointArgs),
     /// List, create & modify event types
     EventType(EventTypeArgs),
-    /// Export data from your Svix Organization
-    Export,
-    /// Import data to your Svix Organization
-    Import,
     /// List integrations by app id
     Integration(IntegrationArgs),
     /// Forward webhook requests to a local url
@@ -122,8 +118,6 @@ async fn main() -> Result<()> {
             let client = get_client(&cfg?)?;
             args.command.exec(&client, color_mode).await?;
         }
-        RootCommands::Import => todo!("Commands::Import"),
-        RootCommands::Export => todo!("Commands::Export"),
         RootCommands::Integration(args) => {
             let client = get_client(&cfg?)?;
             args.command.exec(&client, color_mode).await?;
