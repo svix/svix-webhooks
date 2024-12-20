@@ -76,12 +76,19 @@ func TestKitchenSink(t *testing.T) {
 	}
 
 	endp, err := client.Endpoint.Create(ctx, app.Id, &svix.EndpointIn{
-		Url: "https://example.svix.com/",
+		Url:      "https://example.svix.com/",
+		Channels: []string{"ch0", "ch1"},
 	})
 	if err != nil {
 		t.Fatal(err)
 	}
 
+	if len(endp.GetChannels()) != 2 {
+		t.Errorf("got %d channels, want 2", len(endp.Channels))
+	}
+	if len(endp.GetFilterTypes()) != 0 {
+		t.Errorf("got %d filter types, want 0", len(endp.GetFilterTypes()))
+	}
 	endpPatch := svix.EndpointPatch{}
 	endpPatch.SetFilterTypes([]string{"event.started", "event.ended"})
 
@@ -94,6 +101,22 @@ func TestKitchenSink(t *testing.T) {
 		if !(typ == "event.started" || typ == "event.ended") {
 			t.Fatalf("unexpected filter type: `%s`", typ)
 		}
+	}
+
+	endpPatch2 := svix.EndpointPatch{
+		Channels: nil,
+	}
+	patched2, err := client.Endpoint.Patch(ctx, app.Id, endp.Id, &endpPatch2)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(patched2.Channels) > 0 {
+		t.Fatalf("expected patched channels to be empty: %v", patched2.Channels)
+	}
+
+	err = client.Endpoint.Delete(ctx, app.Id, endp.Id)
+	if err != nil {
+		t.Fatalf("unexpected error on delete: %s", err.Error())
 	}
 }
 
