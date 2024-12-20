@@ -16,7 +16,7 @@ export class Authentication {
     this.api = new AuthenticationApi(config);
   }
 
-  /// Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal.
+  /** Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal. */
   public appPortalAccess(
     appId: string,
     appPortalAccessIn: AppPortalAccessIn,
@@ -39,7 +39,7 @@ export class Authentication {
     });
   }
 
-  /// Expire all of the tokens associated with a specific Application
+  /** Expire all of the tokens associated with a specific application. */
   public expireAll(
     appId: string,
     applicationTokenExpireIn: ApplicationTokenExpireIn,
@@ -52,9 +52,11 @@ export class Authentication {
     });
   }
 
-  /// Logout an app token.
-  ///
-  /// Trying to log out other tokens will fail.
+  /**
+   * Logout an app token.
+   *
+   * Trying to log out other tokens will fail.
+   */
   public logout(options?: PostOptions): Promise<void> {
     return this.api.v1AuthenticationLogout({
       ...options,
