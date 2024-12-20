@@ -30,6 +30,7 @@ type EnvironmentSettingsOut struct {
 	DisplayName *string `json:"displayName,omitempty"`
 	EnableChannels *bool `json:"enableChannels,omitempty"`
 	EnableIntegrationManagement *bool `json:"enableIntegrationManagement,omitempty"`
+	EnableMessageStream *bool `json:"enableMessageStream,omitempty"`
 	EnableMessageTags *bool `json:"enableMessageTags,omitempty"`
 	EnableTransformations *bool `json:"enableTransformations,omitempty"`
 	ShowUseSvixPlay *bool `json:"showUseSvixPlay,omitempty"`
@@ -46,6 +47,8 @@ func NewEnvironmentSettingsOut() *EnvironmentSettingsOut {
 	this.EnableChannels = &enableChannels
 	var enableIntegrationManagement bool = false
 	this.EnableIntegrationManagement = &enableIntegrationManagement
+	var enableMessageStream bool = false
+	this.EnableMessageStream = &enableMessageStream
 	var enableMessageTags bool = false
 	this.EnableMessageTags = &enableMessageTags
 	var enableTransformations bool = false
@@ -66,6 +69,8 @@ func NewEnvironmentSettingsOutWithDefaults() *EnvironmentSettingsOut {
 	this.EnableChannels = &enableChannels
 	var enableIntegrationManagement bool = false
 	this.EnableIntegrationManagement = &enableIntegrationManagement
+	var enableMessageStream bool = false
+	this.EnableMessageStream = &enableMessageStream
 	var enableMessageTags bool = false
 	this.EnableMessageTags = &enableMessageTags
 	var enableTransformations bool = false
@@ -429,6 +434,38 @@ func (o *EnvironmentSettingsOut) SetEnableIntegrationManagement(v bool) {
 	o.EnableIntegrationManagement = &v
 }
 
+// GetEnableMessageStream returns the EnableMessageStream field value if set, zero value otherwise.
+func (o *EnvironmentSettingsOut) GetEnableMessageStream() bool {
+	if o == nil || IsNil(o.EnableMessageStream) {
+		var ret bool
+		return ret
+	}
+	return *o.EnableMessageStream
+}
+
+// GetEnableMessageStreamOk returns a tuple with the EnableMessageStream field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *EnvironmentSettingsOut) GetEnableMessageStreamOk() (*bool, bool) {
+	if o == nil || IsNil(o.EnableMessageStream) {
+		return nil, false
+	}
+	return o.EnableMessageStream, true
+}
+
+// HasEnableMessageStream returns a boolean if a field has been set.
+func (o *EnvironmentSettingsOut) HasEnableMessageStream() bool {
+	if o != nil && !IsNil(o.EnableMessageStream) {
+		return true
+	}
+
+	return false
+}
+
+// SetEnableMessageStream gets a reference to the given bool and assigns it to the EnableMessageStream field.
+func (o *EnvironmentSettingsOut) SetEnableMessageStream(v bool) {
+	o.EnableMessageStream = &v
+}
+
 // GetEnableMessageTags returns the EnableMessageTags field value if set, zero value otherwise.
 func (o *EnvironmentSettingsOut) GetEnableMessageTags() bool {
 	if o == nil || IsNil(o.EnableMessageTags) {
@@ -599,6 +636,9 @@ func (o EnvironmentSettingsOut) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.EnableIntegrationManagement) {
 		toSerialize["enableIntegrationManagement"] = o.EnableIntegrationManagement
+	}
+	if !IsNil(o.EnableMessageStream) {
+		toSerialize["enableMessageStream"] = o.EnableMessageStream
 	}
 	if !IsNil(o.EnableMessageTags) {
 		toSerialize["enableMessageTags"] = o.EnableMessageTags

@@ -1826,6 +1826,10 @@
                         "default": false,
                         "type": "boolean"
                     },
+                    "enableMessageStream": {
+                        "default": false,
+                        "type": "boolean"
+                    },
                     "enableMessageTags": {
                         "default": false,
                         "type": "boolean"
