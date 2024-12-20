@@ -1,9 +1,10 @@
+// this file is @generated (with the exception of getOrCreate)
 import {
+  Configuration,
   ApplicationApi,
   ApplicationIn,
   ApplicationOut,
   ApplicationPatch,
-  Configuration,
   ListResponseApplicationOut,
   Ordering,
 } from "../openapi";
@@ -25,18 +26,26 @@ export class Application {
     this.api = new ApplicationApi(config);
   }
 
+  /// List of all the organization's applications.
   public list(options?: ApplicationListOptions): Promise<ListResponseApplicationOut> {
-    const iterator = options?.iterator ?? undefined;
-    return this.api.v1ApplicationList({ ...options, iterator });
+    return this.api.v1ApplicationList({
+      ...options,
+      iterator: options?.iterator ?? undefined,
+    });
   }
 
+  /// Create a new application.
   public create(
     applicationIn: ApplicationIn,
     options?: PostOptions
   ): Promise<ApplicationOut> {
-    return this.api.v1ApplicationCreate({ applicationIn, ...options });
+    return this.api.v1ApplicationCreate({
+      applicationIn,
+      ...options,
+    });
   }
 
+  /// Get the application with the UID from `applicationIn`, or create it if it doesn't exist yet.
   public getOrCreate(
     applicationIn: ApplicationIn,
     options?: PostOptions
@@ -48,22 +57,36 @@ export class Application {
     });
   }
 
+  /// Get an application.
   public get(appId: string): Promise<ApplicationOut> {
-    return this.api.v1ApplicationGet({ appId });
+    return this.api.v1ApplicationGet({
+      appId,
+    });
   }
 
+  /// Update an application.
   public update(appId: string, applicationIn: ApplicationIn): Promise<ApplicationOut> {
-    return this.api.v1ApplicationUpdate({ appId, applicationIn });
+    return this.api.v1ApplicationUpdate({
+      appId,
+      applicationIn,
+    });
   }
 
+  /// Delete an application.
+  public delete(appId: string): Promise<void> {
+    return this.api.v1ApplicationDelete({
+      appId,
+    });
+  }
+
+  /// Partially update an application.
   public patch(
     appId: string,
     applicationPatch: ApplicationPatch
   ): Promise<ApplicationOut> {
-    return this.api.v1ApplicationPatch({ appId, applicationPatch });
-  }
-
-  public delete(appId: string): Promise<void> {
-    return this.api.v1ApplicationDelete({ appId });
+    return this.api.v1ApplicationPatch({
+      appId,
+      applicationPatch,
+    });
   }
 }
