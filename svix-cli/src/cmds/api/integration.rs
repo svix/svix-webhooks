@@ -1,9 +1,9 @@
+use crate::cli_types::integration::IntegrationListOptions;
+use crate::cli_types::PostOptions;
+use crate::json::JsonOf;
 use clap::{Args, Subcommand};
 use colored_json::ColorMode;
 use svix::api::{IntegrationIn, IntegrationUpdate};
-
-use crate::cli_types::{integration::IntegrationListOptions, PostOptions};
-use crate::json::JsonOf;
 
 #[derive(Args)]
 #[command(args_conflicts_with_subcommands = true)]
@@ -18,6 +18,7 @@ pub enum IntegrationCommands {
     /// List the application's integrations.
     List {
         app_id: String,
+
         #[clap(flatten)]
         options: IntegrationListOptions,
     },
@@ -41,13 +42,7 @@ pub enum IntegrationCommands {
     /// Get an integration's key.
     GetKey { app_id: String, id: String },
     /// Rotate the integration's key. The previous key will be immediately revoked.
-    RotateKey {
-        app_id: String,
-        id: String,
-        // FIXME: Not part of the Rust lib (yet)
-        //#[clap(flatten)]
-        //post_options: Option<PostOptions>,
-    },
+    RotateKey { app_id: String, id: String },
 }
 
 impl IntegrationCommands {

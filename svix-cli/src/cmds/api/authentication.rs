@@ -1,8 +1,8 @@
+use crate::cli_types::PostOptions;
+use crate::json::JsonOf;
 use clap::{Args, Subcommand};
 use colored_json::ColorMode;
-use svix::api::AppPortalAccessIn;
-
-use crate::{cli_types::PostOptions, json::JsonOf};
+use svix::api::{AppPortalAccessIn, ApplicationTokenExpireIn};
 
 #[derive(Args)]
 #[command(args_conflicts_with_subcommands = true)]
@@ -21,11 +21,17 @@ pub enum AuthenticationCommands {
         #[clap(flatten)]
         post_options: Option<PostOptions>,
     },
+    /// Expire all of the tokens associated with a specific application.
+    ExpireAll {
+        app_id: String,
+        application_token_expire_in: JsonOf<ApplicationTokenExpireIn>,
+        #[clap(flatten)]
+        post_options: Option<PostOptions>,
+    },
     /// Logout an app token.
     ///
     /// Trying to log out other tokens will fail.
     Logout {
-        dashboard_auth_token: String,
         #[clap(flatten)]
         post_options: Option<PostOptions>,
     },
@@ -49,14 +55,22 @@ impl AuthenticationCommands {
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
-            AuthenticationCommands::Logout {
-                dashboard_auth_token,
+            Self::ExpireAll {
+                app_id,
+                application_token_expire_in,
                 post_options,
             } => {
-                // We're not using the client received by `exec()` here since the token is an
-                // arg, not whatever is configured for the cli otherwise.
-                let client = client.with_token(dashboard_auth_token);
+                client
+                    .authentication()
+                    .expire_all(
+                        app_id,
+                        application_token_expire_in.into_inner(),
+                        post_options.map(Into::into),
+                    )
+                    .await?;
+            }
 
+            Self::Logout { post_options } => {
                 client
                     .authentication()
                     .logout(post_options.map(Into::into))

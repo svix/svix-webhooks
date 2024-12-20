@@ -11,6 +11,7 @@ pub mod endpoint;
 pub mod event_type;
 pub mod integration;
 pub mod message;
+pub mod message_attempt;
 
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
 pub enum Ordering {

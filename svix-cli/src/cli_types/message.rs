@@ -10,19 +10,19 @@ pub struct MessageListOptions {
     /// The iterator returned from a prior invocation
     #[arg(long)]
     pub iterator: Option<String>,
-    /// Filter response based on the channel
+    /// Filter response based on the channel.
     #[arg(long)]
     pub channel: Option<String>,
-    /// Only include items created before a certain date
+    /// Only include items created before a certain date.
     #[arg(long)]
     pub before: Option<DateTime<Utc>>,
-    /// Only include items created after a certain date
+    /// Only include items created after a certain date.
     #[arg(long)]
     pub after: Option<DateTime<Utc>>,
-    /// When `true` message payloads are included in the response
+    /// When `true` message payloads are included in the response.
     #[arg(long)]
     pub with_content: Option<bool>,
-    /// Filter messages matching the provided tag
+    /// Filter messages matching the provided tag.
     #[arg(long)]
     pub tag: Option<String>,
     /// Filter response based on the event type

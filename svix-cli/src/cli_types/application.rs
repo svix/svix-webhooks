@@ -26,6 +26,7 @@ impl From<ApplicationListOptions> for api::ApplicationListOptions {
         Self {
             limit,
             iterator,
+
             order: order.map(Into::into),
         }
     }
