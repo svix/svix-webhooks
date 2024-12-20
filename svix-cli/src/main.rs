@@ -14,13 +14,14 @@ use cmds::api::application::ApplicationArgs;
 use colored_json::{ColorMode, Output};
 use concolor_clap::{Color, ColorChoice};
 
-const VERSION: &str = env!("CARGO_PKG_VERSION");
-const BIN_NAME: &str = env!("CARGO_BIN_NAME");
 mod cli_types;
 mod cmds;
 mod config;
 mod json;
 mod relay;
+
+const VERSION: &str = env!("CARGO_PKG_VERSION");
+const BIN_NAME: &str = env!("CARGO_BIN_NAME");
 
 #[derive(Parser)]
 #[command(version, about, long_about = None, bin_name = BIN_NAME)]
