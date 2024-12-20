@@ -9,23 +9,23 @@ pub struct MessageListOptions {
     /// The iterator returned from a prior invocation
     pub iterator: Option<String>,
 
-    /// Filter response based on the channel
+    /// Filter response based on the channel.
     pub channel: Option<String>,
 
-    /// Only include items created before a certain date
+    /// Only include items created before a certain date.
     ///
     /// RFC3339 date string.
     pub before: Option<String>,
 
-    /// Only include items created after a certain date
+    /// Only include items created after a certain date.
     ///
     /// RFC3339 date string.
     pub after: Option<String>,
 
-    /// When `true` message payloads are included in the response
+    /// When `true` message payloads are included in the response.
     pub with_content: Option<bool>,
 
-    /// Filter messages matching the provided tag
+    /// Filter messages matching the provided tag.
     pub tag: Option<String>,
 
     /// Filter response based on the event type
@@ -117,8 +117,8 @@ impl<'a> Message<'a> {
             message_api::V1PeriodMessagePeriodCreateParams {
                 app_id,
                 message_in,
-                idempotency_key,
                 with_content: None,
+                idempotency_key,
             },
         )
         .await
@@ -137,11 +137,11 @@ impl<'a> Message<'a> {
         .await
     }
 
-    /// Delete the given message's payload. Useful in cases when a message was
-    /// accidentally sent with sensitive content.
+    /// Delete the given message's payload.
     ///
-    /// The message can't be replayed or resent once its payload has been
-    /// deleted or expired.
+    /// Useful in cases when a message was accidentally sent with sensitive
+    /// content. The message can't be replayed or resent once its payload
+    /// has been deleted or expired.
     pub async fn expunge_content(&self, app_id: String, msg_id: String) -> Result<()> {
         message_api::v1_period_message_period_expunge_content(
             self.cfg,

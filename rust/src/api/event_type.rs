@@ -9,12 +9,15 @@ pub struct EventTypeListOptions {
     /// The iterator returned from a prior invocation
     pub iterator: Option<String>,
 
+    /// The sorting order of the returned items
+    pub order: Option<Ordering>,
+
     /// When `true` archived (deleted but not expunged) items are included in
-    /// the response
+    /// the response.
     pub include_archived: Option<bool>,
 
     /// When `true` the full item (including the schema) is included in the
-    /// response
+    /// response.
     pub with_content: Option<bool>,
 }
 
@@ -35,6 +38,7 @@ impl<'a> EventType<'a> {
         let EventTypeListOptions {
             limit,
             iterator,
+            order,
             include_archived,
             with_content,
         } = options.unwrap_or_default();
@@ -44,8 +48,7 @@ impl<'a> EventType<'a> {
             event_type_api::V1PeriodEventTypePeriodListParams {
                 limit,
                 iterator,
-                // FIXME: not included for backwards compatibility, for now
-                order: None,
+                order,
                 include_archived,
                 with_content,
             },
@@ -70,6 +73,28 @@ impl<'a> EventType<'a> {
             self.cfg,
             event_type_api::V1PeriodEventTypePeriodCreateParams {
                 event_type_in,
+                idempotency_key,
+            },
+        )
+        .await
+    }
+
+    /// Given an OpenAPI spec, create new or update existing event types.
+    /// If an existing `archived` event type is updated, it will be unarchived.
+    ///
+    /// The importer will convert all webhooks found in the either the
+    /// `webhooks` or `x-webhooks` top-level.
+    pub async fn import_openapi(
+        &self,
+        event_type_import_open_api_in: EventTypeImportOpenApiIn,
+        options: Option<PostOptions>,
+    ) -> Result<EventTypeImportOpenApiOut> {
+        let PostOptions { idempotency_key } = options.unwrap_or_default();
+
+        event_type_api::v1_period_event_type_period_import_openapi(
+            self.cfg,
+            event_type_api::V1PeriodEventTypePeriodImportOpenapiParams {
+                event_type_import_open_api_in,
                 idempotency_key,
             },
         )
@@ -101,28 +126,12 @@ impl<'a> EventType<'a> {
         .await
     }
 
-    /// Partially update an event type.
-    pub async fn patch(
-        &self,
-        event_type_name: String,
-        event_type_patch: EventTypePatch,
-    ) -> Result<EventTypeOut> {
-        event_type_api::v1_period_event_type_period_patch(
-            self.cfg,
-            event_type_api::V1PeriodEventTypePeriodPatchParams {
-                event_type_name,
-                event_type_patch,
-            },
-        )
-        .await
-    }
-
     /// Archive an event type.
     ///
     /// Endpoints already configured to filter on an event type will continue to
     /// do so after archival. However, new messages can not be sent with it
     /// and endpoints can not filter on it. An event type can be unarchived
-    /// with the create operation.
+    /// with the [create operation][Self::create].
     pub async fn delete(&self, event_type_name: String) -> Result<()> {
         event_type_api::v1_period_event_type_period_delete(
             self.cfg,
@@ -134,24 +143,17 @@ impl<'a> EventType<'a> {
         .await
     }
 
-    /// Given an OpenAPI spec, create new or update existing event types.
-    ///
-    /// If an existing `archived` event type is updated, it will be unarchived.
-    ///
-    /// The importer will convert all webhooks found in the either the
-    /// `webhooks` or `x-webhooks` top-level.
-    pub async fn import_openapi(
+    /// Partially update an event type.
+    pub async fn patch(
         &self,
-        event_type_import_open_api_in: EventTypeImportOpenApiIn,
-        options: Option<PostOptions>,
-    ) -> Result<EventTypeImportOpenApiOut> {
-        let PostOptions { idempotency_key } = options.unwrap_or_default();
-
-        event_type_api::v1_period_event_type_period_import_openapi(
+        event_type_name: String,
+        event_type_patch: EventTypePatch,
+    ) -> Result<EventTypeOut> {
+        event_type_api::v1_period_event_type_period_patch(
             self.cfg,
-            event_type_api::V1PeriodEventTypePeriodImportOpenapiParams {
-                event_type_import_open_api_in,
-                idempotency_key,
+            event_type_api::V1PeriodEventTypePeriodPatchParams {
+                event_type_name,
+                event_type_patch,
             },
         )
         .await
