@@ -11,11 +11,11 @@ import {
 import { PostOptions } from "../util";
 
 export interface ApplicationListOptions {
-  /// Limit the number of returned items
+  /** Limit the number of returned items */
   limit?: number;
-  /// The iterator returned from a prior invocation
+  /** The iterator returned from a prior invocation */
   iterator?: string | null;
-  /// The sorting order of the returned items
+  /** The sorting order of the returned items */
   order?: Ordering;
 }
 
@@ -26,7 +26,7 @@ export class Application {
     this.api = new ApplicationApi(config);
   }
 
-  /// List of all the organization's applications.
+  /** List of all the organization's applications. */
   public list(options?: ApplicationListOptions): Promise<ListResponseApplicationOut> {
     return this.api.v1ApplicationList({
       ...options,
@@ -34,7 +34,7 @@ export class Application {
     });
   }
 
-  /// Create a new application.
+  /** Create a new application. */
   public create(
     applicationIn: ApplicationIn,
     options?: PostOptions
@@ -45,7 +45,7 @@ export class Application {
     });
   }
 
-  /// Get the application with the UID from `applicationIn`, or create it if it doesn't exist yet.
+  /** Get the application with the UID from `applicationIn`, or create it if it doesn't exist yet. */
   public getOrCreate(
     applicationIn: ApplicationIn,
     options?: PostOptions
@@ -57,14 +57,14 @@ export class Application {
     });
   }
 
-  /// Get an application.
+  /** Get an application. */
   public get(appId: string): Promise<ApplicationOut> {
     return this.api.v1ApplicationGet({
       appId,
     });
   }
 
-  /// Update an application.
+  /** Update an application. */
   public update(appId: string, applicationIn: ApplicationIn): Promise<ApplicationOut> {
     return this.api.v1ApplicationUpdate({
       appId,
@@ -72,14 +72,14 @@ export class Application {
     });
   }
 
-  /// Delete an application.
+  /** Delete an application. */
   public delete(appId: string): Promise<void> {
     return this.api.v1ApplicationDelete({
       appId,
     });
   }
 
-  /// Partially update an application.
+  /** Partially update an application. */
   public patch(
     appId: string,
     applicationPatch: ApplicationPatch
