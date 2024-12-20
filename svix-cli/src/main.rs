@@ -103,7 +103,7 @@ async fn main() -> Result<()> {
         RootCommands::Authentication(args) => {
             let cfg = cfg?;
             let client = get_client(&cfg)?;
-            args.command.exec(&client, color_mode, &cfg).await?;
+            args.command.exec(&client, color_mode).await?;
         }
         RootCommands::EventType(args) => {
             let client = get_client(&cfg?)?;
