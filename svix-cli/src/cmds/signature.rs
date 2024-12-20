@@ -59,7 +59,7 @@ impl SignatureCommands {
                 headers.insert("svix-id", msg_id.parse()?);
                 headers.insert("svix-timestamp", format!("{}", timestamp).parse()?);
                 headers.insert("svix-signature", signature.parse()?);
-                webhook.verify(payload.as_bytes(), &headers)?;
+                webhook.verify_ignoring_timestamp(payload.as_bytes(), &headers)?;
             }
         }
         Ok(())
