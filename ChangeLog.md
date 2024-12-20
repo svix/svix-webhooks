@@ -7,9 +7,12 @@
 * Libs/JavaScript **(Breaking)**: Add more precise type annotations for `options` parameters on
   `MessageAttempt.list`, `MessageAttempt.listByMsg`, `MessageAttempt.listAttemptedMessages` and
   `MessageAttempt.listAttemptedDestinations` ([#1571])
+* Libs/Rust: Add `api::Authentication::expire_all` ([#1584])
+* Libs/Rust: Rename some `Options` types. The old names remain as deprecated type aliases ([#1584])
 
 [#1568]: https://github.com/svix/svix-webhooks/pull/1568
 [#1571]: https://github.com/svix/svix-webhooks/pull/1571
+[#1584]: https://github.com/svix/svix-webhooks/pull/1584
 
 ## Version 1.44.0
 * Libs/JavaScript: Revert packaging-related change because it broke for some users ([#1556])

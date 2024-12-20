@@ -47,6 +47,26 @@ impl<'a> Authentication<'a> {
         .await
     }
 
+    /// Expire all of the tokens associated with a specific application.
+    pub async fn expire_all(
+        &self,
+        app_id: String,
+        application_token_expire_in: ApplicationTokenExpireIn,
+        options: Option<PostOptions>,
+    ) -> Result<()> {
+        let PostOptions { idempotency_key } = options.unwrap_or_default();
+
+        authentication_api::v1_period_authentication_period_expire_all(
+            self.cfg,
+            authentication_api::V1PeriodAuthenticationPeriodExpireAllParams {
+                app_id,
+                application_token_expire_in,
+                idempotency_key,
+            },
+        )
+        .await
+    }
+
     /// Logout an app token.
     ///
     /// Trying to log out other tokens will fail.

@@ -1,4 +1,3 @@
-use super::ListOptions;
 use crate::{apis::message_attempt_api, error::Result, models::*, Configuration};
 
 #[derive(Default)]
@@ -43,7 +42,7 @@ pub struct MessageAttemptListByEndpointOptions {
 }
 
 #[derive(Default)]
-pub struct MessageAttemptListOptions {
+pub struct MessageAttemptListByMsgOptions {
     /// Limit the number of returned items
     pub limit: Option<i32>,
 
@@ -118,6 +117,15 @@ pub struct MessageAttemptListAttemptedMessagesOptions {
     pub event_types: Option<Vec<String>>,
 }
 
+#[derive(Default)]
+pub struct MessageAttemptListAttemptedDestinationsOptions {
+    /// Limit the number of returned items
+    pub limit: Option<i32>,
+
+    /// The iterator returned from a prior invocation
+    pub iterator: Option<String>,
+}
+
 pub struct MessageAttempt<'a> {
     cfg: &'a Configuration,
 }
@@ -175,7 +183,7 @@ impl<'a> MessageAttempt<'a> {
         .await
     }
 
-    /// List attempts by message id
+    /// List attempts by message ID.
     ///
     /// Note that by default this endpoint is limited to retrieving 90 days'
     /// worth of data relative to now or, if an iterator is provided, 90
@@ -186,9 +194,9 @@ impl<'a> MessageAttempt<'a> {
         &self,
         app_id: String,
         msg_id: String,
-        options: Option<MessageAttemptListOptions>,
+        options: Option<MessageAttemptListByMsgOptions>,
     ) -> Result<ListResponseMessageAttemptOut> {
-        let MessageAttemptListOptions {
+        let MessageAttemptListByMsgOptions {
             limit,
             iterator,
             status,
@@ -271,37 +279,15 @@ impl<'a> MessageAttempt<'a> {
         .await
     }
 
-    /// List endpoints attempted by a given message. Additionally includes
-    /// metadata about the latest message attempt. By default, endpoints are
-    /// listed in ascending order by ID.
-    pub async fn list_attempted_destinations(
-        &self,
-        app_id: String,
-        msg_id: String,
-        options: Option<ListOptions>,
-    ) -> Result<ListResponseMessageEndpointOut> {
-        let ListOptions { iterator, limit } = options.unwrap_or_default();
-        message_attempt_api::v1_period_message_attempt_period_list_attempted_destinations(
-            self.cfg,
-            message_attempt_api::V1PeriodMessageAttemptPeriodListAttemptedDestinationsParams {
-                app_id,
-                msg_id,
-                iterator,
-                limit,
-            },
-        )
-        .await
-    }
-
     #[deprecated = "Use `list_by_msg` instead, setting the `endpoint_id` in `options`."]
     pub async fn list_attempts_for_endpoint(
         &self,
         app_id: String,
         msg_id: String,
         endpoint_id: String,
-        options: Option<MessageAttemptListOptions>,
+        options: Option<MessageAttemptListByMsgOptions>,
     ) -> Result<ListResponseMessageAttemptEndpointOut> {
-        let MessageAttemptListOptions {
+        let MessageAttemptListByMsgOptions {
             iterator,
             limit,
             event_types,
@@ -351,8 +337,11 @@ impl<'a> MessageAttempt<'a> {
         .await
     }
 
-    /// Deletes the given attempt's response body. Useful when an endpoint
-    /// accidentally returned sensitive content.
+    /// Deletes the given attempt's response body.
+    ///
+    /// Useful when an endpoint accidentally returned sensitive content.
+    /// The message can't be replayed or resent once its payload has been
+    /// deleted or expired.
     pub async fn expunge_content(
         &self,
         app_id: String,
@@ -365,6 +354,31 @@ impl<'a> MessageAttempt<'a> {
                 app_id,
                 msg_id,
                 attempt_id,
+            },
+        )
+        .await
+    }
+
+    /// List endpoints attempted by a given message.
+    ///
+    /// Additionally includes metadata about the latest message attempt.
+    /// By default, endpoints are listed in ascending order by ID.
+    pub async fn list_attempted_destinations(
+        &self,
+        app_id: String,
+        msg_id: String,
+        options: Option<MessageAttemptListAttemptedDestinationsOptions>,
+    ) -> Result<ListResponseMessageEndpointOut> {
+        let MessageAttemptListAttemptedDestinationsOptions { limit, iterator } =
+            options.unwrap_or_default();
+
+        message_attempt_api::v1_period_message_attempt_period_list_attempted_destinations(
+            self.cfg,
+            message_attempt_api::V1PeriodMessageAttemptPeriodListAttemptedDestinationsParams {
+                app_id,
+                msg_id,
+                limit,
+                iterator,
             },
         )
         .await

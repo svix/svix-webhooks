@@ -14,13 +14,13 @@ pub struct EndpointListOptions {
 }
 
 #[derive(Default)]
-pub struct EndpointStatsOptions {
-    /// Filter the range to data starting from this date
+pub struct EndpointGetStatsOptions {
+    /// Filter the range to data starting from this date.
     ///
     /// RFC3339 date string.
     pub since: Option<String>,
 
-    /// Filter the range to data ending by this date
+    /// Filter the range to data ending by this date.
     ///
     /// RFC3339 date string.
     pub until: Option<String>,
@@ -62,7 +62,7 @@ impl<'a> Endpoint<'a> {
     /// Create a new endpoint for the application.
     ///
     /// When `secret` is `null` the secret is automatically generated
-    /// (recommended)
+    /// (recommended).
     pub async fn create(
         &self,
         app_id: String,
@@ -142,11 +142,109 @@ impl<'a> Endpoint<'a> {
         .await
     }
 
+    /// Get the additional headers to be sent with the webhook.
+    pub async fn get_headers(
+        &self,
+        app_id: String,
+        endpoint_id: String,
+    ) -> Result<EndpointHeadersOut> {
+        endpoint_api::v1_period_endpoint_period_get_headers(
+            self.cfg,
+            endpoint_api::V1PeriodEndpointPeriodGetHeadersParams {
+                app_id,
+                endpoint_id,
+            },
+        )
+        .await
+    }
+
+    /// Set the additional headers to be sent with the webhook.
+    pub async fn update_headers(
+        &self,
+        app_id: String,
+        endpoint_id: String,
+        endpoint_headers_in: EndpointHeadersIn,
+    ) -> Result<()> {
+        endpoint_api::v1_period_endpoint_period_update_headers(
+            self.cfg,
+            endpoint_api::V1PeriodEndpointPeriodUpdateHeadersParams {
+                app_id,
+                endpoint_id,
+                endpoint_headers_in,
+            },
+        )
+        .await
+    }
+
+    /// Partially set the additional headers to be sent with the webhook.
+    pub async fn patch_headers(
+        &self,
+        app_id: String,
+        endpoint_id: String,
+        endpoint_headers_patch_in: EndpointHeadersPatchIn,
+    ) -> Result<()> {
+        endpoint_api::v1_period_endpoint_period_patch_headers(
+            self.cfg,
+            endpoint_api::V1PeriodEndpointPeriodPatchHeadersParams {
+                app_id,
+                endpoint_id,
+                endpoint_headers_patch_in,
+            },
+        )
+        .await
+    }
+
+    /// Resend all failed messages since a given time.
+    ///
+    /// Messages that were sent successfully, even if failed initially, are not
+    /// resent.
+    pub async fn recover(
+        &self,
+        app_id: String,
+        endpoint_id: String,
+        recover_in: RecoverIn,
+    ) -> Result<RecoverOut> {
+        endpoint_api::v1_period_endpoint_period_recover(
+            self.cfg,
+            endpoint_api::V1PeriodEndpointPeriodRecoverParams {
+                app_id,
+                endpoint_id,
+                recover_in,
+                idempotency_key: None,
+            },
+        )
+        .await
+    }
+
+    /// Replays messages to the endpoint.
+    ///
+    /// Only messages that were created after `since` will be sent.
+    /// Messages that were previously sent to the endpoint are not resent.
+    pub async fn replay_missing(
+        &self,
+        app_id: String,
+        endpoint_id: String,
+        replay_in: ReplayIn,
+        options: Option<PostOptions>,
+    ) -> Result<ReplayOut> {
+        let PostOptions { idempotency_key } = options.unwrap_or_default();
+
+        endpoint_api::v1_period_endpoint_period_replay_missing(
+            self.cfg,
+            endpoint_api::V1PeriodEndpointPeriodReplayMissingParams {
+                app_id,
+                endpoint_id,
+                replay_in,
+                idempotency_key,
+            },
+        )
+        .await
+    }
+
     /// Get the endpoint's signing secret.
     ///
     /// This is used to verify the authenticity of the webhook.
-    /// For more information please refer to
-    /// [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
+    /// For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
     pub async fn get_secret(
         &self,
         app_id: String,
@@ -183,76 +281,23 @@ impl<'a> Endpoint<'a> {
         .await
     }
 
-    /// Resend all failed messages since a given time.
-    ///
-    /// Messages that were sent successfully, even if failed initially, are not
-    /// resent.
-    pub async fn recover(
+    /// Send an example message for an event.
+    pub async fn send_example(
         &self,
         app_id: String,
         endpoint_id: String,
-        recover_in: RecoverIn,
-    ) -> Result<()> {
-        endpoint_api::v1_period_endpoint_period_recover(
-            self.cfg,
-            endpoint_api::V1PeriodEndpointPeriodRecoverParams {
-                app_id,
-                endpoint_id,
-                recover_in,
-                idempotency_key: None,
-            },
-        )
-        .await?;
-        Ok(())
-    }
+        event_example_in: EventExampleIn,
+        options: Option<PostOptions>,
+    ) -> Result<MessageOut> {
+        let PostOptions { idempotency_key } = options.unwrap_or_default();
 
-    /// Get the additional headers to be sent with the webhook
-    pub async fn get_headers(
-        &self,
-        app_id: String,
-        endpoint_id: String,
-    ) -> Result<EndpointHeadersOut> {
-        endpoint_api::v1_period_endpoint_period_get_headers(
+        endpoint_api::v1_period_endpoint_period_send_example(
             self.cfg,
-            endpoint_api::V1PeriodEndpointPeriodGetHeadersParams {
+            endpoint_api::V1PeriodEndpointPeriodSendExampleParams {
                 app_id,
                 endpoint_id,
-            },
-        )
-        .await
-    }
-
-    /// Set the additional headers to be sent with the webhook
-    pub async fn update_headers(
-        &self,
-        app_id: String,
-        endpoint_id: String,
-        endpoint_headers_in: EndpointHeadersIn,
-    ) -> Result<()> {
-        endpoint_api::v1_period_endpoint_period_update_headers(
-            self.cfg,
-            endpoint_api::V1PeriodEndpointPeriodUpdateHeadersParams {
-                app_id,
-                endpoint_id,
-                endpoint_headers_in,
-            },
-        )
-        .await
-    }
-
-    /// Partially set the additional headers to be sent with the webhook
-    pub async fn patch_headers(
-        &self,
-        app_id: String,
-        endpoint_id: String,
-        endpoint_headers_patch_in: EndpointHeadersPatchIn,
-    ) -> Result<()> {
-        endpoint_api::v1_period_endpoint_period_patch_headers(
-            self.cfg,
-            endpoint_api::V1PeriodEndpointPeriodPatchHeadersParams {
-                app_id,
-                endpoint_id,
-                endpoint_headers_patch_in,
+                event_example_in,
+                idempotency_key,
             },
         )
         .await
@@ -263,9 +308,9 @@ impl<'a> Endpoint<'a> {
         &self,
         app_id: String,
         endpoint_id: String,
-        options: Option<EndpointStatsOptions>,
+        options: Option<EndpointGetStatsOptions>,
     ) -> Result<EndpointStats> {
-        let EndpointStatsOptions { since, until } = options.unwrap_or_default();
+        let EndpointGetStatsOptions { since, until } = options.unwrap_or_default();
 
         endpoint_api::v1_period_endpoint_period_get_stats(
             self.cfg,
@@ -279,32 +324,7 @@ impl<'a> Endpoint<'a> {
         .await
     }
 
-    /// Replays messages to the endpoint.
-    ///
-    /// Only messages that were created after `since` will be sent. Messages
-    /// that were previously sent to the endpoint are not resent.
-    pub async fn replay_missing(
-        &self,
-        app_id: String,
-        endpoint_id: String,
-        replay_in: ReplayIn,
-        options: Option<PostOptions>,
-    ) -> Result<()> {
-        let PostOptions { idempotency_key } = options.unwrap_or_default();
-        endpoint_api::v1_period_endpoint_period_replay_missing(
-            self.cfg,
-            endpoint_api::V1PeriodEndpointPeriodReplayMissingParams {
-                app_id,
-                endpoint_id,
-                replay_in,
-                idempotency_key,
-            },
-        )
-        .await?;
-        Ok(())
-    }
-
-    /// Get the transformation code associated with this endpoint
+    /// Get the transformation code associated with this endpoint.
     pub async fn transformation_get(
         &self,
         app_id: String,
@@ -320,7 +340,7 @@ impl<'a> Endpoint<'a> {
         .await
     }
 
-    /// Set or unset the transformation code associated with this endpoint
+    /// Set or unset the transformation code associated with this endpoint.
     pub async fn transformation_partial_update(
         &self,
         app_id: String,
@@ -333,27 +353,6 @@ impl<'a> Endpoint<'a> {
                 app_id,
                 endpoint_id,
                 endpoint_transformation_in,
-            },
-        )
-        .await
-    }
-
-    /// Send an example message for an event
-    pub async fn send_example(
-        &self,
-        app_id: String,
-        endpoint_id: String,
-        event_example_in: EventExampleIn,
-        options: Option<PostOptions>,
-    ) -> Result<MessageOut> {
-        let PostOptions { idempotency_key } = options.unwrap_or_default();
-        endpoint_api::v1_period_endpoint_period_send_example(
-            self.cfg,
-            endpoint_api::V1PeriodEndpointPeriodSendExampleParams {
-                app_id,
-                endpoint_id,
-                event_example_in,
-                idempotency_key,
             },
         )
         .await

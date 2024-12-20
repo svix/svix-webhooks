@@ -1,3 +1,5 @@
+#![warn(unreachable_pub)]
+
 use std::sync::Arc;
 
 use hyper_util::{client::legacy::Client as HyperClient, rt::TokioExecutor};
@@ -39,19 +41,27 @@ pub use self::{
     application::{Application, ApplicationListOptions},
     authentication::Authentication,
     background_task::{BackgroundTask, BackgroundTaskListOptions},
-    endpoint::{Endpoint, EndpointListOptions, EndpointStatsOptions},
+    endpoint::{Endpoint, EndpointGetStatsOptions, EndpointListOptions},
     event_type::{EventType, EventTypeListOptions},
     integration::{Integration, IntegrationListOptions},
     message::{Message, MessageListOptions},
     message_attempt::{
-        MessageAttempt, MessageAttemptListAttemptedMessagesOptions,
-        MessageAttemptListByEndpointOptions, MessageAttemptListOptions,
+        MessageAttempt, MessageAttemptListAttemptedDestinationsOptions,
+        MessageAttemptListAttemptedMessagesOptions, MessageAttemptListByEndpointOptions,
+        MessageAttemptListByMsgOptions,
     },
     operational_webhook_endpoint::{
         OperationalWebhookEndpoint, OperationalWebhookEndpointListOptions,
     },
     statistics::{AggregateAppStatsOptions, Statistics},
 };
+
+#[deprecated = "Use EndpointGetStatusOptions instead"]
+pub type EndpointStatsOptions = EndpointGetStatsOptions;
+#[deprecated = "Use MessageAttemptListByMsgOptions instead"]
+pub type MessageAttemptListOptions = MessageAttemptListByMsgOptions;
+#[deprecated = "Use MessageAttemptListAttemptedDestinationsOptions instead"]
+pub type ListOptions = MessageAttemptListAttemptedDestinationsOptions;
 
 pub struct SvixOptions {
     pub debug: bool,
@@ -181,12 +191,6 @@ impl Svix {
 #[derive(Default)]
 pub struct PostOptions {
     pub idempotency_key: Option<String>,
-}
-
-#[derive(Default)]
-pub struct ListOptions {
-    pub iterator: Option<String>,
-    pub limit: Option<i32>,
 }
 
 #[cfg(test)]
