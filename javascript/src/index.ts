@@ -26,7 +26,7 @@ export * from "./webhook";
 
 export { ApplicationListOptions } from "./api/application";
 export { BackgroundTaskListOptions } from "./api/background_task";
-export { EndpointListOptions, EndpointStatsOptions } from "./api/endpoint";
+export { EndpointListOptions, EndpointGetStatsOptions } from "./api/endpoint";
 export { EventTypeListOptions } from "./api/event_type";
 export { IntegrationListOptions } from "./api/integration";
 export { MessageListOptions, messageInRaw } from "./api/message";

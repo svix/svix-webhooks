@@ -24,80 +24,80 @@ export interface MessageAttemptListOptions {
 }
 
 export interface MessageAttemptListByEndpointOptions {
-  /// Limit the number of returned items
+  /** Limit the number of returned items */
   limit?: number;
-  /// The iterator returned from a prior invocation
+  /** The iterator returned from a prior invocation */
   iterator?: string | null;
-  /// Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)
+  /** Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3) */
   status?: MessageStatus;
-  /// Filter response based on the HTTP status code
+  /** Filter response based on the HTTP status code */
   statusCodeClass?: StatusCodeClass;
-  /// Filter response based on the channel
+  /** Filter response based on the channel */
   channel?: string;
-  /// Filter response based on the tag
+  /** Filter response based on the tag */
   tag?: string;
-  /// Only include items created before a certain date
+  /** Only include items created before a certain date */
   before?: Date | null;
-  /// Only include items created after a certain date
+  /** Only include items created after a certain date */
   after?: Date | null;
-  /// When `true` attempt content is included in the response
+  /** When `true` attempt content is included in the response */
   withContent?: boolean;
-  /// When `true`, the message information is included in the response
+  /** When `true`, the message information is included in the response */
   withMsg?: boolean;
-  /// Filter response based on the event type
+  /** Filter response based on the event type */
   eventTypes?: string[];
 }
 
 export interface MessageAttemptListByMsgOptions {
-  /// Limit the number of returned items
+  /** Limit the number of returned items */
   limit?: number;
-  /// The iterator returned from a prior invocation
+  /** The iterator returned from a prior invocation */
   iterator?: string | null;
-  /// Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)
+  /** Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3) */
   status?: MessageStatus;
-  /// Filter response based on the HTTP status code
+  /** Filter response based on the HTTP status code */
   statusCodeClass?: StatusCodeClass;
-  /// Filter response based on the channel
+  /** Filter response based on the channel */
   channel?: string;
-  /// Filter response based on the tag
+  /** Filter response based on the tag */
   tag?: string;
-  /// Filter the attempts based on the attempted endpoint
+  /** Filter the attempts based on the attempted endpoint */
   endpointId?: string;
-  /// Only include items created before a certain date
+  /** Only include items created before a certain date */
   before?: Date | null;
-  /// Only include items created after a certain date
+  /** Only include items created after a certain date */
   after?: Date | null;
-  /// When `true` attempt content is included in the response
+  /** When `true` attempt content is included in the response */
   withContent?: boolean;
-  /// Filter response based on the event type
+  /** Filter response based on the event type */
   eventTypes?: string[];
 }
 
 export interface MessageAttemptListAttemptedMessagesOptions {
-  /// Limit the number of returned items
+  /** Limit the number of returned items */
   limit?: number;
-  /// The iterator returned from a prior invocation
+  /** The iterator returned from a prior invocation */
   iterator?: string | null;
-  /// Filter response based on the channel
+  /** Filter response based on the channel */
   channel?: string;
-  /// Filter response based on the message tags
+  /** Filter response based on the message tags */
   tag?: string;
-  /// Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)
+  /** Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3) */
   status?: MessageStatus;
-  /// Only include items created before a certain date
+  /** Only include items created before a certain date */
   before?: Date | null;
-  /// Only include items created after a certain date
+  /** Only include items created after a certain date */
   after?: Date | null;
-  /// When `true` message payloads are included in the response
+  /** When `true` message payloads are included in the response */
   withContent?: boolean;
-  /// Filter response based on the event type
+  /** Filter response based on the event type */
   eventTypes?: string[];
 }
 
 export interface MessageAttemptListAttemptedDestinationsOptions {
-  /// Limit the number of returned items
+  /** Limit the number of returned items */
   limit?: number;
-  /// The iterator returned from a prior invocation
+  /** The iterator returned from a prior invocation */
   iterator?: string | null;
 }
 
@@ -119,12 +119,14 @@ export class MessageAttempt {
     return this.listByMsg(appId, msgId, options);
   }
 
-  /// List attempts by endpoint id
-  ///
-  /// Note that by default this endpoint is limited to retrieving 90 days' worth of data
-  /// relative to now or, if an iterator is provided, 90 days before/after the time indicated
-  /// by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
-  /// set the `before` or `after` parameter as appropriate.
+  /**
+   * List attempts by endpoint id
+   *
+   * Note that by default this endpoint is limited to retrieving 90 days' worth of data
+   * relative to now or, if an iterator is provided, 90 days before/after the time indicated
+   * by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
+   * set the `before` or `after` parameter as appropriate.
+   */
   public listByEndpoint(
     appId: string,
     endpointId: string,
@@ -140,12 +142,14 @@ export class MessageAttempt {
     });
   }
 
-  /// List attempts by message id
-  ///
-  /// Note that by default this endpoint is limited to retrieving 90 days' worth of data
-  /// relative to now or, if an iterator is provided, 90 days before/after the time indicated
-  /// by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
-  /// set the `before` or `after` parameter as appropriate.
+  /**
+   * List attempts by message ID.
+   *
+   * Note that by default this endpoint is limited to retrieving 90 days' worth of data
+   * relative to now or, if an iterator is provided, 90 days before/after the time indicated
+   * by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
+   * set the `before` or `after` parameter as appropriate.
+   */
   public listByMsg(
     appId: string,
     msgId: string,
@@ -161,14 +165,16 @@ export class MessageAttempt {
     });
   }
 
-  /// List messages for a particular endpoint. Additionally includes metadata about the latest message attempt.
-  ///
-  /// The `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.
-  ///
-  /// Note that by default this endpoint is limited to retrieving 90 days' worth of data
-  /// relative to now or, if an iterator is provided, 90 days before/after the time indicated
-  /// by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
-  /// set the `before` or `after` parameter as appropriate.
+  /**
+   * List messages for a particular endpoint. Additionally includes metadata about the latest message attempt.
+   *
+   * The `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.
+   *
+   * Note that by default this endpoint is limited to retrieving 90 days' worth of data
+   * relative to now or, if an iterator is provided, 90 days before/after the time indicated
+   * by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
+   * set the `before` or `after` parameter as appropriate.
+   */
   public listAttemptedMessages(
     appId: string,
     endpointId: string,
@@ -184,7 +190,7 @@ export class MessageAttempt {
     });
   }
 
-  /// `msg_id`: Use a message id or a message `eventId`
+  /** `msg_id`: Use a message id or a message `eventId` */
   public get(
     appId: string,
     msgId: string,
@@ -197,7 +203,12 @@ export class MessageAttempt {
     });
   }
 
-  /// Deletes the given attempt's response body. Useful when an endpoint accidentally returned sensitive content.
+  /**
+   * Deletes the given attempt's response body.
+   *
+   * Useful when an endpoint accidentally returned sensitive content.
+   * The message can't be replayed or resent once its payload has been deleted or expired.
+   */
   public expungeContent(appId: string, msgId: string, attemptId: string): Promise<void> {
     return this.api.v1MessageAttemptExpungeContent({
       appId,
@@ -206,8 +217,12 @@ export class MessageAttempt {
     });
   }
 
-  /// List endpoints attempted by a given message. Additionally includes metadata about the latest message attempt.
-  /// By default, endpoints are listed in ascending order by ID.
+  /**
+   * List endpoints attempted by a given message.
+   *
+   * Additionally includes metadata about the latest message attempt.
+   * By default, endpoints are listed in ascending order by ID.
+   */
   public listAttemptedDestinations(
     appId: string,
     msgId: string,
@@ -221,7 +236,7 @@ export class MessageAttempt {
     });
   }
 
-  /// Resend a message to the specified endpoint.
+  /** Resend a message to the specified endpoint. */
   public resend(
     appId: string,
     msgId: string,
