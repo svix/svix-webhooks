@@ -1,3 +1,4 @@
+use crate::cli_types::Ordering;
 use clap::Args;
 use svix::api;
 
@@ -9,14 +10,13 @@ pub struct EventTypeListOptions {
     /// The iterator returned from a prior invocation
     #[arg(long)]
     pub iterator: Option<String>,
-    // FIXME: This is missing from the Rust lib
-    // /// The sorting order of the returned items
-    // #[arg(long)]
-    // pub order: Option<Ordering>,
-    /// When `true` archived (deleted but not expunged) items are included in the response
+    /// The sorting order of the returned items
+    #[arg(long)]
+    pub order: Option<Ordering>,
+    /// When `true` archived (deleted but not expunged) items are included in the response.
     #[arg(long)]
     pub include_archived: Option<bool>,
-    /// When `true` the full item (including the schema) is included in the response
+    /// When `true` the full item (including the schema) is included in the response.
     #[arg(long)]
     pub with_content: Option<bool>,
 }
@@ -26,6 +26,7 @@ impl From<EventTypeListOptions> for api::EventTypeListOptions {
         EventTypeListOptions {
             limit,
             iterator,
+            order,
             include_archived,
             with_content,
         }: EventTypeListOptions,
@@ -33,8 +34,24 @@ impl From<EventTypeListOptions> for api::EventTypeListOptions {
         Self {
             limit,
             iterator,
+
+            order: order.map(Into::into),
             include_archived,
             with_content,
         }
     }
 }
+
+// FIXME: need to get the options happening in the SDK for this
+// #[derive(Args, Clone)]
+// pub struct EventTypeDeleteOptions {
+//     /// By default event types are archived when "deleted". Passing this to `true` deletes them entirely.
+//     #[arg(long)]
+//     pub expunge: Option<bool>,
+// }
+//
+// impl From<EventTypeDeleteOptions> for api::EventTypeDeleteOptions {
+//     fn from(EventTypeDeleteOptions { expunge }: EventTypeDeleteOptions) -> Self {
+//         Self { expunge }
+//     }
+// }

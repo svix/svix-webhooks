@@ -27,11 +27,11 @@ impl From<EndpointListOptions> for api::EndpointListOptions {
         Self {
             limit,
             iterator,
+
             order: order.map(Into::into),
         }
     }
 }
-
 #[derive(Args, Clone)]
 pub struct EndpointStatsOptions {
     /// Filter the range to data ending by this date
@@ -42,6 +42,7 @@ pub struct EndpointStatsOptions {
     pub after: Option<DateTime<Utc>>,
 }
 
+#[allow(deprecated)]
 impl From<EndpointStatsOptions> for api::EndpointStatsOptions {
     fn from(EndpointStatsOptions { after, before }: EndpointStatsOptions) -> Self {
         Self {

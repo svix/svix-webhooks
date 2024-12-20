@@ -1,9 +1,9 @@
+use crate::cli_types::message::MessageListOptions;
+use crate::cli_types::PostOptions;
+use crate::json::JsonOf;
 use clap::{Args, Subcommand};
 use colored_json::ColorMode;
 use svix::api::MessageIn;
-
-use crate::cli_types::{message::MessageListOptions, PostOptions};
-use crate::json::JsonOf;
 
 #[derive(Args)]
 #[command(args_conflicts_with_subcommands = true)]
@@ -26,6 +26,7 @@ pub enum MessageCommands {
     /// set the `before` or `after` parameter as appropriate.
     List {
         app_id: String,
+
         #[clap(flatten)]
         options: MessageListOptions,
     },
@@ -41,17 +42,15 @@ pub enum MessageCommands {
     Create {
         app_id: String,
         message_in: JsonOf<MessageIn>,
+
         #[clap(flatten)]
         post_options: Option<PostOptions>,
     },
     /// Get a message by its ID or eventID.
-    Get {
-        app_id: String,
-        id: String,
-        // FIXME: with_content query param not part of the Rust lib (yet)
-    },
-    /// Delete the given message's payload. Useful in cases when a message was accidentally sent with sensitive content.
+    Get { app_id: String, id: String },
+    /// Delete the given message's payload.
     ///
+    /// Useful in cases when a message was accidentally sent with sensitive content.
     /// The message can't be replayed or resent once its payload has been deleted or expired.
     ExpungeContent { app_id: String, id: String },
 }

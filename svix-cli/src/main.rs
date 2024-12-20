@@ -3,6 +3,7 @@ use crate::cmds::api::endpoint::EndpointArgs;
 use crate::cmds::api::event_type::EventTypeArgs;
 use crate::cmds::api::integration::IntegrationArgs;
 use crate::cmds::api::message::MessageArgs;
+use crate::cmds::api::message_attempt::MessageAttemptArgs;
 use crate::cmds::listen::ListenArgs;
 use crate::cmds::open::OpenArgs;
 use crate::cmds::signature::SignatureArgs;
@@ -72,8 +73,7 @@ enum RootCommands {
     /// List & create messages
     Message(MessageArgs),
     /// List, lookup & resend message attempts
-    // FIXME: need codegen for this
-    MessageAttempt,
+    MessageAttempt(MessageAttemptArgs),
     /// Quickly open Svix pages in your browser
     Open(OpenArgs),
     /// Verifying and signing webhooks with the Svix signature scheme
@@ -118,8 +118,10 @@ async fn main() -> Result<()> {
             let client = get_client(&cfg?)?;
             args.command.exec(&client, color_mode).await?;
         }
-        // FIXME: need codegen for this one
-        RootCommands::MessageAttempt => todo!("Commands::MessageAttempt"),
+        RootCommands::MessageAttempt(args) => {
+            let client = get_client(&cfg?)?;
+            args.command.exec(&client, color_mode).await?;
+        }
         RootCommands::Import => todo!("Commands::Import"),
         RootCommands::Export => todo!("Commands::Export"),
         RootCommands::Integration(args) => {

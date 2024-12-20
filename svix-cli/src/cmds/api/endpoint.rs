@@ -1,16 +1,11 @@
+use crate::cli_types::endpoint::{EndpointListOptions, EndpointStatsOptions};
+use crate::cli_types::PostOptions;
+use crate::json::JsonOf;
 use clap::{Args, Subcommand};
 use colored_json::ColorMode;
 use svix::api::{
     EndpointHeadersIn, EndpointHeadersPatchIn, EndpointIn, EndpointPatch, EndpointSecretRotateIn,
     EndpointTransformationIn, EndpointUpdate, EventExampleIn, RecoverIn, ReplayIn,
-};
-
-use crate::{
-    cli_types::{
-        endpoint::{EndpointListOptions, EndpointStatsOptions},
-        PostOptions,
-    },
-    json::JsonOf,
 };
 
 #[derive(Args)]
@@ -26,12 +21,13 @@ pub enum EndpointCommands {
     /// List the application's endpoints.
     List {
         app_id: String,
+
         #[clap(flatten)]
         options: EndpointListOptions,
     },
     /// Create a new endpoint for the application.
     ///
-    /// When `secret` is `null` the secret is automatically generated (recommended)
+    /// When `secret` is `null` the secret is automatically generated (recommended).
     Create {
         app_id: String,
         endpoint_in: JsonOf<EndpointIn>,
@@ -54,15 +50,15 @@ pub enum EndpointCommands {
         id: String,
         endpoint_patch: JsonOf<EndpointPatch>,
     },
-    /// Get the additional headers to be sent with the webhook
+    /// Get the additional headers to be sent with the webhook.
     GetHeaders { app_id: String, id: String },
-    /// Set the additional headers to be sent with the webhook
+    /// Set the additional headers to be sent with the webhook.
     UpdateHeaders {
         app_id: String,
         id: String,
         endpoint_headers_in: JsonOf<EndpointHeadersIn>,
     },
-    /// Partially set the additional headers to be sent with the webhook
+    /// Partially set the additional headers to be sent with the webhook.
     PatchHeaders {
         app_id: String,
         id: String,
@@ -75,15 +71,12 @@ pub enum EndpointCommands {
         app_id: String,
         id: String,
         recover_in: JsonOf<RecoverIn>,
-        // FIXME: Not in the Rust lib (yet)
-        //#[clap(flatten)]
-        //post_options: Option<PostOptions>,
     },
     /// Replays messages to the endpoint.
     ///
     /// Only messages that were created after `since` will be sent.
     /// Messages that were previously sent to the endpoint are not resent.
-    Replay {
+    ReplayMissing {
         app_id: String,
         id: String,
         replay_in: JsonOf<ReplayIn>,
@@ -93,8 +86,7 @@ pub enum EndpointCommands {
     /// Get the endpoint's signing secret.
     ///
     /// This is used to verify the authenticity of the webhook.
-    /// For more information please refer to
-    /// [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
+    /// For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
     GetSecret { app_id: String, id: String },
     /// Rotates the endpoint's signing secret.
     ///
@@ -103,11 +95,8 @@ pub enum EndpointCommands {
         app_id: String,
         id: String,
         endpoint_secret_rotate_in: JsonOf<EndpointSecretRotateIn>,
-        // FIXME: Not in the Rust lib (yet)
-        //#[clap(flatten)]
-        //post_options: Option<PostOptions>,
     },
-    /// Send an example message for an event
+    /// Send an example message for an event.
     SendExample {
         app_id: String,
         id: String,
@@ -123,9 +112,9 @@ pub enum EndpointCommands {
         #[clap(flatten)]
         options: EndpointStatsOptions,
     },
-    /// Get the transformation code associated with this endpoint
+    /// Get the transformation code associated with this endpoint.
     TransformationGet { app_id: String, id: String },
-    /// Set or unset the transformation code associated with this endpoint
+    /// Set or unset the transformation code associated with this endpoint.
     TransformationPartialUpdate {
         app_id: String,
         id: String,
@@ -208,23 +197,25 @@ impl EndpointCommands {
                     .patch_headers(app_id, id, endpoint_headers_patch_in.into_inner())
                     .await?;
             }
+
             Self::Recover {
                 app_id,
                 id,
                 recover_in,
             } => {
-                client
+                let resp = client
                     .endpoint()
                     .recover(app_id, id, recover_in.into_inner())
                     .await?;
+                crate::json::print_json_output(&resp, color_mode)?;
             }
-            Self::Replay {
+            Self::ReplayMissing {
                 app_id,
                 id,
                 replay_in,
                 post_options,
             } => {
-                client
+                let resp = client
                     .endpoint()
                     .replay_missing(
                         app_id,
@@ -233,6 +224,7 @@ impl EndpointCommands {
                         post_options.map(Into::into),
                     )
                     .await?;
+                crate::json::print_json_output(&resp, color_mode)?;
             }
             Self::GetSecret { app_id, id } => {
                 let resp = client.endpoint().get_secret(app_id, id).await?;

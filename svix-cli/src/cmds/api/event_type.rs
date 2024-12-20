@@ -1,11 +1,9 @@
+use crate::cli_types::event_type::EventTypeListOptions;
+use crate::cli_types::PostOptions;
+use crate::json::JsonOf;
 use clap::{Args, Subcommand};
 use colored_json::ColorMode;
 use svix::api::{EventTypeImportOpenApiIn, EventTypeIn, EventTypePatch, EventTypeUpdate};
-
-use crate::{
-    cli_types::{event_type::EventTypeListOptions, PostOptions},
-    json::JsonOf,
-};
 
 #[derive(Args)]
 #[command(args_conflicts_with_subcommands = true)]
@@ -33,7 +31,6 @@ pub enum EventTypeCommands {
         post_options: Option<PostOptions>,
     },
     /// Given an OpenAPI spec, create new or update existing event types.
-    ///
     /// If an existing `archived` event type is updated, it will be unarchived.
     ///
     /// The importer will convert all webhooks found in the either the `webhooks` or `x-webhooks`
@@ -58,9 +55,9 @@ pub enum EventTypeCommands {
     /// [create operation](#operation/create_event_type_api_v1_event_type__post).
     Delete {
         event_type_name: String,
-        // FIXME: Not part of the Rust lib (yet)
-        //#[clap(flatten)]
-        //options: EventTypeDeleteOptions,
+        // FIXME: need to get the options happening in the SDK for this
+        // #[clap(flatten)]
+        // options: EventTypeDeleteOptions,
     },
     /// Partially update an event type.
     Patch {
@@ -113,8 +110,18 @@ impl EventTypeCommands {
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
-            Self::Delete { event_type_name } => {
-                client.event_type().delete(event_type_name).await?;
+            Self::Delete {
+                event_type_name,
+                // FIXME: need to get the options happening in the SDK for this
+                // options,
+            } => {
+                client
+                    .event_type()
+                    .delete(
+                        event_type_name,
+                        // Some(options.into())
+                    )
+                    .await?;
             }
             Self::Patch {
                 event_type_name,
