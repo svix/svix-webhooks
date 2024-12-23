@@ -1,6 +1,9 @@
 # Changelog
 
 ## Next
+* 
+
+## Version 1.45.0
 * Libs/Rust **(Breaking)**: Add `api::MessageAttemptListAttemptedMessagesOptions` and use it for
   `MessageAttempt::list_attempted_messages`, replacing `MessageAttemptListOptions` which contained
   some extra parameters never used with this method / endpoint ([#1568])
