@@ -6,10 +6,12 @@ on:
       - main
     paths:
       - 'svix-cli/**'
+      - 'rust/**'
       - '.github/workflows/cli-lint.yml'
   pull_request:
     paths:
       - 'svix-cli/**'
+      - 'rust/**'
       - '.github/workflows/cli-lint.yml'
       - 'openapi.json'
 
