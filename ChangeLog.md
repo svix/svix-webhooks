@@ -9,6 +9,8 @@
   `MessageAttempt.listAttemptedDestinations` ([#1571])
 * Libs/JavaScript **(Breaking)**: Rename `EndpointStatsOptions` interface to
   `EndpointGetStatsOptions` ([#1585])
+* Libs/Kotlin **(Breaking)**: Remove `ListOptions` class. Usage of classes that were inheriting
+  from it should not change though ([#1587])
 * Libs/Rust: Add `api::Authentication::expire_all` ([#1584])
 * Libs/Rust: Rename some `Options` types. The old names remain as deprecated type aliases ([#1584])
 
@@ -16,6 +18,7 @@
 [#1571]: https://github.com/svix/svix-webhooks/pull/1571
 [#1584]: https://github.com/svix/svix-webhooks/pull/1584
 [#1585]: https://github.com/svix/svix-webhooks/pull/1585
+[#1587]: https://github.com/svix/svix-webhooks/pull/1587
 
 ## Version 1.44.0
 * Libs/JavaScript: Revert packaging-related change because it broke for some users ([#1556])
