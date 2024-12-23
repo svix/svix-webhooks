@@ -21,19 +21,30 @@ import com.svix.kotlin.models.RecoverIn
 import com.svix.kotlin.models.ReplayIn
 import java.time.OffsetDateTime
 
-class EndpointListOptions : ListOptions() {
+class EndpointListOptions {
+    var limit: Int? = null
+    var iterator: String? = null
     var order: Ordering? = null
 
+    /** Limit the number of returned items */
+    fun limit(limit: Int) = apply { this.limit = limit }
+
+    /** The iterator returned from a prior invocation */
+    fun iterator(iterator: String) = apply { this.iterator = iterator }
+
+    /** The sorting order of the returned items */
     fun order(order: Ordering) = apply { this.order = order }
-
-    override fun iterator(iterator: String) = apply { super.iterator(iterator) }
-
-    override fun limit(limit: Int) = apply { super.limit(limit) }
 }
 
-class EndpointStatsOptions {
+class EndpointGetStatsOptions {
     var since: OffsetDateTime? = null
     var until: OffsetDateTime? = null
+
+    /** Filter the range to data starting from this date. */
+    fun since(since: OffsetDateTime) = apply { this.since = since }
+
+    /** Filter the range to data ending by this date. */
+    fun until(until: OffsetDateTime) = apply { this.until = until }
 }
 
 class Endpoint internal constructor(token: String, options: SvixOptions) {
@@ -183,7 +194,7 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
     suspend fun getStats(
         appId: String,
         endpointId: String,
-        options: EndpointStatsOptions = EndpointStatsOptions(),
+        options: EndpointGetStatsOptions = EndpointGetStatsOptions(),
     ): EndpointStats {
         try {
             return api.v1EndpointGetStats(appId, endpointId, options.since, options.until)

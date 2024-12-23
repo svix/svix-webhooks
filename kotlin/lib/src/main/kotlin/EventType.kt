@@ -9,18 +9,32 @@ import com.svix.kotlin.models.EventTypeOut
 import com.svix.kotlin.models.EventTypePatch
 import com.svix.kotlin.models.EventTypeUpdate
 import com.svix.kotlin.models.ListResponseEventTypeOut
+import com.svix.kotlin.models.Ordering
 
-class EventTypeListOptions() : ListOptions() {
+class EventTypeListOptions {
+    var limit: Int? = null
+    var iterator: String? = null
+    var order: Ordering? = null
+    var includeArchived: Boolean? = null
     var withContent: Boolean? = null
-    var includeAchived: Boolean? = null
 
+    /** Limit the number of returned items */
+    fun limit(limit: Int) = apply { this.limit = limit }
+
+    /** The iterator returned from a prior invocation */
+    fun iterator(iterator: String) = apply { this.iterator = iterator }
+
+    /** The sorting order of the returned items */
+    fun order(order: Ordering) = apply { this.order = order }
+
+    /** When `true` archived (deleted but not expunged) items are included in the response. */
+    fun includeArchived(includeArchived: Boolean) = apply { this.includeArchived = includeArchived }
+
+    @Deprecated("Use the new includeArchived() method")
+    fun includeAchived(includeArchived: Boolean) = apply { this.includeArchived = includeArchived }
+
+    /** When `true` the full item (including the schema) is included in the response. */
     fun withContent(withContent: Boolean) = apply { this.withContent = withContent }
-
-    fun includeAchived(includeAchived: Boolean) = apply { this.includeAchived = includeAchived }
-
-    override fun iterator(iterator: String) = apply { super.iterator(iterator) }
-
-    override fun limit(limit: Int) = apply { super.limit(limit) }
 }
 
 class EventType internal constructor(token: String, options: SvixOptions) {
@@ -41,7 +55,7 @@ class EventType internal constructor(token: String, options: SvixOptions) {
                 options.limit,
                 options.iterator,
                 null,
-                options.includeAchived,
+                options.includeArchived,
                 options.withContent,
             )
         } catch (e: Exception) {

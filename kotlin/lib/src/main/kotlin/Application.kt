@@ -8,16 +8,19 @@ import com.svix.kotlin.models.ApplicationPatch
 import com.svix.kotlin.models.ListResponseApplicationOut
 import com.svix.kotlin.models.Ordering
 
-class ApplicationListOptions : ListOptions() {
+class ApplicationListOptions {
+    var limit: Int? = null
+    var iterator: String? = null
     var order: Ordering? = null
 
+    /** Limit the number of returned items */
+    fun limit(limit: Int) = apply { this.limit = limit }
+
+    /** The iterator returned from a prior invocation */
+    fun iterator(iterator: String) = apply { this.iterator = iterator }
+
+    /** The sorting order of the returned items */
     fun order(order: Ordering) = apply { this.order = order }
-
-    override fun iterator(iterator: String): ApplicationListOptions = apply {
-        super.iterator(iterator)
-    }
-
-    override fun limit(limit: Int) = apply { super.limit(limit) }
 }
 
 class Application internal constructor(token: String, options: SvixOptions) {

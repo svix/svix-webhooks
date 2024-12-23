@@ -8,29 +8,39 @@ import com.svix.kotlin.models.MessageIn
 import com.svix.kotlin.models.MessageOut
 import java.time.OffsetDateTime
 
-class MessageListOptions : ListOptions() {
-    var eventTypes: List<String>? = null
+class MessageListOptions {
+    var limit: Int? = null
+    var iterator: String? = null
+    var channel: String? = null
     var before: OffsetDateTime? = null
     var after: OffsetDateTime? = null
-    var channel: String? = null
     var withContent: Boolean? = null
     var tag: String? = null
+    var eventTypes: List<String>? = null
 
-    fun eventTypes(eventTypes: List<String>) = apply { this.eventTypes = eventTypes }
+    /** Limit the number of returned items */
+    fun limit(limit: Int) = apply { this.limit = limit }
 
-    fun before(before: OffsetDateTime) = apply { this.before = before }
+    /** The iterator returned from a prior invocation */
+    fun iterator(iterator: String) = apply { this.iterator = iterator }
 
-    fun after(after: OffsetDateTime) = apply { this.after = after }
-
+    /** Filter response based on the channel. */
     fun channel(channel: String) = apply { this.channel = channel }
 
-    override fun iterator(iterator: String) = apply { super.iterator(iterator) }
+    /** Only include items created before a certain date. */
+    fun before(before: OffsetDateTime) = apply { this.before = before }
 
-    override fun limit(limit: Int) = apply { super.limit(limit) }
+    /** Only include items created after a certain date. */
+    fun after(after: OffsetDateTime) = apply { this.after = after }
 
+    /** When `true` message payloads are included in the response. */
     fun withContent(withContent: Boolean) = apply { this.withContent = withContent }
 
+    /** Filter messages matching the provided tag. */
     fun tag(tag: String) = apply { this.tag = tag }
+
+    /** Filter response based on the event type */
+    fun eventTypes(eventTypes: List<String>) = apply { this.eventTypes = eventTypes }
 }
 
 class Message internal constructor(token: String, options: SvixOptions) {
