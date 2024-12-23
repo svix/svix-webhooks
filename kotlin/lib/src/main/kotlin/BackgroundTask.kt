@@ -8,7 +8,9 @@ import com.svix.kotlin.models.BackgroundTaskType
 import com.svix.kotlin.models.ListResponseBackgroundTaskOut
 import com.svix.kotlin.models.Ordering
 
-class BackgroundTaskListOptions : ListOptions() {
+class BackgroundTaskListOptions {
+    var iterator: String? = null
+    var limit: Int? = null
     var status: BackgroundTaskStatus? = null
     var task: BackgroundTaskType? = null
     var order: Ordering? = null
@@ -19,9 +21,9 @@ class BackgroundTaskListOptions : ListOptions() {
 
     fun task(task: BackgroundTaskType) = apply { this.task = task }
 
-    override fun iterator(iterator: String) = apply { super.iterator(iterator) }
+    fun iterator(iterator: String) = apply { this.iterator = iterator }
 
-    override fun limit(limit: Int) = apply { super.limit(limit) }
+    fun limit(limit: Int) = apply { this.limit = limit }
 }
 
 class BackgroundTask internal constructor(token: String, options: SvixOptions) {

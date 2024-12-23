@@ -10,14 +10,19 @@ import com.svix.kotlin.models.OperationalWebhookEndpointSecretOut
 import com.svix.kotlin.models.OperationalWebhookEndpointUpdate
 import com.svix.kotlin.models.Ordering
 
-class OperationalWebhookEndpointListOptions : ListOptions() {
+class OperationalWebhookEndpointListOptions {
+    var limit: Int? = null
+    var iterator: String? = null
     var order: Ordering? = null
 
+    /** Limit the number of returned items */
+    fun limit(limit: Int) = apply { this.limit = limit }
+
+    /** The iterator returned from a prior invocation */
+    fun iterator(iterator: String) = apply { this.iterator = iterator }
+
+    /** The sorting order of the returned items */
     fun order(order: Ordering) = apply { this.order = order }
-
-    override fun iterator(iterator: String) = apply { super.iterator(iterator) }
-
-    override fun limit(limit: Int) = apply { super.limit(limit) }
 }
 
 class OperationalWebhookEndpoint internal constructor(token: String, options: SvixOptions) {

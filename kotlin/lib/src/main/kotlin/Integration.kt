@@ -9,13 +9,18 @@ import com.svix.kotlin.models.IntegrationUpdate
 import com.svix.kotlin.models.ListResponseIntegrationOut
 import com.svix.kotlin.models.Ordering
 
-class IntegrationListOptions : ListOptions() {
+class IntegrationListOptions {
+    var limit: Int? = null
+    var iterator: String? = null
     var order: Ordering? = null
 
-    override fun iterator(iterator: String) = apply { super.iterator(iterator) }
+    /** Limit the number of returned items */
+    fun limit(limit: Int) = apply { this.limit = limit }
 
-    override fun limit(limit: Int) = apply { super.limit(limit) }
+    /** The iterator returned from a prior invocation */
+    fun iterator(iterator: String) = apply { this.iterator = iterator }
 
+    /** The sorting order of the returned items */
     fun order(order: Ordering) = apply { this.order = order }
 }
 
