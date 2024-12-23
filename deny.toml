@@ -33,6 +33,7 @@ allow = [
 confidence-threshold = 0.8
 exceptions = [
     #{ allow = ["Zlib"], name = "adler32", version = "*" },
+    { allow = ["EPL-2.0"], name = "colored_json", version = "*" }
 ]
 
 [[licenses.clarify]]

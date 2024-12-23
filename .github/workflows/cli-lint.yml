@@ -1,0 +1,79 @@
+name: CLI Lint
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'svix-cli/**'
+      - 'rust/**'
+      - '.github/workflows/cli-lint.yml'
+  pull_request:
+    paths:
+      - 'svix-cli/**'
+      - 'rust/**'
+      - '.github/workflows/cli-lint.yml'
+      - 'openapi.json'
+
+# When pushing to a PR, cancel any jobs still running for the previous head commit of the PR
+concurrency:
+  # head_ref is only defined for pull requests, run_id is always unique and defined so if this
+  # workflow was not triggered by a pull request, nothing gets cancelled.
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  check-fmt:
+    name: Check formatting
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@nightly
+        with:
+          components: rustfmt
+
+      - name: rustfmt
+        run: cargo fmt -- --check
+        working-directory: svix-cli
+
+  test-versions:
+    name: CLI Lint
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        rust: [stable, beta]
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Regen openapi libs
+      run: |
+        yarn
+        ./regen_openapi.sh
+
+    - uses: dtolnay/rust-toolchain@master
+      with:
+        toolchain: ${{ matrix.rust }}
+        components: clippy
+
+    - uses: Swatinem/rust-cache@v2
+      with:
+        workspaces: "svix-cli -> target"
+        # only save the cache on the main branch
+        # cf https://github.com/Swatinem/rust-cache/issues/95
+        save-if: ${{ github.ref == 'refs/heads/main' }}
+        # include relevant information in the cache name
+        prefix-key: "cli-${{ matrix.rust }}"
+
+    - uses: taiki-e/install-action@nextest
+
+    - name: Clippy
+      run: cargo clippy --all-targets --all-features -- -D warnings
+      working-directory: svix-cli
+
+    - name: Run tests
+      run: cargo nextest run
+      working-directory: svix-cli

@@ -1,0 +1,24 @@
+name: CLI Security
+
+on:
+  push:
+    branches:
+    - main
+    paths:
+      - 'svix-cli/**/Cargo.toml'
+      - 'svix-cli/**/Cargo.lock'
+      - '.github/workflows/cli-security.yml'
+  pull_request:
+    paths:
+      - 'rust/**/Cargo.toml'
+      - 'rust/**/Cargo.lock'
+      - '.github/workflows/cli-security.yml'
+
+jobs:
+  security_audit:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: EmbarkStudios/cargo-deny-action@v2
+        with:
+          manifest-path: svix-cli/Cargo.toml
