@@ -3,6 +3,9 @@ name = "svix-cli"
 description = "A CLI to interact with the Svix API."
 version = "1.44.0"
 edition = "2021"
+license = "MIT"
+keywords = ["svix", "webhooks", "diahook"]
+categories = ["development-tools", "asynchronous", "network-programming", "web-programming"]
 
 [[bin]]
 name = "svix"
