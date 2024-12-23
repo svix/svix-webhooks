@@ -1,24 +1,36 @@
-use crate::relay::message::{MessageOut, MessageOutEvent, MessageOutStart};
-use crate::relay::token::generate_token;
+use std::{
+    collections::HashMap,
+    fmt::{Debug, Display, Formatter},
+    time::Duration,
+};
+
 use anyhow::{Context, Result};
-use futures_util::stream::{SplitSink, SplitStream};
-use futures_util::{SinkExt, StreamExt};
+use futures_util::{
+    stream::{SplitSink, SplitStream},
+    SinkExt, StreamExt,
+};
 use http::{HeaderMap, HeaderName, HeaderValue};
 use indoc::printdoc;
 use message::{MessageIn, MessageInEvent};
-use std::collections::HashMap;
-use std::fmt::{Debug, Display, Formatter};
-use std::time::Duration;
-use tokio::net::TcpStream;
-use tokio::sync::mpsc::{UnboundedReceiver, UnboundedSender};
-use tokio::task::JoinSet;
-use tokio::time::Instant;
-use tokio_tungstenite::tungstenite::client::IntoClientRequest;
-use tokio_tungstenite::tungstenite::protocol::frame::coding::CloseCode::Policy;
-use tokio_tungstenite::tungstenite::protocol::CloseFrame;
-use tokio_tungstenite::tungstenite::{Bytes, Utf8Bytes};
+use tokio::{
+    net::TcpStream,
+    sync::mpsc::{UnboundedReceiver, UnboundedSender},
+    task::JoinSet,
+    time::Instant,
+};
 use tokio_tungstenite::{
-    connect_async, tungstenite::protocol::Message, MaybeTlsStream, WebSocketStream,
+    connect_async,
+    tungstenite::{
+        client::IntoClientRequest,
+        protocol::{frame::coding::CloseCode::Policy, CloseFrame, Message},
+        Bytes, Utf8Bytes,
+    },
+    MaybeTlsStream, WebSocketStream,
+};
+
+use crate::relay::{
+    message::{MessageOut, MessageOutEvent, MessageOutStart},
+    token::generate_token,
 };
 
 mod message;

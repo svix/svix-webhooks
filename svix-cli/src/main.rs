@@ -1,19 +1,23 @@
-use crate::cmds::api::authentication::AuthenticationArgs;
-use crate::cmds::api::endpoint::EndpointArgs;
-use crate::cmds::api::event_type::EventTypeArgs;
-use crate::cmds::api::integration::IntegrationArgs;
-use crate::cmds::api::message::MessageArgs;
-use crate::cmds::api::message_attempt::MessageAttemptArgs;
-use crate::cmds::listen::ListenArgs;
-use crate::cmds::open::OpenArgs;
-use crate::cmds::signature::SignatureArgs;
-use crate::config::Config;
 use anyhow::Result;
 use clap::{Parser, Subcommand};
 use clap_complete::Shell;
 use cmds::api::application::ApplicationArgs;
 use colored_json::{ColorMode, Output};
 use concolor_clap::{Color, ColorChoice};
+
+use crate::{
+    cmds::{
+        api::{
+            authentication::AuthenticationArgs, endpoint::EndpointArgs, event_type::EventTypeArgs,
+            integration::IntegrationArgs, message::MessageArgs,
+            message_attempt::MessageAttemptArgs,
+        },
+        listen::ListenArgs,
+        open::OpenArgs,
+        signature::SignatureArgs,
+    },
+    config::Config,
+};
 
 mod cli_types;
 mod cmds;

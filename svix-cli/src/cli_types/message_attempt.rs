@@ -1,7 +1,9 @@
 use chrono::{DateTime, Utc};
 use clap::Args;
-use svix::api;
-use svix::api::{MessageStatus, StatusCodeClass};
+use svix::{
+    api,
+    api::{MessageStatus, StatusCodeClass},
+};
 
 #[derive(Args, Clone)]
 pub struct MessageAttemptListByEndpointOptions {

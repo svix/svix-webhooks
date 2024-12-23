@@ -1,9 +1,11 @@
-use crate::cli_types::application::ApplicationListOptions;
-use crate::cli_types::PostOptions;
-use crate::json::JsonOf;
 use clap::{Args, Subcommand};
 use colored_json::ColorMode;
 use svix::api::{ApplicationIn, ApplicationPatch};
+
+use crate::{
+    cli_types::{application::ApplicationListOptions, PostOptions},
+    json::JsonOf,
+};
 
 #[derive(Args)]
 #[command(args_conflicts_with_subcommands = true)]

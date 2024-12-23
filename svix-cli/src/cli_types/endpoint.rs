@@ -1,7 +1,6 @@
 use chrono::{DateTime, Utc};
 use clap::Args;
-use svix::api;
-use svix::api::Ordering;
+use svix::{api, api::Ordering};
 
 #[derive(Args, Clone)]
 pub struct EndpointListOptions {

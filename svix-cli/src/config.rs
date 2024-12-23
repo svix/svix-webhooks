@@ -1,12 +1,15 @@
+use std::{
+    io::Write,
+    os::unix::fs::OpenOptionsExt,
+    path::{Path, PathBuf},
+};
+
 use anyhow::Result;
 use figment::{
     providers::{Env, Format, Toml},
     Figment,
 };
 use serde::{Deserialize, Serialize};
-use std::io::Write;
-use std::os::unix::fs::OpenOptionsExt;
-use std::path::{Path, PathBuf};
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct Config {

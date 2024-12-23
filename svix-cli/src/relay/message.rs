@@ -8,8 +8,9 @@
 //! The main difference between the two is the `-In` has an HTTP method on it (needed so we can
 //! recreate the request properly to the local server, whereas the `-Out` has a status code.
 
-use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+
+use serde::{Deserialize, Serialize};
 
 pub const VERSION: u16 = 1;
 

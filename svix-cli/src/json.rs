@@ -1,8 +1,8 @@
+use std::str::FromStr;
+
 use anyhow::{Error, Result};
 use colored_json::{Color, ColorMode, ToColoredJson};
-use serde::de::DeserializeOwned;
-use serde::Serialize;
-use std::str::FromStr;
+use serde::{de::DeserializeOwned, Serialize};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct JsonOf<T: DeserializeOwned>(T);

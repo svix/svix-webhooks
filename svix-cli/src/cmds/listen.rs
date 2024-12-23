@@ -1,6 +1,7 @@
-use crate::config::{get_config_file_path, Config};
 use anyhow::{Context, Result};
 use clap::Args;
+
+use crate::config::{get_config_file_path, Config};
 
 #[derive(Args)]
 pub struct ListenArgs {

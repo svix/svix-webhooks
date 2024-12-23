@@ -1,11 +1,16 @@
-use crate::cli_types::endpoint::{EndpointListOptions, EndpointStatsOptions};
-use crate::cli_types::PostOptions;
-use crate::json::JsonOf;
 use clap::{Args, Subcommand};
 use colored_json::ColorMode;
 use svix::api::{
     EndpointHeadersIn, EndpointHeadersPatchIn, EndpointIn, EndpointPatch, EndpointSecretRotateIn,
     EndpointTransformationIn, EndpointUpdate, EventExampleIn, RecoverIn, ReplayIn,
+};
+
+use crate::{
+    cli_types::{
+        endpoint::{EndpointListOptions, EndpointStatsOptions},
+        PostOptions,
+    },
+    json::JsonOf,
 };
 
 #[derive(Args)]

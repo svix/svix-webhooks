@@ -1,8 +1,8 @@
-use crate::BIN_NAME;
 use anyhow::Result;
 use clap::CommandFactory;
-use clap_complete::shells;
-use clap_complete::{generate as generate_, Shell};
+use clap_complete::{generate as generate_, shells, Shell};
+
+use crate::BIN_NAME;
 
 pub fn generate(shell: &Shell) -> Result<()> {
     let mut writer = std::io::stdout().lock();

@@ -1,7 +1,7 @@
-use crate::config;
-use crate::config::Config;
 use anyhow::Result;
 use dialoguer::Input;
+
+use crate::{config, config::Config};
 
 pub fn prompt() -> Result<()> {
     print!("Welcome to the Svix CLI!\n\n");
