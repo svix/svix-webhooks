@@ -12,11 +12,11 @@ import {
 import { PostOptions } from "../util";
 
 export interface IntegrationListOptions {
-  /// Limit the number of returned items
+  /** Limit the number of returned items */
   limit?: number;
-  /// The iterator returned from a prior invocation
+  /** The iterator returned from a prior invocation */
   iterator?: string | null;
-  /// The sorting order of the returned items
+  /** The sorting order of the returned items */
   order?: Ordering;
 }
 
@@ -27,7 +27,7 @@ export class Integration {
     this.api = new IntegrationApi(config);
   }
 
-  /// List the application's integrations.
+  /** List the application's integrations. */
   public list(
     appId: string,
     options?: IntegrationListOptions
@@ -39,7 +39,7 @@ export class Integration {
     });
   }
 
-  /// Create an integration.
+  /** Create an integration. */
   public create(
     appId: string,
     integrationIn: IntegrationIn,
@@ -52,7 +52,7 @@ export class Integration {
     });
   }
 
-  /// Get an integration.
+  /** Get an integration. */
   public get(appId: string, integId: string): Promise<IntegrationOut> {
     return this.api.v1IntegrationGet({
       appId,
@@ -60,7 +60,7 @@ export class Integration {
     });
   }
 
-  /// Update an integration.
+  /** Update an integration. */
   public update(
     appId: string,
     integId: string,
@@ -73,7 +73,7 @@ export class Integration {
     });
   }
 
-  /// Delete an integration.
+  /** Delete an integration. */
   public delete(appId: string, integId: string): Promise<void> {
     return this.api.v1IntegrationDelete({
       appId,
@@ -88,7 +88,7 @@ export class Integration {
     });
   }
 
-  /// Rotate the integration's key. The previous key will be immediately revoked.
+  /** Rotate the integration's key. The previous key will be immediately revoked. */
   public rotateKey(
     appId: string,
     integId: string,

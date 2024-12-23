@@ -27,18 +27,18 @@ import {
 import { PostOptions } from "../util";
 
 export interface EndpointListOptions {
-  /// Limit the number of returned items
+  /** Limit the number of returned items */
   limit?: number;
-  /// The iterator returned from a prior invocation
+  /** The iterator returned from a prior invocation */
   iterator?: string | null;
-  /// The sorting order of the returned items
+  /** The sorting order of the returned items */
   order?: Ordering;
 }
 
-export interface EndpointStatsOptions {
-  /// Filter the range to data starting from this date
+export interface EndpointGetStatsOptions {
+  /** Filter the range to data starting from this date. */
   since?: Date | null;
-  /// Filter the range to data ending by this date
+  /** Filter the range to data ending by this date. */
   until?: Date | null;
 }
 
@@ -49,7 +49,7 @@ export class Endpoint {
     this.api = new EndpointApi(config);
   }
 
-  /// List the application's endpoints.
+  /** List the application's endpoints. */
   public list(
     appId: string,
     options?: EndpointListOptions
@@ -61,9 +61,11 @@ export class Endpoint {
     });
   }
 
-  /// Create a new endpoint for the application.
-  ///
-  /// When `secret` is `null` the secret is automatically generated (recommended)
+  /**
+   * Create a new endpoint for the application.
+   *
+   * When `secret` is `null` the secret is automatically generated (recommended).
+   */
   public create(
     appId: string,
     endpointIn: EndpointIn,
@@ -76,7 +78,7 @@ export class Endpoint {
     });
   }
 
-  /// Get an endpoint.
+  /** Get an endpoint. */
   public get(appId: string, endpointId: string): Promise<EndpointOut> {
     return this.api.v1EndpointGet({
       appId,
@@ -84,7 +86,7 @@ export class Endpoint {
     });
   }
 
-  /// Update an endpoint.
+  /** Update an endpoint. */
   public update(
     appId: string,
     endpointId: string,
@@ -97,7 +99,7 @@ export class Endpoint {
     });
   }
 
-  /// Delete an endpoint.
+  /** Delete an endpoint. */
   public delete(appId: string, endpointId: string): Promise<void> {
     return this.api.v1EndpointDelete({
       appId,
@@ -105,7 +107,7 @@ export class Endpoint {
     });
   }
 
-  /// Partially update an endpoint.
+  /** Partially update an endpoint. */
   public patch(
     appId: string,
     endpointId: string,
@@ -118,7 +120,7 @@ export class Endpoint {
     });
   }
 
-  /// Get the additional headers to be sent with the webhook
+  /** Get the additional headers to be sent with the webhook. */
   public getHeaders(appId: string, endpointId: string): Promise<EndpointHeadersOut> {
     return this.api.v1EndpointGetHeaders({
       appId,
@@ -126,9 +128,7 @@ export class Endpoint {
     });
   }
 
-  /**
-   * @deprecated Since version 1.30.0. Use `headersUpdate` instead.
-   */
+  /** Set the additional headers to be sent with the webhook. */
   public updateHeaders(
     appId: string,
     endpointId: string,
@@ -180,9 +180,11 @@ export class Endpoint {
     });
   }
 
-  /// Resend all failed messages since a given time.
-  ///
-  /// Messages that were sent successfully, even if failed initially, are not resent.
+  /**
+   * Resend all failed messages since a given time.
+   *
+   * Messages that were sent successfully, even if failed initially, are not resent.
+   */
   public recover(
     appId: string,
     endpointId: string,
@@ -197,10 +199,12 @@ export class Endpoint {
     });
   }
 
-  /// Replays messages to the endpoint.
-  ///
-  /// Only messages that were created after `since` will be sent.
-  /// Messages that were previously sent to the endpoint are not resent.
+  /**
+   * Replays messages to the endpoint.
+   *
+   * Only messages that were created after `since` will be sent.
+   * Messages that were previously sent to the endpoint are not resent.
+   */
   public replayMissing(
     appId: string,
     endpointId: string,
@@ -215,10 +219,12 @@ export class Endpoint {
     });
   }
 
-  /// Get the endpoint's signing secret.
-  ///
-  /// This is used to verify the authenticity of the webhook.
-  /// For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
+  /**
+   * Get the endpoint's signing secret.
+   *
+   * This is used to verify the authenticity of the webhook.
+   * For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
+   */
   public getSecret(appId: string, endpointId: string): Promise<EndpointSecretOut> {
     return this.api.v1EndpointGetSecret({
       appId,
@@ -226,9 +232,11 @@ export class Endpoint {
     });
   }
 
-  /// Rotates the endpoint's signing secret.
-  ///
-  /// The previous secret will remain valid for the next 24 hours.
+  /**
+   * Rotates the endpoint's signing secret.
+   *
+   * The previous secret will remain valid for the next 24 hours.
+   */
   public rotateSecret(
     appId: string,
     endpointId: string,
@@ -243,7 +251,7 @@ export class Endpoint {
     });
   }
 
-  /// Send an example message for an event
+  /** Send an example message for an event. */
   public sendExample(
     appId: string,
     endpointId: string,
@@ -258,11 +266,11 @@ export class Endpoint {
     });
   }
 
-  /// Get basic statistics for the endpoint.
+  /** Get basic statistics for the endpoint. */
   public getStats(
     appId: string,
     endpointId: string,
-    options?: EndpointStatsOptions
+    options?: EndpointGetStatsOptions
   ): Promise<EndpointStats> {
     return this.api.v1EndpointGetStats({
       appId,
@@ -273,7 +281,7 @@ export class Endpoint {
     });
   }
 
-  /// Get the transformation code associated with this endpoint
+  /** Get the transformation code associated with this endpoint. */
   public transformationGet(
     appId: string,
     endpointId: string
@@ -284,7 +292,7 @@ export class Endpoint {
     });
   }
 
-  /// Set or unset the transformation code associated with this endpoint
+  /** Set or unset the transformation code associated with this endpoint. */
   public transformationPartialUpdate(
     appId: string,
     endpointId: string,
