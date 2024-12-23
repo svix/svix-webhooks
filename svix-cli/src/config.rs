@@ -20,9 +20,9 @@ pub struct Config {
     // Relay stuff relates to the `listen` command.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub relay_token: Option<String>,
-    // FIXME: "url" isn't right. We expect a hostname, default is: `api.play.svix.com`
+    #[serde(alias = "relay_debug_url")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub relay_debug_url: Option<String>,
+    pub relay_debug_hostname: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub relay_disable_security: Option<bool>,
 }

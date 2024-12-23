@@ -20,6 +20,10 @@ dialoguer = "0.11.0"
 figment = { version = "0.10.19", features = ["toml", "env"] }
 futures-util = "0.3.31"
 http = "1.2.0"
+# Reduce compile times for idna (we don't need the fastest possible impl of UTS 46)
+# As per https://github.com/hsivonen/idna_adapter?tab=readme-ov-file#opting-to-use-unicode-rs
+idna_adapter = "=1.1.0"
+indoc = "2.0.5"
 open = "5.3.1"
 rand = "0.8.5"
 reqwest = "0.12.9"

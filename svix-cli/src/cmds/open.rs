@@ -15,7 +15,7 @@ const DOCS_URL: &str = "https://docs.svix.com/";
 /// Quickly open Svix pages in your browser
 #[derive(Subcommand)]
 pub enum OpenCommands {
-    /// Open the Svix API documentation
+    /// Open the Svix API reference
     Api,
     /// Open the Svix documentation
     Docs,

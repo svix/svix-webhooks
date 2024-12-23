@@ -34,7 +34,7 @@ impl ListenArgs {
             self.url,
             token,
             !self.no_logging,
-            cfg.relay_debug_url.as_deref(),
+            cfg.relay_debug_hostname.as_deref(),
             cfg.relay_disable_security.unwrap_or_default(),
         )
         .await?;

@@ -1,7 +1,7 @@
-use crate::cli_types::Ordering;
 use chrono::{DateTime, Utc};
 use clap::Args;
 use svix::api;
+use svix::api::Ordering;
 
 #[derive(Args, Clone)]
 pub struct EndpointListOptions {

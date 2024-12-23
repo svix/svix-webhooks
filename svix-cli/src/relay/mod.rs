@@ -4,6 +4,7 @@ use anyhow::{Context, Result};
 use futures_util::stream::{SplitSink, SplitStream};
 use futures_util::{SinkExt, StreamExt};
 use http::{HeaderMap, HeaderName, HeaderValue};
+use indoc::printdoc;
 use message::{MessageIn, MessageInEvent};
 use std::collections::HashMap;
 use std::fmt::{Debug, Display, Formatter};
@@ -86,8 +87,8 @@ impl Client {
 
         match tokio::time::timeout(
             WRITE_WAIT,
-            ws_tx.send(Message::Binary(
-                serde_json::to_vec(&MessageOut::Start {
+            ws_tx.send(Message::Text(
+                serde_json::to_string(&MessageOut::Start {
                     version: message::VERSION,
                     data: MessageOutStart {
                         token: self.token.clone(),
@@ -99,7 +100,8 @@ impl Client {
         .await
         {
             Ok(Ok(_)) => { /* nothing to do  */ }
-            // The outer Result is for the timeout, the inner is if there was some other failure during `send`.
+            // The outer Result is for the timeout, the inner is for if there was some other failure
+            // during `send`.
             Ok(Err(_)) | Err(_) => {
                 anyhow::bail!("failed to complete handshake with Webhook Relay server: remote didn't accept start message");
             }
@@ -150,14 +152,14 @@ impl Client {
         };
 
         if show_welcome_message {
-            println!(
+            printdoc!(
                 r#"
-Webhook Relay is now listening at:
-{}
+                Webhook Relay is now listening at:
+                {}
 
-All requests on this endpoint will be forwarded to your local URL:
-{}
-"#,
+                All requests on this endpoint will be forwarded to your local URL:
+                {}
+                "#,
                 receive_url(&start_response.token),
                 self.local_url,
             );
@@ -165,12 +167,12 @@ All requests on this endpoint will be forwarded to your local URL:
             // Setting `--no-logging` gives a 400 response (invalid token) when you send a webhook to
             // Play.
             if self.logging {
-                println!(
+                printdoc!(
                     r#"
-View logs and debug information at:
-{}
-To disable logging, run `svix listen --no-logging`
-"#,
+                    View logs and debug information at:
+                    {}
+                    To disable logging, run `svix listen --no-logging`
+                    "#,
                     view_url(&self.token)
                 );
             }
@@ -302,7 +304,7 @@ impl WsConnection {
         let request = websocket_url.to_string().into_client_request()?;
         let (stream, _resp) = connect_async(request)
             .await
-            .with_context(|| "failed to connect to websocket server")?;
+            .context("failed to connect to websocket server")?;
 
         Ok(Self { stream })
     }
@@ -403,18 +405,12 @@ async fn make_local_request(
 
 fn format_resp_headers(headers: &HeaderMap) -> Result<HashMap<String, String>> {
     let mut out = HashMap::new();
-    const SKIP_USER_AGENT: HeaderValue = HeaderValue::from_static("Go-http-client/1.1");
     for (k, v) in headers {
-        // FIXME: the Go cli used to unset the useragent if it matched the Go http client. Do we need something similar here? idk why this is needed.
-        if k == http::header::USER_AGENT && v == SKIP_USER_AGENT {
-            continue;
-        }
         out.insert(k.to_string(), v.to_str()?.to_string());
     }
     Ok(out)
 }
 
-//
 async fn handle_incoming_message(
     client: HttpClient,
     bytes: Bytes,

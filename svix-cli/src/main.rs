@@ -36,6 +36,7 @@ struct Cli {
 
 impl Cli {
     /// Converts the selected `ColorChoice` from the CLI to a `ColorMode` as used by the JSON printer.
+    ///
     /// When the color choice is "auto", this considers whether stdout is a tty or not so that
     /// color codes are only produced when actually writing directly to a terminal.
     fn color_mode(&self) -> ColorMode {
