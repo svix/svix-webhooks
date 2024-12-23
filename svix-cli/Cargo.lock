@@ -645,6 +645,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4a8575493d277c9092b988c780c94737fb9fd8651a1001e16bee3eccfc1baedb"
 
 [[package]]
+name = "home"
+version = "0.5.11"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "589533453244b0995c858700322199b2becb13b627df2851f64a2775d024abcf"
+dependencies = [
+ "windows-sys 0.59.0",
+]
+
+[[package]]
 name = "http"
 version = "0.2.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1655,6 +1664,7 @@ dependencies = [
  "dialoguer",
  "figment",
  "futures-util",
+ "home",
  "http 1.2.0",
  "idna_adapter",
  "indoc",

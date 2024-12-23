@@ -76,9 +76,9 @@ fn get_folder() -> Result<PathBuf> {
     let pb = match config_path {
         Ok(path) => PathBuf::from(path),
         Err(_e) => {
-            // FIXME: home_dir() can give incorrect results on Windows. Docs recommend "use a crate instead"
-            #[allow(deprecated)]
-            std::env::home_dir().ok_or_else(|| anyhow::anyhow!("unable to find config path"))?
+            // N.b. per <https://github.com/rust-lang/cargo/blob/master/crates/home/README.md> the
+            // stdlib should be fixed as of Rust 1.86.
+            home::home_dir().ok_or_else(|| anyhow::anyhow!("unable to find config path"))?
         }
     };
     Ok(pb.join(".config").join("svix"))

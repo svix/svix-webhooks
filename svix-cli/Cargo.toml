@@ -22,6 +22,7 @@ concolor-clap = "0.1.0"
 dialoguer = "0.11.0"
 figment = { version = "0.10.19", features = ["toml", "env"] }
 futures-util = "0.3.31"
+home = "0.5.11"
 http = "1.2.0"
 # Reduce compile times for idna (we don't need the fastest possible impl of UTS 46)
 # As per https://github.com/hsivonen/idna_adapter?tab=readme-ov-file#opting-to-use-unicode-rs
