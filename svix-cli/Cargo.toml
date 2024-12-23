@@ -6,6 +6,8 @@ edition = "2021"
 license = "MIT"
 keywords = ["svix", "webhooks", "diahook"]
 categories = ["development-tools", "asynchronous", "network-programming", "web-programming"]
+repository = "https://github.com/svix-onelson/svix-webhooks"
+
 
 [[bin]]
 name = "svix"
@@ -38,3 +40,8 @@ tokio = { version = "1.42.0", features = ["full"] }
 tokio-tungstenite = { version = "0.26.0", features = ["native-tls"] }
 toml = "0.8.19"
 url = "2.5.4"
+
+# The profile that 'dist' will build with
+[profile.dist]
+inherits = "release"
+lto = "thin"
