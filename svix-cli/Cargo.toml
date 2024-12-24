@@ -42,11 +42,11 @@ idna_adapter = "=1.1.0"
 indoc = "2.0.5"
 open = "5.3.1"
 rand = "0.8.5"
-reqwest = "0.12.9"
+reqwest = { version = "0.12.9", features = ["rustls-tls"] }
 serde = { version = "1.0.215", features = ["derive"] }
 serde_json = "1.0.133"
-svix = { path = "../rust" }
+svix = { path = "../rust", default-features = false, features = ["http1", "rustls-tls"] }
 tokio = { version = "1.42.0", features = ["full"] }
-tokio-tungstenite = { version = "0.26.0", features = ["native-tls"] }
+tokio-tungstenite = { version = "0.26.0", features = ["rustls-tls-webpki-roots"] }
 toml = "0.8.19"
 url = "2.5.4"
