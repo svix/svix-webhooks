@@ -30,6 +30,7 @@ pub enum WebhookError {
     InvalidPayload,
 }
 
+#[derive(Debug, Clone)]
 pub struct Webhook {
     key: Vec<u8>,
 }
