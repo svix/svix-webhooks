@@ -12,7 +12,10 @@ keywords = ["svix", "webhooks", "diahook"]
 categories = ["development-tools", "asynchronous", "network-programming", "web-programming"]
 
 [features]
-default = ["http1", "native-tls"]
+# openssl-sys keeps showing up in the CLI dep graph, breaking the build, even when
+# `default-features = false`.
+# Switcing the default to rustls properly culls it from the tree.
+default = ["http1", "rustls-tls"]
 
 http1 = ["hyper-util/http1", "hyper-rustls?/http1"]
 http2 = ["hyper-util/http2", "hyper-rustls?/http2"]
