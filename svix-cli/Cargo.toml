@@ -1,12 +1,24 @@
 [package]
 name = "svix-cli"
 description = "A CLI to interact with the Svix API."
+homepage = "https://www.svix.com"
 authors = ["Svix Inc. <oss@svix.com>"]
 version = "1.44.0"
 edition = "2021"
 license = "MIT"
 keywords = ["svix", "webhooks", "diahook"]
 categories = ["development-tools", "asynchronous", "network-programming", "web-programming"]
+repository = "https://github.com/svix/svix-webhooks"
+publish = false
+
+[package.metadata.dist]
+dist = true
+
+[package.metadata.wix]
+upgrade-guid = "A64E8E7A-69C1-4C4A-96A6-D0BD11C42AF6"
+path-guid = "2E3464D5-DAC5-4C00-A074-250BB17BBBE2"
+license = false
+eula = false
 
 [dependencies]
 anyhow = "1.0.94"
