@@ -1,19 +1,23 @@
 [package]
 name = "svix-cli"
 description = "A CLI to interact with the Svix API."
-version = "1.44.0"
+version = "1.45.0"
 edition = "2021"
 license = "MIT"
 keywords = ["svix", "webhooks", "diahook"]
 categories = ["development-tools", "asynchronous", "network-programming", "web-programming"]
 repository = "https://github.com/svix-onelson/svix-webhooks"
 authors = ["Svix Inc. <oss@svix.com>"]
+publish = false
 
 [package.metadata.wix]
 upgrade-guid = "E6EF2AC4-2BA1-4E36-BDD5-FEE972946181"
 path-guid = "09E262C8-4654-4160-A6A9-C03E92D3E575"
 license = false
 eula = false
+
+[package.metadata.dist]
+dist = true
 
 [[bin]]
 name = "svix"
@@ -38,11 +42,11 @@ idna_adapter = "=1.1.0"
 indoc = "2.0.5"
 open = "5.3.1"
 rand = "0.8.5"
-reqwest = "0.12.9"
+reqwest = { version = "0.12.9", features = ["rustls-tls", "charset", "http2", "macos-system-configuration"], default-features = false }
 serde = { version = "1.0.215", features = ["derive"] }
 serde_json = "1.0.133"
 svix = { path = "../rust" }
-tokio = { version = "1.42.0", features = ["full"] }
-tokio-tungstenite = { version = "0.26.0", features = ["native-tls"] }
+tokio = { version = "1.42.0", features = ["macros", "time", "rt-multi-thread"] }
+tokio-tungstenite = { version = "0.26.0", features = ["rustls-tls-webpki-roots"] }
 toml = "0.8.19"
 url = "2.5.4"

@@ -316,6 +316,7 @@ impl WsConnection {
         let request = websocket_url.to_string().into_client_request()?;
         let (stream, _resp) = connect_async(request)
             .await
+            .inspect_err(|e| eprintln!("{e}"))
             .context("failed to connect to websocket server")?;
 
         Ok(Self { stream })
