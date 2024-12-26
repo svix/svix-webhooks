@@ -3,6 +3,9 @@
 ## Next
 * 
 
+## Version 1.46.0
+* 
+
 ## Version 1.45.0
 * Libs/Rust **(Breaking)**: Add `api::MessageAttemptListAttemptedMessagesOptions` and use it for
   `MessageAttempt::list_attempted_messages`, replacing `MessageAttemptListOptions` which contained

@@ -5,7 +5,7 @@ import com.svix.internal.Configuration;
 import com.svix.internal.auth.HttpBearerAuth;
 
 public final class Svix {
-	public static final String VERSION = "1.45.0";
+	public static final String VERSION = "1.46.0";
 	private final Application application;
 	private final Authentication authentication;
 	private final Endpoint endpoint;

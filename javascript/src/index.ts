@@ -36,7 +36,7 @@ export {
 } from "./api/message_attempt";
 export { OperationalWebhookEndpointListOptions } from "./api/op_webhook_endpoint";
 
-const VERSION = "1.45.0";
+const VERSION = "1.46.0";
 
 class UserAgentMiddleware implements Middleware {
   public pre(context: RequestContext): Promise<RequestContext> {
