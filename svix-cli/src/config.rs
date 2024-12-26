@@ -1,6 +1,6 @@
 use std::{
+    fs::{File, OpenOptions},
     io::Write,
-    os::unix::fs::OpenOptionsExt,
     path::{Path, PathBuf},
 };
 
@@ -30,6 +30,26 @@ pub struct Config {
     pub relay_disable_security: Option<bool>,
 }
 
+fn config_file_open_opts() -> OpenOptions {
+    OpenOptions::new()
+        .create(true)
+        .truncate(true)
+        .write(true)
+        .to_owned()
+}
+
+#[cfg(windows)]
+fn open_config_file(path: &Path) -> Result<File> {
+    Ok(config_file_open_opts().open(path)?)
+}
+
+#[cfg(unix)]
+fn open_config_file(path: &Path) -> Result<File> {
+    use std::os::unix::fs::OpenOptionsExt;
+    const FILE_MODE: u32 = 0o600;
+    Ok(config_file_open_opts().mode(FILE_MODE).open(path)?)
+}
+
 impl Config {
     pub fn load() -> Result<Config> {
         let cfg_file = get_folder()?.join(FILE_NAME);
@@ -41,12 +61,7 @@ impl Config {
     }
 
     pub fn save_to_disk(&self, path: &Path) -> Result<()> {
-        let mut fh = std::fs::OpenOptions::new()
-            .create(true)
-            .truncate(true)
-            .write(true)
-            .mode(FILE_MODE)
-            .open(path)?;
+        let mut fh = open_config_file(path)?;
 
         let source = &toml::to_string_pretty(self)?;
         fh.write_all(source.as_bytes())?;
@@ -64,7 +79,6 @@ impl Config {
 }
 
 const FILE_NAME: &str = "config.toml";
-const FILE_MODE: u32 = 0o600;
 
 fn get_folder() -> Result<PathBuf> {
     let config_path = if cfg!(windows) {
