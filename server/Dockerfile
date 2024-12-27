@@ -50,7 +50,7 @@ RUN apt-get update && apt-get install -y \
         rm -rf /var/lib/apt/lists/*
 
 USER appuser
-EXPOSE 8080
+EXPOSE 8071
 
 COPY --from=build /app/target/release/svix-server /usr/local/bin/svix-server
 
