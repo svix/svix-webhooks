@@ -1,6 +1,7 @@
 [package]
 name = "svix-cli"
 description = "A CLI to interact with the Svix API."
+authors = ["Svix Inc. <oss@svix.com>"]
 version = "1.44.0"
 edition = "2021"
 license = "MIT"
