@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    name: Build source distribution
+    name: Build distributions
     runs-on: ubuntu-24.04
     environment: release
 
@@ -23,23 +23,22 @@ jobs:
         run: |
           cd python
           python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt .
-          python -m pip install -r requirements-dev.txt .
+          python -m pip install -r requirements-dev.txt
 
-      - name: Install setuptools
+      - name: Install build
         run: |
           cd python
-          python -m pip install setuptools
+          python -m pip install build
 
       - name: Regen openapi libs
         run: |
           cd python
           ./scripts/generate_openapi.sh
 
-      - name: Build sdist
+      - name: Build distributions
         run: |
           cd python
-          python setup.py sdist
+          python -m build
 
       - uses: pypa/gh-action-pypi-publish@release/v1
         with:
