@@ -8,10 +8,6 @@ license = "MIT"
 keywords = ["svix", "webhooks", "diahook"]
 categories = ["development-tools", "asynchronous", "network-programming", "web-programming"]
 
-[[bin]]
-name = "svix"
-path = "src/main.rs"
-
 [dependencies]
 anyhow = "1.0.94"
 base64 = "0.22.1"
