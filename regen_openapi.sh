@@ -46,6 +46,9 @@ yarn openapi-generator-cli generate -i openapi.json -g ruby -o ruby -c ruby/open
 
 yarn openapi-generator-cli generate -i openapi.json -g csharp -o csharp/ -c csharp/openapi-generator-config.json --global-property apis,models,supportingFiles,apiTests=false,apiDocs=false,modelTests=false,modelDocs=false
 
+# Cleanup previous codegen, allowing us to spot removals.
+# If the removals are expected, stage them eg. `git add -u`, then commit them.
+rm -rf rust/src/{apis,models}
 yarn openapi-generator-cli generate -i rust/openapi.json -g rust -o rust/ -c rust/openapi-generator-config.json -t rust/templates
 
 echo Note: Python generation is not executed automatically.
