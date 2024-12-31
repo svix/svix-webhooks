@@ -39,6 +39,9 @@ pub fn prompt() -> Result<()> {
         "All Set! Your config has been written to `{}`",
         fp.as_os_str().to_str().unwrap_or_default()
     );
-    println!("Type `svix --help` to print the Svix CLI documentation!");
+    println!(
+        "Type `{} --help` to print the Svix CLI documentation!",
+        crate::BIN_NAME
+    );
     Ok(())
 }
