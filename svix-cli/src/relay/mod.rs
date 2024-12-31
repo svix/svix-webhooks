@@ -64,7 +64,6 @@ struct Client {
     websocket_url: url::Url,
     local_url: url::Url,
     http_client: HttpClient,
-    logging: bool,
 }
 
 /// Special handling for the errors during establishing a websocket connection.
@@ -166,29 +165,21 @@ impl Client {
         if show_welcome_message {
             printdoc!(
                 r#"
+
                 Webhook Relay is now listening at:
                 {}
 
                 All requests on this endpoint will be forwarded to your local URL:
                 {}
+
+                View logs and debug information at:
+                {}
+
                 "#,
                 receive_url(&start_response.token),
                 self.local_url,
+                view_url(&self.token),
             );
-            // TL;DR `--no-logging` is broken the same way here as it was in Go.
-            // Setting `--no-logging` gives a 400 response (invalid token) when you send a webhook to
-            // Play.
-            if self.logging {
-                printdoc!(
-                    r#"
-                    View logs and debug information at:
-                    {}
-                    To disable logging, run `{} listen --no-logging`
-                    "#,
-                    view_url(&self.token),
-                    crate::BIN_NAME,
-                );
-            }
         } else {
             // Shows that a reconnection attempt succeeded after some failing initial attempts.
             println!("Connected!");
@@ -222,17 +213,12 @@ impl Client {
 pub async fn listen(
     local_url: url::Url,
     relay_token: String,
-    logging: bool,
     relay_debug_url: Option<&str>,
     relay_disable_security: bool,
 ) -> Result<()> {
     let scheme = if relay_disable_security { "ws" } else { "wss" };
     let api_host = relay_debug_url.unwrap_or(DEFAULT_API_HOST);
-    let token = if logging {
-        format!("c_{relay_token}")
-    } else {
-        relay_token
-    };
+    let token = format!("c_{relay_token}");
 
     let websocket_url = format!("{scheme}://{api_host}/{API_PREFIX}/listen/").parse()?;
 
@@ -241,7 +227,6 @@ pub async fn listen(
         websocket_url,
         local_url,
         http_client: HttpClient::new(),
-        logging,
     };
 
     const MAX_BACKOFF: Duration = Duration::from_millis(5000);
@@ -268,11 +253,7 @@ pub async fn listen(
                 eprintln!("Generating a new token for this session.");
                 client.token = {
                     let relay_token = generate_token()?;
-                    if logging {
-                        format!("c_{relay_token}")
-                    } else {
-                        relay_token
-                    }
+                    format!("c_{relay_token}")
                 };
             }
         } else {
