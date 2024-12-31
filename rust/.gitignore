@@ -5,5 +5,3 @@ Cargo.lock
 /.openapi-generator/
 /openapi.json
 
-/src/apis/
-/src/models/
