@@ -138,7 +138,7 @@ async fn main() -> Result<()> {
 
 fn get_client(cfg: &Config) -> Result<svix::api::Svix> {
     let token = cfg.auth_token.clone().ok_or_else(|| {
-        anyhow::anyhow!("No auth token set. Try running `svix login` to get started.")
+        anyhow::anyhow!("No auth token set. Try running `{BIN_NAME} login` to get started.")
     })?;
     let opts = get_client_options(cfg)?;
     Ok(svix::api::Svix::new(token, Some(opts)))

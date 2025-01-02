@@ -6,7 +6,9 @@ const versionFilePath = ".version";
 
 const filesPaths = [
     versionFilePath,
+    // CLI
     "svix-cli/Cargo.toml",
+    "svix-cli/README.md",
     // Rust Server
     "server/svix-server/Cargo.toml",
     // Bridge Server

@@ -183,9 +183,10 @@ impl Client {
                     r#"
                     View logs and debug information at:
                     {}
-                    To disable logging, run `svix listen --no-logging`
+                    To disable logging, run `{} listen --no-logging`
                     "#,
-                    view_url(&self.token)
+                    view_url(&self.token),
+                    crate::BIN_NAME,
                 );
             }
         } else {
