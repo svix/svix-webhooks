@@ -34,7 +34,7 @@ curl --proto '=https' --tlsv1.2 -LsSf https://github.com/svix/svix-webhooks/rele
 For Windows users, installation can be done via powershell:
 
 ```
-powershell -ExecutionPolicy ByPass -c "irm https://github.com/svix-onelson/svix-webhooks/releases/download/v1.54.0/svix-cli-installer.ps1 | iex"
+powershell -ExecutionPolicy ByPass -c "irm https://github.com/svix-onelson/svix-webhooks/releases/download/v1.45.0/svix-cli-installer.ps1 | iex"
 ```
 
 These scripts will install the binaries to `~/.svix/bin` and also add this directory to your `PATH` by default.
