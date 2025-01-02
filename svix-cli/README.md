@@ -93,10 +93,10 @@ Webhook Relay is now listening at:
 https://play.svix.com/in/c_tSdQhb4Q5PTF5m2juiWu8qFREqE/
 
 All requests on this endpoint will be forwarded to your local URL:
-http://localhost:8000/webhook/
+http://localhost:8080/webhook/
+
 View logs and debug information at:
 https://play.svix.com/view/c_tSdQhb4Q5PTF5m2juiWu8qFREqE/
-To disable logging, run `svix-cli listen --no-logging`
 ```
 
 The above command will return you a unique URL and forward any POST requests it receives

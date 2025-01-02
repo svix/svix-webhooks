@@ -7,9 +7,6 @@ use crate::config::{get_config_file_path, Config};
 pub struct ListenArgs {
     /// The local URL to forward webhooks to
     url: url::Url,
-    /// Disables History Logging
-    #[clap(long)]
-    no_logging: bool,
 }
 
 impl ListenArgs {
@@ -34,7 +31,6 @@ impl ListenArgs {
         crate::relay::listen(
             self.url,
             token,
-            !self.no_logging,
             cfg.relay_debug_hostname.as_deref(),
             cfg.relay_disable_security.unwrap_or_default(),
         )
