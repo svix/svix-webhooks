@@ -7,10 +7,6 @@
 
 # Svix CLI
 
-[![GitHub release (latest by date)][release-img]][release]
-
-
-
 A CLI to interact with the Svix API.
 
 **With the Svix CLI, you can:**
@@ -151,7 +147,3 @@ For detailed instructions on configuring completions for your shell run `svix-cl
 
 For a more information, checkout our [API reference](https://docs.svix.com).
 
-
-
-[release-img]: https://img.shields.io/github/v/release/svix/svix-cli
-[release]: https://github.com/svix/svix-cli/releases
