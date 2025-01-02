@@ -142,6 +142,14 @@ To generate a script for your shell type `svix-cli completion <SHELL NAME>`.
 
 For detailed instructions on configuring completions for your shell run `svix-cli completion --help`.
 
+> [!TIP]
+> You can source the completion script automatically in your shell rc file.
+>
+> Example:
+> ```sh
+> eval "$(svix-cli completion bash)"
+> ```
+
 
 ## Documentation
 
