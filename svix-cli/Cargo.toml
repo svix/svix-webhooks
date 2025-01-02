@@ -20,6 +20,10 @@ path-guid = "2E3464D5-DAC5-4C00-A074-250BB17BBBE2"
 license = false
 eula = false
 
+[[bin]]
+name = "svix"
+path = "src/main.rs"
+
 [dependencies]
 anyhow = "1.0.94"
 base64 = "0.22.1"

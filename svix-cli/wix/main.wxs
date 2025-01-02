@@ -123,9 +123,9 @@
                         <Component Id='binary0' Guid='*'>
                             <File
                                 Id='exe0'
-                                Name='svix-cli.exe'
+                                Name='svix.exe'
                                 DiskId='1'
-                                Source='$(var.CargoTargetBinDir)\svix-cli.exe'
+                                Source='$(var.CargoTargetBinDir)\svix.exe'
                                 KeyPath='yes'/>
                         </Component>
                     </Directory>

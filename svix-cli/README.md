@@ -37,14 +37,14 @@ These scripts will install the binaries to `~/.svix/bin` and also add this direc
 
 #### Manually
 
-Additionally, you can select executables to download directly from [our releases page](https://github.com/svix/svix-cli/releases), and use them as is without
+Additionally, you can select executables to download directly from [our releases page](https://github.com/svix/svix-webhooks/releases), and use them as is without
 having to install anything.
 
 1. Download and extract the archive for your operating system.
-2. Run the `svix-cli` executable from the command line: `./svix-cli help`.
+2. Run the `svix` executable from the command line: `./svix help`.
 
 > [!NOTE]
-> You may need to allow execution by running `chmod +x svix-cli`.
+> You may need to allow execution by running `chmod +x svix`.
 
 
 You can also put the binaries anywhere in your `PATH` so you can run the command from anywhere without needing to provide its full path. On macOS or Linux you can achieve this by moving the executable to `/usr/local/bin` or `/usr/bin`.
@@ -55,13 +55,13 @@ You can also put the binaries anywhere in your `PATH` so you can run the command
 Installing the Svix CLI provides access to the `svix` command.
 
 ```sh
-svix-cli [command]
+svix [command]
 
-# Run `svix-cli help` for information about the available commands
-svix-cli help
+# Run `svix help` for information about the available commands
+svix help
 
 # or add the `--help` flag to any command for a more detailed description and list of flags
-svix-cli [command] --help
+svix [command] --help
 ```
 
 
@@ -79,7 +79,7 @@ change any NAT configuration on your network.
 Example:
 
 ```sh
-svix-cli listen http://localhost:8000/webhook/
+svix listen http://localhost:8000/webhook/
 ```
 
 Output:
@@ -104,13 +104,13 @@ to `http://localhost:8000/webhook/`.
 # Set your Auth Token temporarily via the SVIX_AUTH_TOKEN environment variable
 export SVIX_AUTH_TOKEN=<MY-AUTH-TOKEN>
 # or to persistently store your auth token in a config file run
-svix-cli login # interactively configure your Svix API credentials
+svix login # interactively configure your Svix API credentials
 
 # Create an Application with the name "Demo"
-svix-cli application create '{ "name": "demo" }'
+svix application create '{ "name": "demo" }'
 
 # List Applications
-svix-cli application list --limit 2 --iterator some_iterator
+svix application list --limit 2 --iterator some_iterator
 ```
 
 ## Commands
@@ -138,16 +138,16 @@ The Svix CLI supports the following commands:
 
 Shell completion scripts are provided for `bash`, `elvish`, `fish`, `powershell`, and `zsh`.
 
-To generate a script for your shell type `svix-cli completion <SHELL NAME>`.
+To generate a script for your shell type `svix completion <SHELL NAME>`.
 
-For detailed instructions on configuring completions for your shell run `svix-cli completion --help`.
+For detailed instructions on configuring completions for your shell run `svix completion --help`.
 
 > [!TIP]
 > You can source the completion script automatically in your shell rc file.
 >
 > Example:
 > ```sh
-> eval "$(svix-cli completion bash)"
+> eval "$(svix completion bash)"
 > ```
 
 
