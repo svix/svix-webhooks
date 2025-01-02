@@ -14,7 +14,7 @@
   from it should not change though ([#1587])
 * Libs/Rust: Add `api::Authentication::expire_all` ([#1584])
 * Libs/Rust: Rename some `Options` types. The old names remain as deprecated type aliases ([#1584])
-* Server: Fix exposed port to be 8071 ([#1596])
+* Server: Fix Dockerfile exposed port to be 8071 ([#1596])
 
 [#1568]: https://github.com/svix/svix-webhooks/pull/1568
 [#1571]: https://github.com/svix/svix-webhooks/pull/1571
