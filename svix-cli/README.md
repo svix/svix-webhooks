@@ -28,7 +28,7 @@ A CLI to interact with the Svix API.
 Pre-built binaries are available for Linux, macOS via shell script installers.
 
 ```
-curl --proto '=https' --tlsv1.2 -LsSf https://github.com/svix/svix-webhooks/releases/download/v1.44.0/svix-cli-installer.sh | sh
+curl --proto '=https' --tlsv1.2 -LsSf https://github.com/svix/svix-webhooks/releases/download/v1.45.0/svix-cli-installer.sh | sh
 ```
 
 For Windows users, installation can be done via powershell:
