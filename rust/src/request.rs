@@ -19,28 +19,23 @@ pub(crate) enum Auth {
 /// detected based on the configuration. This functionality is useful when the
 /// OpenAPI definition does not include an authorization scheme.
 pub(crate) struct Request {
-    auth: Option<Auth>,
     method: http1::Method,
     path: String,
     query_params: HashMap<String, String>,
     no_return_type: bool,
     path_params: HashMap<String, String>,
-    form_params: HashMap<String, String>,
     header_params: HashMap<String, String>,
     // TODO: multiple body params are possible technically, but not supported here.
     serialized_body: Option<String>,
 }
 
-#[allow(dead_code)]
 impl Request {
     pub fn new(method: http1::Method, path: String) -> Self {
         Request {
-            auth: None,
             method,
             path,
             query_params: HashMap::new(),
             path_params: HashMap::new(),
-            form_params: HashMap::new(),
             header_params: HashMap::new(),
             serialized_body: None,
             no_return_type: false,
@@ -57,31 +52,18 @@ impl Request {
         self
     }
 
-    #[allow(unused)]
     pub fn with_query_param(mut self, basename: String, param: String) -> Self {
         self.query_params.insert(basename, param);
         self
     }
 
-    #[allow(unused)]
     pub fn with_path_param(mut self, basename: String, param: String) -> Self {
         self.path_params.insert(basename, param);
         self
     }
 
-    #[allow(unused)]
-    pub fn with_form_param(mut self, basename: String, param: String) -> Self {
-        self.form_params.insert(basename, param);
-        self
-    }
-
     pub fn returns_nothing(mut self) -> Self {
         self.no_return_type = true;
-        self
-    }
-
-    pub fn with_auth(mut self, auth: Auth) -> Self {
-        self.auth = Some(auth);
         self
     }
 
@@ -113,13 +95,11 @@ impl Request {
         let mut req_builder = http1::Request::builder().uri(uri).method(self.method);
 
         // Detect the authorization type if it hasn't been set.
-        let auth = self.auth.unwrap_or_else(|| {
-            if conf.bearer_access_token.is_some() {
-                Auth::Bearer
-            } else {
-                Auth::None
-            }
-        });
+        let auth = if conf.bearer_access_token.is_some() {
+            Auth::Bearer
+        } else {
+            Auth::None
+        };
         match auth {
             Auth::Bearer => {
                 if let Some(token) = &conf.bearer_access_token {
@@ -141,19 +121,7 @@ impl Request {
         }
 
         let req_headers = req_builder.headers_mut().unwrap();
-        let request = if !self.form_params.is_empty() {
-            req_headers.insert(
-                CONTENT_TYPE,
-                HeaderValue::from_static("application/x-www-form-urlencoded"),
-            );
-            let mut enc = ::url::form_urlencoded::Serializer::new(String::new());
-            for (k, v) in self.form_params {
-                enc.append_pair(&k, &v);
-            }
-            req_builder
-                .body(Full::from(enc.finish()))
-                .map_err(Error::generic)?
-        } else if let Some(body) = self.serialized_body {
+        let request = if let Some(body) = self.serialized_body {
             req_headers.insert(CONTENT_TYPE, HeaderValue::from_static("application/json"));
             req_headers.insert(CONTENT_LENGTH, body.len().into());
             req_builder.body(Full::from(body)).map_err(Error::generic)?
