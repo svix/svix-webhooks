@@ -40,23 +40,20 @@ public final class Svix {
 			}
 		}
 
-
 		apiClient.setUserAgent(String.format("svix-libs/%s/java", Svix.VERSION));
 
 		HttpBearerAuth httpBearer = (HttpBearerAuth) apiClient.getAuthentication("HTTPBearer");
 		httpBearer.setBearerToken(token);
 
-		Configuration.setDefaultApiClient(apiClient);
-
-		application = new Application();
-		authentication = new Authentication();
-		endpoint = new Endpoint();
-		eventType = new EventType();
-		integration = new Integration();
-		message = new Message();
-		messageAttempt = new MessageAttempt();
-		statistics = new Statistics();
-		operationalWebhookEndpoint = new OperationalWebhookEndpoint();
+		application = new Application(apiClient);
+		authentication = new Authentication(apiClient);
+		endpoint = new Endpoint(apiClient);
+		eventType = new EventType(apiClient);
+		integration = new Integration(apiClient);
+		message = new Message(apiClient);
+		messageAttempt = new MessageAttempt(apiClient);
+		statistics = new Statistics(apiClient);
+		operationalWebhookEndpoint = new OperationalWebhookEndpoint(apiClient);
 	}
 
 	public Application getApplication() {

@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Map;
 
 import com.svix.exceptions.ApiException;
+import com.svix.internal.ApiClient;
 import com.svix.internal.api.MessageApi;
 import com.svix.models.ListResponseMessageOut;
 import com.svix.models.MessageIn;
@@ -15,8 +16,8 @@ import com.google.gson.JsonParser;
 public final class Message {
 	private final MessageApi api;
 
-	Message() {
-		api = new MessageApi();
+	Message(ApiClient apiClient) {
+		api = new MessageApi(apiClient);
 	}
 
 	private static MessageIn messageInEmptyPayload() {

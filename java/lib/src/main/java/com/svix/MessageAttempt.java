@@ -3,6 +3,7 @@ package com.svix;
 import java.util.HashSet;
 
 import com.svix.exceptions.ApiException;
+import com.svix.internal.ApiClient;
 import com.svix.internal.api.MessageAttemptApi;
 import com.svix.models.ListResponseEndpointMessageOut;
 import com.svix.models.ListResponseMessageAttemptEndpointOut;
@@ -13,8 +14,8 @@ import com.svix.models.MessageAttemptOut;
 public final class MessageAttempt {
 	private final MessageAttemptApi api;
 
-	MessageAttempt() {
-		api = new MessageAttemptApi();
+	MessageAttempt(ApiClient apiClient) {
+		api = new MessageAttemptApi(apiClient);
 	}
 
 	/*

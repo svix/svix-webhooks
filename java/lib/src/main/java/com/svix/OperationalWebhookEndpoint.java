@@ -1,6 +1,7 @@
 package com.svix;
 
 import com.svix.exceptions.ApiException;
+import com.svix.internal.ApiClient;
 import com.svix.internal.api.WebhookEndpointApi;
 import com.svix.models.OperationalWebhookEndpointIn;
 import com.svix.models.OperationalWebhookEndpointOut;
@@ -12,8 +13,8 @@ import com.svix.models.ListResponseOperationalWebhookEndpointOut;
 public final class OperationalWebhookEndpoint {
 	private final WebhookEndpointApi api;
 
-	public OperationalWebhookEndpoint() {
-		api = new WebhookEndpointApi();
+	public OperationalWebhookEndpoint(ApiClient apiClient) {
+		api = new WebhookEndpointApi(apiClient);
 	}
 
 	public ListResponseOperationalWebhookEndpointOut list(final OperationalWebhookEndpointListOptions options) throws ApiException {

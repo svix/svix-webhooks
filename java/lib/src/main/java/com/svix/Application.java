@@ -1,6 +1,7 @@
 package com.svix;
 
 import com.svix.exceptions.ApiException;
+import com.svix.internal.ApiClient;
 import com.svix.internal.api.ApplicationApi;
 import com.svix.models.ApplicationIn;
 import com.svix.models.ApplicationOut;
@@ -10,8 +11,8 @@ import com.svix.models.ListResponseApplicationOut;
 public final class Application {
 	private final ApplicationApi api;
 
-	Application() {
-		api = new ApplicationApi();
+	Application(ApiClient apiClient) {
+		api = new ApplicationApi(apiClient);
 	}
 
 	public ListResponseApplicationOut list(final ApplicationListOptions options) throws ApiException {
