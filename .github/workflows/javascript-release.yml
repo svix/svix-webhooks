@@ -8,8 +8,8 @@ on:
       - 'openapi.json'
       - 'javascript/**'
       - '.github/workflows/javascript-release.yml'
-    tags:
-      - 'v*'
+  release:
+    types: [published]
 
 jobs:
   build:
