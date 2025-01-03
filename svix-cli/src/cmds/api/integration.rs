@@ -1,11 +1,36 @@
 use clap::{Args, Subcommand};
-use colored_json::ColorMode;
-use svix::api::{IntegrationIn, IntegrationUpdate};
+use svix::api::{self, Ordering};
 
-use crate::{
-    cli_types::{integration::IntegrationListOptions, PostOptions},
-    json::JsonOf,
-};
+use crate::{cli_types::PostOptions, json::JsonOf};
+
+#[derive(Args, Clone)]
+pub struct IntegrationListOptions {
+    /// Limit the number of returned items
+    #[arg(long)]
+    pub limit: Option<i32>,
+    /// The iterator returned from a prior invocation
+    #[arg(long)]
+    pub iterator: Option<String>,
+    /// The sorting order of the returned items
+    #[arg(long)]
+    pub order: Option<Ordering>,
+}
+
+impl From<IntegrationListOptions> for api::IntegrationListOptions {
+    fn from(
+        IntegrationListOptions {
+            limit,
+            iterator,
+            order,
+        }: IntegrationListOptions,
+    ) -> Self {
+        Self {
+            limit,
+            iterator,
+            order,
+        }
+    }
+}
 
 #[derive(Args)]
 #[command(args_conflicts_with_subcommands = true)]
@@ -27,7 +52,7 @@ pub enum IntegrationCommands {
     /// Create an integration.
     Create {
         app_id: String,
-        integration_in: JsonOf<IntegrationIn>,
+        integration_in: JsonOf<api::IntegrationIn>,
         #[clap(flatten)]
         post_options: Option<PostOptions>,
     },
@@ -37,7 +62,7 @@ pub enum IntegrationCommands {
     Update {
         app_id: String,
         id: String,
-        integration_update: JsonOf<IntegrationUpdate>,
+        integration_update: JsonOf<api::IntegrationUpdate>,
     },
     /// Delete an integration.
     Delete { app_id: String, id: String },
@@ -48,7 +73,11 @@ pub enum IntegrationCommands {
 }
 
 impl IntegrationCommands {
-    pub async fn exec(self, client: &svix::api::Svix, color_mode: ColorMode) -> anyhow::Result<()> {
+    pub async fn exec(
+        self,
+        client: &api::Svix,
+        color_mode: colored_json::ColorMode,
+    ) -> anyhow::Result<()> {
         match self {
             Self::List { app_id, options } => {
                 let resp = client

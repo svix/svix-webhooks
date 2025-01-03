@@ -1,6 +1,5 @@
 use clap::{Args, Subcommand};
-use colored_json::ColorMode;
-use svix::api::{AppPortalAccessIn, ApplicationTokenExpireIn};
+use svix::api::{self};
 
 use crate::{cli_types::PostOptions, json::JsonOf};
 
@@ -17,14 +16,14 @@ pub enum AuthenticationCommands {
     /// Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal.
     AppPortalAccess {
         app_id: String,
-        app_portal_access_in: JsonOf<AppPortalAccessIn>,
+        app_portal_access_in: JsonOf<api::AppPortalAccessIn>,
         #[clap(flatten)]
         post_options: Option<PostOptions>,
     },
     /// Expire all of the tokens associated with a specific application.
     ExpireAll {
         app_id: String,
-        application_token_expire_in: JsonOf<ApplicationTokenExpireIn>,
+        application_token_expire_in: JsonOf<api::ApplicationTokenExpireIn>,
         #[clap(flatten)]
         post_options: Option<PostOptions>,
     },
@@ -38,7 +37,11 @@ pub enum AuthenticationCommands {
 }
 
 impl AuthenticationCommands {
-    pub async fn exec(self, client: &svix::api::Svix, color_mode: ColorMode) -> anyhow::Result<()> {
+    pub async fn exec(
+        self,
+        client: &api::Svix,
+        color_mode: colored_json::ColorMode,
+    ) -> anyhow::Result<()> {
         match self {
             Self::AppPortalAccess {
                 app_id,
@@ -69,7 +72,6 @@ impl AuthenticationCommands {
                     )
                     .await?;
             }
-
             Self::Logout { post_options } => {
                 client
                     .authentication()
