@@ -1,11 +1,46 @@
 use clap::{Args, Subcommand};
-use colored_json::ColorMode;
-use svix::api::{EventTypeImportOpenApiIn, EventTypeIn, EventTypePatch, EventTypeUpdate};
+use svix::api::{self, Ordering};
 
-use crate::{
-    cli_types::{event_type::EventTypeListOptions, PostOptions},
-    json::JsonOf,
-};
+use crate::{cli_types::PostOptions, json::JsonOf};
+
+#[derive(Args, Clone)]
+pub struct EventTypeListOptions {
+    /// Limit the number of returned items
+    #[arg(long)]
+    pub limit: Option<i32>,
+    /// The iterator returned from a prior invocation
+    #[arg(long)]
+    pub iterator: Option<String>,
+    /// The sorting order of the returned items
+    #[arg(long)]
+    pub order: Option<Ordering>,
+    /// When `true` archived (deleted but not expunged) items are included in the response.
+    #[arg(long)]
+    pub include_archived: Option<bool>,
+    /// When `true` the full item (including the schema) is included in the response.
+    #[arg(long)]
+    pub with_content: Option<bool>,
+}
+
+impl From<EventTypeListOptions> for api::EventTypeListOptions {
+    fn from(
+        EventTypeListOptions {
+            limit,
+            iterator,
+            order,
+            include_archived,
+            with_content,
+        }: EventTypeListOptions,
+    ) -> Self {
+        Self {
+            limit,
+            iterator,
+            order,
+            include_archived,
+            with_content,
+        }
+    }
+}
 
 #[derive(Args)]
 #[command(args_conflicts_with_subcommands = true)]
@@ -28,7 +63,7 @@ pub enum EventTypeCommands {
     /// Endpoints filtering on the event type before archival will continue to filter on it.
     /// This operation does not preserve the description and schemas.
     Create {
-        event_type_in: JsonOf<EventTypeIn>,
+        event_type_in: JsonOf<api::EventTypeIn>,
         #[clap(flatten)]
         post_options: Option<PostOptions>,
     },
@@ -38,16 +73,17 @@ pub enum EventTypeCommands {
     /// The importer will convert all webhooks found in the either the `webhooks` or `x-webhooks`
     /// top-level.
     ImportOpenapi {
-        event_type_import_open_api_in: JsonOf<EventTypeImportOpenApiIn>,
+        event_type_import_open_api_in: JsonOf<api::EventTypeImportOpenApiIn>,
         #[clap(flatten)]
         post_options: Option<PostOptions>,
     },
+
     /// Get an event type.
     Get { event_type_name: String },
     /// Update an event type.
     Update {
         event_type_name: String,
-        event_type_update: JsonOf<EventTypeUpdate>,
+        event_type_update: JsonOf<api::EventTypeUpdate>,
     },
     /// Archive an event type.
     ///
@@ -64,12 +100,16 @@ pub enum EventTypeCommands {
     /// Partially update an event type.
     Patch {
         event_type_name: String,
-        event_type_patch: JsonOf<EventTypePatch>,
+        event_type_patch: JsonOf<api::EventTypePatch>,
     },
 }
 
 impl EventTypeCommands {
-    pub async fn exec(self, client: &svix::api::Svix, color_mode: ColorMode) -> anyhow::Result<()> {
+    pub async fn exec(
+        self,
+        client: &api::Svix,
+        color_mode: colored_json::ColorMode,
+    ) -> anyhow::Result<()> {
         match self {
             Self::List { options } => {
                 let resp = client.event_type().list(Some(options.into())).await?;

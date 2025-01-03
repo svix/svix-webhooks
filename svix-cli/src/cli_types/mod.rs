@@ -3,13 +3,6 @@
 use clap::Args;
 use svix::api;
 
-pub mod application;
-pub mod endpoint;
-pub mod event_type;
-pub mod integration;
-pub mod message;
-pub mod message_attempt;
-
 #[derive(Args, Clone, Default)]
 pub struct PostOptions {
     #[arg(long)]

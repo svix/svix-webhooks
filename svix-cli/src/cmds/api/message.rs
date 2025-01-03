@@ -1,11 +1,62 @@
+use chrono::{DateTime, Utc};
 use clap::{Args, Subcommand};
-use colored_json::ColorMode;
-use svix::api::MessageIn;
+use svix::api::{self};
 
-use crate::{
-    cli_types::{message::MessageListOptions, PostOptions},
-    json::JsonOf,
-};
+use crate::{cli_types::PostOptions, json::JsonOf};
+
+#[derive(Args, Clone)]
+pub struct MessageListOptions {
+    /// Limit the number of returned items
+    #[arg(long)]
+    pub limit: Option<i32>,
+    /// The iterator returned from a prior invocation
+    #[arg(long)]
+    pub iterator: Option<String>,
+    /// Filter response based on the channel.
+    #[arg(long)]
+    pub channel: Option<String>,
+    /// Only include items created before a certain date.
+    #[arg(long)]
+    pub before: Option<DateTime<Utc>>,
+    /// Only include items created after a certain date.
+    #[arg(long)]
+    pub after: Option<DateTime<Utc>>,
+    /// When `true` message payloads are included in the response.
+    #[arg(long)]
+    pub with_content: Option<bool>,
+    /// Filter messages matching the provided tag.
+    #[arg(long)]
+    pub tag: Option<String>,
+    /// Filter response based on the event type
+    #[arg(long)]
+    pub event_types: Option<Vec<String>>,
+}
+
+impl From<MessageListOptions> for api::MessageListOptions {
+    fn from(
+        MessageListOptions {
+            limit,
+            iterator,
+            channel,
+            before,
+            after,
+            with_content,
+            tag,
+            event_types,
+        }: MessageListOptions,
+    ) -> Self {
+        Self {
+            limit,
+            iterator,
+            channel,
+            before: before.map(|dt| dt.to_rfc3339()),
+            after: after.map(|dt| dt.to_rfc3339()),
+            with_content,
+            tag,
+            event_types,
+        }
+    }
+}
 
 #[derive(Args)]
 #[command(args_conflicts_with_subcommands = true)]
@@ -43,8 +94,7 @@ pub enum MessageCommands {
     /// The `payload` property is the webhook's body (the actual webhook message). Svix supports payload sizes of up to ~350kb, though it's generally a good idea to keep webhook payloads small, probably no larger than 40kb.
     Create {
         app_id: String,
-        message_in: JsonOf<MessageIn>,
-
+        message_in: JsonOf<api::MessageIn>,
         #[clap(flatten)]
         post_options: Option<PostOptions>,
     },
@@ -58,7 +108,11 @@ pub enum MessageCommands {
 }
 
 impl MessageCommands {
-    pub async fn exec(self, client: &svix::api::Svix, color_mode: ColorMode) -> anyhow::Result<()> {
+    pub async fn exec(
+        self,
+        client: &api::Svix,
+        color_mode: colored_json::ColorMode,
+    ) -> anyhow::Result<()> {
         match self {
             Self::List { app_id, options } => {
                 let resp = client.message().list(app_id, Some(options.into())).await?;

@@ -1,11 +1,36 @@
 use clap::{Args, Subcommand};
-use colored_json::ColorMode;
-use svix::api::{ApplicationIn, ApplicationPatch};
+use svix::api::{self, Ordering};
 
-use crate::{
-    cli_types::{application::ApplicationListOptions, PostOptions},
-    json::JsonOf,
-};
+use crate::{cli_types::PostOptions, json::JsonOf};
+
+#[derive(Args, Clone)]
+pub struct ApplicationListOptions {
+    /// Limit the number of returned items
+    #[arg(long)]
+    pub limit: Option<i32>,
+    /// The iterator returned from a prior invocation
+    #[arg(long)]
+    pub iterator: Option<String>,
+    /// The sorting order of the returned items
+    #[arg(long)]
+    pub order: Option<Ordering>,
+}
+
+impl From<ApplicationListOptions> for api::ApplicationListOptions {
+    fn from(
+        ApplicationListOptions {
+            limit,
+            iterator,
+            order,
+        }: ApplicationListOptions,
+    ) -> Self {
+        Self {
+            limit,
+            iterator,
+            order,
+        }
+    }
+}
 
 #[derive(Args)]
 #[command(args_conflicts_with_subcommands = true)]
@@ -24,7 +49,7 @@ pub enum ApplicationCommands {
     },
     /// Create a new application.
     Create {
-        application_in: JsonOf<ApplicationIn>,
+        application_in: JsonOf<api::ApplicationIn>,
         #[clap(flatten)]
         post_options: Option<PostOptions>,
     },
@@ -33,19 +58,23 @@ pub enum ApplicationCommands {
     /// Update an application.
     Update {
         id: String,
-        application_in: JsonOf<ApplicationIn>,
+        application_in: JsonOf<api::ApplicationIn>,
     },
     /// Delete an application.
     Delete { id: String },
     /// Partially update an application.
     Patch {
         id: String,
-        application_patch: JsonOf<ApplicationPatch>,
+        application_patch: JsonOf<api::ApplicationPatch>,
     },
 }
 
 impl ApplicationCommands {
-    pub async fn exec(self, client: &svix::api::Svix, color_mode: ColorMode) -> anyhow::Result<()> {
+    pub async fn exec(
+        self,
+        client: &api::Svix,
+        color_mode: colored_json::ColorMode,
+    ) -> anyhow::Result<()> {
         match self {
             Self::List { options } => {
                 let resp = client.application().list(Some(options.into())).await?;

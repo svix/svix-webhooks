@@ -1,17 +1,56 @@
+use chrono::{DateTime, Utc};
 use clap::{Args, Subcommand};
-use colored_json::ColorMode;
-use svix::api::{
-    EndpointHeadersIn, EndpointHeadersPatchIn, EndpointIn, EndpointPatch, EndpointSecretRotateIn,
-    EndpointTransformationIn, EndpointUpdate, EventExampleIn, RecoverIn, ReplayIn,
-};
+use svix::api::{self, Ordering};
 
-use crate::{
-    cli_types::{
-        endpoint::{EndpointListOptions, EndpointStatsOptions},
-        PostOptions,
-    },
-    json::JsonOf,
-};
+use crate::{cli_types::PostOptions, json::JsonOf};
+
+#[derive(Args, Clone)]
+pub struct EndpointListOptions {
+    /// Limit the number of returned items
+    #[arg(long)]
+    pub limit: Option<i32>,
+    /// The iterator returned from a prior invocation
+    #[arg(long)]
+    pub iterator: Option<String>,
+    /// The sorting order of the returned items
+    #[arg(long)]
+    pub order: Option<Ordering>,
+}
+
+impl From<EndpointListOptions> for api::EndpointListOptions {
+    fn from(
+        EndpointListOptions {
+            limit,
+            iterator,
+            order,
+        }: EndpointListOptions,
+    ) -> Self {
+        Self {
+            limit,
+            iterator,
+            order,
+        }
+    }
+}
+
+#[derive(Args, Clone)]
+pub struct EndpointGetStatsOptions {
+    /// Filter the range to data starting from this date.
+    #[arg(long)]
+    pub since: Option<DateTime<Utc>>,
+    /// Filter the range to data ending by this date.
+    #[arg(long)]
+    pub until: Option<DateTime<Utc>>,
+}
+
+impl From<EndpointGetStatsOptions> for api::EndpointGetStatsOptions {
+    fn from(EndpointGetStatsOptions { since, until }: EndpointGetStatsOptions) -> Self {
+        Self {
+            since: since.map(|dt| dt.to_rfc3339()),
+            until: until.map(|dt| dt.to_rfc3339()),
+        }
+    }
+}
 
 #[derive(Args)]
 #[command(args_conflicts_with_subcommands = true)]
@@ -35,7 +74,7 @@ pub enum EndpointCommands {
     /// When `secret` is `null` the secret is automatically generated (recommended).
     Create {
         app_id: String,
-        endpoint_in: JsonOf<EndpointIn>,
+        endpoint_in: JsonOf<api::EndpointIn>,
         #[clap(flatten)]
         post_options: Option<PostOptions>,
     },
@@ -45,7 +84,7 @@ pub enum EndpointCommands {
     Update {
         app_id: String,
         id: String,
-        endpoint_update: JsonOf<EndpointUpdate>,
+        endpoint_update: JsonOf<api::EndpointUpdate>,
     },
     /// Delete an endpoint.
     Delete { app_id: String, id: String },
@@ -53,7 +92,7 @@ pub enum EndpointCommands {
     Patch {
         app_id: String,
         id: String,
-        endpoint_patch: JsonOf<EndpointPatch>,
+        endpoint_patch: JsonOf<api::EndpointPatch>,
     },
     /// Get the additional headers to be sent with the webhook.
     GetHeaders { app_id: String, id: String },
@@ -61,13 +100,13 @@ pub enum EndpointCommands {
     UpdateHeaders {
         app_id: String,
         id: String,
-        endpoint_headers_in: JsonOf<EndpointHeadersIn>,
+        endpoint_headers_in: JsonOf<api::EndpointHeadersIn>,
     },
     /// Partially set the additional headers to be sent with the webhook.
     PatchHeaders {
         app_id: String,
         id: String,
-        endpoint_headers_patch_in: JsonOf<EndpointHeadersPatchIn>,
+        endpoint_headers_patch_in: JsonOf<api::EndpointHeadersPatchIn>,
     },
     /// Resend all failed messages since a given time.
     ///
@@ -75,7 +114,7 @@ pub enum EndpointCommands {
     Recover {
         app_id: String,
         id: String,
-        recover_in: JsonOf<RecoverIn>,
+        recover_in: JsonOf<api::RecoverIn>,
     },
     /// Replays messages to the endpoint.
     ///
@@ -84,7 +123,7 @@ pub enum EndpointCommands {
     ReplayMissing {
         app_id: String,
         id: String,
-        replay_in: JsonOf<ReplayIn>,
+        replay_in: JsonOf<api::ReplayIn>,
         #[clap(flatten)]
         post_options: Option<PostOptions>,
     },
@@ -99,13 +138,13 @@ pub enum EndpointCommands {
     RotateSecret {
         app_id: String,
         id: String,
-        endpoint_secret_rotate_in: JsonOf<EndpointSecretRotateIn>,
+        endpoint_secret_rotate_in: JsonOf<api::EndpointSecretRotateIn>,
     },
     /// Send an example message for an event.
     SendExample {
         app_id: String,
         id: String,
-        event_example_in: JsonOf<EventExampleIn>,
+        event_example_in: JsonOf<api::EventExampleIn>,
         #[clap(flatten)]
         post_options: Option<PostOptions>,
     },
@@ -115,7 +154,7 @@ pub enum EndpointCommands {
         id: String,
 
         #[clap(flatten)]
-        options: EndpointStatsOptions,
+        options: EndpointGetStatsOptions,
     },
     /// Get the transformation code associated with this endpoint.
     TransformationGet { app_id: String, id: String },
@@ -123,12 +162,16 @@ pub enum EndpointCommands {
     TransformationPartialUpdate {
         app_id: String,
         id: String,
-        endpoint_transformation_in: JsonOf<EndpointTransformationIn>,
+        endpoint_transformation_in: JsonOf<api::EndpointTransformationIn>,
     },
 }
 
 impl EndpointCommands {
-    pub async fn exec(self, client: &svix::api::Svix, color_mode: ColorMode) -> anyhow::Result<()> {
+    pub async fn exec(
+        self,
+        client: &api::Svix,
+        color_mode: colored_json::ColorMode,
+    ) -> anyhow::Result<()> {
         match self {
             Self::List { app_id, options } => {
                 let resp = client.endpoint().list(app_id, Some(options.into())).await?;
