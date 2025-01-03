@@ -16,19 +16,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Regen openapi libs
-        run: |
-          yarn
-          ./regen_openapi.sh
-
-      - name: Hack around cargo stuff
-        run: |
-          cd rust/
-          git config user.email "work@around.com"
-          git config user.name "Work Around"
-          git add -f src/apis/ src/models/
-          git commit -a -m "Snap"
-
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy, rustfmt
