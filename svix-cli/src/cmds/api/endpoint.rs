@@ -1,6 +1,6 @@
 use chrono::{DateTime, Utc};
 use clap::{Args, Subcommand};
-use svix::api::{self, Ordering};
+use svix::api::*;
 
 use crate::{cli_types::PostOptions, json::JsonOf};
 
@@ -17,7 +17,7 @@ pub struct EndpointListOptions {
     pub order: Option<Ordering>,
 }
 
-impl From<EndpointListOptions> for api::EndpointListOptions {
+impl From<EndpointListOptions> for svix::api::EndpointListOptions {
     fn from(
         EndpointListOptions {
             limit,
@@ -43,7 +43,7 @@ pub struct EndpointGetStatsOptions {
     pub until: Option<DateTime<Utc>>,
 }
 
-impl From<EndpointGetStatsOptions> for api::EndpointGetStatsOptions {
+impl From<EndpointGetStatsOptions> for svix::api::EndpointGetStatsOptions {
     fn from(EndpointGetStatsOptions { since, until }: EndpointGetStatsOptions) -> Self {
         Self {
             since: since.map(|dt| dt.to_rfc3339()),
@@ -74,7 +74,7 @@ pub enum EndpointCommands {
     /// When `secret` is `null` the secret is automatically generated (recommended).
     Create {
         app_id: String,
-        endpoint_in: JsonOf<api::EndpointIn>,
+        endpoint_in: JsonOf<EndpointIn>,
         #[clap(flatten)]
         post_options: Option<PostOptions>,
     },
@@ -84,7 +84,7 @@ pub enum EndpointCommands {
     Update {
         app_id: String,
         id: String,
-        endpoint_update: JsonOf<api::EndpointUpdate>,
+        endpoint_update: JsonOf<EndpointUpdate>,
     },
     /// Delete an endpoint.
     Delete { app_id: String, id: String },
@@ -92,7 +92,7 @@ pub enum EndpointCommands {
     Patch {
         app_id: String,
         id: String,
-        endpoint_patch: JsonOf<api::EndpointPatch>,
+        endpoint_patch: JsonOf<EndpointPatch>,
     },
     /// Get the additional headers to be sent with the webhook.
     GetHeaders { app_id: String, id: String },
@@ -100,13 +100,13 @@ pub enum EndpointCommands {
     UpdateHeaders {
         app_id: String,
         id: String,
-        endpoint_headers_in: JsonOf<api::EndpointHeadersIn>,
+        endpoint_headers_in: JsonOf<EndpointHeadersIn>,
     },
     /// Partially set the additional headers to be sent with the webhook.
     PatchHeaders {
         app_id: String,
         id: String,
-        endpoint_headers_patch_in: JsonOf<api::EndpointHeadersPatchIn>,
+        endpoint_headers_patch_in: JsonOf<EndpointHeadersPatchIn>,
     },
     /// Resend all failed messages since a given time.
     ///
@@ -114,7 +114,7 @@ pub enum EndpointCommands {
     Recover {
         app_id: String,
         id: String,
-        recover_in: JsonOf<api::RecoverIn>,
+        recover_in: JsonOf<RecoverIn>,
     },
     /// Replays messages to the endpoint.
     ///
@@ -123,7 +123,7 @@ pub enum EndpointCommands {
     ReplayMissing {
         app_id: String,
         id: String,
-        replay_in: JsonOf<api::ReplayIn>,
+        replay_in: JsonOf<ReplayIn>,
         #[clap(flatten)]
         post_options: Option<PostOptions>,
     },
@@ -138,13 +138,13 @@ pub enum EndpointCommands {
     RotateSecret {
         app_id: String,
         id: String,
-        endpoint_secret_rotate_in: JsonOf<api::EndpointSecretRotateIn>,
+        endpoint_secret_rotate_in: JsonOf<EndpointSecretRotateIn>,
     },
     /// Send an example message for an event.
     SendExample {
         app_id: String,
         id: String,
-        event_example_in: JsonOf<api::EventExampleIn>,
+        event_example_in: JsonOf<EventExampleIn>,
         #[clap(flatten)]
         post_options: Option<PostOptions>,
     },
@@ -162,14 +162,14 @@ pub enum EndpointCommands {
     TransformationPartialUpdate {
         app_id: String,
         id: String,
-        endpoint_transformation_in: JsonOf<api::EndpointTransformationIn>,
+        endpoint_transformation_in: JsonOf<EndpointTransformationIn>,
     },
 }
 
 impl EndpointCommands {
     pub async fn exec(
         self,
-        client: &api::Svix,
+        client: &Svix,
         color_mode: colored_json::ColorMode,
     ) -> anyhow::Result<()> {
         match self {
@@ -245,7 +245,6 @@ impl EndpointCommands {
                     .patch_headers(app_id, id, endpoint_headers_patch_in.into_inner())
                     .await?;
             }
-
             Self::Recover {
                 app_id,
                 id,

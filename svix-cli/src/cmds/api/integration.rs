@@ -1,5 +1,5 @@
 use clap::{Args, Subcommand};
-use svix::api::{self, Ordering};
+use svix::api::*;
 
 use crate::{cli_types::PostOptions, json::JsonOf};
 
@@ -16,7 +16,7 @@ pub struct IntegrationListOptions {
     pub order: Option<Ordering>,
 }
 
-impl From<IntegrationListOptions> for api::IntegrationListOptions {
+impl From<IntegrationListOptions> for svix::api::IntegrationListOptions {
     fn from(
         IntegrationListOptions {
             limit,
@@ -52,7 +52,7 @@ pub enum IntegrationCommands {
     /// Create an integration.
     Create {
         app_id: String,
-        integration_in: JsonOf<api::IntegrationIn>,
+        integration_in: JsonOf<IntegrationIn>,
         #[clap(flatten)]
         post_options: Option<PostOptions>,
     },
@@ -62,7 +62,7 @@ pub enum IntegrationCommands {
     Update {
         app_id: String,
         id: String,
-        integration_update: JsonOf<api::IntegrationUpdate>,
+        integration_update: JsonOf<IntegrationUpdate>,
     },
     /// Delete an integration.
     Delete { app_id: String, id: String },
@@ -75,7 +75,7 @@ pub enum IntegrationCommands {
 impl IntegrationCommands {
     pub async fn exec(
         self,
-        client: &api::Svix,
+        client: &Svix,
         color_mode: colored_json::ColorMode,
     ) -> anyhow::Result<()> {
         match self {

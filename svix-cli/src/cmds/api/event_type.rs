@@ -1,5 +1,5 @@
 use clap::{Args, Subcommand};
-use svix::api::{self, Ordering};
+use svix::api::*;
 
 use crate::{cli_types::PostOptions, json::JsonOf};
 
@@ -22,7 +22,7 @@ pub struct EventTypeListOptions {
     pub with_content: Option<bool>,
 }
 
-impl From<EventTypeListOptions> for api::EventTypeListOptions {
+impl From<EventTypeListOptions> for svix::api::EventTypeListOptions {
     fn from(
         EventTypeListOptions {
             limit,
@@ -63,7 +63,7 @@ pub enum EventTypeCommands {
     /// Endpoints filtering on the event type before archival will continue to filter on it.
     /// This operation does not preserve the description and schemas.
     Create {
-        event_type_in: JsonOf<api::EventTypeIn>,
+        event_type_in: JsonOf<EventTypeIn>,
         #[clap(flatten)]
         post_options: Option<PostOptions>,
     },
@@ -73,17 +73,16 @@ pub enum EventTypeCommands {
     /// The importer will convert all webhooks found in the either the `webhooks` or `x-webhooks`
     /// top-level.
     ImportOpenapi {
-        event_type_import_open_api_in: JsonOf<api::EventTypeImportOpenApiIn>,
+        event_type_import_open_api_in: JsonOf<EventTypeImportOpenApiIn>,
         #[clap(flatten)]
         post_options: Option<PostOptions>,
     },
-
     /// Get an event type.
     Get { event_type_name: String },
     /// Update an event type.
     Update {
         event_type_name: String,
-        event_type_update: JsonOf<api::EventTypeUpdate>,
+        event_type_update: JsonOf<EventTypeUpdate>,
     },
     /// Archive an event type.
     ///
@@ -100,14 +99,14 @@ pub enum EventTypeCommands {
     /// Partially update an event type.
     Patch {
         event_type_name: String,
-        event_type_patch: JsonOf<api::EventTypePatch>,
+        event_type_patch: JsonOf<EventTypePatch>,
     },
 }
 
 impl EventTypeCommands {
     pub async fn exec(
         self,
-        client: &api::Svix,
+        client: &Svix,
         color_mode: colored_json::ColorMode,
     ) -> anyhow::Result<()> {
         match self {

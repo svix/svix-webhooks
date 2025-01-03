@@ -1,6 +1,6 @@
 use chrono::{DateTime, Utc};
 use clap::{Args, Subcommand};
-use svix::api::{self};
+use svix::api::*;
 
 #[derive(Args, Clone)]
 pub struct MessageAttemptListByEndpointOptions {
@@ -12,10 +12,10 @@ pub struct MessageAttemptListByEndpointOptions {
     pub iterator: Option<String>,
     /// Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)
     #[arg(long)]
-    pub status: Option<api::MessageStatus>,
+    pub status: Option<MessageStatus>,
     /// Filter response based on the HTTP status code
     #[arg(long)]
-    pub status_code_class: Option<api::StatusCodeClass>,
+    pub status_code_class: Option<StatusCodeClass>,
     /// Filter response based on the channel
     #[arg(long)]
     pub channel: Option<String>,
@@ -39,7 +39,7 @@ pub struct MessageAttemptListByEndpointOptions {
     pub event_types: Option<Vec<String>>,
 }
 
-impl From<MessageAttemptListByEndpointOptions> for api::MessageAttemptListByEndpointOptions {
+impl From<MessageAttemptListByEndpointOptions> for svix::api::MessageAttemptListByEndpointOptions {
     fn from(
         MessageAttemptListByEndpointOptions {
             limit,
@@ -81,10 +81,10 @@ pub struct MessageAttemptListByMsgOptions {
     pub iterator: Option<String>,
     /// Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)
     #[arg(long)]
-    pub status: Option<api::MessageStatus>,
+    pub status: Option<MessageStatus>,
     /// Filter response based on the HTTP status code
     #[arg(long)]
-    pub status_code_class: Option<api::StatusCodeClass>,
+    pub status_code_class: Option<StatusCodeClass>,
     /// Filter response based on the channel
     #[arg(long)]
     pub channel: Option<String>,
@@ -108,7 +108,7 @@ pub struct MessageAttemptListByMsgOptions {
     pub event_types: Option<Vec<String>>,
 }
 
-impl From<MessageAttemptListByMsgOptions> for api::MessageAttemptListByMsgOptions {
+impl From<MessageAttemptListByMsgOptions> for svix::api::MessageAttemptListByMsgOptions {
     fn from(
         MessageAttemptListByMsgOptions {
             limit,
@@ -156,7 +156,7 @@ pub struct MessageAttemptListAttemptedMessagesOptions {
     pub tag: Option<String>,
     /// Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)
     #[arg(long)]
-    pub status: Option<api::MessageStatus>,
+    pub status: Option<MessageStatus>,
     /// Only include items created before a certain date
     #[arg(long)]
     pub before: Option<DateTime<Utc>>,
@@ -172,7 +172,7 @@ pub struct MessageAttemptListAttemptedMessagesOptions {
 }
 
 impl From<MessageAttemptListAttemptedMessagesOptions>
-    for api::MessageAttemptListAttemptedMessagesOptions
+    for svix::api::MessageAttemptListAttemptedMessagesOptions
 {
     fn from(
         MessageAttemptListAttemptedMessagesOptions {
@@ -212,7 +212,7 @@ pub struct MessageAttemptListAttemptedDestinationsOptions {
 }
 
 impl From<MessageAttemptListAttemptedDestinationsOptions>
-    for api::MessageAttemptListAttemptedDestinationsOptions
+    for svix::api::MessageAttemptListAttemptedDestinationsOptions
 {
     fn from(
         MessageAttemptListAttemptedDestinationsOptions {
@@ -311,7 +311,7 @@ pub enum MessageAttemptCommands {
 impl MessageAttemptCommands {
     pub async fn exec(
         self,
-        client: &api::Svix,
+        client: &Svix,
         color_mode: colored_json::ColorMode,
     ) -> anyhow::Result<()> {
         match self {
