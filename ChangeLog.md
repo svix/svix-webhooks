@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+* Libs/Java: Stop sharing one `ApiClient` between all `Svix` instances. Fixes a bug where multiple
+  independently instantiated `Svix` instances would always use the same base path and auth token.
+
 ## Version 1.45.0
 * CLI **(New)**: New Rust-based CLI with support for all recent Svix functionality.
 * Libs/Rust **(Breaking)**: Add `api::MessageAttemptListAttemptedMessagesOptions` and use it for

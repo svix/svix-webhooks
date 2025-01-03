@@ -1,6 +1,7 @@
 package com.svix;
 
 import com.svix.exceptions.ApiException;
+import com.svix.internal.ApiClient;
 import com.svix.internal.api.IntegrationApi;
 import com.svix.models.IntegrationIn;
 import com.svix.models.IntegrationOut;
@@ -11,8 +12,8 @@ import com.svix.models.ListResponseIntegrationOut;
 public final class Integration {
 	private final IntegrationApi api;
 
-	public Integration() {
-		api = new IntegrationApi();
+	public Integration(ApiClient apiClient) {
+		api = new IntegrationApi(apiClient);
 	}
 
 	public ListResponseIntegrationOut list(final String appId, final IntegrationListOptions options) throws ApiException {

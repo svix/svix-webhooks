@@ -1,6 +1,7 @@
 package com.svix;
 
 import com.svix.exceptions.ApiException;
+import com.svix.internal.ApiClient;
 import com.svix.internal.api.EndpointApi;
 import com.svix.models.EndpointHeadersIn;
 import com.svix.models.EndpointHeadersOut;
@@ -23,8 +24,8 @@ import com.svix.models.EndpointStats;
 public final class Endpoint {
 	private final EndpointApi api;
 
-	public Endpoint() {
-		api = new EndpointApi();
+	public Endpoint(ApiClient apiClient) {
+		api = new EndpointApi(apiClient);
 	}
 
 	public ListResponseEndpointOut list(final String appId, final EndpointListOptions options) throws ApiException {

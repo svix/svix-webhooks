@@ -1,6 +1,7 @@
 package com.svix;
 
 import com.svix.exceptions.ApiException;
+import com.svix.internal.ApiClient;
 import com.svix.internal.api.BackgroundTasksApi;
 import com.svix.models.BackgroundTaskOut;
 import com.svix.models.ListResponseBackgroundTaskOut;
@@ -8,8 +9,8 @@ import com.svix.models.ListResponseBackgroundTaskOut;
 public final class BackgroundTask {
     private final BackgroundTasksApi api;
 
-    BackgroundTask() {
-        api = new BackgroundTasksApi();
+    BackgroundTask(ApiClient apiClient) {
+        api = new BackgroundTasksApi(apiClient);
     }
 
     public ListResponseBackgroundTaskOut list(final BackgroundTaskListOptions options) throws ApiException {

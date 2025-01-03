@@ -1,6 +1,7 @@
 package com.svix;
 
 import com.svix.exceptions.ApiException;
+import com.svix.internal.ApiClient;
 import com.svix.internal.api.StatisticsApi;
 import com.svix.models.AggregateEventTypesOut;
 import com.svix.models.AppUsageStatsIn;
@@ -9,8 +10,8 @@ import com.svix.models.AppUsageStatsOut;
 public class Statistics {
     private final StatisticsApi api;
 
-    Statistics() {
-        api = new StatisticsApi();
+    Statistics(ApiClient apiClient) {
+        api = new StatisticsApi(apiClient);
     }
 
     public AppUsageStatsOut aggregateAppStats(final AppUsageStatsIn appUsageStatsIn, final PostOptions options) throws ApiException {

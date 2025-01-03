@@ -1,6 +1,7 @@
 package com.svix;
 
 import com.svix.exceptions.ApiException;
+import com.svix.internal.ApiClient;
 import com.svix.internal.api.EventTypeApi;
 import com.svix.models.EventTypeImportOpenApiIn;
 import com.svix.models.EventTypeImportOpenApiOut;
@@ -13,8 +14,8 @@ import com.svix.models.ListResponseEventTypeOut;
 public final class EventType {
 	private final EventTypeApi api;
 
-	public EventType() {
-		api = new EventTypeApi();
+	public EventType(ApiClient apiClient) {
+		api = new EventTypeApi(apiClient);
 	}
 
 	public ListResponseEventTypeOut list(final EventTypeListOptions options) throws ApiException {
