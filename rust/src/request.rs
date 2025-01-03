@@ -5,6 +5,7 @@ use std::collections::HashMap;
 
 use http1::header::{HeaderValue, AUTHORIZATION, CONTENT_LENGTH, CONTENT_TYPE, USER_AGENT};
 use http_body_util::{BodyExt as _, Full};
+use hyper::body::Bytes;
 use serde::de::DeserializeOwned;
 
 use crate::{error::Error, Configuration};
@@ -68,6 +69,19 @@ impl Request {
     }
 
     pub async fn execute<T: DeserializeOwned>(self, conf: &Configuration) -> Result<T, Error> {
+        match self.execute_inner(conf).await? {
+            // This is a hack; if there's no_ret_type, T is (), but serde_json gives an
+            // error when deserializing "" into (), so deserialize 'null' into it
+            // instead.
+            // An alternate option would be to require T: Default, and then return
+            // T::default() here instead since () implements that, but then we'd
+            // need to impl default for all models.
+            None => Ok(serde_json::from_str("null").expect("serde null value")),
+            Some(bytes) => Ok(serde_json::from_slice(&bytes).map_err(Error::generic)?),
+        }
+    }
+
+    async fn execute_inner(self, conf: &Configuration) -> Result<Option<Bytes>, Error> {
         let mut path = self.path;
         for (k, v) in self.path_params {
             // replace {id} with the value of the id path param
@@ -136,13 +150,7 @@ impl Request {
             if !status.is_success() {
                 Err(Error::from_response(status, response.into_body()).await)
             } else if self.no_return_type {
-                // This is a hack; if there's no_ret_type, U is (), but serde_json gives an
-                // error when deserializing "" into (), so deserialize 'null' into it
-                // instead.
-                // An alternate option would be to require U: Default, and then return
-                // U::default() here instead since () implements that, but then we'd
-                // need to impl default for all models.
-                Ok(serde_json::from_str("null").expect("serde null value"))
+                Ok(None)
             } else {
                 let bytes = response
                     .into_body()
@@ -150,7 +158,7 @@ impl Request {
                     .await
                     .map_err(Error::generic)?
                     .to_bytes();
-                Ok(serde_json::from_slice(&bytes).map_err(Error::generic)?)
+                Ok(Some(bytes))
             }
         };
 
