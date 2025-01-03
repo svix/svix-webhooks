@@ -1,9 +1,8 @@
 name: Kotlin Release
 
 on:
-  push:
-    tags:
-      - 'v*'
+  release:
+    types: [published]
 
 jobs:
   kotlin:

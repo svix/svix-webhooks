@@ -1,9 +1,8 @@
 name: Rust Release
 
 on:
-  push:
-    tags:
-      - 'v*'
+  release:
+    types: [published]
 
 env:
   CARGO_TERM_COLOR: always
