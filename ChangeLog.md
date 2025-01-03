@@ -1,6 +1,7 @@
 # Changelog
 
-## Unreleased
+## Version 1.45.1
+* CLI: Rename the binary back from `svix-cli` to `svix`
 * Libs/Java: Stop sharing one `ApiClient` between all `Svix` instances. Fixes a bug where multiple
   independently instantiated `Svix` instances would always use the same base path and auth token.
 
