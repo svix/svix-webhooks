@@ -8,8 +8,12 @@ on:
       - 'openapi.json'
       - 'javascript/**'
       - '.github/workflows/javascript-release.yml'
-  release:
-    types: [published]
+  workflow_dispatch:
+  workflow_run:
+    workflows:
+      - Mega Releaser
+    types:
+      - completed
 
 jobs:
   build:
