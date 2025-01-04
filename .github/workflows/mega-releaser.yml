@@ -1,0 +1,11 @@
+name: Mega Releaser
+
+on: workflow_dispatch
+
+
+jobs:
+  kick-off:
+    name: Kick-off Releases
+    runs-on: ubuntu-latest
+    steps:
+      - run: /bin/true
