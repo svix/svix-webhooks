@@ -53,15 +53,15 @@ namespace Svix
             ArgumentNullException.ThrowIfNull(payload);
             ArgumentNullException.ThrowIfNull(headersProvider);
             
-            ReadOnlySpan<char> msgId = headersProvider(SVIX_ID_HEADER_KEY);
-            ReadOnlySpan<char> msgSignature = headersProvider(SVIX_SIGNATURE_HEADER_KEY);
-            ReadOnlySpan<char> msgTimestamp = headersProvider(SVIX_TIMESTAMP_HEADER_KEY);
-
+            ReadOnlySpan<char> msgId = headerProvider(SVIX_ID_HEADER_KEY);
+            ReadOnlySpan<char> msgTimestamp = headerProvider(SVIX_TIMESTAMP_HEADER_KEY);
+            ReadOnlySpan<char> msgSignature = headerProvider(SVIX_SIGNATURE_HEADER_KEY);
+            
             if (msgId.IsEmpty || msgSignature.IsEmpty || msgTimestamp.IsEmpty)
             {
-                msgId = headersProvider(UNBRANDED_ID_HEADER_KEY);
-                msgSignature = headersProvider(UNBRANDED_SIGNATURE_HEADER_KEY);
-                msgTimestamp = headersProvider(UNBRANDED_TIMESTAMP_HEADER_KEY);
+                msgId = headerProvider(UNBRANDED_ID_HEADER_KEY);
+                msgSignature = headerProvider(UNBRANDED_SIGNATURE_HEADER_KEY);
+                msgTimestamp = headerProvider(UNBRANDED_TIMESTAMP_HEADER_KEY);
                 if (msgId.IsEmpty || msgSignature.IsEmpty || msgTimestamp.IsEmpty)
                 {
                     throw new WebhookVerificationException("Missing Required Headers");
@@ -104,6 +104,8 @@ namespace Svix
             
             throw new WebhookVerificationException("No matching signature found");
         }
+
+
 
         private static DateTimeOffset VerifyTimestamp(ReadOnlySpan<char> timestampHeader)
         {
