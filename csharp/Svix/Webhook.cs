@@ -178,10 +178,13 @@ namespace Svix
         
         private void CalculateSignature(ReadOnlySpan<byte> input, Span<byte> output)
         {
-            using (var hmac = new HMACSHA256(this.key))
+            try
             {
-                if (!hmac.TryComputeHash(input, output, out _))
-                    throw new WebhookVerificationException("Output buffer too small");
+                HMACSHA256.HashData(this.key, input, output);
+            }
+            catch (Exception)
+            {
+                throw new WebhookVerificationException("Output buffer too small");
             }
         }
     }
