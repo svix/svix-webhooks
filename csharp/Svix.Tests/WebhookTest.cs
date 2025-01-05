@@ -133,6 +133,36 @@ namespace Svix.Tests
 
             Assert.Throws<WebhookVerificationException>(() => wh.Verify(testPayload.payload, testPayload.headers));
         }
+        
+        [Fact]
+        public void TestWebHeaderCollectionNullThrowsException()
+        {
+            var testPayload = new TestPayload(DateTimeOffset.UtcNow);
+
+            var wh = new Webhook(testPayload.secret);
+
+            Assert.Throws<ArgumentNullException>(() => wh.Verify(testPayload.payload, (WebHeaderCollection)null));
+        }
+        
+        [Fact]
+        public void TestWebHeadersProviderNullThrowsException()
+        {
+            var testPayload = new TestPayload(DateTimeOffset.UtcNow);
+
+            var wh = new Webhook(testPayload.secret);
+
+            Assert.Throws<ArgumentNullException>(() => wh.Verify(testPayload.payload, (Func<string, string>)null));
+        }
+        
+        [Fact]
+        public void TestPayloadNullThrowsException()
+        {
+            var testPayload = new TestPayload(DateTimeOffset.UtcNow);
+
+            var wh = new Webhook(testPayload.secret);
+
+            Assert.Throws<ArgumentNullException>(() => wh.Verify(null, testPayload.headers));
+        }
 
         [Fact]
         public void TestMultiSigPayloadIsValid()
@@ -153,7 +183,7 @@ namespace Svix.Tests
         }
 
         [Fact]
-        public void TestSivnatureVerificationWorksWithoutPrefix()
+        public void TestSignatureVerificationWorksWithoutPrefix()
         {
             var testPayload = new TestPayload(DateTimeOffset.UtcNow);
 
@@ -165,7 +195,7 @@ namespace Svix.Tests
         }
 
         [Fact]
-        public void verifyWebhookSignWorks()
+        public void VerifyWebhookSignWorks()
         {
             var key = "whsec_MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw";
             var msgId = "msg_p5jXN8AQM9LWM0D4loKWxJek";

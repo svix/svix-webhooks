@@ -37,15 +37,25 @@ namespace Svix
 
         public void Verify(string payload, WebHeaderCollection headers)
         {
-            string msgId = headers.Get(SVIX_ID_HEADER_KEY);
-            string msgSignature = headers.Get(SVIX_SIGNATURE_HEADER_KEY);
-            string msgTimestamp = headers.Get(SVIX_TIMESTAMP_HEADER_KEY);
+            ArgumentNullException.ThrowIfNull(headers);
+            
+            Verify(payload, headers.Get);
+        }
+
+        public void Verify(string payload, Func<string, string> headersProvider)
+        {
+            ArgumentNullException.ThrowIfNull(payload);
+            ArgumentNullException.ThrowIfNull(headersProvider);
+            
+            string msgId = headersProvider(SVIX_ID_HEADER_KEY);
+            string msgSignature = headersProvider(SVIX_SIGNATURE_HEADER_KEY);
+            string msgTimestamp = headersProvider(SVIX_TIMESTAMP_HEADER_KEY);
 
             if (String.IsNullOrEmpty(msgId) || String.IsNullOrEmpty(msgSignature) || String.IsNullOrEmpty(msgTimestamp))
             {
-                msgId = headers.Get(UNBRANDED_ID_HEADER_KEY);
-                msgSignature = headers.Get(UNBRANDED_SIGNATURE_HEADER_KEY);
-                msgTimestamp = headers.Get(UNBRANDED_TIMESTAMP_HEADER_KEY);
+                msgId = headersProvider(UNBRANDED_ID_HEADER_KEY);
+                msgSignature = headersProvider(UNBRANDED_SIGNATURE_HEADER_KEY);
+                msgTimestamp = headersProvider(UNBRANDED_TIMESTAMP_HEADER_KEY);
                 if (String.IsNullOrEmpty(msgId) || String.IsNullOrEmpty(msgSignature) || String.IsNullOrEmpty(msgTimestamp))
                 {
                     throw new WebhookVerificationException("Missing Required Headers");
