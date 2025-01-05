@@ -15,7 +15,7 @@ namespace Svix
         // Borrowed from Stripe-dotnet https://github.com/stripe/stripe-dotnet/blob/7b62c461d7c0cf2c9e06dce5e564b374a9d232e0/src/Stripe.net/Infrastructure/StringUtils.cs#L30
         // basically identical to SecureCompare from Rails::ActiveSupport used in our ruby lib
         [MethodImpl(MethodImplOptions.NoOptimization)]
-        public static bool SecureCompare<T>(ReadOnlySpan<T> a, ReadOnlySpan<T> b) where T : IComparable<T>
+        public static bool SecureCompare(ReadOnlySpan<char> a, ReadOnlySpan<char> b)
         {
             if (a.Length != b.Length)
             {
@@ -25,7 +25,7 @@ namespace Svix
             var result = 0;
             for (var i = 0; i < a.Length; i++)
             {
-                result |= a[i].CompareTo(b[i]);
+                result |= a[i] ^b[i];
             }
 
             return result == 0;
