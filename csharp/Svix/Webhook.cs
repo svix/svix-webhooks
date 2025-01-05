@@ -68,10 +68,10 @@ namespace Svix
                 }
             }
 
-            var timestamp = Webhook.VerifyTimestamp(msgTimestamp);
+            Webhook.VerifyTimestamp(msgTimestamp);
 
             Span<char> expectedSignature = stackalloc char[SIGNATURE_LENGTH_STRING];
-            CalculateSignature(msgId, timestamp, payload, expectedSignature, out var charsWritten);
+            CalculateSignature(msgId, msgTimestamp, payload, expectedSignature, out var charsWritten);
             expectedSignature = expectedSignature.Slice(0, charsWritten);
 
             var signaturePtr = msgSignature;
@@ -107,7 +107,7 @@ namespace Svix
 
 
 
-        private static DateTimeOffset VerifyTimestamp(ReadOnlySpan<char> timestampHeader)
+        private static void VerifyTimestamp(ReadOnlySpan<char> timestampHeader)
         {
             DateTimeOffset timestamp;
             var now = DateTimeOffset.UtcNow;
@@ -129,7 +129,6 @@ namespace Svix
             {
                 throw new WebhookVerificationException("Message timestamp too new");
             }
-            return timestamp;
         }
         
         public string Sign(ReadOnlySpan<char> msgId, DateTimeOffset timestamp, ReadOnlySpan<char> payload)
@@ -138,31 +137,29 @@ namespace Svix
             signature[0] = 'v';
             signature[1] = '1';
             signature[2] = ',';
-            CalculateSignature(msgId, timestamp, payload, signature.Slice(3), out var charsWritten);
+            CalculateSignature(msgId, timestamp.ToUnixTimeSeconds().ToString(), payload, signature.Slice(3), out var charsWritten);
             return signature.Slice(0, charsWritten + 3).ToString();
         }
 
         private void CalculateSignature(
             ReadOnlySpan<char> msgId, 
-            DateTimeOffset timestamp, 
+            ReadOnlySpan<char> timestamp, 
             ReadOnlySpan<char> payload, 
             Span<char> signature,
             out int charsWritten)
         {
-            var timestampUnix = timestamp.ToUnixTimeSeconds().ToString();
-            
             // Estimate buffer size and use stackalloc for smaller allocations
             int msgIdLength = SafeUTF8Encoding.GetByteCount(msgId);
             int payloadLength = SafeUTF8Encoding.GetByteCount(payload);
-            int timestampUnixLength = SafeUTF8Encoding.GetByteCount(timestampUnix);
+            int timestampLength = SafeUTF8Encoding.GetByteCount(timestamp);
             
-            Span<byte> toSignBytes = stackalloc byte[msgIdLength + 1 + timestampUnixLength + 1 + payloadLength];
+            Span<byte> toSignBytes = stackalloc byte[msgIdLength + 1 + timestampLength + 1 + payloadLength];
             
             SafeUTF8Encoding.GetBytes(msgId, toSignBytes.Slice(0, msgIdLength));
             toSignBytes[msgIdLength] = (byte)'.';
-            SafeUTF8Encoding.GetBytes(timestampUnix, toSignBytes.Slice(msgIdLength + 1, timestampUnixLength));
-            toSignBytes[msgIdLength + 1 + timestampUnixLength] = (byte)'.';
-            SafeUTF8Encoding.GetBytes(payload, toSignBytes.Slice(msgIdLength + 1 + timestampUnixLength + 1));
+            SafeUTF8Encoding.GetBytes(timestamp, toSignBytes.Slice(msgIdLength + 1, timestampLength));
+            toSignBytes[msgIdLength + 1 + timestampLength] = (byte)'.';
+            SafeUTF8Encoding.GetBytes(payload, toSignBytes.Slice(msgIdLength + 1 + timestampLength + 1));
 
             Span<byte> signatureBin = stackalloc byte[SIGNATURE_LENGTH_BYTES];
             CalculateSignature(toSignBytes, signatureBin);
