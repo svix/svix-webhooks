@@ -1,5 +1,5 @@
 use super::PostOptions;
-use crate::{apis::authentication_api, error::Result, models::*, Configuration};
+use crate::{error::Result, models::*, Configuration};
 
 pub struct Authentication<'a> {
     cfg: &'a Configuration,
@@ -15,14 +15,15 @@ impl<'a> Authentication<'a> {
         app_id: String,
         options: Option<PostOptions>,
     ) -> Result<DashboardAccessOut> {
-        let options = options.unwrap_or_default();
-        authentication_api::v1_period_authentication_period_dashboard_access(
-            self.cfg,
-            authentication_api::V1PeriodAuthenticationPeriodDashboardAccessParams {
-                app_id,
-                idempotency_key: options.idempotency_key,
-            },
+        let PostOptions { idempotency_key } = options.unwrap_or_default();
+
+        crate::request::Request::new(
+            http1::Method::POST,
+            "/api/v1/auth/dashboard-access/{app_id}",
         )
+        .with_path_param("app_id", app_id)
+        .with_optional_header_param("idempotency-key", idempotency_key)
+        .execute(self.cfg)
         .await
     }
 
@@ -36,14 +37,14 @@ impl<'a> Authentication<'a> {
     ) -> Result<AppPortalAccessOut> {
         let PostOptions { idempotency_key } = options.unwrap_or_default();
 
-        authentication_api::v1_period_authentication_period_app_portal_access(
-            self.cfg,
-            authentication_api::V1PeriodAuthenticationPeriodAppPortalAccessParams {
-                app_id,
-                app_portal_access_in,
-                idempotency_key,
-            },
+        crate::request::Request::new(
+            http1::Method::POST,
+            "/api/v1/auth/app-portal-access/{app_id}",
         )
+        .with_path_param("app_id", app_id)
+        .with_body_param(app_portal_access_in)
+        .with_optional_header_param("idempotency-key", idempotency_key)
+        .execute(self.cfg)
         .await
     }
 
@@ -56,15 +57,13 @@ impl<'a> Authentication<'a> {
     ) -> Result<()> {
         let PostOptions { idempotency_key } = options.unwrap_or_default();
 
-        authentication_api::v1_period_authentication_period_expire_all(
-            self.cfg,
-            authentication_api::V1PeriodAuthenticationPeriodExpireAllParams {
-                app_id,
-                application_token_expire_in,
-                idempotency_key,
-            },
-        )
-        .await
+        crate::request::Request::new(http1::Method::POST, "/api/v1/auth/app/{app_id}/expire-all")
+            .with_path_param("app_id", app_id)
+            .with_body_param(application_token_expire_in)
+            .with_optional_header_param("idempotency-key", idempotency_key)
+            .returns_nothing()
+            .execute(self.cfg)
+            .await
     }
 
     /// Logout an app token.
@@ -73,10 +72,10 @@ impl<'a> Authentication<'a> {
     pub async fn logout(&self, options: Option<PostOptions>) -> Result<()> {
         let PostOptions { idempotency_key } = options.unwrap_or_default();
 
-        authentication_api::v1_period_authentication_period_logout(
-            self.cfg,
-            authentication_api::V1PeriodAuthenticationPeriodLogoutParams { idempotency_key },
-        )
-        .await
+        crate::request::Request::new(http1::Method::POST, "/api/v1/auth/logout")
+            .with_optional_header_param("idempotency-key", idempotency_key)
+            .returns_nothing()
+            .execute(self.cfg)
+            .await
     }
 }

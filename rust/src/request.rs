@@ -48,13 +48,30 @@ impl Request {
         self
     }
 
-    pub fn with_header_param(mut self, basename: &'static str, param: String) -> Self {
-        self.header_params.insert(basename, param);
+    pub fn with_optional_header_param(
+        mut self,
+        basename: &'static str,
+        param: Option<String>,
+    ) -> Self {
+        if let Some(value) = param {
+            self.header_params.insert(basename, value);
+        }
         self
     }
 
     pub fn with_query_param(mut self, basename: &'static str, param: String) -> Self {
         self.query_params.insert(basename, param);
+        self
+    }
+
+    pub fn with_optional_query_param<T: ToString>(
+        mut self,
+        basename: &'static str,
+        param: Option<T>,
+    ) -> Self {
+        if let Some(value) = param {
+            self.query_params.insert(basename, value.to_string());
+        }
         self
     }
 

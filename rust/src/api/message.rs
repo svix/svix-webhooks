@@ -1,5 +1,7 @@
+use itertools::Itertools;
+
 use super::PostOptions;
-use crate::{apis::message_api, error::Result, models::*, Configuration};
+use crate::{error::Result, models::*, Configuration};
 
 #[derive(Default)]
 pub struct MessageListOptions {
@@ -68,21 +70,21 @@ impl<'a> Message<'a> {
             event_types,
         } = options.unwrap_or_default();
 
-        message_api::v1_period_message_period_list(
-            self.cfg,
-            message_api::V1PeriodMessagePeriodListParams {
-                app_id,
-                limit,
-                iterator,
-                channel,
-                before,
-                after,
-                with_content,
-                tag,
-                event_types,
-            },
-        )
-        .await
+        crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}/msg")
+            .with_path_param("app_id", app_id)
+            .with_optional_query_param("limit", limit)
+            .with_optional_query_param("iterator", iterator)
+            .with_optional_query_param("channel", channel)
+            .with_optional_query_param("before", before)
+            .with_optional_query_param("after", after)
+            .with_optional_query_param("with_content", with_content)
+            .with_optional_query_param("tag", tag)
+            .with_optional_query_param(
+                "event_types",
+                event_types.map(|types| types.into_iter().format(",")),
+            )
+            .execute(self.cfg)
+            .await
     }
 
     /// Creates a new message and dispatches it to all of the application's
@@ -112,29 +114,21 @@ impl<'a> Message<'a> {
     ) -> Result<MessageOut> {
         let PostOptions { idempotency_key } = options.unwrap_or_default();
 
-        message_api::v1_period_message_period_create(
-            self.cfg,
-            message_api::V1PeriodMessagePeriodCreateParams {
-                app_id,
-                message_in,
-                with_content: None,
-                idempotency_key,
-            },
-        )
-        .await
+        crate::request::Request::new(http1::Method::POST, "/api/v1/app/{app_id}/msg")
+            .with_path_param("app_id", app_id)
+            .with_body_param(message_in)
+            .with_optional_header_param("idempotency-key", idempotency_key)
+            .execute(self.cfg)
+            .await
     }
 
     /// Get a message by its ID or eventID.
     pub async fn get(&self, app_id: String, msg_id: String) -> Result<MessageOut> {
-        message_api::v1_period_message_period_get(
-            self.cfg,
-            message_api::V1PeriodMessagePeriodGetParams {
-                app_id,
-                msg_id,
-                with_content: None,
-            },
-        )
-        .await
+        crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}/msg/{msg_id}")
+            .with_path_param("app_id", app_id)
+            .with_path_param("msg_id", msg_id)
+            .execute(self.cfg)
+            .await
     }
 
     /// Delete the given message's payload.
@@ -143,26 +137,115 @@ impl<'a> Message<'a> {
     /// content. The message can't be replayed or resent once its payload
     /// has been deleted or expired.
     pub async fn expunge_content(&self, app_id: String, msg_id: String) -> Result<()> {
-        message_api::v1_period_message_period_expunge_content(
-            self.cfg,
-            message_api::V1PeriodMessagePeriodExpungeContentParams { app_id, msg_id },
+        crate::request::Request::new(
+            http1::Method::DELETE,
+            "/api/v1/app/{app_id}/msg/{msg_id}/content",
         )
+        .with_path_param("app_id", app_id)
+        .with_path_param("msg_id", msg_id)
+        .returns_nothing()
+        .execute(self.cfg)
         .await
     }
 
     #[cfg(feature = "svix_beta")]
     pub async fn events(
         &self,
-        params: message_api::V1PeriodMessagePeriodEventsParams,
+        params: V1MessageEventsParams,
     ) -> Result<crate::models::MessageEventsOut> {
-        message_api::v1_period_message_period_events(self.cfg, params).await
+        let V1MessageEventsParams {
+            app_id,
+            limit,
+            iterator,
+            event_types,
+            channels,
+            after,
+        } = params;
+
+        crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}/events")
+            .with_path_param("app_id", app_id)
+            .with_optional_query_param("limit", limit)
+            .with_optional_query_param("iterator", iterator)
+            .with_optional_query_param(
+                "event_types",
+                event_types.map(|types| types.into_iter().format(",")),
+            )
+            .with_optional_query_param(
+                "channels",
+                channels.map(|types| types.into_iter().format(",")),
+            )
+            .with_optional_query_param("after", after)
+            .execute(self.cfg)
+            .await
     }
 
     #[cfg(feature = "svix_beta")]
     pub async fn events_subscription(
         &self,
-        params: message_api::V1PeriodMessagePeriodEventsSubscriptionParams,
+        params: V1MessageEventsSubscriptionParams,
     ) -> Result<crate::models::MessageEventsOut> {
-        message_api::v1_period_message_period_events_subscription(self.cfg, params).await
+        let V1MessageEventsSubscriptionParams {
+            app_id,
+            subscription_id,
+            limit,
+            iterator,
+            event_types,
+            channels,
+            after,
+        } = params;
+
+        crate::request::Request::new(
+            http1::Method::GET,
+            "/api/v1/app/{app_id}/events/subscription/{subscription_id}",
+        )
+        .with_path_param("app_id", app_id.to_string())
+        .with_path_param("subscription_id", subscription_id.to_string())
+        .with_optional_query_param("limit", limit)
+        .with_optional_query_param("iterator", iterator)
+        .with_optional_query_param(
+            "event_types",
+            event_types.map(|types| types.into_iter().format(",")),
+        )
+        .with_optional_query_param(
+            "channels",
+            channels.map(|types| types.into_iter().format(",")),
+        )
+        .with_optional_query_param("after", after)
+        .execute(self.cfg)
+        .await
     }
+}
+
+#[cfg(feature = "svix_beta")]
+#[derive(Clone, Debug)]
+pub struct V1MessageEventsParams {
+    /// The app's ID or UID
+    pub app_id: String,
+    /// Limit the number of returned items
+    pub limit: Option<i32>,
+    /// The iterator returned from a prior invocation
+    pub iterator: Option<String>,
+    /// Filter response based on the event type
+    pub event_types: Option<Vec<String>>,
+    /// Filter response based on the event type.
+    pub channels: Option<Vec<String>>,
+    pub after: Option<String>,
+}
+
+#[cfg(feature = "svix_beta")]
+#[derive(Clone, Debug)]
+pub struct V1MessageEventsSubscriptionParams {
+    /// The app's ID or UID
+    pub app_id: String,
+    /// The esub's ID or UID
+    pub subscription_id: String,
+    /// Limit the number of returned items
+    pub limit: Option<i32>,
+    /// The iterator returned from a prior invocation
+    pub iterator: Option<String>,
+    /// Filter response based on the event type
+    pub event_types: Option<Vec<String>>,
+    /// Filter response based on the event type.
+    pub channels: Option<Vec<String>>,
+    pub after: Option<String>,
 }

@@ -1,4 +1,6 @@
-use crate::{apis::message_attempt_api, error::Result, models::*, Configuration};
+use itertools::Itertools;
+
+use crate::{error::Result, models::*, Configuration};
 
 #[derive(Default)]
 pub struct MessageAttemptListByEndpointOptions {
@@ -162,24 +164,27 @@ impl<'a> MessageAttempt<'a> {
             event_types,
         } = options.unwrap_or_default();
 
-        message_attempt_api::v1_period_message_attempt_period_list_by_endpoint(
-            self.cfg,
-            message_attempt_api::V1PeriodMessageAttemptPeriodListByEndpointParams {
-                app_id,
-                endpoint_id,
-                limit,
-                iterator,
-                status,
-                status_code_class,
-                channel,
-                tag,
-                before,
-                after,
-                with_content,
-                with_msg,
-                event_types,
-            },
+        crate::request::Request::new(
+            http1::Method::GET,
+            "/api/v1/app/{app_id}/attempt/endpoint/{endpoint_id}",
         )
+        .with_path_param("app_id", app_id)
+        .with_path_param("endpoint_id", endpoint_id)
+        .with_optional_query_param("limit", limit)
+        .with_optional_query_param("iterator", iterator)
+        .with_optional_query_param("status", status)
+        .with_optional_query_param("status_code_class", status_code_class)
+        .with_optional_query_param("channel", channel)
+        .with_optional_query_param("tag", tag)
+        .with_optional_query_param("before", before)
+        .with_optional_query_param("after", after)
+        .with_optional_query_param("with_content", with_content)
+        .with_optional_query_param("with_msg", with_msg)
+        .with_optional_query_param(
+            "event_types",
+            event_types.map(|types| types.into_iter().format(",")),
+        )
+        .execute(self.cfg)
         .await
     }
 
@@ -210,24 +215,27 @@ impl<'a> MessageAttempt<'a> {
             event_types,
         } = options.unwrap_or_default();
 
-        message_attempt_api::v1_period_message_attempt_period_list_by_msg(
-            self.cfg,
-            message_attempt_api::V1PeriodMessageAttemptPeriodListByMsgParams {
-                app_id,
-                msg_id,
-                limit,
-                iterator,
-                status,
-                status_code_class,
-                channel,
-                tag,
-                endpoint_id,
-                before,
-                after,
-                with_content,
-                event_types,
-            },
+        crate::request::Request::new(
+            http1::Method::GET,
+            "/api/v1/app/{app_id}/attempt/msg/{msg_id}",
         )
+        .with_path_param("app_id", app_id)
+        .with_path_param("msg_id", msg_id)
+        .with_optional_query_param("limit", limit)
+        .with_optional_query_param("iterator", iterator)
+        .with_optional_query_param("status", status)
+        .with_optional_query_param("status_code_class", status_code_class)
+        .with_optional_query_param("channel", channel)
+        .with_optional_query_param("tag", tag)
+        .with_optional_query_param("endpoint_id", endpoint_id)
+        .with_optional_query_param("before", before)
+        .with_optional_query_param("after", after)
+        .with_optional_query_param("with_content", with_content)
+        .with_optional_query_param(
+            "event_types",
+            event_types.map(|types| types.into_iter().format(",")),
+        )
+        .execute(self.cfg)
         .await
     }
 
@@ -260,22 +268,25 @@ impl<'a> MessageAttempt<'a> {
             event_types,
         } = options.unwrap_or_default();
 
-        message_attempt_api::v1_period_message_attempt_period_list_attempted_messages(
-            self.cfg,
-            message_attempt_api::V1PeriodMessageAttemptPeriodListAttemptedMessagesParams {
-                app_id,
-                endpoint_id,
-                limit,
-                iterator,
-                channel,
-                tag,
-                status,
-                before,
-                after,
-                with_content,
-                event_types,
-            },
+        crate::request::Request::new(
+            http1::Method::GET,
+            "/api/v1/app/{app_id}/endpoint/{endpoint_id}/msg",
         )
+        .with_path_param("app_id", app_id)
+        .with_path_param("endpoint_id", endpoint_id)
+        .with_optional_query_param("limit", limit)
+        .with_optional_query_param("iterator", iterator)
+        .with_optional_query_param("channel", channel)
+        .with_optional_query_param("tag", tag)
+        .with_optional_query_param("status", status)
+        .with_optional_query_param("before", before)
+        .with_optional_query_param("after", after)
+        .with_optional_query_param("with_content", with_content)
+        .with_optional_query_param(
+            "event_types",
+            event_types.map(|types| types.into_iter().format(",")),
+        )
+        .execute(self.cfg)
         .await
     }
 
@@ -300,22 +311,26 @@ impl<'a> MessageAttempt<'a> {
             endpoint_id: _,
             with_content: _,
         } = options.unwrap_or_default();
-        message_attempt_api::v1_period_message_attempt_period_list_by_endpoint_deprecated(
-            self.cfg,
-            message_attempt_api::V1PeriodMessageAttemptPeriodListByEndpointDeprecatedParams {
-                app_id,
-                endpoint_id,
-                msg_id,
-                iterator,
-                limit,
-                event_types,
-                before,
-                after,
-                channel,
-                tag,
-                status,
-            },
+
+        crate::request::Request::new(
+            http1::Method::GET,
+            "/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/attempt",
         )
+        .with_optional_query_param("limit", limit)
+        .with_optional_query_param("iterator", iterator)
+        .with_optional_query_param("channel", channel)
+        .with_optional_query_param("tag", tag)
+        .with_optional_query_param("status", status)
+        .with_optional_query_param("before", before)
+        .with_optional_query_param("after", after)
+        .with_optional_query_param(
+            "event_types",
+            event_types.map(|types| types.into_iter().format(",")),
+        )
+        .with_path_param("app_id", app_id.to_string())
+        .with_path_param("msg_id", msg_id.to_string())
+        .with_path_param("endpoint_id", endpoint_id.to_string())
+        .execute(self.cfg)
         .await
     }
 
@@ -326,14 +341,14 @@ impl<'a> MessageAttempt<'a> {
         msg_id: String,
         attempt_id: String,
     ) -> Result<MessageAttemptOut> {
-        message_attempt_api::v1_period_message_attempt_period_get(
-            self.cfg,
-            message_attempt_api::V1PeriodMessageAttemptPeriodGetParams {
-                app_id,
-                msg_id,
-                attempt_id,
-            },
+        crate::request::Request::new(
+            http1::Method::GET,
+            "/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}",
         )
+        .with_path_param("app_id", app_id)
+        .with_path_param("msg_id", msg_id)
+        .with_path_param("attempt_id", attempt_id)
+        .execute(self.cfg)
         .await
     }
 
@@ -348,14 +363,15 @@ impl<'a> MessageAttempt<'a> {
         msg_id: String,
         attempt_id: String,
     ) -> Result<()> {
-        message_attempt_api::v1_period_message_attempt_period_expunge_content(
-            self.cfg,
-            message_attempt_api::V1PeriodMessageAttemptPeriodExpungeContentParams {
-                app_id,
-                msg_id,
-                attempt_id,
-            },
+        crate::request::Request::new(
+            http1::Method::DELETE,
+            "/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/content",
         )
+        .with_path_param("app_id", app_id)
+        .with_path_param("msg_id", msg_id)
+        .with_path_param("attempt_id", attempt_id)
+        .returns_nothing()
+        .execute(self.cfg)
         .await
     }
 
@@ -372,29 +388,29 @@ impl<'a> MessageAttempt<'a> {
         let MessageAttemptListAttemptedDestinationsOptions { limit, iterator } =
             options.unwrap_or_default();
 
-        message_attempt_api::v1_period_message_attempt_period_list_attempted_destinations(
-            self.cfg,
-            message_attempt_api::V1PeriodMessageAttemptPeriodListAttemptedDestinationsParams {
-                app_id,
-                msg_id,
-                limit,
-                iterator,
-            },
+        crate::request::Request::new(
+            http1::Method::GET,
+            "/api/v1/app/{app_id}/msg/{msg_id}/endpoint",
         )
+        .with_path_param("app_id", app_id)
+        .with_path_param("msg_id", msg_id)
+        .with_optional_query_param("limit", limit)
+        .with_optional_query_param("iterator", iterator)
+        .execute(self.cfg)
         .await
     }
 
     /// Resend a message to the specified endpoint.
     pub async fn resend(&self, app_id: String, msg_id: String, endpoint_id: String) -> Result<()> {
-        message_attempt_api::v1_period_message_attempt_period_resend(
-            self.cfg,
-            message_attempt_api::V1PeriodMessageAttemptPeriodResendParams {
-                app_id,
-                msg_id,
-                endpoint_id,
-                idempotency_key: None,
-            },
+        crate::request::Request::new(
+            http1::Method::POST,
+            "/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/resend",
         )
+        .with_path_param("app_id", app_id)
+        .with_path_param("msg_id", msg_id)
+        .with_path_param("endpoint_id", endpoint_id)
+        .returns_nothing()
+        .execute(self.cfg)
         .await
     }
 }
