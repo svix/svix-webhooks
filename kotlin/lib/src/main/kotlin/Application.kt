@@ -1,3 +1,4 @@
+// this file is @generated (with minor manual changes)
 package com.svix.kotlin
 
 import com.svix.kotlin.exceptions.ApiException
@@ -33,6 +34,7 @@ class Application internal constructor(token: String, options: SvixOptions) {
         options.numRetries?.let { api.numRetries = it }
     }
 
+    /** List of all the organization's applications. */
     suspend fun list(
         options: ApplicationListOptions = ApplicationListOptions()
     ): ListResponseApplicationOut {
@@ -43,6 +45,7 @@ class Application internal constructor(token: String, options: SvixOptions) {
         }
     }
 
+    /** Create a new application. */
     suspend fun create(
         applicationIn: ApplicationIn,
         options: PostOptions = PostOptions(),
@@ -65,6 +68,7 @@ class Application internal constructor(token: String, options: SvixOptions) {
         }
     }
 
+    /** Get an application. */
     suspend fun get(appId: String): ApplicationOut {
         try {
             return api.v1ApplicationGet(appId)
@@ -73,6 +77,7 @@ class Application internal constructor(token: String, options: SvixOptions) {
         }
     }
 
+    /** Update an application. */
     suspend fun update(appId: String, applicationIn: ApplicationIn): ApplicationOut {
         try {
             return api.v1ApplicationUpdate(appId, applicationIn)
@@ -81,17 +86,19 @@ class Application internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun patch(appId: String, applicationPatch: ApplicationPatch): ApplicationOut {
+    /** Delete an application. */
+    suspend fun delete(appId: String) {
         try {
-            return api.v1ApplicationPatch(appId, applicationPatch)
+            api.v1ApplicationDelete(appId)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
     }
 
-    suspend fun delete(appId: String) {
+    /** Partially update an application. */
+    suspend fun patch(appId: String, applicationPatch: ApplicationPatch): ApplicationOut {
         try {
-            api.v1ApplicationDelete(appId)
+            return api.v1ApplicationPatch(appId, applicationPatch)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
