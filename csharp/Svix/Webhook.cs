@@ -43,25 +43,38 @@ namespace Svix
 
         public void Verify(ReadOnlySpan<char> payload, WebHeaderCollection headers)
         {
-            ArgumentNullException.ThrowIfNull(headers);
+            if (payload == null)
+            {
+                throw new ArgumentNullException(nameof(payload));
+            }
+            if (headers == null)
+            {
+                throw new ArgumentNullException(nameof(headers));
+            }
             
             Verify(payload, headers.Get);
         }
 
-        public void Verify(string payload, Func<string, string> headersProvider)
+        public void Verify(ReadOnlySpan<char> payload, Func<string, string> headersProvider)
         {
-            ArgumentNullException.ThrowIfNull(payload);
-            ArgumentNullException.ThrowIfNull(headersProvider);
+            if (payload == null)
+            {
+                throw new ArgumentNullException(nameof(payload));
+            }
+            if (headersProvider == null)
+            {
+                throw new ArgumentNullException(nameof(headersProvider));
+            }
             
-            ReadOnlySpan<char> msgId = headerProvider(SVIX_ID_HEADER_KEY);
-            ReadOnlySpan<char> msgTimestamp = headerProvider(SVIX_TIMESTAMP_HEADER_KEY);
-            ReadOnlySpan<char> msgSignature = headerProvider(SVIX_SIGNATURE_HEADER_KEY);
+            ReadOnlySpan<char> msgId = headersProvider(SVIX_ID_HEADER_KEY);
+            ReadOnlySpan<char> msgTimestamp = headersProvider(SVIX_TIMESTAMP_HEADER_KEY);
+            ReadOnlySpan<char> msgSignature = headersProvider(SVIX_SIGNATURE_HEADER_KEY);
             
             if (msgId.IsEmpty || msgSignature.IsEmpty || msgTimestamp.IsEmpty)
             {
-                msgId = headerProvider(UNBRANDED_ID_HEADER_KEY);
-                msgSignature = headerProvider(UNBRANDED_SIGNATURE_HEADER_KEY);
-                msgTimestamp = headerProvider(UNBRANDED_TIMESTAMP_HEADER_KEY);
+                msgId = headersProvider(UNBRANDED_ID_HEADER_KEY);
+                msgSignature = headersProvider(UNBRANDED_SIGNATURE_HEADER_KEY);
+                msgTimestamp = headersProvider(UNBRANDED_TIMESTAMP_HEADER_KEY);
                 if (msgId.IsEmpty || msgSignature.IsEmpty || msgTimestamp.IsEmpty)
                 {
                     throw new WebhookVerificationException("Missing Required Headers");
