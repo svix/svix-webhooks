@@ -1,5 +1,5 @@
 use clap::{Args, Subcommand};
-use svix::api::{self, Ordering};
+use svix::api::*;
 
 use crate::{cli_types::PostOptions, json::JsonOf};
 
@@ -16,7 +16,7 @@ pub struct ApplicationListOptions {
     pub order: Option<Ordering>,
 }
 
-impl From<ApplicationListOptions> for api::ApplicationListOptions {
+impl From<ApplicationListOptions> for svix::api::ApplicationListOptions {
     fn from(
         ApplicationListOptions {
             limit,
@@ -49,7 +49,7 @@ pub enum ApplicationCommands {
     },
     /// Create a new application.
     Create {
-        application_in: JsonOf<api::ApplicationIn>,
+        application_in: JsonOf<ApplicationIn>,
         #[clap(flatten)]
         post_options: Option<PostOptions>,
     },
@@ -58,21 +58,21 @@ pub enum ApplicationCommands {
     /// Update an application.
     Update {
         id: String,
-        application_in: JsonOf<api::ApplicationIn>,
+        application_in: JsonOf<ApplicationIn>,
     },
     /// Delete an application.
     Delete { id: String },
     /// Partially update an application.
     Patch {
         id: String,
-        application_patch: JsonOf<api::ApplicationPatch>,
+        application_patch: JsonOf<ApplicationPatch>,
     },
 }
 
 impl ApplicationCommands {
     pub async fn exec(
         self,
-        client: &api::Svix,
+        client: &Svix,
         color_mode: colored_json::ColorMode,
     ) -> anyhow::Result<()> {
         match self {
