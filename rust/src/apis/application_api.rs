@@ -214,17 +214,17 @@ pub async fn get_app_usage_stats_api_v1_app_stats_usage_get(configuration: &Conf
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/app/stats/usage".to_string())
+    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/app/stats/usage")
     ;
-    req = req.with_query_param("since".to_string(), since.to_string());
-    req = req.with_query_param("until".to_string(), until.to_string());
+    req = req.with_query_param("since", since.to_string());
+    req = req.with_query_param("until", until.to_string());
     if let Some(ref s) = limit {
         let query_value = s.to_string();
-        req = req.with_query_param("limit".to_string(), query_value);
+        req = req.with_query_param("limit", query_value);
     }
     if let Some(ref s) = iterator {
         let query_value = s.to_string();
-        req = req.with_query_param("iterator".to_string(), query_value);
+        req = req.with_query_param("iterator", query_value);
     }
 
     req.execute(configuration).await
@@ -239,14 +239,14 @@ pub async fn v1_period_application_period_create(configuration: &Configuration, 
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/app".to_string())
+    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/app")
     ;
     if let Some(ref s) = get_if_exists {
         let query_value = s.to_string();
-        req = req.with_query_param("get_if_exists".to_string(), query_value);
+        req = req.with_query_param("get_if_exists", query_value);
     }
     if let Some(param_value) = idempotency_key {
-        req = req.with_header_param("idempotency-key".to_string(), param_value.to_string());
+        req = req.with_header_param("idempotency-key", param_value.to_string());
     }
     req = req.with_body_param(application_in);
 
@@ -260,9 +260,9 @@ pub async fn v1_period_application_period_delete(configuration: &Configuration, 
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::DELETE, "/api/v1/app/{app_id}".to_string())
+    let mut req = crate::request::Request::new(http1::Method::DELETE, "/api/v1/app/{app_id}")
     ;
-    req = req.with_path_param("app_id".to_string(), app_id.to_string());
+    req = req.with_path_param("app_id", app_id.to_string());
     req = req.returns_nothing();
 
     req.execute(configuration).await
@@ -275,9 +275,9 @@ pub async fn v1_period_application_period_get(configuration: &Configuration, par
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}".to_string())
+    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}")
     ;
-    req = req.with_path_param("app_id".to_string(), app_id.to_string());
+    req = req.with_path_param("app_id", app_id.to_string());
 
     req.execute(configuration).await
 }
@@ -291,11 +291,11 @@ pub async fn v1_period_application_period_get_stats(configuration: &Configuratio
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}/stats".to_string())
+    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}/stats")
     ;
-    req = req.with_query_param("since".to_string(), since.to_string());
-    req = req.with_query_param("until".to_string(), until.to_string());
-    req = req.with_path_param("app_id".to_string(), app_id.to_string());
+    req = req.with_query_param("since", since.to_string());
+    req = req.with_query_param("until", until.to_string());
+    req = req.with_path_param("app_id", app_id.to_string());
 
     req.execute(configuration).await
 }
@@ -309,19 +309,19 @@ pub async fn v1_period_application_period_list(configuration: &Configuration, pa
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/app".to_string())
+    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/app")
     ;
     if let Some(ref s) = limit {
         let query_value = s.to_string();
-        req = req.with_query_param("limit".to_string(), query_value);
+        req = req.with_query_param("limit", query_value);
     }
     if let Some(ref s) = iterator {
         let query_value = s.to_string();
-        req = req.with_query_param("iterator".to_string(), query_value);
+        req = req.with_query_param("iterator", query_value);
     }
     if let Some(ref s) = order {
         let query_value = s.to_string();
-        req = req.with_query_param("order".to_string(), query_value);
+        req = req.with_query_param("order", query_value);
     }
 
     req.execute(configuration).await
@@ -335,9 +335,9 @@ pub async fn v1_period_application_period_patch(configuration: &Configuration, p
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::PATCH, "/api/v1/app/{app_id}".to_string())
+    let mut req = crate::request::Request::new(http1::Method::PATCH, "/api/v1/app/{app_id}")
     ;
-    req = req.with_path_param("app_id".to_string(), app_id.to_string());
+    req = req.with_path_param("app_id", app_id.to_string());
     req = req.with_body_param(application_patch);
 
     req.execute(configuration).await
@@ -351,9 +351,9 @@ pub async fn v1_period_application_period_update(configuration: &Configuration, 
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::PUT, "/api/v1/app/{app_id}".to_string())
+    let mut req = crate::request::Request::new(http1::Method::PUT, "/api/v1/app/{app_id}")
     ;
-    req = req.with_path_param("app_id".to_string(), app_id.to_string());
+    req = req.with_path_param("app_id", app_id.to_string());
     req = req.with_body_param(application_in);
 
     req.execute(configuration).await

@@ -202,10 +202,10 @@ pub async fn v1_period_stream_period_create(configuration: &Configuration, param
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/stream".to_string())
+    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/stream")
     ;
     if let Some(param_value) = idempotency_key {
-        req = req.with_header_param("idempotency-key".to_string(), param_value.to_string());
+        req = req.with_header_param("idempotency-key", param_value.to_string());
     }
     req = req.with_body_param(stream_in);
 
@@ -221,11 +221,11 @@ pub async fn v1_period_stream_period_create_events(configuration: &Configuration
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/stream/{stream_id}/events".to_string())
+    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/stream/{stream_id}/events")
     ;
-    req = req.with_path_param("stream_id".to_string(), stream_id.to_string());
+    req = req.with_path_param("stream_id", stream_id.to_string());
     if let Some(param_value) = idempotency_key {
-        req = req.with_header_param("idempotency-key".to_string(), param_value.to_string());
+        req = req.with_header_param("idempotency-key", param_value.to_string());
     }
     req = req.with_body_param(create_stream_in);
 
@@ -239,9 +239,9 @@ pub async fn v1_period_stream_period_delete(configuration: &Configuration, param
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::DELETE, "/api/v1/stream/{stream_id}".to_string())
+    let mut req = crate::request::Request::new(http1::Method::DELETE, "/api/v1/stream/{stream_id}")
     ;
-    req = req.with_path_param("stream_id".to_string(), stream_id.to_string());
+    req = req.with_path_param("stream_id", stream_id.to_string());
     req = req.returns_nothing();
 
     req.execute(configuration).await
@@ -257,21 +257,21 @@ pub async fn v1_period_stream_period_events_get(configuration: &Configuration, p
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/stream/{stream_id}/events".to_string())
+    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/stream/{stream_id}/events")
     ;
     if let Some(ref s) = limit {
         let query_value = s.to_string();
-        req = req.with_query_param("limit".to_string(), query_value);
+        req = req.with_query_param("limit", query_value);
     }
     if let Some(ref s) = iterator {
         let query_value = s.to_string();
-        req = req.with_query_param("iterator".to_string(), query_value);
+        req = req.with_query_param("iterator", query_value);
     }
     if let Some(ref s) = after {
         let query_value = s.to_string();
-        req = req.with_query_param("after".to_string(), query_value);
+        req = req.with_query_param("after", query_value);
     }
-    req = req.with_path_param("stream_id".to_string(), stream_id.to_string());
+    req = req.with_path_param("stream_id", stream_id.to_string());
 
     req.execute(configuration).await
 }
@@ -283,9 +283,9 @@ pub async fn v1_period_stream_period_get(configuration: &Configuration, params: 
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/stream/{stream_id}".to_string())
+    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/stream/{stream_id}")
     ;
-    req = req.with_path_param("stream_id".to_string(), stream_id.to_string());
+    req = req.with_path_param("stream_id", stream_id.to_string());
 
     req.execute(configuration).await
 }
@@ -299,19 +299,19 @@ pub async fn v1_period_stream_period_list(configuration: &Configuration, params:
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/stream".to_string())
+    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/stream")
     ;
     if let Some(ref s) = limit {
         let query_value = s.to_string();
-        req = req.with_query_param("limit".to_string(), query_value);
+        req = req.with_query_param("limit", query_value);
     }
     if let Some(ref s) = iterator {
         let query_value = s.to_string();
-        req = req.with_query_param("iterator".to_string(), query_value);
+        req = req.with_query_param("iterator", query_value);
     }
     if let Some(ref s) = order {
         let query_value = s.to_string();
-        req = req.with_query_param("order".to_string(), query_value);
+        req = req.with_query_param("order", query_value);
     }
 
     req.execute(configuration).await
@@ -325,9 +325,9 @@ pub async fn v1_period_stream_period_patch(configuration: &Configuration, params
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::PATCH, "/api/v1/stream/{stream_id}".to_string())
+    let mut req = crate::request::Request::new(http1::Method::PATCH, "/api/v1/stream/{stream_id}")
     ;
-    req = req.with_path_param("stream_id".to_string(), stream_id.to_string());
+    req = req.with_path_param("stream_id", stream_id.to_string());
     req = req.with_body_param(stream_patch);
 
     req.execute(configuration).await
@@ -341,9 +341,9 @@ pub async fn v1_period_stream_period_update(configuration: &Configuration, param
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::PUT, "/api/v1/stream/{stream_id}".to_string())
+    let mut req = crate::request::Request::new(http1::Method::PUT, "/api/v1/stream/{stream_id}")
     ;
-    req = req.with_path_param("stream_id".to_string(), stream_id.to_string());
+    req = req.with_path_param("stream_id", stream_id.to_string());
     req = req.with_body_param(stream_in);
 
     req.execute(configuration).await

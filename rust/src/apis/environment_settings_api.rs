@@ -37,7 +37,7 @@ pub async fn v1_period_environment_period_get_settings(configuration: &Configura
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/environment/settings".to_string())
+    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/environment/settings")
     ;
 
     req.execute(configuration).await

@@ -113,10 +113,10 @@ pub async fn v1_period_statistics_period_aggregate_app_stats(configuration: &Con
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/stats/usage/app".to_string())
+    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/stats/usage/app")
     ;
     if let Some(param_value) = idempotency_key {
-        req = req.with_header_param("idempotency-key".to_string(), param_value.to_string());
+        req = req.with_header_param("idempotency-key", param_value.to_string());
     }
     req = req.with_body_param(app_usage_stats_in);
 
@@ -129,7 +129,7 @@ pub async fn v1_period_statistics_period_aggregate_event_types(configuration: &C
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::PUT, "/api/v1/stats/usage/event-types".to_string())
+    let mut req = crate::request::Request::new(http1::Method::PUT, "/api/v1/stats/usage/event-types")
     ;
 
     req.execute(configuration).await
@@ -144,17 +144,17 @@ pub async fn v1_period_stats_period_app_attempts(configuration: &Configuration, 
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/stats/app/{app_id}/attempt".to_string())
+    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/stats/app/{app_id}/attempt")
     ;
     if let Some(ref s) = start_date {
         let query_value = s.to_string();
-        req = req.with_query_param("startDate".to_string(), query_value);
+        req = req.with_query_param("startDate", query_value);
     }
     if let Some(ref s) = end_date {
         let query_value = s.to_string();
-        req = req.with_query_param("endDate".to_string(), query_value);
+        req = req.with_query_param("endDate", query_value);
     }
-    req = req.with_path_param("app_id".to_string(), app_id.to_string());
+    req = req.with_path_param("app_id", app_id.to_string());
 
     req.execute(configuration).await
 }
@@ -169,18 +169,18 @@ pub async fn v1_period_stats_period_endpoint_attempts(configuration: &Configurat
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/stats/app/{app_id}/ep/{endpoint_id}/attempt".to_string())
+    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/stats/app/{app_id}/ep/{endpoint_id}/attempt")
     ;
     if let Some(ref s) = start_date {
         let query_value = s.to_string();
-        req = req.with_query_param("startDate".to_string(), query_value);
+        req = req.with_query_param("startDate", query_value);
     }
     if let Some(ref s) = end_date {
         let query_value = s.to_string();
-        req = req.with_query_param("endDate".to_string(), query_value);
+        req = req.with_query_param("endDate", query_value);
     }
-    req = req.with_path_param("app_id".to_string(), app_id.to_string());
-    req = req.with_path_param("endpoint_id".to_string(), endpoint_id.to_string());
+    req = req.with_path_param("app_id", app_id.to_string());
+    req = req.with_path_param("endpoint_id", endpoint_id.to_string());
 
     req.execute(configuration).await
 }

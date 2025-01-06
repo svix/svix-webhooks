@@ -213,11 +213,11 @@ pub async fn v1_period_authentication_period_app_portal_access(configuration: &C
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/auth/app-portal-access/{app_id}".to_string())
+    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/auth/app-portal-access/{app_id}")
     ;
-    req = req.with_path_param("app_id".to_string(), app_id.to_string());
+    req = req.with_path_param("app_id", app_id.to_string());
     if let Some(param_value) = idempotency_key {
-        req = req.with_header_param("idempotency-key".to_string(), param_value.to_string());
+        req = req.with_header_param("idempotency-key", param_value.to_string());
     }
     req = req.with_body_param(app_portal_access_in);
 
@@ -233,11 +233,11 @@ pub async fn v1_period_authentication_period_create_message_token(configuration:
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/auth/app/{app_id}/create-message-token".to_string())
+    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/auth/app/{app_id}/create-message-token")
     ;
-    req = req.with_path_param("app_id".to_string(), app_id.to_string());
+    req = req.with_path_param("app_id", app_id.to_string());
     if let Some(param_value) = idempotency_key {
-        req = req.with_header_param("idempotency-key".to_string(), param_value.to_string());
+        req = req.with_header_param("idempotency-key", param_value.to_string());
     }
     req = req.with_body_param(create_token_in);
 
@@ -252,11 +252,11 @@ pub async fn v1_period_authentication_period_dashboard_access(configuration: &Co
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/auth/dashboard-access/{app_id}".to_string())
+    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/auth/dashboard-access/{app_id}")
     ;
-    req = req.with_path_param("app_id".to_string(), app_id.to_string());
+    req = req.with_path_param("app_id", app_id.to_string());
     if let Some(param_value) = idempotency_key {
-        req = req.with_header_param("idempotency-key".to_string(), param_value.to_string());
+        req = req.with_header_param("idempotency-key", param_value.to_string());
     }
 
     req.execute(configuration).await
@@ -270,10 +270,10 @@ pub async fn v1_period_authentication_period_exchange_one_time_token(configurati
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/auth/one-time-token".to_string())
+    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/auth/one-time-token")
     ;
     if let Some(param_value) = idempotency_key {
-        req = req.with_header_param("idempotency-key".to_string(), param_value.to_string());
+        req = req.with_header_param("idempotency-key", param_value.to_string());
     }
     req = req.with_body_param(one_time_token_in);
 
@@ -289,11 +289,11 @@ pub async fn v1_period_authentication_period_expire_all(configuration: &Configur
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/auth/app/{app_id}/expire-all".to_string())
+    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/auth/app/{app_id}/expire-all")
     ;
-    req = req.with_path_param("app_id".to_string(), app_id.to_string());
+    req = req.with_path_param("app_id", app_id.to_string());
     if let Some(param_value) = idempotency_key {
-        req = req.with_header_param("idempotency-key".to_string(), param_value.to_string());
+        req = req.with_header_param("idempotency-key", param_value.to_string());
     }
     req = req.with_body_param(application_token_expire_in);
     req = req.returns_nothing();
@@ -309,10 +309,10 @@ pub async fn v1_period_authentication_period_get_poller_token(configuration: &Co
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/auth/app/{app_id}/poller/{endpoint_id}/token".to_string())
+    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/auth/app/{app_id}/poller/{endpoint_id}/token")
     ;
-    req = req.with_path_param("app_id".to_string(), app_id.to_string());
-    req = req.with_path_param("endpoint_id".to_string(), endpoint_id.to_string());
+    req = req.with_path_param("app_id", app_id.to_string());
+    req = req.with_path_param("endpoint_id", endpoint_id.to_string());
 
     req.execute(configuration).await
 }
@@ -324,10 +324,10 @@ pub async fn v1_period_authentication_period_logout(configuration: &Configuratio
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/auth/logout".to_string())
+    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/auth/logout")
     ;
     if let Some(param_value) = idempotency_key {
-        req = req.with_header_param("idempotency-key".to_string(), param_value.to_string());
+        req = req.with_header_param("idempotency-key", param_value.to_string());
     }
     req = req.returns_nothing();
 
@@ -344,12 +344,12 @@ pub async fn v1_period_authentication_period_rotate_poller_token(configuration: 
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/auth/app/{app_id}/poller/{endpoint_id}/token/rotate".to_string())
+    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/auth/app/{app_id}/poller/{endpoint_id}/token/rotate")
     ;
-    req = req.with_path_param("app_id".to_string(), app_id.to_string());
-    req = req.with_path_param("endpoint_id".to_string(), endpoint_id.to_string());
+    req = req.with_path_param("app_id", app_id.to_string());
+    req = req.with_path_param("endpoint_id", endpoint_id.to_string());
     if let Some(param_value) = idempotency_key {
-        req = req.with_header_param("idempotency-key".to_string(), param_value.to_string());
+        req = req.with_header_param("idempotency-key", param_value.to_string());
     }
     req = req.with_body_param(rotate_poller_token_in);
 

@@ -67,10 +67,10 @@ pub async fn v1_period_environment_period_export(configuration: &Configuration, 
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/environment/export".to_string())
+    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/environment/export")
     ;
     if let Some(param_value) = idempotency_key {
-        req = req.with_header_param("idempotency-key".to_string(), param_value.to_string());
+        req = req.with_header_param("idempotency-key", param_value.to_string());
     }
 
     req.execute(configuration).await
@@ -84,10 +84,10 @@ pub async fn v1_period_environment_period_import(configuration: &Configuration, 
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/environment/import".to_string())
+    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/environment/import")
     ;
     if let Some(param_value) = idempotency_key {
-        req = req.with_header_param("idempotency-key".to_string(), param_value.to_string());
+        req = req.with_header_param("idempotency-key", param_value.to_string());
     }
     req = req.with_body_param(environment_in);
     req = req.returns_nothing();

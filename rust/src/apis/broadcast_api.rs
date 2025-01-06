@@ -47,10 +47,10 @@ pub async fn create_broadcast_message(configuration: &Configuration, params: Cre
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/msg/broadcast".to_string())
+    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/msg/broadcast")
     ;
     if let Some(param_value) = idempotency_key {
-        req = req.with_header_param("idempotency-key".to_string(), param_value.to_string());
+        req = req.with_header_param("idempotency-key", param_value.to_string());
     }
     req = req.with_body_param(message_broadcast_in);
 

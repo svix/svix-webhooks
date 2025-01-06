@@ -56,27 +56,27 @@ pub async fn v1_period_events(configuration: &Configuration, params: V1PeriodEve
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/events".to_string())
+    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/events")
     ;
     if let Some(ref s) = limit {
         let query_value = s.to_string();
-        req = req.with_query_param("limit".to_string(), query_value);
+        req = req.with_query_param("limit", query_value);
     }
     if let Some(ref s) = iterator {
         let query_value = s.to_string();
-        req = req.with_query_param("iterator".to_string(), query_value);
+        req = req.with_query_param("iterator", query_value);
     }
     if let Some(ref s) = event_types {
         let query_value = s.iter().map(|s| s.to_string()).collect::<Vec<String>>().join(",");
-        req = req.with_query_param("event_types".to_string(), query_value);
+        req = req.with_query_param("event_types", query_value);
     }
     if let Some(ref s) = channels {
         let query_value = s.iter().map(|s| s.to_string()).collect::<Vec<String>>().join(",");
-        req = req.with_query_param("channels".to_string(), query_value);
+        req = req.with_query_param("channels", query_value);
     }
     if let Some(ref s) = after {
         let query_value = s.to_string();
-        req = req.with_query_param("after".to_string(), query_value);
+        req = req.with_query_param("after", query_value);
     }
 
     req.execute(configuration).await
