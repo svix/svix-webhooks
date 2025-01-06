@@ -100,18 +100,6 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun patch(
-        appId: String,
-        endpointId: String,
-        endpointPatch: EndpointPatch,
-    ): EndpointOut {
-        try {
-            return api.v1EndpointPatch(appId, endpointId, endpointPatch)
-        } catch (e: Exception) {
-            throw ApiException.wrap(e)
-        }
-    }
-
     suspend fun delete(appId: String, endpointId: String) {
         try {
             api.v1EndpointDelete(appId, endpointId)
@@ -120,40 +108,13 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun getSecret(appId: String, endpointId: String): EndpointSecretOut {
-        try {
-            return api.v1EndpointGetSecret(appId, endpointId)
-        } catch (e: Exception) {
-            throw ApiException.wrap(e)
-        }
-    }
-
-    suspend fun rotateSecret(
+    suspend fun patch(
         appId: String,
         endpointId: String,
-        endpointSecretRotateIn: EndpointSecretRotateIn,
-        options: PostOptions = PostOptions(),
-    ) {
+        endpointPatch: EndpointPatch,
+    ): EndpointOut {
         try {
-            api.v1EndpointRotateSecret(
-                appId,
-                endpointId,
-                endpointSecretRotateIn,
-                options.idempotencyKey,
-            )
-        } catch (e: Exception) {
-            throw ApiException.wrap(e)
-        }
-    }
-
-    suspend fun recover(
-        appId: String,
-        endpointId: String,
-        recoverIn: RecoverIn,
-        options: PostOptions = PostOptions(),
-    ) {
-        try {
-            api.v1EndpointRecover(appId, endpointId, recoverIn, options.idempotencyKey)
+            return api.v1EndpointPatch(appId, endpointId, endpointPatch)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -191,13 +152,14 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun getStats(
+    suspend fun recover(
         appId: String,
         endpointId: String,
-        options: EndpointGetStatsOptions = EndpointGetStatsOptions(),
-    ): EndpointStats {
+        recoverIn: RecoverIn,
+        options: PostOptions = PostOptions(),
+    ) {
         try {
-            return api.v1EndpointGetStats(appId, endpointId, options.since, options.until)
+            api.v1EndpointRecover(appId, endpointId, recoverIn, options.idempotencyKey)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -211,6 +173,57 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
     ) {
         try {
             api.v1EndpointReplayMissing(appId, endpointId, replayIn, options.idempotencyKey)
+        } catch (e: Exception) {
+            throw ApiException.wrap(e)
+        }
+    }
+
+    suspend fun getSecret(appId: String, endpointId: String): EndpointSecretOut {
+        try {
+            return api.v1EndpointGetSecret(appId, endpointId)
+        } catch (e: Exception) {
+            throw ApiException.wrap(e)
+        }
+    }
+
+    suspend fun rotateSecret(
+        appId: String,
+        endpointId: String,
+        endpointSecretRotateIn: EndpointSecretRotateIn,
+        options: PostOptions = PostOptions(),
+    ) {
+        try {
+            api.v1EndpointRotateSecret(
+                appId,
+                endpointId,
+                endpointSecretRotateIn,
+                options.idempotencyKey,
+            )
+        } catch (e: Exception) {
+            throw ApiException.wrap(e)
+        }
+    }
+
+    suspend fun sendExample(
+        appId: String,
+        endpointId: String,
+        eventExampleIn: EventExampleIn,
+        options: PostOptions = PostOptions(),
+    ) {
+        try {
+            api.v1EndpointSendExample(appId, endpointId, eventExampleIn, options.idempotencyKey)
+        } catch (e: Exception) {
+            throw ApiException.wrap(e)
+        }
+    }
+
+    suspend fun getStats(
+        appId: String,
+        endpointId: String,
+        options: EndpointGetStatsOptions = EndpointGetStatsOptions(),
+    ): EndpointStats {
+        try {
+            return api.v1EndpointGetStats(appId, endpointId, options.since, options.until)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -231,19 +244,6 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
     ) {
         try {
             api.v1EndpointTransformationPartialUpdate(appId, endpointId, endpointTransformationIn)
-        } catch (e: Exception) {
-            throw ApiException.wrap(e)
-        }
-    }
-
-    suspend fun sendExample(
-        appId: String,
-        endpointId: String,
-        eventExampleIn: EventExampleIn,
-        options: PostOptions = PostOptions(),
-    ) {
-        try {
-            api.v1EndpointSendExample(appId, endpointId, eventExampleIn, options.idempotencyKey)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
