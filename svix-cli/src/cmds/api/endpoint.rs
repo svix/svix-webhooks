@@ -92,7 +92,7 @@ pub enum EndpointCommands {
     Patch {
         app_id: String,
         id: String,
-        endpoint_patch: JsonOf<EndpointPatch>,
+        endpoint_patch: Option<JsonOf<EndpointPatch>>,
     },
     /// Get the additional headers to be sent with the webhook.
     GetHeaders { app_id: String, id: String },
@@ -138,7 +138,7 @@ pub enum EndpointCommands {
     RotateSecret {
         app_id: String,
         id: String,
-        endpoint_secret_rotate_in: JsonOf<EndpointSecretRotateIn>,
+        endpoint_secret_rotate_in: Option<JsonOf<EndpointSecretRotateIn>>,
     },
     /// Send an example message for an event.
     SendExample {
@@ -162,7 +162,7 @@ pub enum EndpointCommands {
     TransformationPartialUpdate {
         app_id: String,
         id: String,
-        endpoint_transformation_in: JsonOf<EndpointTransformationIn>,
+        endpoint_transformation_in: Option<JsonOf<EndpointTransformationIn>>,
     },
 }
 
@@ -217,7 +217,11 @@ impl EndpointCommands {
             } => {
                 let resp = client
                     .endpoint()
-                    .patch(app_id, id, endpoint_patch.into_inner())
+                    .patch(
+                        app_id,
+                        id,
+                        endpoint_patch.map(|x| x.into_inner()).unwrap_or_default(),
+                    )
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
@@ -284,7 +288,13 @@ impl EndpointCommands {
             } => {
                 client
                     .endpoint()
-                    .rotate_secret(app_id, id, endpoint_secret_rotate_in.into_inner())
+                    .rotate_secret(
+                        app_id,
+                        id,
+                        endpoint_secret_rotate_in
+                            .map(|x| x.into_inner())
+                            .unwrap_or_default(),
+                    )
                     .await?;
             }
             Self::SendExample {
@@ -329,7 +339,9 @@ impl EndpointCommands {
                     .transformation_partial_update(
                         app_id,
                         id,
-                        endpoint_transformation_in.into_inner(),
+                        endpoint_transformation_in
+                            .map(|x| x.into_inner())
+                            .unwrap_or_default(),
                     )
                     .await?;
             }

@@ -65,7 +65,7 @@ pub enum ApplicationCommands {
     /// Partially update an application.
     Patch {
         id: String,
-        application_patch: JsonOf<ApplicationPatch>,
+        application_patch: Option<JsonOf<ApplicationPatch>>,
     },
 }
 
@@ -110,7 +110,12 @@ impl ApplicationCommands {
             } => {
                 let resp = client
                     .application()
-                    .patch(id, application_patch.into_inner())
+                    .patch(
+                        id,
+                        application_patch
+                            .map(|x| x.into_inner())
+                            .unwrap_or_default(),
+                    )
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
