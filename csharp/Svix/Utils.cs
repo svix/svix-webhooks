@@ -25,7 +25,7 @@ namespace Svix
             var result = 0;
             for (var i = 0; i < a.Length; i++)
             {
-                result |= a[i] ^b[i];
+                result |= a[i] ^ b[i];
             }
 
             return result == 0;

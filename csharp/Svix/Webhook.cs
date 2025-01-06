@@ -105,8 +105,6 @@ namespace Svix
             throw new WebhookVerificationException("No matching signature found");
         }
 
-
-
         private static void VerifyTimestamp(ReadOnlySpan<char> timestampHeader)
         {
             DateTimeOffset timestamp;
