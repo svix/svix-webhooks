@@ -37,7 +37,7 @@ pub async fn v1_period_health_period_get(configuration: &Configuration) -> Resul
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/health".to_string())
+    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/health")
     ;
     req = req.returns_nothing();
 

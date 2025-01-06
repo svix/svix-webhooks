@@ -413,38 +413,38 @@ pub async fn v1_period_message_attempt_period_count_by_endpoint(configuration: &
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}/attempt/endpoint/{endpoint_id}/count".to_string())
+    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}/attempt/endpoint/{endpoint_id}/count")
     ;
     if let Some(ref s) = status {
         let query_value = s.to_string();
-        req = req.with_query_param("status".to_string(), query_value);
+        req = req.with_query_param("status", query_value);
     }
     if let Some(ref s) = status_code_class {
         let query_value = s.to_string();
-        req = req.with_query_param("status_code_class".to_string(), query_value);
+        req = req.with_query_param("status_code_class", query_value);
     }
     if let Some(ref s) = channel {
         let query_value = s.to_string();
-        req = req.with_query_param("channel".to_string(), query_value);
+        req = req.with_query_param("channel", query_value);
     }
     if let Some(ref s) = tag {
         let query_value = s.to_string();
-        req = req.with_query_param("tag".to_string(), query_value);
+        req = req.with_query_param("tag", query_value);
     }
     if let Some(ref s) = before {
         let query_value = s.to_string();
-        req = req.with_query_param("before".to_string(), query_value);
+        req = req.with_query_param("before", query_value);
     }
     if let Some(ref s) = after {
         let query_value = s.to_string();
-        req = req.with_query_param("after".to_string(), query_value);
+        req = req.with_query_param("after", query_value);
     }
     if let Some(ref s) = event_types {
         let query_value = s.iter().map(|s| s.to_string()).collect::<Vec<String>>().join(",");
-        req = req.with_query_param("event_types".to_string(), query_value);
+        req = req.with_query_param("event_types", query_value);
     }
-    req = req.with_path_param("app_id".to_string(), app_id.to_string());
-    req = req.with_path_param("endpoint_id".to_string(), endpoint_id.to_string());
+    req = req.with_path_param("app_id", app_id.to_string());
+    req = req.with_path_param("endpoint_id", endpoint_id.to_string());
 
     req.execute(configuration).await
 }
@@ -458,11 +458,11 @@ pub async fn v1_period_message_attempt_period_expunge_content(configuration: &Co
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::DELETE, "/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/content".to_string())
+    let mut req = crate::request::Request::new(http1::Method::DELETE, "/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/content")
     ;
-    req = req.with_path_param("app_id".to_string(), app_id.to_string());
-    req = req.with_path_param("msg_id".to_string(), msg_id.to_string());
-    req = req.with_path_param("attempt_id".to_string(), attempt_id.to_string());
+    req = req.with_path_param("app_id", app_id.to_string());
+    req = req.with_path_param("msg_id", msg_id.to_string());
+    req = req.with_path_param("attempt_id", attempt_id.to_string());
     req = req.returns_nothing();
 
     req.execute(configuration).await
@@ -477,11 +477,11 @@ pub async fn v1_period_message_attempt_period_get(configuration: &Configuration,
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}".to_string())
+    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}")
     ;
-    req = req.with_path_param("app_id".to_string(), app_id.to_string());
-    req = req.with_path_param("msg_id".to_string(), msg_id.to_string());
-    req = req.with_path_param("attempt_id".to_string(), attempt_id.to_string());
+    req = req.with_path_param("app_id", app_id.to_string());
+    req = req.with_path_param("msg_id", msg_id.to_string());
+    req = req.with_path_param("attempt_id", attempt_id.to_string());
 
     req.execute(configuration).await
 }
@@ -495,11 +495,11 @@ pub async fn v1_period_message_attempt_period_get_headers(configuration: &Config
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/headers".to_string())
+    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/headers")
     ;
-    req = req.with_path_param("app_id".to_string(), app_id.to_string());
-    req = req.with_path_param("msg_id".to_string(), msg_id.to_string());
-    req = req.with_path_param("attempt_id".to_string(), attempt_id.to_string());
+    req = req.with_path_param("app_id", app_id.to_string());
+    req = req.with_path_param("msg_id", msg_id.to_string());
+    req = req.with_path_param("attempt_id", attempt_id.to_string());
 
     req.execute(configuration).await
 }
@@ -514,18 +514,18 @@ pub async fn v1_period_message_attempt_period_list_attempted_destinations(config
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}/msg/{msg_id}/endpoint".to_string())
+    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}/msg/{msg_id}/endpoint")
     ;
     if let Some(ref s) = limit {
         let query_value = s.to_string();
-        req = req.with_query_param("limit".to_string(), query_value);
+        req = req.with_query_param("limit", query_value);
     }
     if let Some(ref s) = iterator {
         let query_value = s.to_string();
-        req = req.with_query_param("iterator".to_string(), query_value);
+        req = req.with_query_param("iterator", query_value);
     }
-    req = req.with_path_param("app_id".to_string(), app_id.to_string());
-    req = req.with_path_param("msg_id".to_string(), msg_id.to_string());
+    req = req.with_path_param("app_id", app_id.to_string());
+    req = req.with_path_param("msg_id", msg_id.to_string());
 
     req.execute(configuration).await
 }
@@ -547,46 +547,46 @@ pub async fn v1_period_message_attempt_period_list_attempted_messages(configurat
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}/endpoint/{endpoint_id}/msg".to_string())
+    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}/endpoint/{endpoint_id}/msg")
     ;
     if let Some(ref s) = limit {
         let query_value = s.to_string();
-        req = req.with_query_param("limit".to_string(), query_value);
+        req = req.with_query_param("limit", query_value);
     }
     if let Some(ref s) = iterator {
         let query_value = s.to_string();
-        req = req.with_query_param("iterator".to_string(), query_value);
+        req = req.with_query_param("iterator", query_value);
     }
     if let Some(ref s) = channel {
         let query_value = s.to_string();
-        req = req.with_query_param("channel".to_string(), query_value);
+        req = req.with_query_param("channel", query_value);
     }
     if let Some(ref s) = tag {
         let query_value = s.to_string();
-        req = req.with_query_param("tag".to_string(), query_value);
+        req = req.with_query_param("tag", query_value);
     }
     if let Some(ref s) = status {
         let query_value = s.to_string();
-        req = req.with_query_param("status".to_string(), query_value);
+        req = req.with_query_param("status", query_value);
     }
     if let Some(ref s) = before {
         let query_value = s.to_string();
-        req = req.with_query_param("before".to_string(), query_value);
+        req = req.with_query_param("before", query_value);
     }
     if let Some(ref s) = after {
         let query_value = s.to_string();
-        req = req.with_query_param("after".to_string(), query_value);
+        req = req.with_query_param("after", query_value);
     }
     if let Some(ref s) = with_content {
         let query_value = s.to_string();
-        req = req.with_query_param("with_content".to_string(), query_value);
+        req = req.with_query_param("with_content", query_value);
     }
     if let Some(ref s) = event_types {
         let query_value = s.iter().map(|s| s.to_string()).collect::<Vec<String>>().join(",");
-        req = req.with_query_param("event_types".to_string(), query_value);
+        req = req.with_query_param("event_types", query_value);
     }
-    req = req.with_path_param("app_id".to_string(), app_id.to_string());
-    req = req.with_path_param("endpoint_id".to_string(), endpoint_id.to_string());
+    req = req.with_path_param("app_id", app_id.to_string());
+    req = req.with_path_param("endpoint_id", endpoint_id.to_string());
 
     req.execute(configuration).await
 }
@@ -610,54 +610,54 @@ pub async fn v1_period_message_attempt_period_list_by_endpoint(configuration: &C
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}/attempt/endpoint/{endpoint_id}".to_string())
+    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}/attempt/endpoint/{endpoint_id}")
     ;
     if let Some(ref s) = limit {
         let query_value = s.to_string();
-        req = req.with_query_param("limit".to_string(), query_value);
+        req = req.with_query_param("limit", query_value);
     }
     if let Some(ref s) = iterator {
         let query_value = s.to_string();
-        req = req.with_query_param("iterator".to_string(), query_value);
+        req = req.with_query_param("iterator", query_value);
     }
     if let Some(ref s) = status {
         let query_value = s.to_string();
-        req = req.with_query_param("status".to_string(), query_value);
+        req = req.with_query_param("status", query_value);
     }
     if let Some(ref s) = status_code_class {
         let query_value = s.to_string();
-        req = req.with_query_param("status_code_class".to_string(), query_value);
+        req = req.with_query_param("status_code_class", query_value);
     }
     if let Some(ref s) = channel {
         let query_value = s.to_string();
-        req = req.with_query_param("channel".to_string(), query_value);
+        req = req.with_query_param("channel", query_value);
     }
     if let Some(ref s) = tag {
         let query_value = s.to_string();
-        req = req.with_query_param("tag".to_string(), query_value);
+        req = req.with_query_param("tag", query_value);
     }
     if let Some(ref s) = before {
         let query_value = s.to_string();
-        req = req.with_query_param("before".to_string(), query_value);
+        req = req.with_query_param("before", query_value);
     }
     if let Some(ref s) = after {
         let query_value = s.to_string();
-        req = req.with_query_param("after".to_string(), query_value);
+        req = req.with_query_param("after", query_value);
     }
     if let Some(ref s) = with_content {
         let query_value = s.to_string();
-        req = req.with_query_param("with_content".to_string(), query_value);
+        req = req.with_query_param("with_content", query_value);
     }
     if let Some(ref s) = with_msg {
         let query_value = s.to_string();
-        req = req.with_query_param("with_msg".to_string(), query_value);
+        req = req.with_query_param("with_msg", query_value);
     }
     if let Some(ref s) = event_types {
         let query_value = s.iter().map(|s| s.to_string()).collect::<Vec<String>>().join(",");
-        req = req.with_query_param("event_types".to_string(), query_value);
+        req = req.with_query_param("event_types", query_value);
     }
-    req = req.with_path_param("app_id".to_string(), app_id.to_string());
-    req = req.with_path_param("endpoint_id".to_string(), endpoint_id.to_string());
+    req = req.with_path_param("app_id", app_id.to_string());
+    req = req.with_path_param("endpoint_id", endpoint_id.to_string());
 
     req.execute(configuration).await
 }
@@ -679,43 +679,43 @@ pub async fn v1_period_message_attempt_period_list_by_endpoint_deprecated(config
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/attempt".to_string())
+    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/attempt")
     ;
     if let Some(ref s) = limit {
         let query_value = s.to_string();
-        req = req.with_query_param("limit".to_string(), query_value);
+        req = req.with_query_param("limit", query_value);
     }
     if let Some(ref s) = iterator {
         let query_value = s.to_string();
-        req = req.with_query_param("iterator".to_string(), query_value);
+        req = req.with_query_param("iterator", query_value);
     }
     if let Some(ref s) = channel {
         let query_value = s.to_string();
-        req = req.with_query_param("channel".to_string(), query_value);
+        req = req.with_query_param("channel", query_value);
     }
     if let Some(ref s) = tag {
         let query_value = s.to_string();
-        req = req.with_query_param("tag".to_string(), query_value);
+        req = req.with_query_param("tag", query_value);
     }
     if let Some(ref s) = status {
         let query_value = s.to_string();
-        req = req.with_query_param("status".to_string(), query_value);
+        req = req.with_query_param("status", query_value);
     }
     if let Some(ref s) = before {
         let query_value = s.to_string();
-        req = req.with_query_param("before".to_string(), query_value);
+        req = req.with_query_param("before", query_value);
     }
     if let Some(ref s) = after {
         let query_value = s.to_string();
-        req = req.with_query_param("after".to_string(), query_value);
+        req = req.with_query_param("after", query_value);
     }
     if let Some(ref s) = event_types {
         let query_value = s.iter().map(|s| s.to_string()).collect::<Vec<String>>().join(",");
-        req = req.with_query_param("event_types".to_string(), query_value);
+        req = req.with_query_param("event_types", query_value);
     }
-    req = req.with_path_param("app_id".to_string(), app_id.to_string());
-    req = req.with_path_param("msg_id".to_string(), msg_id.to_string());
-    req = req.with_path_param("endpoint_id".to_string(), endpoint_id.to_string());
+    req = req.with_path_param("app_id", app_id.to_string());
+    req = req.with_path_param("msg_id", msg_id.to_string());
+    req = req.with_path_param("endpoint_id", endpoint_id.to_string());
 
     req.execute(configuration).await
 }
@@ -739,54 +739,54 @@ pub async fn v1_period_message_attempt_period_list_by_msg(configuration: &Config
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}/attempt/msg/{msg_id}".to_string())
+    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}/attempt/msg/{msg_id}")
     ;
     if let Some(ref s) = limit {
         let query_value = s.to_string();
-        req = req.with_query_param("limit".to_string(), query_value);
+        req = req.with_query_param("limit", query_value);
     }
     if let Some(ref s) = iterator {
         let query_value = s.to_string();
-        req = req.with_query_param("iterator".to_string(), query_value);
+        req = req.with_query_param("iterator", query_value);
     }
     if let Some(ref s) = status {
         let query_value = s.to_string();
-        req = req.with_query_param("status".to_string(), query_value);
+        req = req.with_query_param("status", query_value);
     }
     if let Some(ref s) = status_code_class {
         let query_value = s.to_string();
-        req = req.with_query_param("status_code_class".to_string(), query_value);
+        req = req.with_query_param("status_code_class", query_value);
     }
     if let Some(ref s) = channel {
         let query_value = s.to_string();
-        req = req.with_query_param("channel".to_string(), query_value);
+        req = req.with_query_param("channel", query_value);
     }
     if let Some(ref s) = tag {
         let query_value = s.to_string();
-        req = req.with_query_param("tag".to_string(), query_value);
+        req = req.with_query_param("tag", query_value);
     }
     if let Some(ref s) = endpoint_id {
         let query_value = s.to_string();
-        req = req.with_query_param("endpoint_id".to_string(), query_value);
+        req = req.with_query_param("endpoint_id", query_value);
     }
     if let Some(ref s) = before {
         let query_value = s.to_string();
-        req = req.with_query_param("before".to_string(), query_value);
+        req = req.with_query_param("before", query_value);
     }
     if let Some(ref s) = after {
         let query_value = s.to_string();
-        req = req.with_query_param("after".to_string(), query_value);
+        req = req.with_query_param("after", query_value);
     }
     if let Some(ref s) = with_content {
         let query_value = s.to_string();
-        req = req.with_query_param("with_content".to_string(), query_value);
+        req = req.with_query_param("with_content", query_value);
     }
     if let Some(ref s) = event_types {
         let query_value = s.iter().map(|s| s.to_string()).collect::<Vec<String>>().join(",");
-        req = req.with_query_param("event_types".to_string(), query_value);
+        req = req.with_query_param("event_types", query_value);
     }
-    req = req.with_path_param("app_id".to_string(), app_id.to_string());
-    req = req.with_path_param("msg_id".to_string(), msg_id.to_string());
+    req = req.with_path_param("app_id", app_id.to_string());
+    req = req.with_path_param("msg_id", msg_id.to_string());
 
     req.execute(configuration).await
 }
@@ -809,50 +809,50 @@ pub async fn v1_period_message_attempt_period_list_by_msg_deprecated(configurati
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}/msg/{msg_id}/attempt".to_string())
+    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}/msg/{msg_id}/attempt")
     ;
     if let Some(ref s) = limit {
         let query_value = s.to_string();
-        req = req.with_query_param("limit".to_string(), query_value);
+        req = req.with_query_param("limit", query_value);
     }
     if let Some(ref s) = iterator {
         let query_value = s.to_string();
-        req = req.with_query_param("iterator".to_string(), query_value);
+        req = req.with_query_param("iterator", query_value);
     }
     if let Some(ref s) = endpoint_id {
         let query_value = s.to_string();
-        req = req.with_query_param("endpoint_id".to_string(), query_value);
+        req = req.with_query_param("endpoint_id", query_value);
     }
     if let Some(ref s) = channel {
         let query_value = s.to_string();
-        req = req.with_query_param("channel".to_string(), query_value);
+        req = req.with_query_param("channel", query_value);
     }
     if let Some(ref s) = tag {
         let query_value = s.to_string();
-        req = req.with_query_param("tag".to_string(), query_value);
+        req = req.with_query_param("tag", query_value);
     }
     if let Some(ref s) = status {
         let query_value = s.to_string();
-        req = req.with_query_param("status".to_string(), query_value);
+        req = req.with_query_param("status", query_value);
     }
     if let Some(ref s) = before {
         let query_value = s.to_string();
-        req = req.with_query_param("before".to_string(), query_value);
+        req = req.with_query_param("before", query_value);
     }
     if let Some(ref s) = after {
         let query_value = s.to_string();
-        req = req.with_query_param("after".to_string(), query_value);
+        req = req.with_query_param("after", query_value);
     }
     if let Some(ref s) = status_code_class {
         let query_value = s.to_string();
-        req = req.with_query_param("status_code_class".to_string(), query_value);
+        req = req.with_query_param("status_code_class", query_value);
     }
     if let Some(ref s) = event_types {
         let query_value = s.iter().map(|s| s.to_string()).collect::<Vec<String>>().join(",");
-        req = req.with_query_param("event_types".to_string(), query_value);
+        req = req.with_query_param("event_types", query_value);
     }
-    req = req.with_path_param("app_id".to_string(), app_id.to_string());
-    req = req.with_path_param("msg_id".to_string(), msg_id.to_string());
+    req = req.with_path_param("app_id", app_id.to_string());
+    req = req.with_path_param("msg_id", msg_id.to_string());
 
     req.execute(configuration).await
 }
@@ -867,13 +867,13 @@ pub async fn v1_period_message_attempt_period_resend(configuration: &Configurati
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/resend".to_string())
+    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/resend")
     ;
-    req = req.with_path_param("app_id".to_string(), app_id.to_string());
-    req = req.with_path_param("msg_id".to_string(), msg_id.to_string());
-    req = req.with_path_param("endpoint_id".to_string(), endpoint_id.to_string());
+    req = req.with_path_param("app_id", app_id.to_string());
+    req = req.with_path_param("msg_id", msg_id.to_string());
+    req = req.with_path_param("endpoint_id", endpoint_id.to_string());
     if let Some(param_value) = idempotency_key {
-        req = req.with_header_param("idempotency-key".to_string(), param_value.to_string());
+        req = req.with_header_param("idempotency-key", param_value.to_string());
     }
     req = req.returns_nothing();
 

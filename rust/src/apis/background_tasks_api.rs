@@ -73,9 +73,9 @@ pub async fn get_background_task(configuration: &Configuration, params: GetBackg
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/background-task/{task_id}".to_string())
+    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/background-task/{task_id}")
     ;
-    req = req.with_path_param("task_id".to_string(), task_id.to_string());
+    req = req.with_path_param("task_id", task_id.to_string());
 
     req.execute(configuration).await
 }
@@ -91,27 +91,27 @@ pub async fn list_background_tasks(configuration: &Configuration, params: ListBa
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/background-task".to_string())
+    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/background-task")
     ;
     if let Some(ref s) = status {
         let query_value = s.to_string();
-        req = req.with_query_param("status".to_string(), query_value);
+        req = req.with_query_param("status", query_value);
     }
     if let Some(ref s) = task {
         let query_value = s.to_string();
-        req = req.with_query_param("task".to_string(), query_value);
+        req = req.with_query_param("task", query_value);
     }
     if let Some(ref s) = limit {
         let query_value = s.to_string();
-        req = req.with_query_param("limit".to_string(), query_value);
+        req = req.with_query_param("limit", query_value);
     }
     if let Some(ref s) = iterator {
         let query_value = s.to_string();
-        req = req.with_query_param("iterator".to_string(), query_value);
+        req = req.with_query_param("iterator", query_value);
     }
     if let Some(ref s) = order {
         let query_value = s.to_string();
-        req = req.with_query_param("order".to_string(), query_value);
+        req = req.with_query_param("order", query_value);
     }
 
     req.execute(configuration).await

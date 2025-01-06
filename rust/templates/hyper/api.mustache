@@ -93,7 +93,7 @@ pub {{#supportAsync}}async {{/supportAsync}}fn {{{operationId}}}(configuration: 
 {{/vendorExtensions.x-group-parameters}}
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::{{{httpMethod.toUpperCase}}}, "{{{path}}}".to_string())
+    let mut req = crate::request::Request::new(http1::Method::{{{httpMethod.toUpperCase}}}, "{{{path}}}")
     {{#hasAuthMethods}}
     {{#authMethods}}
     {{#isApiKey}}
@@ -115,37 +115,37 @@ pub {{#supportAsync}}async {{/supportAsync}}fn {{{operationId}}}(configuration: 
     {{#queryParams}}
     {{#required}}
     {{^isNullable}}
-    req = req.with_query_param("{{{baseName}}}".to_string(), {{{paramName}}}{{#isArray}}.join(","){{/isArray}}.to_string());
+    req = req.with_query_param("{{{baseName}}}", {{{paramName}}}{{#isArray}}.join(","){{/isArray}}.to_string());
     {{/isNullable}}
     {{#isNullable}}
     match {{{paramName}}} {
-        Some(param_value) => { req = req.with_query_param("{{{baseName}}}".to_string(), param_value{{#isArray}}.join(","){{/isArray}}.to_string()); },
-        None => { req = req.with_query_param("{{{baseName}}}".to_string(), "".to_string()); },
+        Some(param_value) => { req = req.with_query_param("{{{baseName}}}", param_value{{#isArray}}.join(","){{/isArray}}.to_string()); },
+        None => { req = req.with_query_param("{{{baseName}}}", "".to_string()); },
     }
     {{/isNullable}}
     {{/required}}
     {{^required}}
     if let Some(ref s) = {{{paramName}}} {
         let query_value = {{#isArray}}s.iter().map(|s| s.to_string()).collect::<Vec<String>>().join(","){{/isArray}}{{^isArray}}s.to_string(){{/isArray}};
-        req = req.with_query_param("{{{baseName}}}".to_string(), query_value);
+        req = req.with_query_param("{{{baseName}}}", query_value);
     }
     {{/required}}
     {{/queryParams}}
     {{#pathParams}}
     {{#required}}
     {{^isNullable}}
-    req = req.with_path_param("{{{baseName}}}".to_string(), {{{paramName}}}{{#isArray}}.join(","){{/isArray}}.to_string());
+    req = req.with_path_param("{{{baseName}}}", {{{paramName}}}{{#isArray}}.join(","){{/isArray}}.to_string());
     {{/isNullable}}
     {{#isNullable}}
     match {{{paramName}}} {
-        Some(param_value) => { req = req.with_path_param("{{{baseName}}}".to_string(), param_value{{#isArray}}.join(","){{/isArray}}.to_string()); },
-        None => { req = req.with_path_param("{{{baseName}}}".to_string(), "".to_string()); },
+        Some(param_value) => { req = req.with_path_param("{{{baseName}}}", param_value{{#isArray}}.join(","){{/isArray}}.to_string()); },
+        None => { req = req.with_path_param("{{{baseName}}}", "".to_string()); },
     }
     {{/isNullable}}
     {{/required}}
     {{^required}}
     if let Some(param_value) = {{{paramName}}} {
-        req = req.with_path_param("{{{baseName}}}".to_string(), param_value{{#isArray}}.join(","){{/isArray}}.to_string());
+        req = req.with_path_param("{{{baseName}}}", param_value{{#isArray}}.join(","){{/isArray}}.to_string());
     }
     {{/required}}
     {{/pathParams}}
@@ -153,18 +153,18 @@ pub {{#supportAsync}}async {{/supportAsync}}fn {{{operationId}}}(configuration: 
     {{#headerParams}}
     {{#required}}
     {{^isNullable}}
-    req = req.with_header_param("{{{baseName}}}".to_string(), {{{paramName}}}{{#isArray}}.join(","){{/isArray}}.to_string());
+    req = req.with_header_param("{{{baseName}}}", {{{paramName}}}{{#isArray}}.join(","){{/isArray}}.to_string());
     {{/isNullable}}
     {{#isNullable}}
     match {{{paramName}}} {
-        Some(param_value) => { req = req.with_header_param("{{{baseName}}}".to_string(), param_value{{#isArray}}.join(","){{/isArray}}.to_string()); },
-        None => { req = req.with_header_param("{{{baseName}}}".to_string(), "".to_string()); },
+        Some(param_value) => { req = req.with_header_param("{{{baseName}}}", param_value{{#isArray}}.join(","){{/isArray}}.to_string()); },
+        None => { req = req.with_header_param("{{{baseName}}}", "".to_string()); },
     }
     {{/isNullable}}
     {{/required}}
     {{^required}}
     if let Some(param_value) = {{{paramName}}} {
-        req = req.with_header_param("{{{baseName}}}".to_string(), param_value{{#isArray}}.join(","){{/isArray}}.to_string());
+        req = req.with_header_param("{{{baseName}}}", param_value{{#isArray}}.join(","){{/isArray}}.to_string());
     }
     {{/required}}
     {{/headerParams}}
@@ -174,36 +174,36 @@ pub {{#supportAsync}}async {{/supportAsync}}fn {{{operationId}}}(configuration: 
     {{#isFile}}
     {{#required}}
     {{^isNullable}}
-    req = req.with_form_param("{{{baseName}}}".to_string(), unimplemented!());
+    req = req.with_form_param("{{{baseName}}}", unimplemented!());
     {{/isNullable}}
     {{#isNullable}}
     match {{{paramName}}} {
-        Some(param_value) => { req = req.with_form_param("{{{baseName}}}".to_string(), unimplemented!()); },
-        None => { req = req.with_form_param("{{{baseName}}}".to_string(), unimplemented!()); },
+        Some(param_value) => { req = req.with_form_param("{{{baseName}}}", unimplemented!()); },
+        None => { req = req.with_form_param("{{{baseName}}}", unimplemented!()); },
     }
     {{/isNullable}}
     {{/required}}
     {{^required}}
     if let Some(param_value) = {{{paramName}}} {
-        req = req.with_form_param("{{{baseName}}}".to_string(), unimplemented!());
+        req = req.with_form_param("{{{baseName}}}", unimplemented!());
     }
     {{/required}}
     {{/isFile}}
     {{^isFile}}
     {{#required}}
     {{^isNullable}}
-    req = req.with_form_param("{{{baseName}}}".to_string(), {{{paramName}}}{{#isArray}}.join(","){{/isArray}}.to_string());
+    req = req.with_form_param("{{{baseName}}}", {{{paramName}}}{{#isArray}}.join(","){{/isArray}}.to_string());
     {{/isNullable}}
     {{#isNullable}}
     match {{{paramName}}} {
-        Some(param_value) => { req = req.with_form_param("{{{baseName}}}".to_string(), param_value{{#isArray}}.join(","){{/isArray}}.to_string()); },
-        None => { req = req.with_form_param("{{{baseName}}}".to_string(), "".to_string()); },
+        Some(param_value) => { req = req.with_form_param("{{{baseName}}}", param_value{{#isArray}}.join(","){{/isArray}}.to_string()); },
+        None => { req = req.with_form_param("{{{baseName}}}", "".to_string()); },
     }
     {{/isNullable}}
     {{/required}}
     {{^required}}
     if let Some(param_value) = {{{paramName}}} {
-        req = req.with_form_param("{{{baseName}}}".to_string(), param_value{{#isArray}}.join(","){{/isArray}}.to_string());
+        req = req.with_form_param("{{{baseName}}}", param_value{{#isArray}}.join(","){{/isArray}}.to_string());
     }
     {{/required}}
     {{/isFile}}

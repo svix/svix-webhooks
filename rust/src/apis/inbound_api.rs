@@ -78,16 +78,16 @@ pub async fn v1_period_inbound_period_msg(configuration: &Configuration, params:
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/app/{app_id}/inbound/msg/{inbound_token}".to_string())
+    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/app/{app_id}/inbound/msg/{inbound_token}")
     ;
     if let Some(ref s) = event_type {
         let query_value = s.to_string();
-        req = req.with_query_param("event_type".to_string(), query_value);
+        req = req.with_query_param("event_type", query_value);
     }
-    req = req.with_path_param("app_id".to_string(), app_id.to_string());
-    req = req.with_path_param("inbound_token".to_string(), inbound_token.to_string());
+    req = req.with_path_param("app_id", app_id.to_string());
+    req = req.with_path_param("inbound_token", inbound_token.to_string());
     if let Some(param_value) = idempotency_key {
-        req = req.with_header_param("idempotency-key".to_string(), param_value.to_string());
+        req = req.with_header_param("idempotency-key", param_value.to_string());
     }
     req = req.with_body_param(body);
 
@@ -102,11 +102,11 @@ pub async fn v1_period_inbound_period_rotate_url(configuration: &Configuration, 
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/app/{app_id}/inbound/rotate-url".to_string())
+    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/app/{app_id}/inbound/rotate-url")
     ;
-    req = req.with_path_param("app_id".to_string(), app_id.to_string());
+    req = req.with_path_param("app_id", app_id.to_string());
     if let Some(param_value) = idempotency_key {
-        req = req.with_header_param("idempotency-key".to_string(), param_value.to_string());
+        req = req.with_header_param("idempotency-key", param_value.to_string());
     }
 
     req.execute(configuration).await

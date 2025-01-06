@@ -273,10 +273,10 @@ pub async fn v1_period_event_type_period_create(configuration: &Configuration, p
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/event-type".to_string())
+    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/event-type")
     ;
     if let Some(param_value) = idempotency_key {
-        req = req.with_header_param("idempotency-key".to_string(), param_value.to_string());
+        req = req.with_header_param("idempotency-key", param_value.to_string());
     }
     req = req.with_body_param(event_type_in);
 
@@ -291,13 +291,13 @@ pub async fn v1_period_event_type_period_delete(configuration: &Configuration, p
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::DELETE, "/api/v1/event-type/{event_type_name}".to_string())
+    let mut req = crate::request::Request::new(http1::Method::DELETE, "/api/v1/event-type/{event_type_name}")
     ;
     if let Some(ref s) = expunge {
         let query_value = s.to_string();
-        req = req.with_query_param("expunge".to_string(), query_value);
+        req = req.with_query_param("expunge", query_value);
     }
-    req = req.with_path_param("event_type_name".to_string(), event_type_name.to_string());
+    req = req.with_path_param("event_type_name", event_type_name.to_string());
     req = req.returns_nothing();
 
     req.execute(configuration).await
@@ -310,10 +310,10 @@ pub async fn v1_period_event_type_period_export_openapi(configuration: &Configur
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/event-type/export/openapi".to_string())
+    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/event-type/export/openapi")
     ;
     if let Some(param_value) = idempotency_key {
-        req = req.with_header_param("idempotency-key".to_string(), param_value.to_string());
+        req = req.with_header_param("idempotency-key", param_value.to_string());
     }
 
     req.execute(configuration).await
@@ -327,10 +327,10 @@ pub async fn v1_period_event_type_period_generate_example(configuration: &Config
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/event-type/schema/generate-example".to_string())
+    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/event-type/schema/generate-example")
     ;
     if let Some(param_value) = idempotency_key {
-        req = req.with_header_param("idempotency-key".to_string(), param_value.to_string());
+        req = req.with_header_param("idempotency-key", param_value.to_string());
     }
     req = req.with_body_param(event_type_schema_in);
 
@@ -344,9 +344,9 @@ pub async fn v1_period_event_type_period_get(configuration: &Configuration, para
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/event-type/{event_type_name}".to_string())
+    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/event-type/{event_type_name}")
     ;
-    req = req.with_path_param("event_type_name".to_string(), event_type_name.to_string());
+    req = req.with_path_param("event_type_name", event_type_name.to_string());
 
     req.execute(configuration).await
 }
@@ -358,9 +358,9 @@ pub async fn v1_period_event_type_period_get_retry_schedule(configuration: &Conf
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/event-type/{event_type_name}/retry-schedule".to_string())
+    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/event-type/{event_type_name}/retry-schedule")
     ;
-    req = req.with_path_param("event_type_name".to_string(), event_type_name.to_string());
+    req = req.with_path_param("event_type_name", event_type_name.to_string());
 
     req.execute(configuration).await
 }
@@ -373,10 +373,10 @@ pub async fn v1_period_event_type_period_import_openapi(configuration: &Configur
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/event-type/import/openapi".to_string())
+    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/event-type/import/openapi")
     ;
     if let Some(param_value) = idempotency_key {
-        req = req.with_header_param("idempotency-key".to_string(), param_value.to_string());
+        req = req.with_header_param("idempotency-key", param_value.to_string());
     }
     req = req.with_body_param(event_type_import_open_api_in);
 
@@ -394,27 +394,27 @@ pub async fn v1_period_event_type_period_list(configuration: &Configuration, par
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/event-type".to_string())
+    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/event-type")
     ;
     if let Some(ref s) = limit {
         let query_value = s.to_string();
-        req = req.with_query_param("limit".to_string(), query_value);
+        req = req.with_query_param("limit", query_value);
     }
     if let Some(ref s) = iterator {
         let query_value = s.to_string();
-        req = req.with_query_param("iterator".to_string(), query_value);
+        req = req.with_query_param("iterator", query_value);
     }
     if let Some(ref s) = order {
         let query_value = s.to_string();
-        req = req.with_query_param("order".to_string(), query_value);
+        req = req.with_query_param("order", query_value);
     }
     if let Some(ref s) = include_archived {
         let query_value = s.to_string();
-        req = req.with_query_param("include_archived".to_string(), query_value);
+        req = req.with_query_param("include_archived", query_value);
     }
     if let Some(ref s) = with_content {
         let query_value = s.to_string();
-        req = req.with_query_param("with_content".to_string(), query_value);
+        req = req.with_query_param("with_content", query_value);
     }
 
     req.execute(configuration).await
@@ -428,9 +428,9 @@ pub async fn v1_period_event_type_period_patch(configuration: &Configuration, pa
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::PATCH, "/api/v1/event-type/{event_type_name}".to_string())
+    let mut req = crate::request::Request::new(http1::Method::PATCH, "/api/v1/event-type/{event_type_name}")
     ;
-    req = req.with_path_param("event_type_name".to_string(), event_type_name.to_string());
+    req = req.with_path_param("event_type_name", event_type_name.to_string());
     req = req.with_body_param(event_type_patch);
 
     req.execute(configuration).await
@@ -444,9 +444,9 @@ pub async fn v1_period_event_type_period_update(configuration: &Configuration, p
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::PUT, "/api/v1/event-type/{event_type_name}".to_string())
+    let mut req = crate::request::Request::new(http1::Method::PUT, "/api/v1/event-type/{event_type_name}")
     ;
-    req = req.with_path_param("event_type_name".to_string(), event_type_name.to_string());
+    req = req.with_path_param("event_type_name", event_type_name.to_string());
     req = req.with_body_param(event_type_update);
 
     req.execute(configuration).await
@@ -460,9 +460,9 @@ pub async fn v1_period_event_type_period_update_retry_schedule(configuration: &C
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::PUT, "/api/v1/event-type/{event_type_name}/retry-schedule".to_string())
+    let mut req = crate::request::Request::new(http1::Method::PUT, "/api/v1/event-type/{event_type_name}/retry-schedule")
     ;
-    req = req.with_path_param("event_type_name".to_string(), event_type_name.to_string());
+    req = req.with_path_param("event_type_name", event_type_name.to_string());
     req = req.with_body_param(retry_schedule_in_out);
 
     req.execute(configuration).await

@@ -195,11 +195,11 @@ pub async fn v1_period_integration_period_create(configuration: &Configuration, 
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/app/{app_id}/integration".to_string())
+    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/app/{app_id}/integration")
     ;
-    req = req.with_path_param("app_id".to_string(), app_id.to_string());
+    req = req.with_path_param("app_id", app_id.to_string());
     if let Some(param_value) = idempotency_key {
-        req = req.with_header_param("idempotency-key".to_string(), param_value.to_string());
+        req = req.with_header_param("idempotency-key", param_value.to_string());
     }
     req = req.with_body_param(integration_in);
 
@@ -214,10 +214,10 @@ pub async fn v1_period_integration_period_delete(configuration: &Configuration, 
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::DELETE, "/api/v1/app/{app_id}/integration/{integ_id}".to_string())
+    let mut req = crate::request::Request::new(http1::Method::DELETE, "/api/v1/app/{app_id}/integration/{integ_id}")
     ;
-    req = req.with_path_param("app_id".to_string(), app_id.to_string());
-    req = req.with_path_param("integ_id".to_string(), integ_id.to_string());
+    req = req.with_path_param("app_id", app_id.to_string());
+    req = req.with_path_param("integ_id", integ_id.to_string());
     req = req.returns_nothing();
 
     req.execute(configuration).await
@@ -231,10 +231,10 @@ pub async fn v1_period_integration_period_get(configuration: &Configuration, par
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}/integration/{integ_id}".to_string())
+    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}/integration/{integ_id}")
     ;
-    req = req.with_path_param("app_id".to_string(), app_id.to_string());
-    req = req.with_path_param("integ_id".to_string(), integ_id.to_string());
+    req = req.with_path_param("app_id", app_id.to_string());
+    req = req.with_path_param("integ_id", integ_id.to_string());
 
     req.execute(configuration).await
 }
@@ -247,10 +247,10 @@ pub async fn v1_period_integration_period_get_key(configuration: &Configuration,
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}/integration/{integ_id}/key".to_string())
+    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}/integration/{integ_id}/key")
     ;
-    req = req.with_path_param("app_id".to_string(), app_id.to_string());
-    req = req.with_path_param("integ_id".to_string(), integ_id.to_string());
+    req = req.with_path_param("app_id", app_id.to_string());
+    req = req.with_path_param("integ_id", integ_id.to_string());
 
     req.execute(configuration).await
 }
@@ -265,21 +265,21 @@ pub async fn v1_period_integration_period_list(configuration: &Configuration, pa
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}/integration".to_string())
+    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}/integration")
     ;
     if let Some(ref s) = limit {
         let query_value = s.to_string();
-        req = req.with_query_param("limit".to_string(), query_value);
+        req = req.with_query_param("limit", query_value);
     }
     if let Some(ref s) = iterator {
         let query_value = s.to_string();
-        req = req.with_query_param("iterator".to_string(), query_value);
+        req = req.with_query_param("iterator", query_value);
     }
     if let Some(ref s) = order {
         let query_value = s.to_string();
-        req = req.with_query_param("order".to_string(), query_value);
+        req = req.with_query_param("order", query_value);
     }
-    req = req.with_path_param("app_id".to_string(), app_id.to_string());
+    req = req.with_path_param("app_id", app_id.to_string());
 
     req.execute(configuration).await
 }
@@ -293,12 +293,12 @@ pub async fn v1_period_integration_period_rotate_key(configuration: &Configurati
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/app/{app_id}/integration/{integ_id}/key/rotate".to_string())
+    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/app/{app_id}/integration/{integ_id}/key/rotate")
     ;
-    req = req.with_path_param("app_id".to_string(), app_id.to_string());
-    req = req.with_path_param("integ_id".to_string(), integ_id.to_string());
+    req = req.with_path_param("app_id", app_id.to_string());
+    req = req.with_path_param("integ_id", integ_id.to_string());
     if let Some(param_value) = idempotency_key {
-        req = req.with_header_param("idempotency-key".to_string(), param_value.to_string());
+        req = req.with_header_param("idempotency-key", param_value.to_string());
     }
 
     req.execute(configuration).await
@@ -313,10 +313,10 @@ pub async fn v1_period_integration_period_update(configuration: &Configuration, 
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::PUT, "/api/v1/app/{app_id}/integration/{integ_id}".to_string())
+    let mut req = crate::request::Request::new(http1::Method::PUT, "/api/v1/app/{app_id}/integration/{integ_id}")
     ;
-    req = req.with_path_param("app_id".to_string(), app_id.to_string());
-    req = req.with_path_param("integ_id".to_string(), integ_id.to_string());
+    req = req.with_path_param("app_id", app_id.to_string());
+    req = req.with_path_param("integ_id", integ_id.to_string());
     req = req.with_body_param(integration_update);
 
     req.execute(configuration).await

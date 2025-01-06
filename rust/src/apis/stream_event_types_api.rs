@@ -158,10 +158,10 @@ pub async fn v1_period_stream_period_event_type_period_create(configuration: &Co
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/stream/event-type".to_string())
+    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/stream/event-type")
     ;
     if let Some(param_value) = idempotency_key {
-        req = req.with_header_param("idempotency-key".to_string(), param_value.to_string());
+        req = req.with_header_param("idempotency-key", param_value.to_string());
     }
     req = req.with_body_param(stream_event_type_in);
 
@@ -175,9 +175,9 @@ pub async fn v1_period_stream_period_event_type_period_delete(configuration: &Co
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::DELETE, "/api/v1/stream/event-type/{name}".to_string())
+    let mut req = crate::request::Request::new(http1::Method::DELETE, "/api/v1/stream/event-type/{name}")
     ;
-    req = req.with_path_param("name".to_string(), name.to_string());
+    req = req.with_path_param("name", name.to_string());
     req = req.returns_nothing();
 
     req.execute(configuration).await
@@ -190,9 +190,9 @@ pub async fn v1_period_stream_period_event_type_period_get(configuration: &Confi
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/stream/event-type/{name}".to_string())
+    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/stream/event-type/{name}")
     ;
-    req = req.with_path_param("name".to_string(), name.to_string());
+    req = req.with_path_param("name", name.to_string());
 
     req.execute(configuration).await
 }
@@ -206,19 +206,19 @@ pub async fn v1_period_stream_period_event_type_period_list(configuration: &Conf
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/stream/event-type".to_string())
+    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/stream/event-type")
     ;
     if let Some(ref s) = limit {
         let query_value = s.to_string();
-        req = req.with_query_param("limit".to_string(), query_value);
+        req = req.with_query_param("limit", query_value);
     }
     if let Some(ref s) = iterator {
         let query_value = s.to_string();
-        req = req.with_query_param("iterator".to_string(), query_value);
+        req = req.with_query_param("iterator", query_value);
     }
     if let Some(ref s) = order {
         let query_value = s.to_string();
-        req = req.with_query_param("order".to_string(), query_value);
+        req = req.with_query_param("order", query_value);
     }
 
     req.execute(configuration).await
@@ -232,9 +232,9 @@ pub async fn v1_period_stream_period_event_type_period_patch(configuration: &Con
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::PATCH, "/api/v1/stream/event-type/{name}".to_string())
+    let mut req = crate::request::Request::new(http1::Method::PATCH, "/api/v1/stream/event-type/{name}")
     ;
-    req = req.with_path_param("name".to_string(), name.to_string());
+    req = req.with_path_param("name", name.to_string());
     req = req.with_body_param(stream_event_type_patch);
 
     req.execute(configuration).await
@@ -248,9 +248,9 @@ pub async fn v1_period_stream_period_event_type_period_update(configuration: &Co
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::PUT, "/api/v1/stream/event-type/{name}".to_string())
+    let mut req = crate::request::Request::new(http1::Method::PUT, "/api/v1/stream/event-type/{name}")
     ;
-    req = req.with_path_param("name".to_string(), name.to_string());
+    req = req.with_path_param("name", name.to_string());
     req = req.with_body_param(stream_event_type_in);
 
     req.execute(configuration).await

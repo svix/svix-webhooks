@@ -289,10 +289,10 @@ pub async fn v1_period_endpoint_period_update_hubspot_oauth_config(configuration
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::PUT, "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation-template/oauth/hubspot".to_string())
+    let mut req = crate::request::Request::new(http1::Method::PUT, "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation-template/oauth/hubspot")
     ;
-    req = req.with_path_param("app_id".to_string(), app_id.to_string());
-    req = req.with_path_param("endpoint_id".to_string(), endpoint_id.to_string());
+    req = req.with_path_param("app_id", app_id.to_string());
+    req = req.with_path_param("endpoint_id", endpoint_id.to_string());
     req = req.with_body_param(hubspot_oauth_config_in);
     req = req.returns_nothing();
 
@@ -307,10 +307,10 @@ pub async fn v1_period_transformation_template_period_create(configuration: &Con
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/transformation-template".to_string())
+    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/transformation-template")
     ;
     if let Some(param_value) = idempotency_key {
-        req = req.with_header_param("idempotency-key".to_string(), param_value.to_string());
+        req = req.with_header_param("idempotency-key", param_value.to_string());
     }
     req = req.with_body_param(template_in);
 
@@ -324,9 +324,9 @@ pub async fn v1_period_transformation_template_period_delete(configuration: &Con
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::DELETE, "/api/v1/transformation-template/{transformation_template_id}".to_string())
+    let mut req = crate::request::Request::new(http1::Method::DELETE, "/api/v1/transformation-template/{transformation_template_id}")
     ;
-    req = req.with_path_param("transformation_template_id".to_string(), transformation_template_id.to_string());
+    req = req.with_path_param("transformation_template_id", transformation_template_id.to_string());
     req = req.returns_nothing();
 
     req.execute(configuration).await
@@ -340,10 +340,10 @@ pub async fn v1_period_transformation_template_period_generate(configuration: &C
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/transformation-template/generate".to_string())
+    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/transformation-template/generate")
     ;
     if let Some(param_value) = idempotency_key {
-        req = req.with_header_param("idempotency-key".to_string(), param_value.to_string());
+        req = req.with_header_param("idempotency-key", param_value.to_string());
     }
     req = req.with_body_param(generate_in);
 
@@ -357,9 +357,9 @@ pub async fn v1_period_transformation_template_period_get(configuration: &Config
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/transformation-template/{transformation_template_id}".to_string())
+    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/transformation-template/{transformation_template_id}")
     ;
-    req = req.with_path_param("transformation_template_id".to_string(), transformation_template_id.to_string());
+    req = req.with_path_param("transformation_template_id", transformation_template_id.to_string());
 
     req.execute(configuration).await
 }
@@ -373,19 +373,19 @@ pub async fn v1_period_transformation_template_period_list(configuration: &Confi
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/transformation-template".to_string())
+    let mut req = crate::request::Request::new(http1::Method::GET, "/api/v1/transformation-template")
     ;
     if let Some(ref s) = limit {
         let query_value = s.to_string();
-        req = req.with_query_param("limit".to_string(), query_value);
+        req = req.with_query_param("limit", query_value);
     }
     if let Some(ref s) = iterator {
         let query_value = s.to_string();
-        req = req.with_query_param("iterator".to_string(), query_value);
+        req = req.with_query_param("iterator", query_value);
     }
     if let Some(ref s) = order {
         let query_value = s.to_string();
-        req = req.with_query_param("order".to_string(), query_value);
+        req = req.with_query_param("order", query_value);
     }
 
     req.execute(configuration).await
@@ -399,10 +399,10 @@ pub async fn v1_period_transformation_template_period_oauth_period_discord(confi
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/transformation-template/oauth/discord".to_string())
+    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/transformation-template/oauth/discord")
     ;
     if let Some(param_value) = idempotency_key {
-        req = req.with_header_param("idempotency-key".to_string(), param_value.to_string());
+        req = req.with_header_param("idempotency-key", param_value.to_string());
     }
     req = req.with_body_param(o_auth_payload_in);
 
@@ -417,10 +417,10 @@ pub async fn v1_period_transformation_template_period_oauth_period_hubspot(confi
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/transformation-template/oauth/hubspot".to_string())
+    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/transformation-template/oauth/hubspot")
     ;
     if let Some(param_value) = idempotency_key {
-        req = req.with_header_param("idempotency-key".to_string(), param_value.to_string());
+        req = req.with_header_param("idempotency-key", param_value.to_string());
     }
     req = req.with_body_param(o_auth_payload_in);
 
@@ -435,10 +435,10 @@ pub async fn v1_period_transformation_template_period_oauth_period_slack(configu
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/transformation-template/oauth/slack".to_string())
+    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/transformation-template/oauth/slack")
     ;
     if let Some(param_value) = idempotency_key {
-        req = req.with_header_param("idempotency-key".to_string(), param_value.to_string());
+        req = req.with_header_param("idempotency-key", param_value.to_string());
     }
     req = req.with_body_param(o_auth_payload_in);
 
@@ -453,9 +453,9 @@ pub async fn v1_period_transformation_template_period_patch(configuration: &Conf
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::PATCH, "/api/v1/transformation-template/{transformation_template_id}".to_string())
+    let mut req = crate::request::Request::new(http1::Method::PATCH, "/api/v1/transformation-template/{transformation_template_id}")
     ;
-    req = req.with_path_param("transformation_template_id".to_string(), transformation_template_id.to_string());
+    req = req.with_path_param("transformation_template_id", transformation_template_id.to_string());
     req = req.with_body_param(template_patch);
 
     req.execute(configuration).await
@@ -469,10 +469,10 @@ pub async fn v1_period_transformation_template_period_simulate(configuration: &C
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/transformation-template/simulate".to_string())
+    let mut req = crate::request::Request::new(http1::Method::POST, "/api/v1/transformation-template/simulate")
     ;
     if let Some(param_value) = idempotency_key {
-        req = req.with_header_param("idempotency-key".to_string(), param_value.to_string());
+        req = req.with_header_param("idempotency-key", param_value.to_string());
     }
     req = req.with_body_param(transformation_simulate_in);
 
@@ -487,9 +487,9 @@ pub async fn v1_period_transformation_template_period_update(configuration: &Con
 
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http1::Method::PUT, "/api/v1/transformation-template/{transformation_template_id}".to_string())
+    let mut req = crate::request::Request::new(http1::Method::PUT, "/api/v1/transformation-template/{transformation_template_id}")
     ;
-    req = req.with_path_param("transformation_template_id".to_string(), transformation_template_id.to_string());
+    req = req.with_path_param("transformation_template_id", transformation_template_id.to_string());
     req = req.with_body_param(template_update);
 
     req.execute(configuration).await
