@@ -5,12 +5,6 @@ pub struct Statistics<'a> {
     cfg: &'a Configuration,
 }
 
-pub struct AggregateAppStatsOptions {
-    pub app_ids: Option<Vec<String>>,
-    pub since: String,
-    pub until: String,
-}
-
 impl<'a> Statistics<'a> {
     pub(super) fn new(cfg: &'a Configuration) -> Self {
         Self { cfg }
@@ -23,20 +17,12 @@ impl<'a> Statistics<'a> {
     /// Background Task` endpoint to retrieve the results of the operation.
     pub async fn aggregate_app_stats(
         &self,
-        AggregateAppStatsOptions {
-            app_ids,
-            since,
-            until,
-        }: AggregateAppStatsOptions,
+        app_usage_stats_in: AppUsageStatsIn,
         options: Option<PostOptions>,
     ) -> Result<AppUsageStatsOut> {
         let options = options.unwrap_or_default();
         let params = statistics_api::V1PeriodStatisticsPeriodAggregateAppStatsParams {
-            app_usage_stats_in: AppUsageStatsIn {
-                app_ids,
-                since,
-                until,
-            },
+            app_usage_stats_in,
             idempotency_key: options.idempotency_key,
         };
         statistics_api::v1_period_statistics_period_aggregate_app_stats(self.cfg, params).await

@@ -53,7 +53,7 @@ pub use self::{
     operational_webhook_endpoint::{
         OperationalWebhookEndpoint, OperationalWebhookEndpointListOptions,
     },
-    statistics::{AggregateAppStatsOptions, Statistics},
+    statistics::Statistics,
 };
 
 #[deprecated = "Use EndpointGetStatusOptions instead"]
@@ -62,6 +62,8 @@ pub type EndpointStatsOptions = EndpointGetStatsOptions;
 pub type MessageAttemptListOptions = MessageAttemptListByMsgOptions;
 #[deprecated = "Use MessageAttemptListAttemptedDestinationsOptions instead"]
 pub type ListOptions = MessageAttemptListAttemptedDestinationsOptions;
+#[deprecated = "Use AppUsageStatsIn instead"]
+pub type AggregateAppStatsOptions = AppUsageStatsIn;
 
 pub struct SvixOptions {
     pub debug: bool,
