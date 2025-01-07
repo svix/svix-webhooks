@@ -73,7 +73,7 @@ pub enum EventTypeCommands {
     /// The importer will convert all webhooks found in the either the `webhooks` or `x-webhooks`
     /// top-level.
     ImportOpenapi {
-        event_type_import_open_api_in: JsonOf<EventTypeImportOpenApiIn>,
+        event_type_import_open_api_in: Option<JsonOf<EventTypeImportOpenApiIn>>,
         #[clap(flatten)]
         post_options: Option<PostOptions>,
     },
@@ -99,7 +99,7 @@ pub enum EventTypeCommands {
     /// Partially update an event type.
     Patch {
         event_type_name: String,
-        event_type_patch: JsonOf<EventTypePatch>,
+        event_type_patch: Option<JsonOf<EventTypePatch>>,
     },
 }
 
@@ -131,7 +131,9 @@ impl EventTypeCommands {
                 let resp = client
                     .event_type()
                     .import_openapi(
-                        event_type_import_open_api_in.into_inner(),
+                        event_type_import_open_api_in
+                            .map(|x| x.into_inner())
+                            .unwrap_or_default(),
                         post_options.map(Into::into),
                     )
                     .await?;
@@ -170,7 +172,10 @@ impl EventTypeCommands {
             } => {
                 let resp = client
                     .event_type()
-                    .patch(event_type_name, event_type_patch.into_inner())
+                    .patch(
+                        event_type_name,
+                        event_type_patch.map(|x| x.into_inner()).unwrap_or_default(),
+                    )
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
