@@ -1,3 +1,4 @@
+// this file is @generated (with minor manual changes)
 package com.svix.kotlin
 
 import com.svix.kotlin.exceptions.ApiException
@@ -25,7 +26,7 @@ class IntegrationListOptions {
 }
 
 class Integration internal constructor(token: String, options: SvixOptions) {
-    val api = IntegrationApi(options.serverUrl)
+    private val api = IntegrationApi(options.serverUrl)
 
     init {
         api.accessToken = token
@@ -34,6 +35,7 @@ class Integration internal constructor(token: String, options: SvixOptions) {
         options.numRetries?.let { api.numRetries = it }
     }
 
+    /** List the application's integrations. */
     suspend fun list(
         appId: String,
         options: IntegrationListOptions = IntegrationListOptions(),
@@ -45,18 +47,20 @@ class Integration internal constructor(token: String, options: SvixOptions) {
         }
     }
 
+    /** Create an integration. */
     suspend fun create(
         appId: String,
-        integIn: IntegrationIn,
+        integrationIn: IntegrationIn,
         options: PostOptions = PostOptions(),
     ): IntegrationOut {
         try {
-            return api.v1IntegrationCreate(appId, integIn, options.idempotencyKey)
+            return api.v1IntegrationCreate(appId, integrationIn, options.idempotencyKey)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
     }
 
+    /** Get an integration. */
     suspend fun get(appId: String, integId: String): IntegrationOut {
         try {
             return api.v1IntegrationGet(appId, integId)
@@ -65,18 +69,20 @@ class Integration internal constructor(token: String, options: SvixOptions) {
         }
     }
 
+    /** Update an integration. */
     suspend fun update(
         appId: String,
         integId: String,
-        integUpdate: IntegrationUpdate,
+        integrationUpdate: IntegrationUpdate,
     ): IntegrationOut {
         try {
-            return api.v1IntegrationUpdate(appId, integId, integUpdate)
+            return api.v1IntegrationUpdate(appId, integId, integrationUpdate)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
     }
 
+    /** Delete an integration. */
     suspend fun delete(appId: String, integId: String) {
         try {
             api.v1IntegrationDelete(appId, integId)
@@ -93,6 +99,7 @@ class Integration internal constructor(token: String, options: SvixOptions) {
         }
     }
 
+    /** Rotate the integration's key. The previous key will be immediately revoked. */
     suspend fun rotateKey(
         appId: String,
         integId: String,

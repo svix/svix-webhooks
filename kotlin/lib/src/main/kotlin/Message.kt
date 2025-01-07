@@ -1,3 +1,4 @@
+// this file is @generated (with manual changes)
 package com.svix.kotlin
 
 import com.svix.kotlin.exceptions.ApiException
@@ -44,7 +45,7 @@ class MessageListOptions {
 }
 
 class Message internal constructor(token: String, options: SvixOptions) {
-    val api = MessageApi(options.serverUrl)
+    private val api = MessageApi(options.serverUrl)
 
     init {
         api.accessToken = token
@@ -53,6 +54,18 @@ class Message internal constructor(token: String, options: SvixOptions) {
         options.numRetries?.let { api.numRetries = it }
     }
 
+    /**
+     * List all of the application's messages.
+     *
+     * The `before` and `after` parameters let you filter all items created before or after a
+     * certain date. These can be used alongside an iterator to paginate over results within a
+     * certain window.
+     *
+     * Note that by default this endpoint is limited to retrieving 90 days' worth of data relative
+     * to now or, if an iterator is provided, 90 days before/after the time indicated by the
+     * iterator ID. If you require data beyond those time ranges, you will need to explicitly set
+     * the `before` or `after` parameter as appropriate.
+     */
     suspend fun list(
         appId: String,
         options: MessageListOptions = MessageListOptions(),
@@ -74,6 +87,23 @@ class Message internal constructor(token: String, options: SvixOptions) {
         }
     }
 
+    /**
+     * Creates a new message and dispatches it to all of the application's endpoints.
+     *
+     * The `eventId` is an optional custom unique ID. It's verified to be unique only up to a day,
+     * after that no verification will be made. If a message with the same `eventId` already exists
+     * for the application, a 409 conflict error will be returned.
+     *
+     * The `eventType` indicates the type and schema of the event. All messages of a certain
+     * `eventType` are expected to have the same schema. Endpoints can choose to only listen to
+     * specific event types. Messages can also have `channels`, which similar to event types let
+     * endpoints filter by them. Unlike event types, messages can have multiple channels, and
+     * channels don't imply a specific message content or schema.
+     *
+     * The `payload` property is the webhook's body (the actual webhook message). Svix supports
+     * payload sizes of up to ~350kb, though it's generally a good idea to keep webhook payloads
+     * small, probably no larger than 40kb.
+     */
     suspend fun create(
         appId: String,
         messageIn: MessageIn,
@@ -86,6 +116,7 @@ class Message internal constructor(token: String, options: SvixOptions) {
         }
     }
 
+    /** Get a message by its ID or eventID. */
     suspend fun get(msgId: String, appId: String): MessageOut {
         try {
             return api.v1MessageGet(appId, msgId, null)
@@ -94,9 +125,15 @@ class Message internal constructor(token: String, options: SvixOptions) {
         }
     }
 
+    /**
+     * Delete the given message's payload.
+     *
+     * Useful in cases when a message was accidentally sent with sensitive content. The message
+     * can't be replayed or resent once its payload has been deleted or expired.
+     */
     suspend fun expungeContent(msgId: String, appId: String) {
         try {
-            return api.v1MessageExpungeContent(appId, msgId)
+            api.v1MessageExpungeContent(appId, msgId)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }

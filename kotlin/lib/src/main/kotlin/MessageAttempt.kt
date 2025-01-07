@@ -53,7 +53,7 @@ class MessageAttemptListOptions(
 }
 
 class MessageAttempt internal constructor(token: String, options: SvixOptions) {
-    val api = MessageAttemptApi(options.serverUrl)
+    private val api = MessageAttemptApi(options.serverUrl)
 
     init {
         api.accessToken = token
