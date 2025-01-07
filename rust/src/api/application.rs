@@ -1,5 +1,5 @@
 use super::PostOptions;
-use crate::{apis::application_api, error::Result, models::*, Configuration};
+use crate::{error::Result, models::*, Configuration};
 
 #[derive(Default)]
 pub struct ApplicationListOptions {
@@ -33,15 +33,12 @@ impl<'a> Application<'a> {
             order,
         } = options.unwrap_or_default();
 
-        application_api::v1_period_application_period_list(
-            self.cfg,
-            application_api::V1PeriodApplicationPeriodListParams {
-                limit,
-                iterator,
-                order,
-            },
-        )
-        .await
+        crate::request::Request::new(http1::Method::GET, "/api/v1/app")
+            .with_optional_query_param("limit", limit)
+            .with_optional_query_param("iterator", iterator)
+            .with_optional_query_param("order", order)
+            .execute(self.cfg)
+            .await
     }
 
     /// Create a new application.
@@ -51,15 +48,12 @@ impl<'a> Application<'a> {
         options: Option<PostOptions>,
     ) -> Result<ApplicationOut> {
         let PostOptions { idempotency_key } = options.unwrap_or_default();
-        application_api::v1_period_application_period_create(
-            self.cfg,
-            application_api::V1PeriodApplicationPeriodCreateParams {
-                application_in,
-                idempotency_key,
-                get_if_exists: None,
-            },
-        )
-        .await
+
+        crate::request::Request::new(http1::Method::POST, "/api/v1/app")
+            .with_body_param(application_in)
+            .with_optional_header_param("idempotency-key", idempotency_key)
+            .execute(self.cfg)
+            .await
     }
 
     /// Create the application with the given ID, or create a new one if it
@@ -70,24 +64,21 @@ impl<'a> Application<'a> {
         options: Option<PostOptions>,
     ) -> Result<ApplicationOut> {
         let PostOptions { idempotency_key } = options.unwrap_or_default();
-        application_api::v1_period_application_period_create(
-            self.cfg,
-            application_api::V1PeriodApplicationPeriodCreateParams {
-                application_in,
-                idempotency_key,
-                get_if_exists: Some(true),
-            },
-        )
-        .await
+
+        crate::request::Request::new(http1::Method::POST, "/api/v1/app")
+            .with_body_param(application_in)
+            .with_query_param("get_if_exists", "true".to_owned())
+            .with_optional_header_param("idempotency-key", idempotency_key)
+            .execute(self.cfg)
+            .await
     }
 
     /// Get an application.
     pub async fn get(&self, app_id: String) -> Result<ApplicationOut> {
-        application_api::v1_period_application_period_get(
-            self.cfg,
-            application_api::V1PeriodApplicationPeriodGetParams { app_id },
-        )
-        .await
+        crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}")
+            .with_path_param("app_id", app_id)
+            .execute(self.cfg)
+            .await
     }
 
     /// Update an application.
@@ -96,23 +87,20 @@ impl<'a> Application<'a> {
         app_id: String,
         application_in: ApplicationIn,
     ) -> Result<ApplicationOut> {
-        application_api::v1_period_application_period_update(
-            self.cfg,
-            application_api::V1PeriodApplicationPeriodUpdateParams {
-                app_id,
-                application_in,
-            },
-        )
-        .await
+        crate::request::Request::new(http1::Method::PUT, "/api/v1/app/{app_id}")
+            .with_path_param("app_id", app_id)
+            .with_body_param(application_in)
+            .execute(self.cfg)
+            .await
     }
 
     /// Delete an application.
     pub async fn delete(&self, app_id: String) -> Result<()> {
-        application_api::v1_period_application_period_delete(
-            self.cfg,
-            application_api::V1PeriodApplicationPeriodDeleteParams { app_id },
-        )
-        .await
+        crate::request::Request::new(http1::Method::DELETE, "/api/v1/app/{app_id}")
+            .with_path_param("app_id", app_id)
+            .returns_nothing()
+            .execute(self.cfg)
+            .await
     }
 
     /// Partially update an application.
@@ -121,13 +109,10 @@ impl<'a> Application<'a> {
         app_id: String,
         application_patch: ApplicationPatch,
     ) -> Result<ApplicationOut> {
-        application_api::v1_period_application_period_patch(
-            self.cfg,
-            application_api::V1PeriodApplicationPeriodPatchParams {
-                app_id,
-                application_patch,
-            },
-        )
-        .await
+        crate::request::Request::new(http1::Method::PATCH, "/api/v1/app/{app_id}")
+            .with_path_param("app_id", app_id)
+            .with_body_param(application_patch)
+            .execute(self.cfg)
+            .await
     }
 }

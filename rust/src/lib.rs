@@ -14,18 +14,12 @@ use std::time::Duration;
 use hyper::body::Bytes;
 use hyper_util::client::legacy::{connect::HttpConnector, Client as HyperClient};
 
-#[macro_use]
-extern crate serde_derive;
-
 pub mod api;
 pub mod error;
 mod model_ext;
 mod request;
 pub mod webhooks;
 
-#[rustfmt::skip]
-#[allow(dead_code, clippy::all)]
-mod apis;
 #[rustfmt::skip]
 #[allow(dead_code, clippy::all)]
 mod models;

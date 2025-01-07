@@ -1,4 +1,4 @@
-use crate::{apis::background_tasks_api, error::Result, models::*, Configuration};
+use crate::{error::Result, models::*, Configuration};
 
 #[derive(Default)]
 pub struct BackgroundTaskListOptions {
@@ -29,24 +29,21 @@ impl<'a> BackgroundTask<'a> {
             status,
             task,
         } = options.unwrap_or_default();
-        background_tasks_api::list_background_tasks(
-            self.cfg,
-            background_tasks_api::ListBackgroundTasksParams {
-                status,
-                task,
-                limit,
-                iterator,
-                order,
-            },
-        )
-        .await
+
+        crate::request::Request::new(http1::Method::GET, "/api/v1/background-task")
+            .with_optional_query_param("status", status)
+            .with_optional_query_param("task", task)
+            .with_optional_query_param("limit", limit)
+            .with_optional_query_param("iterator", iterator)
+            .with_optional_query_param("order", order)
+            .execute(self.cfg)
+            .await
     }
 
     pub async fn get(&self, task_id: String) -> Result<BackgroundTaskOut> {
-        background_tasks_api::get_background_task(
-            self.cfg,
-            background_tasks_api::GetBackgroundTaskParams { task_id },
-        )
-        .await
+        crate::request::Request::new(http1::Method::GET, "/api/v1/background-task/{task_id}")
+            .with_path_param("task_id", task_id)
+            .execute(self.cfg)
+            .await
     }
 }

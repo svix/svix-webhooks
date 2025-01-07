@@ -30,8 +30,6 @@
 /.gitlab-ci.yml
 /.travis.yml
 /src/lib.rs
-/src/apis/client.rs
-/src/apis/configuration.rs
-/src/apis/request.rs
+/src/apis/
 
 /docs/
