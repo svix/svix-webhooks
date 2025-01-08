@@ -51,3 +51,8 @@ tokio = { version = "1.42.0", features = ["macros", "time", "rt-multi-thread"] }
 tokio-tungstenite = { version = "0.26.0", features = ["rustls-tls-native-roots"] }
 toml = "0.8.19"
 url = "2.5.4"
+
+# The profile that 'dist' will build with
+[profile.dist]
+inherits = "release"
+lto = "thin"
