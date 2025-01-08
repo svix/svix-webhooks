@@ -6,6 +6,9 @@
 * Libs/Kotlin **(Breaking)**: Update `recover` to return `RecoverOut` (instead of nothing)
 * Libs/Kotlin **(Breaking)**: Update `replayMissing` to return `ReplayOut` (instead of nothing)
 * Libs/Kotlin **(Breaking)**: Update `sendExample` to return `MessageOut` (instead of nothing)
+* Libs/Kotlin **(Breaking)**: Update `MessageAttempt` list methods to each have its own type for
+  list options, since they don't all support the exact same set of parameters and some of the
+  parameters that could be set before would just get ignored
 * Libs/Kotlin: Fix the parameter names of `Endpoint.get` - `appId` and `endpointId` were swapped
 * Libs/Kotlin: Fix a bug in `EventType.list` where `options.order` was not getting honored
 * Libs/Rust **(Breaking)**: Add optional `EventTypeDeleteOptions` parameter to `EventType::delete`
