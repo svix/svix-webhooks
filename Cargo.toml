@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["svix-cli"]
+members = ["rust", "svix-cli"]
 
 # The profile that 'dist' will build with
 [profile.dist]
