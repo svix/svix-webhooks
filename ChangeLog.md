@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+* Libs/Kotlin **(Breaking)**: Mark `api` field of all API resource classes as `private` (previously
+  only some were private, accidentally)
+* Libs/Kotlin **(Breaking)**: Update `recover` to return `RecoverOut` (instead of nothing)
+* Libs/Kotlin **(Breaking)**: Update `replayMissing` to return `ReplayOut` (instead of nothing)
+* Libs/Kotlin **(Breaking)**: Update `sendExample` to return `MessageOut` (instead of nothing)
+* Libs/Kotlin: Fix the parameter names of `Endpoint.get` - `appId` and `endpointId` were swapped
+* Libs/Kotlin: Fix a bug in `EventType.list` where `options.order` was not getting honored
+
 ## Version 1.56.0
 * Skipping versions: we had an issue with our CI that created duplicated Go
   library releases and forced us to bump the version across the libs and the

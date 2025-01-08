@@ -1,5 +1,5 @@
 use super::PostOptions;
-use crate::{apis::event_type_api, error::Result, models::*, Configuration};
+use crate::{error::Result, models::*, Configuration};
 
 #[derive(Default)]
 pub struct EventTypeListOptions {
@@ -43,17 +43,14 @@ impl<'a> EventType<'a> {
             with_content,
         } = options.unwrap_or_default();
 
-        event_type_api::v1_period_event_type_period_list(
-            self.cfg,
-            event_type_api::V1PeriodEventTypePeriodListParams {
-                limit,
-                iterator,
-                order,
-                include_archived,
-                with_content,
-            },
-        )
-        .await
+        crate::request::Request::new(http1::Method::GET, "/api/v1/event-type")
+            .with_optional_query_param("limit", limit)
+            .with_optional_query_param("iterator", iterator)
+            .with_optional_query_param("order", order)
+            .with_optional_query_param("include_archived", include_archived)
+            .with_optional_query_param("with_content", with_content)
+            .execute(self.cfg)
+            .await
     }
 
     /// Create new or unarchive existing event type.
@@ -69,14 +66,11 @@ impl<'a> EventType<'a> {
     ) -> Result<EventTypeOut> {
         let PostOptions { idempotency_key } = options.unwrap_or_default();
 
-        event_type_api::v1_period_event_type_period_create(
-            self.cfg,
-            event_type_api::V1PeriodEventTypePeriodCreateParams {
-                event_type_in,
-                idempotency_key,
-            },
-        )
-        .await
+        crate::request::Request::new(http1::Method::POST, "/api/v1/event-type")
+            .with_body_param(event_type_in)
+            .with_optional_header_param("idempotency-key", idempotency_key)
+            .execute(self.cfg)
+            .await
     }
 
     /// Given an OpenAPI spec, create new or update existing event types.
@@ -91,23 +85,19 @@ impl<'a> EventType<'a> {
     ) -> Result<EventTypeImportOpenApiOut> {
         let PostOptions { idempotency_key } = options.unwrap_or_default();
 
-        event_type_api::v1_period_event_type_period_import_openapi(
-            self.cfg,
-            event_type_api::V1PeriodEventTypePeriodImportOpenapiParams {
-                event_type_import_open_api_in,
-                idempotency_key,
-            },
-        )
-        .await
+        crate::request::Request::new(http1::Method::POST, "/api/v1/event-type/import/openapi")
+            .with_body_param(event_type_import_open_api_in)
+            .with_optional_header_param("idempotency-key", idempotency_key)
+            .execute(self.cfg)
+            .await
     }
 
     /// Get an event type.
     pub async fn get(&self, event_type_name: String) -> Result<EventTypeOut> {
-        event_type_api::v1_period_event_type_period_get(
-            self.cfg,
-            event_type_api::V1PeriodEventTypePeriodGetParams { event_type_name },
-        )
-        .await
+        crate::request::Request::new(http1::Method::GET, "/api/v1/event-type/{event_type_name}")
+            .with_path_param("event_type_name", event_type_name)
+            .execute(self.cfg)
+            .await
     }
 
     /// Update an event type.
@@ -116,14 +106,11 @@ impl<'a> EventType<'a> {
         event_type_name: String,
         event_type_update: EventTypeUpdate,
     ) -> Result<EventTypeOut> {
-        event_type_api::v1_period_event_type_period_update(
-            self.cfg,
-            event_type_api::V1PeriodEventTypePeriodUpdateParams {
-                event_type_name,
-                event_type_update,
-            },
-        )
-        .await
+        crate::request::Request::new(http1::Method::PUT, "/api/v1/event-type/{event_type_name}")
+            .with_path_param("event_type_name", event_type_name)
+            .with_body_param(event_type_update)
+            .execute(self.cfg)
+            .await
     }
 
     /// Archive an event type.
@@ -133,13 +120,13 @@ impl<'a> EventType<'a> {
     /// and endpoints can not filter on it. An event type can be unarchived
     /// with the [create operation][Self::create].
     pub async fn delete(&self, event_type_name: String) -> Result<()> {
-        event_type_api::v1_period_event_type_period_delete(
-            self.cfg,
-            event_type_api::V1PeriodEventTypePeriodDeleteParams {
-                event_type_name,
-                expunge: None,
-            },
+        crate::request::Request::new(
+            http1::Method::DELETE,
+            "/api/v1/event-type/{event_type_name}",
         )
+        .with_path_param("event_type_name", event_type_name)
+        .returns_nothing()
+        .execute(self.cfg)
         .await
     }
 
@@ -149,13 +136,10 @@ impl<'a> EventType<'a> {
         event_type_name: String,
         event_type_patch: EventTypePatch,
     ) -> Result<EventTypeOut> {
-        event_type_api::v1_period_event_type_period_patch(
-            self.cfg,
-            event_type_api::V1PeriodEventTypePeriodPatchParams {
-                event_type_name,
-                event_type_patch,
-            },
-        )
-        .await
+        crate::request::Request::new(http1::Method::PATCH, "/api/v1/event-type/{event_type_name}")
+            .with_path_param("event_type_name", event_type_name)
+            .with_body_param(event_type_patch)
+            .execute(self.cfg)
+            .await
     }
 }

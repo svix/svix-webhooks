@@ -6,25 +6,9 @@ use hyper_util::{client::legacy::Client as HyperClient, rt::TokioExecutor};
 
 use crate::Configuration;
 
-#[cfg(feature = "svix_beta")]
-pub use crate::apis::message_api::{
-    V1PeriodMessagePeriodCreateError, V1PeriodMessagePeriodCreateParams,
-    V1PeriodMessagePeriodEventsParams, V1PeriodMessagePeriodEventsSubscriptionError,
-    V1PeriodMessagePeriodEventsSubscriptionParams,
-};
 pub use crate::models::*;
 
 const CRATE_VERSION: &str = env!("CARGO_PKG_VERSION");
-
-#[cfg(feature = "svix_beta")]
-pub mod raw_stream_api {
-    pub use crate::{
-        apis::stream_api::*,
-        models::{
-            stream_in, stream_out, stream_patch, stream_sink_in, stream_sink_out, stream_sink_patch,
-        },
-    };
-}
 
 mod application;
 mod authentication;
@@ -37,6 +21,8 @@ mod message_attempt;
 mod operational_webhook_endpoint;
 mod statistics;
 
+#[cfg(feature = "svix_beta")]
+pub use self::message::{V1MessageEventsParams, V1MessageEventsSubscriptionParams};
 pub use self::{
     application::{Application, ApplicationListOptions},
     authentication::Authentication,
@@ -53,7 +39,7 @@ pub use self::{
     operational_webhook_endpoint::{
         OperationalWebhookEndpoint, OperationalWebhookEndpointListOptions,
     },
-    statistics::{AggregateAppStatsOptions, Statistics},
+    statistics::Statistics,
 };
 
 #[deprecated = "Use EndpointGetStatusOptions instead"]
@@ -62,6 +48,8 @@ pub type EndpointStatsOptions = EndpointGetStatsOptions;
 pub type MessageAttemptListOptions = MessageAttemptListByMsgOptions;
 #[deprecated = "Use MessageAttemptListAttemptedDestinationsOptions instead"]
 pub type ListOptions = MessageAttemptListAttemptedDestinationsOptions;
+#[deprecated = "Use AppUsageStatsIn instead"]
+pub type AggregateAppStatsOptions = AppUsageStatsIn;
 
 pub struct SvixOptions {
     pub debug: bool,

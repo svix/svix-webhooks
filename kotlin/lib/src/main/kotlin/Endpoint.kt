@@ -1,3 +1,4 @@
+// this file is @generated
 package com.svix.kotlin
 
 import com.svix.kotlin.exceptions.ApiException
@@ -16,9 +17,12 @@ import com.svix.kotlin.models.EndpointTransformationOut
 import com.svix.kotlin.models.EndpointUpdate
 import com.svix.kotlin.models.EventExampleIn
 import com.svix.kotlin.models.ListResponseEndpointOut
+import com.svix.kotlin.models.MessageOut
 import com.svix.kotlin.models.Ordering
 import com.svix.kotlin.models.RecoverIn
+import com.svix.kotlin.models.RecoverOut
 import com.svix.kotlin.models.ReplayIn
+import com.svix.kotlin.models.ReplayOut
 import java.time.OffsetDateTime
 
 class EndpointListOptions {
@@ -48,7 +52,7 @@ class EndpointGetStatsOptions {
 }
 
 class Endpoint internal constructor(token: String, options: SvixOptions) {
-    val api = EndpointApi(options.serverUrl)
+    private val api = EndpointApi(options.serverUrl)
 
     init {
         api.accessToken = token
@@ -57,6 +61,7 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
         options.numRetries?.let { api.numRetries = it }
     }
 
+    /** List the application's endpoints. */
     suspend fun list(
         appId: String,
         options: EndpointListOptions = EndpointListOptions(),
@@ -68,6 +73,11 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
         }
     }
 
+    /**
+     * Create a new endpoint for the application.
+     *
+     * When `secret` is `null` the secret is automatically generated (recommended).
+     */
     suspend fun create(
         appId: String,
         endpointIn: EndpointIn,
@@ -80,14 +90,16 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun get(appId: String, endpointId: String): EndpointOut {
+    /** Get an endpoint. */
+    suspend fun get(endpointId: String, appId: String): EndpointOut {
         try {
-            return api.v1EndpointGet(endpointId, appId)
+            return api.v1EndpointGet(appId, endpointId)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
     }
 
+    /** Update an endpoint. */
     suspend fun update(
         appId: String,
         endpointId: String,
@@ -100,6 +112,16 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
         }
     }
 
+    /** Delete an endpoint. */
+    suspend fun delete(appId: String, endpointId: String) {
+        try {
+            api.v1EndpointDelete(appId, endpointId)
+        } catch (e: Exception) {
+            throw ApiException.wrap(e)
+        }
+    }
+
+    /** Partially update an endpoint. */
     suspend fun patch(
         appId: String,
         endpointId: String,
@@ -112,14 +134,84 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun delete(appId: String, endpointId: String) {
+    /** Get the additional headers to be sent with the webhook. */
+    suspend fun getHeaders(appId: String, endpointId: String): EndpointHeadersOut {
         try {
-            api.v1EndpointDelete(appId, endpointId)
+            return api.v1EndpointGetHeaders(appId, endpointId)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
     }
 
+    /** Set the additional headers to be sent with the webhook. */
+    suspend fun updateHeaders(
+        appId: String,
+        endpointId: String,
+        endpointHeadersIn: EndpointHeadersIn,
+    ) {
+        try {
+            api.v1EndpointUpdateHeaders(appId, endpointId, endpointHeadersIn)
+        } catch (e: Exception) {
+            throw ApiException.wrap(e)
+        }
+    }
+
+    /** Partially set the additional headers to be sent with the webhook. */
+    suspend fun patchHeaders(
+        appId: String,
+        endpointId: String,
+        endpointHeadersPatchIn: EndpointHeadersPatchIn,
+    ) {
+        try {
+            api.v1EndpointPatchHeaders(appId, endpointId, endpointHeadersPatchIn)
+        } catch (e: Exception) {
+            throw ApiException.wrap(e)
+        }
+    }
+
+    /**
+     * Resend all failed messages since a given time.
+     *
+     * Messages that were sent successfully, even if failed initially, are not resent.
+     */
+    suspend fun recover(
+        appId: String,
+        endpointId: String,
+        recoverIn: RecoverIn,
+        options: PostOptions = PostOptions(),
+    ): RecoverOut {
+        try {
+            return api.v1EndpointRecover(appId, endpointId, recoverIn, options.idempotencyKey)
+        } catch (e: Exception) {
+            throw ApiException.wrap(e)
+        }
+    }
+
+    /**
+     * Replays messages to the endpoint.
+     *
+     * Only messages that were created after `since` will be sent. Messages that were previously
+     * sent to the endpoint are not resent.
+     */
+    suspend fun replayMissing(
+        appId: String,
+        endpointId: String,
+        replayIn: ReplayIn,
+        options: PostOptions = PostOptions(),
+    ): ReplayOut {
+        try {
+            return api.v1EndpointReplayMissing(appId, endpointId, replayIn, options.idempotencyKey)
+        } catch (e: Exception) {
+            throw ApiException.wrap(e)
+        }
+    }
+
+    /**
+     * Get the endpoint's signing secret.
+     *
+     * This is used to verify the authenticity of the webhook. For more information please refer to
+     * [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
+     */
     suspend fun getSecret(appId: String, endpointId: String): EndpointSecretOut {
         try {
             return api.v1EndpointGetSecret(appId, endpointId)
@@ -128,6 +220,11 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
         }
     }
 
+    /**
+     * Rotates the endpoint's signing secret.
+     *
+     * The previous secret will remain valid for the next 24 hours.
+     */
     suspend fun rotateSecret(
         appId: String,
         endpointId: String,
@@ -146,51 +243,26 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun recover(
+    /** Send an example message for an event. */
+    suspend fun sendExample(
         appId: String,
         endpointId: String,
-        recoverIn: RecoverIn,
+        eventExampleIn: EventExampleIn,
         options: PostOptions = PostOptions(),
-    ) {
+    ): MessageOut {
         try {
-            api.v1EndpointRecover(appId, endpointId, recoverIn, options.idempotencyKey)
+            return api.v1EndpointSendExample(
+                appId,
+                endpointId,
+                eventExampleIn,
+                options.idempotencyKey,
+            )
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
     }
 
-    suspend fun getHeaders(appId: String, endpointId: String): EndpointHeadersOut {
-        try {
-            return api.v1EndpointGetHeaders(appId, endpointId)
-        } catch (e: Exception) {
-            throw ApiException.wrap(e)
-        }
-    }
-
-    suspend fun updateHeaders(
-        appId: String,
-        endpointId: String,
-        endpointHeadersIn: EndpointHeadersIn,
-    ) {
-        try {
-            api.v1EndpointUpdateHeaders(appId, endpointId, endpointHeadersIn)
-        } catch (e: Exception) {
-            throw ApiException.wrap(e)
-        }
-    }
-
-    suspend fun patchHeaders(
-        appId: String,
-        endpointId: String,
-        endpointHeadersIn: EndpointHeadersPatchIn,
-    ) {
-        try {
-            api.v1EndpointPatchHeaders(appId, endpointId, endpointHeadersIn)
-        } catch (e: Exception) {
-            throw ApiException.wrap(e)
-        }
-    }
-
+    /** Get basic statistics for the endpoint. */
     suspend fun getStats(
         appId: String,
         endpointId: String,
@@ -203,19 +275,7 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun replayMissing(
-        appId: String,
-        endpointId: String,
-        replayIn: ReplayIn,
-        options: PostOptions = PostOptions(),
-    ) {
-        try {
-            api.v1EndpointReplayMissing(appId, endpointId, replayIn, options.idempotencyKey)
-        } catch (e: Exception) {
-            throw ApiException.wrap(e)
-        }
-    }
-
+    /** Get the transformation code associated with this endpoint. */
     suspend fun transformationGet(appId: String, endpointId: String): EndpointTransformationOut {
         try {
             return api.v1EndpointTransformationGet(appId, endpointId)
@@ -224,6 +284,7 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
         }
     }
 
+    /** Set or unset the transformation code associated with this endpoint. */
     suspend fun transformationPartialUpdate(
         appId: String,
         endpointId: String,
@@ -231,19 +292,6 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
     ) {
         try {
             api.v1EndpointTransformationPartialUpdate(appId, endpointId, endpointTransformationIn)
-        } catch (e: Exception) {
-            throw ApiException.wrap(e)
-        }
-    }
-
-    suspend fun sendExample(
-        appId: String,
-        endpointId: String,
-        eventExampleIn: EventExampleIn,
-        options: PostOptions = PostOptions(),
-    ) {
-        try {
-            api.v1EndpointSendExample(appId, endpointId, eventExampleIn, options.idempotencyKey)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }

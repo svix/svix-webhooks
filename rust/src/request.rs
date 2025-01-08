@@ -21,17 +21,17 @@ pub(crate) enum Auth {
 /// OpenAPI definition does not include an authorization scheme.
 pub(crate) struct Request {
     method: http1::Method,
-    path: String,
-    query_params: HashMap<String, String>,
+    path: &'static str,
+    query_params: HashMap<&'static str, String>,
     no_return_type: bool,
-    path_params: HashMap<String, String>,
-    header_params: HashMap<String, String>,
+    path_params: HashMap<&'static str, String>,
+    header_params: HashMap<&'static str, String>,
     // TODO: multiple body params are possible technically, but not supported here.
     serialized_body: Option<String>,
 }
 
 impl Request {
-    pub fn new(method: http1::Method, path: String) -> Self {
+    pub fn new(method: http1::Method, path: &'static str) -> Self {
         Request {
             method,
             path,
@@ -48,17 +48,34 @@ impl Request {
         self
     }
 
-    pub fn with_header_param(mut self, basename: String, param: String) -> Self {
-        self.header_params.insert(basename, param);
+    pub fn with_optional_header_param(
+        mut self,
+        basename: &'static str,
+        param: Option<String>,
+    ) -> Self {
+        if let Some(value) = param {
+            self.header_params.insert(basename, value);
+        }
         self
     }
 
-    pub fn with_query_param(mut self, basename: String, param: String) -> Self {
+    pub fn with_query_param(mut self, basename: &'static str, param: String) -> Self {
         self.query_params.insert(basename, param);
         self
     }
 
-    pub fn with_path_param(mut self, basename: String, param: String) -> Self {
+    pub fn with_optional_query_param<T: ToString>(
+        mut self,
+        basename: &'static str,
+        param: Option<T>,
+    ) -> Self {
+        if let Some(value) = param {
+            self.query_params.insert(basename, value.to_string());
+        }
+        self
+    }
+
+    pub fn with_path_param(mut self, basename: &'static str, param: String) -> Self {
         self.path_params.insert(basename, param);
         self
     }
@@ -82,7 +99,7 @@ impl Request {
     }
 
     async fn execute_inner(self, conf: &Configuration) -> Result<Option<Bytes>, Error> {
-        let mut path = self.path;
+        let mut path = self.path.to_owned();
         for (k, v) in self.path_params {
             // replace {id} with the value of the id path param
             path = path.replace(&format!("{{{k}}}"), &v);
@@ -96,7 +113,7 @@ impl Request {
         {
             let mut query_string = ::url::form_urlencoded::Serializer::new("".to_owned());
             for (key, val) in self.query_params {
-                query_string.append_pair(&key, &val);
+                query_string.append_pair(key, &val);
             }
 
             let query_string_str = query_string.finish();
@@ -131,7 +148,7 @@ impl Request {
         }
 
         for (k, v) in self.header_params {
-            req_builder = req_builder.header(&k, v);
+            req_builder = req_builder.header(k, v);
         }
 
         let req_headers = req_builder.headers_mut().unwrap();

@@ -1,3 +1,4 @@
+// this file is @generated
 package com.svix.kotlin
 
 import com.svix.kotlin.exceptions.ApiException
@@ -16,6 +17,13 @@ class Statistics internal constructor(token: String, options: SvixOptions) {
         options.numRetries?.let { api.numRetries = it }
     }
 
+    /**
+     * Creates a background task to calculate the message destinations for all applications in the
+     * environment.
+     *
+     * Note that this endpoint is asynchronous. You will need to poll the `Get Background Task`
+     * endpoint to retrieve the results of the operation.
+     */
     suspend fun aggregateAppStats(
         appUsageStatsIn: AppUsageStatsIn,
         options: PostOptions = PostOptions(),
@@ -27,6 +35,13 @@ class Statistics internal constructor(token: String, options: SvixOptions) {
         }
     }
 
+    /**
+     * Creates a background task to calculate the listed event types for all apps in the
+     * organization.
+     *
+     * Note that this endpoint is asynchronous. You will need to poll the `Get Background Task`
+     * endpoint to retrieve the results of the operation.
+     */
     suspend fun aggregateEventTypes(): AggregateEventTypesOut {
         try {
             return api.v1StatisticsAggregateEventTypes()

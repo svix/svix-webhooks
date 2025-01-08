@@ -1,3 +1,4 @@
+// this file is @generated (with minor manual changes)
 package com.svix.kotlin
 
 import com.svix.kotlin.exceptions.ApiException
@@ -38,7 +39,7 @@ class EventTypeListOptions {
 }
 
 class EventType internal constructor(token: String, options: SvixOptions) {
-    val api = EventTypeApi(options.serverUrl)
+    private val api = EventTypeApi(options.serverUrl)
 
     init {
         api.accessToken = token
@@ -47,6 +48,7 @@ class EventType internal constructor(token: String, options: SvixOptions) {
         options.numRetries?.let { api.numRetries = it }
     }
 
+    /** Return the list of event types. */
     suspend fun list(
         options: EventTypeListOptions = EventTypeListOptions()
     ): ListResponseEventTypeOut {
@@ -54,7 +56,7 @@ class EventType internal constructor(token: String, options: SvixOptions) {
             return api.v1EventTypeList(
                 options.limit,
                 options.iterator,
-                null,
+                options.order,
                 options.includeArchived,
                 options.withContent,
             )
@@ -63,6 +65,13 @@ class EventType internal constructor(token: String, options: SvixOptions) {
         }
     }
 
+    /**
+     * Create new or unarchive existing event type.
+     *
+     * Unarchiving an event type will allow endpoints to filter on it and messages to be sent with
+     * it. Endpoints filtering on the event type before archival will continue to filter on it. This
+     * operation does not preserve the description and schemas.
+     */
     suspend fun create(
         eventTypeIn: EventTypeIn,
         options: PostOptions = PostOptions(),
@@ -74,6 +83,25 @@ class EventType internal constructor(token: String, options: SvixOptions) {
         }
     }
 
+    /**
+     * Given an OpenAPI spec, create new or update existing event types. If an existing `archived`
+     * event type is updated, it will be unarchived.
+     *
+     * The importer will convert all webhooks found in the either the `webhooks` or `x-webhooks`
+     * top-level.
+     */
+    suspend fun importOpenapi(
+        eventTypeImportOpenApiIn: EventTypeImportOpenApiIn,
+        options: PostOptions = PostOptions(),
+    ): EventTypeImportOpenApiOut {
+        try {
+            return api.v1EventTypeImportOpenapi(eventTypeImportOpenApiIn, options.idempotencyKey)
+        } catch (e: Exception) {
+            throw ApiException.wrap(e)
+        }
+    }
+
+    /** Get an event type. */
     suspend fun get(eventTypeName: String): EventTypeOut {
         try {
             return api.v1EventTypeGet(eventTypeName)
@@ -82,6 +110,7 @@ class EventType internal constructor(token: String, options: SvixOptions) {
         }
     }
 
+    /** Update an event type. */
     suspend fun update(eventTypeName: String, eventTypeUpdate: EventTypeUpdate): EventTypeOut {
         try {
             return api.v1EventTypeUpdate(eventTypeName, eventTypeUpdate)
@@ -90,14 +119,14 @@ class EventType internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun patch(eventTypeName: String, eventTypePatch: EventTypePatch): EventTypeOut {
-        try {
-            return api.v1EventTypePatch(eventTypeName, eventTypePatch)
-        } catch (e: Exception) {
-            throw ApiException.wrap(e)
-        }
-    }
-
+    /**
+     * Archive an event type.
+     *
+     * Endpoints already configured to filter on an event type will continue to do so after
+     * archival. However, new messages can not be sent with it and endpoints can not filter on it.
+     * An event type can be unarchived with the
+     * [create operation](#operation/create_event_type_api_v1_event_type__post).
+     */
     suspend fun delete(eventTypeName: String) {
         try {
             api.v1EventTypeDelete(eventTypeName, null)
@@ -106,12 +135,10 @@ class EventType internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun importOpenApi(
-        eventTypeImportOpenApiIn: EventTypeImportOpenApiIn,
-        options: PostOptions = PostOptions(),
-    ): EventTypeImportOpenApiOut {
+    /** Partially update an event type. */
+    suspend fun patch(eventTypeName: String, eventTypePatch: EventTypePatch): EventTypeOut {
         try {
-            return api.v1EventTypeImportOpenapi(eventTypeImportOpenApiIn, options.idempotencyKey)
+            return api.v1EventTypePatch(eventTypeName, eventTypePatch)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }

@@ -1,5 +1,5 @@
 use super::PostOptions;
-use crate::{apis::integration_api, error::Result, models::*, Configuration};
+use crate::{error::Result, models::*, Configuration};
 
 #[derive(Default)]
 pub struct IntegrationListOptions {
@@ -34,16 +34,13 @@ impl<'a> Integration<'a> {
             order,
         } = options.unwrap_or_default();
 
-        integration_api::v1_period_integration_period_list(
-            self.cfg,
-            integration_api::V1PeriodIntegrationPeriodListParams {
-                app_id,
-                limit,
-                iterator,
-                order,
-            },
-        )
-        .await
+        crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}/integration")
+            .with_path_param("app_id", app_id)
+            .with_optional_query_param("limit", limit)
+            .with_optional_query_param("iterator", iterator)
+            .with_optional_query_param("order", order)
+            .execute(self.cfg)
+            .await
     }
 
     /// Create an integration.
@@ -55,23 +52,23 @@ impl<'a> Integration<'a> {
     ) -> Result<IntegrationOut> {
         let PostOptions { idempotency_key } = options.unwrap_or_default();
 
-        integration_api::v1_period_integration_period_create(
-            self.cfg,
-            integration_api::V1PeriodIntegrationPeriodCreateParams {
-                app_id,
-                integration_in,
-                idempotency_key,
-            },
-        )
-        .await
+        crate::request::Request::new(http1::Method::POST, "/api/v1/app/{app_id}/integration")
+            .with_path_param("app_id", app_id)
+            .with_body_param(integration_in)
+            .with_optional_header_param("idempotency-key", idempotency_key)
+            .execute(self.cfg)
+            .await
     }
 
     /// Get an integration.
     pub async fn get(&self, app_id: String, integ_id: String) -> Result<IntegrationOut> {
-        integration_api::v1_period_integration_period_get(
-            self.cfg,
-            integration_api::V1PeriodIntegrationPeriodGetParams { app_id, integ_id },
+        crate::request::Request::new(
+            http1::Method::GET,
+            "/api/v1/app/{app_id}/integration/{integ_id}",
         )
+        .with_path_param("app_id", app_id)
+        .with_path_param("integ_id", integ_id)
+        .execute(self.cfg)
         .await
     }
 
@@ -82,46 +79,52 @@ impl<'a> Integration<'a> {
         integ_id: String,
         integration_update: IntegrationUpdate,
     ) -> Result<IntegrationOut> {
-        integration_api::v1_period_integration_period_update(
-            self.cfg,
-            integration_api::V1PeriodIntegrationPeriodUpdateParams {
-                app_id,
-                integ_id,
-                integration_update,
-            },
+        crate::request::Request::new(
+            http1::Method::PUT,
+            "/api/v1/app/{app_id}/integration/{integ_id}",
         )
+        .with_path_param("app_id", app_id)
+        .with_path_param("integ_id", integ_id)
+        .with_body_param(integration_update)
+        .execute(self.cfg)
         .await
     }
 
     /// Delete an integration.
     pub async fn delete(&self, app_id: String, integ_id: String) -> Result<()> {
-        integration_api::v1_period_integration_period_delete(
-            self.cfg,
-            integration_api::V1PeriodIntegrationPeriodDeleteParams { app_id, integ_id },
+        crate::request::Request::new(
+            http1::Method::DELETE,
+            "/api/v1/app/{app_id}/integration/{integ_id}",
         )
+        .with_path_param("app_id", app_id)
+        .with_path_param("integ_id", integ_id)
+        .returns_nothing()
+        .execute(self.cfg)
         .await
     }
 
     /// Get an integration's key.
     pub async fn get_key(&self, app_id: String, integ_id: String) -> Result<IntegrationKeyOut> {
-        integration_api::v1_period_integration_period_get_key(
-            self.cfg,
-            integration_api::V1PeriodIntegrationPeriodGetKeyParams { app_id, integ_id },
+        crate::request::Request::new(
+            http1::Method::GET,
+            "/api/v1/app/{app_id}/integration/{integ_id}/key",
         )
+        .with_path_param("app_id", app_id)
+        .with_path_param("integ_id", integ_id)
+        .execute(self.cfg)
         .await
     }
 
     /// Rotate the integration's key. The previous key will be immediately
     /// revoked.
     pub async fn rotate_key(&self, app_id: String, integ_id: String) -> Result<IntegrationKeyOut> {
-        integration_api::v1_period_integration_period_rotate_key(
-            self.cfg,
-            integration_api::V1PeriodIntegrationPeriodRotateKeyParams {
-                app_id,
-                integ_id,
-                idempotency_key: None,
-            },
+        crate::request::Request::new(
+            http1::Method::POST,
+            "/api/v1/app/{app_id}/integration/{integ_id}/key/rotate",
         )
+        .with_path_param("app_id", app_id)
+        .with_path_param("integ_id", integ_id)
+        .execute(self.cfg)
         .await
     }
 }

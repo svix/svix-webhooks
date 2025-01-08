@@ -4,8 +4,8 @@ use anyhow::{Error, Result};
 use colored_json::{Color, ColorMode, ToColoredJson};
 use serde::{de::DeserializeOwned, Serialize};
 
-#[derive(Clone, Debug, PartialEq)]
-pub struct JsonOf<T: DeserializeOwned>(T);
+#[derive(Clone, Debug, Default, PartialEq)]
+pub struct JsonOf<T>(T);
 
 impl<T: DeserializeOwned> FromStr for JsonOf<T> {
     type Err = Error;
@@ -15,7 +15,7 @@ impl<T: DeserializeOwned> FromStr for JsonOf<T> {
     }
 }
 
-impl<T: DeserializeOwned> JsonOf<T> {
+impl<T> JsonOf<T> {
     pub fn into_inner(self) -> T {
         self.0
     }
