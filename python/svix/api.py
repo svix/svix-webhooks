@@ -1267,6 +1267,9 @@ class MessageAttemptAsync(ApiBase):
             **options.to_dict(),
         )
 
+    @deprecated(
+        reason="use list_by_msg instead, passing the endpoint id through options"
+    )
     async def list_attempts_for_endpoint(
         self,
         app_id: str,
@@ -1378,6 +1381,9 @@ class MessageAttempt(ApiBase):
             **options.to_dict(),
         )
 
+    @deprecated(
+        reason="use list_by_msg instead, passing the endpoint id through options"
+    )
     def list_attempts_for_endpoint(
         self,
         app_id: str,
