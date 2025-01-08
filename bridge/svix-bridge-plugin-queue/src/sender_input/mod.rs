@@ -4,7 +4,7 @@ use svix_bridge_types::{
     TransformerTx,
 };
 
-use crate::{config::QueueInputOpts, error::Error, gcp_pubsub, rabbitmq, run_inner, sqs, Consumer};
+use crate::{config::QueueInputOpts, gcp_pubsub, rabbitmq, run_inner, sqs, Consumer};
 
 pub struct QueueSender {
     name: String,
@@ -87,12 +87,11 @@ impl Consumer for QueueSender {
 
     async fn consumer(&self) -> std::io::Result<DynConsumer> {
         Ok(match &self.input_opts {
-            QueueInputOpts::GcpPubSub(cfg) => gcp_pubsub::consumer(cfg).await,
-            QueueInputOpts::RabbitMQ(cfg) => rabbitmq::consumer(cfg).await,
-            QueueInputOpts::Redis(cfg) => crate::redis::consumer(cfg).await,
-            QueueInputOpts::Sqs(cfg) => sqs::consumer(cfg).await,
-        }
-        .map_err(Error::from)?)
+            QueueInputOpts::GcpPubSub(cfg) => gcp_pubsub::consumer(cfg).await?,
+            QueueInputOpts::RabbitMQ(cfg) => rabbitmq::consumer(cfg).await?,
+            QueueInputOpts::Redis(cfg) => crate::redis::consumer(cfg).await?,
+            QueueInputOpts::Sqs(cfg) => sqs::consumer(cfg).await?,
+        })
     }
 }
 
