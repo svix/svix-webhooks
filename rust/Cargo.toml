@@ -54,3 +54,11 @@ allowed = [
     # Used in WebhookError, breaking change to remove from public API.
     "base64",
 ]
+
+[lints.rust]
+# below clippy allow rule is for a lint that's not on stable yet 😒
+unknown_lints = "allow"
+
+[lints.clippy]
+all = { priority = -1, level = "warn" }
+literal_string_with_formatting_args = "allow"
