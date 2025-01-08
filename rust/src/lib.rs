@@ -7,6 +7,7 @@
 //! [`webhooks::Webhook`].
 
 #![warn(clippy::all)]
+#![allow(clippy::literal_string_with_formatting_args)]
 #![forbid(unsafe_code)]
 
 use std::time::Duration;
