@@ -118,6 +118,10 @@ public final class MessageAttempt {
 		}
 	}
 
+	/*
+	 * @deprecated: use listByMsg instead, passing the endpoint ID through options
+	 */
+	@Deprecated
 	public ListResponseMessageAttemptEndpointOut listAttemptsForEndpoint(final String appId, final String msgId, final String endpointId,
 		final MessageAttemptListOptions options) throws ApiException {
 			try {

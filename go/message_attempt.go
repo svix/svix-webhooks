@@ -211,6 +211,7 @@ func (m *MessageAttempt) ListAttemptedDestinations(ctx context.Context, appId st
 	return ret, nil
 }
 
+// Deprecated: use `ListByMsg` instead, passing the endpoint ID through options
 func (m *MessageAttempt) ListAttemptsForEndpoint(ctx context.Context, appId string, msgId string, endpointId string, options *MessageAttemptListOptions) (*ListResponseMessageAttemptEndpointOut, error) {
 	req := m.api.MessageAttemptAPI.V1MessageAttemptListByEndpointDeprecated(ctx, appId, msgId, endpointId)
 	if options != nil {
