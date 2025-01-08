@@ -21,6 +21,13 @@ pub struct EventTypeListOptions {
     pub with_content: Option<bool>,
 }
 
+#[derive(Default)]
+pub struct EventTypeDeleteOptions {
+    /// By default event types are archived when "deleted". Passing this to
+    /// `true` deletes them entirely.
+    pub expunge: Option<bool>,
+}
+
 pub struct EventType<'a> {
     cfg: &'a Configuration,
 }
@@ -119,12 +126,19 @@ impl<'a> EventType<'a> {
     /// do so after archival. However, new messages can not be sent with it
     /// and endpoints can not filter on it. An event type can be unarchived
     /// with the [create operation][Self::create].
-    pub async fn delete(&self, event_type_name: String) -> Result<()> {
+    pub async fn delete(
+        &self,
+        event_type_name: String,
+        options: Option<EventTypeDeleteOptions>,
+    ) -> Result<()> {
+        let EventTypeDeleteOptions { expunge } = options.unwrap_or_default();
+
         crate::request::Request::new(
             http1::Method::DELETE,
             "/api/v1/event-type/{event_type_name}",
         )
         .with_path_param("event_type_name", event_type_name)
+        .with_optional_query_param("expunge", expunge)
         .returns_nothing()
         .execute(self.cfg)
         .await

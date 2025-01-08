@@ -115,6 +115,8 @@ pub enum EndpointCommands {
         app_id: String,
         id: String,
         recover_in: JsonOf<RecoverIn>,
+        #[clap(flatten)]
+        post_options: Option<PostOptions>,
     },
     /// Replays messages to the endpoint.
     ///
@@ -139,6 +141,8 @@ pub enum EndpointCommands {
         app_id: String,
         id: String,
         endpoint_secret_rotate_in: Option<JsonOf<EndpointSecretRotateIn>>,
+        #[clap(flatten)]
+        post_options: Option<PostOptions>,
     },
     /// Send an example message for an event.
     SendExample {
@@ -217,11 +221,7 @@ impl EndpointCommands {
             } => {
                 let resp = client
                     .endpoint()
-                    .patch(
-                        app_id,
-                        id,
-                        endpoint_patch.map(|x| x.into_inner()).unwrap_or_default(),
-                    )
+                    .patch(app_id, id, endpoint_patch.unwrap_or_default().into_inner())
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
@@ -253,10 +253,16 @@ impl EndpointCommands {
                 app_id,
                 id,
                 recover_in,
+                post_options,
             } => {
                 let resp = client
                     .endpoint()
-                    .recover(app_id, id, recover_in.into_inner())
+                    .recover(
+                        app_id,
+                        id,
+                        recover_in.into_inner(),
+                        post_options.map(Into::into),
+                    )
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
@@ -285,15 +291,15 @@ impl EndpointCommands {
                 app_id,
                 id,
                 endpoint_secret_rotate_in,
+                post_options,
             } => {
                 client
                     .endpoint()
                     .rotate_secret(
                         app_id,
                         id,
-                        endpoint_secret_rotate_in
-                            .map(|x| x.into_inner())
-                            .unwrap_or_default(),
+                        endpoint_secret_rotate_in.unwrap_or_default().into_inner(),
+                        post_options.map(Into::into),
                     )
                     .await?;
             }
@@ -339,9 +345,7 @@ impl EndpointCommands {
                     .transformation_partial_update(
                         app_id,
                         id,
-                        endpoint_transformation_in
-                            .map(|x| x.into_inner())
-                            .unwrap_or_default(),
+                        endpoint_transformation_in.unwrap_or_default().into_inner(),
                     )
                     .await?;
             }

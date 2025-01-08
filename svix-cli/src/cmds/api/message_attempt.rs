@@ -2,6 +2,8 @@ use chrono::{DateTime, Utc};
 use clap::{Args, Subcommand};
 use svix::api::*;
 
+use crate::cli_types::PostOptions;
+
 #[derive(Args, Clone)]
 pub struct MessageAttemptListByEndpointOptions {
     /// Limit the number of returned items
@@ -305,6 +307,8 @@ pub enum MessageAttemptCommands {
         app_id: String,
         msg_id: String,
         endpoint_id: String,
+        #[clap(flatten)]
+        post_options: Option<PostOptions>,
     },
 }
 
@@ -384,10 +388,11 @@ impl MessageAttemptCommands {
                 app_id,
                 msg_id,
                 endpoint_id,
+                post_options,
             } => {
                 client
                     .message_attempt()
-                    .resend(app_id, msg_id, endpoint_id)
+                    .resend(app_id, msg_id, endpoint_id, post_options.map(Into::into))
                     .await?;
             }
         }
