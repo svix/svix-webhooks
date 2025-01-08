@@ -52,9 +52,7 @@ impl AuthenticationCommands {
                     .authentication()
                     .app_portal_access(
                         app_id,
-                        app_portal_access_in
-                            .map(|x| x.into_inner())
-                            .unwrap_or_default(),
+                        app_portal_access_in.unwrap_or_default().into_inner(),
                         post_options.map(Into::into),
                     )
                     .await?;
@@ -69,9 +67,7 @@ impl AuthenticationCommands {
                     .authentication()
                     .expire_all(
                         app_id,
-                        application_token_expire_in
-                            .map(|x| x.into_inner())
-                            .unwrap_or_default(),
+                        application_token_expire_in.unwrap_or_default().into_inner(),
                         post_options.map(Into::into),
                     )
                     .await?;

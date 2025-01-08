@@ -1,5 +1,6 @@
 use itertools::Itertools;
 
+use super::PostOptions;
 use crate::{error::Result, models::*, Configuration};
 
 #[derive(Default)]
@@ -401,7 +402,15 @@ impl<'a> MessageAttempt<'a> {
     }
 
     /// Resend a message to the specified endpoint.
-    pub async fn resend(&self, app_id: String, msg_id: String, endpoint_id: String) -> Result<()> {
+    pub async fn resend(
+        &self,
+        app_id: String,
+        msg_id: String,
+        endpoint_id: String,
+        options: Option<PostOptions>,
+    ) -> Result<()> {
+        let PostOptions { idempotency_key } = options.unwrap_or_default();
+
         crate::request::Request::new(
             http1::Method::POST,
             "/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/resend",
@@ -409,6 +418,7 @@ impl<'a> MessageAttempt<'a> {
         .with_path_param("app_id", app_id)
         .with_path_param("msg_id", msg_id)
         .with_path_param("endpoint_id", endpoint_id)
+        .with_optional_header_param("idempotency-key", idempotency_key)
         .returns_nothing()
         .execute(self.cfg)
         .await

@@ -49,6 +49,11 @@ impl<'a> Authentication<'a> {
             .await
     }
 
+    /// DEPRECATED: Please use `app-portal-access` instead.
+    ///
+    /// Use this function to get magic links (and authentication codes) for
+    /// connecting your users to the Consumer Application Portal.
+    #[deprecated]
     pub async fn dashboard_access(
         &self,
         app_id: String,

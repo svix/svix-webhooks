@@ -200,7 +200,10 @@ impl<'a> Endpoint<'a> {
         app_id: String,
         endpoint_id: String,
         recover_in: RecoverIn,
+        options: Option<PostOptions>,
     ) -> Result<RecoverOut> {
+        let PostOptions { idempotency_key } = options.unwrap_or_default();
+
         crate::request::Request::new(
             http1::Method::POST,
             "/api/v1/app/{app_id}/endpoint/{endpoint_id}/recover",
@@ -208,6 +211,7 @@ impl<'a> Endpoint<'a> {
         .with_path_param("app_id", app_id)
         .with_path_param("endpoint_id", endpoint_id)
         .with_body_param(recover_in)
+        .with_optional_header_param("idempotency-key", idempotency_key)
         .execute(self.cfg)
         .await
     }
@@ -264,7 +268,10 @@ impl<'a> Endpoint<'a> {
         app_id: String,
         endpoint_id: String,
         endpoint_secret_rotate_in: EndpointSecretRotateIn,
+        options: Option<PostOptions>,
     ) -> Result<()> {
+        let PostOptions { idempotency_key } = options.unwrap_or_default();
+
         crate::request::Request::new(
             http1::Method::POST,
             "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate",
@@ -272,6 +279,7 @@ impl<'a> Endpoint<'a> {
         .with_path_param("app_id", app_id)
         .with_path_param("endpoint_id", endpoint_id)
         .with_body_param(endpoint_secret_rotate_in)
+        .with_optional_header_param("idempotency-key", idempotency_key)
         .returns_nothing()
         .execute(self.cfg)
         .await

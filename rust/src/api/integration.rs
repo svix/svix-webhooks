@@ -104,6 +104,7 @@ impl<'a> Integration<'a> {
     }
 
     /// Get an integration's key.
+    #[deprecated]
     pub async fn get_key(&self, app_id: String, integ_id: String) -> Result<IntegrationKeyOut> {
         crate::request::Request::new(
             http1::Method::GET,
@@ -117,13 +118,21 @@ impl<'a> Integration<'a> {
 
     /// Rotate the integration's key. The previous key will be immediately
     /// revoked.
-    pub async fn rotate_key(&self, app_id: String, integ_id: String) -> Result<IntegrationKeyOut> {
+    pub async fn rotate_key(
+        &self,
+        app_id: String,
+        integ_id: String,
+        options: Option<PostOptions>,
+    ) -> Result<IntegrationKeyOut> {
+        let PostOptions { idempotency_key } = options.unwrap_or_default();
+
         crate::request::Request::new(
             http1::Method::POST,
             "/api/v1/app/{app_id}/integration/{integ_id}/key/rotate",
         )
         .with_path_param("app_id", app_id)
         .with_path_param("integ_id", integ_id)
+        .with_optional_header_param("idempotency-key", idempotency_key)
         .execute(self.cfg)
         .await
     }
