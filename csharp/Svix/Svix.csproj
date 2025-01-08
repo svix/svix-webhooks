@@ -7,7 +7,6 @@
     <Authors>Svix</Authors>
     <Company>Svix</Company>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <LangVersion>13</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
