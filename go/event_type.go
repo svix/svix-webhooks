@@ -10,17 +10,6 @@ type EventType struct {
 	api *openapi.APIClient
 }
 
-type (
-	ListResponseEventTypeOut      = openapi.ListResponseEventTypeOut
-	EventTypeIn                   = openapi.EventTypeIn
-	EventTypeOut                  = openapi.EventTypeOut
-	EventTypePatch                = openapi.EventTypePatch
-	EventTypeUpdate               = openapi.EventTypeUpdate
-	EventTypeImportOpenApiIn      = openapi.EventTypeImportOpenApiIn
-	EventTypeImportOpenApiOut     = openapi.EventTypeImportOpenApiOut
-	EventTypeImportOpenApiOutData = openapi.EventTypeImportOpenApiOutData
-)
-
 type EventTypeListOptions struct {
 	// Limit the number of returned items
 	Limit *int32

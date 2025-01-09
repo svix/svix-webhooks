@@ -6,15 +6,6 @@ import (
 	"github.com/svix/svix-webhooks/go/internal/openapi"
 )
 
-type (
-	ListResponseOperationalWebhookEndpointOut = openapi.ListResponseOperationalWebhookEndpointOut
-	OperationalWebhookEndpointIn              = openapi.OperationalWebhookEndpointIn
-	OperationalWebhookEndpointUpdate          = openapi.OperationalWebhookEndpointUpdate
-	OperationalWebhookEndpointOut             = openapi.OperationalWebhookEndpointOut
-	OperationalWebhookEndpointSecretOut       = openapi.OperationalWebhookEndpointSecretOut
-	OperationalWebhookEndpointSecretIn        = openapi.OperationalWebhookEndpointSecretIn
-)
-
 type OperationalWebhookEndpoint struct {
 	api *openapi.APIClient
 }

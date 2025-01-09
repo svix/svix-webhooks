@@ -10,12 +10,6 @@ type Authentication struct {
 	api *openapi.APIClient
 }
 
-type (
-	AppPortalAccessIn  = openapi.AppPortalAccessIn
-	AppPortalAccessOut = openapi.AppPortalAccessOut
-	DashboardAccessOut = openapi.DashboardAccessOut
-)
-
 func (a *Authentication) AppPortalAccess(ctx context.Context, appId string, appPortalAccessIn *AppPortalAccessIn) (*AppPortalAccessOut, error) {
 	return a.AppPortalAccessWithOptions(ctx, appId, appPortalAccessIn, nil)
 }

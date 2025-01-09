@@ -6,11 +6,6 @@ import (
 	"github.com/svix/svix-webhooks/go/internal/openapi"
 )
 
-type (
-	ListResponseBackgroundTaskOut = openapi.ListResponseBackgroundTaskOut
-	BackgroundTaskOut             = openapi.BackgroundTaskOut
-)
-
 type BackgroundTask struct {
 	api *openapi.APIClient
 }
@@ -19,8 +14,8 @@ type BackgroundTaskListOptions struct {
 	Iterator *string
 	Limit    *int32
 	Order    *Ordering
-	Status   *openapi.BackgroundTaskStatus
-	Task     *openapi.BackgroundTaskType
+	Status   *BackgroundTaskStatus
+	Task     *BackgroundTaskType
 }
 
 func (a *BackgroundTask) List(ctx context.Context, options *BackgroundTaskListOptions) (*ListResponseBackgroundTaskOut, error) {

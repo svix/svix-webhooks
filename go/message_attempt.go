@@ -11,19 +11,6 @@ type MessageAttempt struct {
 	api *openapi.APIClient
 }
 
-type (
-	MessageStatus                         = openapi.MessageStatus
-	StatusCodeClass                       = openapi.StatusCodeClass
-	ListResponseMessageAttemptOut         = openapi.ListResponseMessageAttemptOut
-	MessageAttemptOut                     = openapi.MessageAttemptOut
-	ListResponseEndpointMessageOut        = openapi.ListResponseEndpointMessageOut
-	EndpointMessageOut                    = openapi.EndpointMessageOut
-	ListResponseMessageEndpointOut        = openapi.ListResponseMessageEndpointOut
-	MessageEndpointOut                    = openapi.MessageEndpointOut
-	ListResponseMessageAttemptEndpointOut = openapi.ListResponseMessageAttemptEndpointOut
-	MessageAttemptEndpointOut             = openapi.MessageAttemptEndpointOut
-)
-
 type MessageAttemptListOptions struct {
 	Iterator        *string
 	Limit           *int32
