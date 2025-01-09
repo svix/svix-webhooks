@@ -6,14 +6,6 @@ import (
 	"github.com/svix/svix-webhooks/go/internal/openapi"
 )
 
-type (
-	ListResponseIntegrationOut = openapi.ListResponseIntegrationOut
-	IntegrationIn              = openapi.IntegrationIn
-	IntegrationUpdate          = openapi.IntegrationUpdate
-	IntegrationOut             = openapi.IntegrationOut
-	IntegrationKeyOut          = openapi.IntegrationKeyOut
-)
-
 type Integration struct {
 	api *openapi.APIClient
 }

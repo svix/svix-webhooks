@@ -11,12 +11,6 @@ type Message struct {
 	api *openapi.APIClient
 }
 
-type (
-	ListResponseMessageOut = openapi.ListResponseMessageOut
-	MessageIn              = openapi.MessageIn
-	MessageOut             = openapi.MessageOut
-)
-
 type MessageListOptions struct {
 	// Limit the number of returned items
 	Limit *int32

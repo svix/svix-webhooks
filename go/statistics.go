@@ -10,12 +10,6 @@ type Statistics struct {
 	api *openapi.APIClient
 }
 
-type (
-	AppUsageStatsIn        = openapi.AppUsageStatsIn
-	AppUsageStatsOut       = openapi.AppUsageStatsOut
-	AggregateEventTypesOut = openapi.AggregateEventTypesOut
-)
-
 func (s *Statistics) AggregateAppStats(ctx context.Context, appUsageStatsIn *AppUsageStatsIn, options *PostOptions) (*AppUsageStatsOut, error) {
 	req := s.api.StatisticsAPI.V1StatisticsAggregateAppStats(ctx)
 	if appUsageStatsIn != nil {

@@ -7,28 +7,6 @@ import (
 	"github.com/svix/svix-webhooks/go/internal/openapi"
 )
 
-type (
-	ListResponseEndpointOut   = openapi.ListResponseEndpointOut
-	EndpointIn                = openapi.EndpointIn
-	EndpointUpdate            = openapi.EndpointUpdate
-	EndpointOut               = openapi.EndpointOut
-	EndpointPatch             = openapi.EndpointPatch
-	EndpointSecretOut         = openapi.EndpointSecretOut
-	EndpointSecretRotateIn    = openapi.EndpointSecretRotateIn
-	EndpointTransformationIn  = openapi.EndpointTransformationIn
-	RecoverIn                 = openapi.RecoverIn
-	ReplayIn                  = openapi.ReplayIn
-	EndpointHeadersIn         = openapi.EndpointHeadersIn
-	EndpointHeadersPatchIn    = openapi.EndpointHeadersPatchIn
-	EndpointHeadersOut        = openapi.EndpointHeadersOut
-	EndpointStats             = openapi.EndpointStats
-	EndpointTransformationOut = openapi.EndpointTransformationOut
-	EventExampleIn            = openapi.EventExampleIn
-	Ordering                  = openapi.Ordering
-	RecoverOut                = openapi.RecoverOut
-	ReplayOut                 = openapi.ReplayOut
-)
-
 type Endpoint struct {
 	api *openapi.APIClient
 }
