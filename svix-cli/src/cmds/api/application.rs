@@ -110,12 +110,7 @@ impl ApplicationCommands {
             } => {
                 let resp = client
                     .application()
-                    .patch(
-                        id,
-                        application_patch
-                            .map(|x| x.into_inner())
-                            .unwrap_or_default(),
-                    )
+                    .patch(id, application_patch.unwrap_or_default().into_inner())
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }

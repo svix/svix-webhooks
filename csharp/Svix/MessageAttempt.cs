@@ -265,6 +265,7 @@ namespace Svix
         }
 
         // Deprecated
+        [Obsolete("Use ListAttemptsByMessage instead, passing the endpoint ID through options")]
         public ListResponseMessageAttemptEndpointOut ListAttemptsForEndpoint(string appId, string messageId,
             string endpointId, AttemptsByEndpointListOptions options = null, string idempotencyKey = default)
         {
@@ -297,6 +298,7 @@ namespace Svix
         }
 
         // Deprecated
+        [Obsolete("Use ListAttemptsByMessageAsync instead, passing the endpoint ID through options")]
         public async Task<ListResponseMessageAttemptEndpointOut> ListAttemptsForEndpointAsync(string appId,
             string messageId, string endpointId, AttemptsByEndpointListOptions options = null, string idempotencyKey = default,
             CancellationToken cancellationToken = default)
@@ -331,6 +333,7 @@ namespace Svix
         }
 
         // Deprecated
+        [Obsolete("Use ListAttemptsByEndpoint or ListAttemptsByMessage instead")]
         public ListResponseMessageAttemptOut ListAttempts(string appId, string messageId, MessageAttemptListOptions options = null,
             string idempotencyKey = default)
         {
@@ -364,6 +367,7 @@ namespace Svix
         }
 
         // Deprecated
+        [Obsolete("Use ListAttemptsByEndpointAsync or ListAttemptsByMessageAsync instead")]
         public async Task<ListResponseMessageAttemptOut> ListAttemptsAsync(string appId, string messageId, MessageAttemptListOptions options = null,
             string idempotencyKey = default, CancellationToken cancellationToken = default)
         {

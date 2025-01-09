@@ -42,6 +42,19 @@ impl From<EventTypeListOptions> for svix::api::EventTypeListOptions {
     }
 }
 
+#[derive(Args, Clone)]
+pub struct EventTypeDeleteOptions {
+    /// By default event types are archived when "deleted". Passing this to `true` deletes them entirely.
+    #[arg(long)]
+    pub expunge: Option<bool>,
+}
+
+impl From<EventTypeDeleteOptions> for svix::api::EventTypeDeleteOptions {
+    fn from(EventTypeDeleteOptions { expunge }: EventTypeDeleteOptions) -> Self {
+        Self { expunge }
+    }
+}
+
 #[derive(Args)]
 #[command(args_conflicts_with_subcommands = true)]
 #[command(flatten_help = true)]
@@ -92,9 +105,8 @@ pub enum EventTypeCommands {
     /// [create operation](#operation/create_event_type_api_v1_event_type__post).
     Delete {
         event_type_name: String,
-        // FIXME: need to get the options happening in the SDK for this
-        // #[clap(flatten)]
-        // options: EventTypeDeleteOptions,
+        #[clap(flatten)]
+        options: EventTypeDeleteOptions,
     },
     /// Partially update an event type.
     Patch {
@@ -132,8 +144,8 @@ impl EventTypeCommands {
                     .event_type()
                     .import_openapi(
                         event_type_import_open_api_in
-                            .map(|x| x.into_inner())
-                            .unwrap_or_default(),
+                            .unwrap_or_default()
+                            .into_inner(),
                         post_options.map(Into::into),
                     )
                     .await?;
@@ -155,15 +167,11 @@ impl EventTypeCommands {
             }
             Self::Delete {
                 event_type_name,
-                // FIXME: need to get the options happening in the SDK for this
-                // options,
+                options,
             } => {
                 client
                     .event_type()
-                    .delete(
-                        event_type_name,
-                        // Some(options.into())
-                    )
+                    .delete(event_type_name, Some(options.into()))
                     .await?;
             }
             Self::Patch {
@@ -174,7 +182,7 @@ impl EventTypeCommands {
                     .event_type()
                     .patch(
                         event_type_name,
-                        event_type_patch.map(|x| x.into_inner()).unwrap_or_default(),
+                        event_type_patch.unwrap_or_default().into_inner(),
                     )
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;

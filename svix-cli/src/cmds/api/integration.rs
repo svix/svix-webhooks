@@ -69,7 +69,12 @@ pub enum IntegrationCommands {
     /// Get an integration's key.
     GetKey { app_id: String, id: String },
     /// Rotate the integration's key. The previous key will be immediately revoked.
-    RotateKey { app_id: String, id: String },
+    RotateKey {
+        app_id: String,
+        id: String,
+        #[clap(flatten)]
+        post_options: Option<PostOptions>,
+    },
 }
 
 impl IntegrationCommands {
@@ -120,11 +125,19 @@ impl IntegrationCommands {
                 client.integration().delete(app_id, id).await?;
             }
             Self::GetKey { app_id, id } => {
+                #[allow(deprecated)]
                 let resp = client.integration().get_key(app_id, id).await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
-            Self::RotateKey { app_id, id } => {
-                let resp = client.integration().rotate_key(app_id, id).await?;
+            Self::RotateKey {
+                app_id,
+                id,
+                post_options,
+            } => {
+                let resp = client
+                    .integration()
+                    .rotate_key(app_id, id, post_options.map(Into::into))
+                    .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
         }

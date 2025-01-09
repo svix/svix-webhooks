@@ -28,7 +28,7 @@ pub use self::{
     authentication::Authentication,
     background_task::{BackgroundTask, BackgroundTaskListOptions},
     endpoint::{Endpoint, EndpointGetStatsOptions, EndpointListOptions},
-    event_type::{EventType, EventTypeListOptions},
+    event_type::{EventType, EventTypeDeleteOptions, EventTypeListOptions},
     integration::{Integration, IntegrationListOptions},
     message::{Message, MessageListOptions},
     message_attempt::{

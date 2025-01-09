@@ -6,7 +6,6 @@
 //! The main entry points of this library are the API client [`api::Svix`], and
 //! [`webhooks::Webhook`].
 
-#![warn(clippy::all)]
 #![forbid(unsafe_code)]
 
 use std::time::Duration;

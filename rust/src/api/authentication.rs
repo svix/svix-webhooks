@@ -10,23 +10,6 @@ impl<'a> Authentication<'a> {
         Self { cfg }
     }
 
-    pub async fn dashboard_access(
-        &self,
-        app_id: String,
-        options: Option<PostOptions>,
-    ) -> Result<DashboardAccessOut> {
-        let PostOptions { idempotency_key } = options.unwrap_or_default();
-
-        crate::request::Request::new(
-            http1::Method::POST,
-            "/api/v1/auth/dashboard-access/{app_id}",
-        )
-        .with_path_param("app_id", app_id)
-        .with_optional_header_param("idempotency-key", idempotency_key)
-        .execute(self.cfg)
-        .await
-    }
-
     /// Use this function to get magic links (and authentication codes) for
     /// connecting your users to the Consumer Application Portal.
     pub async fn app_portal_access(
@@ -64,6 +47,28 @@ impl<'a> Authentication<'a> {
             .returns_nothing()
             .execute(self.cfg)
             .await
+    }
+
+    /// DEPRECATED: Please use `app-portal-access` instead.
+    ///
+    /// Use this function to get magic links (and authentication codes) for
+    /// connecting your users to the Consumer Application Portal.
+    #[deprecated]
+    pub async fn dashboard_access(
+        &self,
+        app_id: String,
+        options: Option<PostOptions>,
+    ) -> Result<DashboardAccessOut> {
+        let PostOptions { idempotency_key } = options.unwrap_or_default();
+
+        crate::request::Request::new(
+            http1::Method::POST,
+            "/api/v1/auth/dashboard-access/{app_id}",
+        )
+        .with_path_param("app_id", app_id)
+        .with_optional_header_param("idempotency-key", idempotency_key)
+        .execute(self.cfg)
+        .await
     }
 
     /// Logout an app token.
