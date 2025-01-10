@@ -30,7 +30,11 @@ type MessageListOptions struct {
 	EventTypes *[]string
 }
 
-func (m *Message) List(ctx context.Context, appId string, options *MessageListOptions) (*ListResponseMessageOut, error) {
+func (m *Message) List(
+	ctx context.Context,
+	appId string,
+	options *MessageListOptions,
+) (*ListResponseMessageOut, error) {
 	req := m.api.MessageAPI.V1MessageList(ctx, appId)
 	if options != nil {
 		if options.Iterator != nil {
@@ -65,11 +69,20 @@ func (m *Message) List(ctx context.Context, appId string, options *MessageListOp
 	return ret, nil
 }
 
-func (m *Message) Create(ctx context.Context, appId string, messageIn *MessageIn) (*MessageOut, error) {
+func (m *Message) Create(
+	ctx context.Context,
+	appId string,
+	messageIn *MessageIn,
+) (*MessageOut, error) {
 	return m.CreateWithOptions(ctx, appId, messageIn, nil)
 }
 
-func (m *Message) CreateWithOptions(ctx context.Context, appId string, messageIn *MessageIn, options *PostOptions) (*MessageOut, error) {
+func (m *Message) CreateWithOptions(
+	ctx context.Context,
+	appId string,
+	messageIn *MessageIn,
+	options *PostOptions,
+) (*MessageOut, error) {
 	req := m.api.MessageAPI.V1MessageCreate(ctx, appId)
 	req = req.MessageIn(*messageIn)
 	if options != nil {
@@ -84,7 +97,11 @@ func (m *Message) CreateWithOptions(ctx context.Context, appId string, messageIn
 	return ret, nil
 }
 
-func (m *Message) Get(ctx context.Context, appId string, msgId string) (*MessageOut, error) {
+func (m *Message) Get(
+	ctx context.Context,
+	appId string,
+	msgId string,
+) (*MessageOut, error) {
 	req := m.api.MessageAPI.V1MessageGet(ctx, appId, msgId)
 	ret, res, err := req.Execute()
 	if err != nil {
@@ -93,7 +110,11 @@ func (m *Message) Get(ctx context.Context, appId string, msgId string) (*Message
 	return ret, nil
 }
 
-func (m *Message) ExpungeContent(ctx context.Context, appId string, msgId string) error {
+func (m *Message) ExpungeContent(
+	ctx context.Context,
+	appId string,
+	msgId string,
+) error {
 	req := m.api.MessageAPI.V1MessageExpungeContent(ctx, appId, msgId)
 	res, err := req.Execute()
 	return wrapError(err, res)
@@ -111,7 +132,11 @@ func (m *Message) ExpungeContent(ctx context.Context, appId string, msgId string
 // of the webhook sent by Svix overriding the default of `application/json`.
 //
 // See the class documentation for details about the other parameters.
-func NewMessageInRaw(eventType string, payload string, contentType openapi.NullableString) *MessageIn {
+func NewMessageInRaw(
+	eventType string,
+	payload string,
+	contentType openapi.NullableString,
+) *MessageIn {
 	msgIn := openapi.NewMessageIn(eventType, make(map[string]interface{}))
 
 	transformationsParams := map[string]interface{}{
