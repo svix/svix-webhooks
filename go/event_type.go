@@ -17,63 +17,88 @@ type EventTypeListOptions struct {
 	Iterator *string
 	// The sorting order of the returned items
 	Order *Ordering
-	// When `true` archived (deleted but not expunged) items are included in the response
+	// When `true` archived (deleted but not expunged) items are included in the response.
 	IncludeArchived *bool
-	// When `true` the full item (including the schema) is included in the response
+	// When `true` the full item (including the schema) is included in the response.
 	WithContent *bool
 }
 
-func (e *EventType) List(
+// Return the list of event types.
+func (eventType *EventType) List(
 	ctx context.Context,
 	options *EventTypeListOptions,
 ) (*ListResponseEventTypeOut, error) {
-	req := e.api.EventTypeAPI.V1EventTypeList(ctx)
+	req := eventType.api.EventTypeAPI.V1EventTypeList(
+		ctx,
+	)
+
 	if options != nil {
-		if options.Iterator != nil {
-			req = req.Iterator(*options.Iterator)
-		}
 		if options.Limit != nil {
 			req = req.Limit(*options.Limit)
 		}
-		if options.WithContent != nil {
-			req = req.WithContent(*options.WithContent)
-		}
-		if options.IncludeArchived != nil {
-			req = req.IncludeArchived(*options.IncludeArchived)
+		if options.Iterator != nil {
+			req = req.Iterator(*options.Iterator)
 		}
 		if options.Order != nil {
 			req = req.Order(*options.Order)
 		}
+		if options.IncludeArchived != nil {
+			req = req.IncludeArchived(*options.IncludeArchived)
+		}
+		if options.WithContent != nil {
+			req = req.WithContent(*options.WithContent)
+		}
 	}
+
 	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
+
 	return ret, nil
 }
 
-func (e *EventType) Create(
+// Create new or unarchive existing event type.
+//
+// Unarchiving an event type will allow endpoints to filter on it and messages to be sent with it.
+// Endpoints filtering on the event type before archival will continue to filter on it.
+// This operation does not preserve the description and schemas.
+func (eventType *EventType) Create(
 	ctx context.Context,
 	eventTypeIn *EventTypeIn,
 ) (*EventTypeOut, error) {
-	return e.CreateWithOptions(ctx, eventTypeIn, nil)
+	return eventType.CreateWithOptions(
+		ctx,
+		eventTypeIn,
+		nil,
+	)
 }
 
-func (e *EventType) CreateWithOptions(
+// Create new or unarchive existing event type.
+//
+// Unarchiving an event type will allow endpoints to filter on it and messages to be sent with it.
+// Endpoints filtering on the event type before archival will continue to filter on it.
+// This operation does not preserve the description and schemas.
+func (eventType *EventType) CreateWithOptions(
 	ctx context.Context,
-	eventTypeIn *EventTypeIn, options *PostOptions,
+	eventTypeIn *EventTypeIn,
+	options *PostOptions,
 ) (*EventTypeOut, error) {
-	req := e.api.EventTypeAPI.V1EventTypeCreate(ctx)
-	req = req.EventTypeIn(*eventTypeIn)
+	req := eventType.api.EventTypeAPI.V1EventTypeCreate(
+		ctx,
+	).EventTypeIn(*eventTypeIn)
+
 	if options != nil {
 		if options.IdempotencyKey != nil {
 			req = req.IdempotencyKey(*options.IdempotencyKey)
 		}
 	}
+
 	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
+
 	return ret, nil
 }
 
@@ -86,6 +111,7 @@ func (e *EventType) Get(
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
+
 	return ret, nil
 }
 
@@ -100,6 +126,7 @@ func (e *EventType) Update(
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
+
 	return ret, nil
 }
 
@@ -114,26 +141,32 @@ func (e *EventType) Patch(
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
+
 	return ret, nil
 }
 
-func (e *EventType) Delete(
+// Archive an event type.
+//
+// Endpoints already configured to filter on an event type will continue to do so after archival.
+// However, new messages can not be sent with it and endpoints can not filter on it.
+// An event type can be unarchived with the create operation.
+func (eventType *EventType) Delete(
 	ctx context.Context,
 	eventTypeName string,
 ) error {
-	return e.DeleteWithOptions(ctx, eventTypeName, nil)
+	return eventType.DeleteWithOptions(ctx, eventTypeName, nil)
 }
 
 type EventTypeDeleteOptions struct {
 	Expunge *bool
 }
 
-func (e *EventType) DeleteWithOptions(
+func (eventType *EventType) DeleteWithOptions(
 	ctx context.Context,
 	eventTypeName string,
 	options *EventTypeDeleteOptions,
 ) error {
-	req := e.api.EventTypeAPI.V1EventTypeDelete(ctx, eventTypeName)
+	req := eventType.api.EventTypeAPI.V1EventTypeDelete(ctx, eventTypeName)
 	if options != nil {
 		if options.Expunge != nil {
 			req = req.Expunge(*options.Expunge)
@@ -163,5 +196,6 @@ func (e *EventType) ImportOpenApiWithOptions(
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
+
 	return ret, nil
 }

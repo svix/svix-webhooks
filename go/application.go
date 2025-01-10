@@ -19,52 +19,68 @@ type ApplicationListOptions struct {
 	Order *Ordering
 }
 
-func (a *Application) List(
+// List of all the organization's applications.
+func (application *Application) List(
 	ctx context.Context,
 	options *ApplicationListOptions,
 ) (*ListResponseApplicationOut, error) {
-	req := a.api.ApplicationAPI.V1ApplicationList(ctx)
+	req := application.api.ApplicationAPI.V1ApplicationList(
+		ctx,
+	)
+
 	if options != nil {
-		if options.Iterator != nil {
-			req = req.Iterator(*options.Iterator)
-		}
 		if options.Limit != nil {
 			req = req.Limit(*options.Limit)
+		}
+		if options.Iterator != nil {
+			req = req.Iterator(*options.Iterator)
 		}
 		if options.Order != nil {
 			req = req.Order(*options.Order)
 		}
 	}
+
 	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
+
 	return ret, nil
 }
 
-func (a *Application) Create(
+// Create a new application.
+func (application *Application) Create(
 	ctx context.Context,
 	applicationIn *ApplicationIn,
 ) (*ApplicationOut, error) {
-	return a.CreateWithOptions(ctx, applicationIn, nil)
+	return application.CreateWithOptions(
+		ctx,
+		applicationIn,
+		nil,
+	)
 }
 
-func (a *Application) CreateWithOptions(
+// Create a new application.
+func (application *Application) CreateWithOptions(
 	ctx context.Context,
 	applicationIn *ApplicationIn,
 	options *PostOptions,
 ) (*ApplicationOut, error) {
-	req := a.api.ApplicationAPI.V1ApplicationCreate(ctx)
-	req = req.ApplicationIn(*applicationIn)
+	req := application.api.ApplicationAPI.V1ApplicationCreate(
+		ctx,
+	).ApplicationIn(*applicationIn)
+
 	if options != nil {
 		if options.IdempotencyKey != nil {
 			req = req.IdempotencyKey(*options.IdempotencyKey)
 		}
 	}
+
 	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
+
 	return ret, nil
 }
 
@@ -95,29 +111,40 @@ func (a *Application) GetOrCreateWithOptions(
 	return ret, nil
 }
 
-func (a *Application) Get(
+// Get an application.
+func (application *Application) Get(
 	ctx context.Context,
 	appId string,
 ) (*ApplicationOut, error) {
-	req := a.api.ApplicationAPI.V1ApplicationGet(ctx, appId)
+	req := application.api.ApplicationAPI.V1ApplicationGet(
+		ctx,
+		appId,
+	)
+
 	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
+
 	return ret, nil
 }
 
-func (a *Application) Update(
+// Update an application.
+func (application *Application) Update(
 	ctx context.Context,
 	appId string,
 	applicationIn *ApplicationIn,
 ) (*ApplicationOut, error) {
-	req := a.api.ApplicationAPI.V1ApplicationUpdate(ctx, appId)
-	req = req.ApplicationIn(*applicationIn)
+	req := application.api.ApplicationAPI.V1ApplicationUpdate(
+		ctx,
+		appId,
+	).ApplicationIn(*applicationIn)
+
 	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
+
 	return ret, nil
 }
 
