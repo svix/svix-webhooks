@@ -27,83 +27,119 @@ type EndpointStatsOptions struct {
 	Until *time.Time
 }
 
-func (e *Endpoint) List(
+// List the application's endpoints.
+func (endpoint *Endpoint) List(
 	ctx context.Context,
 	appId string,
 	options *EndpointListOptions,
 ) (*ListResponseEndpointOut, error) {
-	req := e.api.EndpointAPI.V1EndpointList(ctx, appId)
+	req := endpoint.api.EndpointAPI.V1EndpointList(
+		ctx,
+		appId,
+	)
+
 	if options != nil {
-		if options.Iterator != nil {
-			req = req.Iterator(*options.Iterator)
-		}
 		if options.Limit != nil {
 			req = req.Limit(*options.Limit)
+		}
+		if options.Iterator != nil {
+			req = req.Iterator(*options.Iterator)
 		}
 		if options.Order != nil {
 			req = req.Order(*options.Order)
 		}
 	}
+
 	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
+
 	return ret, nil
 }
 
-func (e *Endpoint) Create(
+// Create a new endpoint for the application.
+//
+// When `secret` is `null` the secret is automatically generated (recommended).
+func (endpoint *Endpoint) Create(
 	ctx context.Context,
 	appId string,
 	endpointIn *EndpointIn,
 ) (*EndpointOut, error) {
-	return e.CreateWithOptions(ctx, appId, endpointIn, nil)
+	return endpoint.CreateWithOptions(
+		ctx,
+		appId,
+		endpointIn,
+		nil,
+	)
 }
 
-func (e *Endpoint) CreateWithOptions(
+// Create a new endpoint for the application.
+//
+// When `secret` is `null` the secret is automatically generated (recommended).
+func (endpoint *Endpoint) CreateWithOptions(
 	ctx context.Context,
 	appId string,
 	endpointIn *EndpointIn,
 	options *PostOptions,
 ) (*EndpointOut, error) {
-	req := e.api.EndpointAPI.V1EndpointCreate(ctx, appId)
-	req = req.EndpointIn(*endpointIn)
+	req := endpoint.api.EndpointAPI.V1EndpointCreate(
+		ctx,
+		appId,
+	).EndpointIn(*endpointIn)
+
 	if options != nil {
 		if options.IdempotencyKey != nil {
 			req = req.IdempotencyKey(*options.IdempotencyKey)
 		}
 	}
+
 	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
+
 	return ret, nil
 }
 
-func (e *Endpoint) Get(
+// Get an endpoint.
+func (endpoint *Endpoint) Get(
 	ctx context.Context,
 	appId string,
 	endpointId string,
 ) (*EndpointOut, error) {
-	req := e.api.EndpointAPI.V1EndpointGet(ctx, appId, endpointId)
+	req := endpoint.api.EndpointAPI.V1EndpointGet(
+		ctx,
+		appId,
+		endpointId,
+	)
+
 	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
+
 	return ret, nil
 }
 
-func (e *Endpoint) Update(
+// Update an endpoint.
+func (endpoint *Endpoint) Update(
 	ctx context.Context,
 	appId string,
 	endpointId string,
 	endpointUpdate *EndpointUpdate,
 ) (*EndpointOut, error) {
-	req := e.api.EndpointAPI.V1EndpointUpdate(ctx, appId, endpointId)
-	req = req.EndpointUpdate(*endpointUpdate)
+	req := endpoint.api.EndpointAPI.V1EndpointUpdate(
+		ctx,
+		appId,
+		endpointId,
+	).EndpointUpdate(*endpointUpdate)
+
 	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
+
 	return ret, nil
 }
 
@@ -276,33 +312,53 @@ func (e *Endpoint) GetStatsWithOptions(
 	return ret, nil
 }
 
-func (e *Endpoint) ReplayMissing(
+// Replays messages to the endpoint.
+//
+// Only messages that were created after `since` will be sent.
+// Messages that were previously sent to the endpoint are not resent.
+func (endpoint *Endpoint) ReplayMissing(
 	ctx context.Context,
 	appId string,
 	endpointId string,
 	replayIn *ReplayIn,
 ) (*ReplayOut, error) {
-	return e.ReplayMissingWithOptions(ctx, appId, endpointId, replayIn, nil)
+	return endpoint.ReplayMissingWithOptions(
+		ctx,
+		appId,
+		endpointId,
+		replayIn,
+		nil,
+	)
 }
 
-func (e *Endpoint) ReplayMissingWithOptions(
+// Replays messages to the endpoint.
+//
+// Only messages that were created after `since` will be sent.
+// Messages that were previously sent to the endpoint are not resent.
+func (endpoint *Endpoint) ReplayMissingWithOptions(
 	ctx context.Context,
 	appId string,
 	endpointId string,
 	replayIn *ReplayIn,
 	options *PostOptions,
 ) (*ReplayOut, error) {
-	req := e.api.EndpointAPI.V1EndpointReplayMissing(ctx, appId, endpointId)
-	req.ReplayIn(*replayIn)
+	req := endpoint.api.EndpointAPI.V1EndpointReplayMissing(
+		ctx,
+		appId,
+		endpointId,
+	).ReplayIn(*replayIn)
+
 	if options != nil {
 		if options.IdempotencyKey != nil {
 			req = req.IdempotencyKey(*options.IdempotencyKey)
 		}
 	}
+
 	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
+
 	return ret, nil
 }
 
@@ -316,6 +372,7 @@ func (e *Endpoint) TransformationGet(
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
+
 	return ret, nil
 }
 
