@@ -168,79 +168,6 @@ func (e *Endpoint) Patch(
 	return ret, nil
 }
 
-func (e *Endpoint) GetSecret(
-	ctx context.Context,
-	appId string,
-	endpointId string,
-) (*EndpointSecretOut, error) {
-	req := e.api.EndpointAPI.V1EndpointGetSecret(ctx, appId, endpointId)
-	ret, res, err := req.Execute()
-	if err != nil {
-		return nil, wrapError(err, res)
-	}
-	return ret, nil
-}
-
-func (e *Endpoint) RotateSecret(
-	ctx context.Context,
-	appId string,
-	endpointId string,
-	endpointSecretRotateIn *EndpointSecretRotateIn,
-) error {
-	return e.RotateSecretWithOptions(ctx, appId, endpointId, endpointSecretRotateIn, nil)
-}
-
-func (e *Endpoint) RotateSecretWithOptions(
-	ctx context.Context,
-	appId string,
-	endpointId string,
-	endpointSecretRotateIn *EndpointSecretRotateIn,
-	options *PostOptions,
-) error {
-	req := e.api.EndpointAPI.V1EndpointRotateSecret(ctx, appId, endpointId)
-	req = req.EndpointSecretRotateIn(*endpointSecretRotateIn)
-	if options != nil {
-		if options.IdempotencyKey != nil {
-			req = req.IdempotencyKey(*options.IdempotencyKey)
-		}
-	}
-	res, err := req.Execute()
-	if err != nil {
-		return wrapError(err, res)
-	}
-	return nil
-}
-
-func (e *Endpoint) Recover(
-	ctx context.Context,
-	appId string,
-	endpointId string,
-	recoverIn *RecoverIn,
-) (*RecoverOut, error) {
-	return e.RecoverWithOptions(ctx, appId, endpointId, recoverIn, nil)
-}
-
-func (e *Endpoint) RecoverWithOptions(
-	ctx context.Context,
-	appId string,
-	endpointId string,
-	recoverIn *RecoverIn,
-	options *PostOptions,
-) (*RecoverOut, error) {
-	req := e.api.EndpointAPI.V1EndpointRecover(ctx, appId, endpointId)
-	req = req.RecoverIn(*recoverIn)
-	if options != nil {
-		if options.IdempotencyKey != nil {
-			req = req.IdempotencyKey(*options.IdempotencyKey)
-		}
-	}
-	ret, res, err := req.Execute()
-	if err != nil {
-		return nil, wrapError(err, res)
-	}
-	return ret, nil
-}
-
 func (e *Endpoint) GetHeaders(
 	ctx context.Context,
 	appId string,
@@ -284,26 +211,28 @@ func (e *Endpoint) PatchHeaders(
 	return nil
 }
 
-func (e *Endpoint) GetStats(
+func (e *Endpoint) Recover(
 	ctx context.Context,
 	appId string,
 	endpointId string,
-) (*EndpointStats, error) {
-	return e.GetStatsWithOptions(ctx, appId, endpointId, EndpointStatsOptions{})
+	recoverIn *RecoverIn,
+) (*RecoverOut, error) {
+	return e.RecoverWithOptions(ctx, appId, endpointId, recoverIn, nil)
 }
 
-func (e *Endpoint) GetStatsWithOptions(
+func (e *Endpoint) RecoverWithOptions(
 	ctx context.Context,
 	appId string,
 	endpointId string,
-	options EndpointStatsOptions,
-) (*EndpointStats, error) {
-	req := e.api.EndpointAPI.V1EndpointGetStats(ctx, appId, endpointId)
-	if options.Since != nil {
-		req = req.Since(*options.Since)
-	}
-	if options.Until != nil {
-		req = req.Until(*options.Until)
+	recoverIn *RecoverIn,
+	options *PostOptions,
+) (*RecoverOut, error) {
+	req := e.api.EndpointAPI.V1EndpointRecover(ctx, appId, endpointId)
+	req = req.RecoverIn(*recoverIn)
+	if options != nil {
+		if options.IdempotencyKey != nil {
+			req = req.IdempotencyKey(*options.IdempotencyKey)
+		}
 	}
 	ret, res, err := req.Execute()
 	if err != nil {
@@ -362,33 +291,46 @@ func (endpoint *Endpoint) ReplayMissingWithOptions(
 	return ret, nil
 }
 
-func (e *Endpoint) TransformationGet(
+func (e *Endpoint) GetSecret(
 	ctx context.Context,
 	appId string,
 	endpointId string,
-) (*EndpointTransformationOut, error) {
-	req := e.api.EndpointAPI.V1EndpointTransformationGet(ctx, appId, endpointId)
+) (*EndpointSecretOut, error) {
+	req := e.api.EndpointAPI.V1EndpointGetSecret(ctx, appId, endpointId)
 	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
-
 	return ret, nil
 }
 
-func (e *Endpoint) TransformationPartialUpdate(
+func (e *Endpoint) RotateSecret(
 	ctx context.Context,
 	appId string,
-	endpointId string, transformation *EndpointTransformationIn,
+	endpointId string,
+	endpointSecretRotateIn *EndpointSecretRotateIn,
 ) error {
-	req := e.api.EndpointAPI.V1EndpointTransformationPartialUpdate(ctx, appId, endpointId)
-	req = req.EndpointTransformationIn(*transformation)
+	return e.RotateSecretWithOptions(ctx, appId, endpointId, endpointSecretRotateIn, nil)
+}
 
+func (e *Endpoint) RotateSecretWithOptions(
+	ctx context.Context,
+	appId string,
+	endpointId string,
+	endpointSecretRotateIn *EndpointSecretRotateIn,
+	options *PostOptions,
+) error {
+	req := e.api.EndpointAPI.V1EndpointRotateSecret(ctx, appId, endpointId)
+	req = req.EndpointSecretRotateIn(*endpointSecretRotateIn)
+	if options != nil {
+		if options.IdempotencyKey != nil {
+			req = req.IdempotencyKey(*options.IdempotencyKey)
+		}
+	}
 	res, err := req.Execute()
 	if err != nil {
 		return wrapError(err, res)
 	}
-
 	return nil
 }
 
@@ -422,4 +364,62 @@ func (e *Endpoint) SendExampleWithOptions(
 		return nil, wrapError(err, res)
 	}
 	return ret, nil
+}
+
+func (e *Endpoint) GetStats(
+	ctx context.Context,
+	appId string,
+	endpointId string,
+) (*EndpointStats, error) {
+	return e.GetStatsWithOptions(ctx, appId, endpointId, EndpointStatsOptions{})
+}
+
+func (e *Endpoint) GetStatsWithOptions(
+	ctx context.Context,
+	appId string,
+	endpointId string,
+	options EndpointStatsOptions,
+) (*EndpointStats, error) {
+	req := e.api.EndpointAPI.V1EndpointGetStats(ctx, appId, endpointId)
+	if options.Since != nil {
+		req = req.Since(*options.Since)
+	}
+	if options.Until != nil {
+		req = req.Until(*options.Until)
+	}
+	ret, res, err := req.Execute()
+	if err != nil {
+		return nil, wrapError(err, res)
+	}
+	return ret, nil
+}
+
+func (e *Endpoint) TransformationGet(
+	ctx context.Context,
+	appId string,
+	endpointId string,
+) (*EndpointTransformationOut, error) {
+	req := e.api.EndpointAPI.V1EndpointTransformationGet(ctx, appId, endpointId)
+	ret, res, err := req.Execute()
+	if err != nil {
+		return nil, wrapError(err, res)
+	}
+
+	return ret, nil
+}
+
+func (e *Endpoint) TransformationPartialUpdate(
+	ctx context.Context,
+	appId string,
+	endpointId string, transformation *EndpointTransformationIn,
+) error {
+	req := e.api.EndpointAPI.V1EndpointTransformationPartialUpdate(ctx, appId, endpointId)
+	req = req.EndpointTransformationIn(*transformation)
+
+	res, err := req.Execute()
+	if err != nil {
+		return wrapError(err, res)
+	}
+
+	return nil
 }
