@@ -1,3 +1,4 @@
+// this file is @generated
 package svix
 
 import (
@@ -48,6 +49,42 @@ func (authentication *Authentication) AppPortalAccessWithOptions(
 	}
 
 	return ret, nil
+}
+
+// Expire all of the tokens associated with a specific application.
+func (authentication *Authentication) ExpireAll(
+	ctx context.Context,
+	appId string,
+	applicationTokenExpireIn *ApplicationTokenExpireIn,
+) error {
+	return authentication.ExpireAllWithOptions(
+		ctx,
+		appId,
+		applicationTokenExpireIn,
+		nil,
+	)
+}
+
+// Expire all of the tokens associated with a specific application.
+func (authentication *Authentication) ExpireAllWithOptions(
+	ctx context.Context,
+	appId string,
+	applicationTokenExpireIn *ApplicationTokenExpireIn,
+	options *PostOptions,
+) error {
+	req := authentication.api.AuthenticationAPI.V1AuthenticationExpireAll(
+		ctx,
+		appId,
+	).ApplicationTokenExpireIn(*applicationTokenExpireIn)
+
+	if options != nil {
+		if options.IdempotencyKey != nil {
+			req = req.IdempotencyKey(*options.IdempotencyKey)
+		}
+	}
+
+	res, err := req.Execute()
+	return wrapError(err, res)
 }
 
 // DEPRECATED: Please use `app-portal-access` instead.

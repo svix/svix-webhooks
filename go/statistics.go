@@ -1,3 +1,4 @@
+// this file is @generated
 package svix
 
 import (
@@ -15,6 +16,21 @@ type Statistics struct {
 // Note that this endpoint is asynchronous. You will need to poll the `Get Background Task` endpoint to
 // retrieve the results of the operation.
 func (statistics *Statistics) AggregateAppStats(
+	ctx context.Context,
+	appUsageStatsIn *AppUsageStatsIn,
+) (*AppUsageStatsOut, error) {
+	return statistics.AggregateAppStatsWithOptions(
+		ctx,
+		appUsageStatsIn,
+		nil,
+	)
+}
+
+// Creates a background task to calculate the message destinations for all applications in the environment.
+//
+// Note that this endpoint is asynchronous. You will need to poll the `Get Background Task` endpoint to
+// retrieve the results of the operation.
+func (statistics *Statistics) AggregateAppStatsWithOptions(
 	ctx context.Context,
 	appUsageStatsIn *AppUsageStatsIn,
 	options *PostOptions,

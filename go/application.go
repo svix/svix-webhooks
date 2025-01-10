@@ -1,3 +1,4 @@
+// this file is @generated
 package svix
 
 import (
@@ -84,33 +85,6 @@ func (application *Application) CreateWithOptions(
 	return ret, nil
 }
 
-func (a *Application) GetOrCreate(
-	ctx context.Context,
-	applicationIn *ApplicationIn,
-) (*ApplicationOut, error) {
-	return a.GetOrCreateWithOptions(ctx, applicationIn, nil)
-}
-
-func (a *Application) GetOrCreateWithOptions(
-	ctx context.Context,
-	applicationIn *ApplicationIn,
-	options *PostOptions,
-) (*ApplicationOut, error) {
-	req := a.api.ApplicationAPI.V1ApplicationCreate(ctx)
-	req = req.ApplicationIn(*applicationIn)
-	req = req.GetIfExists(true)
-	if options != nil {
-		if options.IdempotencyKey != nil {
-			req = req.IdempotencyKey(*options.IdempotencyKey)
-		}
-	}
-	ret, res, err := req.Execute()
-	if err != nil {
-		return nil, wrapError(err, res)
-	}
-	return ret, nil
-}
-
 // Get an application.
 func (application *Application) Get(
 	ctx context.Context,
@@ -148,25 +122,35 @@ func (application *Application) Update(
 	return ret, nil
 }
 
-func (a *Application) Patch(
+// Delete an application.
+func (application *Application) Delete(
+	ctx context.Context,
+	appId string,
+) error {
+	req := application.api.ApplicationAPI.V1ApplicationDelete(
+		ctx,
+		appId,
+	)
+
+	res, err := req.Execute()
+	return wrapError(err, res)
+}
+
+// Partially update an application.
+func (application *Application) Patch(
 	ctx context.Context,
 	appId string,
 	applicationPatch *ApplicationPatch,
 ) (*ApplicationOut, error) {
-	req := a.api.ApplicationAPI.V1ApplicationPatch(ctx, appId)
-	req = req.ApplicationPatch(*applicationPatch)
+	req := application.api.ApplicationAPI.V1ApplicationPatch(
+		ctx,
+		appId,
+	).ApplicationPatch(*applicationPatch)
+
 	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
-	return ret, nil
-}
 
-func (a *Application) Delete(
-	ctx context.Context,
-	appId string,
-) error {
-	req := a.api.ApplicationAPI.V1ApplicationDelete(ctx, appId)
-	res, err := req.Execute()
-	return wrapError(err, res)
+	return ret, nil
 }

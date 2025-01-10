@@ -34,6 +34,7 @@ type (
 	ApplicationIn                             = openapi.ApplicationIn
 	ApplicationOut                            = openapi.ApplicationOut
 	ApplicationPatch                          = openapi.ApplicationPatch
+	ApplicationTokenExpireIn                  = openapi.ApplicationTokenExpireIn
 	AppPortalAccessIn                         = openapi.AppPortalAccessIn
 	AppPortalAccessOut                        = openapi.AppPortalAccessOut
 	AppUsageStatsIn                           = openapi.AppUsageStatsIn
@@ -95,6 +96,9 @@ type (
 	ReplayIn                                  = openapi.ReplayIn
 	ReplayOut                                 = openapi.ReplayOut
 	StatusCodeClass                           = openapi.StatusCodeClass
+
+	// Deprecated: Use EndpointGetStatsOptions directly
+	EndpointStatsOptions = EndpointGetStatsOptions
 )
 
 var defaultHTTPClient = &http.Client{
