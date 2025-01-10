@@ -19,7 +19,10 @@ type ApplicationListOptions struct {
 	Order *Ordering
 }
 
-func (a *Application) List(ctx context.Context, options *ApplicationListOptions) (*ListResponseApplicationOut, error) {
+func (a *Application) List(
+	ctx context.Context,
+	options *ApplicationListOptions,
+) (*ListResponseApplicationOut, error) {
 	req := a.api.ApplicationAPI.V1ApplicationList(ctx)
 	if options != nil {
 		if options.Iterator != nil {
@@ -39,11 +42,18 @@ func (a *Application) List(ctx context.Context, options *ApplicationListOptions)
 	return ret, nil
 }
 
-func (a *Application) Create(ctx context.Context, applicationIn *ApplicationIn) (*ApplicationOut, error) {
+func (a *Application) Create(
+	ctx context.Context,
+	applicationIn *ApplicationIn,
+) (*ApplicationOut, error) {
 	return a.CreateWithOptions(ctx, applicationIn, nil)
 }
 
-func (a *Application) CreateWithOptions(ctx context.Context, applicationIn *ApplicationIn, options *PostOptions) (*ApplicationOut, error) {
+func (a *Application) CreateWithOptions(
+	ctx context.Context,
+	applicationIn *ApplicationIn,
+	options *PostOptions,
+) (*ApplicationOut, error) {
 	req := a.api.ApplicationAPI.V1ApplicationCreate(ctx)
 	req = req.ApplicationIn(*applicationIn)
 	if options != nil {
@@ -58,11 +68,18 @@ func (a *Application) CreateWithOptions(ctx context.Context, applicationIn *Appl
 	return ret, nil
 }
 
-func (a *Application) GetOrCreate(ctx context.Context, applicationIn *ApplicationIn) (*ApplicationOut, error) {
+func (a *Application) GetOrCreate(
+	ctx context.Context,
+	applicationIn *ApplicationIn,
+) (*ApplicationOut, error) {
 	return a.GetOrCreateWithOptions(ctx, applicationIn, nil)
 }
 
-func (a *Application) GetOrCreateWithOptions(ctx context.Context, applicationIn *ApplicationIn, options *PostOptions) (*ApplicationOut, error) {
+func (a *Application) GetOrCreateWithOptions(
+	ctx context.Context,
+	applicationIn *ApplicationIn,
+	options *PostOptions,
+) (*ApplicationOut, error) {
 	req := a.api.ApplicationAPI.V1ApplicationCreate(ctx)
 	req = req.ApplicationIn(*applicationIn)
 	req = req.GetIfExists(true)
@@ -78,7 +95,10 @@ func (a *Application) GetOrCreateWithOptions(ctx context.Context, applicationIn 
 	return ret, nil
 }
 
-func (a *Application) Get(ctx context.Context, appId string) (*ApplicationOut, error) {
+func (a *Application) Get(
+	ctx context.Context,
+	appId string,
+) (*ApplicationOut, error) {
 	req := a.api.ApplicationAPI.V1ApplicationGet(ctx, appId)
 	ret, res, err := req.Execute()
 	if err != nil {
@@ -87,7 +107,11 @@ func (a *Application) Get(ctx context.Context, appId string) (*ApplicationOut, e
 	return ret, nil
 }
 
-func (a *Application) Update(ctx context.Context, appId string, applicationIn *ApplicationIn) (*ApplicationOut, error) {
+func (a *Application) Update(
+	ctx context.Context,
+	appId string,
+	applicationIn *ApplicationIn,
+) (*ApplicationOut, error) {
 	req := a.api.ApplicationAPI.V1ApplicationUpdate(ctx, appId)
 	req = req.ApplicationIn(*applicationIn)
 	ret, res, err := req.Execute()
@@ -97,7 +121,11 @@ func (a *Application) Update(ctx context.Context, appId string, applicationIn *A
 	return ret, nil
 }
 
-func (a *Application) Patch(ctx context.Context, appId string, applicationPatch *ApplicationPatch) (*ApplicationOut, error) {
+func (a *Application) Patch(
+	ctx context.Context,
+	appId string,
+	applicationPatch *ApplicationPatch,
+) (*ApplicationOut, error) {
 	req := a.api.ApplicationAPI.V1ApplicationPatch(ctx, appId)
 	req = req.ApplicationPatch(*applicationPatch)
 	ret, res, err := req.Execute()
@@ -107,7 +135,10 @@ func (a *Application) Patch(ctx context.Context, appId string, applicationPatch 
 	return ret, nil
 }
 
-func (a *Application) Delete(ctx context.Context, appId string) error {
+func (a *Application) Delete(
+	ctx context.Context,
+	appId string,
+) error {
 	req := a.api.ApplicationAPI.V1ApplicationDelete(ctx, appId)
 	res, err := req.Execute()
 	return wrapError(err, res)

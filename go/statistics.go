@@ -10,7 +10,11 @@ type Statistics struct {
 	api *openapi.APIClient
 }
 
-func (s *Statistics) AggregateAppStats(ctx context.Context, appUsageStatsIn *AppUsageStatsIn, options *PostOptions) (*AppUsageStatsOut, error) {
+func (s *Statistics) AggregateAppStats(
+	ctx context.Context,
+	appUsageStatsIn *AppUsageStatsIn,
+	options *PostOptions,
+) (*AppUsageStatsOut, error) {
 	req := s.api.StatisticsAPI.V1StatisticsAggregateAppStats(ctx)
 	if appUsageStatsIn != nil {
 		req = req.AppUsageStatsIn(*appUsageStatsIn)
@@ -27,7 +31,9 @@ func (s *Statistics) AggregateAppStats(ctx context.Context, appUsageStatsIn *App
 	return ret, nil
 }
 
-func (s *Statistics) AggregateEventTypes(ctx context.Context) (*AggregateEventTypesOut, error) {
+func (s *Statistics) AggregateEventTypes(
+	ctx context.Context,
+) (*AggregateEventTypesOut, error) {
 	req := s.api.StatisticsAPI.V1StatisticsAggregateEventTypes(ctx)
 
 	ret, res, err := req.Execute()

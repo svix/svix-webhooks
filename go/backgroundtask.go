@@ -18,7 +18,10 @@ type BackgroundTaskListOptions struct {
 	Task     *BackgroundTaskType
 }
 
-func (a *BackgroundTask) List(ctx context.Context, options *BackgroundTaskListOptions) (*ListResponseBackgroundTaskOut, error) {
+func (a *BackgroundTask) List(
+	ctx context.Context,
+	options *BackgroundTaskListOptions,
+) (*ListResponseBackgroundTaskOut, error) {
 	req := a.api.BackgroundTasksAPI.ListBackgroundTasks(ctx)
 	if options != nil {
 		if options.Iterator != nil {
@@ -44,7 +47,10 @@ func (a *BackgroundTask) List(ctx context.Context, options *BackgroundTaskListOp
 	return ret, nil
 }
 
-func (a *BackgroundTask) Get(ctx context.Context, taskId string) (*BackgroundTaskOut, error) {
+func (a *BackgroundTask) Get(
+	ctx context.Context,
+	taskId string,
+) (*BackgroundTaskOut, error) {
 	req := a.api.BackgroundTasksAPI.GetBackgroundTask(ctx, taskId)
 	ret, res, err := req.Execute()
 	if err != nil {
