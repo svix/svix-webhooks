@@ -36,55 +36,6 @@ func (m *MessageAttempt) List(
 	return m.ListByMsg(ctx, appId, msgId, options)
 }
 
-func (m *MessageAttempt) ListByMsg(
-	ctx context.Context,
-	appId string,
-	msgId string,
-	options *MessageAttemptListOptions,
-) (*ListResponseMessageAttemptOut, error) {
-	req := m.api.MessageAttemptAPI.V1MessageAttemptListByMsg(ctx, appId, msgId)
-	if options != nil {
-		if options.Iterator != nil {
-			req = req.Iterator(*options.Iterator)
-		}
-		if options.Limit != nil {
-			req = req.Limit(*options.Limit)
-		}
-		if options.Status != nil {
-			req = req.Status(*options.Status)
-		}
-		if options.EventTypes != nil {
-			req = req.EventTypes(*options.EventTypes)
-		}
-		if options.Before != nil {
-			req = req.Before(*options.Before)
-		}
-		if options.After != nil {
-			req = req.After(*options.After)
-		}
-		if options.StatusCodeClass != nil {
-			req.StatusCodeClass(*options.StatusCodeClass)
-		}
-		if options.Channel != nil {
-			req = req.Channel(*options.Channel)
-		}
-		if options.EndpointId != nil {
-			req = req.EndpointId(*options.EndpointId)
-		}
-		if options.WithContent != nil {
-			req = req.WithContent(*options.WithContent)
-		}
-		if options.Tag != nil {
-			req = req.Tag(*options.Tag)
-		}
-	}
-	ret, res, err := req.Execute()
-	if err != nil {
-		return nil, wrapError(err, res)
-	}
-	return ret, nil
-}
-
 func (m *MessageAttempt) ListByEndpoint(
 	ctx context.Context,
 	appId string,
@@ -134,44 +85,53 @@ func (m *MessageAttempt) ListByEndpoint(
 	return ret, nil
 }
 
-func (m *MessageAttempt) Get(
+func (m *MessageAttempt) ListByMsg(
 	ctx context.Context,
 	appId string,
 	msgId string,
-	attemptID string,
-) (*MessageAttemptOut, error) {
-	req := m.api.MessageAttemptAPI.V1MessageAttemptGet(ctx, appId, msgId, attemptID)
+	options *MessageAttemptListOptions,
+) (*ListResponseMessageAttemptOut, error) {
+	req := m.api.MessageAttemptAPI.V1MessageAttemptListByMsg(ctx, appId, msgId)
+	if options != nil {
+		if options.Iterator != nil {
+			req = req.Iterator(*options.Iterator)
+		}
+		if options.Limit != nil {
+			req = req.Limit(*options.Limit)
+		}
+		if options.Status != nil {
+			req = req.Status(*options.Status)
+		}
+		if options.EventTypes != nil {
+			req = req.EventTypes(*options.EventTypes)
+		}
+		if options.Before != nil {
+			req = req.Before(*options.Before)
+		}
+		if options.After != nil {
+			req = req.After(*options.After)
+		}
+		if options.StatusCodeClass != nil {
+			req.StatusCodeClass(*options.StatusCodeClass)
+		}
+		if options.Channel != nil {
+			req = req.Channel(*options.Channel)
+		}
+		if options.EndpointId != nil {
+			req = req.EndpointId(*options.EndpointId)
+		}
+		if options.WithContent != nil {
+			req = req.WithContent(*options.WithContent)
+		}
+		if options.Tag != nil {
+			req = req.Tag(*options.Tag)
+		}
+	}
 	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
 	return ret, nil
-}
-
-func (m *MessageAttempt) Resend(
-	ctx context.Context,
-	appId string,
-	msgId string,
-	endpointId string,
-) error {
-	return m.ResendWithOptions(ctx, appId, msgId, endpointId, nil)
-}
-
-func (m *MessageAttempt) ResendWithOptions(
-	ctx context.Context,
-	appId string,
-	msgId string,
-	endpointId string,
-	options *PostOptions,
-) error {
-	req := m.api.MessageAttemptAPI.V1MessageAttemptResend(ctx, appId, msgId, endpointId)
-	if options != nil {
-		if options.IdempotencyKey != nil {
-			req = req.IdempotencyKey(*options.IdempotencyKey)
-		}
-	}
-	res, err := req.Execute()
-	return wrapError(err, res)
 }
 
 func (m *MessageAttempt) ListAttemptedMessages(
@@ -215,6 +175,31 @@ func (m *MessageAttempt) ListAttemptedMessages(
 		return nil, wrapError(err, res)
 	}
 	return ret, nil
+}
+
+func (m *MessageAttempt) Get(
+	ctx context.Context,
+	appId string,
+	msgId string,
+	attemptID string,
+) (*MessageAttemptOut, error) {
+	req := m.api.MessageAttemptAPI.V1MessageAttemptGet(ctx, appId, msgId, attemptID)
+	ret, res, err := req.Execute()
+	if err != nil {
+		return nil, wrapError(err, res)
+	}
+	return ret, nil
+}
+
+func (m *MessageAttempt) ExpungeContent(
+	ctx context.Context,
+	appId string,
+	msgId string,
+	attemptId string,
+) error {
+	req := m.api.MessageAttemptAPI.V1MessageAttemptExpungeContent(ctx, appId, msgId, attemptId)
+	res, err := req.Execute()
+	return wrapError(err, res)
 }
 
 func (m *MessageAttempt) ListAttemptedDestinations(
@@ -281,13 +266,28 @@ func (m *MessageAttempt) ListAttemptsForEndpoint(
 	return ret, nil
 }
 
-func (m *MessageAttempt) ExpungeContent(
+func (m *MessageAttempt) Resend(
 	ctx context.Context,
 	appId string,
 	msgId string,
-	attemptId string,
+	endpointId string,
 ) error {
-	req := m.api.MessageAttemptAPI.V1MessageAttemptExpungeContent(ctx, appId, msgId, attemptId)
+	return m.ResendWithOptions(ctx, appId, msgId, endpointId, nil)
+}
+
+func (m *MessageAttempt) ResendWithOptions(
+	ctx context.Context,
+	appId string,
+	msgId string,
+	endpointId string,
+	options *PostOptions,
+) error {
+	req := m.api.MessageAttemptAPI.V1MessageAttemptResend(ctx, appId, msgId, endpointId)
+	if options != nil {
+		if options.IdempotencyKey != nil {
+			req = req.IdempotencyKey(*options.IdempotencyKey)
+		}
+	}
 	res, err := req.Execute()
 	return wrapError(err, res)
 }
