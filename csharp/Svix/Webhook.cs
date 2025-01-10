@@ -19,10 +19,11 @@ namespace Svix
         internal const string UNBRANDED_SIGNATURE_HEADER_KEY = "webhook-signature";
         internal const string UNBRANDED_TIMESTAMP_HEADER_KEY = "webhook-timestamp";
 
-        private const int SIGNATURE_LENGTH_BYTES = 32;
+        private const int SIGNATURE_LENGTH_BYTES = HMACSHA256.HashSizeInBytes;
         private const int SIGNATURE_LENGTH_BASE64 = 48;
         private const int SIGNATURE_LENGTH_STRING = 56;
         private const int TOLERANCE_IN_SECONDS = 60 * 5;
+        private const int MAX_STACKALLOC = 1024 * 256;
         private const string PREFIX = "whsec_";
         
         private readonly byte[] key;
@@ -163,8 +164,11 @@ namespace Svix
             int msgIdLength = SafeUTF8Encoding.GetByteCount(msgId);
             int payloadLength = SafeUTF8Encoding.GetByteCount(payload);
             int timestampLength = SafeUTF8Encoding.GetByteCount(timestamp);
+            int totalLength = msgIdLength + 1 + timestampLength + 1 + payloadLength;
             
-            Span<byte> toSignBytes = stackalloc byte[msgIdLength + 1 + timestampLength + 1 + payloadLength];
+            Span<byte> toSignBytes = totalLength <= MAX_STACKALLOC 
+                ? stackalloc byte[totalLength] 
+                : new byte[totalLength];
             
             SafeUTF8Encoding.GetBytes(msgId, toSignBytes.Slice(0, msgIdLength));
             toSignBytes[msgIdLength] = (byte)'.';
