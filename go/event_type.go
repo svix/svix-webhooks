@@ -102,6 +102,30 @@ func (eventType *EventType) CreateWithOptions(
 	return ret, nil
 }
 
+func (e *EventType) ImportOpenApi(
+	ctx context.Context,
+	eventTypeImportOpenApiIn EventTypeImportOpenApiIn,
+) (*EventTypeImportOpenApiOut, error) {
+	return e.ImportOpenApiWithOptions(ctx, eventTypeImportOpenApiIn, nil)
+}
+
+func (e *EventType) ImportOpenApiWithOptions(
+	ctx context.Context,
+	eventTypeImportOpenApiIn EventTypeImportOpenApiIn,
+	options *PostOptions,
+) (*EventTypeImportOpenApiOut, error) {
+	req := e.api.EventTypeAPI.V1EventTypeImportOpenapi(ctx).EventTypeImportOpenApiIn(eventTypeImportOpenApiIn)
+	if options != nil && options.IdempotencyKey != nil {
+		req = req.IdempotencyKey(*options.IdempotencyKey)
+	}
+	ret, res, err := req.Execute()
+	if err != nil {
+		return nil, wrapError(err, res)
+	}
+
+	return ret, nil
+}
+
 func (e *EventType) Get(
 	ctx context.Context,
 	eventTypeName string,
@@ -168,30 +192,6 @@ func (e *EventType) Patch(
 ) (*EventTypeOut, error) {
 	req := e.api.EventTypeAPI.V1EventTypePatch(ctx, eventTypeName)
 	req = req.EventTypePatch(*eventTypePatch)
-	ret, res, err := req.Execute()
-	if err != nil {
-		return nil, wrapError(err, res)
-	}
-
-	return ret, nil
-}
-
-func (e *EventType) ImportOpenApi(
-	ctx context.Context,
-	eventTypeImportOpenApiIn EventTypeImportOpenApiIn,
-) (*EventTypeImportOpenApiOut, error) {
-	return e.ImportOpenApiWithOptions(ctx, eventTypeImportOpenApiIn, nil)
-}
-
-func (e *EventType) ImportOpenApiWithOptions(
-	ctx context.Context,
-	eventTypeImportOpenApiIn EventTypeImportOpenApiIn,
-	options *PostOptions,
-) (*EventTypeImportOpenApiOut, error) {
-	req := e.api.EventTypeAPI.V1EventTypeImportOpenapi(ctx).EventTypeImportOpenApiIn(eventTypeImportOpenApiIn)
-	if options != nil && options.IdempotencyKey != nil {
-		req = req.IdempotencyKey(*options.IdempotencyKey)
-	}
 	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
