@@ -34,6 +34,7 @@ type (
 	ApplicationIn                             = openapi.ApplicationIn
 	ApplicationOut                            = openapi.ApplicationOut
 	ApplicationPatch                          = openapi.ApplicationPatch
+	ApplicationTokenExpireIn                  = openapi.ApplicationTokenExpireIn
 	AppPortalAccessIn                         = openapi.AppPortalAccessIn
 	AppPortalAccessOut                        = openapi.AppPortalAccessOut
 	AppUsageStatsIn                           = openapi.AppUsageStatsIn
