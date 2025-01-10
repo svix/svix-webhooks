@@ -207,5 +207,21 @@ namespace Svix.Tests
             var signature = wh.Sign(msgId, timestamp, payload);
             Assert.Equal(signature, expected);
         }
+        
+        [Theory]
+        [InlineData(1024 * 1024, "v1,txpEUxqWZJ5nteTnymUVa+7C4NHpBeXJ6CsBAW0c3/A=")]
+        [InlineData(256 * 1024, "v1,Mw4Pe2WgApuT7NSqnSq0PQPV9gbLdggCl9B865x5Xh0=")]
+        [InlineData(256 * 1024 - 1, "v1,NTItnqyWMoFhk2Bbe5V/BMdcFRWgcSQaTgqLHX7FC7c=")]
+        public void VerifyWebhookSignWithLargePayloadWorks(int payloadSize, string expected)
+        {
+            var key = "whsec_MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw";
+            var msgId = "msg_p5jXN8AQM9LWM0D4loKWxJek";
+            var timestamp = DateTimeOffset.FromUnixTimeSeconds(1614265330);
+            var payload = new string('a', payloadSize);
+
+            var wh = new Webhook(key);
+            var signature = wh.Sign(msgId, timestamp, payload);
+            Assert.Equal(signature, expected);
+        }
     }
 }
