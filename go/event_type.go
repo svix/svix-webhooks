@@ -126,11 +126,16 @@ func (e *EventType) ImportOpenApiWithOptions(
 	return ret, nil
 }
 
-func (e *EventType) Get(
+// Get an event type.
+func (eventType *EventType) Get(
 	ctx context.Context,
 	eventTypeName string,
 ) (*EventTypeOut, error) {
-	req := e.api.EventTypeAPI.V1EventTypeGet(ctx, eventTypeName)
+	req := eventType.api.EventTypeAPI.V1EventTypeGet(
+		ctx,
+		eventTypeName,
+	)
+
 	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
@@ -139,13 +144,17 @@ func (e *EventType) Get(
 	return ret, nil
 }
 
-func (e *EventType) Update(
+// Update an event type.
+func (eventType *EventType) Update(
 	ctx context.Context,
 	eventTypeName string,
 	eventTypeUpdate *EventTypeUpdate,
 ) (*EventTypeOut, error) {
-	req := e.api.EventTypeAPI.V1EventTypeUpdate(ctx, eventTypeName)
-	req = req.EventTypeUpdate(*eventTypeUpdate)
+	req := eventType.api.EventTypeAPI.V1EventTypeUpdate(
+		ctx,
+		eventTypeName,
+	).EventTypeUpdate(*eventTypeUpdate)
+
 	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
@@ -175,23 +184,32 @@ func (eventType *EventType) DeleteWithOptions(
 	eventTypeName string,
 	options *EventTypeDeleteOptions,
 ) error {
-	req := eventType.api.EventTypeAPI.V1EventTypeDelete(ctx, eventTypeName)
+	req := eventType.api.EventTypeAPI.V1EventTypeDelete(
+		ctx,
+		eventTypeName,
+	)
+
 	if options != nil {
 		if options.Expunge != nil {
 			req = req.Expunge(*options.Expunge)
 		}
 	}
+
 	res, err := req.Execute()
 	return wrapError(err, res)
 }
 
-func (e *EventType) Patch(
+// Partially update an event type.
+func (eventType *EventType) Patch(
 	ctx context.Context,
 	eventTypeName string,
 	eventTypePatch *EventTypePatch,
 ) (*EventTypeOut, error) {
-	req := e.api.EventTypeAPI.V1EventTypePatch(ctx, eventTypeName)
-	req = req.EventTypePatch(*eventTypePatch)
+	req := eventType.api.EventTypeAPI.V1EventTypePatch(
+		ctx,
+		eventTypeName,
+	).EventTypePatch(*eventTypePatch)
+
 	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
