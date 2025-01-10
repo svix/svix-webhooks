@@ -143,6 +143,16 @@ func (endpoint *Endpoint) Update(
 	return ret, nil
 }
 
+func (e *Endpoint) Delete(
+	ctx context.Context,
+	appId string,
+	endpointId string,
+) error {
+	req := e.api.EndpointAPI.V1EndpointDelete(ctx, appId, endpointId)
+	res, err := req.Execute()
+	return wrapError(err, res)
+}
+
 func (e *Endpoint) Patch(
 	ctx context.Context,
 	appId string,
@@ -156,16 +166,6 @@ func (e *Endpoint) Patch(
 		return nil, wrapError(err, res)
 	}
 	return ret, nil
-}
-
-func (e *Endpoint) Delete(
-	ctx context.Context,
-	appId string,
-	endpointId string,
-) error {
-	req := e.api.EndpointAPI.V1EndpointDelete(ctx, appId, endpointId)
-	res, err := req.Execute()
-	return wrapError(err, res)
 }
 
 func (e *Endpoint) GetSecret(

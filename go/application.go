@@ -148,6 +148,15 @@ func (application *Application) Update(
 	return ret, nil
 }
 
+func (a *Application) Delete(
+	ctx context.Context,
+	appId string,
+) error {
+	req := a.api.ApplicationAPI.V1ApplicationDelete(ctx, appId)
+	res, err := req.Execute()
+	return wrapError(err, res)
+}
+
 func (a *Application) Patch(
 	ctx context.Context,
 	appId string,
@@ -160,13 +169,4 @@ func (a *Application) Patch(
 		return nil, wrapError(err, res)
 	}
 	return ret, nil
-}
-
-func (a *Application) Delete(
-	ctx context.Context,
-	appId string,
-) error {
-	req := a.api.ApplicationAPI.V1ApplicationDelete(ctx, appId)
-	res, err := req.Execute()
-	return wrapError(err, res)
 }

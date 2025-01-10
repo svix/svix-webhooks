@@ -130,21 +130,6 @@ func (e *EventType) Update(
 	return ret, nil
 }
 
-func (e *EventType) Patch(
-	ctx context.Context,
-	eventTypeName string,
-	eventTypePatch *EventTypePatch,
-) (*EventTypeOut, error) {
-	req := e.api.EventTypeAPI.V1EventTypePatch(ctx, eventTypeName)
-	req = req.EventTypePatch(*eventTypePatch)
-	ret, res, err := req.Execute()
-	if err != nil {
-		return nil, wrapError(err, res)
-	}
-
-	return ret, nil
-}
-
 // Archive an event type.
 //
 // Endpoints already configured to filter on an event type will continue to do so after archival.
@@ -174,6 +159,21 @@ func (eventType *EventType) DeleteWithOptions(
 	}
 	res, err := req.Execute()
 	return wrapError(err, res)
+}
+
+func (e *EventType) Patch(
+	ctx context.Context,
+	eventTypeName string,
+	eventTypePatch *EventTypePatch,
+) (*EventTypeOut, error) {
+	req := e.api.EventTypeAPI.V1EventTypePatch(ctx, eventTypeName)
+	req = req.EventTypePatch(*eventTypePatch)
+	ret, res, err := req.Execute()
+	if err != nil {
+		return nil, wrapError(err, res)
+	}
+
+	return ret, nil
 }
 
 func (e *EventType) ImportOpenApi(
