@@ -96,6 +96,9 @@ type (
 	ReplayIn                                  = openapi.ReplayIn
 	ReplayOut                                 = openapi.ReplayOut
 	StatusCodeClass                           = openapi.StatusCodeClass
+
+	// Deprecated: Use EndpointGetStatsOptions directly
+	EndpointStatsOptions = EndpointGetStatsOptions
 )
 
 var defaultHTTPClient = &http.Client{
