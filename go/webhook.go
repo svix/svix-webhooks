@@ -22,11 +22,11 @@ const webhookSecretPrefix = "whsec_"
 var tolerance time.Duration = 5 * time.Minute
 
 var (
-	errRequiredHeaders     = fmt.Errorf("Missing Required Headers")
-	errInvalidHeaders      = fmt.Errorf("Invalid Signature Headers")
-	errNoMatchingSignature = fmt.Errorf("No matching signature found")
-	errMessageTooOld       = fmt.Errorf("Message timestamp too old")
-	errMessageTooNew       = fmt.Errorf("Message timestamp too new")
+	errRequiredHeaders     = fmt.Errorf("missing required headers")
+	errInvalidHeaders      = fmt.Errorf("invalid signature headers")
+	errNoMatchingSignature = fmt.Errorf("no matching signature found")
+	errMessageTooOld       = fmt.Errorf("message timestamp too old")
+	errMessageTooNew       = fmt.Errorf("message timestamp too new")
 )
 
 func NewWebhook(secret string) (*Webhook, error) {

@@ -11,42 +11,53 @@ type Message struct {
 	api *openapi.APIClient
 }
 
-type (
-	ListResponseMessageOut = openapi.ListResponseMessageOut
-	MessageIn              = openapi.MessageIn
-	MessageOut             = openapi.MessageOut
-)
-
 type MessageListOptions struct {
 	// Limit the number of returned items
 	Limit *int32
 	// The iterator returned from a prior invocation
 	Iterator *string
-	// Filter response based on the channel
+	// Filter response based on the channel.
 	Channel *string
-	// Only include items created before a certain date
+	// Only include items created before a certain date.
 	Before *time.Time
-	// Only include items created after a certain date
+	// Only include items created after a certain date.
 	After *time.Time
-	// When `true` message payloads are included in the response
+	// When `true` message payloads are included in the response.
 	WithContent *bool
-	// Filter messages matching the provided tag
+	// Filter messages matching the provided tag.
 	Tag *string
 	// Filter response based on the event type
 	EventTypes *[]string
 }
 
-func (m *Message) List(ctx context.Context, appId string, options *MessageListOptions) (*ListResponseMessageOut, error) {
-	req := m.api.MessageAPI.V1MessageList(ctx, appId)
+// List all of the application's messages.
+//
+// The `before` and `after` parameters let you filter all items created before or after a certain date. These can be used alongside an iterator to paginate over results
+// within a certain window.
+//
+// Note that by default this endpoint is limited to retrieving 90 days' worth of data
+// relative to now or, if an iterator is provided, 90 days before/after the time indicated
+// by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
+// set the `before` or `after` parameter as appropriate.
+func (message *Message) List(
+	ctx context.Context,
+	appId string,
+	options *MessageListOptions,
+) (*ListResponseMessageOut, error) {
+	req := message.api.MessageAPI.V1MessageList(
+		ctx,
+		appId,
+	)
+
 	if options != nil {
-		if options.Iterator != nil {
-			req = req.Iterator(*options.Iterator)
-		}
 		if options.Limit != nil {
 			req = req.Limit(*options.Limit)
 		}
-		if options.EventTypes != nil {
-			req = req.EventTypes(*options.EventTypes)
+		if options.Iterator != nil {
+			req = req.Iterator(*options.Iterator)
+		}
+		if options.Channel != nil {
+			req = req.Channel(*options.Channel)
 		}
 		if options.Before != nil {
 			req = req.Before(*options.Before)
@@ -54,53 +65,116 @@ func (m *Message) List(ctx context.Context, appId string, options *MessageListOp
 		if options.After != nil {
 			req = req.After(*options.After)
 		}
-		if options.Channel != nil {
-			req = req.Channel(*options.Channel)
+		if options.WithContent != nil {
+			req = req.WithContent(*options.WithContent)
 		}
 		if options.Tag != nil {
 			req = req.Tag(*options.Tag)
 		}
-		if options.WithContent != nil {
-			req = req.WithContent(*options.WithContent)
+		if options.EventTypes != nil {
+			req = req.EventTypes(*options.EventTypes)
 		}
 	}
+
 	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
+
 	return ret, nil
 }
 
-func (m *Message) Create(ctx context.Context, appId string, messageIn *MessageIn) (*MessageOut, error) {
-	return m.CreateWithOptions(ctx, appId, messageIn, nil)
+// Creates a new message and dispatches it to all of the application's endpoints.
+//
+// The `eventId` is an optional custom unique ID. It's verified to be unique only up to a day, after that no verification will be made.
+// If a message with the same `eventId` already exists for the application, a 409 conflict error will be returned.
+//
+// The `eventType` indicates the type and schema of the event. All messages of a certain `eventType` are expected to have the same schema. Endpoints can choose to only listen to specific event types.
+// Messages can also have `channels`, which similar to event types let endpoints filter by them. Unlike event types, messages can have multiple channels, and channels don't imply a specific message content or schema.
+//
+// The `payload` property is the webhook's body (the actual webhook message). Svix supports payload sizes of up to ~350kb, though it's generally a good idea to keep webhook payloads small, probably no larger than 40kb.
+func (message *Message) Create(
+	ctx context.Context,
+	appId string,
+	messageIn *MessageIn,
+) (*MessageOut, error) {
+	return message.CreateWithOptions(
+		ctx,
+		appId,
+		messageIn,
+		nil,
+	)
 }
 
-func (m *Message) CreateWithOptions(ctx context.Context, appId string, messageIn *MessageIn, options *PostOptions) (*MessageOut, error) {
-	req := m.api.MessageAPI.V1MessageCreate(ctx, appId)
-	req = req.MessageIn(*messageIn)
+// Creates a new message and dispatches it to all of the application's endpoints.
+//
+// The `eventId` is an optional custom unique ID. It's verified to be unique only up to a day, after that no verification will be made.
+// If a message with the same `eventId` already exists for the application, a 409 conflict error will be returned.
+//
+// The `eventType` indicates the type and schema of the event. All messages of a certain `eventType` are expected to have the same schema. Endpoints can choose to only listen to specific event types.
+// Messages can also have `channels`, which similar to event types let endpoints filter by them. Unlike event types, messages can have multiple channels, and channels don't imply a specific message content or schema.
+//
+// The `payload` property is the webhook's body (the actual webhook message). Svix supports payload sizes of up to ~350kb, though it's generally a good idea to keep webhook payloads small, probably no larger than 40kb.
+func (message *Message) CreateWithOptions(
+	ctx context.Context,
+	appId string,
+	messageIn *MessageIn,
+	options *PostOptions,
+) (*MessageOut, error) {
+	req := message.api.MessageAPI.V1MessageCreate(
+		ctx,
+		appId,
+	).MessageIn(*messageIn)
+
 	if options != nil {
 		if options.IdempotencyKey != nil {
 			req = req.IdempotencyKey(*options.IdempotencyKey)
 		}
 	}
+
 	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
+
 	return ret, nil
 }
 
-func (m *Message) Get(ctx context.Context, appId string, msgId string) (*MessageOut, error) {
-	req := m.api.MessageAPI.V1MessageGet(ctx, appId, msgId)
+// Get a message by its ID or eventID.
+func (message *Message) Get(
+	ctx context.Context,
+	appId string,
+	msgId string,
+) (*MessageOut, error) {
+	req := message.api.MessageAPI.V1MessageGet(
+		ctx,
+		appId,
+		msgId,
+	)
+
 	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
+
 	return ret, nil
 }
 
-func (m *Message) ExpungeContent(ctx context.Context, appId string, msgId string) error {
-	req := m.api.MessageAPI.V1MessageExpungeContent(ctx, appId, msgId)
+// Delete the given message's payload.
+//
+// Useful in cases when a message was accidentally sent with sensitive content.
+// The message can't be replayed or resent once its payload has been deleted or expired.
+func (message *Message) ExpungeContent(
+	ctx context.Context,
+	appId string,
+	msgId string,
+) error {
+	req := message.api.MessageAPI.V1MessageExpungeContent(
+		ctx,
+		appId,
+		msgId,
+	)
+
 	res, err := req.Execute()
 	return wrapError(err, res)
 }
@@ -117,7 +191,11 @@ func (m *Message) ExpungeContent(ctx context.Context, appId string, msgId string
 // of the webhook sent by Svix overriding the default of `application/json`.
 //
 // See the class documentation for details about the other parameters.
-func NewMessageInRaw(eventType string, payload string, contentType openapi.NullableString) *MessageIn {
+func NewMessageInRaw(
+	eventType string,
+	payload string,
+	contentType openapi.NullableString,
+) *MessageIn {
 	msgIn := openapi.NewMessageIn(eventType, make(map[string]interface{}))
 
 	transformationsParams := map[string]interface{}{

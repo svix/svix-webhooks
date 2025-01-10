@@ -7,28 +7,6 @@ import (
 	"github.com/svix/svix-webhooks/go/internal/openapi"
 )
 
-type (
-	ListResponseEndpointOut   = openapi.ListResponseEndpointOut
-	EndpointIn                = openapi.EndpointIn
-	EndpointUpdate            = openapi.EndpointUpdate
-	EndpointOut               = openapi.EndpointOut
-	EndpointPatch             = openapi.EndpointPatch
-	EndpointSecretOut         = openapi.EndpointSecretOut
-	EndpointSecretRotateIn    = openapi.EndpointSecretRotateIn
-	EndpointTransformationIn  = openapi.EndpointTransformationIn
-	RecoverIn                 = openapi.RecoverIn
-	ReplayIn                  = openapi.ReplayIn
-	EndpointHeadersIn         = openapi.EndpointHeadersIn
-	EndpointHeadersPatchIn    = openapi.EndpointHeadersPatchIn
-	EndpointHeadersOut        = openapi.EndpointHeadersOut
-	EndpointStats             = openapi.EndpointStats
-	EndpointTransformationOut = openapi.EndpointTransformationOut
-	EventExampleIn            = openapi.EventExampleIn
-	Ordering                  = openapi.Ordering
-	RecoverOut                = openapi.RecoverOut
-	ReplayOut                 = openapi.ReplayOut
-)
-
 type Endpoint struct {
 	api *openapi.APIClient
 }
@@ -49,65 +27,128 @@ type EndpointStatsOptions struct {
 	Until *time.Time
 }
 
-func (e *Endpoint) List(ctx context.Context, appId string, options *EndpointListOptions) (*ListResponseEndpointOut, error) {
-	req := e.api.EndpointAPI.V1EndpointList(ctx, appId)
+// List the application's endpoints.
+func (endpoint *Endpoint) List(
+	ctx context.Context,
+	appId string,
+	options *EndpointListOptions,
+) (*ListResponseEndpointOut, error) {
+	req := endpoint.api.EndpointAPI.V1EndpointList(
+		ctx,
+		appId,
+	)
+
 	if options != nil {
-		if options.Iterator != nil {
-			req = req.Iterator(*options.Iterator)
-		}
 		if options.Limit != nil {
 			req = req.Limit(*options.Limit)
+		}
+		if options.Iterator != nil {
+			req = req.Iterator(*options.Iterator)
 		}
 		if options.Order != nil {
 			req = req.Order(*options.Order)
 		}
 	}
+
 	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
+
 	return ret, nil
 }
 
-func (e *Endpoint) Create(ctx context.Context, appId string, endpointIn *EndpointIn) (*EndpointOut, error) {
-	return e.CreateWithOptions(ctx, appId, endpointIn, nil)
+// Create a new endpoint for the application.
+//
+// When `secret` is `null` the secret is automatically generated (recommended).
+func (endpoint *Endpoint) Create(
+	ctx context.Context,
+	appId string,
+	endpointIn *EndpointIn,
+) (*EndpointOut, error) {
+	return endpoint.CreateWithOptions(
+		ctx,
+		appId,
+		endpointIn,
+		nil,
+	)
 }
 
-func (e *Endpoint) CreateWithOptions(ctx context.Context, appId string, endpointIn *EndpointIn, options *PostOptions) (*EndpointOut, error) {
-	req := e.api.EndpointAPI.V1EndpointCreate(ctx, appId)
-	req = req.EndpointIn(*endpointIn)
+// Create a new endpoint for the application.
+//
+// When `secret` is `null` the secret is automatically generated (recommended).
+func (endpoint *Endpoint) CreateWithOptions(
+	ctx context.Context,
+	appId string,
+	endpointIn *EndpointIn,
+	options *PostOptions,
+) (*EndpointOut, error) {
+	req := endpoint.api.EndpointAPI.V1EndpointCreate(
+		ctx,
+		appId,
+	).EndpointIn(*endpointIn)
+
 	if options != nil {
 		if options.IdempotencyKey != nil {
 			req = req.IdempotencyKey(*options.IdempotencyKey)
 		}
 	}
+
 	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
+
 	return ret, nil
 }
 
-func (e *Endpoint) Get(ctx context.Context, appId string, endpointId string) (*EndpointOut, error) {
-	req := e.api.EndpointAPI.V1EndpointGet(ctx, appId, endpointId)
+// Get an endpoint.
+func (endpoint *Endpoint) Get(
+	ctx context.Context,
+	appId string,
+	endpointId string,
+) (*EndpointOut, error) {
+	req := endpoint.api.EndpointAPI.V1EndpointGet(
+		ctx,
+		appId,
+		endpointId,
+	)
+
 	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
+
 	return ret, nil
 }
 
-func (e *Endpoint) Update(ctx context.Context, appId string, endpointId string, endpointUpdate *EndpointUpdate) (*EndpointOut, error) {
-	req := e.api.EndpointAPI.V1EndpointUpdate(ctx, appId, endpointId)
-	req = req.EndpointUpdate(*endpointUpdate)
+// Update an endpoint.
+func (endpoint *Endpoint) Update(
+	ctx context.Context,
+	appId string,
+	endpointId string,
+	endpointUpdate *EndpointUpdate,
+) (*EndpointOut, error) {
+	req := endpoint.api.EndpointAPI.V1EndpointUpdate(
+		ctx,
+		appId,
+		endpointId,
+	).EndpointUpdate(*endpointUpdate)
+
 	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
+
 	return ret, nil
 }
 
-func (e *Endpoint) Patch(ctx context.Context, appId string, endpointId string, endpointPatch *EndpointPatch) (*EndpointOut, error) {
+func (e *Endpoint) Patch(
+	ctx context.Context,
+	appId string,
+	endpointId string,
+	endpointPatch *EndpointPatch,
+) (*EndpointOut, error) {
 	req := e.api.EndpointAPI.V1EndpointPatch(ctx, appId, endpointId)
 	req = req.EndpointPatch(*endpointPatch)
 	ret, res, err := req.Execute()
@@ -117,13 +158,21 @@ func (e *Endpoint) Patch(ctx context.Context, appId string, endpointId string, e
 	return ret, nil
 }
 
-func (e *Endpoint) Delete(ctx context.Context, appId string, endpointId string) error {
+func (e *Endpoint) Delete(
+	ctx context.Context,
+	appId string,
+	endpointId string,
+) error {
 	req := e.api.EndpointAPI.V1EndpointDelete(ctx, appId, endpointId)
 	res, err := req.Execute()
 	return wrapError(err, res)
 }
 
-func (e *Endpoint) GetSecret(ctx context.Context, appId string, endpointId string) (*EndpointSecretOut, error) {
+func (e *Endpoint) GetSecret(
+	ctx context.Context,
+	appId string,
+	endpointId string,
+) (*EndpointSecretOut, error) {
 	req := e.api.EndpointAPI.V1EndpointGetSecret(ctx, appId, endpointId)
 	ret, res, err := req.Execute()
 	if err != nil {
@@ -132,11 +181,22 @@ func (e *Endpoint) GetSecret(ctx context.Context, appId string, endpointId strin
 	return ret, nil
 }
 
-func (e *Endpoint) RotateSecret(ctx context.Context, appId string, endpointId string, endpointSecretRotateIn *EndpointSecretRotateIn) error {
+func (e *Endpoint) RotateSecret(
+	ctx context.Context,
+	appId string,
+	endpointId string,
+	endpointSecretRotateIn *EndpointSecretRotateIn,
+) error {
 	return e.RotateSecretWithOptions(ctx, appId, endpointId, endpointSecretRotateIn, nil)
 }
 
-func (e *Endpoint) RotateSecretWithOptions(ctx context.Context, appId string, endpointId string, endpointSecretRotateIn *EndpointSecretRotateIn, options *PostOptions) error {
+func (e *Endpoint) RotateSecretWithOptions(
+	ctx context.Context,
+	appId string,
+	endpointId string,
+	endpointSecretRotateIn *EndpointSecretRotateIn,
+	options *PostOptions,
+) error {
 	req := e.api.EndpointAPI.V1EndpointRotateSecret(ctx, appId, endpointId)
 	req = req.EndpointSecretRotateIn(*endpointSecretRotateIn)
 	if options != nil {
@@ -151,11 +211,22 @@ func (e *Endpoint) RotateSecretWithOptions(ctx context.Context, appId string, en
 	return nil
 }
 
-func (e *Endpoint) Recover(ctx context.Context, appId string, endpointId string, recoverIn *RecoverIn) (*RecoverOut, error) {
+func (e *Endpoint) Recover(
+	ctx context.Context,
+	appId string,
+	endpointId string,
+	recoverIn *RecoverIn,
+) (*RecoverOut, error) {
 	return e.RecoverWithOptions(ctx, appId, endpointId, recoverIn, nil)
 }
 
-func (e *Endpoint) RecoverWithOptions(ctx context.Context, appId string, endpointId string, recoverIn *RecoverIn, options *PostOptions) (*RecoverOut, error) {
+func (e *Endpoint) RecoverWithOptions(
+	ctx context.Context,
+	appId string,
+	endpointId string,
+	recoverIn *RecoverIn,
+	options *PostOptions,
+) (*RecoverOut, error) {
 	req := e.api.EndpointAPI.V1EndpointRecover(ctx, appId, endpointId)
 	req = req.RecoverIn(*recoverIn)
 	if options != nil {
@@ -170,7 +241,11 @@ func (e *Endpoint) RecoverWithOptions(ctx context.Context, appId string, endpoin
 	return ret, nil
 }
 
-func (e *Endpoint) GetHeaders(ctx context.Context, appId string, endpointId string) (*EndpointHeadersOut, error) {
+func (e *Endpoint) GetHeaders(
+	ctx context.Context,
+	appId string,
+	endpointId string,
+) (*EndpointHeadersOut, error) {
 	req := e.api.EndpointAPI.V1EndpointGetHeaders(ctx, appId, endpointId)
 	ret, res, err := req.Execute()
 	if err != nil {
@@ -179,7 +254,12 @@ func (e *Endpoint) GetHeaders(ctx context.Context, appId string, endpointId stri
 	return ret, nil
 }
 
-func (e *Endpoint) UpdateHeaders(ctx context.Context, appId string, endpointId string, endpointHeadersIn *EndpointHeadersIn) error {
+func (e *Endpoint) UpdateHeaders(
+	ctx context.Context,
+	appId string,
+	endpointId string,
+	endpointHeadersIn *EndpointHeadersIn,
+) error {
 	req := e.api.EndpointAPI.V1EndpointUpdateHeaders(ctx, appId, endpointId)
 	req = req.EndpointHeadersIn(*endpointHeadersIn)
 	res, err := req.Execute()
@@ -189,7 +269,12 @@ func (e *Endpoint) UpdateHeaders(ctx context.Context, appId string, endpointId s
 	return nil
 }
 
-func (e *Endpoint) PatchHeaders(ctx context.Context, appId string, endpointId string, endpointHeadersIn *EndpointHeadersPatchIn) error {
+func (e *Endpoint) PatchHeaders(
+	ctx context.Context,
+	appId string,
+	endpointId string,
+	endpointHeadersIn *EndpointHeadersPatchIn,
+) error {
 	req := e.api.EndpointAPI.V1EndpointPatchHeaders(ctx, appId, endpointId)
 	req = req.EndpointHeadersPatchIn(*endpointHeadersIn)
 	res, err := req.Execute()
@@ -199,11 +284,20 @@ func (e *Endpoint) PatchHeaders(ctx context.Context, appId string, endpointId st
 	return nil
 }
 
-func (e *Endpoint) GetStats(ctx context.Context, appId string, endpointId string) (*EndpointStats, error) {
+func (e *Endpoint) GetStats(
+	ctx context.Context,
+	appId string,
+	endpointId string,
+) (*EndpointStats, error) {
 	return e.GetStatsWithOptions(ctx, appId, endpointId, EndpointStatsOptions{})
 }
 
-func (e *Endpoint) GetStatsWithOptions(ctx context.Context, appId string, endpointId string, options EndpointStatsOptions) (*EndpointStats, error) {
+func (e *Endpoint) GetStatsWithOptions(
+	ctx context.Context,
+	appId string,
+	endpointId string,
+	options EndpointStatsOptions,
+) (*EndpointStats, error) {
 	req := e.api.EndpointAPI.V1EndpointGetStats(ctx, appId, endpointId)
 	if options.Since != nil {
 		req = req.Since(*options.Since)
@@ -218,41 +312,75 @@ func (e *Endpoint) GetStatsWithOptions(ctx context.Context, appId string, endpoi
 	return ret, nil
 }
 
-func (e *Endpoint) ReplayMissing(ctx context.Context, appId string, endpointId string, replayIn *ReplayIn) (*ReplayOut, error) {
-	return e.ReplayMissingWithOptions(ctx, appId, endpointId, replayIn, nil)
+// Replays messages to the endpoint.
+//
+// Only messages that were created after `since` will be sent.
+// Messages that were previously sent to the endpoint are not resent.
+func (endpoint *Endpoint) ReplayMissing(
+	ctx context.Context,
+	appId string,
+	endpointId string,
+	replayIn *ReplayIn,
+) (*ReplayOut, error) {
+	return endpoint.ReplayMissingWithOptions(
+		ctx,
+		appId,
+		endpointId,
+		replayIn,
+		nil,
+	)
 }
 
-func (e *Endpoint) ReplayMissingWithOptions(
+// Replays messages to the endpoint.
+//
+// Only messages that were created after `since` will be sent.
+// Messages that were previously sent to the endpoint are not resent.
+func (endpoint *Endpoint) ReplayMissingWithOptions(
 	ctx context.Context,
 	appId string,
 	endpointId string,
 	replayIn *ReplayIn,
 	options *PostOptions,
 ) (*ReplayOut, error) {
-	req := e.api.EndpointAPI.V1EndpointReplayMissing(ctx, appId, endpointId)
-	req.ReplayIn(*replayIn)
+	req := endpoint.api.EndpointAPI.V1EndpointReplayMissing(
+		ctx,
+		appId,
+		endpointId,
+	).ReplayIn(*replayIn)
+
 	if options != nil {
 		if options.IdempotencyKey != nil {
 			req = req.IdempotencyKey(*options.IdempotencyKey)
 		}
 	}
+
 	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
+
 	return ret, nil
 }
 
-func (e *Endpoint) TransformationGet(ctx context.Context, appId string, endpointId string) (*EndpointTransformationOut, error) {
+func (e *Endpoint) TransformationGet(
+	ctx context.Context,
+	appId string,
+	endpointId string,
+) (*EndpointTransformationOut, error) {
 	req := e.api.EndpointAPI.V1EndpointTransformationGet(ctx, appId, endpointId)
 	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
+
 	return ret, nil
 }
 
-func (e *Endpoint) TransformationPartialUpdate(ctx context.Context, appId string, endpointId string, transformation *EndpointTransformationIn) error {
+func (e *Endpoint) TransformationPartialUpdate(
+	ctx context.Context,
+	appId string,
+	endpointId string, transformation *EndpointTransformationIn,
+) error {
 	req := e.api.EndpointAPI.V1EndpointTransformationPartialUpdate(ctx, appId, endpointId)
 	req = req.EndpointTransformationIn(*transformation)
 
@@ -264,7 +392,12 @@ func (e *Endpoint) TransformationPartialUpdate(ctx context.Context, appId string
 	return nil
 }
 
-func (e *Endpoint) SendExample(ctx context.Context, appId string, endpointId string, eventExampleIn *EventExampleIn) (*MessageOut, error) {
+func (e *Endpoint) SendExample(
+	ctx context.Context,
+	appId string,
+	endpointId string,
+	eventExampleIn *EventExampleIn,
+) (*MessageOut, error) {
 	return e.SendExampleWithOptions(ctx, appId, endpointId, eventExampleIn, nil)
 }
 

@@ -10,17 +10,6 @@ type EventType struct {
 	api *openapi.APIClient
 }
 
-type (
-	ListResponseEventTypeOut      = openapi.ListResponseEventTypeOut
-	EventTypeIn                   = openapi.EventTypeIn
-	EventTypeOut                  = openapi.EventTypeOut
-	EventTypePatch                = openapi.EventTypePatch
-	EventTypeUpdate               = openapi.EventTypeUpdate
-	EventTypeImportOpenApiIn      = openapi.EventTypeImportOpenApiIn
-	EventTypeImportOpenApiOut     = openapi.EventTypeImportOpenApiOut
-	EventTypeImportOpenApiOutData = openapi.EventTypeImportOpenApiOutData
-)
-
 type EventTypeListOptions struct {
 	// Limit the number of returned items
 	Limit *int32
@@ -28,96 +17,156 @@ type EventTypeListOptions struct {
 	Iterator *string
 	// The sorting order of the returned items
 	Order *Ordering
-	// When `true` archived (deleted but not expunged) items are included in the response
+	// When `true` archived (deleted but not expunged) items are included in the response.
 	IncludeArchived *bool
-	// When `true` the full item (including the schema) is included in the response
+	// When `true` the full item (including the schema) is included in the response.
 	WithContent *bool
 }
 
-func (e *EventType) List(ctx context.Context, options *EventTypeListOptions) (*ListResponseEventTypeOut, error) {
-	req := e.api.EventTypeAPI.V1EventTypeList(ctx)
+// Return the list of event types.
+func (eventType *EventType) List(
+	ctx context.Context,
+	options *EventTypeListOptions,
+) (*ListResponseEventTypeOut, error) {
+	req := eventType.api.EventTypeAPI.V1EventTypeList(
+		ctx,
+	)
+
 	if options != nil {
-		if options.Iterator != nil {
-			req = req.Iterator(*options.Iterator)
-		}
 		if options.Limit != nil {
 			req = req.Limit(*options.Limit)
 		}
-		if options.WithContent != nil {
-			req = req.WithContent(*options.WithContent)
-		}
-		if options.IncludeArchived != nil {
-			req = req.IncludeArchived(*options.IncludeArchived)
+		if options.Iterator != nil {
+			req = req.Iterator(*options.Iterator)
 		}
 		if options.Order != nil {
 			req = req.Order(*options.Order)
 		}
+		if options.IncludeArchived != nil {
+			req = req.IncludeArchived(*options.IncludeArchived)
+		}
+		if options.WithContent != nil {
+			req = req.WithContent(*options.WithContent)
+		}
 	}
+
 	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
+
 	return ret, nil
 }
 
-func (e *EventType) Create(ctx context.Context, eventTypeIn *EventTypeIn) (*EventTypeOut, error) {
-	return e.CreateWithOptions(ctx, eventTypeIn, nil)
+// Create new or unarchive existing event type.
+//
+// Unarchiving an event type will allow endpoints to filter on it and messages to be sent with it.
+// Endpoints filtering on the event type before archival will continue to filter on it.
+// This operation does not preserve the description and schemas.
+func (eventType *EventType) Create(
+	ctx context.Context,
+	eventTypeIn *EventTypeIn,
+) (*EventTypeOut, error) {
+	return eventType.CreateWithOptions(
+		ctx,
+		eventTypeIn,
+		nil,
+	)
 }
 
-func (e *EventType) CreateWithOptions(ctx context.Context, eventTypeIn *EventTypeIn, options *PostOptions) (*EventTypeOut, error) {
-	req := e.api.EventTypeAPI.V1EventTypeCreate(ctx)
-	req = req.EventTypeIn(*eventTypeIn)
+// Create new or unarchive existing event type.
+//
+// Unarchiving an event type will allow endpoints to filter on it and messages to be sent with it.
+// Endpoints filtering on the event type before archival will continue to filter on it.
+// This operation does not preserve the description and schemas.
+func (eventType *EventType) CreateWithOptions(
+	ctx context.Context,
+	eventTypeIn *EventTypeIn,
+	options *PostOptions,
+) (*EventTypeOut, error) {
+	req := eventType.api.EventTypeAPI.V1EventTypeCreate(
+		ctx,
+	).EventTypeIn(*eventTypeIn)
+
 	if options != nil {
 		if options.IdempotencyKey != nil {
 			req = req.IdempotencyKey(*options.IdempotencyKey)
 		}
 	}
+
 	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
+
 	return ret, nil
 }
 
-func (e *EventType) Get(ctx context.Context, eventTypeName string) (*EventTypeOut, error) {
+func (e *EventType) Get(
+	ctx context.Context,
+	eventTypeName string,
+) (*EventTypeOut, error) {
 	req := e.api.EventTypeAPI.V1EventTypeGet(ctx, eventTypeName)
 	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
+
 	return ret, nil
 }
 
-func (e *EventType) Update(ctx context.Context, eventTypeName string, eventTypeUpdate *EventTypeUpdate) (*EventTypeOut, error) {
+func (e *EventType) Update(
+	ctx context.Context,
+	eventTypeName string,
+	eventTypeUpdate *EventTypeUpdate,
+) (*EventTypeOut, error) {
 	req := e.api.EventTypeAPI.V1EventTypeUpdate(ctx, eventTypeName)
 	req = req.EventTypeUpdate(*eventTypeUpdate)
 	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
+
 	return ret, nil
 }
 
-func (e *EventType) Patch(ctx context.Context, eventTypeName string, eventTypePatch *EventTypePatch) (*EventTypeOut, error) {
+func (e *EventType) Patch(
+	ctx context.Context,
+	eventTypeName string,
+	eventTypePatch *EventTypePatch,
+) (*EventTypeOut, error) {
 	req := e.api.EventTypeAPI.V1EventTypePatch(ctx, eventTypeName)
 	req = req.EventTypePatch(*eventTypePatch)
 	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
+
 	return ret, nil
 }
 
-func (e *EventType) Delete(ctx context.Context, eventTypeName string) error {
-	return e.DeleteWithOptions(ctx, eventTypeName, nil)
+// Archive an event type.
+//
+// Endpoints already configured to filter on an event type will continue to do so after archival.
+// However, new messages can not be sent with it and endpoints can not filter on it.
+// An event type can be unarchived with the create operation.
+func (eventType *EventType) Delete(
+	ctx context.Context,
+	eventTypeName string,
+) error {
+	return eventType.DeleteWithOptions(ctx, eventTypeName, nil)
 }
 
 type EventTypeDeleteOptions struct {
 	Expunge *bool
 }
 
-func (e *EventType) DeleteWithOptions(ctx context.Context, eventTypeName string, options *EventTypeDeleteOptions) error {
-	req := e.api.EventTypeAPI.V1EventTypeDelete(ctx, eventTypeName)
+func (eventType *EventType) DeleteWithOptions(
+	ctx context.Context,
+	eventTypeName string,
+	options *EventTypeDeleteOptions,
+) error {
+	req := eventType.api.EventTypeAPI.V1EventTypeDelete(ctx, eventTypeName)
 	if options != nil {
 		if options.Expunge != nil {
 			req = req.Expunge(*options.Expunge)
@@ -127,11 +176,18 @@ func (e *EventType) DeleteWithOptions(ctx context.Context, eventTypeName string,
 	return wrapError(err, res)
 }
 
-func (e *EventType) ImportOpenApi(ctx context.Context, eventTypeImportOpenApiIn EventTypeImportOpenApiIn) (*EventTypeImportOpenApiOut, error) {
+func (e *EventType) ImportOpenApi(
+	ctx context.Context,
+	eventTypeImportOpenApiIn EventTypeImportOpenApiIn,
+) (*EventTypeImportOpenApiOut, error) {
 	return e.ImportOpenApiWithOptions(ctx, eventTypeImportOpenApiIn, nil)
 }
 
-func (e *EventType) ImportOpenApiWithOptions(ctx context.Context, eventTypeImportOpenApiIn EventTypeImportOpenApiIn, options *PostOptions) (*EventTypeImportOpenApiOut, error) {
+func (e *EventType) ImportOpenApiWithOptions(
+	ctx context.Context,
+	eventTypeImportOpenApiIn EventTypeImportOpenApiIn,
+	options *PostOptions,
+) (*EventTypeImportOpenApiOut, error) {
 	req := e.api.EventTypeAPI.V1EventTypeImportOpenapi(ctx).EventTypeImportOpenApiIn(eventTypeImportOpenApiIn)
 	if options != nil && options.IdempotencyKey != nil {
 		req = req.IdempotencyKey(*options.IdempotencyKey)
@@ -140,5 +196,6 @@ func (e *EventType) ImportOpenApiWithOptions(ctx context.Context, eventTypeImpor
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
+
 	return ret, nil
 }
