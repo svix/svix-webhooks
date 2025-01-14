@@ -139,3 +139,6 @@ class Application(ApiBase):
 
     def delete(self, app_id: str) -> None:
         return v1_application_delete.request_sync(client=self._client, app_id=app_id)
+
+
+__all__ = ["ApplicationIn", "ApplicationOut", "ApplicationPatch"]
