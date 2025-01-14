@@ -95,6 +95,51 @@ from svix.internal.openapi_client.models.message_status import MessageStatus
 from svix.internal.openapi_client.models.recover_in import RecoverIn
 from svix.internal.openapi_client.models.status_code_class import StatusCodeClass
 
+from svix.internal.openapi_client.models.aggregate_event_types_out import (
+    AggregateEventTypesOut,
+)
+from svix.internal.openapi_client.models.app_usage_stats_in import AppUsageStatsIn
+from svix.internal.openapi_client.models.app_usage_stats_out import AppUsageStatsOut
+from ..internal.openapi_client.models.app_portal_access_in import AppPortalAccessIn
+from ..internal.openapi_client.models.app_portal_access_out import AppPortalAccessOut
+from ..internal.openapi_client.models.background_task_out import BackgroundTaskOut
+from ..internal.openapi_client.models.background_task_status import BackgroundTaskStatus
+from ..internal.openapi_client.models.background_task_type import BackgroundTaskType
+from ..internal.openapi_client.models.operational_webhook_endpoint_in import (
+    OperationalWebhookEndpointIn,
+)
+from ..internal.openapi_client.models.operational_webhook_endpoint_out import (
+    OperationalWebhookEndpointOut,
+)
+from ..internal.openapi_client.models.operational_webhook_endpoint_secret_in import (
+    OperationalWebhookEndpointSecretIn,
+)
+from ..internal.openapi_client.models.operational_webhook_endpoint_secret_out import (
+    OperationalWebhookEndpointSecretOut,
+)
+from ..internal.openapi_client.models.operational_webhook_endpoint_update import (
+    OperationalWebhookEndpointUpdate,
+)
+from ..internal.openapi_client.models.endpoint_stats import EndpointStats
+from ..internal.openapi_client.models.endpoint_transformation_in import (
+    EndpointTransformationIn,
+)
+from ..internal.openapi_client.models.endpoint_transformation_out import (
+    EndpointTransformationOut,
+)
+from ..internal.openapi_client.models.endpoint_update import EndpointUpdate
+from ..internal.openapi_client.models.event_example_in import EventExampleIn
+from ..internal.openapi_client.models.list_response_background_task_out import (
+    ListResponseBackgroundTaskOut,
+)
+from ..internal.openapi_client.models.list_response_operational_webhook_endpoint_out import (
+    ListResponseOperationalWebhookEndpointOut,
+)
+from ..internal.openapi_client.models.ordering import Ordering
+from ..internal.openapi_client.models.recover_out import RecoverOut
+from ..internal.openapi_client.models.replay_in import ReplayIn
+from ..internal.openapi_client.models.replay_out import ReplayOut
+
 DEFAULT_SERVER_URL = "https://api.svix.com"
 
 
@@ -278,4 +323,28 @@ __all__ = [
     "IntegrationOut",
     "IntegrationUpdate",
     "ListResponseIntegrationOut",
+    "AggregateEventTypesOut",
+    "AppUsageStatsIn",
+    "AppUsageStatsOut",
+    "AppPortalAccessIn",
+    "AppPortalAccessOut",
+    "BackgroundTaskOut",
+    "BackgroundTaskStatus",
+    "BackgroundTaskType",
+    "OperationalWebhookEndpointIn",
+    "OperationalWebhookEndpointOut",
+    "OperationalWebhookEndpointSecretIn",
+    "OperationalWebhookEndpointSecretOut",
+    "OperationalWebhookEndpointUpdate",
+    "EndpointStats",
+    "EndpointTransformationIn",
+    "EndpointTransformationOut",
+    "EndpointUpdate",
+    "EventExampleIn",
+    "ListResponseBackgroundTaskOut",
+    "ListResponseOperationalWebhookEndpointOut",
+    "Ordering",
+    "RecoverOut",
+    "ReplayIn",
+    "ReplayOut",
 ]
