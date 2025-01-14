@@ -1,40 +1,13 @@
-import typing as t
-from dataclasses import asdict, dataclass
-
+from .common import PostOptions, ApiBase
 
 from ..internal.openapi_client.api.authentication import (
     v1_authentication_app_portal_access,
     v1_authentication_dashboard_access,
     v1_authentication_logout,
 )
-from ..internal.openapi_client.client import AuthenticatedClient
 from ..internal.openapi_client.models.app_portal_access_in import AppPortalAccessIn
 from ..internal.openapi_client.models.app_portal_access_out import AppPortalAccessOut
 from ..internal.openapi_client.models.dashboard_access_out import DashboardAccessOut
-
-
-@dataclass
-class ListOptions:
-    iterator: t.Optional[str] = None
-    limit: t.Optional[int] = None
-
-    def to_dict(self) -> t.Dict[str, t.Any]:
-        return {k: v for k, v in asdict(self).items() if v is not None}
-
-
-@dataclass
-class PostOptions:
-    idempotency_key: t.Optional[str] = None
-
-    def to_dict(self) -> t.Dict[str, t.Any]:
-        return {k: v for k, v in asdict(self).items() if v is not None}
-
-
-class ApiBase:
-    _client: AuthenticatedClient
-
-    def __init__(self, client: AuthenticatedClient) -> None:
-        self._client = client
 
 
 class AuthenticationAsync(ApiBase):

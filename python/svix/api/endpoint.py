@@ -1,6 +1,6 @@
 import typing as t
-from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
+from dataclasses import dataclass
+from datetime import datetime
 
 
 from ..internal.openapi_client.api.endpoint import (
@@ -22,7 +22,6 @@ from ..internal.openapi_client.api.endpoint import (
     v1_endpoint_update,
     v1_endpoint_update_headers,
 )
-from ..internal.openapi_client.client import AuthenticatedClient
 from ..internal.openapi_client.models.endpoint_headers_in import EndpointHeadersIn
 from ..internal.openapi_client.models.endpoint_headers_out import EndpointHeadersOut
 from ..internal.openapi_client.models.endpoint_headers_patch_in import (
@@ -54,31 +53,7 @@ from ..internal.openapi_client.models.recover_out import RecoverOut
 from ..internal.openapi_client.models.replay_in import ReplayIn
 from ..internal.openapi_client.models.replay_out import ReplayOut
 
-
-def ensure_tz(x: t.Optional[datetime]) -> t.Optional[datetime]:
-    if x is None:
-        return None
-
-    if x.tzinfo is None:
-        return x.replace(tzinfo=timezone.utc)
-    return x
-
-
-@dataclass
-class ListOptions:
-    iterator: t.Optional[str] = None
-    limit: t.Optional[int] = None
-
-    def to_dict(self) -> t.Dict[str, t.Any]:
-        return {k: v for k, v in asdict(self).items() if v is not None}
-
-
-@dataclass
-class PostOptions:
-    idempotency_key: t.Optional[str] = None
-
-    def to_dict(self) -> t.Dict[str, t.Any]:
-        return {k: v for k, v in asdict(self).items() if v is not None}
+from .common import ensure_tz, ListOptions, PostOptions, ApiBase
 
 
 @dataclass
@@ -90,13 +65,6 @@ class EndpointListOptions(ListOptions):
 class EndpointStatsOptions:
     since: t.Optional[datetime] = None
     until: t.Optional[datetime] = None
-
-
-class ApiBase:
-    _client: AuthenticatedClient
-
-    def __init__(self, client: AuthenticatedClient) -> None:
-        self._client = client
 
 
 class EndpointAsync(ApiBase):

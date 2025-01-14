@@ -1,5 +1,5 @@
 import typing as t
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
 
 
 from ..internal.openapi_client.api.application import (
@@ -10,7 +10,6 @@ from ..internal.openapi_client.api.application import (
     v1_application_patch,
     v1_application_update,
 )
-from ..internal.openapi_client.client import AuthenticatedClient
 from ..internal.openapi_client.models.application_in import ApplicationIn
 from ..internal.openapi_client.models.application_out import ApplicationOut
 from ..internal.openapi_client.models.application_patch import ApplicationPatch
@@ -19,34 +18,12 @@ from ..internal.openapi_client.models.list_response_application_out import (
 )
 from ..internal.openapi_client.models.ordering import Ordering
 
-
-@dataclass
-class ListOptions:
-    iterator: t.Optional[str] = None
-    limit: t.Optional[int] = None
-
-    def to_dict(self) -> t.Dict[str, t.Any]:
-        return {k: v for k, v in asdict(self).items() if v is not None}
-
-
-@dataclass
-class PostOptions:
-    idempotency_key: t.Optional[str] = None
-
-    def to_dict(self) -> t.Dict[str, t.Any]:
-        return {k: v for k, v in asdict(self).items() if v is not None}
+from .common import PostOptions, ApiBase, ListOptions
 
 
 @dataclass
 class ApplicationListOptions(ListOptions):
     order: t.Optional[Ordering] = None
-
-
-class ApiBase:
-    _client: AuthenticatedClient
-
-    def __init__(self, client: AuthenticatedClient) -> None:
-        self._client = client
 
 
 class ApplicationAsync(ApiBase):

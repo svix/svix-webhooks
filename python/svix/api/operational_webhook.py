@@ -1,5 +1,7 @@
 import typing as t
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
+
+from .common import ListOptions, PostOptions, ApiBase
 
 
 from ..internal.openapi_client.api.webhook_endpoint import (
@@ -11,7 +13,6 @@ from ..internal.openapi_client.api.webhook_endpoint import (
     rotate_operational_webhook_endpoint_secret,
     update_operational_webhook_endpoint,
 )
-from ..internal.openapi_client.client import AuthenticatedClient
 from ..internal.openapi_client.models.operational_webhook_endpoint_in import (
     OperationalWebhookEndpointIn,
 )
@@ -32,36 +33,13 @@ from ..internal.openapi_client.models.list_response_operational_webhook_endpoint
 )
 from ..internal.openapi_client.models.ordering import Ordering
 
+
 DEFAULT_SERVER_URL = "https://api.svix.com"
-
-
-@dataclass
-class ListOptions:
-    iterator: t.Optional[str] = None
-    limit: t.Optional[int] = None
-
-    def to_dict(self) -> t.Dict[str, t.Any]:
-        return {k: v for k, v in asdict(self).items() if v is not None}
-
-
-@dataclass
-class PostOptions:
-    idempotency_key: t.Optional[str] = None
-
-    def to_dict(self) -> t.Dict[str, t.Any]:
-        return {k: v for k, v in asdict(self).items() if v is not None}
 
 
 @dataclass
 class OperationalWebhookEndpointListOptions(ListOptions):
     order: t.Optional[Ordering] = None
-
-
-class ApiBase:
-    _client: AuthenticatedClient
-
-    def __init__(self, client: AuthenticatedClient) -> None:
-        self._client = client
 
 
 class OperationalWebhookEndpointAsync(ApiBase):

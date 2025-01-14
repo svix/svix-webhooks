@@ -1,5 +1,5 @@
 import typing as t
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
 
 
 from ..internal.openapi_client.api.event_type import (
@@ -11,7 +11,6 @@ from ..internal.openapi_client.api.event_type import (
     v1_event_type_patch,
     v1_event_type_update,
 )
-from ..internal.openapi_client.client import AuthenticatedClient
 from ..internal.openapi_client.models.event_type_import_open_api_in import (
     EventTypeImportOpenApiIn,
 )
@@ -25,38 +24,13 @@ from ..internal.openapi_client.models.event_type_update import EventTypeUpdate
 from ..internal.openapi_client.models.list_response_event_type_out import (
     ListResponseEventTypeOut,
 )
-
-DEFAULT_SERVER_URL = "https://api.svix.com"
-
-
-@dataclass
-class ListOptions:
-    iterator: t.Optional[str] = None
-    limit: t.Optional[int] = None
-
-    def to_dict(self) -> t.Dict[str, t.Any]:
-        return {k: v for k, v in asdict(self).items() if v is not None}
-
-
-@dataclass
-class PostOptions:
-    idempotency_key: t.Optional[str] = None
-
-    def to_dict(self) -> t.Dict[str, t.Any]:
-        return {k: v for k, v in asdict(self).items() if v is not None}
+from .common import ListOptions, PostOptions, ApiBase
 
 
 @dataclass
 class EventTypeListOptions(ListOptions):
     with_content: t.Optional[bool] = None
     include_archived: t.Optional[bool] = None
-
-
-class ApiBase:
-    _client: AuthenticatedClient
-
-    def __init__(self, client: AuthenticatedClient) -> None:
-        self._client = client
 
 
 class EventTypeAsync(ApiBase):

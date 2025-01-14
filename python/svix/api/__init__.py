@@ -1,7 +1,5 @@
 import typing as t
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-
 
 from .application import (
     ApplicationAsync,
@@ -100,15 +98,6 @@ from svix.internal.openapi_client.models.status_code_class import StatusCodeClas
 DEFAULT_SERVER_URL = "https://api.svix.com"
 
 
-def ensure_tz(x: t.Optional[datetime]) -> t.Optional[datetime]:
-    if x is None:
-        return None
-
-    if x.tzinfo is None:
-        return x.replace(tzinfo=timezone.utc)
-    return x
-
-
 @dataclass
 class SvixOptions:
     debug: bool = False
@@ -131,13 +120,6 @@ class SvixOptions:
     Request methods will raise httpx.TimeoutException if this is exceeded.
     """
     timeout: float = 15.0
-
-
-class ApiBase:
-    _client: AuthenticatedClient
-
-    def __init__(self, client: AuthenticatedClient) -> None:
-        self._client = client
 
 
 class ClientBase:

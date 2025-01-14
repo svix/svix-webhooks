@@ -1,5 +1,4 @@
-import typing as t
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
 
 
 from ..internal.openapi_client.api.integration import (
@@ -11,7 +10,6 @@ from ..internal.openapi_client.api.integration import (
     v1_integration_rotate_key,
     v1_integration_update,
 )
-from ..internal.openapi_client.client import AuthenticatedClient
 from ..internal.openapi_client.models.integration_in import IntegrationIn
 from ..internal.openapi_client.models.integration_key_out import IntegrationKeyOut
 from ..internal.openapi_client.models.integration_out import IntegrationOut
@@ -19,37 +17,14 @@ from ..internal.openapi_client.models.integration_update import IntegrationUpdat
 from ..internal.openapi_client.models.list_response_integration_out import (
     ListResponseIntegrationOut,
 )
+from .common import ListOptions, PostOptions, ApiBase
 
 DEFAULT_SERVER_URL = "https://api.svix.com"
 
 
 @dataclass
-class ListOptions:
-    iterator: t.Optional[str] = None
-    limit: t.Optional[int] = None
-
-    def to_dict(self) -> t.Dict[str, t.Any]:
-        return {k: v for k, v in asdict(self).items() if v is not None}
-
-
-@dataclass
-class PostOptions:
-    idempotency_key: t.Optional[str] = None
-
-    def to_dict(self) -> t.Dict[str, t.Any]:
-        return {k: v for k, v in asdict(self).items() if v is not None}
-
-
-@dataclass
 class IntegrationListOptions(ListOptions):
     pass
-
-
-class ApiBase:
-    _client: AuthenticatedClient
-
-    def __init__(self, client: AuthenticatedClient) -> None:
-        self._client = client
 
 
 class IntegrationAsync(ApiBase):

@@ -1,6 +1,6 @@
 import typing as t
-from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
+from dataclasses import dataclass
+from datetime import datetime
 
 
 from ..internal.openapi_client.api.message import (
@@ -9,40 +9,16 @@ from ..internal.openapi_client.api.message import (
     v1_message_get,
     v1_message_list,
 )
-from ..internal.openapi_client.client import AuthenticatedClient
 from ..internal.openapi_client.models.list_response_message_out import (
     ListResponseMessageOut,
 )
 from ..internal.openapi_client.models.message_in import MessageIn
 from ..internal.openapi_client.models.message_out import MessageOut
 
+from .common import ensure_tz, ListOptions, PostOptions, ApiBase
+
+
 DEFAULT_SERVER_URL = "https://api.svix.com"
-
-
-def ensure_tz(x: t.Optional[datetime]) -> t.Optional[datetime]:
-    if x is None:
-        return None
-
-    if x.tzinfo is None:
-        return x.replace(tzinfo=timezone.utc)
-    return x
-
-
-@dataclass
-class ListOptions:
-    iterator: t.Optional[str] = None
-    limit: t.Optional[int] = None
-
-    def to_dict(self) -> t.Dict[str, t.Any]:
-        return {k: v for k, v in asdict(self).items() if v is not None}
-
-
-@dataclass
-class PostOptions:
-    idempotency_key: t.Optional[str] = None
-
-    def to_dict(self) -> t.Dict[str, t.Any]:
-        return {k: v for k, v in asdict(self).items() if v is not None}
 
 
 @dataclass
@@ -92,13 +68,6 @@ def message_in_raw(
         payload={},
         transformations_params=transformations_params,
     )
-
-
-class ApiBase:
-    _client: AuthenticatedClient
-
-    def __init__(self, client: AuthenticatedClient) -> None:
-        self._client = client
 
 
 class MessageAsync(ApiBase):
