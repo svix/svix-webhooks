@@ -18,9 +18,6 @@ from ..internal.openapi_client.models.message_out import MessageOut
 from .common import ensure_tz, ListOptions, PostOptions, ApiBase
 
 
-DEFAULT_SERVER_URL = "https://api.svix.com"
-
-
 @dataclass
 class MessageListOptions(ListOptions):
     event_types: t.Optional[t.List[str]] = None

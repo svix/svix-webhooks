@@ -19,8 +19,6 @@ from ..internal.openapi_client.models.list_response_integration_out import (
 )
 from .common import ListOptions, PostOptions, ApiBase
 
-DEFAULT_SERVER_URL = "https://api.svix.com"
-
 
 @dataclass
 class IntegrationListOptions(ListOptions):

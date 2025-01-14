@@ -34,9 +34,6 @@ from ..internal.openapi_client.models.list_response_operational_webhook_endpoint
 from ..internal.openapi_client.models.ordering import Ordering
 
 
-DEFAULT_SERVER_URL = "https://api.svix.com"
-
-
 @dataclass
 class OperationalWebhookEndpointListOptions(ListOptions):
     order: t.Optional[Ordering] = None

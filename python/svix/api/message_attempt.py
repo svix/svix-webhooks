@@ -33,8 +33,6 @@ from ..internal.openapi_client.models.message_attempt_out import MessageAttemptO
 from ..internal.openapi_client.models.message_status import MessageStatus
 from ..internal.openapi_client.models.status_code_class import StatusCodeClass
 
-DEFAULT_SERVER_URL = "https://api.svix.com"
-
 
 @dataclass
 class MessageAttemptListOptions(ListOptions):

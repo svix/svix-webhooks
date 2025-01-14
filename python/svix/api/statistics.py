@@ -12,8 +12,6 @@ from ..internal.openapi_client.api.statistics import (
     v1_statistics_aggregate_event_types,
 )
 
-DEFAULT_SERVER_URL = "https://api.svix.com"
-
 
 class StatisticsAsync(ApiBase):
     async def aggregate_app_stats(
