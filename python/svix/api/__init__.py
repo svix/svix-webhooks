@@ -1,14 +1,9 @@
+# ruff: noqa: F401
+
 import typing as t
 from dataclasses import dataclass, field
 
-from .application import (
-    ApplicationAsync,
-    Application,
-    ApplicationIn,
-    ApplicationOut,
-    ApplicationPatch,
-    ApplicationListOptions,
-)
+from .application import ApplicationAsync, Application, ApplicationListOptions
 from .authentication import AuthenticationAsync, Authentication
 from .endpoint import EndpointAsync, Endpoint, EndpointListOptions
 from .event_type import EventTypeAsync, EventType, EventTypeListOptions
@@ -25,8 +20,105 @@ from .operational_webhook import (
 )
 from .statistics import StatisticsAsync, Statistics
 
-
+from svix.internal.openapi_client.models.aggregate_event_types_out import (
+    AggregateEventTypesOut,
+)
+from svix.internal.openapi_client.models.app_usage_stats_in import AppUsageStatsIn
+from svix.internal.openapi_client.models.app_usage_stats_out import AppUsageStatsOut
+from svix.internal.openapi_client.api.application import (
+    v1_application_create,
+    v1_application_delete,
+    v1_application_get,
+    v1_application_list,
+    v1_application_patch,
+    v1_application_update,
+)
+from svix.internal.openapi_client.api.authentication import (
+    v1_authentication_app_portal_access,
+    v1_authentication_dashboard_access,
+    v1_authentication_logout,
+)
+from svix.internal.openapi_client.api.background_tasks import (
+    get_background_task,
+    list_background_tasks,
+)
+from svix.internal.openapi_client.api.endpoint import (
+    v1_endpoint_create,
+    v1_endpoint_delete,
+    v1_endpoint_get,
+    v1_endpoint_get_headers,
+    v1_endpoint_get_secret,
+    v1_endpoint_get_stats,
+    v1_endpoint_list,
+    v1_endpoint_patch,
+    v1_endpoint_patch_headers,
+    v1_endpoint_recover,
+    v1_endpoint_replay_missing,
+    v1_endpoint_rotate_secret,
+    v1_endpoint_send_example,
+    v1_endpoint_transformation_get,
+    v1_endpoint_transformation_partial_update,
+    v1_endpoint_update,
+    v1_endpoint_update_headers,
+)
+from svix.internal.openapi_client.api.webhook_endpoint import (
+    create_operational_webhook_endpoint,
+    delete_operational_webhook_endpoint,
+    get_operational_webhook_endpoint,
+    get_operational_webhook_endpoint_secret,
+    list_operational_webhook_endpoints,
+    rotate_operational_webhook_endpoint_secret,
+    update_operational_webhook_endpoint,
+)
+from svix.internal.openapi_client.api.event_type import (
+    v1_event_type_create,
+    v1_event_type_delete,
+    v1_event_type_get,
+    v1_event_type_import_openapi,
+    v1_event_type_list,
+    v1_event_type_patch,
+    v1_event_type_update,
+)
+from svix.internal.openapi_client.api.integration import (
+    v1_integration_create,
+    v1_integration_delete,
+    v1_integration_get,
+    v1_integration_get_key,
+    v1_integration_list,
+    v1_integration_rotate_key,
+    v1_integration_update,
+)
+from svix.internal.openapi_client.api.message import (
+    v1_message_create,
+    v1_message_expunge_content,
+    v1_message_get,
+    v1_message_list,
+)
+from svix.internal.openapi_client.api.message_attempt import (
+    v1_message_attempt_expunge_content,
+    v1_message_attempt_get,
+    v1_message_attempt_list_attempted_destinations,
+    v1_message_attempt_list_attempted_messages,
+    v1_message_attempt_list_by_endpoint,
+    v1_message_attempt_list_by_endpoint_deprecated,
+    v1_message_attempt_list_by_msg,
+    v1_message_attempt_resend,
+)
+from svix.internal.openapi_client.api.statistics import (
+    v1_statistics_aggregate_app_stats,
+    v1_statistics_aggregate_event_types,
+)
 from svix.internal.openapi_client.client import AuthenticatedClient
+from svix.internal.openapi_client.models.app_portal_access_in import AppPortalAccessIn
+from svix.internal.openapi_client.models.app_portal_access_out import AppPortalAccessOut
+from svix.internal.openapi_client.models.application_in import ApplicationIn
+from svix.internal.openapi_client.models.application_out import ApplicationOut
+from svix.internal.openapi_client.models.application_patch import ApplicationPatch
+from svix.internal.openapi_client.models.background_task_out import BackgroundTaskOut
+from svix.internal.openapi_client.models.background_task_status import (
+    BackgroundTaskStatus,
+)
+from svix.internal.openapi_client.models.background_task_type import BackgroundTaskType
 from svix.internal.openapi_client.models.dashboard_access_out import DashboardAccessOut
 from svix.internal.openapi_client.models.endpoint_headers_in import EndpointHeadersIn
 from svix.internal.openapi_client.models.endpoint_headers_out import EndpointHeadersOut
@@ -43,14 +135,36 @@ from svix.internal.openapi_client.models.endpoint_secret_out import EndpointSecr
 from svix.internal.openapi_client.models.endpoint_secret_rotate_in import (
     EndpointSecretRotateIn,
 )
+from svix.internal.openapi_client.models.operational_webhook_endpoint_in import (
+    OperationalWebhookEndpointIn,
+)
+from svix.internal.openapi_client.models.operational_webhook_endpoint_out import (
+    OperationalWebhookEndpointOut,
+)
+from svix.internal.openapi_client.models.operational_webhook_endpoint_secret_in import (
+    OperationalWebhookEndpointSecretIn,
+)
+from svix.internal.openapi_client.models.operational_webhook_endpoint_secret_out import (
+    OperationalWebhookEndpointSecretOut,
+)
+from svix.internal.openapi_client.models.operational_webhook_endpoint_update import (
+    OperationalWebhookEndpointUpdate,
+)
+from svix.internal.openapi_client.models.endpoint_stats import EndpointStats
+from svix.internal.openapi_client.models.endpoint_transformation_in import (
+    EndpointTransformationIn,
+)
+from svix.internal.openapi_client.models.endpoint_transformation_out import (
+    EndpointTransformationOut,
+)
+from svix.internal.openapi_client.models.endpoint_update import EndpointUpdate
+from svix.internal.openapi_client.models.event_example_in import EventExampleIn
 from svix.internal.openapi_client.models.event_type_import_open_api_in import (
     EventTypeImportOpenApiIn,
 )
 from svix.internal.openapi_client.models.event_type_import_open_api_out import (
     EventTypeImportOpenApiOut,
 )
-
-
 from svix.internal.openapi_client.models.event_type_in import EventTypeIn
 from svix.internal.openapi_client.models.event_type_out import EventTypeOut
 from svix.internal.openapi_client.models.event_type_patch import EventTypePatch
@@ -62,11 +176,17 @@ from svix.internal.openapi_client.models.integration_update import IntegrationUp
 from svix.internal.openapi_client.models.list_response_application_out import (
     ListResponseApplicationOut,
 )
+from svix.internal.openapi_client.models.list_response_background_task_out import (
+    ListResponseBackgroundTaskOut,
+)
 from svix.internal.openapi_client.models.list_response_endpoint_message_out import (
     ListResponseEndpointMessageOut,
 )
 from svix.internal.openapi_client.models.list_response_endpoint_out import (
     ListResponseEndpointOut,
+)
+from svix.internal.openapi_client.models.list_response_operational_webhook_endpoint_out import (
+    ListResponseOperationalWebhookEndpointOut,
 )
 from svix.internal.openapi_client.models.list_response_event_type_out import (
     ListResponseEventTypeOut,
@@ -92,7 +212,11 @@ from svix.internal.openapi_client.models.message_in_payload import MessageInPayl
 from svix.internal.openapi_client.models.message_out import MessageOut
 from svix.internal.openapi_client.models.message_out_payload import MessageOutPayload
 from svix.internal.openapi_client.models.message_status import MessageStatus
+from svix.internal.openapi_client.models.ordering import Ordering
 from svix.internal.openapi_client.models.recover_in import RecoverIn
+from svix.internal.openapi_client.models.recover_out import RecoverOut
+from svix.internal.openapi_client.models.replay_in import ReplayIn
+from svix.internal.openapi_client.models.replay_out import ReplayOut
 from svix.internal.openapi_client.models.status_code_class import StatusCodeClass
 
 DEFAULT_SERVER_URL = "https://api.svix.com"
