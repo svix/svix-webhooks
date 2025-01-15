@@ -36,15 +36,14 @@ jq --indent 4 '.components.schemas |= with_entries(
         end
     )' \
     < .codegen-tmp/openapi.json \
-    | tee go/openapi.json \
-    > rust/openapi.json
+    > .codegen-tmp/openapi-less-null.json
 
 yarn openapi-generator-cli generate -i .codegen-tmp/openapi.json -g typescript -o javascript/src/openapi -c javascript/openapi-generator-config.json --type-mappings=set=Array -t javascript/templates
 
 # Cleanup previous codegen, allowing us to spot removals.
 # If the removals are expected, stage them eg. `git add -u`, then commit them.
 rm -f go/internal/openapi/*.go
-yarn openapi-generator-cli generate -i go/openapi.json -g go -o go/internal/openapi -c go/openapi-generator-config.json -t go/templates
+yarn openapi-generator-cli generate -i .codegen-tmp/openapi-less-null.json -g go -o go/internal/openapi -c go/openapi-generator-config.json -t go/templates
 
 yarn openapi-generator-cli generate -i .codegen-tmp/openapi.json -g java -o java/lib/generated/openapi -c java/openapi-generator-config.json -t java/templates
 
@@ -57,7 +56,7 @@ yarn openapi-generator-cli generate -i .codegen-tmp/openapi.json -g csharp -o cs
 # Cleanup previous codegen, allowing us to spot removals.
 # If the removals are expected, stage them eg. `git add -u`, then commit them.
 rm -rf rust/src/models
-yarn openapi-generator-cli generate -i rust/openapi.json -g rust -o rust/ -c rust/openapi-generator-config.json -t rust/templates
+yarn openapi-generator-cli generate -i .codegen-tmp/openapi-less-null.json -g rust -o rust/ -c rust/openapi-generator-config.json -t rust/templates
 
 rm -rf .codegen-tmp
 echo Note: Python generation is not executed automatically.
