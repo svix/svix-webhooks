@@ -34,7 +34,11 @@ const filesPaths = [
     "python/svix/__init__.py",
     // Ruby
     "ruby/Gemfile.lock",
-    "ruby/lib/svix/version.rb"
+    "ruby/lib/svix/version.rb",
+    // OpenAPI spec
+    "server/openapi.json",
+    // Cloud OpenAPI spec - not necessary but any other time of updating seems weirder
+    "openapi.json",
 ];
 
 const rootDir = join(__dirname, "..");

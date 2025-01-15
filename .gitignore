@@ -1,13 +1,16 @@
 # Javascript
 /node_modules
 
-#PHP
+# PHP
 /vendor/
 composer.lock
 
-#IDE
+# IDE
 .vscode
 .idea
 
 # Rust
 target/
+
+# Codegen script
+/.codegen-tmp/
