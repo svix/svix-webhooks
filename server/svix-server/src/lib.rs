@@ -400,7 +400,7 @@ mod docs {
     }
 
     async fn get_openapi_json() -> impl IntoResponse {
-        static BODY: &str = include_str!("static/openapi.json");
+        static BODY: &str = include_str!("../../openapi.json");
         ([(http::header::CONTENT_TYPE, "application/json")], BODY)
     }
 }
