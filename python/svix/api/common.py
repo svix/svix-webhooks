@@ -15,21 +15,28 @@ def ensure_tz(x: t.Optional[datetime]) -> t.Optional[datetime]:
     return x
 
 
+def sanitize_field(v: t.Any) -> t.Any:
+    if isinstance(v, datetime):
+        return ensure_tz(v)
+
+    return v
+
+
 @dataclass
-class ListOptions:
+class BaseOptions:
+    def to_dict(self) -> t.Dict[str, t.Any]:
+        return {k: sanitize_field(v) for k, v in asdict(self).items() if v is not None}
+
+
+@dataclass
+class ListOptions(BaseOptions):
     iterator: t.Optional[str] = None
     limit: t.Optional[int] = None
 
-    def to_dict(self) -> t.Dict[str, t.Any]:
-        return {k: v for k, v in asdict(self).items() if v is not None}
-
 
 @dataclass
-class PostOptions:
+class PostOptions(BaseOptions):
     idempotency_key: t.Optional[str] = None
-
-    def to_dict(self) -> t.Dict[str, t.Any]:
-        return {k: v for k, v in asdict(self).items() if v is not None}
 
 
 class ApiBase:
