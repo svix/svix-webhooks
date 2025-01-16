@@ -37,7 +37,13 @@ from .event_type import (
     EventTypeImportOpenapiOptions,
     EventTypeDeleteOptions,
 )
-from .integration import IntegrationAsync, Integration
+from .integration import (
+    IntegrationAsync,
+    Integration,
+    IntegrationListOptions,
+    IntegrationCreateOptions,
+    IntegrationRotateKeyOptions,
+)
 from .message import MessageAsync, Message
 from .message_attempt import (
     MessageAttemptAsync,
