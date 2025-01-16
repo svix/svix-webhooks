@@ -16,12 +16,10 @@ use hyper_util::client::legacy::{connect::HttpConnector, Client as HyperClient};
 pub mod api;
 pub mod error;
 mod model_ext;
+#[allow(clippy::all)]
+mod models;
 mod request;
 pub mod webhooks;
-
-#[rustfmt::skip]
-#[allow(dead_code, clippy::all)]
-mod models;
 
 pub struct Configuration {
     pub base_path: String,
