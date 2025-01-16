@@ -48,6 +48,13 @@ from .message import MessageAsync, Message
 from .message_attempt import (
     MessageAttemptAsync,
     MessageAttempt,
+    MessageAttemptListByEndpointOptions,
+    MessageAttemptListByMsgOptions,
+    MessageAttemptListAttemptedMessagesOptions,
+    MessageAttemptListAttemptedDestinationsOptions,
+    MessageAttemptResendOptions,
+    MessageListOptions,
+    MessageListAttemptsForEndpointOptions,
 )
 from .operational_webhook import (
     OperationalWebhookEndpointAsync,
