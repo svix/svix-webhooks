@@ -22,7 +22,14 @@ from .endpoint import (
     EndpointSendExampleOptions,
     EndpointGetStatsOptions,
 )
-from .event_type import EventTypeAsync, EventType, EventTypeListOptions
+from .event_type import (
+    EventTypeAsync,
+    EventType,
+    EventTypeListOptions,
+    EventTypeCreateOptions,
+    EventTypeImportOpenapiOptions,
+    EventTypeDeleteOptions,
+)
 from .integration import IntegrationAsync, Integration
 from .message import MessageAsync, Message
 from .message_attempt import (
