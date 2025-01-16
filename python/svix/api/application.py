@@ -1,6 +1,8 @@
 import typing as t
 from dataclasses import dataclass
 
+from .common import ApiBase, BaseOptions
+from ..internal.openapi_client import models
 
 from ..internal.openapi_client.api.application import (
     v1_application_create,
@@ -16,14 +18,27 @@ from ..internal.openapi_client.models.application_patch import ApplicationPatch
 from ..internal.openapi_client.models.list_response_application_out import (
     ListResponseApplicationOut,
 )
-from ..internal.openapi_client.models.ordering import Ordering
 
-from .common import PostOptions, ApiBase, ListOptions
 
 
 @dataclass
-class ApplicationListOptions(ListOptions):
-    order: t.Optional[Ordering] = None
+class ApplicationListOptions(BaseOptions):
+    # Limit the number of returned items
+    limit: t.Optional[int] = None
+    # The iterator returned from a prior invocation
+    iterator: t.Optional[str] = None
+    # The sorting order of the returned items
+    order: t.Optional[models.Ordering] = None
+
+
+@dataclass
+class ApplicationCreateOptions(BaseOptions):
+    idempotency_key: t.Optional[str] = None
+
+
+@dataclass
+class ApplicationGetOrCreateOptions(BaseOptions):
+    idempotency_key: t.Optional[str] = None
 
 
 class ApplicationAsync(ApiBase):
@@ -35,7 +50,9 @@ class ApplicationAsync(ApiBase):
         )
 
     async def create(
-        self, application_in: ApplicationIn, options: PostOptions = PostOptions()
+        self,
+        application_in: ApplicationIn,
+        options: ApplicationCreateOptions = ApplicationCreateOptions(),
     ) -> ApplicationOut:
         return await v1_application_create.request_asyncio(
             client=self._client, json_body=application_in, **options.to_dict()
@@ -47,7 +64,9 @@ class ApplicationAsync(ApiBase):
         )
 
     async def get_or_create(
-        self, application_in: ApplicationIn, options: PostOptions = PostOptions()
+        self,
+        application_in: ApplicationIn,
+        options: ApplicationGetOrCreateOptions = ApplicationGetOrCreateOptions(),
     ) -> ApplicationOut:
         return await v1_application_create.request_asyncio(
             client=self._client,
@@ -85,7 +104,9 @@ class Application(ApiBase):
         )
 
     def create(
-        self, application_in: ApplicationIn, options: PostOptions = PostOptions()
+        self,
+        application_in: ApplicationIn,
+        options: ApplicationListOptions = ApplicationListOptions(),
     ) -> ApplicationOut:
         return v1_application_create.request_sync(
             client=self._client, json_body=application_in, **options.to_dict()
@@ -95,7 +116,9 @@ class Application(ApiBase):
         return v1_application_get.request_sync(client=self._client, app_id=app_id)
 
     def get_or_create(
-        self, application_in: ApplicationIn, options: PostOptions = PostOptions()
+        self,
+        application_in: ApplicationIn,
+        options: ApplicationGetOrCreateOptions = ApplicationGetOrCreateOptions(),
     ) -> ApplicationOut:
         return v1_application_create.request_sync(
             client=self._client,
