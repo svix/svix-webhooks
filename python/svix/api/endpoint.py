@@ -102,6 +102,13 @@ class EndpointAsync(ApiBase):
             json_body=endpoint_update,
         )
 
+    async def delete(self, app_id: str, endpoint_id: str) -> None:
+        return await v1_endpoint_delete.request_asyncio(
+            client=self._client,
+            app_id=app_id,
+            endpoint_id=endpoint_id,
+        )
+
     async def patch(
         self, app_id: str, endpoint_id: str, endpoint_patch: EndpointPatch
     ) -> EndpointOut:
@@ -110,50 +117,6 @@ class EndpointAsync(ApiBase):
             app_id=app_id,
             endpoint_id=endpoint_id,
             json_body=endpoint_patch,
-        )
-
-    async def delete(self, app_id: str, endpoint_id: str) -> None:
-        return await v1_endpoint_delete.request_asyncio(
-            client=self._client,
-            app_id=app_id,
-            endpoint_id=endpoint_id,
-        )
-
-    async def get_secret(self, app_id: str, endpoint_id: str) -> EndpointSecretOut:
-        return await v1_endpoint_get_secret.request_asyncio(
-            client=self._client,
-            app_id=app_id,
-            endpoint_id=endpoint_id,
-        )
-
-    async def rotate_secret(
-        self,
-        app_id: str,
-        endpoint_id: str,
-        endpoint_secret_rotate_in: EndpointSecretRotateIn,
-        options: PostOptions = PostOptions(),
-    ) -> None:
-        return await v1_endpoint_rotate_secret.request_asyncio(
-            client=self._client,
-            app_id=app_id,
-            endpoint_id=endpoint_id,
-            json_body=endpoint_secret_rotate_in,
-            **options.to_dict(),
-        )
-
-    async def recover(
-        self,
-        app_id: str,
-        endpoint_id: str,
-        recover_in: RecoverIn,
-        options: PostOptions = PostOptions(),
-    ) -> RecoverOut:
-        return await v1_endpoint_recover.request_asyncio(
-            client=self._client,
-            app_id=app_id,
-            endpoint_id=endpoint_id,
-            json_body=recover_in,
-            **options.to_dict(),
         )
 
     async def get_headers(self, app_id: str, endpoint_id: str) -> EndpointHeadersOut:
@@ -183,18 +146,19 @@ class EndpointAsync(ApiBase):
             json_body=endpoint_headers_in,
         )
 
-    async def get_stats(
+    async def recover(
         self,
         app_id: str,
         endpoint_id: str,
-        options: EndpointStatsOptions = EndpointStatsOptions(),
-    ) -> EndpointStats:
-        return await v1_endpoint_get_stats.request_asyncio(
+        recover_in: RecoverIn,
+        options: PostOptions = PostOptions(),
+    ) -> RecoverOut:
+        return await v1_endpoint_recover.request_asyncio(
             client=self._client,
             app_id=app_id,
             endpoint_id=endpoint_id,
-            since=ensure_tz(options.since),
-            until=ensure_tz(options.until),
+            json_body=recover_in,
+            **options.to_dict(),
         )
 
     async def replay_missing(
@@ -210,6 +174,57 @@ class EndpointAsync(ApiBase):
             endpoint_id=endpoint_id,
             json_body=replay_in,
             **options.to_dict(),
+        )
+
+    async def get_secret(self, app_id: str, endpoint_id: str) -> EndpointSecretOut:
+        return await v1_endpoint_get_secret.request_asyncio(
+            client=self._client,
+            app_id=app_id,
+            endpoint_id=endpoint_id,
+        )
+
+    async def rotate_secret(
+        self,
+        app_id: str,
+        endpoint_id: str,
+        endpoint_secret_rotate_in: EndpointSecretRotateIn,
+        options: PostOptions = PostOptions(),
+    ) -> None:
+        return await v1_endpoint_rotate_secret.request_asyncio(
+            client=self._client,
+            app_id=app_id,
+            endpoint_id=endpoint_id,
+            json_body=endpoint_secret_rotate_in,
+            **options.to_dict(),
+        )
+
+    async def send_example(
+        self,
+        app_id: str,
+        endpoint_id: str,
+        event_example_in: EventExampleIn,
+        options: PostOptions = PostOptions(),
+    ) -> MessageOut:
+        return await v1_endpoint_send_example.request_asyncio(
+            client=self._client,
+            app_id=app_id,
+            endpoint_id=endpoint_id,
+            json_body=event_example_in,
+            **options.to_dict(),
+        )
+
+    async def get_stats(
+        self,
+        app_id: str,
+        endpoint_id: str,
+        options: EndpointStatsOptions = EndpointStatsOptions(),
+    ) -> EndpointStats:
+        return await v1_endpoint_get_stats.request_asyncio(
+            client=self._client,
+            app_id=app_id,
+            endpoint_id=endpoint_id,
+            since=ensure_tz(options.since),
+            until=ensure_tz(options.until),
         )
 
     async def transformations_get(
@@ -230,21 +245,6 @@ class EndpointAsync(ApiBase):
             app_id=app_id,
             endpoint_id=endpoint_id,
             json_body=endpoint_transformation_in,
-        )
-
-    async def send_example(
-        self,
-        app_id: str,
-        endpoint_id: str,
-        event_example_in: EventExampleIn,
-        options: PostOptions = PostOptions(),
-    ) -> MessageOut:
-        return await v1_endpoint_send_example.request_asyncio(
-            client=self._client,
-            app_id=app_id,
-            endpoint_id=endpoint_id,
-            json_body=event_example_in,
-            **options.to_dict(),
         )
 
 
@@ -283,6 +283,13 @@ class Endpoint(ApiBase):
             json_body=endpoint_update,
         )
 
+    def delete(self, app_id: str, endpoint_id: str) -> None:
+        return v1_endpoint_delete.request_sync(
+            client=self._client,
+            app_id=app_id,
+            endpoint_id=endpoint_id,
+        )
+
     def patch(
         self, app_id: str, endpoint_id: str, endpoint_patch: EndpointPatch
     ) -> EndpointOut:
@@ -291,50 +298,6 @@ class Endpoint(ApiBase):
             app_id=app_id,
             endpoint_id=endpoint_id,
             json_body=endpoint_patch,
-        )
-
-    def delete(self, app_id: str, endpoint_id: str) -> None:
-        return v1_endpoint_delete.request_sync(
-            client=self._client,
-            app_id=app_id,
-            endpoint_id=endpoint_id,
-        )
-
-    def get_secret(self, app_id: str, endpoint_id: str) -> EndpointSecretOut:
-        return v1_endpoint_get_secret.request_sync(
-            client=self._client,
-            app_id=app_id,
-            endpoint_id=endpoint_id,
-        )
-
-    def rotate_secret(
-        self,
-        app_id: str,
-        endpoint_id: str,
-        endpoint_secret_rotate_in: EndpointSecretRotateIn,
-        options: PostOptions = PostOptions(),
-    ) -> None:
-        return v1_endpoint_rotate_secret.request_sync(
-            client=self._client,
-            app_id=app_id,
-            endpoint_id=endpoint_id,
-            json_body=endpoint_secret_rotate_in,
-            **options.to_dict(),
-        )
-
-    def recover(
-        self,
-        app_id: str,
-        endpoint_id: str,
-        recover_in: RecoverIn,
-        options: PostOptions = PostOptions(),
-    ) -> RecoverOut:
-        return v1_endpoint_recover.request_sync(
-            client=self._client,
-            app_id=app_id,
-            endpoint_id=endpoint_id,
-            json_body=recover_in,
-            **options.to_dict(),
         )
 
     def get_headers(self, app_id: str, endpoint_id: str) -> EndpointHeadersOut:
@@ -364,18 +327,19 @@ class Endpoint(ApiBase):
             json_body=endpoint_headers_in,
         )
 
-    def get_stats(
+    def recover(
         self,
         app_id: str,
         endpoint_id: str,
-        options: EndpointStatsOptions = EndpointStatsOptions(),
-    ) -> EndpointStats:
-        return v1_endpoint_get_stats.request_sync(
+        recover_in: RecoverIn,
+        options: PostOptions = PostOptions(),
+    ) -> RecoverOut:
+        return v1_endpoint_recover.request_sync(
             client=self._client,
             app_id=app_id,
             endpoint_id=endpoint_id,
-            since=ensure_tz(options.since),
-            until=ensure_tz(options.until),
+            json_body=recover_in,
+            **options.to_dict(),
         )
 
     def replay_missing(
@@ -391,6 +355,57 @@ class Endpoint(ApiBase):
             endpoint_id=endpoint_id,
             json_body=replay_in,
             **options.to_dict(),
+        )
+
+    def get_secret(self, app_id: str, endpoint_id: str) -> EndpointSecretOut:
+        return v1_endpoint_get_secret.request_sync(
+            client=self._client,
+            app_id=app_id,
+            endpoint_id=endpoint_id,
+        )
+
+    def rotate_secret(
+        self,
+        app_id: str,
+        endpoint_id: str,
+        endpoint_secret_rotate_in: EndpointSecretRotateIn,
+        options: PostOptions = PostOptions(),
+    ) -> None:
+        return v1_endpoint_rotate_secret.request_sync(
+            client=self._client,
+            app_id=app_id,
+            endpoint_id=endpoint_id,
+            json_body=endpoint_secret_rotate_in,
+            **options.to_dict(),
+        )
+
+    def send_example(
+        self,
+        app_id: str,
+        endpoint_id: str,
+        event_example_in: EventExampleIn,
+        options: PostOptions = PostOptions(),
+    ) -> MessageOut:
+        return v1_endpoint_send_example.request_sync(
+            client=self._client,
+            app_id=app_id,
+            endpoint_id=endpoint_id,
+            json_body=event_example_in,
+            **options.to_dict(),
+        )
+
+    def get_stats(
+        self,
+        app_id: str,
+        endpoint_id: str,
+        options: EndpointStatsOptions = EndpointStatsOptions(),
+    ) -> EndpointStats:
+        return v1_endpoint_get_stats.request_sync(
+            client=self._client,
+            app_id=app_id,
+            endpoint_id=endpoint_id,
+            since=ensure_tz(options.since),
+            until=ensure_tz(options.until),
         )
 
     def transformations_get(
@@ -411,19 +426,4 @@ class Endpoint(ApiBase):
             app_id=app_id,
             endpoint_id=endpoint_id,
             json_body=endpoint_transformation_in,
-        )
-
-    def send_example(
-        self,
-        app_id: str,
-        endpoint_id: str,
-        event_example_in: EventExampleIn,
-        options: PostOptions = PostOptions(),
-    ) -> MessageOut:
-        return v1_endpoint_send_example.request_sync(
-            client=self._client,
-            app_id=app_id,
-            endpoint_id=endpoint_id,
-            json_body=event_example_in,
-            **options.to_dict(),
         )
