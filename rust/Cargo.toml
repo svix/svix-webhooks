@@ -40,8 +40,8 @@ thiserror = "1.0.30"
 time = "0.3"
 url = "2.2"
 tokio = { version = "1.41.0", features = ["time"] }
-serde_with = { version = "^3.8", default-features = false, features = ["base64", "std", "macros"] }
 itertools = "0.14.0"
+js_option = "0.1.1"
 
 [dev-dependencies]
 tokio = { version = "1.41.0", features = ["macros"] }
