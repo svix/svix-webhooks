@@ -10,7 +10,14 @@ from .application import (
     ApplicationCreateOptions,
     ApplicationGetOrCreateOptions,
 )
-from .authentication import AuthenticationAsync, Authentication
+from .authentication import (
+    AuthenticationAsync,
+    Authentication,
+    AuthenticationAppPortalAccessOptions,
+    AuthenticationDashboardAccessOptions,
+    AuthenticationExpireAllOptions,
+    AuthenticationLogoutOptions,
+)
 from .endpoint import (
     EndpointAsync,
     Endpoint,
