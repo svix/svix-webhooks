@@ -9,8 +9,8 @@ fi
 cd $(dirname "$0")
 mkdir -p .codegen-tmp
 # OpenAPI version has to be overwritten to avoid broken codegen paths in OpenAPI generator.
-# Spec version is overwritten to avoid unnecessary diffs on comments.
-jq --indent 4 '.openapi = "3.0.2" | .info.version = "1.1.1"' \
+# Spec version is overwritten to avoid unnecessary diffs on comments. Same for description.
+jq --indent 4 '.openapi = "3.0.2" | .info.version = "1.1.1" | del(.info.description)' \
     < openapi.json \
     > .codegen-tmp/openapi.json
 
