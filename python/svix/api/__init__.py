@@ -3,7 +3,13 @@
 import typing as t
 from dataclasses import dataclass, field
 
-from .application import ApplicationAsync, Application, ApplicationListOptions
+from .application import (
+    ApplicationAsync,
+    Application,
+    ApplicationListOptions,
+    ApplicationCreateOptions,
+    ApplicationGetOrCreateOptions,
+)
 from .authentication import AuthenticationAsync, Authentication
 from .endpoint import EndpointAsync, Endpoint, EndpointListOptions
 from .event_type import EventTypeAsync, EventType, EventTypeListOptions
@@ -275,6 +281,8 @@ __all__ = [
     "ApplicationIn",
     "ApplicationOut",
     "ApplicationPatch",
+    "ApplicationCreateOptions",
+    "ApplicationGetOrCreateOptions",
     "ListResponseApplicationOut",
     "DashboardAccessOut",
     "EndpointHeadersIn",
