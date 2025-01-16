@@ -11,7 +11,17 @@ from .application import (
     ApplicationGetOrCreateOptions,
 )
 from .authentication import AuthenticationAsync, Authentication
-from .endpoint import EndpointAsync, Endpoint, EndpointListOptions
+from .endpoint import (
+    EndpointAsync,
+    Endpoint,
+    EndpointListOptions,
+    EndpointCreateOptions,
+    EndpointRecoverOptions,
+    EndpointReplayMissingOptions,
+    EndpointRotateSecretOptions,
+    EndpointSendExampleOptions,
+    EndpointGetStatsOptions,
+)
 from .event_type import EventTypeAsync, EventType, EventTypeListOptions
 from .integration import IntegrationAsync, Integration
 from .message import MessageAsync, Message
