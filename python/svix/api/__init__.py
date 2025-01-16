@@ -65,7 +65,7 @@ from .operational_webhook import (
     OperationalWebhookEndpointAsync,
     OperationalWebhookEndpoint,
 )
-from .statistics import StatisticsAsync, Statistics
+from .statistics import StatisticsAsync, Statistics, StatisticsAggregateAppStatsOptions
 
 from svix.internal.openapi_client.models.aggregate_event_types_out import (
     AggregateEventTypesOut,
