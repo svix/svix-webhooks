@@ -44,7 +44,13 @@ from .integration import (
     IntegrationCreateOptions,
     IntegrationRotateKeyOptions,
 )
-from .message import MessageAsync, Message
+from .message import (
+    MessageAsync,
+    Message,
+    MessageListOptions,
+    MessageCreateOptions,
+    MessageGetOptions,
+)
 from .message_attempt import (
     MessageAttemptAsync,
     MessageAttempt,
@@ -53,7 +59,6 @@ from .message_attempt import (
     MessageAttemptListAttemptedMessagesOptions,
     MessageAttemptListAttemptedDestinationsOptions,
     MessageAttemptResendOptions,
-    MessageListOptions,
     MessageListAttemptsForEndpointOptions,
 )
 from .operational_webhook import (
