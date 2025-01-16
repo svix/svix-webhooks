@@ -51,6 +51,17 @@ class EventTypeAsync(ApiBase):
             **options.to_dict(),
         )
 
+    async def import_openapi(
+        self,
+        event_type_import_openapi_in: EventTypeImportOpenApiIn,
+        options: PostOptions = PostOptions(),
+    ) -> EventTypeImportOpenApiOut:
+        return await v1_event_type_import_openapi.request_asyncio(
+            client=self._client,
+            json_body=event_type_import_openapi_in,
+            **options.to_dict(),
+        )
+
     async def get(self, event_type_name: str) -> EventTypeOut:
         return await v1_event_type_get.request_asyncio(
             client=self._client,
@@ -66,6 +77,12 @@ class EventTypeAsync(ApiBase):
             json_body=event_type_update,
         )
 
+    async def delete(self, event_type_name: str) -> None:
+        return await v1_event_type_delete.request_asyncio(
+            client=self._client,
+            event_type_name=event_type_name,
+        )
+
     async def patch(
         self, event_type_name: str, event_type_patch: EventTypePatch
     ) -> EventTypeOut:
@@ -73,23 +90,6 @@ class EventTypeAsync(ApiBase):
             client=self._client,
             event_type_name=event_type_name,
             json_body=event_type_patch,
-        )
-
-    async def delete(self, event_type_name: str) -> None:
-        return await v1_event_type_delete.request_asyncio(
-            client=self._client,
-            event_type_name=event_type_name,
-        )
-
-    async def import_openapi(
-        self,
-        event_type_import_openapi_in: EventTypeImportOpenApiIn,
-        options: PostOptions = PostOptions(),
-    ) -> EventTypeImportOpenApiOut:
-        return await v1_event_type_import_openapi.request_asyncio(
-            client=self._client,
-            json_body=event_type_import_openapi_in,
-            **options.to_dict(),
         )
 
 
@@ -111,6 +111,17 @@ class EventType(ApiBase):
             **options.to_dict(),
         )
 
+    def import_openapi(
+        self,
+        event_type_import_openapi_in: EventTypeImportOpenApiIn,
+        options: PostOptions = PostOptions(),
+    ) -> EventTypeImportOpenApiOut:
+        return v1_event_type_import_openapi.request_sync(
+            client=self._client,
+            json_body=event_type_import_openapi_in,
+            **options.to_dict(),
+        )
+
     def get(self, event_type_name: str) -> EventTypeOut:
         return v1_event_type_get.request_sync(
             client=self._client,
@@ -126,6 +137,12 @@ class EventType(ApiBase):
             json_body=event_type_update,
         )
 
+    def delete(self, event_type_name: str) -> None:
+        return v1_event_type_delete.request_sync(
+            client=self._client,
+            event_type_name=event_type_name,
+        )
+
     def patch(
         self, event_type_name: str, event_type_patch: EventTypePatch
     ) -> EventTypeOut:
@@ -133,21 +150,4 @@ class EventType(ApiBase):
             client=self._client,
             event_type_name=event_type_name,
             json_body=event_type_patch,
-        )
-
-    def delete(self, event_type_name: str) -> None:
-        return v1_event_type_delete.request_sync(
-            client=self._client,
-            event_type_name=event_type_name,
-        )
-
-    def import_openapi(
-        self,
-        event_type_import_openapi_in: EventTypeImportOpenApiIn,
-        options: PostOptions = PostOptions(),
-    ) -> EventTypeImportOpenApiOut:
-        return v1_event_type_import_openapi.request_sync(
-            client=self._client,
-            json_body=event_type_import_openapi_in,
-            **options.to_dict(),
         )
