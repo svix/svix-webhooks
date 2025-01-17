@@ -53,16 +53,6 @@ class MessageAttemptListOptions(ListOptions):
 
 
 class MessageAttemptAsync(ApiBase):
-    async def list_by_msg(
-        self,
-        app_id: str,
-        msg_id: str,
-        options: MessageAttemptListOptions = MessageAttemptListOptions(),
-    ) -> ListResponseMessageAttemptOut:
-        return await v1_message_attempt_list_by_msg.request_asyncio(
-            client=self._client, app_id=app_id, msg_id=msg_id, **options.to_dict()
-        )
-
     async def list_by_endpoint(
         self,
         app_id: str,
@@ -76,27 +66,14 @@ class MessageAttemptAsync(ApiBase):
             **options.to_dict(),
         )
 
-    async def get(self, app_id: str, msg_id: str, attempt_id: str) -> MessageAttemptOut:
-        return await v1_message_attempt_get.request_asyncio(
-            client=self._client,
-            app_id=app_id,
-            msg_id=msg_id,
-            attempt_id=attempt_id,
-        )
-
-    async def resend(
+    async def list_by_msg(
         self,
         app_id: str,
         msg_id: str,
-        endpoint_id: str,
-        options: PostOptions = PostOptions(),
-    ) -> None:
-        return await v1_message_attempt_resend.request_asyncio(
-            client=self._client,
-            app_id=app_id,
-            msg_id=msg_id,
-            endpoint_id=endpoint_id,
-            **options.to_dict(),
+        options: MessageAttemptListOptions = MessageAttemptListOptions(),
+    ) -> ListResponseMessageAttemptOut:
+        return await v1_message_attempt_list_by_msg.request_asyncio(
+            client=self._client, app_id=app_id, msg_id=msg_id, **options.to_dict()
         )
 
     async def list_attempted_messages(
@@ -112,6 +89,27 @@ class MessageAttemptAsync(ApiBase):
             **options.to_dict(),
         )
 
+    async def get(self, app_id: str, msg_id: str, attempt_id: str) -> MessageAttemptOut:
+        return await v1_message_attempt_get.request_asyncio(
+            client=self._client,
+            app_id=app_id,
+            msg_id=msg_id,
+            attempt_id=attempt_id,
+        )
+
+    async def expunge_content(
+        self,
+        app_id: str,
+        msg_id: str,
+        attempt_id: str,
+    ) -> None:
+        return await v1_message_attempt_expunge_content.request_asyncio(
+            client=self._client,
+            app_id=app_id,
+            msg_id=msg_id,
+            attempt_id=attempt_id,
+        )
+
     async def list_attempted_destinations(
         self,
         app_id: str,
@@ -122,6 +120,21 @@ class MessageAttemptAsync(ApiBase):
             client=self._client,
             app_id=app_id,
             msg_id=msg_id,
+            **options.to_dict(),
+        )
+
+    async def resend(
+        self,
+        app_id: str,
+        msg_id: str,
+        endpoint_id: str,
+        options: PostOptions = PostOptions(),
+    ) -> None:
+        return await v1_message_attempt_resend.request_asyncio(
+            client=self._client,
+            app_id=app_id,
+            msg_id=msg_id,
+            endpoint_id=endpoint_id,
             **options.to_dict(),
         )
 
@@ -143,40 +156,8 @@ class MessageAttemptAsync(ApiBase):
             **options.to_dict(),
         )
 
-    async def expunge_content(
-        self,
-        app_id: str,
-        msg_id: str,
-        attempt_id: str,
-    ) -> None:
-        return await v1_message_attempt_expunge_content.request_asyncio(
-            client=self._client,
-            app_id=app_id,
-            msg_id=msg_id,
-            attempt_id=attempt_id,
-        )
-
 
 class MessageAttempt(ApiBase):
-    @deprecated(reason="use list_by_msg or list_by_endpoint instead")
-    def list(
-        self,
-        app_id: str,
-        msg_id: str,
-        options: MessageAttemptListOptions = MessageAttemptListOptions(),
-    ) -> ListResponseMessageAttemptOut:
-        return self.list_by_msg(app_id=app_id, msg_id=msg_id, options=options)
-
-    def list_by_msg(
-        self,
-        app_id: str,
-        msg_id: str,
-        options: MessageAttemptListOptions = MessageAttemptListOptions(),
-    ) -> ListResponseMessageAttemptOut:
-        return v1_message_attempt_list_by_msg.request_sync(
-            client=self._client, app_id=app_id, msg_id=msg_id, **options.to_dict()
-        )
-
     def list_by_endpoint(
         self,
         app_id: str,
@@ -190,12 +171,61 @@ class MessageAttempt(ApiBase):
             **options.to_dict(),
         )
 
+    def list_by_msg(
+        self,
+        app_id: str,
+        msg_id: str,
+        options: MessageAttemptListOptions = MessageAttemptListOptions(),
+    ) -> ListResponseMessageAttemptOut:
+        return v1_message_attempt_list_by_msg.request_sync(
+            client=self._client, app_id=app_id, msg_id=msg_id, **options.to_dict()
+        )
+
+    def list_attempted_messages(
+        self,
+        app_id: str,
+        endpoint_id: str,
+        options: MessageAttemptListOptions = MessageAttemptListOptions(),
+    ) -> ListResponseEndpointMessageOut:
+        return v1_message_attempt_list_attempted_messages.request_sync(
+            client=self._client,
+            app_id=app_id,
+            endpoint_id=endpoint_id,
+            **options.to_dict(),
+        )
+
     def get(self, app_id: str, msg_id: str, attempt_id: str) -> MessageAttemptOut:
         return v1_message_attempt_get.request_sync(
             client=self._client,
             app_id=app_id,
             msg_id=msg_id,
             attempt_id=attempt_id,
+        )
+
+    def expunge_content(
+        self,
+        app_id: str,
+        msg_id: str,
+        attempt_id: str,
+    ) -> None:
+        return v1_message_attempt_expunge_content.request_sync(
+            client=self._client,
+            app_id=app_id,
+            msg_id=msg_id,
+            attempt_id=attempt_id,
+        )
+
+    def list_attempted_destinations(
+        self,
+        app_id: str,
+        msg_id: str,
+        options: MessageAttemptListOptions = MessageAttemptListOptions(),
+    ) -> ListResponseMessageEndpointOut:
+        return v1_message_attempt_list_attempted_destinations.request_sync(
+            client=self._client,
+            app_id=app_id,
+            msg_id=msg_id,
+            **options.to_dict(),
         )
 
     def resend(
@@ -213,31 +243,14 @@ class MessageAttempt(ApiBase):
             **options.to_dict(),
         )
 
-    def list_attempted_messages(
-        self,
-        app_id: str,
-        endpoint_id: str,
-        options: MessageAttemptListOptions = MessageAttemptListOptions(),
-    ) -> ListResponseEndpointMessageOut:
-        return v1_message_attempt_list_attempted_messages.request_sync(
-            client=self._client,
-            app_id=app_id,
-            endpoint_id=endpoint_id,
-            **options.to_dict(),
-        )
-
-    def list_attempted_destinations(
+    @deprecated(reason="use list_by_msg or list_by_endpoint instead")
+    def list(
         self,
         app_id: str,
         msg_id: str,
         options: MessageAttemptListOptions = MessageAttemptListOptions(),
-    ) -> ListResponseMessageEndpointOut:
-        return v1_message_attempt_list_attempted_destinations.request_sync(
-            client=self._client,
-            app_id=app_id,
-            msg_id=msg_id,
-            **options.to_dict(),
-        )
+    ) -> ListResponseMessageAttemptOut:
+        return self.list_by_msg(app_id=app_id, msg_id=msg_id, options=options)
 
     @deprecated(
         reason="use list_by_msg instead, passing the endpoint id through options"
@@ -255,17 +268,4 @@ class MessageAttempt(ApiBase):
             msg_id=msg_id,
             endpoint_id=endpoint_id,
             **options.to_dict(),
-        )
-
-    def expunge_content(
-        self,
-        app_id: str,
-        msg_id: str,
-        attempt_id: str,
-    ) -> None:
-        return v1_message_attempt_expunge_content.request_sync(
-            client=self._client,
-            app_id=app_id,
-            msg_id=msg_id,
-            attempt_id=attempt_id,
         )
