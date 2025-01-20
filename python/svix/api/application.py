@@ -9,7 +9,7 @@ from ..internal.openapi_client.models.application_patch import ApplicationPatch
 from ..internal.openapi_client.models.list_response_application_out import (
     ListResponseApplicationOut,
 )
-from .common import ApiBase, BaseOptions
+from .common import ApiBase, BaseOptions, sanitize_field
 
 
 @dataclass
@@ -21,14 +21,15 @@ class ApplicationListOptions(BaseOptions):
     # The sorting order of the returned items
     order: t.Optional[models.Ordering] = None
 
-    def query_params(self) -> t.Optional[t.Dict[str, t.Optional[t.Any]]]:
-        return {
+    def _query_params(self) -> t.Optional[t.Dict[str, t.Any]]:
+        d = {
             "limit": self.limit,
             "iterator": self.iterator,
             "order": self.order,
         }
+        return {k: sanitize_field(v) for k, v in d.items() if v is not None}
 
-    def header_params(self) -> t.Optional[t.Dict[str, t.Optional[t.Any]]]:
+    def _header_params(self) -> t.Optional[t.Dict[str, t.Any]]:
         return None
 
 
@@ -36,26 +37,28 @@ class ApplicationListOptions(BaseOptions):
 class ApplicationCreateOptions(BaseOptions):
     idempotency_key: t.Optional[str] = None
 
-    def query_params(self) -> t.Optional[t.Dict[str, t.Optional[t.Any]]]:
+    def _query_params(self) -> t.Optional[t.Dict[str, t.Any]]:
         return None
 
-    def header_params(self) -> t.Optional[t.Dict[str, t.Optional[t.Any]]]:
-        return {
+    def _header_params(self) -> t.Optional[t.Dict[str, t.Any]]:
+        d = {
             "idempotency-key": self.idempotency_key,
         }
+        return {k: sanitize_field(v) for k, v in d.items() if v is not None}
 
 
 @dataclass
 class ApplicationGetOrCreateOptions(BaseOptions):
     idempotency_key: t.Optional[str] = None
 
-    def query_params(self) -> t.Optional[t.Dict[str, t.Optional[t.Any]]]:
+    def _query_params(self) -> t.Optional[t.Dict[str, t.Any]]:
         return None
 
-    def header_params(self) -> t.Optional[t.Dict[str, t.Optional[t.Any]]]:
-        return {
+    def _header_params(self) -> t.Optional[t.Dict[str, t.Any]]:
+        d = {
             "idempotency-key": self.idempotency_key,
         }
+        return {k: sanitize_field(v) for k, v in d.items() if v is not None}
 
 
 class ApplicationAsync(ApiBase):
@@ -68,8 +71,8 @@ class ApplicationAsync(ApiBase):
             method="get",
             path="/api/v1/app",
             path_params={},
-            query_params=options.query_params(),
-            header_params=options.header_params(),
+            query_params=options._query_params(),
+            header_params=options._header_params(),
         )
         return ListResponseApplicationOut.from_dict(response.json())
 
@@ -84,8 +87,8 @@ class ApplicationAsync(ApiBase):
             method="post",
             path="/api/v1/app",
             path_params={},
-            query_params=options.query_params(),
-            header_params=options.header_params(),
+            query_params=options._query_params(),
+            header_params=options._header_params(),
             json_body=application_in.to_dict(),
         )
         return ApplicationOut.from_dict(response.json())
@@ -112,7 +115,7 @@ class ApplicationAsync(ApiBase):
             path="/api/v1/app",
             path_params={},
             query_params={"get_if_exists": True},
-            header_params=options.header_params(),
+            header_params=options._header_params(),
             json_body=application_in.to_dict(),
         )
         return ApplicationOut.from_dict(response.json())
@@ -169,8 +172,8 @@ class Application(ApiBase):
             method="get",
             path="/api/v1/app",
             path_params={},
-            query_params=options.query_params(),
-            header_params=options.header_params(),
+            query_params=options._query_params(),
+            header_params=options._header_params(),
         )
         return ListResponseApplicationOut.from_dict(response.json())
 
@@ -185,8 +188,8 @@ class Application(ApiBase):
             method="post",
             path="/api/v1/app",
             path_params={},
-            query_params=options.query_params(),
-            header_params=options.header_params(),
+            query_params=options._query_params(),
+            header_params=options._header_params(),
             json_body=application_in.to_dict(),
         )
         return ApplicationOut.from_dict(response.json())
@@ -214,7 +217,7 @@ class Application(ApiBase):
             path="/api/v1/app",
             path_params={},
             query_params={"get_if_exists": True},
-            header_params=options.header_params(),
+            header_params=options._header_params(),
             json_body=application_in.to_dict(),
         )
         return ApplicationOut.from_dict(response.json())
