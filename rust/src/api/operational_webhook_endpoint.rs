@@ -3,8 +3,13 @@ use crate::{error::Result, models::*, Configuration};
 
 #[derive(Default)]
 pub struct OperationalWebhookEndpointListOptions {
-    pub iterator: Option<String>,
+    /// Limit the number of returned items
     pub limit: Option<i32>,
+
+    /// The iterator returned from a prior invocation
+    pub iterator: Option<String>,
+
+    /// The sorting order of the returned items
     pub order: Option<Ordering>,
 }
 
@@ -17,13 +22,14 @@ impl<'a> OperationalWebhookEndpoint<'a> {
         Self { cfg }
     }
 
+    /// List operational webhook endpoints.
     pub async fn list(
         &self,
         options: Option<OperationalWebhookEndpointListOptions>,
     ) -> Result<ListResponseOperationalWebhookEndpointOut> {
         let OperationalWebhookEndpointListOptions {
-            iterator,
             limit,
+            iterator,
             order,
         } = options.unwrap_or_default();
 
@@ -35,20 +41,22 @@ impl<'a> OperationalWebhookEndpoint<'a> {
             .await
     }
 
+    /// Create an operational webhook endpoint.
     pub async fn create(
         &self,
-        endpoint_in: OperationalWebhookEndpointIn,
+        operational_webhook_endpoint_in: OperationalWebhookEndpointIn,
         options: Option<PostOptions>,
     ) -> Result<OperationalWebhookEndpointOut> {
         let PostOptions { idempotency_key } = options.unwrap_or_default();
 
         crate::request::Request::new(http1::Method::POST, "/api/v1/operational-webhook/endpoint")
-            .with_body_param(endpoint_in)
+            .with_body_param(operational_webhook_endpoint_in)
             .with_optional_header_param("idempotency-key", idempotency_key)
             .execute(self.cfg)
             .await
     }
 
+    /// Get an operational webhook endpoint.
     pub async fn get(&self, endpoint_id: String) -> Result<OperationalWebhookEndpointOut> {
         crate::request::Request::new(
             http1::Method::GET,
@@ -59,21 +67,23 @@ impl<'a> OperationalWebhookEndpoint<'a> {
         .await
     }
 
+    /// Update an operational webhook endpoint.
     pub async fn update(
         &self,
         endpoint_id: String,
-        endpoint_update: OperationalWebhookEndpointUpdate,
+        operational_webhook_endpoint_update: OperationalWebhookEndpointUpdate,
     ) -> Result<OperationalWebhookEndpointOut> {
         crate::request::Request::new(
             http1::Method::PUT,
             "/api/v1/operational-webhook/endpoint/{endpoint_id}",
         )
         .with_path_param("endpoint_id", endpoint_id)
-        .with_body_param(endpoint_update)
+        .with_body_param(operational_webhook_endpoint_update)
         .execute(self.cfg)
         .await
     }
 
+    /// Delete an operational webhook endpoint.
     pub async fn delete(&self, endpoint_id: String) -> Result<()> {
         crate::request::Request::new(
             http1::Method::DELETE,
