@@ -50,12 +50,19 @@ if not TOKEN and not SERVER_URL:
             # fallback on v1 otherwise
             return "docker-compose"
 
+    # `pytest-docker` reads this to override the location of the docker-compose.yml file
     @pytest.fixture(scope="session")
     def docker_compose_file():
         return [
             os.path.join(os.path.dirname(__file__), "../../server/docker-compose.yml"),
             os.path.join(os.path.dirname(__file__), "docker-compose.override.yml"),
         ]
+
+    # `pytest-docker` will use this fixture to override the setup command
+    @pytest.fixture(scope="session")
+    def docker_setup():
+        # Don't include the default --build option in the setup
+        return ["up -d"]
 
     @pytest.fixture(scope="session")
     def docker_compose(docker_services):
