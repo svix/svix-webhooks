@@ -1,25 +1,15 @@
+# This file is @generated
 import typing as t
 from dataclasses import dataclass
 
-from .common import ApiBase, BaseOptions
 from ..internal.openapi_client import models
-
-
-from ..internal.openapi_client.api.application import (
-    v1_application_list,
-    v1_application_create,
-    v1_application_get,
-    v1_application_update,
-    v1_application_delete,
-    v1_application_patch,
-)
-
-from ..internal.openapi_client.models.list_response_application_out import (
-    ListResponseApplicationOut,
-)
 from ..internal.openapi_client.models.application_in import ApplicationIn
 from ..internal.openapi_client.models.application_out import ApplicationOut
 from ..internal.openapi_client.models.application_patch import ApplicationPatch
+from ..internal.openapi_client.models.list_response_application_out import (
+    ListResponseApplicationOut,
+)
+from .common import ApiBase, BaseOptions
 
 
 @dataclass
@@ -31,15 +21,41 @@ class ApplicationListOptions(BaseOptions):
     # The sorting order of the returned items
     order: t.Optional[models.Ordering] = None
 
+    def query_params(self) -> t.Optional[t.Dict[str, t.Optional[t.Any]]]:
+        return {
+            "limit": self.limit,
+            "iterator": self.iterator,
+            "order": self.order,
+        }
+
+    def header_params(self) -> t.Optional[t.Dict[str, t.Optional[t.Any]]]:
+        return None
+
 
 @dataclass
 class ApplicationCreateOptions(BaseOptions):
     idempotency_key: t.Optional[str] = None
 
+    def query_params(self) -> t.Optional[t.Dict[str, t.Optional[t.Any]]]:
+        return None
+
+    def header_params(self) -> t.Optional[t.Dict[str, t.Optional[t.Any]]]:
+        return {
+            "idempotency-key": self.idempotency_key,
+        }
+
 
 @dataclass
 class ApplicationGetOrCreateOptions(BaseOptions):
     idempotency_key: t.Optional[str] = None
+
+    def query_params(self) -> t.Optional[t.Dict[str, t.Optional[t.Any]]]:
+        return None
+
+    def header_params(self) -> t.Optional[t.Dict[str, t.Optional[t.Any]]]:
+        return {
+            "idempotency-key": self.idempotency_key,
+        }
 
 
 class ApplicationAsync(ApiBase):
@@ -47,9 +63,15 @@ class ApplicationAsync(ApiBase):
         self, options: ApplicationListOptions = ApplicationListOptions()
     ) -> ListResponseApplicationOut:
         """List of all the organization's applications."""
-        return await v1_application_list.request_asyncio(
-            client=self._client, **options.to_dict()
+        # ruff: noqa: F841
+        response = await self._execute_request_asyncio(
+            method="get",
+            path="/api/v1/app",
+            path_params={},
+            query_params=options.query_params(),
+            header_params=options.header_params(),
         )
+        return ListResponseApplicationOut.from_dict(response.json())
 
     async def create(
         self,
@@ -57,49 +79,84 @@ class ApplicationAsync(ApiBase):
         options: ApplicationCreateOptions = ApplicationCreateOptions(),
     ) -> ApplicationOut:
         """Create a new application."""
-        return await v1_application_create.request_asyncio(
-            client=self._client, json_body=application_in, **options.to_dict()
+        # ruff: noqa: F841
+        response = await self._execute_request_asyncio(
+            method="post",
+            path="/api/v1/app",
+            path_params={},
+            query_params=options.query_params(),
+            header_params=options.header_params(),
+            json_body=application_in.to_dict(),
         )
+        return ApplicationOut.from_dict(response.json())
 
     async def get(self, app_id: str) -> ApplicationOut:
         """Get an application."""
-        return await v1_application_get.request_asyncio(
-            client=self._client, app_id=app_id
+        # ruff: noqa: F841
+        response = await self._execute_request_asyncio(
+            method="get",
+            path="/api/v1/app/{app_id}",
+            path_params={
+                "app_id": app_id,
+            },
         )
+        return ApplicationOut.from_dict(response.json())
 
     async def get_or_create(
         self,
         application_in: ApplicationIn,
         options: ApplicationGetOrCreateOptions = ApplicationGetOrCreateOptions(),
     ) -> ApplicationOut:
-        return await v1_application_create.request_asyncio(
-            client=self._client,
-            json_body=application_in,
-            get_if_exists=True,
-            **options.to_dict(),
+        response = await self._execute_request_asyncio(
+            method="post",
+            path="/api/v1/app",
+            path_params={},
+            query_params={"get_if_exists": True},
+            header_params=options.header_params(),
+            json_body=application_in.to_dict(),
         )
+        return ApplicationOut.from_dict(response.json())
 
     async def update(
         self, app_id: str, application_in: ApplicationIn
     ) -> ApplicationOut:
         """Update an application."""
-        return await v1_application_update.request_asyncio(
-            client=self._client, app_id=app_id, json_body=application_in
+        # ruff: noqa: F841
+        response = await self._execute_request_asyncio(
+            method="put",
+            path="/api/v1/app/{app_id}",
+            path_params={
+                "app_id": app_id,
+            },
+            json_body=application_in.to_dict(),
         )
+        return ApplicationOut.from_dict(response.json())
 
     async def delete(self, app_id: str) -> None:
         """Delete an application."""
-        return await v1_application_delete.request_asyncio(
-            client=self._client, app_id=app_id
+        # ruff: noqa: F841
+        response = await self._execute_request_asyncio(
+            method="delete",
+            path="/api/v1/app/{app_id}",
+            path_params={
+                "app_id": app_id,
+            },
         )
 
     async def patch(
         self, app_id: str, application_patch: ApplicationPatch
     ) -> ApplicationOut:
         """Partially update an application."""
-        return await v1_application_patch.request_asyncio(
-            client=self._client, app_id=app_id, json_body=application_patch
+        # ruff: noqa: F841
+        response = await self._execute_request_asyncio(
+            method="patch",
+            path="/api/v1/app/{app_id}",
+            path_params={
+                "app_id": app_id,
+            },
+            json_body=application_patch.to_dict(),
         )
+        return ApplicationOut.from_dict(response.json())
 
 
 class Application(ApiBase):
@@ -107,9 +164,15 @@ class Application(ApiBase):
         self, options: ApplicationListOptions = ApplicationListOptions()
     ) -> ListResponseApplicationOut:
         """List of all the organization's applications."""
-        return v1_application_list.request_sync(
-            client=self._client, **options.to_dict()
+        # ruff: noqa: F841
+        response = self._execute_request_sync(
+            method="get",
+            path="/api/v1/app",
+            path_params={},
+            query_params=options.query_params(),
+            header_params=options.header_params(),
         )
+        return ListResponseApplicationOut.from_dict(response.json())
 
     def create(
         self,
@@ -117,38 +180,78 @@ class Application(ApiBase):
         options: ApplicationCreateOptions = ApplicationCreateOptions(),
     ) -> ApplicationOut:
         """Create a new application."""
-        return v1_application_create.request_sync(
-            client=self._client, json_body=application_in, **options.to_dict()
+        # ruff: noqa: F841
+        response = self._execute_request_sync(
+            method="post",
+            path="/api/v1/app",
+            path_params={},
+            query_params=options.query_params(),
+            header_params=options.header_params(),
+            json_body=application_in.to_dict(),
         )
+        return ApplicationOut.from_dict(response.json())
 
     def get(self, app_id: str) -> ApplicationOut:
         """Get an application."""
-        return v1_application_get.request_sync(client=self._client, app_id=app_id)
+        # ruff: noqa: F841
+        response = self._execute_request_sync(
+            method="get",
+            path="/api/v1/app/{app_id}",
+            path_params={
+                "app_id": app_id,
+            },
+        )
+        return ApplicationOut.from_dict(response.json())
 
     def get_or_create(
         self,
         application_in: ApplicationIn,
         options: ApplicationGetOrCreateOptions = ApplicationGetOrCreateOptions(),
     ) -> ApplicationOut:
-        return v1_application_create.request_sync(
-            client=self._client,
-            json_body=application_in,
-            get_if_exists=True,
-            **options.to_dict(),
+        # ruff: noqa: F841
+        response = self._execute_request_sync(
+            method="post",
+            path="/api/v1/app",
+            path_params={},
+            query_params={"get_if_exists": True},
+            header_params=options.header_params(),
+            json_body=application_in.to_dict(),
         )
+        return ApplicationOut.from_dict(response.json())
 
     def update(self, app_id: str, application_in: ApplicationIn) -> ApplicationOut:
         """Update an application."""
-        return v1_application_update.request_sync(
-            client=self._client, app_id=app_id, json_body=application_in
+        # ruff: noqa: F841
+        response = self._execute_request_sync(
+            method="put",
+            path="/api/v1/app/{app_id}",
+            path_params={
+                "app_id": app_id,
+            },
+            json_body=application_in.to_dict(),
         )
+        return ApplicationOut.from_dict(response.json())
 
     def delete(self, app_id: str) -> None:
         """Delete an application."""
-        return v1_application_delete.request_sync(client=self._client, app_id=app_id)
+        # ruff: noqa: F841
+        response = self._execute_request_sync(
+            method="delete",
+            path="/api/v1/app/{app_id}",
+            path_params={
+                "app_id": app_id,
+            },
+        )
 
     def patch(self, app_id: str, application_patch: ApplicationPatch) -> ApplicationOut:
         """Partially update an application."""
-        return v1_application_patch.request_sync(
-            client=self._client, app_id=app_id, json_body=application_patch
+        # ruff: noqa: F841
+        response = self._execute_request_sync(
+            method="patch",
+            path="/api/v1/app/{app_id}",
+            path_params={
+                "app_id": app_id,
+            },
+            json_body=application_patch.to_dict(),
         )
+        return ApplicationOut.from_dict(response.json())
