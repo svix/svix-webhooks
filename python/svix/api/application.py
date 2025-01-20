@@ -21,15 +21,17 @@ class ApplicationListOptions(BaseOptions):
     # The sorting order of the returned items
     order: t.Optional[models.Ordering] = None
 
-    def _query_params(self) -> t.Optional[t.Dict[str, t.Any]]:
+    def _query_params(self) -> t.Optional[t.Dict[str, str]]:
         d = {
             "limit": self.limit,
             "iterator": self.iterator,
             "order": self.order,
         }
-        return {k: sanitize_field(v) for k, v in d.items() if v is not None}
+        return {
+            k: str(sanitize_field(v)).lower() for k, v in d.items() if v is not None
+        }
 
-    def _header_params(self) -> t.Optional[t.Dict[str, t.Any]]:
+    def _header_params(self) -> t.Optional[t.Dict[str, str]]:
         return None
 
 
@@ -37,28 +39,28 @@ class ApplicationListOptions(BaseOptions):
 class ApplicationCreateOptions(BaseOptions):
     idempotency_key: t.Optional[str] = None
 
-    def _query_params(self) -> t.Optional[t.Dict[str, t.Any]]:
+    def _query_params(self) -> t.Optional[t.Dict[str, str]]:
         return None
 
-    def _header_params(self) -> t.Optional[t.Dict[str, t.Any]]:
+    def _header_params(self) -> t.Optional[t.Dict[str, str]]:
         d = {
             "idempotency-key": self.idempotency_key,
         }
-        return {k: sanitize_field(v) for k, v in d.items() if v is not None}
+        return {k: v for k, v in d.items() if v is not None}
 
 
 @dataclass
 class ApplicationGetOrCreateOptions(BaseOptions):
     idempotency_key: t.Optional[str] = None
 
-    def _query_params(self) -> t.Optional[t.Dict[str, t.Any]]:
+    def _query_params(self) -> t.Optional[t.Dict[str, str]]:
         return None
 
-    def _header_params(self) -> t.Optional[t.Dict[str, t.Any]]:
+    def _header_params(self) -> t.Optional[t.Dict[str, str]]:
         d = {
             "idempotency-key": self.idempotency_key,
         }
-        return {k: sanitize_field(v) for k, v in d.items() if v is not None}
+        return {k: v for k, v in d.items() if v is not None}
 
 
 class ApplicationAsync(ApiBase):
@@ -114,7 +116,7 @@ class ApplicationAsync(ApiBase):
             method="post",
             path="/api/v1/app",
             path_params={},
-            query_params={"get_if_exists": True},
+            query_params={"get_if_exists": "true"},
             header_params=options._header_params(),
             json_body=application_in.to_dict(),
         )
@@ -216,7 +218,7 @@ class Application(ApiBase):
             method="post",
             path="/api/v1/app",
             path_params={},
-            query_params={"get_if_exists": True},
+            query_params={"get_if_exists": "true"},
             header_params=options._header_params(),
             json_body=application_in.to_dict(),
         )

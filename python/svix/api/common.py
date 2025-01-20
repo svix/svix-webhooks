@@ -57,8 +57,8 @@ class ApiBase:
         method: str,
         path: str,
         path_params: t.Optional[t.Dict[str, str]],
-        query_params: t.Optional[t.Dict[str, t.Optional[t.Any]]],
-        header_params: t.Optional[t.Dict[str, t.Optional[str]]],
+        query_params: t.Optional[t.Dict[str, str]],
+        header_params: t.Optional[t.Dict[str, str]],
         json_body: t.Optional[t.Dict[str, t.Any]],
     ) -> t.Dict[str, t.Any]:
         if path_params is None:
@@ -72,7 +72,7 @@ class ApiBase:
             "svix-req-id": f"{random.getrandbits(32)}",
         }
         if header_params is not None:
-            headers.update({k: v for k, v in header_params.items() if v is not None})
+            headers.update(header_params)
 
         httpx_kwargs = {
             "method": method.upper(),
@@ -85,11 +85,7 @@ class ApiBase:
         }
 
         if query_params is not None:
-            httpx_kwargs["params"] = {
-                k: str(sanitize_field(v))
-                for k, v in query_params.items()
-                if v is not None
-            }
+            httpx_kwargs["params"] = query_params
 
         if json_body is not None:
             httpx_kwargs["json"] = json_body
@@ -100,8 +96,8 @@ class ApiBase:
         method: str,
         path: str,
         path_params: t.Optional[t.Dict[str, str]] = None,
-        query_params: t.Optional[t.Dict[str, t.Optional[t.Any]]] = None,
-        header_params: t.Optional[t.Dict[str, t.Optional[str]]] = None,
+        query_params: t.Optional[t.Dict[str, str]] = None,
+        header_params: t.Optional[t.Dict[str, str]] = None,
         json_body: t.Optional[t.Dict[str, t.Any]] = None,
     ) -> httpx.Response:
         httpx_kwargs = self._get_httpx_kwargs(
@@ -133,8 +129,8 @@ class ApiBase:
         method: str,
         path: str,
         path_params: t.Optional[t.Dict[str, str]] = None,
-        query_params: t.Optional[t.Dict[str, t.Optional[t.Any]]] = None,
-        header_params: t.Optional[t.Dict[str, t.Optional[str]]] = None,
+        query_params: t.Optional[t.Dict[str, str]] = None,
+        header_params: t.Optional[t.Dict[str, str]] = None,
         json_body: t.Optional[t.Dict[str, t.Any]] = None,
     ) -> httpx.Response:
         httpx_kwargs = self._get_httpx_kwargs(
