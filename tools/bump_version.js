@@ -38,7 +38,7 @@ const filesPaths = [
     // OpenAPI spec
     "server/openapi.json",
     // Cloud OpenAPI spec - not necessary but any other time of updating seems weirder
-    "openapi.json",
+    "lib-openapi.json",
 ];
 
 const rootDir = join(__dirname, "..");

@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'openapi.json'
+      - 'lib-openapi.json'
       - 'javascript/**'
       - '.github/workflows/javascript-release.yml'
   workflow_dispatch:
