@@ -152,6 +152,3 @@ class Application(ApiBase):
         return v1_application_patch.request_sync(
             client=self._client, app_id=app_id, json_body=application_patch
         )
-
-
-__all__ = ["ApplicationIn", "ApplicationOut", "ApplicationPatch"]
