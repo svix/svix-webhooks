@@ -3,7 +3,7 @@
 set -exo pipefail
 
 if [ -n "$1" ]; then
-    curl "$1" | python -m json.tool > openapi.json
+    curl "$1" | python -m json.tool > lib-openapi.json
 fi
 
 cd $(dirname "$0")
@@ -11,7 +11,7 @@ mkdir -p .codegen-tmp
 # OpenAPI version has to be overwritten to avoid broken codegen paths in OpenAPI generator.
 # Spec version is overwritten to avoid unnecessary diffs on comments. Same for description.
 jq --indent 4 '.openapi = "3.0.2" | .info.version = "1.1.1" | del(.info.description)' \
-    < openapi.json \
+    < lib-openapi.json \
     > .codegen-tmp/openapi.json
 
 # For some languages, write a separate OpenAPI spec file where optional fields

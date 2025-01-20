@@ -6,7 +6,7 @@ on:
       - "go/**"
       - "go.sum"
       - "go.mod"
-      - "openapi.json"
+      - "lib-openapi.json"
       - ".github/workflows/go-ci.yml"
 
 jobs:

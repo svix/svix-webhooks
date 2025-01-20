@@ -4,7 +4,7 @@ on:
   pull_request:
     paths:
       - "csharp/**"
-      - "openapi.json"
+      - "lib-openapi.json"
       - '.github/workflows/csharp-lint.yml'
 
 jobs:

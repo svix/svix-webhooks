@@ -5,13 +5,13 @@ on:
       - main
     paths:
       - "python/**"
-      - "openapi.json"
+      - "lib-openapi.json"
       - "server/**"
       - ".github/workflows/python-tests.yml"
   pull_request:
     paths:
       - "python/**"
-      - "openapi.json"
+      - "lib-openapi.json"
       - "server/**"
       - ".github/workflows/python-tests.yml"
 jobs:

@@ -10,7 +10,7 @@ else
     COMMAND="update"
 fi
 
-openapi-python-client $COMMAND --path ../../openapi.json --custom-template-path=../templates --config ../openapi-generator-config.json
+openapi-python-client $COMMAND --path ../../lib-openapi.json --custom-template-path=../templates --config ../openapi-generator-config.json
 
 cd internal
 
