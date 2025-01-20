@@ -26,12 +26,12 @@ class AuthenticationAppPortalAccessOptions(BaseOptions):
 
 
 @dataclass
-class AuthenticationDashboardAccessOptions(BaseOptions):
+class AuthenticationExpireAllOptions(BaseOptions):
     idempotency_key: t.Optional[str] = None
 
 
 @dataclass
-class AuthenticationExpireAllOptions(BaseOptions):
+class AuthenticationDashboardAccessOptions(BaseOptions):
     idempotency_key: t.Optional[str] = None
 
 
@@ -55,16 +55,6 @@ class AuthenticationAsync(ApiBase):
             **options.to_dict(),
         )
 
-    @deprecated
-    async def dashboard_access(
-        self,
-        app_id: str,
-        options: AuthenticationDashboardAccessOptions = AuthenticationDashboardAccessOptions(),
-    ) -> DashboardAccessOut:
-        return await v1_authentication_dashboard_access.request_asyncio(
-            client=self._client, app_id=app_id, **options.to_dict()
-        )
-
     async def expire_all(
         self,
         app_id: str,
@@ -77,6 +67,16 @@ class AuthenticationAsync(ApiBase):
             app_id=app_id,
             json_body=application_token_expire_in,
             **options.to_dict(),
+        )
+
+    @deprecated
+    async def dashboard_access(
+        self,
+        app_id: str,
+        options: AuthenticationDashboardAccessOptions = AuthenticationDashboardAccessOptions(),
+    ) -> DashboardAccessOut:
+        return await v1_authentication_dashboard_access.request_asyncio(
+            client=self._client, app_id=app_id, **options.to_dict()
         )
 
     async def logout(
