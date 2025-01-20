@@ -10,21 +10,62 @@ from .application import (
     ApplicationCreateOptions,
     ApplicationGetOrCreateOptions,
 )
-from .authentication import AuthenticationAsync, Authentication
-from .endpoint import EndpointAsync, Endpoint, EndpointListOptions
-from .event_type import EventTypeAsync, EventType, EventTypeListOptions
-from .integration import IntegrationAsync, Integration
-from .message import MessageAsync, Message
+from .authentication import (
+    AuthenticationAsync,
+    Authentication,
+    AuthenticationAppPortalAccessOptions,
+    AuthenticationDashboardAccessOptions,
+    AuthenticationExpireAllOptions,
+    AuthenticationLogoutOptions,
+)
+from .endpoint import (
+    EndpointAsync,
+    Endpoint,
+    EndpointListOptions,
+    EndpointCreateOptions,
+    EndpointRecoverOptions,
+    EndpointReplayMissingOptions,
+    EndpointRotateSecretOptions,
+    EndpointSendExampleOptions,
+    EndpointGetStatsOptions,
+)
+from .event_type import (
+    EventTypeAsync,
+    EventType,
+    EventTypeListOptions,
+    EventTypeCreateOptions,
+    EventTypeImportOpenapiOptions,
+    EventTypeDeleteOptions,
+)
+from .integration import (
+    IntegrationAsync,
+    Integration,
+    IntegrationListOptions,
+    IntegrationCreateOptions,
+    IntegrationRotateKeyOptions,
+)
+from .message import (
+    MessageAsync,
+    Message,
+    MessageListOptions,
+    MessageCreateOptions,
+    MessageGetOptions,
+)
 from .message_attempt import (
     MessageAttemptAsync,
     MessageAttempt,
-    MessageAttemptListOptions,
+    MessageAttemptListByEndpointOptions,
+    MessageAttemptListByMsgOptions,
+    MessageAttemptListAttemptedMessagesOptions,
+    MessageAttemptListAttemptedDestinationsOptions,
+    MessageAttemptResendOptions,
+    MessageListAttemptsForEndpointOptions,
 )
 from .operational_webhook import (
     OperationalWebhookEndpointAsync,
     OperationalWebhookEndpoint,
 )
-from .statistics import StatisticsAsync, Statistics
+from .statistics import StatisticsAsync, Statistics, StatisticsAggregateAppStatsOptions
 
 from svix.internal.openapi_client.models.aggregate_event_types_out import (
     AggregateEventTypesOut,
