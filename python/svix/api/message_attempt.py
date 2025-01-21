@@ -235,24 +235,6 @@ class MessageAttemptAsync(ApiBase):
             **options.to_dict(),
         )
 
-    @deprecated(
-        reason="use list_by_msg instead, passing the endpoint id through options"
-    )
-    async def list_attempts_for_endpoint(
-        self,
-        app_id: str,
-        msg_id: str,
-        endpoint_id: str,
-        options: MessageListAttemptsForEndpointOptions = MessageListAttemptsForEndpointOptions(),
-    ) -> ListResponseMessageAttemptEndpointOut:
-        return await v1_message_attempt_list_by_endpoint_deprecated.request_asyncio(
-            client=self._client,
-            app_id=app_id,
-            msg_id=msg_id,
-            endpoint_id=endpoint_id,
-            **options.to_dict(),
-        )
-
 
 class MessageAttempt(ApiBase):
     def list_by_endpoint(
@@ -351,33 +333,6 @@ class MessageAttempt(ApiBase):
     ) -> None:
         """Resend a message to the specified endpoint."""
         return v1_message_attempt_resend.request_sync(
-            client=self._client,
-            app_id=app_id,
-            msg_id=msg_id,
-            endpoint_id=endpoint_id,
-            **options.to_dict(),
-        )
-
-    @deprecated(reason="use list_by_msg or list_by_endpoint instead")
-    def list(
-        self,
-        app_id: str,
-        msg_id: str,
-        options: MessageAttemptListByMsgOptions = MessageAttemptListByMsgOptions(),
-    ) -> ListResponseMessageAttemptOut:
-        return self.list_by_msg(app_id=app_id, msg_id=msg_id, options=options)
-
-    @deprecated(
-        reason="use list_by_msg instead, passing the endpoint id through options"
-    )
-    def list_attempts_for_endpoint(
-        self,
-        app_id: str,
-        msg_id: str,
-        endpoint_id: str,
-        options: MessageListAttemptsForEndpointOptions = MessageListAttemptsForEndpointOptions(),
-    ) -> ListResponseMessageAttemptEndpointOut:
-        return v1_message_attempt_list_by_endpoint_deprecated.request_sync(
             client=self._client,
             app_id=app_id,
             msg_id=msg_id,
