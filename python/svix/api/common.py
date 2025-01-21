@@ -33,7 +33,7 @@ def _serialize_single_param(val: t.Any) -> str:
             val.replace(tzinfo=timezone.utc)
         return val.isoformat()
     elif isinstance(val, bool):
-        return str(val).lower()
+        return "true" if val else "false"
     else:
         return str(val)
 
