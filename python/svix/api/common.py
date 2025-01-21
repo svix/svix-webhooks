@@ -4,13 +4,11 @@ import time
 import typing as t
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
-from http import HTTPStatus
 
 import httpx
 
 from ..internal.openapi_client.client import AuthenticatedClient
-from ..internal.openapi_client.errors import UnexpectedStatus
-from ..internal.openapi_client.models import HttpError, HTTPValidationError
+from ..internal.openapi_client.models import HttpError
 
 
 def ensure_tz(x: t.Optional[datetime]) -> t.Optional[datetime]:
@@ -157,19 +155,5 @@ class ApiBase:
 def _filter_response_for_errors_response(response: httpx.Response) -> httpx.Response:
     if 200 <= response.status_code <= 299:
         return response
-
-    if response.status_code == HTTPStatus.BAD_REQUEST:
+    else:
         raise HttpError.init_exception(response.json(), response.status_code)
-    if response.status_code == HTTPStatus.UNAUTHORIZED:
-        raise HttpError.init_exception(response.json(), response.status_code)
-    if response.status_code == HTTPStatus.FORBIDDEN:
-        raise HttpError.init_exception(response.json(), response.status_code)
-    if response.status_code == HTTPStatus.NOT_FOUND:
-        raise HttpError.init_exception(response.json(), response.status_code)
-    if response.status_code == HTTPStatus.CONFLICT:
-        raise HttpError.init_exception(response.json(), response.status_code)
-    if response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
-        raise HTTPValidationError.init_exception(response.json(), response.status_code)
-    if response.status_code == HTTPStatus.TOO_MANY_REQUESTS:
-        raise HttpError.init_exception(response.json(), response.status_code)
-    raise UnexpectedStatus(response.status_code, response.content)
