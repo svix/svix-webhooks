@@ -89,7 +89,7 @@ class ApiBase:
             httpx_kwargs["json"] = json_body
         return httpx_kwargs
 
-    async def _execute_request_asyncio(
+    async def _request_asyncio(
         self,
         method: str,
         path: str,
@@ -122,7 +122,7 @@ class ApiBase:
 
         return _filter_response_for_errors_response(response)
 
-    def _execute_request_sync(
+    def _request_sync(
         self,
         method: str,
         path: str,
