@@ -27,6 +27,21 @@ def sanitize_field(v: t.Any) -> t.Any:
     return v
 
 
+def _serialize_single_param(val: t.Any) -> str:
+    if isinstance(val, datetime):
+        if val.tzinfo is None:
+            val.replace(tzinfo=timezone.utc)
+        return val.isoformat()
+    elif isinstance(val, bool):
+        return str(val).lower()
+    else:
+        return str(val)
+
+
+def serialize_params(d: t.Dict[str, t.Optional[t.Any]]) -> t.Dict[str, str]:
+    return {k: _serialize_single_param(v) for k, v in d.items() if v is not None}
+
+
 @dataclass
 class BaseOptions:
     def to_dict(self) -> t.Dict[str, t.Any]:

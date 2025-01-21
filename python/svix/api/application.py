@@ -9,7 +9,7 @@ from ..internal.openapi_client.models.application_patch import ApplicationPatch
 from ..internal.openapi_client.models.list_response_application_out import (
     ListResponseApplicationOut,
 )
-from .common import ApiBase, BaseOptions, sanitize_field
+from .common import ApiBase, BaseOptions, serialize_params
 
 
 @dataclass
@@ -21,46 +21,47 @@ class ApplicationListOptions(BaseOptions):
     # The sorting order of the returned items
     order: t.Optional[models.Ordering] = None
 
-    def _query_params(self) -> t.Optional[t.Dict[str, str]]:
-        d = {
-            "limit": self.limit,
-            "iterator": self.iterator,
-            "order": self.order,
-        }
-        return {
-            k: str(sanitize_field(v)).lower() for k, v in d.items() if v is not None
-        }
+    def _query_params(self) -> t.Dict[str, str]:
+        return serialize_params(
+            {
+                "limit": self.limit,
+                "iterator": self.iterator,
+                "order": self.order,
+            }
+        )
 
-    def _header_params(self) -> t.Optional[t.Dict[str, str]]:
-        return None
+    def _header_params(self) -> t.Dict[str, str]:
+        return {}
 
 
 @dataclass
 class ApplicationCreateOptions(BaseOptions):
     idempotency_key: t.Optional[str] = None
 
-    def _query_params(self) -> t.Optional[t.Dict[str, str]]:
-        return None
+    def _query_params(self) -> t.Dict[str, str]:
+        return {}
 
-    def _header_params(self) -> t.Optional[t.Dict[str, str]]:
-        d = {
-            "idempotency-key": self.idempotency_key,
-        }
-        return {k: v for k, v in d.items() if v is not None}
+    def _header_params(self) -> t.Dict[str, str]:
+        return serialize_params(
+            {
+                "idempotency-key": self.idempotency_key,
+            }
+        )
 
 
 @dataclass
 class ApplicationGetOrCreateOptions(BaseOptions):
     idempotency_key: t.Optional[str] = None
 
-    def _query_params(self) -> t.Optional[t.Dict[str, str]]:
-        return None
+    def _query_params(self) -> t.Dict[str, str]:
+        return {}
 
-    def _header_params(self) -> t.Optional[t.Dict[str, str]]:
-        d = {
-            "idempotency-key": self.idempotency_key,
-        }
-        return {k: v for k, v in d.items() if v is not None}
+    def _header_params(self) -> t.Dict[str, str]:
+        return serialize_params(
+            {
+                "idempotency-key": self.idempotency_key,
+            }
+        )
 
 
 class ApplicationAsync(ApiBase):
