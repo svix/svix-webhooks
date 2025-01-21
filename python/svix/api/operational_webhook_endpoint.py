@@ -1,17 +1,10 @@
+# This file is @generated
 import typing as t
 from dataclasses import dataclass
 
-from .common import BaseOptions, ApiBase, serialize_params
-
-
-from ..internal.openapi_client.api.webhook_endpoint import (
-    create_operational_webhook_endpoint,
-    delete_operational_webhook_endpoint,
-    get_operational_webhook_endpoint,
-    get_operational_webhook_endpoint_secret,
-    list_operational_webhook_endpoints,
-    rotate_operational_webhook_endpoint_secret,
-    update_operational_webhook_endpoint,
+from ..internal.openapi_client import models
+from ..internal.openapi_client.models.list_response_operational_webhook_endpoint_out import (
+    ListResponseOperationalWebhookEndpointOut,
 )
 from ..internal.openapi_client.models.operational_webhook_endpoint_in import (
     OperationalWebhookEndpointIn,
@@ -28,10 +21,7 @@ from ..internal.openapi_client.models.operational_webhook_endpoint_secret_out im
 from ..internal.openapi_client.models.operational_webhook_endpoint_update import (
     OperationalWebhookEndpointUpdate,
 )
-from ..internal.openapi_client.models.list_response_operational_webhook_endpoint_out import (
-    ListResponseOperationalWebhookEndpointOut,
-)
-from ..internal.openapi_client import models
+from .common import ApiBase, BaseOptions, serialize_params
 
 
 @dataclass
@@ -82,49 +72,88 @@ class OperationalWebhookEndpointAsync(ApiBase):
         self,
         options: OperationalWebhookEndpointListOptions = OperationalWebhookEndpointListOptions(),
     ) -> ListResponseOperationalWebhookEndpointOut:
-        return await list_operational_webhook_endpoints.request_asyncio(
-            client=self._client,
-            **options.to_dict(),
+        """List operational webhook endpoints."""
+        # ruff: noqa: F841
+        response = await self._request_asyncio(
+            method="get",
+            path="/api/v1/operational-webhook/endpoint",
+            path_params={},
+            query_params=options._query_params(),
+            header_params=options._header_params(),
         )
+        return ListResponseOperationalWebhookEndpointOut.from_dict(response.json())
 
     async def create(
         self,
         operational_webhook_endpoint_in: OperationalWebhookEndpointIn,
         options: OperationalWebhookEndpointCreateOptions = OperationalWebhookEndpointCreateOptions(),
     ) -> OperationalWebhookEndpointOut:
-        return await create_operational_webhook_endpoint.request_asyncio(
-            client=self._client,
-            json_body=operational_webhook_endpoint_in,
-            **options.to_dict(),
+        """Create an operational webhook endpoint."""
+        # ruff: noqa: F841
+        response = await self._request_asyncio(
+            method="post",
+            path="/api/v1/operational-webhook/endpoint",
+            path_params={},
+            query_params=options._query_params(),
+            header_params=options._header_params(),
+            json_body=operational_webhook_endpoint_in.to_dict(),
         )
+        return OperationalWebhookEndpointOut.from_dict(response.json())
 
     async def get(self, endpoint_id: str) -> OperationalWebhookEndpointOut:
-        return await get_operational_webhook_endpoint.request_asyncio(
-            client=self._client, endpoint_id=endpoint_id
+        """Get an operational webhook endpoint."""
+        # ruff: noqa: F841
+        response = await self._request_asyncio(
+            method="get",
+            path="/api/v1/operational-webhook/endpoint/{endpoint_id}",
+            path_params={
+                "endpoint_id": endpoint_id,
+            },
         )
+        return OperationalWebhookEndpointOut.from_dict(response.json())
 
     async def update(
         self,
         endpoint_id: str,
         operational_webhook_endpoint_update: OperationalWebhookEndpointUpdate,
     ) -> OperationalWebhookEndpointOut:
-        return await update_operational_webhook_endpoint.request_asyncio(
-            client=self._client,
-            endpoint_id=endpoint_id,
-            json_body=operational_webhook_endpoint_update,
+        """Update an operational webhook endpoint."""
+        # ruff: noqa: F841
+        response = await self._request_asyncio(
+            method="put",
+            path="/api/v1/operational-webhook/endpoint/{endpoint_id}",
+            path_params={
+                "endpoint_id": endpoint_id,
+            },
+            json_body=operational_webhook_endpoint_update.to_dict(),
         )
+        return OperationalWebhookEndpointOut.from_dict(response.json())
 
     async def delete(self, endpoint_id: str) -> None:
-        return await delete_operational_webhook_endpoint.request_asyncio(
-            client=self._client,
-            endpoint_id=endpoint_id,
+        """Delete an operational webhook endpoint."""
+        # ruff: noqa: F841
+        response = await self._request_asyncio(
+            method="delete",
+            path="/api/v1/operational-webhook/endpoint/{endpoint_id}",
+            path_params={
+                "endpoint_id": endpoint_id,
+            },
         )
 
     async def get_secret(self, endpoint_id: str) -> OperationalWebhookEndpointSecretOut:
-        return await get_operational_webhook_endpoint_secret.request_asyncio(
-            client=self._client,
-            endpoint_id=endpoint_id,
+        """Get an operational webhook endpoint's signing secret.
+
+        This is used to verify the authenticity of the webhook.
+        For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/)."""
+        # ruff: noqa: F841
+        response = await self._request_asyncio(
+            method="get",
+            path="/api/v1/operational-webhook/endpoint/{endpoint_id}/secret",
+            path_params={
+                "endpoint_id": endpoint_id,
+            },
         )
+        return OperationalWebhookEndpointSecretOut.from_dict(response.json())
 
     async def rotate_secret(
         self,
@@ -132,11 +161,19 @@ class OperationalWebhookEndpointAsync(ApiBase):
         operational_webhook_endpoint_secret_in: OperationalWebhookEndpointSecretIn,
         options: OperationalWebhookEndpointRotateSecretOptions = OperationalWebhookEndpointRotateSecretOptions(),
     ) -> None:
-        return await rotate_operational_webhook_endpoint_secret.request_asyncio(
-            client=self._client,
-            endpoint_id=endpoint_id,
-            json_body=operational_webhook_endpoint_secret_in,
-            **options.to_dict(),
+        """Rotates an operational webhook endpoint's signing secret.
+
+        The previous secret will remain valid for the next 24 hours."""
+        # ruff: noqa: F841
+        response = await self._request_asyncio(
+            method="post",
+            path="/api/v1/operational-webhook/endpoint/{endpoint_id}/secret/rotate",
+            path_params={
+                "endpoint_id": endpoint_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
+            json_body=operational_webhook_endpoint_secret_in.to_dict(),
         )
 
 
@@ -145,49 +182,88 @@ class OperationalWebhookEndpoint(ApiBase):
         self,
         options: OperationalWebhookEndpointListOptions = OperationalWebhookEndpointListOptions(),
     ) -> ListResponseOperationalWebhookEndpointOut:
-        return list_operational_webhook_endpoints.request_sync(
-            client=self._client,
-            **options.to_dict(),
+        """List operational webhook endpoints."""
+        # ruff: noqa: F841
+        response = self._request_sync(
+            method="get",
+            path="/api/v1/operational-webhook/endpoint",
+            path_params={},
+            query_params=options._query_params(),
+            header_params=options._header_params(),
         )
+        return ListResponseOperationalWebhookEndpointOut.from_dict(response.json())
 
     def create(
         self,
         operational_webhook_endpoint_in: OperationalWebhookEndpointIn,
         options: OperationalWebhookEndpointCreateOptions = OperationalWebhookEndpointCreateOptions(),
     ) -> OperationalWebhookEndpointOut:
-        return create_operational_webhook_endpoint.request_sync(
-            client=self._client,
-            json_body=operational_webhook_endpoint_in,
-            **options.to_dict(),
+        """Create an operational webhook endpoint."""
+        # ruff: noqa: F841
+        response = self._request_sync(
+            method="post",
+            path="/api/v1/operational-webhook/endpoint",
+            path_params={},
+            query_params=options._query_params(),
+            header_params=options._header_params(),
+            json_body=operational_webhook_endpoint_in.to_dict(),
         )
+        return OperationalWebhookEndpointOut.from_dict(response.json())
 
     def get(self, endpoint_id: str) -> OperationalWebhookEndpointOut:
-        return get_operational_webhook_endpoint.request_sync(
-            client=self._client, endpoint_id=endpoint_id
+        """Get an operational webhook endpoint."""
+        # ruff: noqa: F841
+        response = self._request_sync(
+            method="get",
+            path="/api/v1/operational-webhook/endpoint/{endpoint_id}",
+            path_params={
+                "endpoint_id": endpoint_id,
+            },
         )
+        return OperationalWebhookEndpointOut.from_dict(response.json())
 
     def update(
         self,
         endpoint_id: str,
         operational_webhook_endpoint_update: OperationalWebhookEndpointUpdate,
     ) -> OperationalWebhookEndpointOut:
-        return update_operational_webhook_endpoint.request_sync(
-            client=self._client,
-            endpoint_id=endpoint_id,
-            json_body=operational_webhook_endpoint_update,
+        """Update an operational webhook endpoint."""
+        # ruff: noqa: F841
+        response = self._request_sync(
+            method="put",
+            path="/api/v1/operational-webhook/endpoint/{endpoint_id}",
+            path_params={
+                "endpoint_id": endpoint_id,
+            },
+            json_body=operational_webhook_endpoint_update.to_dict(),
         )
+        return OperationalWebhookEndpointOut.from_dict(response.json())
 
     def delete(self, endpoint_id: str) -> None:
-        return delete_operational_webhook_endpoint.request_sync(
-            client=self._client,
-            endpoint_id=endpoint_id,
+        """Delete an operational webhook endpoint."""
+        # ruff: noqa: F841
+        response = self._request_sync(
+            method="delete",
+            path="/api/v1/operational-webhook/endpoint/{endpoint_id}",
+            path_params={
+                "endpoint_id": endpoint_id,
+            },
         )
 
     def get_secret(self, endpoint_id: str) -> OperationalWebhookEndpointSecretOut:
-        return get_operational_webhook_endpoint_secret.request_sync(
-            client=self._client,
-            endpoint_id=endpoint_id,
+        """Get an operational webhook endpoint's signing secret.
+
+        This is used to verify the authenticity of the webhook.
+        For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/)."""
+        # ruff: noqa: F841
+        response = self._request_sync(
+            method="get",
+            path="/api/v1/operational-webhook/endpoint/{endpoint_id}/secret",
+            path_params={
+                "endpoint_id": endpoint_id,
+            },
         )
+        return OperationalWebhookEndpointSecretOut.from_dict(response.json())
 
     def rotate_secret(
         self,
@@ -195,9 +271,17 @@ class OperationalWebhookEndpoint(ApiBase):
         operational_webhook_endpoint_secret_in: OperationalWebhookEndpointSecretIn,
         options: OperationalWebhookEndpointRotateSecretOptions = OperationalWebhookEndpointRotateSecretOptions(),
     ) -> None:
-        return rotate_operational_webhook_endpoint_secret.request_sync(
-            client=self._client,
-            endpoint_id=endpoint_id,
-            json_body=operational_webhook_endpoint_secret_in,
-            **options.to_dict(),
+        """Rotates an operational webhook endpoint's signing secret.
+
+        The previous secret will remain valid for the next 24 hours."""
+        # ruff: noqa: F841
+        response = self._request_sync(
+            method="post",
+            path="/api/v1/operational-webhook/endpoint/{endpoint_id}/secret/rotate",
+            path_params={
+                "endpoint_id": endpoint_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
+            json_body=operational_webhook_endpoint_secret_in.to_dict(),
         )
