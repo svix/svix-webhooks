@@ -47,6 +47,12 @@ class BaseOptions:
     def to_dict(self) -> t.Dict[str, t.Any]:
         return {k: sanitize_field(v) for k, v in asdict(self).items() if v is not None}
 
+    def _query_params() -> t.Dict[str, str]:
+        return {}
+
+    def _header_params() -> t.Dict[str, str]:
+        return {}
+
 
 @dataclass
 class ListOptions(BaseOptions):

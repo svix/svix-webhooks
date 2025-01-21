@@ -66,6 +66,7 @@ class ApplicationAsync(ApiBase):
             path="/api/v1/app",
             path_params={},
             query_params=options._query_params(),
+            header_params=options._header_params(),
         )
         return ListResponseApplicationOut.from_dict(response.json())
 
@@ -80,6 +81,7 @@ class ApplicationAsync(ApiBase):
             method="post",
             path="/api/v1/app",
             path_params={},
+            query_params=options._query_params(),
             header_params=options._header_params(),
             json_body=application_in.to_dict(),
         )
@@ -165,6 +167,7 @@ class Application(ApiBase):
             path="/api/v1/app",
             path_params={},
             query_params=options._query_params(),
+            header_params=options._header_params(),
         )
         return ListResponseApplicationOut.from_dict(response.json())
 
@@ -179,6 +182,7 @@ class Application(ApiBase):
             method="post",
             path="/api/v1/app",
             path_params={},
+            query_params=options._query_params(),
             header_params=options._header_params(),
             json_body=application_in.to_dict(),
         )
