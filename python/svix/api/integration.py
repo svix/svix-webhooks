@@ -90,6 +90,7 @@ class IntegrationAsync(ApiBase):
             client=self._client, app_id=app_id, integ_id=integ_id
         )
 
+    @deprecated
     async def get_key(self, app_id: str, integ_id: str) -> IntegrationKeyOut:
         return await v1_integration_get_key.request_asyncio(
             client=self._client,
@@ -155,6 +156,7 @@ class Integration(ApiBase):
             client=self._client, app_id=app_id, integ_id=integ_id
         )
 
+    @deprecated
     def get_key(self, app_id: str, integ_id: str) -> IntegrationKeyOut:
         return v1_integration_get_key.request_sync(
             client=self._client,
