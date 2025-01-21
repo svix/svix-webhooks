@@ -1,3 +1,4 @@
+use js_option::JsOption;
 use std::collections::HashSet;
 use svix::{
     api::{ApplicationIn, EndpointIn, EndpointPatch, EventTypeIn, Svix, SvixOptions},
@@ -105,10 +106,10 @@ async fn test_endpoint_crud() {
             app.id.clone(),
             ep.id.clone(),
             EndpointPatch {
-                filter_types: Some(Some(vec![
+                filter_types: JsOption::Some(vec![
                     String::from("event.started"),
                     String::from("event.ended"),
-                ])),
+                ]),
                 ..Default::default()
             },
         )
