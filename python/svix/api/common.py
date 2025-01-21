@@ -74,11 +74,9 @@ class ApiBase:
         header_params: t.Optional[t.Dict[str, str]],
         json_body: t.Optional[t.Dict[str, t.Any]],
     ) -> t.Dict[str, t.Any]:
-        if path_params is None:
-            url = f"{self._client.base_url}{path}"
-        else:
-            formatted_path = path.format(**path_params)
-            url = url = f"{self._client.base_url}{formatted_path}"
+        if path_params is not None:
+            path = path.format(**path_params)
+        url = f"{self._client.base_url}{path}"
 
         headers: t.Dict[str, str] = {
             **self._client.get_headers(),
