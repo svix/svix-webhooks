@@ -59,7 +59,6 @@ from .message_attempt import (
     MessageAttemptListAttemptedMessagesOptions,
     MessageAttemptListAttemptedDestinationsOptions,
     MessageAttemptResendOptions,
-    MessageListAttemptsForEndpointOptions,
 )
 from .operational_webhook import (
     OperationalWebhookEndpointAsync,

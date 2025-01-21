@@ -194,16 +194,6 @@ class MessageAttemptResendOptions(BaseOptions):
     idempotency_key: t.Optional[str] = None
 
 
-@dataclass
-class MessageListAttemptsForEndpointOptions(BaseOptions):
-    status: t.Optional[models.MessageStatus] = None
-    event_types: t.Optional[t.List[str]] = None
-    before: t.Optional[datetime] = None
-    after: t.Optional[datetime] = None
-    channel: t.Optional[str] = None
-    status_code_class: t.Optional[models.StatusCodeClass] = None
-
-
 class MessageAttemptAsync(ApiBase):
     async def list_by_endpoint(
         self,
