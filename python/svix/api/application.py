@@ -30,16 +30,10 @@ class ApplicationListOptions(BaseOptions):
             }
         )
 
-    def _header_params(self) -> t.Dict[str, str]:
-        return {}
-
 
 @dataclass
 class ApplicationCreateOptions(BaseOptions):
     idempotency_key: t.Optional[str] = None
-
-    def _query_params(self) -> t.Dict[str, str]:
-        return {}
 
     def _header_params(self) -> t.Dict[str, str]:
         return serialize_params(
@@ -52,9 +46,6 @@ class ApplicationCreateOptions(BaseOptions):
 @dataclass
 class ApplicationGetOrCreateOptions(BaseOptions):
     idempotency_key: t.Optional[str] = None
-
-    def _query_params(self) -> t.Dict[str, str]:
-        return {}
 
     def _header_params(self) -> t.Dict[str, str]:
         return serialize_params(
@@ -75,7 +66,6 @@ class ApplicationAsync(ApiBase):
             path="/api/v1/app",
             path_params={},
             query_params=options._query_params(),
-            header_params=options._header_params(),
         )
         return ListResponseApplicationOut.from_dict(response.json())
 
@@ -90,7 +80,6 @@ class ApplicationAsync(ApiBase):
             method="post",
             path="/api/v1/app",
             path_params={},
-            query_params=options._query_params(),
             header_params=options._header_params(),
             json_body=application_in.to_dict(),
         )
@@ -176,7 +165,6 @@ class Application(ApiBase):
             path="/api/v1/app",
             path_params={},
             query_params=options._query_params(),
-            header_params=options._header_params(),
         )
         return ListResponseApplicationOut.from_dict(response.json())
 
@@ -191,7 +179,6 @@ class Application(ApiBase):
             method="post",
             path="/api/v1/app",
             path_params={},
-            query_params=options._query_params(),
             header_params=options._header_params(),
             json_body=application_in.to_dict(),
         )
