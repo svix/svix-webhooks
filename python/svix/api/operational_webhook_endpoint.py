@@ -89,12 +89,12 @@ class OperationalWebhookEndpointAsync(ApiBase):
 
     async def create(
         self,
-        endpoint_in: OperationalWebhookEndpointIn,
+        operational_webhook_endpoint_in: OperationalWebhookEndpointIn,
         options: OperationalWebhookEndpointCreateOptions = OperationalWebhookEndpointCreateOptions(),
     ) -> OperationalWebhookEndpointOut:
         return await create_operational_webhook_endpoint.request_asyncio(
             client=self._client,
-            json_body=endpoint_in,
+            json_body=operational_webhook_endpoint_in,
             **options.to_dict(),
         )
 
@@ -104,12 +104,14 @@ class OperationalWebhookEndpointAsync(ApiBase):
         )
 
     async def update(
-        self, endpoint_id: str, endpoint_update: OperationalWebhookEndpointUpdate
+        self,
+        endpoint_id: str,
+        operational_webhook_endpoint_update: OperationalWebhookEndpointUpdate,
     ) -> OperationalWebhookEndpointOut:
         return await update_operational_webhook_endpoint.request_asyncio(
             client=self._client,
             endpoint_id=endpoint_id,
-            json_body=endpoint_update,
+            json_body=operational_webhook_endpoint_update,
         )
 
     async def delete(self, endpoint_id: str) -> None:
@@ -127,13 +129,13 @@ class OperationalWebhookEndpointAsync(ApiBase):
     async def rotate_secret(
         self,
         endpoint_id: str,
-        endpoint_secret_rotate_in: OperationalWebhookEndpointSecretIn,
+        operational_webhook_endpoint_secret_in: OperationalWebhookEndpointSecretIn,
         options: OperationalWebhookEndpointRotateSecretOptions = OperationalWebhookEndpointRotateSecretOptions(),
     ) -> None:
         return await rotate_operational_webhook_endpoint_secret.request_asyncio(
             client=self._client,
             endpoint_id=endpoint_id,
-            json_body=endpoint_secret_rotate_in,
+            json_body=operational_webhook_endpoint_secret_in,
             **options.to_dict(),
         )
 
@@ -150,12 +152,12 @@ class OperationalWebhookEndpoint(ApiBase):
 
     def create(
         self,
-        endpoint_in: OperationalWebhookEndpointIn,
+        operational_webhook_endpoint_in: OperationalWebhookEndpointIn,
         options: OperationalWebhookEndpointCreateOptions = OperationalWebhookEndpointCreateOptions(),
     ) -> OperationalWebhookEndpointOut:
         return create_operational_webhook_endpoint.request_sync(
             client=self._client,
-            json_body=endpoint_in,
+            json_body=operational_webhook_endpoint_in,
             **options.to_dict(),
         )
 
@@ -165,12 +167,14 @@ class OperationalWebhookEndpoint(ApiBase):
         )
 
     def update(
-        self, endpoint_id: str, endpoint_update: OperationalWebhookEndpointUpdate
+        self,
+        endpoint_id: str,
+        operational_webhook_endpoint_update: OperationalWebhookEndpointUpdate,
     ) -> OperationalWebhookEndpointOut:
         return update_operational_webhook_endpoint.request_sync(
             client=self._client,
             endpoint_id=endpoint_id,
-            json_body=endpoint_update,
+            json_body=operational_webhook_endpoint_update,
         )
 
     def delete(self, endpoint_id: str) -> None:
@@ -188,12 +192,12 @@ class OperationalWebhookEndpoint(ApiBase):
     def rotate_secret(
         self,
         endpoint_id: str,
-        endpoint_secret_rotate_in: OperationalWebhookEndpointSecretIn,
+        operational_webhook_endpoint_secret_in: OperationalWebhookEndpointSecretIn,
         options: OperationalWebhookEndpointRotateSecretOptions = OperationalWebhookEndpointRotateSecretOptions(),
     ) -> None:
         return rotate_operational_webhook_endpoint_secret.request_sync(
             client=self._client,
             endpoint_id=endpoint_id,
-            json_body=endpoint_secret_rotate_in,
+            json_body=operational_webhook_endpoint_secret_in,
             **options.to_dict(),
         )
