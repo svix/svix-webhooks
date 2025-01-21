@@ -63,6 +63,9 @@ from .message_attempt import (
 from .operational_webhook import (
     OperationalWebhookEndpointAsync,
     OperationalWebhookEndpoint,
+    OperationalWebhookEndpointListOptions,
+    OperationalWebhookEndpointCreateOptions,
+    OperationalWebhookEndpointRotateSecretOptions,
 )
 from .statistics import StatisticsAsync, Statistics, StatisticsAggregateAppStatsOptions
 

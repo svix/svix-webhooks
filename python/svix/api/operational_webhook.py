@@ -1,7 +1,7 @@
 import typing as t
 from dataclasses import dataclass
 
-from .common import ListOptions, PostOptions, ApiBase
+from .common import BaseOptions, ApiBase, serialize_params
 
 
 from ..internal.openapi_client.api.webhook_endpoint import (
@@ -31,12 +31,50 @@ from ..internal.openapi_client.models.operational_webhook_endpoint_update import
 from ..internal.openapi_client.models.list_response_operational_webhook_endpoint_out import (
     ListResponseOperationalWebhookEndpointOut,
 )
-from ..internal.openapi_client.models.ordering import Ordering
+from ..internal.openapi_client import models
 
 
 @dataclass
-class OperationalWebhookEndpointListOptions(ListOptions):
-    order: t.Optional[Ordering] = None
+class OperationalWebhookEndpointListOptions(BaseOptions):
+    # Limit the number of returned items
+    limit: t.Optional[int] = None
+    # The iterator returned from a prior invocation
+    iterator: t.Optional[str] = None
+    # The sorting order of the returned items
+    order: t.Optional[models.Ordering] = None
+
+    def _query_params(self) -> t.Dict[str, str]:
+        return serialize_params(
+            {
+                "limit": self.limit,
+                "iterator": self.iterator,
+                "order": self.order,
+            }
+        )
+
+
+@dataclass
+class OperationalWebhookEndpointCreateOptions(BaseOptions):
+    idempotency_key: t.Optional[str] = None
+
+    def _header_params(self) -> t.Dict[str, str]:
+        return serialize_params(
+            {
+                "idempotency-key": self.idempotency_key,
+            }
+        )
+
+
+@dataclass
+class OperationalWebhookEndpointRotateSecretOptions(BaseOptions):
+    idempotency_key: t.Optional[str] = None
+
+    def _header_params(self) -> t.Dict[str, str]:
+        return serialize_params(
+            {
+                "idempotency-key": self.idempotency_key,
+            }
+        )
 
 
 class OperationalWebhookEndpointAsync(ApiBase):
@@ -52,7 +90,7 @@ class OperationalWebhookEndpointAsync(ApiBase):
     async def create(
         self,
         endpoint_in: OperationalWebhookEndpointIn,
-        options: PostOptions = PostOptions(),
+        options: OperationalWebhookEndpointCreateOptions = OperationalWebhookEndpointCreateOptions(),
     ) -> OperationalWebhookEndpointOut:
         return await create_operational_webhook_endpoint.request_asyncio(
             client=self._client,
@@ -90,7 +128,7 @@ class OperationalWebhookEndpointAsync(ApiBase):
         self,
         endpoint_id: str,
         endpoint_secret_rotate_in: OperationalWebhookEndpointSecretIn,
-        options: PostOptions = PostOptions(),
+        options: OperationalWebhookEndpointRotateSecretOptions = OperationalWebhookEndpointRotateSecretOptions(),
     ) -> None:
         return await rotate_operational_webhook_endpoint_secret.request_asyncio(
             client=self._client,
@@ -113,7 +151,7 @@ class OperationalWebhookEndpoint(ApiBase):
     def create(
         self,
         endpoint_in: OperationalWebhookEndpointIn,
-        options: PostOptions = PostOptions(),
+        options: OperationalWebhookEndpointCreateOptions = OperationalWebhookEndpointCreateOptions(),
     ) -> OperationalWebhookEndpointOut:
         return create_operational_webhook_endpoint.request_sync(
             client=self._client,
@@ -151,7 +189,7 @@ class OperationalWebhookEndpoint(ApiBase):
         self,
         endpoint_id: str,
         endpoint_secret_rotate_in: OperationalWebhookEndpointSecretIn,
-        options: PostOptions = PostOptions(),
+        options: OperationalWebhookEndpointRotateSecretOptions = OperationalWebhookEndpointRotateSecretOptions(),
     ) -> None:
         return rotate_operational_webhook_endpoint_secret.request_sync(
             client=self._client,
