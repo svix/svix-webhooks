@@ -1,3 +1,4 @@
+// this file is @generated (with some manual changes)
 package svix
 
 import (
@@ -19,86 +20,118 @@ type OperationalWebhookEndpointListOptions struct {
 	Order *Ordering
 }
 
-func (e *OperationalWebhookEndpoint) List(
+// List operational webhook endpoints.
+func (operationalWebhookEndpoint *OperationalWebhookEndpoint) List(
 	ctx context.Context,
 	options *OperationalWebhookEndpointListOptions,
 ) (*ListResponseOperationalWebhookEndpointOut, error) {
-	req := e.api.WebhookEndpointAPI.ListOperationalWebhookEndpoints(ctx)
+	req := operationalWebhookEndpoint.api.WebhookEndpointAPI.ListOperationalWebhookEndpoints(
+		ctx,
+	)
+
 	if options != nil {
-		if options.Iterator != nil {
-			req = req.Iterator(*options.Iterator)
-		}
 		if options.Limit != nil {
 			req = req.Limit(*options.Limit)
+		}
+		if options.Iterator != nil {
+			req = req.Iterator(*options.Iterator)
 		}
 		if options.Order != nil {
 			req = req.Order(*options.Order)
 		}
 	}
+
 	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
+
 	return ret, nil
 }
 
-func (e *OperationalWebhookEndpoint) Create(
+// Create an operational webhook endpoint.
+func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Create(
 	ctx context.Context,
-	endpointIn *OperationalWebhookEndpointIn,
+	operationalWebhookEndpointIn *OperationalWebhookEndpointIn,
 ) (*OperationalWebhookEndpointOut, error) {
-	return e.CreateWithOptions(ctx, endpointIn, nil)
+	return operationalWebhookEndpoint.CreateWithOptions(
+		ctx,
+		operationalWebhookEndpointIn,
+		nil,
+	)
 }
 
-func (e *OperationalWebhookEndpoint) CreateWithOptions(
+// Create an operational webhook endpoint.
+func (operationalWebhookEndpoint *OperationalWebhookEndpoint) CreateWithOptions(
 	ctx context.Context,
-	endpointIn *OperationalWebhookEndpointIn,
+	operationalWebhookEndpointIn *OperationalWebhookEndpointIn,
 	options *PostOptions,
 ) (*OperationalWebhookEndpointOut, error) {
-	req := e.api.WebhookEndpointAPI.CreateOperationalWebhookEndpoint(ctx)
-	req = req.OperationalWebhookEndpointIn(*endpointIn)
+	req := operationalWebhookEndpoint.api.WebhookEndpointAPI.CreateOperationalWebhookEndpoint(
+		ctx,
+	).OperationalWebhookEndpointIn(*operationalWebhookEndpointIn)
+
 	if options != nil {
 		if options.IdempotencyKey != nil {
 			req = req.IdempotencyKey(*options.IdempotencyKey)
 		}
 	}
+
 	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
+
 	return ret, nil
 }
 
-func (e *OperationalWebhookEndpoint) Get(
+// Get an operational webhook endpoint.
+func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Get(
 	ctx context.Context,
 	endpointId string,
 ) (*OperationalWebhookEndpointOut, error) {
-	req := e.api.WebhookEndpointAPI.GetOperationalWebhookEndpoint(ctx, endpointId)
+	req := operationalWebhookEndpoint.api.WebhookEndpointAPI.GetOperationalWebhookEndpoint(
+		ctx,
+		endpointId,
+	)
+
 	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
+
 	return ret, nil
 }
 
-func (e *OperationalWebhookEndpoint) Update(
+// Update an operational webhook endpoint.
+func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Update(
 	ctx context.Context,
 	endpointId string,
-	endpointUpdate *OperationalWebhookEndpointUpdate,
+	operationalWebhookEndpointUpdate *OperationalWebhookEndpointUpdate,
 ) (*OperationalWebhookEndpointOut, error) {
-	req := e.api.WebhookEndpointAPI.UpdateOperationalWebhookEndpoint(ctx, endpointId)
-	req = req.OperationalWebhookEndpointUpdate(*endpointUpdate)
+	req := operationalWebhookEndpoint.api.WebhookEndpointAPI.UpdateOperationalWebhookEndpoint(
+		ctx,
+		endpointId,
+	).OperationalWebhookEndpointUpdate(*operationalWebhookEndpointUpdate)
+
 	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
+
 	return ret, nil
 }
 
-func (e *OperationalWebhookEndpoint) Delete(
+// Delete an operational webhook endpoint.
+func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Delete(
 	ctx context.Context,
 	endpointId string,
 ) error {
-	req := e.api.WebhookEndpointAPI.DeleteOperationalWebhookEndpoint(ctx, endpointId)
+	req := operationalWebhookEndpoint.api.WebhookEndpointAPI.DeleteOperationalWebhookEndpoint(
+		ctx,
+		endpointId,
+	)
+
 	res, err := req.Execute()
 	return wrapError(err, res)
 }

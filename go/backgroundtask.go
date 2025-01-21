@@ -1,3 +1,4 @@
+// this file is @generated (with minor manual changes)
 package svix
 
 import (
@@ -11,50 +12,67 @@ type BackgroundTask struct {
 }
 
 type BackgroundTaskListOptions struct {
+	// Filter the response based on the status.
+	Status *BackgroundTaskStatus
+	// Filter the response based on the type.
+	Task *BackgroundTaskType
+	// Limit the number of returned items
+	Limit *int32
+	// The iterator returned from a prior invocation
 	Iterator *string
-	Limit    *int32
-	Order    *Ordering
-	Status   *BackgroundTaskStatus
-	Task     *BackgroundTaskType
+	// The sorting order of the returned items
+	Order *Ordering
 }
 
-func (a *BackgroundTask) List(
+// List background tasks executed in the past 90 days.
+func (backgroundTask *BackgroundTask) List(
 	ctx context.Context,
 	options *BackgroundTaskListOptions,
 ) (*ListResponseBackgroundTaskOut, error) {
-	req := a.api.BackgroundTasksAPI.ListBackgroundTasks(ctx)
+	req := backgroundTask.api.BackgroundTasksAPI.ListBackgroundTasks(
+		ctx,
+	)
+
 	if options != nil {
-		if options.Iterator != nil {
-			req = req.Iterator(*options.Iterator)
-		}
-		if options.Limit != nil {
-			req = req.Limit(*options.Limit)
-		}
-		if options.Order != nil {
-			req = req.Order(*options.Order)
-		}
 		if options.Status != nil {
 			req = req.Status(*options.Status)
 		}
 		if options.Task != nil {
 			req = req.Task(*options.Task)
 		}
+		if options.Limit != nil {
+			req = req.Limit(*options.Limit)
+		}
+		if options.Iterator != nil {
+			req = req.Iterator(*options.Iterator)
+		}
+		if options.Order != nil {
+			req = req.Order(*options.Order)
+		}
 	}
+
 	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
+
 	return ret, nil
 }
 
-func (a *BackgroundTask) Get(
+// Get a background task by ID.
+func (backgroundTask *BackgroundTask) Get(
 	ctx context.Context,
 	taskId string,
 ) (*BackgroundTaskOut, error) {
-	req := a.api.BackgroundTasksAPI.GetBackgroundTask(ctx, taskId)
+	req := backgroundTask.api.BackgroundTasksAPI.GetBackgroundTask(
+		ctx,
+		taskId,
+	)
+
 	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
+
 	return ret, nil
 }
