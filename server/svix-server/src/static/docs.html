@@ -1,26 +1,32 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<title>Svix API - ReDoc</title>
-<!-- needed for adaptive design -->
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Svix API - ReDoc</title>
+  <!-- needed for adaptive design -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700" rel="stylesheet">
 
-<link rel="shortcut icon" href="https://www.svix.com/favicon.ico">
-<!--
-ReDoc doesn't change outer page styles
--->
-<style>
-  body {
-	margin: 0;
-	padding: 0;
-  }
-</style>
+  <link rel="shortcut icon" href="https://www.svix.com/favicon.ico">
+  <!-- ReDoc doesn't change outer page styles -->
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    redoc ul[role="menu"] {
+      /* fix last item being hidden behind the redoc banner on smaller viewports */
+      padding-bottom: 32px;
+    }
+  </style>
 </head>
+
 <body>
-<redoc spec-url="/api/v1/openapi.json"></redoc>
-<script src="https://cdn.jsdelivr.net/npm/redoc@latest/bundles/redoc.standalone.js"> </script>
+  <redoc spec-url="/api/v1/openapi.json"></redoc>
+  <script src="https://cdn.jsdelivr.net/npm/redoc@latest/bundles/redoc.standalone.js"> </script>
 </body>
+
 </html>
