@@ -1,3 +1,4 @@
+// this file is @generated (with minor manual changes)
 package svix
 
 import (
@@ -444,22 +445,22 @@ func (endpoint *Endpoint) SendExampleWithOptions(
 }
 
 // Get basic statistics for the endpoint.
-func (e *Endpoint) GetStats(
+func (endpoint *Endpoint) GetStats(
 	ctx context.Context,
 	appId string,
 	endpointId string,
 ) (*EndpointStats, error) {
-	return e.GetStatsWithOptions(ctx, appId, endpointId, EndpointStatsOptions{})
+	return endpoint.GetStatsWithOptions(ctx, appId, endpointId, EndpointStatsOptions{})
 }
 
 // Get basic statistics for the endpoint.
-func (e *Endpoint) GetStatsWithOptions(
+func (endpoint *Endpoint) GetStatsWithOptions(
 	ctx context.Context,
 	appId string,
 	endpointId string,
 	options EndpointStatsOptions,
 ) (*EndpointStats, error) {
-	req := e.api.EndpointAPI.V1EndpointGetStats(
+	req := endpoint.api.EndpointAPI.V1EndpointGetStats(
 		ctx,
 		appId,
 		endpointId,

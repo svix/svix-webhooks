@@ -1,3 +1,4 @@
+// this file is @generated (with some manual changes)
 package svix
 
 import (
