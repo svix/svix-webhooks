@@ -125,7 +125,6 @@ class MessageAsync(ApiBase):
         by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
         set the `before` or `after` parameter as appropriate.
         """
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="get",
             path="/api/v1/app/{app_id}/msg",
@@ -152,7 +151,6 @@ class MessageAsync(ApiBase):
         Messages can also have `channels`, which similar to event types let endpoints filter by them. Unlike event types, messages can have multiple channels, and channels don't imply a specific message content or schema.
 
         The `payload` property is the webhook's body (the actual webhook message). Svix supports payload sizes of up to ~350kb, though it's generally a good idea to keep webhook payloads small, probably no larger than 40kb."""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="post",
             path="/api/v1/app/{app_id}/msg",
@@ -171,7 +169,6 @@ class MessageAsync(ApiBase):
         self, app_id: str, msg_id: str, options: MessageGetOptions = MessageGetOptions()
     ) -> MessageOut:
         """Get a message by its ID or eventID."""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="get",
             path="/api/v1/app/{app_id}/msg/{msg_id}",
@@ -189,8 +186,7 @@ class MessageAsync(ApiBase):
 
         Useful in cases when a message was accidentally sent with sensitive content.
         The message can't be replayed or resent once its payload has been deleted or expired."""
-        # ruff: noqa: F841
-        response = await self._request_asyncio(
+        await self._request_asyncio(
             method="delete",
             path="/api/v1/app/{app_id}/msg/{msg_id}/content",
             path_params={
@@ -214,7 +210,6 @@ class Message(ApiBase):
         by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
         set the `before` or `after` parameter as appropriate.
         """
-        # ruff: noqa: F841
         response = self._request_sync(
             method="get",
             path="/api/v1/app/{app_id}/msg",
@@ -241,7 +236,6 @@ class Message(ApiBase):
         Messages can also have `channels`, which similar to event types let endpoints filter by them. Unlike event types, messages can have multiple channels, and channels don't imply a specific message content or schema.
 
         The `payload` property is the webhook's body (the actual webhook message). Svix supports payload sizes of up to ~350kb, though it's generally a good idea to keep webhook payloads small, probably no larger than 40kb."""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="post",
             path="/api/v1/app/{app_id}/msg",
@@ -260,7 +254,6 @@ class Message(ApiBase):
         self, app_id: str, msg_id: str, options: MessageGetOptions = MessageGetOptions()
     ) -> MessageOut:
         """Get a message by its ID or eventID."""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="get",
             path="/api/v1/app/{app_id}/msg/{msg_id}",
@@ -278,8 +271,7 @@ class Message(ApiBase):
 
         Useful in cases when a message was accidentally sent with sensitive content.
         The message can't be replayed or resent once its payload has been deleted or expired."""
-        # ruff: noqa: F841
-        response = self._request_sync(
+        self._request_sync(
             method="delete",
             path="/api/v1/app/{app_id}/msg/{msg_id}/content",
             path_params={

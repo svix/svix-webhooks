@@ -69,7 +69,6 @@ class AuthenticationAsync(ApiBase):
         options: AuthenticationAppPortalAccessOptions = AuthenticationAppPortalAccessOptions(),
     ) -> AppPortalAccessOut:
         """Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal."""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="post",
             path="/api/v1/auth/app-portal-access/{app_id}",
@@ -89,8 +88,7 @@ class AuthenticationAsync(ApiBase):
         options: AuthenticationExpireAllOptions = AuthenticationExpireAllOptions(),
     ) -> None:
         """Expire all of the tokens associated with a specific application."""
-        # ruff: noqa: F841
-        response = await self._request_asyncio(
+        await self._request_asyncio(
             method="post",
             path="/api/v1/auth/app/{app_id}/expire-all",
             path_params={
@@ -110,7 +108,6 @@ class AuthenticationAsync(ApiBase):
         """DEPRECATED: Please use `app-portal-access` instead.
 
         Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal."""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="post",
             path="/api/v1/auth/dashboard-access/{app_id}",
@@ -128,8 +125,7 @@ class AuthenticationAsync(ApiBase):
         """Logout an app token.
 
         Trying to log out other tokens will fail."""
-        # ruff: noqa: F841
-        response = await self._request_asyncio(
+        await self._request_asyncio(
             method="post",
             path="/api/v1/auth/logout",
             path_params={},
@@ -146,7 +142,6 @@ class Authentication(ApiBase):
         options: AuthenticationAppPortalAccessOptions = AuthenticationAppPortalAccessOptions(),
     ) -> AppPortalAccessOut:
         """Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal."""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="post",
             path="/api/v1/auth/app-portal-access/{app_id}",
@@ -166,8 +161,7 @@ class Authentication(ApiBase):
         options: AuthenticationExpireAllOptions = AuthenticationExpireAllOptions(),
     ) -> None:
         """Expire all of the tokens associated with a specific application."""
-        # ruff: noqa: F841
-        response = self._request_sync(
+        self._request_sync(
             method="post",
             path="/api/v1/auth/app/{app_id}/expire-all",
             path_params={
@@ -187,7 +181,6 @@ class Authentication(ApiBase):
         """DEPRECATED: Please use `app-portal-access` instead.
 
         Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal."""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="post",
             path="/api/v1/auth/dashboard-access/{app_id}",
@@ -205,8 +198,7 @@ class Authentication(ApiBase):
         """Logout an app token.
 
         Trying to log out other tokens will fail."""
-        # ruff: noqa: F841
-        response = self._request_sync(
+        self._request_sync(
             method="post",
             path="/api/v1/auth/logout",
             path_params={},

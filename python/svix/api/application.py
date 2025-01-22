@@ -60,7 +60,6 @@ class ApplicationAsync(ApiBase):
         self, options: ApplicationListOptions = ApplicationListOptions()
     ) -> ListResponseApplicationOut:
         """List of all the organization's applications."""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="get",
             path="/api/v1/app",
@@ -76,7 +75,6 @@ class ApplicationAsync(ApiBase):
         options: ApplicationCreateOptions = ApplicationCreateOptions(),
     ) -> ApplicationOut:
         """Create a new application."""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="post",
             path="/api/v1/app",
@@ -89,7 +87,6 @@ class ApplicationAsync(ApiBase):
 
     async def get(self, app_id: str) -> ApplicationOut:
         """Get an application."""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="get",
             path="/api/v1/app/{app_id}",
@@ -118,7 +115,6 @@ class ApplicationAsync(ApiBase):
         self, app_id: str, application_in: ApplicationIn
     ) -> ApplicationOut:
         """Update an application."""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="put",
             path="/api/v1/app/{app_id}",
@@ -131,8 +127,7 @@ class ApplicationAsync(ApiBase):
 
     async def delete(self, app_id: str) -> None:
         """Delete an application."""
-        # ruff: noqa: F841
-        response = await self._request_asyncio(
+        await self._request_asyncio(
             method="delete",
             path="/api/v1/app/{app_id}",
             path_params={
@@ -144,7 +139,6 @@ class ApplicationAsync(ApiBase):
         self, app_id: str, application_patch: ApplicationPatch
     ) -> ApplicationOut:
         """Partially update an application."""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="patch",
             path="/api/v1/app/{app_id}",
@@ -161,7 +155,6 @@ class Application(ApiBase):
         self, options: ApplicationListOptions = ApplicationListOptions()
     ) -> ListResponseApplicationOut:
         """List of all the organization's applications."""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="get",
             path="/api/v1/app",
@@ -177,7 +170,6 @@ class Application(ApiBase):
         options: ApplicationCreateOptions = ApplicationCreateOptions(),
     ) -> ApplicationOut:
         """Create a new application."""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="post",
             path="/api/v1/app",
@@ -190,7 +182,6 @@ class Application(ApiBase):
 
     def get(self, app_id: str) -> ApplicationOut:
         """Get an application."""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="get",
             path="/api/v1/app/{app_id}",
@@ -218,7 +209,6 @@ class Application(ApiBase):
 
     def update(self, app_id: str, application_in: ApplicationIn) -> ApplicationOut:
         """Update an application."""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="put",
             path="/api/v1/app/{app_id}",
@@ -231,8 +221,7 @@ class Application(ApiBase):
 
     def delete(self, app_id: str) -> None:
         """Delete an application."""
-        # ruff: noqa: F841
-        response = self._request_sync(
+        self._request_sync(
             method="delete",
             path="/api/v1/app/{app_id}",
             path_params={
@@ -242,7 +231,6 @@ class Application(ApiBase):
 
     def patch(self, app_id: str, application_patch: ApplicationPatch) -> ApplicationOut:
         """Partially update an application."""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="patch",
             path="/api/v1/app/{app_id}",

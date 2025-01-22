@@ -63,7 +63,6 @@ class IntegrationAsync(ApiBase):
         self, app_id: str, options: IntegrationListOptions = IntegrationListOptions()
     ) -> ListResponseIntegrationOut:
         """List the application's integrations."""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="get",
             path="/api/v1/app/{app_id}/integration",
@@ -82,7 +81,6 @@ class IntegrationAsync(ApiBase):
         options: IntegrationCreateOptions = IntegrationCreateOptions(),
     ) -> IntegrationOut:
         """Create an integration."""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="post",
             path="/api/v1/app/{app_id}/integration",
@@ -97,7 +95,6 @@ class IntegrationAsync(ApiBase):
 
     async def get(self, app_id: str, integ_id: str) -> IntegrationOut:
         """Get an integration."""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="get",
             path="/api/v1/app/{app_id}/integration/{integ_id}",
@@ -112,7 +109,6 @@ class IntegrationAsync(ApiBase):
         self, app_id: str, integ_id: str, integration_update: IntegrationUpdate
     ) -> IntegrationOut:
         """Update an integration."""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="put",
             path="/api/v1/app/{app_id}/integration/{integ_id}",
@@ -126,8 +122,7 @@ class IntegrationAsync(ApiBase):
 
     async def delete(self, app_id: str, integ_id: str) -> None:
         """Delete an integration."""
-        # ruff: noqa: F841
-        response = await self._request_asyncio(
+        await self._request_asyncio(
             method="delete",
             path="/api/v1/app/{app_id}/integration/{integ_id}",
             path_params={
@@ -139,7 +134,6 @@ class IntegrationAsync(ApiBase):
     @deprecated
     async def get_key(self, app_id: str, integ_id: str) -> IntegrationKeyOut:
         """Get an integration's key."""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="get",
             path="/api/v1/app/{app_id}/integration/{integ_id}/key",
@@ -157,7 +151,6 @@ class IntegrationAsync(ApiBase):
         options: IntegrationRotateKeyOptions = IntegrationRotateKeyOptions(),
     ) -> IntegrationKeyOut:
         """Rotate the integration's key. The previous key will be immediately revoked."""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="post",
             path="/api/v1/app/{app_id}/integration/{integ_id}/key/rotate",
@@ -176,7 +169,6 @@ class Integration(ApiBase):
         self, app_id: str, options: IntegrationListOptions = IntegrationListOptions()
     ) -> ListResponseIntegrationOut:
         """List the application's integrations."""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="get",
             path="/api/v1/app/{app_id}/integration",
@@ -195,7 +187,6 @@ class Integration(ApiBase):
         options: IntegrationCreateOptions = IntegrationCreateOptions(),
     ) -> IntegrationOut:
         """Create an integration."""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="post",
             path="/api/v1/app/{app_id}/integration",
@@ -210,7 +201,6 @@ class Integration(ApiBase):
 
     def get(self, app_id: str, integ_id: str) -> IntegrationOut:
         """Get an integration."""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="get",
             path="/api/v1/app/{app_id}/integration/{integ_id}",
@@ -225,7 +215,6 @@ class Integration(ApiBase):
         self, app_id: str, integ_id: str, integration_update: IntegrationUpdate
     ) -> IntegrationOut:
         """Update an integration."""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="put",
             path="/api/v1/app/{app_id}/integration/{integ_id}",
@@ -239,8 +228,7 @@ class Integration(ApiBase):
 
     def delete(self, app_id: str, integ_id: str) -> None:
         """Delete an integration."""
-        # ruff: noqa: F841
-        response = self._request_sync(
+        self._request_sync(
             method="delete",
             path="/api/v1/app/{app_id}/integration/{integ_id}",
             path_params={
@@ -252,7 +240,6 @@ class Integration(ApiBase):
     @deprecated
     def get_key(self, app_id: str, integ_id: str) -> IntegrationKeyOut:
         """Get an integration's key."""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="get",
             path="/api/v1/app/{app_id}/integration/{integ_id}/key",
@@ -270,7 +257,6 @@ class Integration(ApiBase):
         options: IntegrationRotateKeyOptions = IntegrationRotateKeyOptions(),
     ) -> IntegrationKeyOut:
         """Rotate the integration's key. The previous key will be immediately revoked."""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="post",
             path="/api/v1/app/{app_id}/integration/{integ_id}/key/rotate",

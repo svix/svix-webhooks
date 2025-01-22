@@ -32,7 +32,6 @@ class StatisticsAsync(ApiBase):
 
         Note that this endpoint is asynchronous. You will need to poll the `Get Background Task` endpoint to
         retrieve the results of the operation."""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="post",
             path="/api/v1/stats/usage/app",
@@ -48,7 +47,6 @@ class StatisticsAsync(ApiBase):
 
         Note that this endpoint is asynchronous. You will need to poll the `Get Background Task` endpoint to
         retrieve the results of the operation."""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="put", path="/api/v1/stats/usage/event-types", path_params={}
         )
@@ -65,7 +63,6 @@ class Statistics(ApiBase):
 
         Note that this endpoint is asynchronous. You will need to poll the `Get Background Task` endpoint to
         retrieve the results of the operation."""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="post",
             path="/api/v1/stats/usage/app",
@@ -81,7 +78,6 @@ class Statistics(ApiBase):
 
         Note that this endpoint is asynchronous. You will need to poll the `Get Background Task` endpoint to
         retrieve the results of the operation."""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="put", path="/api/v1/stats/usage/event-types", path_params={}
         )

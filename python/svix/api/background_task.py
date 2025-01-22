@@ -40,7 +40,6 @@ class BackgroundTaskAsync(ApiBase):
         self, options: BackgroundTaskListOptions = BackgroundTaskListOptions()
     ) -> ListResponseBackgroundTaskOut:
         """List background tasks executed in the past 90 days."""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="get",
             path="/api/v1/background-task",
@@ -52,7 +51,6 @@ class BackgroundTaskAsync(ApiBase):
 
     async def get(self, task_id: str) -> BackgroundTaskOut:
         """Get a background task by ID."""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="get",
             path="/api/v1/background-task/{task_id}",
@@ -68,7 +66,6 @@ class BackgroundTask(ApiBase):
         self, options: BackgroundTaskListOptions = BackgroundTaskListOptions()
     ) -> ListResponseBackgroundTaskOut:
         """List background tasks executed in the past 90 days."""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="get",
             path="/api/v1/background-task",
@@ -80,7 +77,6 @@ class BackgroundTask(ApiBase):
 
     def get(self, task_id: str) -> BackgroundTaskOut:
         """Get a background task by ID."""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="get",
             path="/api/v1/background-task/{task_id}",

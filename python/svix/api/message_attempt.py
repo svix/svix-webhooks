@@ -261,7 +261,6 @@ class MessageAttemptAsync(ApiBase):
         by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
         set the `before` or `after` parameter as appropriate.
         """
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="get",
             path="/api/v1/app/{app_id}/attempt/endpoint/{endpoint_id}",
@@ -286,7 +285,6 @@ class MessageAttemptAsync(ApiBase):
         relative to now or, if an iterator is provided, 90 days before/after the time indicated
         by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
         set the `before` or `after` parameter as appropriate."""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="get",
             path="/api/v1/app/{app_id}/attempt/msg/{msg_id}",
@@ -314,7 +312,6 @@ class MessageAttemptAsync(ApiBase):
         by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
         set the `before` or `after` parameter as appropriate.
         """
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="get",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/msg",
@@ -342,7 +339,6 @@ class MessageAttemptAsync(ApiBase):
         set the `before` or `after` parameter as appropriate.
 
         `msg_id`: Use a message id or a message `eventId`"""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="get",
             path="/api/v1/app/{app_id}/msg/{msg_id}/attempt",
@@ -357,7 +353,6 @@ class MessageAttemptAsync(ApiBase):
 
     async def get(self, app_id: str, msg_id: str, attempt_id: str) -> MessageAttemptOut:
         """`msg_id`: Use a message id or a message `eventId`"""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="get",
             path="/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}",
@@ -374,8 +369,7 @@ class MessageAttemptAsync(ApiBase):
 
         Useful when an endpoint accidentally returned sensitive content.
         The message can't be replayed or resent once its payload has been deleted or expired."""
-        # ruff: noqa: F841
-        response = await self._request_asyncio(
+        await self._request_asyncio(
             method="delete",
             path="/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/content",
             path_params={
@@ -395,7 +389,6 @@ class MessageAttemptAsync(ApiBase):
 
         Additionally includes metadata about the latest message attempt.
         By default, endpoints are listed in ascending order by ID."""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="get",
             path="/api/v1/app/{app_id}/msg/{msg_id}/endpoint",
@@ -429,7 +422,6 @@ class MessageAttemptAsync(ApiBase):
         by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
         set the `before` or `after` parameter as appropriate.
         """
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="get",
             path="/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/attempt",
@@ -451,8 +443,7 @@ class MessageAttemptAsync(ApiBase):
         options: MessageAttemptResendOptions = MessageAttemptResendOptions(),
     ) -> None:
         """Resend a message to the specified endpoint."""
-        # ruff: noqa: F841
-        response = await self._request_asyncio(
+        await self._request_asyncio(
             method="post",
             path="/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/resend",
             path_params={
@@ -479,7 +470,6 @@ class MessageAttempt(ApiBase):
         by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
         set the `before` or `after` parameter as appropriate.
         """
-        # ruff: noqa: F841
         response = self._request_sync(
             method="get",
             path="/api/v1/app/{app_id}/attempt/endpoint/{endpoint_id}",
@@ -504,7 +494,6 @@ class MessageAttempt(ApiBase):
         relative to now or, if an iterator is provided, 90 days before/after the time indicated
         by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
         set the `before` or `after` parameter as appropriate."""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="get",
             path="/api/v1/app/{app_id}/attempt/msg/{msg_id}",
@@ -532,7 +521,6 @@ class MessageAttempt(ApiBase):
         by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
         set the `before` or `after` parameter as appropriate.
         """
-        # ruff: noqa: F841
         response = self._request_sync(
             method="get",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/msg",
@@ -560,7 +548,6 @@ class MessageAttempt(ApiBase):
         set the `before` or `after` parameter as appropriate.
 
         `msg_id`: Use a message id or a message `eventId`"""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="get",
             path="/api/v1/app/{app_id}/msg/{msg_id}/attempt",
@@ -575,7 +562,6 @@ class MessageAttempt(ApiBase):
 
     def get(self, app_id: str, msg_id: str, attempt_id: str) -> MessageAttemptOut:
         """`msg_id`: Use a message id or a message `eventId`"""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="get",
             path="/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}",
@@ -592,8 +578,7 @@ class MessageAttempt(ApiBase):
 
         Useful when an endpoint accidentally returned sensitive content.
         The message can't be replayed or resent once its payload has been deleted or expired."""
-        # ruff: noqa: F841
-        response = self._request_sync(
+        self._request_sync(
             method="delete",
             path="/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/content",
             path_params={
@@ -613,7 +598,6 @@ class MessageAttempt(ApiBase):
 
         Additionally includes metadata about the latest message attempt.
         By default, endpoints are listed in ascending order by ID."""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="get",
             path="/api/v1/app/{app_id}/msg/{msg_id}/endpoint",
@@ -647,7 +631,6 @@ class MessageAttempt(ApiBase):
         by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
         set the `before` or `after` parameter as appropriate.
         """
-        # ruff: noqa: F841
         response = self._request_sync(
             method="get",
             path="/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/attempt",
@@ -669,8 +652,7 @@ class MessageAttempt(ApiBase):
         options: MessageAttemptResendOptions = MessageAttemptResendOptions(),
     ) -> None:
         """Resend a message to the specified endpoint."""
-        # ruff: noqa: F841
-        response = self._request_sync(
+        self._request_sync(
             method="post",
             path="/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/resend",
             path_params={

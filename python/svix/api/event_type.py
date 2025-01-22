@@ -86,7 +86,6 @@ class EventTypeAsync(ApiBase):
         self, options: EventTypeListOptions = EventTypeListOptions()
     ) -> ListResponseEventTypeOut:
         """Return the list of event types."""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="get",
             path="/api/v1/event-type",
@@ -106,7 +105,6 @@ class EventTypeAsync(ApiBase):
         Unarchiving an event type will allow endpoints to filter on it and messages to be sent with it.
         Endpoints filtering on the event type before archival will continue to filter on it.
         This operation does not preserve the description and schemas."""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="post",
             path="/api/v1/event-type",
@@ -127,7 +125,6 @@ class EventTypeAsync(ApiBase):
 
         The importer will convert all webhooks found in the either the `webhooks` or `x-webhooks`
         top-level."""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="post",
             path="/api/v1/event-type/import/openapi",
@@ -140,7 +137,6 @@ class EventTypeAsync(ApiBase):
 
     async def get(self, event_type_name: str) -> EventTypeOut:
         """Get an event type."""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="get",
             path="/api/v1/event-type/{event_type_name}",
@@ -154,7 +150,6 @@ class EventTypeAsync(ApiBase):
         self, event_type_name: str, event_type_update: EventTypeUpdate
     ) -> EventTypeOut:
         """Update an event type."""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="put",
             path="/api/v1/event-type/{event_type_name}",
@@ -176,8 +171,7 @@ class EventTypeAsync(ApiBase):
         However, new messages can not be sent with it and endpoints can not filter on it.
         An event type can be unarchived with the
         [create operation](#operation/create_event_type_api_v1_event_type__post)."""
-        # ruff: noqa: F841
-        response = await self._request_asyncio(
+        await self._request_asyncio(
             method="delete",
             path="/api/v1/event-type/{event_type_name}",
             path_params={
@@ -191,7 +185,6 @@ class EventTypeAsync(ApiBase):
         self, event_type_name: str, event_type_patch: EventTypePatch
     ) -> EventTypeOut:
         """Partially update an event type."""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="patch",
             path="/api/v1/event-type/{event_type_name}",
@@ -208,7 +201,6 @@ class EventType(ApiBase):
         self, options: EventTypeListOptions = EventTypeListOptions()
     ) -> ListResponseEventTypeOut:
         """Return the list of event types."""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="get",
             path="/api/v1/event-type",
@@ -228,7 +220,6 @@ class EventType(ApiBase):
         Unarchiving an event type will allow endpoints to filter on it and messages to be sent with it.
         Endpoints filtering on the event type before archival will continue to filter on it.
         This operation does not preserve the description and schemas."""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="post",
             path="/api/v1/event-type",
@@ -249,7 +240,6 @@ class EventType(ApiBase):
 
         The importer will convert all webhooks found in the either the `webhooks` or `x-webhooks`
         top-level."""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="post",
             path="/api/v1/event-type/import/openapi",
@@ -262,7 +252,6 @@ class EventType(ApiBase):
 
     def get(self, event_type_name: str) -> EventTypeOut:
         """Get an event type."""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="get",
             path="/api/v1/event-type/{event_type_name}",
@@ -276,7 +265,6 @@ class EventType(ApiBase):
         self, event_type_name: str, event_type_update: EventTypeUpdate
     ) -> EventTypeOut:
         """Update an event type."""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="put",
             path="/api/v1/event-type/{event_type_name}",
@@ -298,8 +286,7 @@ class EventType(ApiBase):
         However, new messages can not be sent with it and endpoints can not filter on it.
         An event type can be unarchived with the
         [create operation](#operation/create_event_type_api_v1_event_type__post)."""
-        # ruff: noqa: F841
-        response = self._request_sync(
+        self._request_sync(
             method="delete",
             path="/api/v1/event-type/{event_type_name}",
             path_params={
@@ -313,7 +300,6 @@ class EventType(ApiBase):
         self, event_type_name: str, event_type_patch: EventTypePatch
     ) -> EventTypeOut:
         """Partially update an event type."""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="patch",
             path="/api/v1/event-type/{event_type_name}",

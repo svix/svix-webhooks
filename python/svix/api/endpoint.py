@@ -136,7 +136,6 @@ class EndpointAsync(ApiBase):
         self, app_id: str, options: EndpointListOptions = EndpointListOptions()
     ) -> ListResponseEndpointOut:
         """List the application's endpoints."""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="get",
             path="/api/v1/app/{app_id}/endpoint",
@@ -157,7 +156,6 @@ class EndpointAsync(ApiBase):
         """Create a new endpoint for the application.
 
         When `secret` is `null` the secret is automatically generated (recommended)."""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="post",
             path="/api/v1/app/{app_id}/endpoint",
@@ -172,7 +170,6 @@ class EndpointAsync(ApiBase):
 
     async def get(self, app_id: str, endpoint_id: str) -> EndpointOut:
         """Get an endpoint."""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="get",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}",
@@ -187,7 +184,6 @@ class EndpointAsync(ApiBase):
         self, app_id: str, endpoint_id: str, endpoint_update: EndpointUpdate
     ) -> EndpointOut:
         """Update an endpoint."""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="put",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}",
@@ -201,8 +197,7 @@ class EndpointAsync(ApiBase):
 
     async def delete(self, app_id: str, endpoint_id: str) -> None:
         """Delete an endpoint."""
-        # ruff: noqa: F841
-        response = await self._request_asyncio(
+        await self._request_asyncio(
             method="delete",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}",
             path_params={
@@ -215,7 +210,6 @@ class EndpointAsync(ApiBase):
         self, app_id: str, endpoint_id: str, endpoint_patch: EndpointPatch
     ) -> EndpointOut:
         """Partially update an endpoint."""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="patch",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}",
@@ -229,7 +223,6 @@ class EndpointAsync(ApiBase):
 
     async def get_headers(self, app_id: str, endpoint_id: str) -> EndpointHeadersOut:
         """Get the additional headers to be sent with the webhook."""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="get",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers",
@@ -244,8 +237,7 @@ class EndpointAsync(ApiBase):
         self, app_id: str, endpoint_id: str, endpoint_headers_in: EndpointHeadersIn
     ) -> None:
         """Set the additional headers to be sent with the webhook."""
-        # ruff: noqa: F841
-        response = await self._request_asyncio(
+        await self._request_asyncio(
             method="put",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers",
             path_params={
@@ -262,8 +254,7 @@ class EndpointAsync(ApiBase):
         endpoint_headers_patch_in: EndpointHeadersPatchIn,
     ) -> None:
         """Partially set the additional headers to be sent with the webhook."""
-        # ruff: noqa: F841
-        response = await self._request_asyncio(
+        await self._request_asyncio(
             method="patch",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers",
             path_params={
@@ -283,7 +274,6 @@ class EndpointAsync(ApiBase):
         """Resend all failed messages since a given time.
 
         Messages that were sent successfully, even if failed initially, are not resent."""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="post",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/recover",
@@ -308,7 +298,6 @@ class EndpointAsync(ApiBase):
 
         Only messages that were created after `since` will be sent.
         Messages that were previously sent to the endpoint are not resent."""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="post",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/replay-missing",
@@ -327,7 +316,6 @@ class EndpointAsync(ApiBase):
 
         This is used to verify the authenticity of the webhook.
         For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/)."""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="get",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret",
@@ -348,8 +336,7 @@ class EndpointAsync(ApiBase):
         """Rotates the endpoint's signing secret.
 
         The previous secret will remain valid for the next 24 hours."""
-        # ruff: noqa: F841
-        response = await self._request_asyncio(
+        await self._request_asyncio(
             method="post",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate",
             path_params={
@@ -369,7 +356,6 @@ class EndpointAsync(ApiBase):
         options: EndpointSendExampleOptions = EndpointSendExampleOptions(),
     ) -> MessageOut:
         """Send an example message for an event."""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="post",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/send-example",
@@ -390,7 +376,6 @@ class EndpointAsync(ApiBase):
         options: EndpointGetStatsOptions = EndpointGetStatsOptions(),
     ) -> EndpointStats:
         """Get basic statistics for the endpoint."""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="get",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/stats",
@@ -407,7 +392,6 @@ class EndpointAsync(ApiBase):
         self, app_id: str, endpoint_id: str
     ) -> EndpointTransformationOut:
         """Get the transformation code associated with this endpoint."""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="get",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
@@ -425,8 +409,7 @@ class EndpointAsync(ApiBase):
         endpoint_transformation_in: EndpointTransformationIn,
     ) -> None:
         """Set or unset the transformation code associated with this endpoint."""
-        # ruff: noqa: F841
-        response = await self._request_asyncio(
+        await self._request_asyncio(
             method="patch",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
             path_params={
@@ -442,7 +425,6 @@ class Endpoint(ApiBase):
         self, app_id: str, options: EndpointListOptions = EndpointListOptions()
     ) -> ListResponseEndpointOut:
         """List the application's endpoints."""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="get",
             path="/api/v1/app/{app_id}/endpoint",
@@ -463,7 +445,6 @@ class Endpoint(ApiBase):
         """Create a new endpoint for the application.
 
         When `secret` is `null` the secret is automatically generated (recommended)."""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="post",
             path="/api/v1/app/{app_id}/endpoint",
@@ -478,7 +459,6 @@ class Endpoint(ApiBase):
 
     def get(self, app_id: str, endpoint_id: str) -> EndpointOut:
         """Get an endpoint."""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="get",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}",
@@ -493,7 +473,6 @@ class Endpoint(ApiBase):
         self, app_id: str, endpoint_id: str, endpoint_update: EndpointUpdate
     ) -> EndpointOut:
         """Update an endpoint."""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="put",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}",
@@ -507,8 +486,7 @@ class Endpoint(ApiBase):
 
     def delete(self, app_id: str, endpoint_id: str) -> None:
         """Delete an endpoint."""
-        # ruff: noqa: F841
-        response = self._request_sync(
+        self._request_sync(
             method="delete",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}",
             path_params={
@@ -521,7 +499,6 @@ class Endpoint(ApiBase):
         self, app_id: str, endpoint_id: str, endpoint_patch: EndpointPatch
     ) -> EndpointOut:
         """Partially update an endpoint."""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="patch",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}",
@@ -535,7 +512,6 @@ class Endpoint(ApiBase):
 
     def get_headers(self, app_id: str, endpoint_id: str) -> EndpointHeadersOut:
         """Get the additional headers to be sent with the webhook."""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="get",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers",
@@ -550,8 +526,7 @@ class Endpoint(ApiBase):
         self, app_id: str, endpoint_id: str, endpoint_headers_in: EndpointHeadersIn
     ) -> None:
         """Set the additional headers to be sent with the webhook."""
-        # ruff: noqa: F841
-        response = self._request_sync(
+        self._request_sync(
             method="put",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers",
             path_params={
@@ -568,8 +543,7 @@ class Endpoint(ApiBase):
         endpoint_headers_patch_in: EndpointHeadersPatchIn,
     ) -> None:
         """Partially set the additional headers to be sent with the webhook."""
-        # ruff: noqa: F841
-        response = self._request_sync(
+        self._request_sync(
             method="patch",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers",
             path_params={
@@ -589,7 +563,6 @@ class Endpoint(ApiBase):
         """Resend all failed messages since a given time.
 
         Messages that were sent successfully, even if failed initially, are not resent."""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="post",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/recover",
@@ -614,7 +587,6 @@ class Endpoint(ApiBase):
 
         Only messages that were created after `since` will be sent.
         Messages that were previously sent to the endpoint are not resent."""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="post",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/replay-missing",
@@ -633,7 +605,6 @@ class Endpoint(ApiBase):
 
         This is used to verify the authenticity of the webhook.
         For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/)."""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="get",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret",
@@ -654,8 +625,7 @@ class Endpoint(ApiBase):
         """Rotates the endpoint's signing secret.
 
         The previous secret will remain valid for the next 24 hours."""
-        # ruff: noqa: F841
-        response = self._request_sync(
+        self._request_sync(
             method="post",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate",
             path_params={
@@ -675,7 +645,6 @@ class Endpoint(ApiBase):
         options: EndpointSendExampleOptions = EndpointSendExampleOptions(),
     ) -> MessageOut:
         """Send an example message for an event."""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="post",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/send-example",
@@ -696,7 +665,6 @@ class Endpoint(ApiBase):
         options: EndpointGetStatsOptions = EndpointGetStatsOptions(),
     ) -> EndpointStats:
         """Get basic statistics for the endpoint."""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="get",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/stats",
@@ -713,7 +681,6 @@ class Endpoint(ApiBase):
         self, app_id: str, endpoint_id: str
     ) -> EndpointTransformationOut:
         """Get the transformation code associated with this endpoint."""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="get",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
@@ -731,8 +698,7 @@ class Endpoint(ApiBase):
         endpoint_transformation_in: EndpointTransformationIn,
     ) -> None:
         """Set or unset the transformation code associated with this endpoint."""
-        # ruff: noqa: F841
-        response = self._request_sync(
+        self._request_sync(
             method="patch",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
             path_params={
