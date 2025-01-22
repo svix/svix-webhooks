@@ -1,5 +1,3 @@
-use itertools::Itertools;
-
 use super::PostOptions;
 use crate::{error::Result, models::*, Configuration};
 
@@ -181,10 +179,7 @@ impl<'a> MessageAttempt<'a> {
         .with_optional_query_param("after", after)
         .with_optional_query_param("with_content", with_content)
         .with_optional_query_param("with_msg", with_msg)
-        .with_optional_query_param(
-            "event_types",
-            event_types.map(|types| types.into_iter().format(",")),
-        )
+        .with_optional_query_param("event_types", event_types)
         .execute(self.cfg)
         .await
     }
@@ -232,10 +227,7 @@ impl<'a> MessageAttempt<'a> {
         .with_optional_query_param("before", before)
         .with_optional_query_param("after", after)
         .with_optional_query_param("with_content", with_content)
-        .with_optional_query_param(
-            "event_types",
-            event_types.map(|types| types.into_iter().format(",")),
-        )
+        .with_optional_query_param("event_types", event_types)
         .execute(self.cfg)
         .await
     }
@@ -283,10 +275,7 @@ impl<'a> MessageAttempt<'a> {
         .with_optional_query_param("before", before)
         .with_optional_query_param("after", after)
         .with_optional_query_param("with_content", with_content)
-        .with_optional_query_param(
-            "event_types",
-            event_types.map(|types| types.into_iter().format(",")),
-        )
+        .with_optional_query_param("event_types", event_types)
         .execute(self.cfg)
         .await
     }
@@ -324,10 +313,7 @@ impl<'a> MessageAttempt<'a> {
         .with_optional_query_param("status", status)
         .with_optional_query_param("before", before)
         .with_optional_query_param("after", after)
-        .with_optional_query_param(
-            "event_types",
-            event_types.map(|types| types.into_iter().format(",")),
-        )
+        .with_optional_query_param("event_types", event_types)
         .with_path_param("app_id", app_id.to_string())
         .with_path_param("msg_id", msg_id.to_string())
         .with_path_param("endpoint_id", endpoint_id.to_string())
