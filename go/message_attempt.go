@@ -114,19 +114,33 @@ func (messageAttempt *MessageAttempt) ListByMsg(
 	msgId string,
 	options *MessageAttemptListOptions,
 ) (*ListResponseMessageAttemptOut, error) {
-	req := messageAttempt.api.MessageAttemptAPI.V1MessageAttemptListByMsg(ctx, appId, msgId)
+	req := messageAttempt.api.MessageAttemptAPI.V1MessageAttemptListByMsg(
+		ctx,
+		appId,
+		msgId,
+	)
+
 	if options != nil {
-		if options.Iterator != nil {
-			req = req.Iterator(*options.Iterator)
-		}
 		if options.Limit != nil {
 			req = req.Limit(*options.Limit)
+		}
+		if options.Iterator != nil {
+			req = req.Iterator(*options.Iterator)
 		}
 		if options.Status != nil {
 			req = req.Status(*options.Status)
 		}
-		if options.EventTypes != nil {
-			req = req.EventTypes(*options.EventTypes)
+		if options.StatusCodeClass != nil {
+			req = req.StatusCodeClass(*options.StatusCodeClass)
+		}
+		if options.Channel != nil {
+			req = req.Channel(*options.Channel)
+		}
+		if options.Tag != nil {
+			req = req.Tag(*options.Tag)
+		}
+		if options.EndpointId != nil {
+			req = req.EndpointId(*options.EndpointId)
 		}
 		if options.Before != nil {
 			req = req.Before(*options.Before)
@@ -134,20 +148,11 @@ func (messageAttempt *MessageAttempt) ListByMsg(
 		if options.After != nil {
 			req = req.After(*options.After)
 		}
-		if options.StatusCodeClass != nil {
-			req.StatusCodeClass(*options.StatusCodeClass)
-		}
-		if options.Channel != nil {
-			req = req.Channel(*options.Channel)
-		}
-		if options.EndpointId != nil {
-			req = req.EndpointId(*options.EndpointId)
-		}
 		if options.WithContent != nil {
 			req = req.WithContent(*options.WithContent)
 		}
-		if options.Tag != nil {
-			req = req.Tag(*options.Tag)
+		if options.EventTypes != nil {
+			req = req.EventTypes(*options.EventTypes)
 		}
 	}
 
@@ -270,7 +275,12 @@ func (messageAttempt *MessageAttempt) ListAttemptedDestinations(
 	msgId string,
 	options *MessageAttemptListOptions,
 ) (*ListResponseMessageEndpointOut, error) {
-	req := messageAttempt.api.MessageAttemptAPI.V1MessageAttemptListAttemptedDestinations(ctx, appId, msgId)
+	req := messageAttempt.api.MessageAttemptAPI.V1MessageAttemptListAttemptedDestinations(
+		ctx,
+		appId,
+		msgId,
+	)
+
 	if options != nil {
 		if options.Limit != nil {
 			req = req.Limit(*options.Limit)

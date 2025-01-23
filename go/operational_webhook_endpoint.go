@@ -136,11 +136,18 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Delete(
 	return wrapError(err, res)
 }
 
-func (e *OperationalWebhookEndpoint) GetSecret(
+// Get an operational webhook endpoint's signing secret.
+//
+// This is used to verify the authenticity of the webhook.
+// For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
+func (operationalWebhookEndpoint *OperationalWebhookEndpoint) GetSecret(
 	ctx context.Context,
 	endpointId string,
 ) (*OperationalWebhookEndpointSecretOut, error) {
-	req := e.api.WebhookEndpointAPI.GetOperationalWebhookEndpointSecret(ctx, endpointId)
+	req := operationalWebhookEndpoint.api.WebhookEndpointAPI.GetOperationalWebhookEndpointSecret(
+		ctx,
+		endpointId,
+	)
 	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
@@ -148,30 +155,42 @@ func (e *OperationalWebhookEndpoint) GetSecret(
 	return ret, nil
 }
 
-func (e *OperationalWebhookEndpoint) RotateSecret(
+// Rotates an operational webhook endpoint's signing secret.
+//
+// The previous secret will remain valid for the next 24 hours.
+func (operationalWebhookEndpoint *OperationalWebhookEndpoint) RotateSecret(
 	ctx context.Context,
 	endpointId string,
-	endpointSecretRotateIn *OperationalWebhookEndpointSecretIn,
+	operationalWebhookEndpointSecretIn *OperationalWebhookEndpointSecretIn,
 ) error {
-	return e.RotateSecretWithOptions(ctx, endpointId, endpointSecretRotateIn, nil)
+	return operationalWebhookEndpoint.RotateSecretWithOptions(
+		ctx,
+		endpointId,
+		operationalWebhookEndpointSecretIn,
+		nil,
+	)
 }
 
-func (e *OperationalWebhookEndpoint) RotateSecretWithOptions(
+// Rotates an operational webhook endpoint's signing secret.
+//
+// The previous secret will remain valid for the next 24 hours.
+func (operationalWebhookEndpoint *OperationalWebhookEndpoint) RotateSecretWithOptions(
 	ctx context.Context,
 	endpointId string,
-	endpointSecretRotateIn *OperationalWebhookEndpointSecretIn,
+	operationalWebhookEndpointSecretIn *OperationalWebhookEndpointSecretIn,
 	options *PostOptions,
 ) error {
-	req := e.api.WebhookEndpointAPI.RotateOperationalWebhookEndpointSecret(ctx, endpointId)
-	req = req.OperationalWebhookEndpointSecretIn(*endpointSecretRotateIn)
+	req := operationalWebhookEndpoint.api.WebhookEndpointAPI.RotateOperationalWebhookEndpointSecret(
+		ctx,
+		endpointId,
+	)
+	req = req.OperationalWebhookEndpointSecretIn(*operationalWebhookEndpointSecretIn)
 	if options != nil {
 		if options.IdempotencyKey != nil {
 			req = req.IdempotencyKey(*options.IdempotencyKey)
 		}
 	}
+
 	res, err := req.Execute()
-	if err != nil {
-		return wrapError(err, res)
-	}
-	return nil
+	return wrapError(err, res)
 }
