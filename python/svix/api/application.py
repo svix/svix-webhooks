@@ -2,13 +2,13 @@
 import typing as t
 from dataclasses import dataclass
 
-from ..internal.openapi_client import models
 from ..internal.openapi_client.models.application_in import ApplicationIn
 from ..internal.openapi_client.models.application_out import ApplicationOut
 from ..internal.openapi_client.models.application_patch import ApplicationPatch
 from ..internal.openapi_client.models.list_response_application_out import (
     ListResponseApplicationOut,
 )
+from ..internal.openapi_client.models.ordering import Ordering
 from .common import ApiBase, BaseOptions, serialize_params
 
 
@@ -18,7 +18,7 @@ class ApplicationListOptions(BaseOptions):
     """Limit the number of returned items"""
     iterator: t.Optional[str] = None
     """The iterator returned from a prior invocation"""
-    order: t.Optional[models.Ordering] = None
+    order: t.Optional[Ordering] = None
     """The sorting order of the returned items"""
 
     def _query_params(self) -> t.Dict[str, str]:
