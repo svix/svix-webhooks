@@ -13,22 +13,22 @@ from .common import ApiBase, BaseOptions, serialize_params
 
 @dataclass
 class MessageListOptions(BaseOptions):
-    # Limit the number of returned items
     limit: t.Optional[int] = None
-    # The iterator returned from a prior invocation
+    """Limit the number of returned items"""
     iterator: t.Optional[str] = None
-    # Filter response based on the channel.
+    """The iterator returned from a prior invocation"""
     channel: t.Optional[str] = None
-    # Only include items created before a certain date.
+    """Filter response based on the channel."""
     before: t.Optional[datetime] = None
-    # Only include items created after a certain date.
+    """Only include items created before a certain date."""
     after: t.Optional[datetime] = None
-    # When `true` message payloads are included in the response.
+    """Only include items created after a certain date."""
     with_content: t.Optional[bool] = None
-    # Filter messages matching the provided tag.
+    """When `true` message payloads are included in the response."""
     tag: t.Optional[str] = None
-    # Filter response based on the event type
+    """Filter messages matching the provided tag."""
     event_types: t.Optional[t.Set[str]] = None
+    """Filter response based on the event type"""
 
     def _query_params(self) -> t.Dict[str, str]:
         return serialize_params(
@@ -47,8 +47,8 @@ class MessageListOptions(BaseOptions):
 
 @dataclass
 class MessageCreateOptions(BaseOptions):
-    # When `true`, message payloads are included in the response.
-    with_content: t.Optional[bool] = False
+    with_content: t.Optional[bool] = None
+    """When `true`, message payloads are included in the response."""
     idempotency_key: t.Optional[str] = None
 
     def _query_params(self) -> t.Dict[str, str]:
@@ -68,8 +68,8 @@ class MessageCreateOptions(BaseOptions):
 
 @dataclass
 class MessageGetOptions(BaseOptions):
-    # When `true` message payloads are included in the response.
     with_content: t.Optional[bool] = None
+    """When `true` message payloads are included in the response."""
 
     def _query_params(self) -> t.Dict[str, str]:
         return serialize_params(

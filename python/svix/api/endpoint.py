@@ -38,12 +38,12 @@ from .common import ApiBase, BaseOptions, serialize_params
 
 @dataclass
 class EndpointListOptions(BaseOptions):
-    # Limit the number of returned items
     limit: t.Optional[int] = None
-    # The iterator returned from a prior invocation
+    """Limit the number of returned items"""
     iterator: t.Optional[str] = None
-    # The sorting order of the returned items
+    """The iterator returned from a prior invocation"""
     order: t.Optional[models.Ordering] = None
+    """The sorting order of the returned items"""
 
     def _query_params(self) -> t.Dict[str, str]:
         return serialize_params(
@@ -117,10 +117,10 @@ class EndpointSendExampleOptions(BaseOptions):
 
 @dataclass
 class EndpointGetStatsOptions(BaseOptions):
-    # Filter the range to data starting from this date.
     since: t.Optional[datetime] = None
-    # Filter the range to data ending by this date.
+    """Filter the range to data starting from this date."""
     until: t.Optional[datetime] = None
+    """Filter the range to data ending by this date."""
 
     def _query_params(self) -> t.Dict[str, str]:
         return serialize_params(

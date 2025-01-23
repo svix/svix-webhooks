@@ -3,7 +3,6 @@ import typing as t
 from dataclasses import dataclass
 from datetime import datetime
 
-
 from ..internal.openapi_client import models
 from ..internal.openapi_client.models.list_response_endpoint_message_out import (
     ListResponseEndpointMessageOut,
@@ -20,28 +19,28 @@ from .common import ApiBase, BaseOptions, serialize_params
 
 @dataclass
 class MessageAttemptListByEndpointOptions(BaseOptions):
-    # Limit the number of returned items
     limit: t.Optional[int] = None
-    # The iterator returned from a prior invocation
+    """Limit the number of returned items"""
     iterator: t.Optional[str] = None
-    # Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)
+    """The iterator returned from a prior invocation"""
     status: t.Optional[models.MessageStatus] = None
-    # Filter response based on the HTTP status code
+    """Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)"""
     status_code_class: t.Optional[models.StatusCodeClass] = None
-    # Filter response based on the channel
+    """Filter response based on the HTTP status code"""
     channel: t.Optional[str] = None
-    # Filter response based on the tag
+    """Filter response based on the channel"""
     tag: t.Optional[str] = None
-    # Only include items created before a certain date
+    """Filter response based on the tag"""
     before: t.Optional[datetime] = None
-    # Only include items created after a certain date
+    """Only include items created before a certain date"""
     after: t.Optional[datetime] = None
-    # When `true` attempt content is included in the response
+    """Only include items created after a certain date"""
     with_content: t.Optional[bool] = None
-    # When `true`, the message information is included in the response
+    """When `true` attempt content is included in the response"""
     with_msg: t.Optional[bool] = None
-    # Filter response based on the event type
+    """When `true`, the message information is included in the response"""
     event_types: t.Optional[t.Set[str]] = None
+    """Filter response based on the event type"""
 
     def _query_params(self) -> t.Dict[str, str]:
         return serialize_params(
@@ -63,28 +62,28 @@ class MessageAttemptListByEndpointOptions(BaseOptions):
 
 @dataclass
 class MessageAttemptListByMsgOptions(BaseOptions):
-    # Limit the number of returned items
     limit: t.Optional[int] = None
-    # The iterator returned from a prior invocation
+    """Limit the number of returned items"""
     iterator: t.Optional[str] = None
-    # Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)
+    """The iterator returned from a prior invocation"""
     status: t.Optional[models.MessageStatus] = None
-    # Filter response based on the HTTP status code
+    """Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)"""
     status_code_class: t.Optional[models.StatusCodeClass] = None
-    # Filter response based on the channel
+    """Filter response based on the HTTP status code"""
     channel: t.Optional[str] = None
-    # Filter response based on the tag
+    """Filter response based on the channel"""
     tag: t.Optional[str] = None
-    # Filter the attempts based on the attempted endpoint
+    """Filter response based on the tag"""
     endpoint_id: t.Optional[str] = None
-    # Only include items created before a certain date
+    """Filter the attempts based on the attempted endpoint"""
     before: t.Optional[datetime] = None
-    # Only include items created after a certain date
+    """Only include items created before a certain date"""
     after: t.Optional[datetime] = None
-    # When `true` attempt content is included in the response
+    """Only include items created after a certain date"""
     with_content: t.Optional[bool] = None
-    # Filter response based on the event type
+    """When `true` attempt content is included in the response"""
     event_types: t.Optional[t.Set[str]] = None
+    """Filter response based on the event type"""
 
     def _query_params(self) -> t.Dict[str, str]:
         return serialize_params(
@@ -106,24 +105,24 @@ class MessageAttemptListByMsgOptions(BaseOptions):
 
 @dataclass
 class MessageAttemptListAttemptedMessagesOptions(BaseOptions):
-    # Limit the number of returned items
     limit: t.Optional[int] = None
-    # The iterator returned from a prior invocation
+    """Limit the number of returned items"""
     iterator: t.Optional[str] = None
-    # Filter response based on the channel
+    """The iterator returned from a prior invocation"""
     channel: t.Optional[str] = None
-    # Filter response based on the message tags
+    """Filter response based on the channel"""
     tag: t.Optional[str] = None
-    # Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)
+    """Filter response based on the message tags"""
     status: t.Optional[models.MessageStatus] = None
-    # Only include items created before a certain date
+    """Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)"""
     before: t.Optional[datetime] = None
-    # Only include items created after a certain date
+    """Only include items created before a certain date"""
     after: t.Optional[datetime] = None
-    # When `true` message payloads are included in the response
+    """Only include items created after a certain date"""
     with_content: t.Optional[bool] = None
-    # Filter response based on the event type
+    """When `true` message payloads are included in the response"""
     event_types: t.Optional[t.Set[str]] = None
+    """Filter response based on the event type"""
 
     def _query_params(self) -> t.Dict[str, str]:
         return serialize_params(
@@ -143,10 +142,10 @@ class MessageAttemptListAttemptedMessagesOptions(BaseOptions):
 
 @dataclass
 class MessageAttemptListAttemptedDestinationsOptions(BaseOptions):
-    # Limit the number of returned items
     limit: t.Optional[int] = None
-    # The iterator returned from a prior invocation
+    """Limit the number of returned items"""
     iterator: t.Optional[str] = None
+    """The iterator returned from a prior invocation"""
 
     def _query_params(self) -> t.Dict[str, str]:
         return serialize_params(

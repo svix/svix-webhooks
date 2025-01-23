@@ -12,16 +12,16 @@ from .common import ApiBase, BaseOptions, serialize_params
 
 @dataclass
 class BackgroundTaskListOptions(BaseOptions):
-    # Filter the response based on the status.
     status: t.Optional[models.BackgroundTaskStatus] = None
-    # Filter the response based on the type.
+    """Filter the response based on the status."""
     task: t.Optional[models.BackgroundTaskType] = None
-    # Limit the number of returned items
+    """Filter the response based on the type."""
     limit: t.Optional[int] = None
-    # The iterator returned from a prior invocation
+    """Limit the number of returned items"""
     iterator: t.Optional[str] = None
-    # The sorting order of the returned items
+    """The iterator returned from a prior invocation"""
     order: t.Optional[models.Ordering] = None
+    """The sorting order of the returned items"""
 
     def _query_params(self) -> t.Dict[str, str]:
         return serialize_params(

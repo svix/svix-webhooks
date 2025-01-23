@@ -21,16 +21,16 @@ from .common import ApiBase, BaseOptions, serialize_params
 
 @dataclass
 class EventTypeListOptions(BaseOptions):
-    # Limit the number of returned items
     limit: t.Optional[int] = None
-    # The iterator returned from a prior invocation
+    """Limit the number of returned items"""
     iterator: t.Optional[str] = None
-    # The sorting order of the returned items
+    """The iterator returned from a prior invocation"""
     order: t.Optional[models.Ordering] = None
-    # When `true` archived (deleted but not expunged) items are included in the response.
+    """The sorting order of the returned items"""
     include_archived: t.Optional[bool] = None
-    # When `true` the full item (including the schema) is included in the response.
+    """When `true` archived (deleted but not expunged) items are included in the response."""
     with_content: t.Optional[bool] = None
+    """When `true` the full item (including the schema) is included in the response."""
 
     def _query_params(self) -> t.Dict[str, str]:
         return serialize_params(
@@ -70,8 +70,8 @@ class EventTypeImportOpenapiOptions(BaseOptions):
 
 @dataclass
 class EventTypeDeleteOptions(BaseOptions):
-    # By default event types are archived when "deleted". Passing this to `true` deletes them entirely.
     expunge: t.Optional[bool] = None
+    """By default event types are archived when "deleted". Passing this to `true` deletes them entirely."""
 
     def _query_params(self) -> t.Dict[str, str]:
         return serialize_params(
