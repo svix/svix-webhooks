@@ -73,7 +73,6 @@ class OperationalWebhookEndpointAsync(ApiBase):
         options: OperationalWebhookEndpointListOptions = OperationalWebhookEndpointListOptions(),
     ) -> ListResponseOperationalWebhookEndpointOut:
         """List operational webhook endpoints."""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="get",
             path="/api/v1/operational-webhook/endpoint",
@@ -89,7 +88,6 @@ class OperationalWebhookEndpointAsync(ApiBase):
         options: OperationalWebhookEndpointCreateOptions = OperationalWebhookEndpointCreateOptions(),
     ) -> OperationalWebhookEndpointOut:
         """Create an operational webhook endpoint."""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="post",
             path="/api/v1/operational-webhook/endpoint",
@@ -102,7 +100,6 @@ class OperationalWebhookEndpointAsync(ApiBase):
 
     async def get(self, endpoint_id: str) -> OperationalWebhookEndpointOut:
         """Get an operational webhook endpoint."""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="get",
             path="/api/v1/operational-webhook/endpoint/{endpoint_id}",
@@ -118,7 +115,6 @@ class OperationalWebhookEndpointAsync(ApiBase):
         operational_webhook_endpoint_update: OperationalWebhookEndpointUpdate,
     ) -> OperationalWebhookEndpointOut:
         """Update an operational webhook endpoint."""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="put",
             path="/api/v1/operational-webhook/endpoint/{endpoint_id}",
@@ -131,8 +127,7 @@ class OperationalWebhookEndpointAsync(ApiBase):
 
     async def delete(self, endpoint_id: str) -> None:
         """Delete an operational webhook endpoint."""
-        # ruff: noqa: F841
-        response = await self._request_asyncio(
+        await self._request_asyncio(
             method="delete",
             path="/api/v1/operational-webhook/endpoint/{endpoint_id}",
             path_params={
@@ -145,7 +140,6 @@ class OperationalWebhookEndpointAsync(ApiBase):
 
         This is used to verify the authenticity of the webhook.
         For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/)."""
-        # ruff: noqa: F841
         response = await self._request_asyncio(
             method="get",
             path="/api/v1/operational-webhook/endpoint/{endpoint_id}/secret",
@@ -164,8 +158,7 @@ class OperationalWebhookEndpointAsync(ApiBase):
         """Rotates an operational webhook endpoint's signing secret.
 
         The previous secret will remain valid for the next 24 hours."""
-        # ruff: noqa: F841
-        response = await self._request_asyncio(
+        await self._request_asyncio(
             method="post",
             path="/api/v1/operational-webhook/endpoint/{endpoint_id}/secret/rotate",
             path_params={
@@ -183,7 +176,6 @@ class OperationalWebhookEndpoint(ApiBase):
         options: OperationalWebhookEndpointListOptions = OperationalWebhookEndpointListOptions(),
     ) -> ListResponseOperationalWebhookEndpointOut:
         """List operational webhook endpoints."""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="get",
             path="/api/v1/operational-webhook/endpoint",
@@ -199,7 +191,6 @@ class OperationalWebhookEndpoint(ApiBase):
         options: OperationalWebhookEndpointCreateOptions = OperationalWebhookEndpointCreateOptions(),
     ) -> OperationalWebhookEndpointOut:
         """Create an operational webhook endpoint."""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="post",
             path="/api/v1/operational-webhook/endpoint",
@@ -212,7 +203,6 @@ class OperationalWebhookEndpoint(ApiBase):
 
     def get(self, endpoint_id: str) -> OperationalWebhookEndpointOut:
         """Get an operational webhook endpoint."""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="get",
             path="/api/v1/operational-webhook/endpoint/{endpoint_id}",
@@ -228,7 +218,6 @@ class OperationalWebhookEndpoint(ApiBase):
         operational_webhook_endpoint_update: OperationalWebhookEndpointUpdate,
     ) -> OperationalWebhookEndpointOut:
         """Update an operational webhook endpoint."""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="put",
             path="/api/v1/operational-webhook/endpoint/{endpoint_id}",
@@ -241,8 +230,7 @@ class OperationalWebhookEndpoint(ApiBase):
 
     def delete(self, endpoint_id: str) -> None:
         """Delete an operational webhook endpoint."""
-        # ruff: noqa: F841
-        response = self._request_sync(
+        self._request_sync(
             method="delete",
             path="/api/v1/operational-webhook/endpoint/{endpoint_id}",
             path_params={
@@ -255,7 +243,6 @@ class OperationalWebhookEndpoint(ApiBase):
 
         This is used to verify the authenticity of the webhook.
         For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/)."""
-        # ruff: noqa: F841
         response = self._request_sync(
             method="get",
             path="/api/v1/operational-webhook/endpoint/{endpoint_id}/secret",
@@ -274,8 +261,7 @@ class OperationalWebhookEndpoint(ApiBase):
         """Rotates an operational webhook endpoint's signing secret.
 
         The previous secret will remain valid for the next 24 hours."""
-        # ruff: noqa: F841
-        response = self._request_sync(
+        self._request_sync(
             method="post",
             path="/api/v1/operational-webhook/endpoint/{endpoint_id}/secret/rotate",
             path_params={
