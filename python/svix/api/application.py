@@ -85,17 +85,6 @@ class ApplicationAsync(ApiBase):
         )
         return ApplicationOut.from_dict(response.json())
 
-    async def get(self, app_id: str) -> ApplicationOut:
-        """Get an application."""
-        response = await self._request_asyncio(
-            method="get",
-            path="/api/v1/app/{app_id}",
-            path_params={
-                "app_id": app_id,
-            },
-        )
-        return ApplicationOut.from_dict(response.json())
-
     async def get_or_create(
         self,
         application_in: ApplicationIn,
@@ -108,6 +97,17 @@ class ApplicationAsync(ApiBase):
             query_params={"get_if_exists": "true"},
             header_params=options._header_params(),
             json_body=application_in.to_dict(),
+        )
+        return ApplicationOut.from_dict(response.json())
+
+    async def get(self, app_id: str) -> ApplicationOut:
+        """Get an application."""
+        response = await self._request_asyncio(
+            method="get",
+            path="/api/v1/app/{app_id}",
+            path_params={
+                "app_id": app_id,
+            },
         )
         return ApplicationOut.from_dict(response.json())
 
@@ -180,17 +180,6 @@ class Application(ApiBase):
         )
         return ApplicationOut.from_dict(response.json())
 
-    def get(self, app_id: str) -> ApplicationOut:
-        """Get an application."""
-        response = self._request_sync(
-            method="get",
-            path="/api/v1/app/{app_id}",
-            path_params={
-                "app_id": app_id,
-            },
-        )
-        return ApplicationOut.from_dict(response.json())
-
     def get_or_create(
         self,
         application_in: ApplicationIn,
@@ -204,6 +193,17 @@ class Application(ApiBase):
             query_params={"get_if_exists": "true"},
             header_params=options._header_params(),
             json_body=application_in.to_dict(),
+        )
+        return ApplicationOut.from_dict(response.json())
+
+    def get(self, app_id: str) -> ApplicationOut:
+        """Get an application."""
+        response = self._request_sync(
+            method="get",
+            path="/api/v1/app/{app_id}",
+            path_params={
+                "app_id": app_id,
+            },
         )
         return ApplicationOut.from_dict(response.json())
 
