@@ -3,6 +3,7 @@ import typing as t
 from dataclasses import dataclass
 from datetime import datetime
 
+from ..internal.openapi_client import models
 from ..internal.openapi_client.models.endpoint_headers_in import EndpointHeadersIn
 from ..internal.openapi_client.models.endpoint_headers_out import EndpointHeadersOut
 from ..internal.openapi_client.models.endpoint_headers_patch_in import (
@@ -28,7 +29,6 @@ from ..internal.openapi_client.models.list_response_endpoint_out import (
     ListResponseEndpointOut,
 )
 from ..internal.openapi_client.models.message_out import MessageOut
-from ..internal.openapi_client.models.ordering import Ordering
 from ..internal.openapi_client.models.recover_in import RecoverIn
 from ..internal.openapi_client.models.recover_out import RecoverOut
 from ..internal.openapi_client.models.replay_in import ReplayIn
@@ -42,7 +42,7 @@ class EndpointListOptions(BaseOptions):
     """Limit the number of returned items"""
     iterator: t.Optional[str] = None
     """The iterator returned from a prior invocation"""
-    order: t.Optional[Ordering] = None
+    order: t.Optional[models.Ordering] = None
     """The sorting order of the returned items"""
 
     def _query_params(self) -> t.Dict[str, str]:

@@ -2,6 +2,7 @@
 import typing as t
 from dataclasses import dataclass
 
+from ..internal.openapi_client import models
 from ..internal.openapi_client.models.event_type_import_open_api_in import (
     EventTypeImportOpenApiIn,
 )
@@ -15,7 +16,6 @@ from ..internal.openapi_client.models.event_type_update import EventTypeUpdate
 from ..internal.openapi_client.models.list_response_event_type_out import (
     ListResponseEventTypeOut,
 )
-from ..internal.openapi_client.models.ordering import Ordering
 from .common import ApiBase, BaseOptions, serialize_params
 
 
@@ -25,7 +25,7 @@ class EventTypeListOptions(BaseOptions):
     """Limit the number of returned items"""
     iterator: t.Optional[str] = None
     """The iterator returned from a prior invocation"""
-    order: t.Optional[Ordering] = None
+    order: t.Optional[models.Ordering] = None
     """The sorting order of the returned items"""
     include_archived: t.Optional[bool] = None
     """When `true` archived (deleted but not expunged) items are included in the response."""

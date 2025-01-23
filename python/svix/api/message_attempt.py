@@ -3,6 +3,7 @@ import typing as t
 from dataclasses import dataclass
 from datetime import datetime
 
+from ..internal.openapi_client import models
 from ..internal.openapi_client.models.list_response_endpoint_message_out import (
     ListResponseEndpointMessageOut,
 )
@@ -13,8 +14,6 @@ from ..internal.openapi_client.models.list_response_message_endpoint_out import 
     ListResponseMessageEndpointOut,
 )
 from ..internal.openapi_client.models.message_attempt_out import MessageAttemptOut
-from ..internal.openapi_client.models.message_status import MessageStatus
-from ..internal.openapi_client.models.status_code_class import StatusCodeClass
 from .common import ApiBase, BaseOptions, serialize_params
 
 
@@ -24,9 +23,9 @@ class MessageAttemptListByEndpointOptions(BaseOptions):
     """Limit the number of returned items"""
     iterator: t.Optional[str] = None
     """The iterator returned from a prior invocation"""
-    status: t.Optional[MessageStatus] = None
+    status: t.Optional[models.MessageStatus] = None
     """Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)"""
-    status_code_class: t.Optional[StatusCodeClass] = None
+    status_code_class: t.Optional[models.StatusCodeClass] = None
     """Filter response based on the HTTP status code"""
     channel: t.Optional[str] = None
     """Filter response based on the channel"""
@@ -67,9 +66,9 @@ class MessageAttemptListByMsgOptions(BaseOptions):
     """Limit the number of returned items"""
     iterator: t.Optional[str] = None
     """The iterator returned from a prior invocation"""
-    status: t.Optional[MessageStatus] = None
+    status: t.Optional[models.MessageStatus] = None
     """Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)"""
-    status_code_class: t.Optional[StatusCodeClass] = None
+    status_code_class: t.Optional[models.StatusCodeClass] = None
     """Filter response based on the HTTP status code"""
     channel: t.Optional[str] = None
     """Filter response based on the channel"""
@@ -114,7 +113,7 @@ class MessageAttemptListAttemptedMessagesOptions(BaseOptions):
     """Filter response based on the channel"""
     tag: t.Optional[str] = None
     """Filter response based on the message tags"""
-    status: t.Optional[MessageStatus] = None
+    status: t.Optional[models.MessageStatus] = None
     """Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)"""
     before: t.Optional[datetime] = None
     """Only include items created before a certain date"""

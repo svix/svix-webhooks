@@ -4,6 +4,7 @@ from dataclasses import dataclass
 
 from deprecated import deprecated
 
+from ..internal.openapi_client import models
 from ..internal.openapi_client.models.integration_in import IntegrationIn
 from ..internal.openapi_client.models.integration_key_out import IntegrationKeyOut
 from ..internal.openapi_client.models.integration_out import IntegrationOut
@@ -11,7 +12,6 @@ from ..internal.openapi_client.models.integration_update import IntegrationUpdat
 from ..internal.openapi_client.models.list_response_integration_out import (
     ListResponseIntegrationOut,
 )
-from ..internal.openapi_client.models.ordering import Ordering
 from .common import ApiBase, BaseOptions, serialize_params
 
 
@@ -21,7 +21,7 @@ class IntegrationListOptions(BaseOptions):
     """Limit the number of returned items"""
     iterator: t.Optional[str] = None
     """The iterator returned from a prior invocation"""
-    order: t.Optional[Ordering] = None
+    order: t.Optional[models.Ordering] = None
     """The sorting order of the returned items"""
 
     def _query_params(self) -> t.Dict[str, str]:
