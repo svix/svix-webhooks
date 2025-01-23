@@ -6,9 +6,10 @@ use std::collections::HashMap;
 use http1::header::{HeaderValue, AUTHORIZATION, CONTENT_LENGTH, CONTENT_TYPE, USER_AGENT};
 use http_body_util::{BodyExt as _, Full};
 use hyper::body::Bytes;
+use itertools::Itertools as _;
 use serde::de::DeserializeOwned;
 
-use crate::{error::Error, Configuration};
+use crate::{error::Error, models, Configuration};
 
 #[allow(dead_code)]
 pub(crate) enum Auth {
@@ -59,18 +60,18 @@ impl Request {
         self
     }
 
-    pub fn with_query_param(mut self, basename: &'static str, param: String) -> Self {
-        self.query_params.insert(basename, param);
+    pub fn with_query_param(mut self, basename: &'static str, param: impl QueryParamValue) -> Self {
+        self.query_params.insert(basename, param.encode());
         self
     }
 
-    pub fn with_optional_query_param<T: ToString>(
+    pub fn with_optional_query_param<T: QueryParamValue>(
         mut self,
         basename: &'static str,
         param: Option<T>,
     ) -> Self {
         if let Some(value) = param {
-            self.query_params.insert(basename, value.to_string());
+            self.query_params.insert(basename, value.encode());
         }
         self
     }
@@ -186,5 +187,34 @@ impl Request {
         } else {
             execute_request.await
         }
+    }
+}
+
+pub(crate) trait QueryParamValue {
+    fn encode(&self) -> String;
+}
+
+macro_rules! impl_query_param_value {
+    ($ty:ty) => {
+        impl QueryParamValue for $ty {
+            fn encode(&self) -> String {
+                self.to_string()
+            }
+        }
+    };
+}
+
+impl_query_param_value!(bool);
+impl_query_param_value!(i32);
+impl_query_param_value!(String);
+impl_query_param_value!(models::BackgroundTaskStatus);
+impl_query_param_value!(models::BackgroundTaskType);
+impl_query_param_value!(models::MessageStatus);
+impl_query_param_value!(models::Ordering);
+impl_query_param_value!(models::StatusCodeClass);
+
+impl QueryParamValue for Vec<String> {
+    fn encode(&self) -> String {
+        self.iter().format(",").to_string()
     }
 }

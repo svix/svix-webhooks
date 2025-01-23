@@ -1,3 +1,4 @@
+// this file is @generated (with some manual changes)
 package svix
 
 import (
@@ -21,6 +22,11 @@ type EventTypeListOptions struct {
 	IncludeArchived *bool
 	// When `true` the full item (including the schema) is included in the response.
 	WithContent *bool
+}
+
+type EventTypeDeleteOptions struct {
+	// By default event types are archived when "deleted". Passing this to `true` deletes them entirely.
+	Expunge *bool
 }
 
 // Return the list of event types.
@@ -102,19 +108,19 @@ func (eventType *EventType) CreateWithOptions(
 	return ret, nil
 }
 
-func (e *EventType) ImportOpenApi(
+func (eventType *EventType) ImportOpenApi(
 	ctx context.Context,
 	eventTypeImportOpenApiIn EventTypeImportOpenApiIn,
 ) (*EventTypeImportOpenApiOut, error) {
-	return e.ImportOpenApiWithOptions(ctx, eventTypeImportOpenApiIn, nil)
+	return eventType.ImportOpenApiWithOptions(ctx, eventTypeImportOpenApiIn, nil)
 }
 
-func (e *EventType) ImportOpenApiWithOptions(
+func (eventType *EventType) ImportOpenApiWithOptions(
 	ctx context.Context,
 	eventTypeImportOpenApiIn EventTypeImportOpenApiIn,
 	options *PostOptions,
 ) (*EventTypeImportOpenApiOut, error) {
-	req := e.api.EventTypeAPI.V1EventTypeImportOpenapi(ctx).EventTypeImportOpenApiIn(eventTypeImportOpenApiIn)
+	req := eventType.api.EventTypeAPI.V1EventTypeImportOpenapi(ctx).EventTypeImportOpenApiIn(eventTypeImportOpenApiIn)
 	if options != nil && options.IdempotencyKey != nil {
 		req = req.IdempotencyKey(*options.IdempotencyKey)
 	}
@@ -173,10 +179,6 @@ func (eventType *EventType) Delete(
 	eventTypeName string,
 ) error {
 	return eventType.DeleteWithOptions(ctx, eventTypeName, nil)
-}
-
-type EventTypeDeleteOptions struct {
-	Expunge *bool
 }
 
 func (eventType *EventType) DeleteWithOptions(
