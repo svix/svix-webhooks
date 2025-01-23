@@ -34,6 +34,8 @@ def _serialize_single_param(val: t.Any) -> str:
         return val.isoformat()
     elif isinstance(val, bool):
         return "true" if val else "false"
+    elif isinstance(val, set) or isinstance(val, list):
+        return ",".join(val)
     else:
         return str(val)
 
