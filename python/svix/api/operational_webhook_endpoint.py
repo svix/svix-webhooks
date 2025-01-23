@@ -2,7 +2,6 @@
 import typing as t
 from dataclasses import dataclass
 
-from ..internal.openapi_client import models
 from ..internal.openapi_client.models.list_response_operational_webhook_endpoint_out import (
     ListResponseOperationalWebhookEndpointOut,
 )
@@ -21,6 +20,7 @@ from ..internal.openapi_client.models.operational_webhook_endpoint_secret_out im
 from ..internal.openapi_client.models.operational_webhook_endpoint_update import (
     OperationalWebhookEndpointUpdate,
 )
+from ..internal.openapi_client.models.ordering import Ordering
 from .common import ApiBase, BaseOptions, serialize_params
 
 
@@ -30,7 +30,7 @@ class OperationalWebhookEndpointListOptions(BaseOptions):
     """Limit the number of returned items"""
     iterator: t.Optional[str] = None
     """The iterator returned from a prior invocation"""
-    order: t.Optional[models.Ordering] = None
+    order: t.Optional[Ordering] = None
     """The sorting order of the returned items"""
 
     def _query_params(self) -> t.Dict[str, str]:

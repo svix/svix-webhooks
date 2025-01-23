@@ -2,25 +2,27 @@
 import typing as t
 from dataclasses import dataclass
 
-from ..internal.openapi_client import models
 from ..internal.openapi_client.models.background_task_out import BackgroundTaskOut
+from ..internal.openapi_client.models.background_task_status import BackgroundTaskStatus
+from ..internal.openapi_client.models.background_task_type import BackgroundTaskType
 from ..internal.openapi_client.models.list_response_background_task_out import (
     ListResponseBackgroundTaskOut,
 )
+from ..internal.openapi_client.models.ordering import Ordering
 from .common import ApiBase, BaseOptions, serialize_params
 
 
 @dataclass
 class BackgroundTaskListOptions(BaseOptions):
-    status: t.Optional[models.BackgroundTaskStatus] = None
+    status: t.Optional[BackgroundTaskStatus] = None
     """Filter the response based on the status."""
-    task: t.Optional[models.BackgroundTaskType] = None
+    task: t.Optional[BackgroundTaskType] = None
     """Filter the response based on the type."""
     limit: t.Optional[int] = None
     """Limit the number of returned items"""
     iterator: t.Optional[str] = None
     """The iterator returned from a prior invocation"""
-    order: t.Optional[models.Ordering] = None
+    order: t.Optional[Ordering] = None
     """The sorting order of the returned items"""
 
     def _query_params(self) -> t.Dict[str, str]:
