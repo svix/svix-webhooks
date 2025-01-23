@@ -31,6 +31,13 @@ type MessageListOptions struct {
 	EventTypes *[]string
 }
 
+type MessageCreateOptions struct {
+	// When `true`, message payloads are included in the response.
+	WithContent *bool
+
+	IdempotencyKey *string
+}
+
 // List all of the application's messages.
 //
 // The `before` and `after` parameters let you filter all items created before or after a certain date. These can be used alongside an iterator to paginate over results
@@ -120,7 +127,7 @@ func (message *Message) CreateWithOptions(
 	ctx context.Context,
 	appId string,
 	messageIn *MessageIn,
-	options *PostOptions,
+	options *MessageCreateOptions,
 ) (*MessageOut, error) {
 	req := message.api.MessageAPI.V1MessageCreate(
 		ctx,
@@ -128,6 +135,9 @@ func (message *Message) CreateWithOptions(
 	).MessageIn(*messageIn)
 
 	if options != nil {
+		if options.WithContent != nil {
+			req = req.WithContent(*options.WithContent)
+		}
 		if options.IdempotencyKey != nil {
 			req = req.IdempotencyKey(*options.IdempotencyKey)
 		}
