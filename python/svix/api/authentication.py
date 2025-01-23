@@ -1,43 +1,64 @@
+# This file is @generated
 import typing as t
 from dataclasses import dataclass
+
 from deprecated import deprecated
-
-from .common import ApiBase, BaseOptions
-
-
-from ..internal.openapi_client.api.authentication import (
-    v1_authentication_app_portal_access,
-    v1_authentication_dashboard_access,
-    v1_authentication_expire_all,
-    v1_authentication_logout,
-)
 
 from ..internal.openapi_client.models.app_portal_access_in import AppPortalAccessIn
 from ..internal.openapi_client.models.app_portal_access_out import AppPortalAccessOut
-from ..internal.openapi_client.models.dashboard_access_out import DashboardAccessOut
 from ..internal.openapi_client.models.application_token_expire_in import (
     ApplicationTokenExpireIn,
 )
+from ..internal.openapi_client.models.dashboard_access_out import DashboardAccessOut
+from .common import ApiBase, BaseOptions, serialize_params
 
 
 @dataclass
 class AuthenticationAppPortalAccessOptions(BaseOptions):
     idempotency_key: t.Optional[str] = None
 
-
-@dataclass
-class AuthenticationDashboardAccessOptions(BaseOptions):
-    idempotency_key: t.Optional[str] = None
+    def _header_params(self) -> t.Dict[str, str]:
+        return serialize_params(
+            {
+                "idempotency-key": self.idempotency_key,
+            }
+        )
 
 
 @dataclass
 class AuthenticationExpireAllOptions(BaseOptions):
     idempotency_key: t.Optional[str] = None
 
+    def _header_params(self) -> t.Dict[str, str]:
+        return serialize_params(
+            {
+                "idempotency-key": self.idempotency_key,
+            }
+        )
+
+
+@dataclass
+class AuthenticationDashboardAccessOptions(BaseOptions):
+    idempotency_key: t.Optional[str] = None
+
+    def _header_params(self) -> t.Dict[str, str]:
+        return serialize_params(
+            {
+                "idempotency-key": self.idempotency_key,
+            }
+        )
+
 
 @dataclass
 class AuthenticationLogoutOptions(BaseOptions):
     idempotency_key: t.Optional[str] = None
+
+    def _header_params(self) -> t.Dict[str, str]:
+        return serialize_params(
+            {
+                "idempotency-key": self.idempotency_key,
+            }
+        )
 
 
 class AuthenticationAsync(ApiBase):
@@ -48,22 +69,17 @@ class AuthenticationAsync(ApiBase):
         options: AuthenticationAppPortalAccessOptions = AuthenticationAppPortalAccessOptions(),
     ) -> AppPortalAccessOut:
         """Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal."""
-        return await v1_authentication_app_portal_access.request_asyncio(
-            client=self._client,
-            app_id=app_id,
-            json_body=app_portal_access_in,
-            **options.to_dict(),
+        response = await self._request_asyncio(
+            method="post",
+            path="/api/v1/auth/app-portal-access/{app_id}",
+            path_params={
+                "app_id": app_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
+            json_body=app_portal_access_in.to_dict(),
         )
-
-    @deprecated
-    async def dashboard_access(
-        self,
-        app_id: str,
-        options: AuthenticationDashboardAccessOptions = AuthenticationDashboardAccessOptions(),
-    ) -> DashboardAccessOut:
-        return await v1_authentication_dashboard_access.request_asyncio(
-            client=self._client, app_id=app_id, **options.to_dict()
-        )
+        return AppPortalAccessOut.from_dict(response.json())
 
     async def expire_all(
         self,
@@ -72,12 +88,36 @@ class AuthenticationAsync(ApiBase):
         options: AuthenticationExpireAllOptions = AuthenticationExpireAllOptions(),
     ) -> None:
         """Expire all of the tokens associated with a specific application."""
-        return await v1_authentication_expire_all.request_asyncio(
-            client=self._client,
-            app_id=app_id,
-            json_body=application_token_expire_in,
-            **options.to_dict(),
+        await self._request_asyncio(
+            method="post",
+            path="/api/v1/auth/app/{app_id}/expire-all",
+            path_params={
+                "app_id": app_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
+            json_body=application_token_expire_in.to_dict(),
         )
+
+    @deprecated
+    async def dashboard_access(
+        self,
+        app_id: str,
+        options: AuthenticationDashboardAccessOptions = AuthenticationDashboardAccessOptions(),
+    ) -> DashboardAccessOut:
+        """DEPRECATED: Please use `app-portal-access` instead.
+
+        Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal."""
+        response = await self._request_asyncio(
+            method="post",
+            path="/api/v1/auth/dashboard-access/{app_id}",
+            path_params={
+                "app_id": app_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
+        )
+        return DashboardAccessOut.from_dict(response.json())
 
     async def logout(
         self, options: AuthenticationLogoutOptions = AuthenticationLogoutOptions()
@@ -85,8 +125,12 @@ class AuthenticationAsync(ApiBase):
         """Logout an app token.
 
         Trying to log out other tokens will fail."""
-        return await v1_authentication_logout.request_asyncio(
-            client=self._client, **options.to_dict()
+        await self._request_asyncio(
+            method="post",
+            path="/api/v1/auth/logout",
+            path_params={},
+            query_params=options._query_params(),
+            header_params=options._header_params(),
         )
 
 
@@ -98,12 +142,17 @@ class Authentication(ApiBase):
         options: AuthenticationAppPortalAccessOptions = AuthenticationAppPortalAccessOptions(),
     ) -> AppPortalAccessOut:
         """Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal."""
-        return v1_authentication_app_portal_access.request_sync(
-            client=self._client,
-            app_id=app_id,
-            json_body=app_portal_access_in,
-            **options.to_dict(),
+        response = self._request_sync(
+            method="post",
+            path="/api/v1/auth/app-portal-access/{app_id}",
+            path_params={
+                "app_id": app_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
+            json_body=app_portal_access_in.to_dict(),
         )
+        return AppPortalAccessOut.from_dict(response.json())
 
     def expire_all(
         self,
@@ -112,11 +161,15 @@ class Authentication(ApiBase):
         options: AuthenticationExpireAllOptions = AuthenticationExpireAllOptions(),
     ) -> None:
         """Expire all of the tokens associated with a specific application."""
-        return v1_authentication_expire_all.request_sync(
-            client=self._client,
-            app_id=app_id,
-            json_body=application_token_expire_in,
-            **options.to_dict(),
+        self._request_sync(
+            method="post",
+            path="/api/v1/auth/app/{app_id}/expire-all",
+            path_params={
+                "app_id": app_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
+            json_body=application_token_expire_in.to_dict(),
         )
 
     @deprecated
@@ -125,9 +178,19 @@ class Authentication(ApiBase):
         app_id: str,
         options: AuthenticationDashboardAccessOptions = AuthenticationDashboardAccessOptions(),
     ) -> DashboardAccessOut:
-        return v1_authentication_dashboard_access.request_sync(
-            client=self._client, app_id=app_id, **options.to_dict()
+        """DEPRECATED: Please use `app-portal-access` instead.
+
+        Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal."""
+        response = self._request_sync(
+            method="post",
+            path="/api/v1/auth/dashboard-access/{app_id}",
+            path_params={
+                "app_id": app_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
         )
+        return DashboardAccessOut.from_dict(response.json())
 
     def logout(
         self, options: AuthenticationLogoutOptions = AuthenticationLogoutOptions()
@@ -135,6 +198,10 @@ class Authentication(ApiBase):
         """Logout an app token.
 
         Trying to log out other tokens will fail."""
-        return v1_authentication_logout.request_sync(
-            client=self._client, **options.to_dict()
+        self._request_sync(
+            method="post",
+            path="/api/v1/auth/logout",
+            path_params={},
+            query_params=options._query_params(),
+            header_params=options._header_params(),
         )

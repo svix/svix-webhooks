@@ -1,24 +1,25 @@
+# This file is @generated
 import typing as t
 from dataclasses import dataclass
 
-from .common import ApiBase, BaseOptions
-
-
-from ..internal.openapi_client.api.statistics import (
-    v1_statistics_aggregate_app_stats,
-    v1_statistics_aggregate_event_types,
-)
-
-from ..internal.openapi_client.models.app_usage_stats_in import AppUsageStatsIn
-from ..internal.openapi_client.models.app_usage_stats_out import AppUsageStatsOut
 from ..internal.openapi_client.models.aggregate_event_types_out import (
     AggregateEventTypesOut,
 )
+from ..internal.openapi_client.models.app_usage_stats_in import AppUsageStatsIn
+from ..internal.openapi_client.models.app_usage_stats_out import AppUsageStatsOut
+from .common import ApiBase, BaseOptions, serialize_params
 
 
 @dataclass
 class StatisticsAggregateAppStatsOptions(BaseOptions):
     idempotency_key: t.Optional[str] = None
+
+    def _header_params(self) -> t.Dict[str, str]:
+        return serialize_params(
+            {
+                "idempotency-key": self.idempotency_key,
+            }
+        )
 
 
 class StatisticsAsync(ApiBase):
@@ -31,18 +32,25 @@ class StatisticsAsync(ApiBase):
 
         Note that this endpoint is asynchronous. You will need to poll the `Get Background Task` endpoint to
         retrieve the results of the operation."""
-        return await v1_statistics_aggregate_app_stats.request_asyncio(
-            client=self._client, json_body=app_usage_stats_in, **options.to_dict()
+        response = await self._request_asyncio(
+            method="post",
+            path="/api/v1/stats/usage/app",
+            path_params={},
+            query_params=options._query_params(),
+            header_params=options._header_params(),
+            json_body=app_usage_stats_in.to_dict(),
         )
+        return AppUsageStatsOut.from_dict(response.json())
 
     async def aggregate_event_types(self) -> AggregateEventTypesOut:
         """Creates a background task to calculate the listed event types for all apps in the organization.
 
         Note that this endpoint is asynchronous. You will need to poll the `Get Background Task` endpoint to
         retrieve the results of the operation."""
-        return await v1_statistics_aggregate_event_types.request_asyncio(
-            client=self._client
+        response = await self._request_asyncio(
+            method="put", path="/api/v1/stats/usage/event-types", path_params={}
         )
+        return AggregateEventTypesOut.from_dict(response.json())
 
 
 class Statistics(ApiBase):
@@ -55,13 +63,22 @@ class Statistics(ApiBase):
 
         Note that this endpoint is asynchronous. You will need to poll the `Get Background Task` endpoint to
         retrieve the results of the operation."""
-        return v1_statistics_aggregate_app_stats.request_sync(
-            client=self._client, json_body=app_usage_stats_in, **options.to_dict()
+        response = self._request_sync(
+            method="post",
+            path="/api/v1/stats/usage/app",
+            path_params={},
+            query_params=options._query_params(),
+            header_params=options._header_params(),
+            json_body=app_usage_stats_in.to_dict(),
         )
+        return AppUsageStatsOut.from_dict(response.json())
 
     def aggregate_event_types(self) -> AggregateEventTypesOut:
         """Creates a background task to calculate the listed event types for all apps in the organization.
 
         Note that this endpoint is asynchronous. You will need to poll the `Get Background Task` endpoint to
         retrieve the results of the operation."""
-        return v1_statistics_aggregate_event_types.request_sync(client=self._client)
+        response = self._request_sync(
+            method="put", path="/api/v1/stats/usage/event-types", path_params={}
+        )
+        return AggregateEventTypesOut.from_dict(response.json())

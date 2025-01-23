@@ -59,11 +59,13 @@ from .message_attempt import (
     MessageAttemptListAttemptedMessagesOptions,
     MessageAttemptListAttemptedDestinationsOptions,
     MessageAttemptResendOptions,
-    MessageListAttemptsForEndpointOptions,
 )
-from .operational_webhook import (
+from .operational_webhook_endpoint import (
     OperationalWebhookEndpointAsync,
     OperationalWebhookEndpoint,
+    OperationalWebhookEndpointListOptions,
+    OperationalWebhookEndpointCreateOptions,
+    OperationalWebhookEndpointRotateSecretOptions,
 )
 from .statistics import StatisticsAsync, Statistics, StatisticsAggregateAppStatsOptions
 

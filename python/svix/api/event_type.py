@@ -1,63 +1,84 @@
+# This file is @generated
 import typing as t
 from dataclasses import dataclass
 
-from .common import ApiBase, BaseOptions
 from ..internal.openapi_client import models
-
-
-from ..internal.openapi_client.api.event_type import (
-    v1_event_type_list,
-    v1_event_type_create,
-    v1_event_type_import_openapi,
-    v1_event_type_get,
-    v1_event_type_update,
-    v1_event_type_delete,
-    v1_event_type_patch,
-)
-
-from ..internal.openapi_client.models.list_response_event_type_out import (
-    ListResponseEventTypeOut,
-)
-from ..internal.openapi_client.models.event_type_in import EventTypeIn
-from ..internal.openapi_client.models.event_type_out import EventTypeOut
 from ..internal.openapi_client.models.event_type_import_open_api_in import (
     EventTypeImportOpenApiIn,
 )
 from ..internal.openapi_client.models.event_type_import_open_api_out import (
     EventTypeImportOpenApiOut,
 )
-from ..internal.openapi_client.models.event_type_update import EventTypeUpdate
+from ..internal.openapi_client.models.event_type_in import EventTypeIn
+from ..internal.openapi_client.models.event_type_out import EventTypeOut
 from ..internal.openapi_client.models.event_type_patch import EventTypePatch
+from ..internal.openapi_client.models.event_type_update import EventTypeUpdate
+from ..internal.openapi_client.models.list_response_event_type_out import (
+    ListResponseEventTypeOut,
+)
+from .common import ApiBase, BaseOptions, serialize_params
 
 
 @dataclass
 class EventTypeListOptions(BaseOptions):
-    # Limit the number of returned items
     limit: t.Optional[int] = None
-    # The iterator returned from a prior invocation
+    """Limit the number of returned items"""
     iterator: t.Optional[str] = None
-    # The sorting order of the returned items
+    """The iterator returned from a prior invocation"""
     order: t.Optional[models.Ordering] = None
-    # When `true` archived (deleted but not expunged) items are included in the response.
+    """The sorting order of the returned items"""
     include_archived: t.Optional[bool] = None
-    # When `true` the full item (including the schema) is included in the response.
+    """When `true` archived (deleted but not expunged) items are included in the response."""
     with_content: t.Optional[bool] = None
+    """When `true` the full item (including the schema) is included in the response."""
+
+    def _query_params(self) -> t.Dict[str, str]:
+        return serialize_params(
+            {
+                "limit": self.limit,
+                "iterator": self.iterator,
+                "order": self.order,
+                "include_archived": self.include_archived,
+                "with_content": self.with_content,
+            }
+        )
 
 
 @dataclass
 class EventTypeCreateOptions(BaseOptions):
     idempotency_key: t.Optional[str] = None
 
+    def _header_params(self) -> t.Dict[str, str]:
+        return serialize_params(
+            {
+                "idempotency-key": self.idempotency_key,
+            }
+        )
+
 
 @dataclass
 class EventTypeImportOpenapiOptions(BaseOptions):
     idempotency_key: t.Optional[str] = None
 
+    def _header_params(self) -> t.Dict[str, str]:
+        return serialize_params(
+            {
+                "idempotency-key": self.idempotency_key,
+            }
+        )
+
 
 @dataclass
 class EventTypeDeleteOptions(BaseOptions):
-    # By default event types are archived when "deleted". Passing this to `true` deletes them entirely.
     expunge: t.Optional[bool] = None
+    """By default event types are archived when "deleted". Passing this to `true` deletes them entirely."""
+
+    def _query_params(self) -> t.Dict[str, str]:
+        return serialize_params(
+            {
+                "expunge": self.expunge,
+            }
+        )
 
 
 class EventTypeAsync(ApiBase):
@@ -65,9 +86,14 @@ class EventTypeAsync(ApiBase):
         self, options: EventTypeListOptions = EventTypeListOptions()
     ) -> ListResponseEventTypeOut:
         """Return the list of event types."""
-        return await v1_event_type_list.request_asyncio(
-            client=self._client, **options.to_dict()
+        response = await self._request_asyncio(
+            method="get",
+            path="/api/v1/event-type",
+            path_params={},
+            query_params=options._query_params(),
+            header_params=options._header_params(),
         )
+        return ListResponseEventTypeOut.from_dict(response.json())
 
     async def create(
         self,
@@ -79,9 +105,15 @@ class EventTypeAsync(ApiBase):
         Unarchiving an event type will allow endpoints to filter on it and messages to be sent with it.
         Endpoints filtering on the event type before archival will continue to filter on it.
         This operation does not preserve the description and schemas."""
-        return await v1_event_type_create.request_asyncio(
-            client=self._client, json_body=event_type_in, **options.to_dict()
+        response = await self._request_asyncio(
+            method="post",
+            path="/api/v1/event-type",
+            path_params={},
+            query_params=options._query_params(),
+            header_params=options._header_params(),
+            json_body=event_type_in.to_dict(),
         )
+        return EventTypeOut.from_dict(response.json())
 
     async def import_openapi(
         self,
@@ -93,27 +125,40 @@ class EventTypeAsync(ApiBase):
 
         The importer will convert all webhooks found in the either the `webhooks` or `x-webhooks`
         top-level."""
-        return await v1_event_type_import_openapi.request_asyncio(
-            client=self._client,
-            json_body=event_type_import_open_api_in,
-            **options.to_dict(),
+        response = await self._request_asyncio(
+            method="post",
+            path="/api/v1/event-type/import/openapi",
+            path_params={},
+            query_params=options._query_params(),
+            header_params=options._header_params(),
+            json_body=event_type_import_open_api_in.to_dict(),
         )
+        return EventTypeImportOpenApiOut.from_dict(response.json())
 
     async def get(self, event_type_name: str) -> EventTypeOut:
         """Get an event type."""
-        return await v1_event_type_get.request_asyncio(
-            client=self._client, event_type_name=event_type_name
+        response = await self._request_asyncio(
+            method="get",
+            path="/api/v1/event-type/{event_type_name}",
+            path_params={
+                "event_type_name": event_type_name,
+            },
         )
+        return EventTypeOut.from_dict(response.json())
 
     async def update(
         self, event_type_name: str, event_type_update: EventTypeUpdate
     ) -> EventTypeOut:
         """Update an event type."""
-        return await v1_event_type_update.request_asyncio(
-            client=self._client,
-            event_type_name=event_type_name,
-            json_body=event_type_update,
+        response = await self._request_asyncio(
+            method="put",
+            path="/api/v1/event-type/{event_type_name}",
+            path_params={
+                "event_type_name": event_type_name,
+            },
+            json_body=event_type_update.to_dict(),
         )
+        return EventTypeOut.from_dict(response.json())
 
     async def delete(
         self,
@@ -126,19 +171,29 @@ class EventTypeAsync(ApiBase):
         However, new messages can not be sent with it and endpoints can not filter on it.
         An event type can be unarchived with the
         [create operation](#operation/create_event_type_api_v1_event_type__post)."""
-        return await v1_event_type_delete.request_asyncio(
-            client=self._client, event_type_name=event_type_name, **options.to_dict()
+        await self._request_asyncio(
+            method="delete",
+            path="/api/v1/event-type/{event_type_name}",
+            path_params={
+                "event_type_name": event_type_name,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
         )
 
     async def patch(
         self, event_type_name: str, event_type_patch: EventTypePatch
     ) -> EventTypeOut:
         """Partially update an event type."""
-        return await v1_event_type_patch.request_asyncio(
-            client=self._client,
-            event_type_name=event_type_name,
-            json_body=event_type_patch,
+        response = await self._request_asyncio(
+            method="patch",
+            path="/api/v1/event-type/{event_type_name}",
+            path_params={
+                "event_type_name": event_type_name,
+            },
+            json_body=event_type_patch.to_dict(),
         )
+        return EventTypeOut.from_dict(response.json())
 
 
 class EventType(ApiBase):
@@ -146,7 +201,14 @@ class EventType(ApiBase):
         self, options: EventTypeListOptions = EventTypeListOptions()
     ) -> ListResponseEventTypeOut:
         """Return the list of event types."""
-        return v1_event_type_list.request_sync(client=self._client, **options.to_dict())
+        response = self._request_sync(
+            method="get",
+            path="/api/v1/event-type",
+            path_params={},
+            query_params=options._query_params(),
+            header_params=options._header_params(),
+        )
+        return ListResponseEventTypeOut.from_dict(response.json())
 
     def create(
         self,
@@ -158,9 +220,15 @@ class EventType(ApiBase):
         Unarchiving an event type will allow endpoints to filter on it and messages to be sent with it.
         Endpoints filtering on the event type before archival will continue to filter on it.
         This operation does not preserve the description and schemas."""
-        return v1_event_type_create.request_sync(
-            client=self._client, json_body=event_type_in, **options.to_dict()
+        response = self._request_sync(
+            method="post",
+            path="/api/v1/event-type",
+            path_params={},
+            query_params=options._query_params(),
+            header_params=options._header_params(),
+            json_body=event_type_in.to_dict(),
         )
+        return EventTypeOut.from_dict(response.json())
 
     def import_openapi(
         self,
@@ -172,27 +240,40 @@ class EventType(ApiBase):
 
         The importer will convert all webhooks found in the either the `webhooks` or `x-webhooks`
         top-level."""
-        return v1_event_type_import_openapi.request_sync(
-            client=self._client,
-            json_body=event_type_import_open_api_in,
-            **options.to_dict(),
+        response = self._request_sync(
+            method="post",
+            path="/api/v1/event-type/import/openapi",
+            path_params={},
+            query_params=options._query_params(),
+            header_params=options._header_params(),
+            json_body=event_type_import_open_api_in.to_dict(),
         )
+        return EventTypeImportOpenApiOut.from_dict(response.json())
 
     def get(self, event_type_name: str) -> EventTypeOut:
         """Get an event type."""
-        return v1_event_type_get.request_sync(
-            client=self._client, event_type_name=event_type_name
+        response = self._request_sync(
+            method="get",
+            path="/api/v1/event-type/{event_type_name}",
+            path_params={
+                "event_type_name": event_type_name,
+            },
         )
+        return EventTypeOut.from_dict(response.json())
 
     def update(
         self, event_type_name: str, event_type_update: EventTypeUpdate
     ) -> EventTypeOut:
         """Update an event type."""
-        return v1_event_type_update.request_sync(
-            client=self._client,
-            event_type_name=event_type_name,
-            json_body=event_type_update,
+        response = self._request_sync(
+            method="put",
+            path="/api/v1/event-type/{event_type_name}",
+            path_params={
+                "event_type_name": event_type_name,
+            },
+            json_body=event_type_update.to_dict(),
         )
+        return EventTypeOut.from_dict(response.json())
 
     def delete(
         self,
@@ -205,16 +286,26 @@ class EventType(ApiBase):
         However, new messages can not be sent with it and endpoints can not filter on it.
         An event type can be unarchived with the
         [create operation](#operation/create_event_type_api_v1_event_type__post)."""
-        return v1_event_type_delete.request_sync(
-            client=self._client, event_type_name=event_type_name, **options.to_dict()
+        self._request_sync(
+            method="delete",
+            path="/api/v1/event-type/{event_type_name}",
+            path_params={
+                "event_type_name": event_type_name,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
         )
 
     def patch(
         self, event_type_name: str, event_type_patch: EventTypePatch
     ) -> EventTypeOut:
         """Partially update an event type."""
-        return v1_event_type_patch.request_sync(
-            client=self._client,
-            event_type_name=event_type_name,
-            json_body=event_type_patch,
+        response = self._request_sync(
+            method="patch",
+            path="/api/v1/event-type/{event_type_name}",
+            path_params={
+                "event_type_name": event_type_name,
+            },
+            json_body=event_type_patch.to_dict(),
         )
+        return EventTypeOut.from_dict(response.json())

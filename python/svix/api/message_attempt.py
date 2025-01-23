@@ -1,134 +1,171 @@
+# This file is @generated
 import typing as t
-from datetime import datetime
 from dataclasses import dataclass
+from datetime import datetime
 
-from deprecated import deprecated
-
-from .common import ApiBase, BaseOptions
 from ..internal.openapi_client import models
-
-
-from ..internal.openapi_client.api.message_attempt import (
-    v1_message_attempt_list_by_endpoint,
-    v1_message_attempt_list_by_msg,
-    v1_message_attempt_list_attempted_messages,
-    v1_message_attempt_get,
-    v1_message_attempt_expunge_content,
-    v1_message_attempt_list_attempted_destinations,
-    v1_message_attempt_resend,
-    v1_message_attempt_list_by_endpoint_deprecated,
-)
-
-from ..internal.openapi_client.models.list_response_message_attempt_out import (
-    ListResponseMessageAttemptOut,
-)
 from ..internal.openapi_client.models.list_response_endpoint_message_out import (
     ListResponseEndpointMessageOut,
 )
-from ..internal.openapi_client.models.message_attempt_out import MessageAttemptOut
+from ..internal.openapi_client.models.list_response_message_attempt_out import (
+    ListResponseMessageAttemptOut,
+)
 from ..internal.openapi_client.models.list_response_message_endpoint_out import (
     ListResponseMessageEndpointOut,
 )
-from ..internal.openapi_client.models.list_response_message_attempt_endpoint_out import (
-    ListResponseMessageAttemptEndpointOut,
-)
+from ..internal.openapi_client.models.message_attempt_out import MessageAttemptOut
+from .common import ApiBase, BaseOptions, serialize_params
 
 
 @dataclass
 class MessageAttemptListByEndpointOptions(BaseOptions):
-    # Limit the number of returned items
     limit: t.Optional[int] = None
-    # The iterator returned from a prior invocation
+    """Limit the number of returned items"""
     iterator: t.Optional[str] = None
-    # Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)
+    """The iterator returned from a prior invocation"""
     status: t.Optional[models.MessageStatus] = None
-    # Filter response based on the HTTP status code
+    """Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)"""
     status_code_class: t.Optional[models.StatusCodeClass] = None
-    # Filter response based on the channel
+    """Filter response based on the HTTP status code"""
     channel: t.Optional[str] = None
-    # Filter response based on the tag
+    """Filter response based on the channel"""
     tag: t.Optional[str] = None
-    # Only include items created before a certain date
+    """Filter response based on the tag"""
     before: t.Optional[datetime] = None
-    # Only include items created after a certain date
+    """Only include items created before a certain date"""
     after: t.Optional[datetime] = None
-    # When `true` attempt content is included in the response
+    """Only include items created after a certain date"""
     with_content: t.Optional[bool] = None
-    # When `true`, the message information is included in the response
+    """When `true` attempt content is included in the response"""
     with_msg: t.Optional[bool] = None
-    # Filter response based on the event type
+    """When `true`, the message information is included in the response"""
     event_types: t.Optional[t.Set[str]] = None
+    """Filter response based on the event type"""
+
+    def _query_params(self) -> t.Dict[str, str]:
+        return serialize_params(
+            {
+                "limit": self.limit,
+                "iterator": self.iterator,
+                "status": self.status,
+                "status_code_class": self.status_code_class,
+                "channel": self.channel,
+                "tag": self.tag,
+                "before": self.before,
+                "after": self.after,
+                "with_content": self.with_content,
+                "with_msg": self.with_msg,
+                "event_types": self.event_types,
+            }
+        )
 
 
 @dataclass
 class MessageAttemptListByMsgOptions(BaseOptions):
-    # Limit the number of returned items
     limit: t.Optional[int] = None
-    # The iterator returned from a prior invocation
+    """Limit the number of returned items"""
     iterator: t.Optional[str] = None
-    # Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)
+    """The iterator returned from a prior invocation"""
     status: t.Optional[models.MessageStatus] = None
-    # Filter response based on the HTTP status code
+    """Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)"""
     status_code_class: t.Optional[models.StatusCodeClass] = None
-    # Filter response based on the channel
+    """Filter response based on the HTTP status code"""
     channel: t.Optional[str] = None
-    # Filter response based on the tag
+    """Filter response based on the channel"""
     tag: t.Optional[str] = None
-    # Filter the attempts based on the attempted endpoint
+    """Filter response based on the tag"""
     endpoint_id: t.Optional[str] = None
-    # Only include items created before a certain date
+    """Filter the attempts based on the attempted endpoint"""
     before: t.Optional[datetime] = None
-    # Only include items created after a certain date
+    """Only include items created before a certain date"""
     after: t.Optional[datetime] = None
-    # When `true` attempt content is included in the response
+    """Only include items created after a certain date"""
     with_content: t.Optional[bool] = None
-    # Filter response based on the event type
+    """When `true` attempt content is included in the response"""
     event_types: t.Optional[t.Set[str]] = None
+    """Filter response based on the event type"""
+
+    def _query_params(self) -> t.Dict[str, str]:
+        return serialize_params(
+            {
+                "limit": self.limit,
+                "iterator": self.iterator,
+                "status": self.status,
+                "status_code_class": self.status_code_class,
+                "channel": self.channel,
+                "tag": self.tag,
+                "endpoint_id": self.endpoint_id,
+                "before": self.before,
+                "after": self.after,
+                "with_content": self.with_content,
+                "event_types": self.event_types,
+            }
+        )
 
 
 @dataclass
 class MessageAttemptListAttemptedMessagesOptions(BaseOptions):
-    # Limit the number of returned items
     limit: t.Optional[int] = None
-    # The iterator returned from a prior invocation
+    """Limit the number of returned items"""
     iterator: t.Optional[str] = None
-    # Filter response based on the channel
+    """The iterator returned from a prior invocation"""
     channel: t.Optional[str] = None
-    # Filter response based on the message tags
+    """Filter response based on the channel"""
     tag: t.Optional[str] = None
-    # Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)
+    """Filter response based on the message tags"""
     status: t.Optional[models.MessageStatus] = None
-    # Only include items created before a certain date
+    """Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)"""
     before: t.Optional[datetime] = None
-    # Only include items created after a certain date
+    """Only include items created before a certain date"""
     after: t.Optional[datetime] = None
-    # When `true` message payloads are included in the response
+    """Only include items created after a certain date"""
     with_content: t.Optional[bool] = None
-    # Filter response based on the event type
+    """When `true` message payloads are included in the response"""
     event_types: t.Optional[t.Set[str]] = None
+    """Filter response based on the event type"""
+
+    def _query_params(self) -> t.Dict[str, str]:
+        return serialize_params(
+            {
+                "limit": self.limit,
+                "iterator": self.iterator,
+                "channel": self.channel,
+                "tag": self.tag,
+                "status": self.status,
+                "before": self.before,
+                "after": self.after,
+                "with_content": self.with_content,
+                "event_types": self.event_types,
+            }
+        )
 
 
 @dataclass
 class MessageAttemptListAttemptedDestinationsOptions(BaseOptions):
-    # Limit the number of returned items
     limit: t.Optional[int] = None
-    # The iterator returned from a prior invocation
+    """Limit the number of returned items"""
     iterator: t.Optional[str] = None
+    """The iterator returned from a prior invocation"""
+
+    def _query_params(self) -> t.Dict[str, str]:
+        return serialize_params(
+            {
+                "limit": self.limit,
+                "iterator": self.iterator,
+            }
+        )
 
 
 @dataclass
 class MessageAttemptResendOptions(BaseOptions):
     idempotency_key: t.Optional[str] = None
 
-
-@dataclass
-class MessageListAttemptsForEndpointOptions(BaseOptions):
-    status: t.Optional[models.MessageStatus] = None
-    event_types: t.Optional[t.List[str]] = None
-    before: t.Optional[datetime] = None
-    after: t.Optional[datetime] = None
-    channel: t.Optional[str] = None
-    status_code_class: t.Optional[models.StatusCodeClass] = None
+    def _header_params(self) -> t.Dict[str, str]:
+        return serialize_params(
+            {
+                "idempotency-key": self.idempotency_key,
+            }
+        )
 
 
 class MessageAttemptAsync(ApiBase):
@@ -145,12 +182,17 @@ class MessageAttemptAsync(ApiBase):
         by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
         set the `before` or `after` parameter as appropriate.
         """
-        return await v1_message_attempt_list_by_endpoint.request_asyncio(
-            client=self._client,
-            app_id=app_id,
-            endpoint_id=endpoint_id,
-            **options.to_dict(),
+        response = await self._request_asyncio(
+            method="get",
+            path="/api/v1/app/{app_id}/attempt/endpoint/{endpoint_id}",
+            path_params={
+                "app_id": app_id,
+                "endpoint_id": endpoint_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
         )
+        return ListResponseMessageAttemptOut.from_dict(response.json())
 
     async def list_by_msg(
         self,
@@ -164,9 +206,17 @@ class MessageAttemptAsync(ApiBase):
         relative to now or, if an iterator is provided, 90 days before/after the time indicated
         by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
         set the `before` or `after` parameter as appropriate."""
-        return await v1_message_attempt_list_by_msg.request_asyncio(
-            client=self._client, app_id=app_id, msg_id=msg_id, **options.to_dict()
+        response = await self._request_asyncio(
+            method="get",
+            path="/api/v1/app/{app_id}/attempt/msg/{msg_id}",
+            path_params={
+                "app_id": app_id,
+                "msg_id": msg_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
         )
+        return ListResponseMessageAttemptOut.from_dict(response.json())
 
     async def list_attempted_messages(
         self,
@@ -183,26 +233,44 @@ class MessageAttemptAsync(ApiBase):
         by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
         set the `before` or `after` parameter as appropriate.
         """
-        return await v1_message_attempt_list_attempted_messages.request_asyncio(
-            client=self._client,
-            app_id=app_id,
-            endpoint_id=endpoint_id,
-            **options.to_dict(),
+        response = await self._request_asyncio(
+            method="get",
+            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/msg",
+            path_params={
+                "app_id": app_id,
+                "endpoint_id": endpoint_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
         )
+        return ListResponseEndpointMessageOut.from_dict(response.json())
 
     async def get(self, app_id: str, msg_id: str, attempt_id: str) -> MessageAttemptOut:
         """`msg_id`: Use a message id or a message `eventId`"""
-        return await v1_message_attempt_get.request_asyncio(
-            client=self._client, app_id=app_id, msg_id=msg_id, attempt_id=attempt_id
+        response = await self._request_asyncio(
+            method="get",
+            path="/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}",
+            path_params={
+                "app_id": app_id,
+                "msg_id": msg_id,
+                "attempt_id": attempt_id,
+            },
         )
+        return MessageAttemptOut.from_dict(response.json())
 
     async def expunge_content(self, app_id: str, msg_id: str, attempt_id: str) -> None:
         """Deletes the given attempt's response body.
 
         Useful when an endpoint accidentally returned sensitive content.
         The message can't be replayed or resent once its payload has been deleted or expired."""
-        return await v1_message_attempt_expunge_content.request_asyncio(
-            client=self._client, app_id=app_id, msg_id=msg_id, attempt_id=attempt_id
+        await self._request_asyncio(
+            method="delete",
+            path="/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/content",
+            path_params={
+                "app_id": app_id,
+                "msg_id": msg_id,
+                "attempt_id": attempt_id,
+            },
         )
 
     async def list_attempted_destinations(
@@ -215,9 +283,17 @@ class MessageAttemptAsync(ApiBase):
 
         Additionally includes metadata about the latest message attempt.
         By default, endpoints are listed in ascending order by ID."""
-        return await v1_message_attempt_list_attempted_destinations.request_asyncio(
-            client=self._client, app_id=app_id, msg_id=msg_id, **options.to_dict()
+        response = await self._request_asyncio(
+            method="get",
+            path="/api/v1/app/{app_id}/msg/{msg_id}/endpoint",
+            path_params={
+                "app_id": app_id,
+                "msg_id": msg_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
         )
+        return ListResponseMessageEndpointOut.from_dict(response.json())
 
     async def resend(
         self,
@@ -227,30 +303,16 @@ class MessageAttemptAsync(ApiBase):
         options: MessageAttemptResendOptions = MessageAttemptResendOptions(),
     ) -> None:
         """Resend a message to the specified endpoint."""
-        return await v1_message_attempt_resend.request_asyncio(
-            client=self._client,
-            app_id=app_id,
-            msg_id=msg_id,
-            endpoint_id=endpoint_id,
-            **options.to_dict(),
-        )
-
-    @deprecated(
-        reason="use list_by_msg instead, passing the endpoint id through options"
-    )
-    async def list_attempts_for_endpoint(
-        self,
-        app_id: str,
-        msg_id: str,
-        endpoint_id: str,
-        options: MessageListAttemptsForEndpointOptions = MessageListAttemptsForEndpointOptions(),
-    ) -> ListResponseMessageAttemptEndpointOut:
-        return await v1_message_attempt_list_by_endpoint_deprecated.request_asyncio(
-            client=self._client,
-            app_id=app_id,
-            msg_id=msg_id,
-            endpoint_id=endpoint_id,
-            **options.to_dict(),
+        await self._request_asyncio(
+            method="post",
+            path="/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/resend",
+            path_params={
+                "app_id": app_id,
+                "msg_id": msg_id,
+                "endpoint_id": endpoint_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
         )
 
 
@@ -268,12 +330,17 @@ class MessageAttempt(ApiBase):
         by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
         set the `before` or `after` parameter as appropriate.
         """
-        return v1_message_attempt_list_by_endpoint.request_sync(
-            client=self._client,
-            app_id=app_id,
-            endpoint_id=endpoint_id,
-            **options.to_dict(),
+        response = self._request_sync(
+            method="get",
+            path="/api/v1/app/{app_id}/attempt/endpoint/{endpoint_id}",
+            path_params={
+                "app_id": app_id,
+                "endpoint_id": endpoint_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
         )
+        return ListResponseMessageAttemptOut.from_dict(response.json())
 
     def list_by_msg(
         self,
@@ -287,9 +354,17 @@ class MessageAttempt(ApiBase):
         relative to now or, if an iterator is provided, 90 days before/after the time indicated
         by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
         set the `before` or `after` parameter as appropriate."""
-        return v1_message_attempt_list_by_msg.request_sync(
-            client=self._client, app_id=app_id, msg_id=msg_id, **options.to_dict()
+        response = self._request_sync(
+            method="get",
+            path="/api/v1/app/{app_id}/attempt/msg/{msg_id}",
+            path_params={
+                "app_id": app_id,
+                "msg_id": msg_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
         )
+        return ListResponseMessageAttemptOut.from_dict(response.json())
 
     def list_attempted_messages(
         self,
@@ -306,26 +381,44 @@ class MessageAttempt(ApiBase):
         by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
         set the `before` or `after` parameter as appropriate.
         """
-        return v1_message_attempt_list_attempted_messages.request_sync(
-            client=self._client,
-            app_id=app_id,
-            endpoint_id=endpoint_id,
-            **options.to_dict(),
+        response = self._request_sync(
+            method="get",
+            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/msg",
+            path_params={
+                "app_id": app_id,
+                "endpoint_id": endpoint_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
         )
+        return ListResponseEndpointMessageOut.from_dict(response.json())
 
     def get(self, app_id: str, msg_id: str, attempt_id: str) -> MessageAttemptOut:
         """`msg_id`: Use a message id or a message `eventId`"""
-        return v1_message_attempt_get.request_sync(
-            client=self._client, app_id=app_id, msg_id=msg_id, attempt_id=attempt_id
+        response = self._request_sync(
+            method="get",
+            path="/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}",
+            path_params={
+                "app_id": app_id,
+                "msg_id": msg_id,
+                "attempt_id": attempt_id,
+            },
         )
+        return MessageAttemptOut.from_dict(response.json())
 
     def expunge_content(self, app_id: str, msg_id: str, attempt_id: str) -> None:
         """Deletes the given attempt's response body.
 
         Useful when an endpoint accidentally returned sensitive content.
         The message can't be replayed or resent once its payload has been deleted or expired."""
-        return v1_message_attempt_expunge_content.request_sync(
-            client=self._client, app_id=app_id, msg_id=msg_id, attempt_id=attempt_id
+        self._request_sync(
+            method="delete",
+            path="/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/content",
+            path_params={
+                "app_id": app_id,
+                "msg_id": msg_id,
+                "attempt_id": attempt_id,
+            },
         )
 
     def list_attempted_destinations(
@@ -338,9 +431,17 @@ class MessageAttempt(ApiBase):
 
         Additionally includes metadata about the latest message attempt.
         By default, endpoints are listed in ascending order by ID."""
-        return v1_message_attempt_list_attempted_destinations.request_sync(
-            client=self._client, app_id=app_id, msg_id=msg_id, **options.to_dict()
+        response = self._request_sync(
+            method="get",
+            path="/api/v1/app/{app_id}/msg/{msg_id}/endpoint",
+            path_params={
+                "app_id": app_id,
+                "msg_id": msg_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
         )
+        return ListResponseMessageEndpointOut.from_dict(response.json())
 
     def resend(
         self,
@@ -350,37 +451,14 @@ class MessageAttempt(ApiBase):
         options: MessageAttemptResendOptions = MessageAttemptResendOptions(),
     ) -> None:
         """Resend a message to the specified endpoint."""
-        return v1_message_attempt_resend.request_sync(
-            client=self._client,
-            app_id=app_id,
-            msg_id=msg_id,
-            endpoint_id=endpoint_id,
-            **options.to_dict(),
-        )
-
-    @deprecated(reason="use list_by_msg or list_by_endpoint instead")
-    def list(
-        self,
-        app_id: str,
-        msg_id: str,
-        options: MessageAttemptListByMsgOptions = MessageAttemptListByMsgOptions(),
-    ) -> ListResponseMessageAttemptOut:
-        return self.list_by_msg(app_id=app_id, msg_id=msg_id, options=options)
-
-    @deprecated(
-        reason="use list_by_msg instead, passing the endpoint id through options"
-    )
-    def list_attempts_for_endpoint(
-        self,
-        app_id: str,
-        msg_id: str,
-        endpoint_id: str,
-        options: MessageListAttemptsForEndpointOptions = MessageListAttemptsForEndpointOptions(),
-    ) -> ListResponseMessageAttemptEndpointOut:
-        return v1_message_attempt_list_by_endpoint_deprecated.request_sync(
-            client=self._client,
-            app_id=app_id,
-            msg_id=msg_id,
-            endpoint_id=endpoint_id,
-            **options.to_dict(),
+        self._request_sync(
+            method="post",
+            path="/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/resend",
+            path_params={
+                "app_id": app_id,
+                "msg_id": msg_id,
+                "endpoint_id": endpoint_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
         )

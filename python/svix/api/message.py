@@ -1,56 +1,82 @@
+# This file is @generated
 import typing as t
-from datetime import datetime
 from dataclasses import dataclass
-
-from .common import ApiBase, BaseOptions
-
-
-from ..internal.openapi_client.api.message import (
-    v1_message_list,
-    v1_message_create,
-    v1_message_get,
-    v1_message_expunge_content,
-)
+from datetime import datetime
 
 from ..internal.openapi_client.models.list_response_message_out import (
     ListResponseMessageOut,
 )
 from ..internal.openapi_client.models.message_in import MessageIn
 from ..internal.openapi_client.models.message_out import MessageOut
+from .common import ApiBase, BaseOptions, serialize_params
 
 
 @dataclass
 class MessageListOptions(BaseOptions):
-    # Limit the number of returned items
     limit: t.Optional[int] = None
-    # The iterator returned from a prior invocation
+    """Limit the number of returned items"""
     iterator: t.Optional[str] = None
-    # Filter response based on the channel.
+    """The iterator returned from a prior invocation"""
     channel: t.Optional[str] = None
-    # Only include items created before a certain date.
+    """Filter response based on the channel."""
     before: t.Optional[datetime] = None
-    # Only include items created after a certain date.
+    """Only include items created before a certain date."""
     after: t.Optional[datetime] = None
-    # When `true` message payloads are included in the response.
+    """Only include items created after a certain date."""
     with_content: t.Optional[bool] = None
-    # Filter messages matching the provided tag.
+    """When `true` message payloads are included in the response."""
     tag: t.Optional[str] = None
-    # Filter response based on the event type
+    """Filter messages matching the provided tag."""
     event_types: t.Optional[t.Set[str]] = None
+    """Filter response based on the event type"""
+
+    def _query_params(self) -> t.Dict[str, str]:
+        return serialize_params(
+            {
+                "limit": self.limit,
+                "iterator": self.iterator,
+                "channel": self.channel,
+                "before": self.before,
+                "after": self.after,
+                "with_content": self.with_content,
+                "tag": self.tag,
+                "event_types": self.event_types,
+            }
+        )
 
 
 @dataclass
 class MessageCreateOptions(BaseOptions):
-    # When `true`, message payloads are included in the response.
-    with_content: t.Optional[bool] = False
-
+    with_content: t.Optional[bool] = None
+    """When `true`, message payloads are included in the response."""
     idempotency_key: t.Optional[str] = None
+
+    def _query_params(self) -> t.Dict[str, str]:
+        return serialize_params(
+            {
+                "with_content": self.with_content,
+            }
+        )
+
+    def _header_params(self) -> t.Dict[str, str]:
+        return serialize_params(
+            {
+                "idempotency-key": self.idempotency_key,
+            }
+        )
 
 
 @dataclass
 class MessageGetOptions(BaseOptions):
-    # When `true` message payloads are included in the response.
     with_content: t.Optional[bool] = None
+    """When `true` message payloads are included in the response."""
+
+    def _query_params(self) -> t.Dict[str, str]:
+        return serialize_params(
+            {
+                "with_content": self.with_content,
+            }
+        )
 
 
 def message_in_raw(
@@ -99,9 +125,16 @@ class MessageAsync(ApiBase):
         by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
         set the `before` or `after` parameter as appropriate.
         """
-        return await v1_message_list.request_asyncio(
-            client=self._client, app_id=app_id, **options.to_dict()
+        response = await self._request_asyncio(
+            method="get",
+            path="/api/v1/app/{app_id}/msg",
+            path_params={
+                "app_id": app_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
         )
+        return ListResponseMessageOut.from_dict(response.json())
 
     async def create(
         self,
@@ -118,12 +151,17 @@ class MessageAsync(ApiBase):
         Messages can also have `channels`, which similar to event types let endpoints filter by them. Unlike event types, messages can have multiple channels, and channels don't imply a specific message content or schema.
 
         The `payload` property is the webhook's body (the actual webhook message). Svix supports payload sizes of up to ~350kb, though it's generally a good idea to keep webhook payloads small, probably no larger than 40kb."""
-        ret = await v1_message_create.request_asyncio(
-            client=self._client,
-            app_id=app_id,
-            json_body=message_in,
-            **options.to_dict(),
+        response = await self._request_asyncio(
+            method="post",
+            path="/api/v1/app/{app_id}/msg",
+            path_params={
+                "app_id": app_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
+            json_body=message_in.to_dict(),
         )
+        ret = MessageOut.from_dict(response.json())
         ret.payload = message_in.payload
         return ret
 
@@ -131,17 +169,30 @@ class MessageAsync(ApiBase):
         self, app_id: str, msg_id: str, options: MessageGetOptions = MessageGetOptions()
     ) -> MessageOut:
         """Get a message by its ID or eventID."""
-        return await v1_message_get.request_asyncio(
-            client=self._client, app_id=app_id, msg_id=msg_id, **options.to_dict()
+        response = await self._request_asyncio(
+            method="get",
+            path="/api/v1/app/{app_id}/msg/{msg_id}",
+            path_params={
+                "app_id": app_id,
+                "msg_id": msg_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
         )
+        return MessageOut.from_dict(response.json())
 
     async def expunge_content(self, app_id: str, msg_id: str) -> None:
         """Delete the given message's payload.
 
         Useful in cases when a message was accidentally sent with sensitive content.
         The message can't be replayed or resent once its payload has been deleted or expired."""
-        return await v1_message_expunge_content.request_asyncio(
-            client=self._client, app_id=app_id, msg_id=msg_id
+        await self._request_asyncio(
+            method="delete",
+            path="/api/v1/app/{app_id}/msg/{msg_id}/content",
+            path_params={
+                "app_id": app_id,
+                "msg_id": msg_id,
+            },
         )
 
 
@@ -159,9 +210,16 @@ class Message(ApiBase):
         by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
         set the `before` or `after` parameter as appropriate.
         """
-        return v1_message_list.request_sync(
-            client=self._client, app_id=app_id, **options.to_dict()
+        response = self._request_sync(
+            method="get",
+            path="/api/v1/app/{app_id}/msg",
+            path_params={
+                "app_id": app_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
         )
+        return ListResponseMessageOut.from_dict(response.json())
 
     def create(
         self,
@@ -178,12 +236,17 @@ class Message(ApiBase):
         Messages can also have `channels`, which similar to event types let endpoints filter by them. Unlike event types, messages can have multiple channels, and channels don't imply a specific message content or schema.
 
         The `payload` property is the webhook's body (the actual webhook message). Svix supports payload sizes of up to ~350kb, though it's generally a good idea to keep webhook payloads small, probably no larger than 40kb."""
-        ret = v1_message_create.request_sync(
-            client=self._client,
-            app_id=app_id,
-            json_body=message_in,
-            **options.to_dict(),
+        response = self._request_sync(
+            method="post",
+            path="/api/v1/app/{app_id}/msg",
+            path_params={
+                "app_id": app_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
+            json_body=message_in.to_dict(),
         )
+        ret = MessageOut.from_dict(response.json())
         ret.payload = message_in.payload
         return ret
 
@@ -191,15 +254,28 @@ class Message(ApiBase):
         self, app_id: str, msg_id: str, options: MessageGetOptions = MessageGetOptions()
     ) -> MessageOut:
         """Get a message by its ID or eventID."""
-        return v1_message_get.request_sync(
-            client=self._client, app_id=app_id, msg_id=msg_id, **options.to_dict()
+        response = self._request_sync(
+            method="get",
+            path="/api/v1/app/{app_id}/msg/{msg_id}",
+            path_params={
+                "app_id": app_id,
+                "msg_id": msg_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
         )
+        return MessageOut.from_dict(response.json())
 
     def expunge_content(self, app_id: str, msg_id: str) -> None:
         """Delete the given message's payload.
 
         Useful in cases when a message was accidentally sent with sensitive content.
         The message can't be replayed or resent once its payload has been deleted or expired."""
-        return v1_message_expunge_content.request_sync(
-            client=self._client, app_id=app_id, msg_id=msg_id
+        self._request_sync(
+            method="delete",
+            path="/api/v1/app/{app_id}/msg/{msg_id}/content",
+            path_params={
+                "app_id": app_id,
+                "msg_id": msg_id,
+            },
         )
