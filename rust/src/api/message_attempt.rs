@@ -1,4 +1,3 @@
-use super::PostOptions;
 use crate::{error::Result, models::*, Configuration};
 
 #[derive(Default)]
@@ -125,6 +124,11 @@ pub struct MessageAttemptListAttemptedDestinationsOptions {
 
     /// The iterator returned from a prior invocation
     pub iterator: Option<String>,
+}
+
+#[derive(Default)]
+pub struct MessageAttemptResendOptions {
+    pub idempotency_key: Option<String>,
 }
 
 pub struct MessageAttempt<'a> {
@@ -393,9 +397,9 @@ impl<'a> MessageAttempt<'a> {
         app_id: String,
         msg_id: String,
         endpoint_id: String,
-        options: Option<PostOptions>,
+        options: Option<MessageAttemptResendOptions>,
     ) -> Result<()> {
-        let PostOptions { idempotency_key } = options.unwrap_or_default();
+        let MessageAttemptResendOptions { idempotency_key } = options.unwrap_or_default();
 
         crate::request::Request::new(
             http1::Method::POST,

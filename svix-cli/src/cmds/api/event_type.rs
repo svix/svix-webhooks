@@ -1,7 +1,7 @@
 use clap::{Args, Subcommand};
 use svix::api::*;
 
-use crate::{cli_types::PostOptions, json::JsonOf};
+use crate::json::JsonOf;
 
 #[derive(Args, Clone)]
 pub struct EventTypeListOptions {
@@ -43,6 +43,32 @@ impl From<EventTypeListOptions> for svix::api::EventTypeListOptions {
 }
 
 #[derive(Args, Clone)]
+pub struct EventTypeCreateOptions {
+    #[arg(long)]
+    pub idempotency_key: Option<String>,
+}
+
+impl From<EventTypeCreateOptions> for svix::api::EventTypeCreateOptions {
+    fn from(EventTypeCreateOptions { idempotency_key }: EventTypeCreateOptions) -> Self {
+        Self { idempotency_key }
+    }
+}
+
+#[derive(Args, Clone)]
+pub struct EventTypeImportOpenapiOptions {
+    #[arg(long)]
+    pub idempotency_key: Option<String>,
+}
+
+impl From<EventTypeImportOpenapiOptions> for svix::api::EventTypeImportOpenapiOptions {
+    fn from(
+        EventTypeImportOpenapiOptions { idempotency_key }: EventTypeImportOpenapiOptions,
+    ) -> Self {
+        Self { idempotency_key }
+    }
+}
+
+#[derive(Args, Clone)]
 pub struct EventTypeDeleteOptions {
     /// By default event types are archived when "deleted". Passing this to `true` deletes them entirely.
     #[arg(long)]
@@ -56,8 +82,7 @@ impl From<EventTypeDeleteOptions> for svix::api::EventTypeDeleteOptions {
 }
 
 #[derive(Args)]
-#[command(args_conflicts_with_subcommands = true)]
-#[command(flatten_help = true)]
+#[command(args_conflicts_with_subcommands = true, flatten_help = true)]
 pub struct EventTypeArgs {
     #[command(subcommand)]
     pub command: EventTypeCommands,
@@ -78,7 +103,7 @@ pub enum EventTypeCommands {
     Create {
         event_type_in: JsonOf<EventTypeIn>,
         #[clap(flatten)]
-        post_options: Option<PostOptions>,
+        options: EventTypeCreateOptions,
     },
     /// Given an OpenAPI spec, create new or update existing event types.
     /// If an existing `archived` event type is updated, it will be unarchived.
@@ -88,7 +113,7 @@ pub enum EventTypeCommands {
     ImportOpenapi {
         event_type_import_open_api_in: Option<JsonOf<EventTypeImportOpenApiIn>>,
         #[clap(flatten)]
-        post_options: Option<PostOptions>,
+        options: EventTypeImportOpenapiOptions,
     },
     /// Get an event type.
     Get { event_type_name: String },
@@ -128,17 +153,17 @@ impl EventTypeCommands {
             }
             Self::Create {
                 event_type_in,
-                post_options,
+                options,
             } => {
                 let resp = client
                     .event_type()
-                    .create(event_type_in.into_inner(), post_options.map(Into::into))
+                    .create(event_type_in.into_inner(), Some(options.into()))
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
             Self::ImportOpenapi {
                 event_type_import_open_api_in,
-                post_options,
+                options,
             } => {
                 let resp = client
                     .event_type()
@@ -146,7 +171,7 @@ impl EventTypeCommands {
                         event_type_import_open_api_in
                             .unwrap_or_default()
                             .into_inner(),
-                        post_options.map(Into::into),
+                        Some(options.into()),
                     )
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;

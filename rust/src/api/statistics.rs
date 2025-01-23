@@ -1,5 +1,9 @@
-use super::PostOptions;
 use crate::{error::Result, models::*, Configuration};
+
+#[derive(Default)]
+pub struct StatisticsAggregateAppStatsOptions {
+    pub idempotency_key: Option<String>,
+}
 
 pub struct Statistics<'a> {
     cfg: &'a Configuration,
@@ -18,13 +22,13 @@ impl<'a> Statistics<'a> {
     pub async fn aggregate_app_stats(
         &self,
         app_usage_stats_in: AppUsageStatsIn,
-        options: Option<PostOptions>,
+        options: Option<StatisticsAggregateAppStatsOptions>,
     ) -> Result<AppUsageStatsOut> {
-        let PostOptions { idempotency_key } = options.unwrap_or_default();
+        let StatisticsAggregateAppStatsOptions { idempotency_key } = options.unwrap_or_default();
 
         crate::request::Request::new(http1::Method::POST, "/api/v1/stats/usage/app")
-            .with_body_param(app_usage_stats_in)
             .with_optional_header_param("idempotency-key", idempotency_key)
+            .with_body_param(app_usage_stats_in)
             .execute(self.cfg)
             .await
     }

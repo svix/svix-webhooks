@@ -2,7 +2,7 @@ use chrono::{DateTime, Utc};
 use clap::{Args, Subcommand};
 use svix::api::*;
 
-use crate::{cli_types::PostOptions, json::JsonOf};
+use crate::json::JsonOf;
 
 #[derive(Args, Clone)]
 pub struct EndpointListOptions {
@@ -34,6 +34,68 @@ impl From<EndpointListOptions> for svix::api::EndpointListOptions {
 }
 
 #[derive(Args, Clone)]
+pub struct EndpointCreateOptions {
+    #[arg(long)]
+    pub idempotency_key: Option<String>,
+}
+
+impl From<EndpointCreateOptions> for svix::api::EndpointCreateOptions {
+    fn from(EndpointCreateOptions { idempotency_key }: EndpointCreateOptions) -> Self {
+        Self { idempotency_key }
+    }
+}
+
+#[derive(Args, Clone)]
+pub struct EndpointRecoverOptions {
+    #[arg(long)]
+    pub idempotency_key: Option<String>,
+}
+
+impl From<EndpointRecoverOptions> for svix::api::EndpointRecoverOptions {
+    fn from(EndpointRecoverOptions { idempotency_key }: EndpointRecoverOptions) -> Self {
+        Self { idempotency_key }
+    }
+}
+
+#[derive(Args, Clone)]
+pub struct EndpointReplayMissingOptions {
+    #[arg(long)]
+    pub idempotency_key: Option<String>,
+}
+
+impl From<EndpointReplayMissingOptions> for svix::api::EndpointReplayMissingOptions {
+    fn from(
+        EndpointReplayMissingOptions { idempotency_key }: EndpointReplayMissingOptions,
+    ) -> Self {
+        Self { idempotency_key }
+    }
+}
+
+#[derive(Args, Clone)]
+pub struct EndpointRotateSecretOptions {
+    #[arg(long)]
+    pub idempotency_key: Option<String>,
+}
+
+impl From<EndpointRotateSecretOptions> for svix::api::EndpointRotateSecretOptions {
+    fn from(EndpointRotateSecretOptions { idempotency_key }: EndpointRotateSecretOptions) -> Self {
+        Self { idempotency_key }
+    }
+}
+
+#[derive(Args, Clone)]
+pub struct EndpointSendExampleOptions {
+    #[arg(long)]
+    pub idempotency_key: Option<String>,
+}
+
+impl From<EndpointSendExampleOptions> for svix::api::EndpointSendExampleOptions {
+    fn from(EndpointSendExampleOptions { idempotency_key }: EndpointSendExampleOptions) -> Self {
+        Self { idempotency_key }
+    }
+}
+
+#[derive(Args, Clone)]
 pub struct EndpointGetStatsOptions {
     /// Filter the range to data starting from this date.
     #[arg(long)]
@@ -53,8 +115,7 @@ impl From<EndpointGetStatsOptions> for svix::api::EndpointGetStatsOptions {
 }
 
 #[derive(Args)]
-#[command(args_conflicts_with_subcommands = true)]
-#[command(flatten_help = true)]
+#[command(args_conflicts_with_subcommands = true, flatten_help = true)]
 pub struct EndpointArgs {
     #[command(subcommand)]
     pub command: EndpointCommands,
@@ -76,7 +137,7 @@ pub enum EndpointCommands {
         app_id: String,
         endpoint_in: JsonOf<EndpointIn>,
         #[clap(flatten)]
-        post_options: Option<PostOptions>,
+        options: EndpointCreateOptions,
     },
     /// Get an endpoint.
     Get { app_id: String, id: String },
@@ -116,7 +177,7 @@ pub enum EndpointCommands {
         id: String,
         recover_in: JsonOf<RecoverIn>,
         #[clap(flatten)]
-        post_options: Option<PostOptions>,
+        options: EndpointRecoverOptions,
     },
     /// Replays messages to the endpoint.
     ///
@@ -127,7 +188,7 @@ pub enum EndpointCommands {
         id: String,
         replay_in: JsonOf<ReplayIn>,
         #[clap(flatten)]
-        post_options: Option<PostOptions>,
+        options: EndpointReplayMissingOptions,
     },
     /// Get the endpoint's signing secret.
     ///
@@ -142,7 +203,7 @@ pub enum EndpointCommands {
         id: String,
         endpoint_secret_rotate_in: Option<JsonOf<EndpointSecretRotateIn>>,
         #[clap(flatten)]
-        post_options: Option<PostOptions>,
+        options: EndpointRotateSecretOptions,
     },
     /// Send an example message for an event.
     SendExample {
@@ -150,7 +211,7 @@ pub enum EndpointCommands {
         id: String,
         event_example_in: JsonOf<EventExampleIn>,
         #[clap(flatten)]
-        post_options: Option<PostOptions>,
+        options: EndpointSendExampleOptions,
     },
     /// Get basic statistics for the endpoint.
     GetStats {
@@ -184,15 +245,11 @@ impl EndpointCommands {
             Self::Create {
                 app_id,
                 endpoint_in,
-                post_options,
+                options,
             } => {
                 let resp = client
                     .endpoint()
-                    .create(
-                        app_id,
-                        endpoint_in.into_inner(),
-                        post_options.map(Into::into),
-                    )
+                    .create(app_id, endpoint_in.into_inner(), Some(options.into()))
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
@@ -253,16 +310,11 @@ impl EndpointCommands {
                 app_id,
                 id,
                 recover_in,
-                post_options,
+                options,
             } => {
                 let resp = client
                     .endpoint()
-                    .recover(
-                        app_id,
-                        id,
-                        recover_in.into_inner(),
-                        post_options.map(Into::into),
-                    )
+                    .recover(app_id, id, recover_in.into_inner(), Some(options.into()))
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
@@ -270,16 +322,11 @@ impl EndpointCommands {
                 app_id,
                 id,
                 replay_in,
-                post_options,
+                options,
             } => {
                 let resp = client
                     .endpoint()
-                    .replay_missing(
-                        app_id,
-                        id,
-                        replay_in.into_inner(),
-                        post_options.map(Into::into),
-                    )
+                    .replay_missing(app_id, id, replay_in.into_inner(), Some(options.into()))
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
@@ -291,7 +338,7 @@ impl EndpointCommands {
                 app_id,
                 id,
                 endpoint_secret_rotate_in,
-                post_options,
+                options,
             } => {
                 client
                     .endpoint()
@@ -299,7 +346,7 @@ impl EndpointCommands {
                         app_id,
                         id,
                         endpoint_secret_rotate_in.unwrap_or_default().into_inner(),
-                        post_options.map(Into::into),
+                        Some(options.into()),
                     )
                     .await?;
             }
@@ -307,7 +354,7 @@ impl EndpointCommands {
                 app_id,
                 id,
                 event_example_in,
-                post_options,
+                options,
             } => {
                 let resp = client
                     .endpoint()
@@ -315,7 +362,7 @@ impl EndpointCommands {
                         app_id,
                         id,
                         event_example_in.into_inner(),
-                        post_options.map(Into::into),
+                        Some(options.into()),
                     )
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;

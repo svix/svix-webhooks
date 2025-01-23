@@ -1,4 +1,3 @@
-use super::PostOptions;
 use crate::{error::Result, models::*, Configuration};
 
 #[derive(Default)]
@@ -30,6 +29,20 @@ pub struct MessageListOptions {
 
     /// Filter response based on the event type
     pub event_types: Option<Vec<String>>,
+}
+
+#[derive(Default)]
+pub struct MessageCreateOptions {
+    /// When `true`, message payloads are included in the response.
+    pub with_content: Option<bool>,
+
+    pub idempotency_key: Option<String>,
+}
+
+#[derive(Default)]
+pub struct MessageGetOptions {
+    /// When `true` message payloads are included in the response.
+    pub with_content: Option<bool>,
 }
 
 pub struct Message<'a> {
@@ -105,23 +118,35 @@ impl<'a> Message<'a> {
         &self,
         app_id: String,
         message_in: MessageIn,
-        options: Option<PostOptions>,
+        options: Option<MessageCreateOptions>,
     ) -> Result<MessageOut> {
-        let PostOptions { idempotency_key } = options.unwrap_or_default();
+        let MessageCreateOptions {
+            with_content,
+            idempotency_key,
+        } = options.unwrap_or_default();
 
         crate::request::Request::new(http1::Method::POST, "/api/v1/app/{app_id}/msg")
             .with_path_param("app_id", app_id)
-            .with_body_param(message_in)
+            .with_optional_query_param("with_content", with_content)
             .with_optional_header_param("idempotency-key", idempotency_key)
+            .with_body_param(message_in)
             .execute(self.cfg)
             .await
     }
 
     /// Get a message by its ID or eventID.
-    pub async fn get(&self, app_id: String, msg_id: String) -> Result<MessageOut> {
+    pub async fn get(
+        &self,
+        app_id: String,
+        msg_id: String,
+        options: Option<MessageGetOptions>,
+    ) -> Result<MessageOut> {
+        let MessageGetOptions { with_content } = options.unwrap_or_default();
+
         crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}/msg/{msg_id}")
             .with_path_param("app_id", app_id)
             .with_path_param("msg_id", msg_id)
+            .with_optional_query_param("with_content", with_content)
             .execute(self.cfg)
             .await
     }
