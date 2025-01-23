@@ -1,4 +1,3 @@
-use super::PostOptions;
 use crate::{error::Result, models::*, Configuration};
 
 #[derive(Default)]
@@ -11,6 +10,11 @@ pub struct ApplicationListOptions {
 
     /// The sorting order of the returned items
     pub order: Option<Ordering>,
+}
+
+#[derive(Default)]
+pub struct ApplicationCreateOptions {
+    pub idempotency_key: Option<String>,
 }
 
 pub struct Application<'a> {
@@ -45,13 +49,13 @@ impl<'a> Application<'a> {
     pub async fn create(
         &self,
         application_in: ApplicationIn,
-        options: Option<PostOptions>,
+        options: Option<ApplicationCreateOptions>,
     ) -> Result<ApplicationOut> {
-        let PostOptions { idempotency_key } = options.unwrap_or_default();
+        let ApplicationCreateOptions { idempotency_key } = options.unwrap_or_default();
 
         crate::request::Request::new(http1::Method::POST, "/api/v1/app")
-            .with_body_param(application_in)
             .with_optional_header_param("idempotency-key", idempotency_key)
+            .with_body_param(application_in)
             .execute(self.cfg)
             .await
     }
@@ -61,14 +65,14 @@ impl<'a> Application<'a> {
     pub async fn get_or_create(
         &self,
         application_in: ApplicationIn,
-        options: Option<PostOptions>,
+        options: Option<ApplicationCreateOptions>,
     ) -> Result<ApplicationOut> {
-        let PostOptions { idempotency_key } = options.unwrap_or_default();
+        let ApplicationCreateOptions { idempotency_key } = options.unwrap_or_default();
 
         crate::request::Request::new(http1::Method::POST, "/api/v1/app")
-            .with_body_param(application_in)
             .with_query_param("get_if_exists", "true".to_owned())
             .with_optional_header_param("idempotency-key", idempotency_key)
+            .with_body_param(application_in)
             .execute(self.cfg)
             .await
     }

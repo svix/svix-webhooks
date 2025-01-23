@@ -2,8 +2,6 @@ use chrono::{DateTime, Utc};
 use clap::{Args, Subcommand};
 use svix::api::*;
 
-use crate::cli_types::PostOptions;
-
 #[derive(Args, Clone)]
 pub struct MessageAttemptListByEndpointOptions {
     /// Limit the number of returned items
@@ -218,16 +216,28 @@ impl From<MessageAttemptListAttemptedDestinationsOptions>
 {
     fn from(
         MessageAttemptListAttemptedDestinationsOptions {
-                    limit,iterator,
-                }: MessageAttemptListAttemptedDestinationsOptions,
+            limit,
+            iterator,
+        }: MessageAttemptListAttemptedDestinationsOptions,
     ) -> Self {
         Self { limit, iterator }
     }
 }
 
+#[derive(Args, Clone)]
+pub struct MessageAttemptResendOptions {
+    #[arg(long)]
+    pub idempotency_key: Option<String>,
+}
+
+impl From<MessageAttemptResendOptions> for svix::api::MessageAttemptResendOptions {
+    fn from(MessageAttemptResendOptions { idempotency_key }: MessageAttemptResendOptions) -> Self {
+        Self { idempotency_key }
+    }
+}
+
 #[derive(Args)]
-#[command(args_conflicts_with_subcommands = true)]
-#[command(flatten_help = true)]
+#[command(args_conflicts_with_subcommands = true, flatten_help = true)]
 pub struct MessageAttemptArgs {
     #[command(subcommand)]
     pub command: MessageAttemptCommands,
@@ -308,7 +318,7 @@ pub enum MessageAttemptCommands {
         msg_id: String,
         endpoint_id: String,
         #[clap(flatten)]
-        post_options: Option<PostOptions>,
+        options: MessageAttemptResendOptions,
     },
 }
 
@@ -388,11 +398,11 @@ impl MessageAttemptCommands {
                 app_id,
                 msg_id,
                 endpoint_id,
-                post_options,
+                options,
             } => {
                 client
                     .message_attempt()
-                    .resend(app_id, msg_id, endpoint_id, post_options.map(Into::into))
+                    .resend(app_id, msg_id, endpoint_id, Some(options.into()))
                     .await?;
             }
         }

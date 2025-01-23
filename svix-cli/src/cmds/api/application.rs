@@ -1,7 +1,7 @@
 use clap::{Args, Subcommand};
 use svix::api::*;
 
-use crate::{cli_types::PostOptions, json::JsonOf};
+use crate::json::JsonOf;
 
 #[derive(Args, Clone)]
 pub struct ApplicationListOptions {
@@ -32,9 +32,20 @@ impl From<ApplicationListOptions> for svix::api::ApplicationListOptions {
     }
 }
 
+#[derive(Args, Clone)]
+pub struct ApplicationCreateOptions {
+    #[arg(long)]
+    pub idempotency_key: Option<String>,
+}
+
+impl From<ApplicationCreateOptions> for svix::api::ApplicationCreateOptions {
+    fn from(ApplicationCreateOptions { idempotency_key }: ApplicationCreateOptions) -> Self {
+        Self { idempotency_key }
+    }
+}
+
 #[derive(Args)]
-#[command(args_conflicts_with_subcommands = true)]
-#[command(flatten_help = true)]
+#[command(args_conflicts_with_subcommands = true, flatten_help = true)]
 pub struct ApplicationArgs {
     #[command(subcommand)]
     pub command: ApplicationCommands,
@@ -51,7 +62,7 @@ pub enum ApplicationCommands {
     Create {
         application_in: JsonOf<ApplicationIn>,
         #[clap(flatten)]
-        post_options: Option<PostOptions>,
+        options: ApplicationCreateOptions,
     },
     /// Get an application.
     Get { id: String },
@@ -82,11 +93,11 @@ impl ApplicationCommands {
             }
             Self::Create {
                 application_in,
-                post_options,
+                options,
             } => {
                 let resp = client
                     .application()
-                    .create(application_in.into_inner(), post_options.map(Into::into))
+                    .create(application_in.into_inner(), Some(options.into()))
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }

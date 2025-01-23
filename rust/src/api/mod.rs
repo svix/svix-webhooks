@@ -24,22 +24,35 @@ mod statistics;
 #[cfg(feature = "svix_beta")]
 pub use self::message::{V1MessageEventsParams, V1MessageEventsSubscriptionParams};
 pub use self::{
-    application::{Application, ApplicationListOptions},
-    authentication::Authentication,
+    application::{Application, ApplicationCreateOptions, ApplicationListOptions},
+    authentication::{
+        Authentication, AuthenticationAppPortalAccessOptions, AuthenticationDashboardAccessOptions,
+        AuthenticationExpireAllOptions, AuthenticationLogoutOptions,
+    },
     background_task::{BackgroundTask, BackgroundTaskListOptions},
-    endpoint::{Endpoint, EndpointGetStatsOptions, EndpointListOptions},
-    event_type::{EventType, EventTypeDeleteOptions, EventTypeListOptions},
-    integration::{Integration, IntegrationListOptions},
-    message::{Message, MessageListOptions},
+    endpoint::{
+        Endpoint, EndpointCreateOptions, EndpointGetStatsOptions, EndpointListOptions,
+        EndpointRecoverOptions, EndpointReplayMissingOptions, EndpointRotateSecretOptions,
+        EndpointSendExampleOptions,
+    },
+    event_type::{
+        EventType, EventTypeCreateOptions, EventTypeDeleteOptions, EventTypeImportOpenapiOptions,
+        EventTypeListOptions,
+    },
+    integration::{
+        Integration, IntegrationCreateOptions, IntegrationListOptions, IntegrationRotateKeyOptions,
+    },
+    message::{Message, MessageCreateOptions, MessageGetOptions, MessageListOptions},
     message_attempt::{
         MessageAttempt, MessageAttemptListAttemptedDestinationsOptions,
         MessageAttemptListAttemptedMessagesOptions, MessageAttemptListByEndpointOptions,
-        MessageAttemptListByMsgOptions,
+        MessageAttemptListByMsgOptions, MessageAttemptResendOptions,
     },
     operational_webhook_endpoint::{
-        OperationalWebhookEndpoint, OperationalWebhookEndpointListOptions,
+        OperationalWebhookEndpoint, OperationalWebhookEndpointCreateOptions,
+        OperationalWebhookEndpointListOptions,
     },
-    statistics::Statistics,
+    statistics::{Statistics, StatisticsAggregateAppStatsOptions},
 };
 
 #[deprecated = "Use EndpointGetStatusOptions instead"]
@@ -174,11 +187,6 @@ impl Svix {
     pub fn cfg(&self) -> &Configuration {
         &self.cfg
     }
-}
-
-#[derive(Default)]
-pub struct PostOptions {
-    pub idempotency_key: Option<String>,
 }
 
 #[cfg(test)]

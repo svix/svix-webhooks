@@ -1,7 +1,7 @@
 use clap::{Args, Subcommand};
 use svix::api::*;
 
-use crate::{cli_types::PostOptions, json::JsonOf};
+use crate::json::JsonOf;
 
 #[derive(Args, Clone)]
 pub struct IntegrationListOptions {
@@ -32,9 +32,32 @@ impl From<IntegrationListOptions> for svix::api::IntegrationListOptions {
     }
 }
 
+#[derive(Args, Clone)]
+pub struct IntegrationCreateOptions {
+    #[arg(long)]
+    pub idempotency_key: Option<String>,
+}
+
+impl From<IntegrationCreateOptions> for svix::api::IntegrationCreateOptions {
+    fn from(IntegrationCreateOptions { idempotency_key }: IntegrationCreateOptions) -> Self {
+        Self { idempotency_key }
+    }
+}
+
+#[derive(Args, Clone)]
+pub struct IntegrationRotateKeyOptions {
+    #[arg(long)]
+    pub idempotency_key: Option<String>,
+}
+
+impl From<IntegrationRotateKeyOptions> for svix::api::IntegrationRotateKeyOptions {
+    fn from(IntegrationRotateKeyOptions { idempotency_key }: IntegrationRotateKeyOptions) -> Self {
+        Self { idempotency_key }
+    }
+}
+
 #[derive(Args)]
-#[command(args_conflicts_with_subcommands = true)]
-#[command(flatten_help = true)]
+#[command(args_conflicts_with_subcommands = true, flatten_help = true)]
 pub struct IntegrationArgs {
     #[command(subcommand)]
     pub command: IntegrationCommands,
@@ -54,7 +77,7 @@ pub enum IntegrationCommands {
         app_id: String,
         integration_in: JsonOf<IntegrationIn>,
         #[clap(flatten)]
-        post_options: Option<PostOptions>,
+        options: IntegrationCreateOptions,
     },
     /// Get an integration.
     Get { app_id: String, id: String },
@@ -73,7 +96,7 @@ pub enum IntegrationCommands {
         app_id: String,
         id: String,
         #[clap(flatten)]
-        post_options: Option<PostOptions>,
+        options: IntegrationRotateKeyOptions,
     },
 }
 
@@ -94,15 +117,11 @@ impl IntegrationCommands {
             Self::Create {
                 app_id,
                 integration_in,
-                post_options,
+                options,
             } => {
                 let resp = client
                     .integration()
-                    .create(
-                        app_id,
-                        integration_in.into_inner(),
-                        post_options.map(Into::into),
-                    )
+                    .create(app_id, integration_in.into_inner(), Some(options.into()))
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
@@ -132,11 +151,11 @@ impl IntegrationCommands {
             Self::RotateKey {
                 app_id,
                 id,
-                post_options,
+                options,
             } => {
                 let resp = client
                     .integration()
-                    .rotate_key(app_id, id, post_options.map(Into::into))
+                    .rotate_key(app_id, id, Some(options.into()))
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }

@@ -17,7 +17,7 @@
 * Libs/Kotlin: Fix the parameter names of `Endpoint.get` - `appId` and `endpointId` were swapped
 * Libs/Kotlin: Fix a bug in `EventType.list` where `options.order` was not getting honored
 * Libs/Rust **(Breaking)**: Add optional `EventTypeDeleteOptions` parameter to `EventType::delete`
-* Libs/Rust **(Breaking)**: Add optional `PostOptions` parameter to `Endpoint::recover`,
+* Libs/Rust **(Breaking)**: Add optional `options` parameters to `Endpoint::recover`,
   `Endpoint::rotate_secret`, `Integration::rotate_key` and `MessageAttempt::resend`
 * Libs/Rust **(Breaking)**: Remove model files that were not referenced by any operations available
   through the `Svix` object
@@ -25,6 +25,7 @@
   `js_option::JsOption<T>`
 * Libs/Rust **(Breaking)**: Change `rate_limit` from `i32` to `u16` in several places
 * Libs/Rust **(Breaking)**: Remove `settings` parameter from `EnvironmentIn::new`
+* Libs/Rust **(Breaking)**: Replace `PostOptions` with operation-specific options structs
 * Libs/Go **(Breaking)**: Rename `Statistics.AggregateAppStats` to `AggregateAppStatsWithOptions`;
   the old name is used for a version of the method without the `PostOptions`, like elsewhere
 * Libs/Go: Add `Authentication.ExpireAll` (and `ExpireAllWithOptions`)

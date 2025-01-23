@@ -2,7 +2,7 @@ use chrono::{DateTime, Utc};
 use clap::{Args, Subcommand};
 use svix::api::*;
 
-use crate::{cli_types::PostOptions, json::JsonOf};
+use crate::json::JsonOf;
 
 #[derive(Args, Clone)]
 pub struct MessageListOptions {
@@ -58,9 +58,45 @@ impl From<MessageListOptions> for svix::api::MessageListOptions {
     }
 }
 
+#[derive(Args, Clone)]
+pub struct MessageCreateOptions {
+    /// When `true`, message payloads are included in the response.
+    #[arg(long)]
+    pub with_content: Option<bool>,
+
+    #[arg(long)]
+    pub idempotency_key: Option<String>,
+}
+
+impl From<MessageCreateOptions> for svix::api::MessageCreateOptions {
+    fn from(
+        MessageCreateOptions {
+            with_content,
+            idempotency_key,
+        }: MessageCreateOptions,
+    ) -> Self {
+        Self {
+            with_content,
+            idempotency_key,
+        }
+    }
+}
+
+#[derive(Args, Clone)]
+pub struct MessageGetOptions {
+    /// When `true` message payloads are included in the response.
+    #[arg(long)]
+    pub with_content: Option<bool>,
+}
+
+impl From<MessageGetOptions> for svix::api::MessageGetOptions {
+    fn from(MessageGetOptions { with_content }: MessageGetOptions) -> Self {
+        Self { with_content }
+    }
+}
+
 #[derive(Args)]
-#[command(args_conflicts_with_subcommands = true)]
-#[command(flatten_help = true)]
+#[command(args_conflicts_with_subcommands = true, flatten_help = true)]
 pub struct MessageArgs {
     #[command(subcommand)]
     pub command: MessageCommands,
@@ -96,10 +132,15 @@ pub enum MessageCommands {
         app_id: String,
         message_in: JsonOf<MessageIn>,
         #[clap(flatten)]
-        post_options: Option<PostOptions>,
+        options: MessageCreateOptions,
     },
     /// Get a message by its ID or eventID.
-    Get { app_id: String, id: String },
+    Get {
+        app_id: String,
+        id: String,
+        #[clap(flatten)]
+        options: MessageGetOptions,
+    },
     /// Delete the given message's payload.
     ///
     /// Useful in cases when a message was accidentally sent with sensitive content.
@@ -121,20 +162,23 @@ impl MessageCommands {
             Self::Create {
                 app_id,
                 message_in,
-                post_options,
+                options,
             } => {
                 let resp = client
                     .message()
-                    .create(
-                        app_id,
-                        message_in.into_inner(),
-                        post_options.map(Into::into),
-                    )
+                    .create(app_id, message_in.into_inner(), Some(options.into()))
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
-            Self::Get { app_id, id } => {
-                let resp = client.message().get(app_id, id).await?;
+            Self::Get {
+                app_id,
+                id,
+                options,
+            } => {
+                let resp = client
+                    .message()
+                    .get(app_id, id, Some(options.into()))
+                    .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
             Self::ExpungeContent { app_id, id } => {

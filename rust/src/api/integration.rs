@@ -1,4 +1,3 @@
-use super::PostOptions;
 use crate::{error::Result, models::*, Configuration};
 
 #[derive(Default)]
@@ -11,6 +10,16 @@ pub struct IntegrationListOptions {
 
     /// The sorting order of the returned items
     pub order: Option<Ordering>,
+}
+
+#[derive(Default)]
+pub struct IntegrationCreateOptions {
+    pub idempotency_key: Option<String>,
+}
+
+#[derive(Default)]
+pub struct IntegrationRotateKeyOptions {
+    pub idempotency_key: Option<String>,
 }
 
 pub struct Integration<'a> {
@@ -48,14 +57,14 @@ impl<'a> Integration<'a> {
         &self,
         app_id: String,
         integration_in: IntegrationIn,
-        options: Option<PostOptions>,
+        options: Option<IntegrationCreateOptions>,
     ) -> Result<IntegrationOut> {
-        let PostOptions { idempotency_key } = options.unwrap_or_default();
+        let IntegrationCreateOptions { idempotency_key } = options.unwrap_or_default();
 
         crate::request::Request::new(http1::Method::POST, "/api/v1/app/{app_id}/integration")
             .with_path_param("app_id", app_id)
-            .with_body_param(integration_in)
             .with_optional_header_param("idempotency-key", idempotency_key)
+            .with_body_param(integration_in)
             .execute(self.cfg)
             .await
     }
@@ -122,9 +131,9 @@ impl<'a> Integration<'a> {
         &self,
         app_id: String,
         integ_id: String,
-        options: Option<PostOptions>,
+        options: Option<IntegrationRotateKeyOptions>,
     ) -> Result<IntegrationKeyOut> {
-        let PostOptions { idempotency_key } = options.unwrap_or_default();
+        let IntegrationRotateKeyOptions { idempotency_key } = options.unwrap_or_default();
 
         crate::request::Request::new(
             http1::Method::POST,

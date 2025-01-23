@@ -19,7 +19,6 @@ use crate::{
     config::Config,
 };
 
-mod cli_types;
 mod cmds;
 mod config;
 mod json;

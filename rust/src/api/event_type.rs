@@ -1,4 +1,3 @@
-use super::PostOptions;
 use crate::{error::Result, models::*, Configuration};
 
 #[derive(Default)]
@@ -19,6 +18,16 @@ pub struct EventTypeListOptions {
     /// When `true` the full item (including the schema) is included in the
     /// response.
     pub with_content: Option<bool>,
+}
+
+#[derive(Default)]
+pub struct EventTypeCreateOptions {
+    pub idempotency_key: Option<String>,
+}
+
+#[derive(Default)]
+pub struct EventTypeImportOpenapiOptions {
+    pub idempotency_key: Option<String>,
 }
 
 #[derive(Default)]
@@ -69,13 +78,13 @@ impl<'a> EventType<'a> {
     pub async fn create(
         &self,
         event_type_in: EventTypeIn,
-        options: Option<PostOptions>,
+        options: Option<EventTypeCreateOptions>,
     ) -> Result<EventTypeOut> {
-        let PostOptions { idempotency_key } = options.unwrap_or_default();
+        let EventTypeCreateOptions { idempotency_key } = options.unwrap_or_default();
 
         crate::request::Request::new(http1::Method::POST, "/api/v1/event-type")
-            .with_body_param(event_type_in)
             .with_optional_header_param("idempotency-key", idempotency_key)
+            .with_body_param(event_type_in)
             .execute(self.cfg)
             .await
     }
@@ -88,13 +97,13 @@ impl<'a> EventType<'a> {
     pub async fn import_openapi(
         &self,
         event_type_import_open_api_in: EventTypeImportOpenApiIn,
-        options: Option<PostOptions>,
+        options: Option<EventTypeImportOpenapiOptions>,
     ) -> Result<EventTypeImportOpenApiOut> {
-        let PostOptions { idempotency_key } = options.unwrap_or_default();
+        let EventTypeImportOpenapiOptions { idempotency_key } = options.unwrap_or_default();
 
         crate::request::Request::new(http1::Method::POST, "/api/v1/event-type/import/openapi")
-            .with_body_param(event_type_import_open_api_in)
             .with_optional_header_param("idempotency-key", idempotency_key)
+            .with_body_param(event_type_import_open_api_in)
             .execute(self.cfg)
             .await
     }
@@ -125,7 +134,8 @@ impl<'a> EventType<'a> {
     /// Endpoints already configured to filter on an event type will continue to
     /// do so after archival. However, new messages can not be sent with it
     /// and endpoints can not filter on it. An event type can be unarchived
-    /// with the [create operation][Self::create].
+    /// with the [create operation](#operation/
+    /// create_event_type_api_v1_event_type__post).
     pub async fn delete(
         &self,
         event_type_name: String,

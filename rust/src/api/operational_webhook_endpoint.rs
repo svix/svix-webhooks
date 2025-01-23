@@ -1,4 +1,3 @@
-use super::{Ordering, PostOptions};
 use crate::{error::Result, models::*, Configuration};
 
 #[derive(Default)]
@@ -11,6 +10,11 @@ pub struct OperationalWebhookEndpointListOptions {
 
     /// The sorting order of the returned items
     pub order: Option<Ordering>,
+}
+
+#[derive(Default)]
+pub struct OperationalWebhookEndpointCreateOptions {
+    pub idempotency_key: Option<String>,
 }
 
 pub struct OperationalWebhookEndpoint<'a> {
@@ -45,13 +49,14 @@ impl<'a> OperationalWebhookEndpoint<'a> {
     pub async fn create(
         &self,
         operational_webhook_endpoint_in: OperationalWebhookEndpointIn,
-        options: Option<PostOptions>,
+        options: Option<OperationalWebhookEndpointCreateOptions>,
     ) -> Result<OperationalWebhookEndpointOut> {
-        let PostOptions { idempotency_key } = options.unwrap_or_default();
+        let OperationalWebhookEndpointCreateOptions { idempotency_key } =
+            options.unwrap_or_default();
 
         crate::request::Request::new(http1::Method::POST, "/api/v1/operational-webhook/endpoint")
-            .with_body_param(operational_webhook_endpoint_in)
             .with_optional_header_param("idempotency-key", idempotency_key)
+            .with_body_param(operational_webhook_endpoint_in)
             .execute(self.cfg)
             .await
     }
