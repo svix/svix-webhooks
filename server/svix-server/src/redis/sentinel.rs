@@ -1,4 +1,3 @@
-use axum::async_trait;
 use redis::{
     sentinel::{SentinelClient, SentinelNodeConnectionInfo, SentinelServerType},
     ErrorKind, IntoConnectionInfo, RedisError,
@@ -30,7 +29,6 @@ impl RedisSentinelConnectionManager {
     }
 }
 
-#[async_trait]
 impl bb8::ManageConnection for RedisSentinelConnectionManager {
     type Connection = redis::aio::MultiplexedConnection;
     type Error = RedisError;
