@@ -4,8 +4,8 @@ go 1.20
 
 retract (
 	v1.55.0
-	// v1.53.0 was never published
 	v1.54.0
+	// v1.53.0 was never published
 	v1.52.0
 	v1.51.0
 	v1.50.0
