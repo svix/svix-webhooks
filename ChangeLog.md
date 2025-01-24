@@ -26,6 +26,8 @@
 * Libs/Rust **(Breaking)**: Change `rate_limit` from `i32` to `u16` in several places
 * Libs/Rust **(Breaking)**: Remove `settings` parameter from `EnvironmentIn::new`
 * Libs/Rust **(Breaking)**: Replace `PostOptions` with operation-specific options structs
+* Libs/Rust **(Breaking)**: Remove `Period` from `BackgroundTaskType` variant names; this was
+  introduced by accident a few releases ago
 * Libs/Go **(Breaking)**: Rename `Statistics.AggregateAppStats` to `AggregateAppStatsWithOptions`;
   the old name is used for a version of the method without the `PostOptions`, like elsewhere
 * Libs/Go: Add `Authentication.ExpireAll` (and `ExpireAllWithOptions`)

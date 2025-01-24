@@ -11,8 +11,15 @@ use serde::{Deserialize, Serialize};
 pub struct EventTypeImportOpenApiIn {
     /// If `true`, return the event types that would be modified without
     /// actually modifying them.
+    #[serde(rename = "dryRun")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub dry_run: Option<bool>,
+
+    /// If `true`, all existing event types that are not in the spec will be
+    /// archived.
+    #[serde(rename = "replaceAll")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub replace_all: Option<bool>,
 
     /// A pre-parsed JSON spec.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -28,6 +35,7 @@ impl EventTypeImportOpenApiIn {
     pub fn new() -> Self {
         Self {
             dry_run: None,
+            replace_all: None,
             spec: None,
             spec_raw: None,
         }
