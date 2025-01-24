@@ -108,28 +108,65 @@ func (eventType *EventType) CreateWithOptions(
 	return ret, nil
 }
 
-func (eventType *EventType) ImportOpenApi(
+// Given an OpenAPI spec, create new or update existing event types.
+// If an existing `archived` event type is updated, it will be unarchived.
+//
+// The importer will convert all webhooks found in the either the `webhooks` or `x-webhooks`
+// top-level.
+func (eventType *EventType) ImportOpenapi(
 	ctx context.Context,
-	eventTypeImportOpenApiIn EventTypeImportOpenApiIn,
+	eventTypeImportOpenApiIn *EventTypeImportOpenApiIn,
 ) (*EventTypeImportOpenApiOut, error) {
-	return eventType.ImportOpenApiWithOptions(ctx, eventTypeImportOpenApiIn, nil)
+	return eventType.ImportOpenapiWithOptions(
+		ctx,
+		eventTypeImportOpenApiIn,
+		nil,
+	)
 }
 
-func (eventType *EventType) ImportOpenApiWithOptions(
+// Given an OpenAPI spec, create new or update existing event types.
+// If an existing `archived` event type is updated, it will be unarchived.
+//
+// The importer will convert all webhooks found in the either the `webhooks` or `x-webhooks`
+// top-level.
+func (eventType *EventType) ImportOpenapiWithOptions(
 	ctx context.Context,
-	eventTypeImportOpenApiIn EventTypeImportOpenApiIn,
+	eventTypeImportOpenApiIn *EventTypeImportOpenApiIn,
 	options *PostOptions,
 ) (*EventTypeImportOpenApiOut, error) {
-	req := eventType.api.EventTypeAPI.V1EventTypeImportOpenapi(ctx).EventTypeImportOpenApiIn(eventTypeImportOpenApiIn)
-	if options != nil && options.IdempotencyKey != nil {
-		req = req.IdempotencyKey(*options.IdempotencyKey)
+	req := eventType.api.EventTypeAPI.V1EventTypeImportOpenapi(
+		ctx,
+	).EventTypeImportOpenApiIn(*eventTypeImportOpenApiIn)
+
+	if options != nil {
+		if options.IdempotencyKey != nil {
+			req = req.IdempotencyKey(*options.IdempotencyKey)
+		}
 	}
+
 	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
 
 	return ret, nil
+}
+
+// Deprecated: Use eventType.ImportOpenapi instead
+func (eventType *EventType) ImportOpenApi(
+	ctx context.Context,
+	eventTypeImportOpenApiIn EventTypeImportOpenApiIn,
+) (*EventTypeImportOpenApiOut, error) {
+	return eventType.ImportOpenapi(ctx, &eventTypeImportOpenApiIn)
+}
+
+// Deprecated: Use eventType.ImportOpenapiWithOptions instead
+func (eventType *EventType) ImportOpenApiWithOptions(
+	ctx context.Context,
+	eventTypeImportOpenApiIn EventTypeImportOpenApiIn,
+	options *PostOptions,
+) (*EventTypeImportOpenApiOut, error) {
+	return eventType.ImportOpenapiWithOptions(ctx, &eventTypeImportOpenApiIn, options)
 }
 
 // Get an event type.
