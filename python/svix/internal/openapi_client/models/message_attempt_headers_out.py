@@ -6,7 +6,9 @@ import attr
 from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
-    from ..models.message_attempt_headers_out_sent_headers import MessageAttemptHeadersOutSentHeaders
+    from ..models.message_attempt_headers_out_sent_headers import (
+        MessageAttemptHeadersOutSentHeaders,
+    )
 
 
 T = TypeVar("T", bound="MessageAttemptHeadersOut")

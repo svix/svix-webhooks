@@ -6,7 +6,9 @@ import attr
 from ..models.message_attempt_failing_event_type import MessageAttemptFailingEventType
 
 if TYPE_CHECKING:
-    from ..models.message_attempt_failing_event_data import MessageAttemptFailingEventData
+    from ..models.message_attempt_failing_event_data import (
+        MessageAttemptFailingEventData,
+    )
 
 
 T = TypeVar("T", bound="MessageAttemptFailingEvent")
@@ -25,7 +27,9 @@ class MessageAttemptFailingEvent:
     """
 
     data: "MessageAttemptFailingEventData"
-    type: MessageAttemptFailingEventType = MessageAttemptFailingEventType.MESSAGE_ATTEMPT_FAILING
+    type: MessageAttemptFailingEventType = (
+        MessageAttemptFailingEventType.MESSAGE_ATTEMPT_FAILING
+    )
     additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
@@ -46,7 +50,9 @@ class MessageAttemptFailingEvent:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        from ..models.message_attempt_failing_event_data import MessageAttemptFailingEventData
+        from ..models.message_attempt_failing_event_data import (
+            MessageAttemptFailingEventData,
+        )
 
         d = src_dict.copy()
         data = MessageAttemptFailingEventData.from_dict(d.pop("data"))

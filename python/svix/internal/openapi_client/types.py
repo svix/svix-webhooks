@@ -1,4 +1,4 @@
-""" Contains some shared types for properties """
+"""Contains some shared types for properties"""
 
 from http import HTTPStatus
 from typing import BinaryIO, Generic, Literal, MutableMapping, Optional, Tuple, TypeVar

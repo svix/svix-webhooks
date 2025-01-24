@@ -6,7 +6,9 @@ import attr
 from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
-    from ..models.endpoint_transformation_simulate_in_payload import EndpointTransformationSimulateInPayload
+    from ..models.endpoint_transformation_simulate_in_payload import (
+        EndpointTransformationSimulateInPayload,
+    )
 
 
 T = TypeVar("T", bound="EndpointTransformationSimulateIn")

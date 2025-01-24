@@ -6,7 +6,9 @@ import attr
 from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
-    from ..models.operational_webhook_endpoint_update_metadata import OperationalWebhookEndpointUpdateMetadata
+    from ..models.operational_webhook_endpoint_update_metadata import (
+        OperationalWebhookEndpointUpdateMetadata,
+    )
 
 
 T = TypeVar("T", bound="OperationalWebhookEndpointUpdate")

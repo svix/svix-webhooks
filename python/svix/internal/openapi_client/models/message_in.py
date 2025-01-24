@@ -8,7 +8,9 @@ from ..types import UNSET, Unset
 if TYPE_CHECKING:
     from ..models.application_in import ApplicationIn
     from ..models.message_in_payload import MessageInPayload
-    from ..models.message_in_transformations_params import MessageInTransformationsParams
+    from ..models.message_in_transformations_params import (
+        MessageInTransformationsParams,
+    )
 
 
 T = TypeVar("T", bound="MessageIn")

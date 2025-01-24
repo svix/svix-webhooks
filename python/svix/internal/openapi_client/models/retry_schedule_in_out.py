@@ -27,7 +27,9 @@ class RetryScheduleInOut:
         if not isinstance(self.retry_schedule, Unset):
             retry_schedule = []
             for componentsschemas_retry_schedule_item_data in self.retry_schedule:
-                componentsschemas_retry_schedule_item = componentsschemas_retry_schedule_item_data.to_dict()
+                componentsschemas_retry_schedule_item = (
+                    componentsschemas_retry_schedule_item_data.to_dict()
+                )
 
                 retry_schedule.append(componentsschemas_retry_schedule_item)
 
@@ -47,7 +49,9 @@ class RetryScheduleInOut:
         retry_schedule = []
         _retry_schedule = d.pop("retrySchedule", UNSET)
         for componentsschemas_retry_schedule_item_data in _retry_schedule or []:
-            componentsschemas_retry_schedule_item = Duration.from_dict(componentsschemas_retry_schedule_item_data)
+            componentsschemas_retry_schedule_item = Duration.from_dict(
+                componentsschemas_retry_schedule_item_data
+            )
 
             retry_schedule.append(componentsschemas_retry_schedule_item)
 

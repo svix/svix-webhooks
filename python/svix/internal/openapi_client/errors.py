@@ -1,4 +1,4 @@
-""" Contains shared errors types that can be raised from API functions """
+"""Contains shared errors types that can be raised from API functions"""
 
 
 class UnexpectedStatus(Exception):

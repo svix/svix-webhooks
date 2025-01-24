@@ -3,10 +3,14 @@ from typing import TYPE_CHECKING, Any, Dict, List, Type, TypeVar
 
 import attr
 
-from ..models.message_attempt_exhausted_event_type import MessageAttemptExhaustedEventType
+from ..models.message_attempt_exhausted_event_type import (
+    MessageAttemptExhaustedEventType,
+)
 
 if TYPE_CHECKING:
-    from ..models.message_attempt_exhausted_event_data import MessageAttemptExhaustedEventData
+    from ..models.message_attempt_exhausted_event_data import (
+        MessageAttemptExhaustedEventData,
+    )
 
 
 T = TypeVar("T", bound="MessageAttemptExhaustedEvent")
@@ -24,7 +28,9 @@ class MessageAttemptExhaustedEvent:
     """
 
     data: "MessageAttemptExhaustedEventData"
-    type: MessageAttemptExhaustedEventType = MessageAttemptExhaustedEventType.MESSAGE_ATTEMPT_EXHAUSTED
+    type: MessageAttemptExhaustedEventType = (
+        MessageAttemptExhaustedEventType.MESSAGE_ATTEMPT_EXHAUSTED
+    )
     additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
@@ -45,7 +51,9 @@ class MessageAttemptExhaustedEvent:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        from ..models.message_attempt_exhausted_event_data import MessageAttemptExhaustedEventData
+        from ..models.message_attempt_exhausted_event_data import (
+            MessageAttemptExhaustedEventData,
+        )
 
         d = src_dict.copy()
         data = MessageAttemptExhaustedEventData.from_dict(d.pop("data"))

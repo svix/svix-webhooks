@@ -156,14 +156,18 @@ class EnvironmentSettingsOut:
         if isinstance(_custom_strings_override, Unset):
             custom_strings_override = UNSET
         else:
-            custom_strings_override = CustomStringsOverride.from_dict(_custom_strings_override)
+            custom_strings_override = CustomStringsOverride.from_dict(
+                _custom_strings_override
+            )
 
         _custom_theme_override = d.pop("customThemeOverride", UNSET)
         custom_theme_override: Union[Unset, CustomThemeOverride]
         if isinstance(_custom_theme_override, Unset):
             custom_theme_override = UNSET
         else:
-            custom_theme_override = CustomThemeOverride.from_dict(_custom_theme_override)
+            custom_theme_override = CustomThemeOverride.from_dict(
+                _custom_theme_override
+            )
 
         display_name = d.pop("displayName", UNSET)
 

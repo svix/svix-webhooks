@@ -85,7 +85,9 @@ class EnvironmentOut:
         transformation_templates = []
         _transformation_templates = d.pop("transformationTemplates")
         for transformation_templates_item_data in _transformation_templates:
-            transformation_templates_item = TemplateOut.from_dict(transformation_templates_item_data)
+            transformation_templates_item = TemplateOut.from_dict(
+                transformation_templates_item_data
+            )
 
             transformation_templates.append(transformation_templates_item)
 

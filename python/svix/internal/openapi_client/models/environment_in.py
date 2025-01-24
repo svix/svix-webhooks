@@ -48,7 +48,9 @@ class EnvironmentIn:
             else:
                 transformation_templates = []
                 for transformation_templates_item_data in self.transformation_templates:
-                    transformation_templates_item = transformation_templates_item_data.to_dict()
+                    transformation_templates_item = (
+                        transformation_templates_item_data.to_dict()
+                    )
 
                     transformation_templates.append(transformation_templates_item)
 
@@ -84,7 +86,9 @@ class EnvironmentIn:
         transformation_templates = []
         _transformation_templates = d.pop("transformationTemplates", UNSET)
         for transformation_templates_item_data in _transformation_templates or []:
-            transformation_templates_item = TemplateIn.from_dict(transformation_templates_item_data)
+            transformation_templates_item = TemplateIn.from_dict(
+                transformation_templates_item_data
+            )
 
             transformation_templates.append(transformation_templates_item)
 

@@ -3,10 +3,14 @@ from typing import TYPE_CHECKING, Any, Dict, List, Type, TypeVar
 
 import attr
 
-from ..models.message_attempt_recovered_event_type import MessageAttemptRecoveredEventType
+from ..models.message_attempt_recovered_event_type import (
+    MessageAttemptRecoveredEventType,
+)
 
 if TYPE_CHECKING:
-    from ..models.message_attempt_recovered_event_data import MessageAttemptRecoveredEventData
+    from ..models.message_attempt_recovered_event_data import (
+        MessageAttemptRecoveredEventData,
+    )
 
 
 T = TypeVar("T", bound="MessageAttemptRecoveredEvent")
@@ -24,7 +28,9 @@ class MessageAttemptRecoveredEvent:
     """
 
     data: "MessageAttemptRecoveredEventData"
-    type: MessageAttemptRecoveredEventType = MessageAttemptRecoveredEventType.MESSAGE_ATTEMPT_RECOVERED
+    type: MessageAttemptRecoveredEventType = (
+        MessageAttemptRecoveredEventType.MESSAGE_ATTEMPT_RECOVERED
+    )
     additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
@@ -45,7 +51,9 @@ class MessageAttemptRecoveredEvent:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        from ..models.message_attempt_recovered_event_data import MessageAttemptRecoveredEventData
+        from ..models.message_attempt_recovered_event_data import (
+            MessageAttemptRecoveredEventData,
+        )
 
         d = src_dict.copy()
         data = MessageAttemptRecoveredEventData.from_dict(d.pop("data"))

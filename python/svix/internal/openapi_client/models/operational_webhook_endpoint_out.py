@@ -8,7 +8,9 @@ from dateutil.parser import isoparse
 from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
-    from ..models.operational_webhook_endpoint_out_metadata import OperationalWebhookEndpointOutMetadata
+    from ..models.operational_webhook_endpoint_out_metadata import (
+        OperationalWebhookEndpointOutMetadata,
+    )
 
 
 T = TypeVar("T", bound="OperationalWebhookEndpointOut")

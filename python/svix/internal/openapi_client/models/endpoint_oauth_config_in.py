@@ -9,7 +9,9 @@ from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
     from ..models.client_secret_jwt_params_in import ClientSecretJwtParamsIn
-    from ..models.endpoint_oauth_config_in_extra_params import EndpointOauthConfigInExtraParams
+    from ..models.endpoint_oauth_config_in_extra_params import (
+        EndpointOauthConfigInExtraParams,
+    )
 
 
 T = TypeVar("T", bound="EndpointOauthConfigIn")

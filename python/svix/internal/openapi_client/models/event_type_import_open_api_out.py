@@ -4,7 +4,9 @@ from typing import TYPE_CHECKING, Any, Dict, List, Type, TypeVar
 import attr
 
 if TYPE_CHECKING:
-    from ..models.event_type_import_open_api_out_data import EventTypeImportOpenApiOutData
+    from ..models.event_type_import_open_api_out_data import (
+        EventTypeImportOpenApiOutData,
+    )
 
 
 T = TypeVar("T", bound="EventTypeImportOpenApiOut")
@@ -35,7 +37,9 @@ class EventTypeImportOpenApiOut:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        from ..models.event_type_import_open_api_out_data import EventTypeImportOpenApiOutData
+        from ..models.event_type_import_open_api_out_data import (
+            EventTypeImportOpenApiOutData,
+        )
 
         d = src_dict.copy()
         data = EventTypeImportOpenApiOutData.from_dict(d.pop("data"))

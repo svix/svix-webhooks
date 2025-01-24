@@ -135,7 +135,9 @@ class ListResponseStreamSinkOut:
                 try:
                     if not isinstance(data, dict):
                         raise TypeError()
-                    componentsschemas_stream_sink_out_type_0 = StreamSinkOutType0.from_dict(data)
+                    componentsschemas_stream_sink_out_type_0 = (
+                        StreamSinkOutType0.from_dict(data)
+                    )
 
                     return componentsschemas_stream_sink_out_type_0
                 except:  # noqa: E722
@@ -143,7 +145,9 @@ class ListResponseStreamSinkOut:
                 try:
                     if not isinstance(data, dict):
                         raise TypeError()
-                    componentsschemas_stream_sink_out_type_1 = StreamSinkOutType1.from_dict(data)
+                    componentsschemas_stream_sink_out_type_1 = (
+                        StreamSinkOutType1.from_dict(data)
+                    )
 
                     return componentsschemas_stream_sink_out_type_1
                 except:  # noqa: E722
@@ -151,7 +155,9 @@ class ListResponseStreamSinkOut:
                 try:
                     if not isinstance(data, dict):
                         raise TypeError()
-                    componentsschemas_stream_sink_out_type_2 = StreamSinkOutType2.from_dict(data)
+                    componentsschemas_stream_sink_out_type_2 = (
+                        StreamSinkOutType2.from_dict(data)
+                    )
 
                     return componentsschemas_stream_sink_out_type_2
                 except:  # noqa: E722
@@ -159,7 +165,9 @@ class ListResponseStreamSinkOut:
                 try:
                     if not isinstance(data, dict):
                         raise TypeError()
-                    componentsschemas_stream_sink_out_type_3 = StreamSinkOutType3.from_dict(data)
+                    componentsschemas_stream_sink_out_type_3 = (
+                        StreamSinkOutType3.from_dict(data)
+                    )
 
                     return componentsschemas_stream_sink_out_type_3
                 except:  # noqa: E722
@@ -167,7 +175,9 @@ class ListResponseStreamSinkOut:
                 try:
                     if not isinstance(data, dict):
                         raise TypeError()
-                    componentsschemas_stream_sink_out_type_4 = StreamSinkOutType4.from_dict(data)
+                    componentsschemas_stream_sink_out_type_4 = (
+                        StreamSinkOutType4.from_dict(data)
+                    )
 
                     return componentsschemas_stream_sink_out_type_4
                 except:  # noqa: E722
@@ -175,7 +185,9 @@ class ListResponseStreamSinkOut:
                 try:
                     if not isinstance(data, dict):
                         raise TypeError()
-                    componentsschemas_stream_sink_out_type_5 = StreamSinkOutType5.from_dict(data)
+                    componentsschemas_stream_sink_out_type_5 = (
+                        StreamSinkOutType5.from_dict(data)
+                    )
 
                     return componentsschemas_stream_sink_out_type_5
                 except:  # noqa: E722
@@ -183,14 +195,18 @@ class ListResponseStreamSinkOut:
                 try:
                     if not isinstance(data, dict):
                         raise TypeError()
-                    componentsschemas_stream_sink_out_type_6 = StreamSinkOutType6.from_dict(data)
+                    componentsschemas_stream_sink_out_type_6 = (
+                        StreamSinkOutType6.from_dict(data)
+                    )
 
                     return componentsschemas_stream_sink_out_type_6
                 except:  # noqa: E722
                     pass
                 if not isinstance(data, dict):
                     raise TypeError()
-                componentsschemas_stream_sink_out_type_7 = StreamSinkOutType7.from_dict(data)
+                componentsschemas_stream_sink_out_type_7 = StreamSinkOutType7.from_dict(
+                    data
+                )
 
                 return componentsschemas_stream_sink_out_type_7
 

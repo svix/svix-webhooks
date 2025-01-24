@@ -55,7 +55,9 @@ class ListResponseOperationalWebhookEndpointOut:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        from ..models.operational_webhook_endpoint_out import OperationalWebhookEndpointOut
+        from ..models.operational_webhook_endpoint_out import (
+            OperationalWebhookEndpointOut,
+        )
 
         d = src_dict.copy()
         data = []

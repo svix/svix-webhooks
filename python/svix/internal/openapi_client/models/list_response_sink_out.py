@@ -26,7 +26,15 @@ class ListResponseSinkOut:
         prev_iterator (Union[Unset, None, str]):  Example: -iterator.
     """
 
-    data: List[Union["SinkOutType0", "SinkOutType1", "SinkOutType2", "SinkOutType3", "SinkOutType4"]]
+    data: List[
+        Union[
+            "SinkOutType0",
+            "SinkOutType1",
+            "SinkOutType2",
+            "SinkOutType3",
+            "SinkOutType4",
+        ]
+    ]
     done: bool
     iterator: Optional[str]
     prev_iterator: Union[Unset, None, str] = UNSET
@@ -92,7 +100,13 @@ class ListResponseSinkOut:
 
             def _parse_data_item(
                 data: object,
-            ) -> Union["SinkOutType0", "SinkOutType1", "SinkOutType2", "SinkOutType3", "SinkOutType4"]:
+            ) -> Union[
+                "SinkOutType0",
+                "SinkOutType1",
+                "SinkOutType2",
+                "SinkOutType3",
+                "SinkOutType4",
+            ]:
                 try:
                     if not isinstance(data, dict):
                         raise TypeError()
