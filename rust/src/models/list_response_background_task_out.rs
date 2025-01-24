@@ -1,21 +1,24 @@
+// this file is @generated
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+use super::background_task_out::BackgroundTaskOut;
+
+#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
 pub struct ListResponseBackgroundTaskOut {
-    pub data: Vec<super::BackgroundTaskOut>,
+    pub data: Vec<BackgroundTaskOut>,
+
     pub done: bool,
-    pub iterator: Option<String>,
-    #[serde(rename = "prevIterator", skip_serializing_if = "Option::is_none")]
+
+    pub iterator: String,
+
+    #[serde(rename = "prevIterator")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub prev_iterator: Option<String>,
 }
 
 impl ListResponseBackgroundTaskOut {
-    pub fn new(
-        data: Vec<super::BackgroundTaskOut>,
-        done: bool,
-        iterator: Option<String>,
-    ) -> ListResponseBackgroundTaskOut {
-        ListResponseBackgroundTaskOut {
+    pub fn new(data: Vec<BackgroundTaskOut>, done: bool, iterator: String) -> Self {
+        Self {
             data,
             done,
             iterator,

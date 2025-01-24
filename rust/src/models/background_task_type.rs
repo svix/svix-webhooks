@@ -1,3 +1,6 @@
+// this file is @generated
+use std::fmt;
+
 use serde::{Deserialize, Serialize};
 
 #[derive(
@@ -6,28 +9,28 @@ use serde::{Deserialize, Serialize};
 pub enum BackgroundTaskType {
     #[default]
     #[serde(rename = "endpoint.replay")]
-    EndpointPeriodReplay,
+    EndpointReplay,
     #[serde(rename = "endpoint.recover")]
-    EndpointPeriodRecover,
+    EndpointRecover,
     #[serde(rename = "application.stats")]
-    ApplicationPeriodStats,
+    ApplicationStats,
     #[serde(rename = "message.broadcast")]
-    MessagePeriodBroadcast,
+    MessageBroadcast,
     #[serde(rename = "sdk.generate")]
-    SdkPeriodGenerate,
+    SdkGenerate,
     #[serde(rename = "event-type.aggregate")]
-    EventTypePeriodAggregate,
+    EventTypeAggregate,
 }
 
-impl std::fmt::Display for BackgroundTaskType {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+impl fmt::Display for BackgroundTaskType {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Self::EndpointPeriodReplay => write!(f, "endpoint.replay"),
-            Self::EndpointPeriodRecover => write!(f, "endpoint.recover"),
-            Self::ApplicationPeriodStats => write!(f, "application.stats"),
-            Self::MessagePeriodBroadcast => write!(f, "message.broadcast"),
-            Self::SdkPeriodGenerate => write!(f, "sdk.generate"),
-            Self::EventTypePeriodAggregate => write!(f, "event-type.aggregate"),
+            Self::EndpointReplay => f.write_str("endpoint.replay"),
+            Self::EndpointRecover => f.write_str("endpoint.recover"),
+            Self::ApplicationStats => f.write_str("application.stats"),
+            Self::MessageBroadcast => f.write_str("message.broadcast"),
+            Self::SdkGenerate => f.write_str("sdk.generate"),
+            Self::EventTypeAggregate => f.write_str("event-type.aggregate"),
         }
     }
 }

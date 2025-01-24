@@ -1,3 +1,6 @@
+// this file is @generated
+use std::fmt;
+
 use serde::{Deserialize, Serialize};
 
 #[derive(
@@ -31,21 +34,21 @@ pub enum TransformationTemplateKind {
     Zapier,
 }
 
-impl std::fmt::Display for TransformationTemplateKind {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+impl fmt::Display for TransformationTemplateKind {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Self::Custom => write!(f, "Custom"),
-            Self::CustomerIo => write!(f, "CustomerIO"),
-            Self::Discord => write!(f, "Discord"),
-            Self::Hubspot => write!(f, "Hubspot"),
-            Self::Inngest => write!(f, "Inngest"),
-            Self::Salesforce => write!(f, "Salesforce"),
-            Self::Segment => write!(f, "Segment"),
-            Self::Slack => write!(f, "Slack"),
-            Self::Teams => write!(f, "Teams"),
-            Self::TriggerDev => write!(f, "TriggerDev"),
-            Self::Windmill => write!(f, "Windmill"),
-            Self::Zapier => write!(f, "Zapier"),
+            Self::Custom => f.write_str("Custom"),
+            Self::CustomerIo => f.write_str("CustomerIO"),
+            Self::Discord => f.write_str("Discord"),
+            Self::Hubspot => f.write_str("Hubspot"),
+            Self::Inngest => f.write_str("Inngest"),
+            Self::Salesforce => f.write_str("Salesforce"),
+            Self::Segment => f.write_str("Segment"),
+            Self::Slack => f.write_str("Slack"),
+            Self::Teams => f.write_str("Teams"),
+            Self::TriggerDev => f.write_str("TriggerDev"),
+            Self::Windmill => f.write_str("Windmill"),
+            Self::Zapier => f.write_str("Zapier"),
         }
     }
 }
