@@ -64,5 +64,3 @@ target/
 
 # Ipython Notebook
 .ipynb_checkpoints
-
-/svix/internal
