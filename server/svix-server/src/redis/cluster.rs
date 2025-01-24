@@ -1,4 +1,3 @@
-use axum::async_trait;
 use redis::{
     cluster::{ClusterClient, ClusterClientBuilder},
     cluster_routing::{MultipleNodeRoutingInfo, ResponsePolicy, RoutingInfo},
@@ -22,7 +21,6 @@ impl RedisClusterConnectionManager {
     }
 }
 
-#[async_trait]
 impl bb8::ManageConnection for RedisClusterConnectionManager {
     type Connection = redis::cluster_async::ClusterConnection;
     type Error = RedisError;
