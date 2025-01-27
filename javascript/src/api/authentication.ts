@@ -1,4 +1,4 @@
-// this file is @generated (with minor manual changes)
+// this file is @generated
 import {
   Configuration,
   AuthenticationApi,
@@ -29,16 +29,6 @@ export class Authentication {
     });
   }
 
-  public dashboardAccess(
-    appId: string,
-    options?: PostOptions
-  ): Promise<DashboardAccessOut> {
-    return this.api.v1AuthenticationDashboardAccess({
-      appId,
-      ...options,
-    });
-  }
-
   /** Expire all of the tokens associated with a specific application. */
   public expireAll(
     appId: string,
@@ -48,6 +38,23 @@ export class Authentication {
     return this.api.v1AuthenticationExpireAll({
       appId,
       applicationTokenExpireIn,
+      ...options,
+    });
+  }
+
+  /**
+   * DEPRECATED: Please use `app-portal-access` instead.
+   *
+   * Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal.
+   *
+   * @deprecated
+   */
+  public dashboardAccess(
+    appId: string,
+    options?: PostOptions
+  ): Promise<DashboardAccessOut> {
+    return this.api.v1AuthenticationDashboardAccess({
+      appId,
       ...options,
     });
   }

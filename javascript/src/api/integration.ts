@@ -1,4 +1,4 @@
-// this file is @generated (with minor manual changes)
+// this file is @generated
 import {
   Configuration,
   IntegrationApi,
@@ -81,10 +81,15 @@ export class Integration {
     });
   }
 
+  /**
+   * Get an integration's key.
+   *
+   * @deprecated
+   */
   public getKey(appId: string, integId: string): Promise<IntegrationKeyOut> {
     return this.api.v1IntegrationGetKey({
-      integId,
       appId,
+      integId,
     });
   }
 

@@ -1,4 +1,4 @@
-// this file is @generated (with minor manual changes)
+// this file is @generated
 import {
   Configuration,
   EventTypeApi,
@@ -24,6 +24,11 @@ export interface EventTypeListOptions {
   includeArchived?: boolean;
   /** When `true` the full item (including the schema) is included in the response. */
   withContent?: boolean;
+}
+
+export interface EventTypeDeleteOptions {
+  /** By default event types are archived when "deleted". Passing this to `true` deletes them entirely. */
+  expunge?: boolean;
 }
 
 export class EventType {
@@ -98,9 +103,10 @@ export class EventType {
    * An event type can be unarchived with the
    * [create operation](#operation/create_event_type_api_v1_event_type__post).
    */
-  public delete(eventTypeName: string): Promise<void> {
+  public delete(eventTypeName: string, options?: EventTypeDeleteOptions): Promise<void> {
     return this.api.v1EventTypeDelete({
       eventTypeName,
+      ...options,
     });
   }
 
