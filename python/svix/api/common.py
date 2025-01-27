@@ -80,7 +80,7 @@ class ApiBase:
         path_params: t.Optional[t.Dict[str, str]],
         query_params: t.Optional[t.Dict[str, str]],
         header_params: t.Optional[t.Dict[str, str]],
-        json_body: t.Optional[t.Dict[str, t.Any]],
+        json_body: t.Optional[str],
     ) -> t.Dict[str, t.Any]:
         if path_params is not None:
             path = path.format(**path_params)
@@ -107,7 +107,11 @@ class ApiBase:
             httpx_kwargs["params"] = query_params
 
         if json_body is not None:
-            httpx_kwargs["json"] = json_body
+            encoded_body = json_body.encode("utf-8")
+            httpx_kwargs["content"] = encoded_body
+            headers["content-type"] = "application/json"
+            headers["content-length"] = str(len(encoded_body))
+
         return httpx_kwargs
 
     async def _request_asyncio(
@@ -117,7 +121,7 @@ class ApiBase:
         path_params: t.Optional[t.Dict[str, str]] = None,
         query_params: t.Optional[t.Dict[str, str]] = None,
         header_params: t.Optional[t.Dict[str, str]] = None,
-        json_body: t.Optional[t.Dict[str, t.Any]] = None,
+        json_body: t.Optional[str] = None,
     ) -> httpx.Response:
         httpx_kwargs = self._get_httpx_kwargs(
             method,
@@ -150,7 +154,7 @@ class ApiBase:
         path_params: t.Optional[t.Dict[str, str]] = None,
         query_params: t.Optional[t.Dict[str, str]] = None,
         header_params: t.Optional[t.Dict[str, str]] = None,
-        json_body: t.Optional[t.Dict[str, t.Any]] = None,
+        json_body: t.Optional[str] = None,
     ) -> httpx.Response:
         httpx_kwargs = self._get_httpx_kwargs(
             method,
