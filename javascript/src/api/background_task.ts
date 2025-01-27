@@ -33,7 +33,7 @@ export class BackgroundTask {
   public list(
     options?: BackgroundTaskListOptions
   ): Promise<ListResponseBackgroundTaskOut> {
-    return this.api.v1BackgroundTaskList({
+    return this.api.listBackgroundTasks({
       ...options,
       iterator: options?.iterator ?? undefined,
     });
@@ -52,7 +52,7 @@ export class BackgroundTask {
 
   /** Get a background task by ID. */
   public get(taskId: string): Promise<BackgroundTaskOut> {
-    return this.api.v1BackgroundTaskGet({
+    return this.api.getBackgroundTask({
       taskId,
     });
   }

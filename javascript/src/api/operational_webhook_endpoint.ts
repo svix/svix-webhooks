@@ -32,7 +32,7 @@ export class OperationalWebhookEndpoint {
   public list(
     options?: OperationalWebhookEndpointListOptions
   ): Promise<ListResponseOperationalWebhookEndpointOut> {
-    return this.api.v1OperationalWebhookEndpointList({
+    return this.api.listOperationalWebhookEndpoints({
       ...options,
       iterator: options?.iterator ?? undefined,
     });
@@ -43,7 +43,7 @@ export class OperationalWebhookEndpoint {
     operationalWebhookEndpointIn: OperationalWebhookEndpointIn,
     options?: PostOptions
   ): Promise<OperationalWebhookEndpointOut> {
-    return this.api.v1OperationalWebhookEndpointCreate({
+    return this.api.createOperationalWebhookEndpoint({
       operationalWebhookEndpointIn,
       ...options,
     });
@@ -51,7 +51,7 @@ export class OperationalWebhookEndpoint {
 
   /** Get an operational webhook endpoint. */
   public get(endpointId: string): Promise<OperationalWebhookEndpointOut> {
-    return this.api.v1OperationalWebhookEndpointGet({
+    return this.api.getOperationalWebhookEndpoint({
       endpointId,
     });
   }
@@ -61,7 +61,7 @@ export class OperationalWebhookEndpoint {
     endpointId: string,
     operationalWebhookEndpointUpdate: OperationalWebhookEndpointUpdate
   ): Promise<OperationalWebhookEndpointOut> {
-    return this.api.v1OperationalWebhookEndpointUpdate({
+    return this.api.updateOperationalWebhookEndpoint({
       endpointId,
       operationalWebhookEndpointUpdate,
     });
@@ -69,7 +69,7 @@ export class OperationalWebhookEndpoint {
 
   /** Delete an operational webhook endpoint. */
   public delete(endpointId: string): Promise<void> {
-    return this.api.v1OperationalWebhookEndpointDelete({
+    return this.api.deleteOperationalWebhookEndpoint({
       endpointId,
     });
   }

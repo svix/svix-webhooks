@@ -15,7 +15,7 @@ import { EventType } from "./api/event_type";
 import { Integration } from "./api/integration";
 import { Message } from "./api/message";
 import { MessageAttempt } from "./api/message_attempt";
-import { OperationalWebhookEndpoint } from "./api/op_webhook_endpoint";
+import { OperationalWebhookEndpoint } from "./api/operational_webhook_endpoint";
 import { Statistics } from "./api/statistics";
 
 export * from "./openapi/models/all";
@@ -34,7 +34,7 @@ export {
   MessageAttemptListByEndpointOptions,
   MessageAttemptListOptions,
 } from "./api/message_attempt";
-export { OperationalWebhookEndpointListOptions } from "./api/op_webhook_endpoint";
+export { OperationalWebhookEndpointListOptions } from "./api/operational_webhook_endpoint";
 
 const VERSION = "1.56.0";
 
