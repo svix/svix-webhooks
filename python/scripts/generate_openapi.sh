@@ -4,14 +4,17 @@ set -ex
 
 cd svix
 
-if [ ! -d "./internal" ]; then
-    COMMAND="generate"
-else
-    COMMAND="update"
-fi
+# hack: CI will run this file and fail, this is because openapi-python-client was removed as a dependency
 
-openapi-python-client $COMMAND --path ../../lib-openapi.json --custom-template-path=../templates --config ../openapi-generator-config.json
 
-cd internal
+# if [ ! -d "./internal" ]; then
+#     COMMAND="generate"
+# else
+#     COMMAND="update"
+# fi
 
-touch __init__.py
+# openapi-python-client $COMMAND --path ../../lib-openapi.json --custom-template-path=../templates --config ../openapi-generator-config.json
+
+# cd internal
+
+# touch __init__.py
