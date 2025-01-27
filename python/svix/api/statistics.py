@@ -2,11 +2,7 @@
 import typing as t
 from dataclasses import dataclass
 
-from ..internal.openapi_client.models.aggregate_event_types_out import (
-    AggregateEventTypesOut,
-)
-from ..internal.openapi_client.models.app_usage_stats_in import AppUsageStatsIn
-from ..internal.openapi_client.models.app_usage_stats_out import AppUsageStatsOut
+from ..models import AggregateEventTypesOut, AppUsageStatsIn, AppUsageStatsOut
 from .common import ApiBase, BaseOptions, serialize_params
 
 

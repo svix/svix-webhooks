@@ -3,36 +3,28 @@ import typing as t
 from dataclasses import dataclass
 from datetime import datetime
 
-from ..internal.openapi_client import models
-from ..internal.openapi_client.models.endpoint_headers_in import EndpointHeadersIn
-from ..internal.openapi_client.models.endpoint_headers_out import EndpointHeadersOut
-from ..internal.openapi_client.models.endpoint_headers_patch_in import (
+from .. import models
+from ..models import (
+    EndpointHeadersIn,
+    EndpointHeadersOut,
     EndpointHeadersPatchIn,
-)
-from ..internal.openapi_client.models.endpoint_in import EndpointIn
-from ..internal.openapi_client.models.endpoint_out import EndpointOut
-from ..internal.openapi_client.models.endpoint_patch import EndpointPatch
-from ..internal.openapi_client.models.endpoint_secret_out import EndpointSecretOut
-from ..internal.openapi_client.models.endpoint_secret_rotate_in import (
+    EndpointIn,
+    EndpointOut,
+    EndpointPatch,
+    EndpointSecretOut,
     EndpointSecretRotateIn,
-)
-from ..internal.openapi_client.models.endpoint_stats import EndpointStats
-from ..internal.openapi_client.models.endpoint_transformation_in import (
+    EndpointStats,
     EndpointTransformationIn,
-)
-from ..internal.openapi_client.models.endpoint_transformation_out import (
     EndpointTransformationOut,
-)
-from ..internal.openapi_client.models.endpoint_update import EndpointUpdate
-from ..internal.openapi_client.models.event_example_in import EventExampleIn
-from ..internal.openapi_client.models.list_response_endpoint_out import (
+    EndpointUpdate,
+    EventExampleIn,
     ListResponseEndpointOut,
+    MessageOut,
+    RecoverIn,
+    RecoverOut,
+    ReplayIn,
+    ReplayOut,
 )
-from ..internal.openapi_client.models.message_out import MessageOut
-from ..internal.openapi_client.models.recover_in import RecoverIn
-from ..internal.openapi_client.models.recover_out import RecoverOut
-from ..internal.openapi_client.models.replay_in import ReplayIn
-from ..internal.openapi_client.models.replay_out import ReplayOut
 from .common import ApiBase, BaseOptions, serialize_params
 
 

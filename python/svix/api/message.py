@@ -3,11 +3,7 @@ import typing as t
 from dataclasses import dataclass
 from datetime import datetime
 
-from ..internal.openapi_client.models.list_response_message_out import (
-    ListResponseMessageOut,
-)
-from ..internal.openapi_client.models.message_in import MessageIn
-from ..internal.openapi_client.models.message_out import MessageOut
+from ..models import ListResponseMessageOut, MessageIn, MessageOut
 from .common import ApiBase, BaseOptions, serialize_params
 
 

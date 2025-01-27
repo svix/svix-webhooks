@@ -2,11 +2,8 @@
 import typing as t
 from dataclasses import dataclass
 
-from ..internal.openapi_client import models
-from ..internal.openapi_client.models.background_task_out import BackgroundTaskOut
-from ..internal.openapi_client.models.list_response_background_task_out import (
-    ListResponseBackgroundTaskOut,
-)
+from .. import models
+from ..models import BackgroundTaskOut, ListResponseBackgroundTaskOut
 from .common import ApiBase, BaseOptions, serialize_params
 
 

@@ -7,8 +7,8 @@ from datetime import datetime, timezone
 
 import httpx
 
-from ..internal.openapi_client.client import AuthenticatedClient
-from ..internal.openapi_client.models import HttpError
+from .client import AuthenticatedClient
+from .http_error import HttpError
 
 
 def ensure_tz(x: t.Optional[datetime]) -> t.Optional[datetime]:

@@ -2,18 +2,14 @@
 import typing as t
 from dataclasses import dataclass
 
-from ..internal.openapi_client import models
-from ..internal.openapi_client.models.event_type_import_open_api_in import (
+from .. import models
+from ..models import (
     EventTypeImportOpenApiIn,
-)
-from ..internal.openapi_client.models.event_type_import_open_api_out import (
     EventTypeImportOpenApiOut,
-)
-from ..internal.openapi_client.models.event_type_in import EventTypeIn
-from ..internal.openapi_client.models.event_type_out import EventTypeOut
-from ..internal.openapi_client.models.event_type_patch import EventTypePatch
-from ..internal.openapi_client.models.event_type_update import EventTypeUpdate
-from ..internal.openapi_client.models.list_response_event_type_out import (
+    EventTypeIn,
+    EventTypeOut,
+    EventTypePatch,
+    EventTypeUpdate,
     ListResponseEventTypeOut,
 )
 from .common import ApiBase, BaseOptions, serialize_params

@@ -2,23 +2,13 @@
 import typing as t
 from dataclasses import dataclass
 
-from ..internal.openapi_client import models
-from ..internal.openapi_client.models.list_response_operational_webhook_endpoint_out import (
+from .. import models
+from ..models import (
     ListResponseOperationalWebhookEndpointOut,
-)
-from ..internal.openapi_client.models.operational_webhook_endpoint_in import (
     OperationalWebhookEndpointIn,
-)
-from ..internal.openapi_client.models.operational_webhook_endpoint_out import (
     OperationalWebhookEndpointOut,
-)
-from ..internal.openapi_client.models.operational_webhook_endpoint_secret_in import (
     OperationalWebhookEndpointSecretIn,
-)
-from ..internal.openapi_client.models.operational_webhook_endpoint_secret_out import (
     OperationalWebhookEndpointSecretOut,
-)
-from ..internal.openapi_client.models.operational_webhook_endpoint_update import (
     OperationalWebhookEndpointUpdate,
 )
 from .common import ApiBase, BaseOptions, serialize_params

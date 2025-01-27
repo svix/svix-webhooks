@@ -4,12 +4,12 @@ from dataclasses import dataclass
 
 from deprecated import deprecated
 
-from ..internal.openapi_client import models
-from ..internal.openapi_client.models.integration_in import IntegrationIn
-from ..internal.openapi_client.models.integration_key_out import IntegrationKeyOut
-from ..internal.openapi_client.models.integration_out import IntegrationOut
-from ..internal.openapi_client.models.integration_update import IntegrationUpdate
-from ..internal.openapi_client.models.list_response_integration_out import (
+from .. import models
+from ..models import (
+    IntegrationIn,
+    IntegrationKeyOut,
+    IntegrationOut,
+    IntegrationUpdate,
     ListResponseIntegrationOut,
 )
 from .common import ApiBase, BaseOptions, serialize_params

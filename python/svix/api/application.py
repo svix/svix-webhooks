@@ -2,11 +2,11 @@
 import typing as t
 from dataclasses import dataclass
 
-from ..internal.openapi_client import models
-from ..internal.openapi_client.models.application_in import ApplicationIn
-from ..internal.openapi_client.models.application_out import ApplicationOut
-from ..internal.openapi_client.models.application_patch import ApplicationPatch
-from ..internal.openapi_client.models.list_response_application_out import (
+from .. import models
+from ..models import (
+    ApplicationIn,
+    ApplicationOut,
+    ApplicationPatch,
     ListResponseApplicationOut,
 )
 from .common import ApiBase, BaseOptions, serialize_params

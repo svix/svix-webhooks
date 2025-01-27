@@ -4,12 +4,12 @@ from dataclasses import dataclass
 
 from deprecated import deprecated
 
-from ..internal.openapi_client.models.app_portal_access_in import AppPortalAccessIn
-from ..internal.openapi_client.models.app_portal_access_out import AppPortalAccessOut
-from ..internal.openapi_client.models.application_token_expire_in import (
+from ..models import (
     ApplicationTokenExpireIn,
+    AppPortalAccessIn,
+    AppPortalAccessOut,
+    DashboardAccessOut,
 )
-from ..internal.openapi_client.models.dashboard_access_out import DashboardAccessOut
 from .common import ApiBase, BaseOptions, serialize_params
 
 
