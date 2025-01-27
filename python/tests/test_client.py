@@ -85,9 +85,9 @@ def create_svix_endpoint(
             url=endpoint_url,
             uid=endpoint_uid,
             version=1,
-            filter_types=[event_type_name],
-            channels=[channel] if channel else None,
-            metadata=metadata,  # type: ignore[arg-type]
+            filter_types={event_type_name},
+            channels={channel} if channel else None,
+            metadata=metadata,
             secret=secret,
         ),
     )
@@ -159,9 +159,9 @@ def test_svix_endpoint_create(
     )
     assert endpoint.url == endpoint_url
     assert endpoint.uid == endpoint_uid
-    assert endpoint.filter_types == [event_type.name]
+    assert endpoint.filter_types == {event_type.name}
     if with_channel:
-        assert endpoint.channels == [channel]
+        assert endpoint.channels == {channel}
     if with_metadata:
         assert endpoint.metadata == metadata
     if with_secret:
@@ -222,7 +222,7 @@ def test_svix_message_create(
             MessageIn(
                 event_type=event_type.name,
                 payload=payload,
-                channels=[channel] if channel else None,
+                channels={channel} if channel else None,
             ),
         )
 
@@ -233,4 +233,4 @@ def test_svix_message_create(
     assert message_out.event_type == event_type.name
     assert message_out.event_type == event_type.name
     if with_channel:
-        assert message_out.channels == [channel]
+        assert message_out.channels == {channel}
