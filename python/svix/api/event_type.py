@@ -89,7 +89,7 @@ class EventTypeAsync(ApiBase):
             query_params=options._query_params(),
             header_params=options._header_params(),
         )
-        return ListResponseEventTypeOut.from_dict(response.json())
+        return ListResponseEventTypeOut.model_validate(response.json())
 
     async def create(
         self,
@@ -107,9 +107,9 @@ class EventTypeAsync(ApiBase):
             path_params={},
             query_params=options._query_params(),
             header_params=options._header_params(),
-            json_body=event_type_in.to_dict(),
+            json_body=event_type_in.model_dump_json(exclude_unset=True, by_alias=True),
         )
-        return EventTypeOut.from_dict(response.json())
+        return EventTypeOut.model_validate(response.json())
 
     async def import_openapi(
         self,
@@ -127,9 +127,11 @@ class EventTypeAsync(ApiBase):
             path_params={},
             query_params=options._query_params(),
             header_params=options._header_params(),
-            json_body=event_type_import_open_api_in.to_dict(),
+            json_body=event_type_import_open_api_in.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
         )
-        return EventTypeImportOpenApiOut.from_dict(response.json())
+        return EventTypeImportOpenApiOut.model_validate(response.json())
 
     async def get(self, event_type_name: str) -> EventTypeOut:
         """Get an event type."""
@@ -140,7 +142,7 @@ class EventTypeAsync(ApiBase):
                 "event_type_name": event_type_name,
             },
         )
-        return EventTypeOut.from_dict(response.json())
+        return EventTypeOut.model_validate(response.json())
 
     async def update(
         self, event_type_name: str, event_type_update: EventTypeUpdate
@@ -152,9 +154,11 @@ class EventTypeAsync(ApiBase):
             path_params={
                 "event_type_name": event_type_name,
             },
-            json_body=event_type_update.to_dict(),
+            json_body=event_type_update.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
         )
-        return EventTypeOut.from_dict(response.json())
+        return EventTypeOut.model_validate(response.json())
 
     async def delete(
         self,
@@ -187,9 +191,11 @@ class EventTypeAsync(ApiBase):
             path_params={
                 "event_type_name": event_type_name,
             },
-            json_body=event_type_patch.to_dict(),
+            json_body=event_type_patch.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
         )
-        return EventTypeOut.from_dict(response.json())
+        return EventTypeOut.model_validate(response.json())
 
 
 class EventType(ApiBase):
@@ -204,7 +210,7 @@ class EventType(ApiBase):
             query_params=options._query_params(),
             header_params=options._header_params(),
         )
-        return ListResponseEventTypeOut.from_dict(response.json())
+        return ListResponseEventTypeOut.model_validate(response.json())
 
     def create(
         self,
@@ -222,9 +228,9 @@ class EventType(ApiBase):
             path_params={},
             query_params=options._query_params(),
             header_params=options._header_params(),
-            json_body=event_type_in.to_dict(),
+            json_body=event_type_in.model_dump_json(exclude_unset=True, by_alias=True),
         )
-        return EventTypeOut.from_dict(response.json())
+        return EventTypeOut.model_validate(response.json())
 
     def import_openapi(
         self,
@@ -242,9 +248,11 @@ class EventType(ApiBase):
             path_params={},
             query_params=options._query_params(),
             header_params=options._header_params(),
-            json_body=event_type_import_open_api_in.to_dict(),
+            json_body=event_type_import_open_api_in.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
         )
-        return EventTypeImportOpenApiOut.from_dict(response.json())
+        return EventTypeImportOpenApiOut.model_validate(response.json())
 
     def get(self, event_type_name: str) -> EventTypeOut:
         """Get an event type."""
@@ -255,7 +263,7 @@ class EventType(ApiBase):
                 "event_type_name": event_type_name,
             },
         )
-        return EventTypeOut.from_dict(response.json())
+        return EventTypeOut.model_validate(response.json())
 
     def update(
         self, event_type_name: str, event_type_update: EventTypeUpdate
@@ -267,9 +275,11 @@ class EventType(ApiBase):
             path_params={
                 "event_type_name": event_type_name,
             },
-            json_body=event_type_update.to_dict(),
+            json_body=event_type_update.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
         )
-        return EventTypeOut.from_dict(response.json())
+        return EventTypeOut.model_validate(response.json())
 
     def delete(
         self,
@@ -302,6 +312,8 @@ class EventType(ApiBase):
             path_params={
                 "event_type_name": event_type_name,
             },
-            json_body=event_type_patch.to_dict(),
+            json_body=event_type_patch.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
         )
-        return EventTypeOut.from_dict(response.json())
+        return EventTypeOut.model_validate(response.json())

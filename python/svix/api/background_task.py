@@ -44,7 +44,7 @@ class BackgroundTaskAsync(ApiBase):
             query_params=options._query_params(),
             header_params=options._header_params(),
         )
-        return ListResponseBackgroundTaskOut.from_dict(response.json())
+        return ListResponseBackgroundTaskOut.model_validate(response.json())
 
     async def get(self, task_id: str) -> BackgroundTaskOut:
         """Get a background task by ID."""
@@ -55,7 +55,7 @@ class BackgroundTaskAsync(ApiBase):
                 "task_id": task_id,
             },
         )
-        return BackgroundTaskOut.from_dict(response.json())
+        return BackgroundTaskOut.model_validate(response.json())
 
 
 class BackgroundTask(ApiBase):
@@ -70,7 +70,7 @@ class BackgroundTask(ApiBase):
             query_params=options._query_params(),
             header_params=options._header_params(),
         )
-        return ListResponseBackgroundTaskOut.from_dict(response.json())
+        return ListResponseBackgroundTaskOut.model_validate(response.json())
 
     def get(self, task_id: str) -> BackgroundTaskOut:
         """Get a background task by ID."""
@@ -81,4 +81,4 @@ class BackgroundTask(ApiBase):
                 "task_id": task_id,
             },
         )
-        return BackgroundTaskOut.from_dict(response.json())
+        return BackgroundTaskOut.model_validate(response.json())

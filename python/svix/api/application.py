@@ -55,7 +55,7 @@ class ApplicationAsync(ApiBase):
             query_params=options._query_params(),
             header_params=options._header_params(),
         )
-        return ListResponseApplicationOut.from_dict(response.json())
+        return ListResponseApplicationOut.model_validate(response.json())
 
     async def create(
         self,
@@ -69,9 +69,9 @@ class ApplicationAsync(ApiBase):
             path_params={},
             query_params=options._query_params(),
             header_params=options._header_params(),
-            json_body=application_in.to_dict(),
+            json_body=application_in.model_dump_json(exclude_unset=True, by_alias=True),
         )
-        return ApplicationOut.from_dict(response.json())
+        return ApplicationOut.model_validate(response.json())
 
     async def get_or_create(
         self,
@@ -84,9 +84,9 @@ class ApplicationAsync(ApiBase):
             path_params={},
             query_params={"get_if_exists": "true"},
             header_params=options._header_params(),
-            json_body=application_in.to_dict(),
+            json_body=application_in.model_dump_json(exclude_unset=True, by_alias=True),
         )
-        return ApplicationOut.from_dict(response.json())
+        return ApplicationOut.model_validate(response.json())
 
     async def get(self, app_id: str) -> ApplicationOut:
         """Get an application."""
@@ -97,7 +97,7 @@ class ApplicationAsync(ApiBase):
                 "app_id": app_id,
             },
         )
-        return ApplicationOut.from_dict(response.json())
+        return ApplicationOut.model_validate(response.json())
 
     async def update(
         self, app_id: str, application_in: ApplicationIn
@@ -109,9 +109,9 @@ class ApplicationAsync(ApiBase):
             path_params={
                 "app_id": app_id,
             },
-            json_body=application_in.to_dict(),
+            json_body=application_in.model_dump_json(exclude_unset=True, by_alias=True),
         )
-        return ApplicationOut.from_dict(response.json())
+        return ApplicationOut.model_validate(response.json())
 
     async def delete(self, app_id: str) -> None:
         """Delete an application."""
@@ -133,9 +133,11 @@ class ApplicationAsync(ApiBase):
             path_params={
                 "app_id": app_id,
             },
-            json_body=application_patch.to_dict(),
+            json_body=application_patch.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
         )
-        return ApplicationOut.from_dict(response.json())
+        return ApplicationOut.model_validate(response.json())
 
 
 class Application(ApiBase):
@@ -150,7 +152,7 @@ class Application(ApiBase):
             query_params=options._query_params(),
             header_params=options._header_params(),
         )
-        return ListResponseApplicationOut.from_dict(response.json())
+        return ListResponseApplicationOut.model_validate(response.json())
 
     def create(
         self,
@@ -164,25 +166,24 @@ class Application(ApiBase):
             path_params={},
             query_params=options._query_params(),
             header_params=options._header_params(),
-            json_body=application_in.to_dict(),
+            json_body=application_in.model_dump_json(exclude_unset=True, by_alias=True),
         )
-        return ApplicationOut.from_dict(response.json())
+        return ApplicationOut.model_validate(response.json())
 
     def get_or_create(
         self,
         application_in: ApplicationIn,
         options: ApplicationCreateOptions = ApplicationCreateOptions(),
     ) -> ApplicationOut:
-        # ruff: noqa: F841
         response = self._request_sync(
             method="post",
             path="/api/v1/app",
             path_params={},
             query_params={"get_if_exists": "true"},
             header_params=options._header_params(),
-            json_body=application_in.to_dict(),
+            json_body=application_in.model_dump_json(exclude_unset=True, by_alias=True),
         )
-        return ApplicationOut.from_dict(response.json())
+        return ApplicationOut.model_validate(response.json())
 
     def get(self, app_id: str) -> ApplicationOut:
         """Get an application."""
@@ -193,7 +194,7 @@ class Application(ApiBase):
                 "app_id": app_id,
             },
         )
-        return ApplicationOut.from_dict(response.json())
+        return ApplicationOut.model_validate(response.json())
 
     def update(self, app_id: str, application_in: ApplicationIn) -> ApplicationOut:
         """Update an application."""
@@ -203,9 +204,9 @@ class Application(ApiBase):
             path_params={
                 "app_id": app_id,
             },
-            json_body=application_in.to_dict(),
+            json_body=application_in.model_dump_json(exclude_unset=True, by_alias=True),
         )
-        return ApplicationOut.from_dict(response.json())
+        return ApplicationOut.model_validate(response.json())
 
     def delete(self, app_id: str) -> None:
         """Delete an application."""
@@ -225,6 +226,8 @@ class Application(ApiBase):
             path_params={
                 "app_id": app_id,
             },
-            json_body=application_patch.to_dict(),
+            json_body=application_patch.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
         )
-        return ApplicationOut.from_dict(response.json())
+        return ApplicationOut.model_validate(response.json())

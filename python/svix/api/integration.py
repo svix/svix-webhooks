@@ -72,7 +72,7 @@ class IntegrationAsync(ApiBase):
             query_params=options._query_params(),
             header_params=options._header_params(),
         )
-        return ListResponseIntegrationOut.from_dict(response.json())
+        return ListResponseIntegrationOut.model_validate(response.json())
 
     async def create(
         self,
@@ -89,9 +89,9 @@ class IntegrationAsync(ApiBase):
             },
             query_params=options._query_params(),
             header_params=options._header_params(),
-            json_body=integration_in.to_dict(),
+            json_body=integration_in.model_dump_json(exclude_unset=True, by_alias=True),
         )
-        return IntegrationOut.from_dict(response.json())
+        return IntegrationOut.model_validate(response.json())
 
     async def get(self, app_id: str, integ_id: str) -> IntegrationOut:
         """Get an integration."""
@@ -103,7 +103,7 @@ class IntegrationAsync(ApiBase):
                 "integ_id": integ_id,
             },
         )
-        return IntegrationOut.from_dict(response.json())
+        return IntegrationOut.model_validate(response.json())
 
     async def update(
         self, app_id: str, integ_id: str, integration_update: IntegrationUpdate
@@ -116,9 +116,11 @@ class IntegrationAsync(ApiBase):
                 "app_id": app_id,
                 "integ_id": integ_id,
             },
-            json_body=integration_update.to_dict(),
+            json_body=integration_update.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
         )
-        return IntegrationOut.from_dict(response.json())
+        return IntegrationOut.model_validate(response.json())
 
     async def delete(self, app_id: str, integ_id: str) -> None:
         """Delete an integration."""
@@ -142,7 +144,7 @@ class IntegrationAsync(ApiBase):
                 "integ_id": integ_id,
             },
         )
-        return IntegrationKeyOut.from_dict(response.json())
+        return IntegrationKeyOut.model_validate(response.json())
 
     async def rotate_key(
         self,
@@ -161,7 +163,7 @@ class IntegrationAsync(ApiBase):
             query_params=options._query_params(),
             header_params=options._header_params(),
         )
-        return IntegrationKeyOut.from_dict(response.json())
+        return IntegrationKeyOut.model_validate(response.json())
 
 
 class Integration(ApiBase):
@@ -178,7 +180,7 @@ class Integration(ApiBase):
             query_params=options._query_params(),
             header_params=options._header_params(),
         )
-        return ListResponseIntegrationOut.from_dict(response.json())
+        return ListResponseIntegrationOut.model_validate(response.json())
 
     def create(
         self,
@@ -195,9 +197,9 @@ class Integration(ApiBase):
             },
             query_params=options._query_params(),
             header_params=options._header_params(),
-            json_body=integration_in.to_dict(),
+            json_body=integration_in.model_dump_json(exclude_unset=True, by_alias=True),
         )
-        return IntegrationOut.from_dict(response.json())
+        return IntegrationOut.model_validate(response.json())
 
     def get(self, app_id: str, integ_id: str) -> IntegrationOut:
         """Get an integration."""
@@ -209,7 +211,7 @@ class Integration(ApiBase):
                 "integ_id": integ_id,
             },
         )
-        return IntegrationOut.from_dict(response.json())
+        return IntegrationOut.model_validate(response.json())
 
     def update(
         self, app_id: str, integ_id: str, integration_update: IntegrationUpdate
@@ -222,9 +224,11 @@ class Integration(ApiBase):
                 "app_id": app_id,
                 "integ_id": integ_id,
             },
-            json_body=integration_update.to_dict(),
+            json_body=integration_update.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
         )
-        return IntegrationOut.from_dict(response.json())
+        return IntegrationOut.model_validate(response.json())
 
     def delete(self, app_id: str, integ_id: str) -> None:
         """Delete an integration."""
@@ -248,7 +252,7 @@ class Integration(ApiBase):
                 "integ_id": integ_id,
             },
         )
-        return IntegrationKeyOut.from_dict(response.json())
+        return IntegrationKeyOut.model_validate(response.json())
 
     def rotate_key(
         self,
@@ -267,4 +271,4 @@ class Integration(ApiBase):
             query_params=options._query_params(),
             header_params=options._header_params(),
         )
-        return IntegrationKeyOut.from_dict(response.json())
+        return IntegrationKeyOut.model_validate(response.json())
