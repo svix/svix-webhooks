@@ -43,18 +43,6 @@ class ApplicationCreateOptions(BaseOptions):
         )
 
 
-@dataclass
-class ApplicationGetOrCreateOptions(BaseOptions):
-    idempotency_key: t.Optional[str] = None
-
-    def _header_params(self) -> t.Dict[str, str]:
-        return serialize_params(
-            {
-                "idempotency-key": self.idempotency_key,
-            }
-        )
-
-
 class ApplicationAsync(ApiBase):
     async def list(
         self, options: ApplicationListOptions = ApplicationListOptions()
@@ -88,7 +76,7 @@ class ApplicationAsync(ApiBase):
     async def get_or_create(
         self,
         application_in: ApplicationIn,
-        options: ApplicationGetOrCreateOptions = ApplicationGetOrCreateOptions(),
+        options: ApplicationCreateOptions = ApplicationCreateOptions(),
     ) -> ApplicationOut:
         response = await self._request_asyncio(
             method="post",
@@ -183,7 +171,7 @@ class Application(ApiBase):
     def get_or_create(
         self,
         application_in: ApplicationIn,
-        options: ApplicationGetOrCreateOptions = ApplicationGetOrCreateOptions(),
+        options: ApplicationCreateOptions = ApplicationCreateOptions(),
     ) -> ApplicationOut:
         # ruff: noqa: F841
         response = self._request_sync(
