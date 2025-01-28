@@ -6,7 +6,6 @@ namespace Svix.Abstractions
 {
     public interface ISvixClient
     {
-        public IApplication Application { get; }
 
         public IAuthentication Authentication { get; }
 

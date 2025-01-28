@@ -12,7 +12,7 @@ using Svix.Models;
 
 namespace Svix
 {
-    public sealed class Application : SvixResourceBase, IApplication
+    public sealed class Application : SvixResourceBase
     {
         private readonly IApplicationApi _applicationApi;
 

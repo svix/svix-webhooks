@@ -15,7 +15,7 @@ namespace Svix
             AccessToken = Token
         };
 
-        public IApplication Application { get; }
+        public Application Application { get; }
 
         public IAuthentication Authentication { get; }
 
