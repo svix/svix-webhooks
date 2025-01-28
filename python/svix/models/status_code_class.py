@@ -3,12 +3,12 @@ from enum import IntEnum
 
 
 class StatusCodeClass(IntEnum):
-    VALUE_0 = 0
-    VALUE_100 = 100
-    VALUE_200 = 200
-    VALUE_300 = 300
-    VALUE_400 = 400
-    VALUE_500 = 500
+    CODE_NONE = 0
+    CODE1XX = 100
+    CODE2XX = 200
+    CODE3XX = 300
+    CODE4XX = 400
+    CODE5XX = 500
 
     def __str__(self) -> str:
         return str(self.value)
