@@ -25,7 +25,7 @@ const filesPaths = [
     "java/lib/src/main/java/com/svix/Svix.java",
     // Javascript
     "javascript/package.json",
-    "javascript/src/index.ts",
+    "javascript/src/request.ts",
     // Kotlin
     "kotlin/gradle.properties",
     "kotlin/README.md",

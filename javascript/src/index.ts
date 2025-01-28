@@ -1,12 +1,3 @@
-import {
-  ServerConfiguration,
-  HttpBearerConfiguration,
-  Configuration,
-  createConfiguration,
-  Middleware,
-  RequestContext,
-  ResponseContext,
-} from "./openapi";
 import { Authentication } from "./api/authentication";
 import { Application } from "./api/application";
 import { BackgroundTask } from "./api/background_task";
@@ -17,6 +8,7 @@ import { Message } from "./api/message";
 import { MessageAttempt } from "./api/message_attempt";
 import { OperationalWebhookEndpoint } from "./api/operational_webhook_endpoint";
 import { Statistics } from "./api/statistics";
+import { SvixRequestContext } from "./request";
 
 export * from "./openapi/models/all";
 export * from "./openapi/apis/exception";
@@ -36,19 +28,6 @@ export {
 } from "./api/message_attempt";
 export { OperationalWebhookEndpointListOptions } from "./api/operational_webhook_endpoint";
 
-const VERSION = "1.56.0";
-
-class UserAgentMiddleware implements Middleware {
-  public pre(context: RequestContext): Promise<RequestContext> {
-    context.setHeaderParam("User-Agent", `svix-libs/${VERSION}/javascript`);
-    return Promise.resolve(context);
-  }
-
-  public post(context: ResponseContext): Promise<ResponseContext> {
-    return Promise.resolve(context);
-  }
-}
-
 export interface SvixOptions {
   debug?: boolean;
   serverUrl?: string;
@@ -61,47 +40,52 @@ const REGIONS = [
 ];
 
 export class Svix {
-  public readonly _configuration: Configuration;
-  public readonly authentication: Authentication;
-  public readonly application: Application;
-  public readonly endpoint: Endpoint;
-  public readonly eventType: EventType;
-  public readonly integration: Integration;
-  public readonly message: Message;
-  public readonly messageAttempt: MessageAttempt;
-  public readonly backgroundTask: BackgroundTask;
-  public readonly statistics: Statistics;
-  public readonly operationalWebhookEndpoint: OperationalWebhookEndpoint;
+  private readonly requestCtx: SvixRequestContext;
 
   public constructor(token: string, options: SvixOptions = {}) {
     const regionalUrl = REGIONS.find((x) => x.region === token.split(".")[1])?.url;
     const baseUrl: string = options.serverUrl ?? regionalUrl ?? "https://api.svix.com";
 
-    const baseServer = new ServerConfiguration<any>(baseUrl, {});
+    this.requestCtx = { baseUrl, token };
+  }
 
-    const bearerConfiguration: HttpBearerConfiguration = {
-      tokenProvider: {
-        getToken: () => token,
-      },
-    };
-    const config = createConfiguration({
-      baseServer,
-      promiseMiddleware: [new UserAgentMiddleware()],
-      authMethods: {
-        HTTPBearer: bearerConfiguration,
-      },
-    });
+  public get authentication() {
+    return new Authentication(this.requestCtx);
+  }
 
-    this._configuration = config;
-    this.authentication = new Authentication(config);
-    this.application = new Application(config);
-    this.endpoint = new Endpoint(config);
-    this.eventType = new EventType(config);
-    this.integration = new Integration(config);
-    this.message = new Message(config);
-    this.messageAttempt = new MessageAttempt(config);
-    this.backgroundTask = new BackgroundTask(config);
-    this.statistics = new Statistics(config);
-    this.operationalWebhookEndpoint = new OperationalWebhookEndpoint(config);
+  public get application() {
+    return new Application(this.requestCtx);
+  }
+
+  public get endpoint() {
+    return new Endpoint(this.requestCtx);
+  }
+
+  public get eventType() {
+    return new EventType(this.requestCtx);
+  }
+
+  public get integration() {
+    return new Integration(this.requestCtx);
+  }
+
+  public get message() {
+    return new Message(this.requestCtx);
+  }
+
+  public get messageAttempt() {
+    return new MessageAttempt(this.requestCtx);
+  }
+
+  public get backgroundTask() {
+    return new BackgroundTask(this.requestCtx);
+  }
+
+  public get statistics() {
+    return new Statistics(this.requestCtx);
+  }
+
+  public get operationalWebhookEndpoint() {
+    return new OperationalWebhookEndpoint(this.requestCtx);
   }
 }

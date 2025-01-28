@@ -1,13 +1,12 @@
-// this file is @generated (with the exception of getOrCreate)
+// this file is @generated
 import {
-  Configuration,
-  ApplicationApi,
   ApplicationIn,
   ApplicationOut,
   ApplicationPatch,
   ListResponseApplicationOut,
   Ordering,
 } from "../openapi";
+import { HttpMethod, SvixRequest, SvixRequestContext } from "../request";
 import { PostOptions } from "../util";
 
 export interface ApplicationListOptions {
@@ -20,18 +19,17 @@ export interface ApplicationListOptions {
 }
 
 export class Application {
-  private readonly api: ApplicationApi;
-
-  public constructor(config: Configuration) {
-    this.api = new ApplicationApi(config);
-  }
+  public constructor(private readonly requestCtx: SvixRequestContext) {}
 
   /** List of all the organization's applications. */
   public list(options?: ApplicationListOptions): Promise<ListResponseApplicationOut> {
-    return this.api.v1ApplicationList({
-      ...options,
-      iterator: options?.iterator ?? undefined,
-    });
+    const request = new SvixRequest(HttpMethod.GET, "/api/v1/app");
+
+    request.setQueryParam("limit", options?.limit);
+    request.setQueryParam("iterator", options?.iterator);
+    request.setQueryParam("order", options?.order);
+
+    return request.send(this.requestCtx);
   }
 
   /** Create a new application. */
@@ -39,10 +37,12 @@ export class Application {
     applicationIn: ApplicationIn,
     options?: PostOptions
   ): Promise<ApplicationOut> {
-    return this.api.v1ApplicationCreate({
-      applicationIn,
-      ...options,
-    });
+    const request = new SvixRequest(HttpMethod.POST, "/api/v1/app");
+
+    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
+    request.body = applicationIn;
+
+    return request.send(this.requestCtx);
   }
 
   /** Get the application with the UID from `applicationIn`, or create it if it doesn't exist yet. */
@@ -50,33 +50,41 @@ export class Application {
     applicationIn: ApplicationIn,
     options?: PostOptions
   ): Promise<ApplicationOut> {
-    return this.api.v1ApplicationCreate({
-      applicationIn,
-      ...options,
-      getIfExists: true,
-    });
+    const request = new SvixRequest(HttpMethod.POST, "/api/v1/app");
+
+    request.body = applicationIn;
+    request.setQueryParam("get_if_exists", true);
+    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
+
+    return request.send(this.requestCtx);
   }
 
   /** Get an application. */
   public get(appId: string): Promise<ApplicationOut> {
-    return this.api.v1ApplicationGet({
-      appId,
-    });
+    const request = new SvixRequest(HttpMethod.GET, "/api/v1/app/{app_id}");
+
+    request.setPathParam("app_id", appId);
+
+    return request.send(this.requestCtx);
   }
 
   /** Update an application. */
   public update(appId: string, applicationIn: ApplicationIn): Promise<ApplicationOut> {
-    return this.api.v1ApplicationUpdate({
-      appId,
-      applicationIn,
-    });
+    const request = new SvixRequest(HttpMethod.PUT, "/api/v1/app/{app_id}");
+
+    request.setPathParam("app_id", appId);
+    request.body = applicationIn;
+
+    return request.send(this.requestCtx);
   }
 
   /** Delete an application. */
   public delete(appId: string): Promise<void> {
-    return this.api.v1ApplicationDelete({
-      appId,
-    });
+    const request = new SvixRequest(HttpMethod.DELETE, "/api/v1/app/{app_id}");
+
+    request.setPathParam("app_id", appId);
+
+    return request.sendNoResponseBody(this.requestCtx);
   }
 
   /** Partially update an application. */
@@ -84,9 +92,11 @@ export class Application {
     appId: string,
     applicationPatch: ApplicationPatch
   ): Promise<ApplicationOut> {
-    return this.api.v1ApplicationPatch({
-      appId,
-      applicationPatch,
-    });
+    const request = new SvixRequest(HttpMethod.PATCH, "/api/v1/app/{app_id}");
+
+    request.setPathParam("app_id", appId);
+    request.body = applicationPatch;
+
+    return request.send(this.requestCtx);
   }
 }

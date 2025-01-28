@@ -1,7 +1,5 @@
-// this file is @generated (with minor manual changes)
+// this file is @generated
 import {
-  Configuration,
-  MessageAttemptApi,
   ListResponseEndpointMessageOut,
   ListResponseMessageAttemptOut,
   ListResponseMessageEndpointOut,
@@ -9,6 +7,7 @@ import {
   MessageStatus,
   StatusCodeClass,
 } from "../openapi";
+import { HttpMethod, SvixRequest, SvixRequestContext } from "../request";
 import { PostOptions } from "../util";
 
 export interface MessageAttemptListOptions {
@@ -102,11 +101,7 @@ export interface MessageAttemptListAttemptedDestinationsOptions {
 }
 
 export class MessageAttempt {
-  private readonly api: MessageAttemptApi;
-
-  public constructor(config: Configuration) {
-    this.api = new MessageAttemptApi(config);
-  }
+  public constructor(private readonly requestCtx: SvixRequestContext) {}
 
   /**
    * @deprecated Since version 0.48.0. Use listByMsg or listByEndpoint instead.
@@ -132,14 +127,26 @@ export class MessageAttempt {
     endpointId: string,
     options?: MessageAttemptListByEndpointOptions
   ): Promise<ListResponseMessageAttemptOut> {
-    return this.api.v1MessageAttemptListByEndpoint({
-      appId,
-      endpointId,
-      ...options,
-      iterator: options?.iterator ?? undefined,
-      before: options?.before ?? undefined,
-      after: options?.after ?? undefined,
-    });
+    const request = new SvixRequest(
+      HttpMethod.GET,
+      "/api/v1/app/{app_id}/attempt/endpoint/{endpoint_id}"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("endpoint_id", endpointId);
+    request.setQueryParam("limit", options?.limit);
+    request.setQueryParam("iterator", options?.iterator);
+    request.setQueryParam("status", options?.status);
+    request.setQueryParam("status_code_class", options?.statusCodeClass);
+    request.setQueryParam("channel", options?.channel);
+    request.setQueryParam("tag", options?.tag);
+    request.setQueryParam("before", options?.before);
+    request.setQueryParam("after", options?.after);
+    request.setQueryParam("with_content", options?.withContent);
+    request.setQueryParam("with_msg", options?.withMsg);
+    request.setQueryParam("event_types", options?.eventTypes);
+
+    return request.send(this.requestCtx);
   }
 
   /**
@@ -155,14 +162,26 @@ export class MessageAttempt {
     msgId: string,
     options?: MessageAttemptListByMsgOptions
   ): Promise<ListResponseMessageAttemptOut> {
-    return this.api.v1MessageAttemptListByMsg({
-      appId,
-      msgId,
-      ...options,
-      iterator: options?.iterator ?? undefined,
-      before: options?.before ?? undefined,
-      after: options?.after ?? undefined,
-    });
+    const request = new SvixRequest(
+      HttpMethod.GET,
+      "/api/v1/app/{app_id}/attempt/msg/{msg_id}"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("msg_id", msgId);
+    request.setQueryParam("limit", options?.limit);
+    request.setQueryParam("iterator", options?.iterator);
+    request.setQueryParam("status", options?.status);
+    request.setQueryParam("status_code_class", options?.statusCodeClass);
+    request.setQueryParam("channel", options?.channel);
+    request.setQueryParam("tag", options?.tag);
+    request.setQueryParam("endpoint_id", options?.endpointId);
+    request.setQueryParam("before", options?.before);
+    request.setQueryParam("after", options?.after);
+    request.setQueryParam("with_content", options?.withContent);
+    request.setQueryParam("event_types", options?.eventTypes);
+
+    return request.send(this.requestCtx);
   }
 
   /**
@@ -180,14 +199,24 @@ export class MessageAttempt {
     endpointId: string,
     options?: MessageAttemptListAttemptedMessagesOptions
   ): Promise<ListResponseEndpointMessageOut> {
-    return this.api.v1MessageAttemptListAttemptedMessages({
-      appId,
-      endpointId,
-      ...options,
-      iterator: options?.iterator ?? undefined,
-      before: options?.before ?? undefined,
-      after: options?.after ?? undefined,
-    });
+    const request = new SvixRequest(
+      HttpMethod.GET,
+      "/api/v1/app/{app_id}/endpoint/{endpoint_id}/msg"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("endpoint_id", endpointId);
+    request.setQueryParam("limit", options?.limit);
+    request.setQueryParam("iterator", options?.iterator);
+    request.setQueryParam("channel", options?.channel);
+    request.setQueryParam("tag", options?.tag);
+    request.setQueryParam("status", options?.status);
+    request.setQueryParam("before", options?.before);
+    request.setQueryParam("after", options?.after);
+    request.setQueryParam("with_content", options?.withContent);
+    request.setQueryParam("event_types", options?.eventTypes);
+
+    return request.send(this.requestCtx);
   }
 
   /** `msg_id`: Use a message id or a message `eventId` */
@@ -196,11 +225,16 @@ export class MessageAttempt {
     msgId: string,
     attemptId: string
   ): Promise<MessageAttemptOut> {
-    return this.api.v1MessageAttemptGet({
-      appId,
-      msgId,
-      attemptId,
-    });
+    const request = new SvixRequest(
+      HttpMethod.GET,
+      "/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("msg_id", msgId);
+    request.setPathParam("attempt_id", attemptId);
+
+    return request.send(this.requestCtx);
   }
 
   /**
@@ -210,11 +244,16 @@ export class MessageAttempt {
    * The message can't be replayed or resent once its payload has been deleted or expired.
    */
   public expungeContent(appId: string, msgId: string, attemptId: string): Promise<void> {
-    return this.api.v1MessageAttemptExpungeContent({
-      appId,
-      msgId,
-      attemptId,
-    });
+    const request = new SvixRequest(
+      HttpMethod.DELETE,
+      "/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/content"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("msg_id", msgId);
+    request.setPathParam("attempt_id", attemptId);
+
+    return request.sendNoResponseBody(this.requestCtx);
   }
 
   /**
@@ -228,12 +267,17 @@ export class MessageAttempt {
     msgId: string,
     options?: MessageAttemptListAttemptedDestinationsOptions
   ): Promise<ListResponseMessageEndpointOut> {
-    return this.api.v1MessageAttemptListAttemptedDestinations({
-      appId,
-      msgId,
-      ...options,
-      iterator: options?.iterator ?? undefined,
-    });
+    const request = new SvixRequest(
+      HttpMethod.GET,
+      "/api/v1/app/{app_id}/msg/{msg_id}/endpoint"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("msg_id", msgId);
+    request.setQueryParam("limit", options?.limit);
+    request.setQueryParam("iterator", options?.iterator);
+
+    return request.send(this.requestCtx);
   }
 
   /** Resend a message to the specified endpoint. */
@@ -243,11 +287,16 @@ export class MessageAttempt {
     endpointId: string,
     options?: PostOptions
   ): Promise<void> {
-    return this.api.v1MessageAttemptResend({
-      appId,
-      msgId,
-      endpointId,
-      ...options,
-    });
+    const request = new SvixRequest(
+      HttpMethod.POST,
+      "/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/resend"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("msg_id", msgId);
+    request.setPathParam("endpoint_id", endpointId);
+    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
+
+    return request.sendNoResponseBody(this.requestCtx);
   }
 }
