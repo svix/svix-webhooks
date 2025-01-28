@@ -2,23 +2,13 @@
 import typing as t
 from dataclasses import dataclass
 
-from ..internal.openapi_client import models
-from ..internal.openapi_client.models.list_response_operational_webhook_endpoint_out import (
+from .. import models
+from ..models import (
     ListResponseOperationalWebhookEndpointOut,
-)
-from ..internal.openapi_client.models.operational_webhook_endpoint_in import (
     OperationalWebhookEndpointIn,
-)
-from ..internal.openapi_client.models.operational_webhook_endpoint_out import (
     OperationalWebhookEndpointOut,
-)
-from ..internal.openapi_client.models.operational_webhook_endpoint_secret_in import (
     OperationalWebhookEndpointSecretIn,
-)
-from ..internal.openapi_client.models.operational_webhook_endpoint_secret_out import (
     OperationalWebhookEndpointSecretOut,
-)
-from ..internal.openapi_client.models.operational_webhook_endpoint_update import (
     OperationalWebhookEndpointUpdate,
 )
 from .common import ApiBase, BaseOptions, serialize_params
@@ -80,7 +70,7 @@ class OperationalWebhookEndpointAsync(ApiBase):
             query_params=options._query_params(),
             header_params=options._header_params(),
         )
-        return ListResponseOperationalWebhookEndpointOut.from_dict(response.json())
+        return ListResponseOperationalWebhookEndpointOut.model_validate(response.json())
 
     async def create(
         self,
@@ -94,9 +84,11 @@ class OperationalWebhookEndpointAsync(ApiBase):
             path_params={},
             query_params=options._query_params(),
             header_params=options._header_params(),
-            json_body=operational_webhook_endpoint_in.to_dict(),
+            json_body=operational_webhook_endpoint_in.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
         )
-        return OperationalWebhookEndpointOut.from_dict(response.json())
+        return OperationalWebhookEndpointOut.model_validate(response.json())
 
     async def get(self, endpoint_id: str) -> OperationalWebhookEndpointOut:
         """Get an operational webhook endpoint."""
@@ -107,7 +99,7 @@ class OperationalWebhookEndpointAsync(ApiBase):
                 "endpoint_id": endpoint_id,
             },
         )
-        return OperationalWebhookEndpointOut.from_dict(response.json())
+        return OperationalWebhookEndpointOut.model_validate(response.json())
 
     async def update(
         self,
@@ -121,9 +113,11 @@ class OperationalWebhookEndpointAsync(ApiBase):
             path_params={
                 "endpoint_id": endpoint_id,
             },
-            json_body=operational_webhook_endpoint_update.to_dict(),
+            json_body=operational_webhook_endpoint_update.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
         )
-        return OperationalWebhookEndpointOut.from_dict(response.json())
+        return OperationalWebhookEndpointOut.model_validate(response.json())
 
     async def delete(self, endpoint_id: str) -> None:
         """Delete an operational webhook endpoint."""
@@ -147,7 +141,7 @@ class OperationalWebhookEndpointAsync(ApiBase):
                 "endpoint_id": endpoint_id,
             },
         )
-        return OperationalWebhookEndpointSecretOut.from_dict(response.json())
+        return OperationalWebhookEndpointSecretOut.model_validate(response.json())
 
     async def rotate_secret(
         self,
@@ -166,7 +160,9 @@ class OperationalWebhookEndpointAsync(ApiBase):
             },
             query_params=options._query_params(),
             header_params=options._header_params(),
-            json_body=operational_webhook_endpoint_secret_in.to_dict(),
+            json_body=operational_webhook_endpoint_secret_in.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
         )
 
 
@@ -183,7 +179,7 @@ class OperationalWebhookEndpoint(ApiBase):
             query_params=options._query_params(),
             header_params=options._header_params(),
         )
-        return ListResponseOperationalWebhookEndpointOut.from_dict(response.json())
+        return ListResponseOperationalWebhookEndpointOut.model_validate(response.json())
 
     def create(
         self,
@@ -197,9 +193,11 @@ class OperationalWebhookEndpoint(ApiBase):
             path_params={},
             query_params=options._query_params(),
             header_params=options._header_params(),
-            json_body=operational_webhook_endpoint_in.to_dict(),
+            json_body=operational_webhook_endpoint_in.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
         )
-        return OperationalWebhookEndpointOut.from_dict(response.json())
+        return OperationalWebhookEndpointOut.model_validate(response.json())
 
     def get(self, endpoint_id: str) -> OperationalWebhookEndpointOut:
         """Get an operational webhook endpoint."""
@@ -210,7 +208,7 @@ class OperationalWebhookEndpoint(ApiBase):
                 "endpoint_id": endpoint_id,
             },
         )
-        return OperationalWebhookEndpointOut.from_dict(response.json())
+        return OperationalWebhookEndpointOut.model_validate(response.json())
 
     def update(
         self,
@@ -224,9 +222,11 @@ class OperationalWebhookEndpoint(ApiBase):
             path_params={
                 "endpoint_id": endpoint_id,
             },
-            json_body=operational_webhook_endpoint_update.to_dict(),
+            json_body=operational_webhook_endpoint_update.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
         )
-        return OperationalWebhookEndpointOut.from_dict(response.json())
+        return OperationalWebhookEndpointOut.model_validate(response.json())
 
     def delete(self, endpoint_id: str) -> None:
         """Delete an operational webhook endpoint."""
@@ -250,7 +250,7 @@ class OperationalWebhookEndpoint(ApiBase):
                 "endpoint_id": endpoint_id,
             },
         )
-        return OperationalWebhookEndpointSecretOut.from_dict(response.json())
+        return OperationalWebhookEndpointSecretOut.model_validate(response.json())
 
     def rotate_secret(
         self,
@@ -269,5 +269,7 @@ class OperationalWebhookEndpoint(ApiBase):
             },
             query_params=options._query_params(),
             header_params=options._header_params(),
-            json_body=operational_webhook_endpoint_secret_in.to_dict(),
+            json_body=operational_webhook_endpoint_secret_in.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
         )

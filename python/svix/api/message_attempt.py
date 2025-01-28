@@ -3,17 +3,13 @@ import typing as t
 from dataclasses import dataclass
 from datetime import datetime
 
-from ..internal.openapi_client import models
-from ..internal.openapi_client.models.list_response_endpoint_message_out import (
+from .. import models
+from ..models import (
     ListResponseEndpointMessageOut,
-)
-from ..internal.openapi_client.models.list_response_message_attempt_out import (
     ListResponseMessageAttemptOut,
-)
-from ..internal.openapi_client.models.list_response_message_endpoint_out import (
     ListResponseMessageEndpointOut,
+    MessageAttemptOut,
 )
-from ..internal.openapi_client.models.message_attempt_out import MessageAttemptOut
 from .common import ApiBase, BaseOptions, serialize_params
 
 
@@ -192,7 +188,7 @@ class MessageAttemptAsync(ApiBase):
             query_params=options._query_params(),
             header_params=options._header_params(),
         )
-        return ListResponseMessageAttemptOut.from_dict(response.json())
+        return ListResponseMessageAttemptOut.model_validate(response.json())
 
     async def list_by_msg(
         self,
@@ -216,7 +212,7 @@ class MessageAttemptAsync(ApiBase):
             query_params=options._query_params(),
             header_params=options._header_params(),
         )
-        return ListResponseMessageAttemptOut.from_dict(response.json())
+        return ListResponseMessageAttemptOut.model_validate(response.json())
 
     async def list_attempted_messages(
         self,
@@ -243,7 +239,7 @@ class MessageAttemptAsync(ApiBase):
             query_params=options._query_params(),
             header_params=options._header_params(),
         )
-        return ListResponseEndpointMessageOut.from_dict(response.json())
+        return ListResponseEndpointMessageOut.model_validate(response.json())
 
     async def get(self, app_id: str, msg_id: str, attempt_id: str) -> MessageAttemptOut:
         """`msg_id`: Use a message id or a message `eventId`"""
@@ -256,7 +252,7 @@ class MessageAttemptAsync(ApiBase):
                 "attempt_id": attempt_id,
             },
         )
-        return MessageAttemptOut.from_dict(response.json())
+        return MessageAttemptOut.model_validate(response.json())
 
     async def expunge_content(self, app_id: str, msg_id: str, attempt_id: str) -> None:
         """Deletes the given attempt's response body.
@@ -293,7 +289,7 @@ class MessageAttemptAsync(ApiBase):
             query_params=options._query_params(),
             header_params=options._header_params(),
         )
-        return ListResponseMessageEndpointOut.from_dict(response.json())
+        return ListResponseMessageEndpointOut.model_validate(response.json())
 
     async def resend(
         self,
@@ -340,7 +336,7 @@ class MessageAttempt(ApiBase):
             query_params=options._query_params(),
             header_params=options._header_params(),
         )
-        return ListResponseMessageAttemptOut.from_dict(response.json())
+        return ListResponseMessageAttemptOut.model_validate(response.json())
 
     def list_by_msg(
         self,
@@ -364,7 +360,7 @@ class MessageAttempt(ApiBase):
             query_params=options._query_params(),
             header_params=options._header_params(),
         )
-        return ListResponseMessageAttemptOut.from_dict(response.json())
+        return ListResponseMessageAttemptOut.model_validate(response.json())
 
     def list_attempted_messages(
         self,
@@ -391,7 +387,7 @@ class MessageAttempt(ApiBase):
             query_params=options._query_params(),
             header_params=options._header_params(),
         )
-        return ListResponseEndpointMessageOut.from_dict(response.json())
+        return ListResponseEndpointMessageOut.model_validate(response.json())
 
     def get(self, app_id: str, msg_id: str, attempt_id: str) -> MessageAttemptOut:
         """`msg_id`: Use a message id or a message `eventId`"""
@@ -404,7 +400,7 @@ class MessageAttempt(ApiBase):
                 "attempt_id": attempt_id,
             },
         )
-        return MessageAttemptOut.from_dict(response.json())
+        return MessageAttemptOut.model_validate(response.json())
 
     def expunge_content(self, app_id: str, msg_id: str, attempt_id: str) -> None:
         """Deletes the given attempt's response body.
@@ -441,7 +437,7 @@ class MessageAttempt(ApiBase):
             query_params=options._query_params(),
             header_params=options._header_params(),
         )
-        return ListResponseMessageEndpointOut.from_dict(response.json())
+        return ListResponseMessageEndpointOut.model_validate(response.json())
 
     def resend(
         self,

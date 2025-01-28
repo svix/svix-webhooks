@@ -10,7 +10,7 @@ from svix.api import (
     Svix,
 )
 from svix.exceptions import HttpError
-from svix.internal.openapi_client.models import EndpointPatch
+from svix.models import EndpointPatch
 
 TOKEN = os.getenv("SVIX_TOKEN")
 SERVER_URL = os.getenv("SVIX_SERVER_URL")

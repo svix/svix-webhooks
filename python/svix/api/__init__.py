@@ -1,189 +1,151 @@
-# ruff: noqa: F401
-
 import typing as t
 from dataclasses import dataclass, field
 
+# add __init__.py from models directory
+from ..models import (
+    AggregateEventTypesOut,
+    ApplicationIn,
+    ApplicationOut,
+    ApplicationPatch,
+    ApplicationTokenExpireIn,
+    AppPortalAccessIn,
+    AppPortalAccessOut,
+    AppUsageStatsIn,
+    AppUsageStatsOut,
+    BackgroundTaskData,
+    BackgroundTaskOut,
+    BackgroundTaskStatus,
+    BackgroundTaskType,
+    DashboardAccessOut,
+    EndpointHeadersIn,
+    EndpointHeadersOut,
+    EndpointHeadersPatchIn,
+    EndpointIn,
+    EndpointMessageOut,
+    EndpointOut,
+    EndpointPatch,
+    EndpointSecretOut,
+    EndpointSecretRotateIn,
+    EndpointStats,
+    EndpointTransformationIn,
+    EndpointTransformationOut,
+    EndpointUpdate,
+    EnvironmentIn,
+    EnvironmentOut,
+    EventExampleIn,
+    EventTypeFromOpenApi,
+    EventTypeImportOpenApiIn,
+    EventTypeImportOpenApiOut,
+    EventTypeImportOpenApiOutData,
+    EventTypeIn,
+    EventTypeOut,
+    EventTypePatch,
+    EventTypeUpdate,
+    IntegrationIn,
+    IntegrationKeyOut,
+    IntegrationOut,
+    IntegrationUpdate,
+    ListResponseApplicationOut,
+    ListResponseBackgroundTaskOut,
+    ListResponseEndpointMessageOut,
+    ListResponseEndpointOut,
+    ListResponseEventTypeOut,
+    ListResponseIntegrationOut,
+    ListResponseMessageAttemptOut,
+    ListResponseMessageEndpointOut,
+    ListResponseMessageOut,
+    ListResponseOperationalWebhookEndpointOut,
+    MessageAttemptOut,
+    MessageAttemptTriggerType,
+    MessageEndpointOut,
+    MessageIn,
+    MessageOut,
+    MessageStatus,
+    OperationalWebhookEndpointIn,
+    OperationalWebhookEndpointOut,
+    OperationalWebhookEndpointSecretIn,
+    OperationalWebhookEndpointSecretOut,
+    OperationalWebhookEndpointUpdate,
+    Ordering,
+    RecoverIn,
+    RecoverOut,
+    ReplayIn,
+    ReplayOut,
+    StatusCodeClass,
+    TemplateIn,
+    TemplateOut,
+    TransformationTemplateKind,
+)
 from .application import (
-    ApplicationAsync,
     Application,
-    ApplicationListOptions,
+    ApplicationAsync,
     ApplicationCreateOptions,
-    ApplicationGetOrCreateOptions,
+    ApplicationListOptions,
 )
 from .authentication import (
-    AuthenticationAsync,
     Authentication,
     AuthenticationAppPortalAccessOptions,
+    AuthenticationAsync,
     AuthenticationDashboardAccessOptions,
     AuthenticationExpireAllOptions,
     AuthenticationLogoutOptions,
 )
+from .background_task import (
+    BackgroundTask,
+    BackgroundTaskAsync,
+    BackgroundTaskListOptions,
+)
+from .client import AuthenticatedClient
 from .endpoint import (
-    EndpointAsync,
     Endpoint,
-    EndpointListOptions,
+    EndpointAsync,
     EndpointCreateOptions,
+    EndpointGetStatsOptions,
+    EndpointListOptions,
     EndpointRecoverOptions,
     EndpointReplayMissingOptions,
     EndpointRotateSecretOptions,
     EndpointSendExampleOptions,
-    EndpointGetStatsOptions,
 )
 from .event_type import (
-    EventTypeAsync,
     EventType,
-    EventTypeListOptions,
+    EventTypeAsync,
     EventTypeCreateOptions,
-    EventTypeImportOpenapiOptions,
     EventTypeDeleteOptions,
+    EventTypeImportOpenapiOptions,
+    EventTypeListOptions,
 )
 from .integration import (
-    IntegrationAsync,
     Integration,
-    IntegrationListOptions,
+    IntegrationAsync,
     IntegrationCreateOptions,
+    IntegrationListOptions,
     IntegrationRotateKeyOptions,
 )
 from .message import (
-    MessageAsync,
     Message,
-    MessageListOptions,
+    MessageAsync,
     MessageCreateOptions,
     MessageGetOptions,
+    MessageListOptions,
 )
 from .message_attempt import (
-    MessageAttemptAsync,
     MessageAttempt,
+    MessageAttemptAsync,
+    MessageAttemptListAttemptedDestinationsOptions,
+    MessageAttemptListAttemptedMessagesOptions,
     MessageAttemptListByEndpointOptions,
     MessageAttemptListByMsgOptions,
-    MessageAttemptListAttemptedMessagesOptions,
-    MessageAttemptListAttemptedDestinationsOptions,
     MessageAttemptResendOptions,
 )
 from .operational_webhook_endpoint import (
-    OperationalWebhookEndpointAsync,
     OperationalWebhookEndpoint,
-    OperationalWebhookEndpointListOptions,
+    OperationalWebhookEndpointAsync,
     OperationalWebhookEndpointCreateOptions,
+    OperationalWebhookEndpointListOptions,
     OperationalWebhookEndpointRotateSecretOptions,
 )
-from .statistics import StatisticsAsync, Statistics, StatisticsAggregateAppStatsOptions
-
-from svix.internal.openapi_client.models.aggregate_event_types_out import (
-    AggregateEventTypesOut,
-)
-from svix.internal.openapi_client.models.app_usage_stats_in import AppUsageStatsIn
-from svix.internal.openapi_client.models.app_usage_stats_out import AppUsageStatsOut
-from svix.internal.openapi_client.client import AuthenticatedClient
-from svix.internal.openapi_client.models.app_portal_access_in import AppPortalAccessIn
-from svix.internal.openapi_client.models.app_portal_access_out import AppPortalAccessOut
-from svix.internal.openapi_client.models.application_in import ApplicationIn
-from svix.internal.openapi_client.models.application_out import ApplicationOut
-from svix.internal.openapi_client.models.application_patch import ApplicationPatch
-from svix.internal.openapi_client.models.background_task_out import BackgroundTaskOut
-from svix.internal.openapi_client.models.background_task_status import (
-    BackgroundTaskStatus,
-)
-from svix.internal.openapi_client.models.background_task_type import BackgroundTaskType
-from svix.internal.openapi_client.models.dashboard_access_out import DashboardAccessOut
-from svix.internal.openapi_client.models.endpoint_headers_in import EndpointHeadersIn
-from svix.internal.openapi_client.models.endpoint_headers_out import EndpointHeadersOut
-from svix.internal.openapi_client.models.endpoint_headers_patch_in import (
-    EndpointHeadersPatchIn,
-)
-from svix.internal.openapi_client.models.endpoint_in import EndpointIn
-from svix.internal.openapi_client.models.endpoint_message_out_payload import (
-    EndpointMessageOutPayload,
-)
-from svix.internal.openapi_client.models.endpoint_out import EndpointOut
-from svix.internal.openapi_client.models.endpoint_patch import EndpointPatch
-from svix.internal.openapi_client.models.endpoint_secret_out import EndpointSecretOut
-from svix.internal.openapi_client.models.endpoint_secret_rotate_in import (
-    EndpointSecretRotateIn,
-)
-from svix.internal.openapi_client.models.operational_webhook_endpoint_in import (
-    OperationalWebhookEndpointIn,
-)
-from svix.internal.openapi_client.models.operational_webhook_endpoint_out import (
-    OperationalWebhookEndpointOut,
-)
-from svix.internal.openapi_client.models.operational_webhook_endpoint_secret_in import (
-    OperationalWebhookEndpointSecretIn,
-)
-from svix.internal.openapi_client.models.operational_webhook_endpoint_secret_out import (
-    OperationalWebhookEndpointSecretOut,
-)
-from svix.internal.openapi_client.models.operational_webhook_endpoint_update import (
-    OperationalWebhookEndpointUpdate,
-)
-from svix.internal.openapi_client.models.endpoint_stats import EndpointStats
-from svix.internal.openapi_client.models.endpoint_transformation_in import (
-    EndpointTransformationIn,
-)
-from svix.internal.openapi_client.models.endpoint_transformation_out import (
-    EndpointTransformationOut,
-)
-from svix.internal.openapi_client.models.endpoint_update import EndpointUpdate
-from svix.internal.openapi_client.models.event_example_in import EventExampleIn
-from svix.internal.openapi_client.models.event_type_import_open_api_in import (
-    EventTypeImportOpenApiIn,
-)
-from svix.internal.openapi_client.models.event_type_import_open_api_out import (
-    EventTypeImportOpenApiOut,
-)
-from svix.internal.openapi_client.models.event_type_in import EventTypeIn
-from svix.internal.openapi_client.models.event_type_out import EventTypeOut
-from svix.internal.openapi_client.models.event_type_patch import EventTypePatch
-from svix.internal.openapi_client.models.event_type_update import EventTypeUpdate
-from svix.internal.openapi_client.models.integration_in import IntegrationIn
-from svix.internal.openapi_client.models.integration_key_out import IntegrationKeyOut
-from svix.internal.openapi_client.models.integration_out import IntegrationOut
-from svix.internal.openapi_client.models.integration_update import IntegrationUpdate
-from svix.internal.openapi_client.models.list_response_application_out import (
-    ListResponseApplicationOut,
-)
-from svix.internal.openapi_client.models.list_response_background_task_out import (
-    ListResponseBackgroundTaskOut,
-)
-from svix.internal.openapi_client.models.list_response_endpoint_message_out import (
-    ListResponseEndpointMessageOut,
-)
-from svix.internal.openapi_client.models.list_response_endpoint_out import (
-    ListResponseEndpointOut,
-)
-from svix.internal.openapi_client.models.list_response_operational_webhook_endpoint_out import (
-    ListResponseOperationalWebhookEndpointOut,
-)
-from svix.internal.openapi_client.models.list_response_event_type_out import (
-    ListResponseEventTypeOut,
-)
-from svix.internal.openapi_client.models.list_response_integration_out import (
-    ListResponseIntegrationOut,
-)
-from svix.internal.openapi_client.models.list_response_message_attempt_endpoint_out import (
-    ListResponseMessageAttemptEndpointOut,
-)
-from svix.internal.openapi_client.models.list_response_message_attempt_out import (
-    ListResponseMessageAttemptOut,
-)
-from svix.internal.openapi_client.models.list_response_message_endpoint_out import (
-    ListResponseMessageEndpointOut,
-)
-from svix.internal.openapi_client.models.list_response_message_out import (
-    ListResponseMessageOut,
-)
-from svix.internal.openapi_client.models.message_attempt_out import MessageAttemptOut
-from svix.internal.openapi_client.models.message_in import MessageIn
-from svix.internal.openapi_client.models.message_in_payload import MessageInPayload
-from svix.internal.openapi_client.models.message_out import MessageOut
-from svix.internal.openapi_client.models.message_out_payload import MessageOutPayload
-from svix.internal.openapi_client.models.message_status import MessageStatus
-from svix.internal.openapi_client.models.ordering import Ordering
-from svix.internal.openapi_client.models.recover_in import RecoverIn
-from svix.internal.openapi_client.models.recover_out import RecoverOut
-from svix.internal.openapi_client.models.replay_in import ReplayIn
-from svix.internal.openapi_client.models.replay_out import ReplayOut
-from svix.internal.openapi_client.models.status_code_class import StatusCodeClass
+from .statistics import Statistics, StatisticsAggregateAppStatsOptions, StatisticsAsync
 
 DEFAULT_SERVER_URL = "https://api.svix.com"
 
@@ -321,53 +283,131 @@ class Svix(ClientBase):
 
 
 __all__ = [
+    "AuthenticatedClient",
+    "Application",
+    "ApplicationAsync",
+    "ApplicationListOptions",
+    "ApplicationCreateOptions",
+    "Authentication",
+    "AuthenticationAsync",
+    "AuthenticationAppPortalAccessOptions",
+    "AuthenticationExpireAllOptions",
+    "AuthenticationDashboardAccessOptions",
+    "AuthenticationLogoutOptions",
+    "BackgroundTask",
+    "BackgroundTaskAsync",
+    "BackgroundTaskListOptions",
+    "Endpoint",
+    "EndpointAsync",
+    "EndpointListOptions",
+    "EndpointCreateOptions",
+    "EndpointRecoverOptions",
+    "EndpointReplayMissingOptions",
+    "EndpointRotateSecretOptions",
+    "EndpointSendExampleOptions",
+    "EndpointGetStatsOptions",
+    "EventType",
+    "EventTypeAsync",
+    "EventTypeListOptions",
+    "EventTypeCreateOptions",
+    "EventTypeImportOpenapiOptions",
+    "EventTypeDeleteOptions",
+    "Integration",
+    "IntegrationAsync",
+    "IntegrationListOptions",
+    "IntegrationCreateOptions",
+    "IntegrationRotateKeyOptions",
+    "Message",
+    "MessageAsync",
+    "MessageListOptions",
+    "MessageCreateOptions",
+    "MessageGetOptions",
+    "MessageAttempt",
+    "MessageAttemptAsync",
+    "MessageAttemptListByEndpointOptions",
+    "MessageAttemptListByMsgOptions",
+    "MessageAttemptListAttemptedMessagesOptions",
+    "MessageAttemptListAttemptedDestinationsOptions",
+    "MessageAttemptResendOptions",
+    "OperationalWebhookEndpoint",
+    "OperationalWebhookEndpointAsync",
+    "OperationalWebhookEndpointListOptions",
+    "OperationalWebhookEndpointCreateOptions",
+    "OperationalWebhookEndpointRotateSecretOptions",
+    "Statistics",
+    "StatisticsAsync",
+    "StatisticsAggregateAppStatsOptions",
+    # These are edited in by hand
+    "AggregateEventTypesOut",
+    "AppPortalAccessIn",
+    "AppPortalAccessOut",
+    "AppUsageStatsIn",
+    "AppUsageStatsOut",
     "ApplicationIn",
     "ApplicationOut",
     "ApplicationPatch",
-    "ApplicationCreateOptions",
-    "ApplicationGetOrCreateOptions",
-    "ListResponseApplicationOut",
+    "ApplicationTokenExpireIn",
+    "BackgroundTaskData",
+    "BackgroundTaskOut",
+    "BackgroundTaskStatus",
+    "BackgroundTaskType",
     "DashboardAccessOut",
     "EndpointHeadersIn",
-    "EndpointHeadersPatchIn",
     "EndpointHeadersOut",
+    "EndpointHeadersPatchIn",
     "EndpointIn",
+    "EndpointMessageOut",
     "EndpointOut",
     "EndpointPatch",
     "EndpointSecretOut",
     "EndpointSecretRotateIn",
-    "ListResponseEndpointOut",
+    "EndpointStats",
+    "EndpointTransformationIn",
+    "EndpointTransformationOut",
+    "EndpointUpdate",
+    "EnvironmentIn",
+    "EnvironmentOut",
+    "EventExampleIn",
+    "EventTypeFromOpenApi",
     "EventTypeImportOpenApiIn",
     "EventTypeImportOpenApiOut",
+    "EventTypeImportOpenApiOutData",
     "EventTypeIn",
     "EventTypeOut",
     "EventTypePatch",
     "EventTypeUpdate",
-    "ListResponseEventTypeOut",
-    "ListResponseMessageOut",
-    "MessageIn",
-    "MessageInPayload",
-    "MessageOut",
-    "MessageOutPayload",
-    "EndpointMessageOutPayload",
-    "ListResponseMessageAttemptOut",
-    "ListResponseEndpointMessageOut",
-    "ListResponseMessageEndpointOut",
-    "ListResponseMessageAttemptEndpointOut",
-    "MessageAttemptOut",
-    "MessageStatus",
-    "SvixOptions",
-    "ApplicationListOptions",
-    "EventTypeListOptions",
-    "EndpointListOptions",
-    "MessageAttemptListOptions",
-    "RecoverIn",
-    "StatusCodeClass",
-    "Svix",
-    "SvixAsync",
-    "IntegrationKeyOut",
     "IntegrationIn",
+    "IntegrationKeyOut",
     "IntegrationOut",
     "IntegrationUpdate",
+    "ListResponseApplicationOut",
+    "ListResponseBackgroundTaskOut",
+    "ListResponseEndpointMessageOut",
+    "ListResponseEndpointOut",
+    "ListResponseEventTypeOut",
     "ListResponseIntegrationOut",
+    "ListResponseMessageAttemptOut",
+    "ListResponseMessageEndpointOut",
+    "ListResponseMessageOut",
+    "ListResponseOperationalWebhookEndpointOut",
+    "MessageAttemptOut",
+    "MessageAttemptTriggerType",
+    "MessageEndpointOut",
+    "MessageIn",
+    "MessageOut",
+    "MessageStatus",
+    "OperationalWebhookEndpointIn",
+    "OperationalWebhookEndpointOut",
+    "OperationalWebhookEndpointSecretIn",
+    "OperationalWebhookEndpointSecretOut",
+    "OperationalWebhookEndpointUpdate",
+    "Ordering",
+    "RecoverIn",
+    "RecoverOut",
+    "ReplayIn",
+    "ReplayOut",
+    "StatusCodeClass",
+    "TemplateIn",
+    "TemplateOut",
+    "TransformationTemplateKind",
 ]

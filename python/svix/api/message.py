@@ -3,11 +3,7 @@ import typing as t
 from dataclasses import dataclass
 from datetime import datetime
 
-from ..internal.openapi_client.models.list_response_message_out import (
-    ListResponseMessageOut,
-)
-from ..internal.openapi_client.models.message_in import MessageIn
-from ..internal.openapi_client.models.message_out import MessageOut
+from ..models import ListResponseMessageOut, MessageIn, MessageOut
 from .common import ApiBase, BaseOptions, serialize_params
 
 
@@ -134,7 +130,7 @@ class MessageAsync(ApiBase):
             query_params=options._query_params(),
             header_params=options._header_params(),
         )
-        return ListResponseMessageOut.from_dict(response.json())
+        return ListResponseMessageOut.model_validate(response.json())
 
     async def create(
         self,
@@ -159,11 +155,11 @@ class MessageAsync(ApiBase):
             },
             query_params=options._query_params(),
             header_params=options._header_params(),
-            json_body=message_in.to_dict(),
+            json_body=message_in.model_dump_json(exclude_unset=True, by_alias=True),
         )
-        ret = MessageOut.from_dict(response.json())
-        ret.payload = message_in.payload
-        return ret
+        ret = response.json()
+        ret["payload"] = message_in.payload
+        return MessageOut.model_validate(ret)
 
     async def get(
         self, app_id: str, msg_id: str, options: MessageGetOptions = MessageGetOptions()
@@ -179,7 +175,7 @@ class MessageAsync(ApiBase):
             query_params=options._query_params(),
             header_params=options._header_params(),
         )
-        return MessageOut.from_dict(response.json())
+        return MessageOut.model_validate(response.json())
 
     async def expunge_content(self, app_id: str, msg_id: str) -> None:
         """Delete the given message's payload.
@@ -219,7 +215,7 @@ class Message(ApiBase):
             query_params=options._query_params(),
             header_params=options._header_params(),
         )
-        return ListResponseMessageOut.from_dict(response.json())
+        return ListResponseMessageOut.model_validate(response.json())
 
     def create(
         self,
@@ -244,11 +240,11 @@ class Message(ApiBase):
             },
             query_params=options._query_params(),
             header_params=options._header_params(),
-            json_body=message_in.to_dict(),
+            json_body=message_in.model_dump_json(exclude_unset=True, by_alias=True),
         )
-        ret = MessageOut.from_dict(response.json())
-        ret.payload = message_in.payload
-        return ret
+        ret = response.json()
+        ret["payload"] = message_in.payload
+        return MessageOut.model_validate(ret)
 
     def get(
         self, app_id: str, msg_id: str, options: MessageGetOptions = MessageGetOptions()
@@ -264,7 +260,7 @@ class Message(ApiBase):
             query_params=options._query_params(),
             header_params=options._header_params(),
         )
-        return MessageOut.from_dict(response.json())
+        return MessageOut.model_validate(response.json())
 
     def expunge_content(self, app_id: str, msg_id: str) -> None:
         """Delete the given message's payload.

@@ -2,11 +2,8 @@
 import typing as t
 from dataclasses import dataclass
 
-from ..internal.openapi_client import models
-from ..internal.openapi_client.models.background_task_out import BackgroundTaskOut
-from ..internal.openapi_client.models.list_response_background_task_out import (
-    ListResponseBackgroundTaskOut,
-)
+from .. import models
+from ..models import BackgroundTaskOut, ListResponseBackgroundTaskOut
 from .common import ApiBase, BaseOptions, serialize_params
 
 
@@ -47,7 +44,7 @@ class BackgroundTaskAsync(ApiBase):
             query_params=options._query_params(),
             header_params=options._header_params(),
         )
-        return ListResponseBackgroundTaskOut.from_dict(response.json())
+        return ListResponseBackgroundTaskOut.model_validate(response.json())
 
     async def get(self, task_id: str) -> BackgroundTaskOut:
         """Get a background task by ID."""
@@ -58,7 +55,7 @@ class BackgroundTaskAsync(ApiBase):
                 "task_id": task_id,
             },
         )
-        return BackgroundTaskOut.from_dict(response.json())
+        return BackgroundTaskOut.model_validate(response.json())
 
 
 class BackgroundTask(ApiBase):
@@ -73,7 +70,7 @@ class BackgroundTask(ApiBase):
             query_params=options._query_params(),
             header_params=options._header_params(),
         )
-        return ListResponseBackgroundTaskOut.from_dict(response.json())
+        return ListResponseBackgroundTaskOut.model_validate(response.json())
 
     def get(self, task_id: str) -> BackgroundTaskOut:
         """Get a background task by ID."""
@@ -84,4 +81,4 @@ class BackgroundTask(ApiBase):
                 "task_id": task_id,
             },
         )
-        return BackgroundTaskOut.from_dict(response.json())
+        return BackgroundTaskOut.model_validate(response.json())

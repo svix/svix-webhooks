@@ -36,10 +36,6 @@ jobs:
           python -m pip install -r requirements-dev.txt .
         working-directory: ./python
 
-      - name: Regen openapi libs
-        run: ./scripts/generate_openapi.sh
-        working-directory: ./python
-
       - name: Check typing on client tests
         run: mypy tests/test_client.py
         working-directory: ./python

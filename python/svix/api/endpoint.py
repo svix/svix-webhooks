@@ -3,36 +3,28 @@ import typing as t
 from dataclasses import dataclass
 from datetime import datetime
 
-from ..internal.openapi_client import models
-from ..internal.openapi_client.models.endpoint_headers_in import EndpointHeadersIn
-from ..internal.openapi_client.models.endpoint_headers_out import EndpointHeadersOut
-from ..internal.openapi_client.models.endpoint_headers_patch_in import (
+from .. import models
+from ..models import (
+    EndpointHeadersIn,
+    EndpointHeadersOut,
     EndpointHeadersPatchIn,
-)
-from ..internal.openapi_client.models.endpoint_in import EndpointIn
-from ..internal.openapi_client.models.endpoint_out import EndpointOut
-from ..internal.openapi_client.models.endpoint_patch import EndpointPatch
-from ..internal.openapi_client.models.endpoint_secret_out import EndpointSecretOut
-from ..internal.openapi_client.models.endpoint_secret_rotate_in import (
+    EndpointIn,
+    EndpointOut,
+    EndpointPatch,
+    EndpointSecretOut,
     EndpointSecretRotateIn,
-)
-from ..internal.openapi_client.models.endpoint_stats import EndpointStats
-from ..internal.openapi_client.models.endpoint_transformation_in import (
+    EndpointStats,
     EndpointTransformationIn,
-)
-from ..internal.openapi_client.models.endpoint_transformation_out import (
     EndpointTransformationOut,
-)
-from ..internal.openapi_client.models.endpoint_update import EndpointUpdate
-from ..internal.openapi_client.models.event_example_in import EventExampleIn
-from ..internal.openapi_client.models.list_response_endpoint_out import (
+    EndpointUpdate,
+    EventExampleIn,
     ListResponseEndpointOut,
+    MessageOut,
+    RecoverIn,
+    RecoverOut,
+    ReplayIn,
+    ReplayOut,
 )
-from ..internal.openapi_client.models.message_out import MessageOut
-from ..internal.openapi_client.models.recover_in import RecoverIn
-from ..internal.openapi_client.models.recover_out import RecoverOut
-from ..internal.openapi_client.models.replay_in import ReplayIn
-from ..internal.openapi_client.models.replay_out import ReplayOut
 from .common import ApiBase, BaseOptions, serialize_params
 
 
@@ -145,7 +137,7 @@ class EndpointAsync(ApiBase):
             query_params=options._query_params(),
             header_params=options._header_params(),
         )
-        return ListResponseEndpointOut.from_dict(response.json())
+        return ListResponseEndpointOut.model_validate(response.json())
 
     async def create(
         self,
@@ -164,9 +156,9 @@ class EndpointAsync(ApiBase):
             },
             query_params=options._query_params(),
             header_params=options._header_params(),
-            json_body=endpoint_in.to_dict(),
+            json_body=endpoint_in.model_dump_json(exclude_unset=True, by_alias=True),
         )
-        return EndpointOut.from_dict(response.json())
+        return EndpointOut.model_validate(response.json())
 
     async def get(self, app_id: str, endpoint_id: str) -> EndpointOut:
         """Get an endpoint."""
@@ -178,7 +170,7 @@ class EndpointAsync(ApiBase):
                 "endpoint_id": endpoint_id,
             },
         )
-        return EndpointOut.from_dict(response.json())
+        return EndpointOut.model_validate(response.json())
 
     async def update(
         self, app_id: str, endpoint_id: str, endpoint_update: EndpointUpdate
@@ -191,9 +183,11 @@ class EndpointAsync(ApiBase):
                 "app_id": app_id,
                 "endpoint_id": endpoint_id,
             },
-            json_body=endpoint_update.to_dict(),
+            json_body=endpoint_update.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
         )
-        return EndpointOut.from_dict(response.json())
+        return EndpointOut.model_validate(response.json())
 
     async def delete(self, app_id: str, endpoint_id: str) -> None:
         """Delete an endpoint."""
@@ -217,9 +211,9 @@ class EndpointAsync(ApiBase):
                 "app_id": app_id,
                 "endpoint_id": endpoint_id,
             },
-            json_body=endpoint_patch.to_dict(),
+            json_body=endpoint_patch.model_dump_json(exclude_unset=True, by_alias=True),
         )
-        return EndpointOut.from_dict(response.json())
+        return EndpointOut.model_validate(response.json())
 
     async def get_headers(self, app_id: str, endpoint_id: str) -> EndpointHeadersOut:
         """Get the additional headers to be sent with the webhook."""
@@ -231,7 +225,7 @@ class EndpointAsync(ApiBase):
                 "endpoint_id": endpoint_id,
             },
         )
-        return EndpointHeadersOut.from_dict(response.json())
+        return EndpointHeadersOut.model_validate(response.json())
 
     async def update_headers(
         self, app_id: str, endpoint_id: str, endpoint_headers_in: EndpointHeadersIn
@@ -244,7 +238,9 @@ class EndpointAsync(ApiBase):
                 "app_id": app_id,
                 "endpoint_id": endpoint_id,
             },
-            json_body=endpoint_headers_in.to_dict(),
+            json_body=endpoint_headers_in.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
         )
 
     async def patch_headers(
@@ -261,7 +257,9 @@ class EndpointAsync(ApiBase):
                 "app_id": app_id,
                 "endpoint_id": endpoint_id,
             },
-            json_body=endpoint_headers_patch_in.to_dict(),
+            json_body=endpoint_headers_patch_in.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
         )
 
     async def recover(
@@ -283,9 +281,9 @@ class EndpointAsync(ApiBase):
             },
             query_params=options._query_params(),
             header_params=options._header_params(),
-            json_body=recover_in.to_dict(),
+            json_body=recover_in.model_dump_json(exclude_unset=True, by_alias=True),
         )
-        return RecoverOut.from_dict(response.json())
+        return RecoverOut.model_validate(response.json())
 
     async def replay_missing(
         self,
@@ -307,9 +305,9 @@ class EndpointAsync(ApiBase):
             },
             query_params=options._query_params(),
             header_params=options._header_params(),
-            json_body=replay_in.to_dict(),
+            json_body=replay_in.model_dump_json(exclude_unset=True, by_alias=True),
         )
-        return ReplayOut.from_dict(response.json())
+        return ReplayOut.model_validate(response.json())
 
     async def get_secret(self, app_id: str, endpoint_id: str) -> EndpointSecretOut:
         """Get the endpoint's signing secret.
@@ -324,7 +322,7 @@ class EndpointAsync(ApiBase):
                 "endpoint_id": endpoint_id,
             },
         )
-        return EndpointSecretOut.from_dict(response.json())
+        return EndpointSecretOut.model_validate(response.json())
 
     async def rotate_secret(
         self,
@@ -345,7 +343,9 @@ class EndpointAsync(ApiBase):
             },
             query_params=options._query_params(),
             header_params=options._header_params(),
-            json_body=endpoint_secret_rotate_in.to_dict(),
+            json_body=endpoint_secret_rotate_in.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
         )
 
     async def send_example(
@@ -365,9 +365,11 @@ class EndpointAsync(ApiBase):
             },
             query_params=options._query_params(),
             header_params=options._header_params(),
-            json_body=event_example_in.to_dict(),
+            json_body=event_example_in.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
         )
-        return MessageOut.from_dict(response.json())
+        return MessageOut.model_validate(response.json())
 
     async def get_stats(
         self,
@@ -386,7 +388,7 @@ class EndpointAsync(ApiBase):
             query_params=options._query_params(),
             header_params=options._header_params(),
         )
-        return EndpointStats.from_dict(response.json())
+        return EndpointStats.model_validate(response.json())
 
     async def transformation_get(
         self, app_id: str, endpoint_id: str
@@ -400,7 +402,7 @@ class EndpointAsync(ApiBase):
                 "endpoint_id": endpoint_id,
             },
         )
-        return EndpointTransformationOut.from_dict(response.json())
+        return EndpointTransformationOut.model_validate(response.json())
 
     async def transformation_partial_update(
         self,
@@ -416,7 +418,9 @@ class EndpointAsync(ApiBase):
                 "app_id": app_id,
                 "endpoint_id": endpoint_id,
             },
-            json_body=endpoint_transformation_in.to_dict(),
+            json_body=endpoint_transformation_in.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
         )
 
 
@@ -434,7 +438,7 @@ class Endpoint(ApiBase):
             query_params=options._query_params(),
             header_params=options._header_params(),
         )
-        return ListResponseEndpointOut.from_dict(response.json())
+        return ListResponseEndpointOut.model_validate(response.json())
 
     def create(
         self,
@@ -453,9 +457,9 @@ class Endpoint(ApiBase):
             },
             query_params=options._query_params(),
             header_params=options._header_params(),
-            json_body=endpoint_in.to_dict(),
+            json_body=endpoint_in.model_dump_json(exclude_unset=True, by_alias=True),
         )
-        return EndpointOut.from_dict(response.json())
+        return EndpointOut.model_validate(response.json())
 
     def get(self, app_id: str, endpoint_id: str) -> EndpointOut:
         """Get an endpoint."""
@@ -467,7 +471,7 @@ class Endpoint(ApiBase):
                 "endpoint_id": endpoint_id,
             },
         )
-        return EndpointOut.from_dict(response.json())
+        return EndpointOut.model_validate(response.json())
 
     def update(
         self, app_id: str, endpoint_id: str, endpoint_update: EndpointUpdate
@@ -480,9 +484,11 @@ class Endpoint(ApiBase):
                 "app_id": app_id,
                 "endpoint_id": endpoint_id,
             },
-            json_body=endpoint_update.to_dict(),
+            json_body=endpoint_update.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
         )
-        return EndpointOut.from_dict(response.json())
+        return EndpointOut.model_validate(response.json())
 
     def delete(self, app_id: str, endpoint_id: str) -> None:
         """Delete an endpoint."""
@@ -506,9 +512,9 @@ class Endpoint(ApiBase):
                 "app_id": app_id,
                 "endpoint_id": endpoint_id,
             },
-            json_body=endpoint_patch.to_dict(),
+            json_body=endpoint_patch.model_dump_json(exclude_unset=True, by_alias=True),
         )
-        return EndpointOut.from_dict(response.json())
+        return EndpointOut.model_validate(response.json())
 
     def get_headers(self, app_id: str, endpoint_id: str) -> EndpointHeadersOut:
         """Get the additional headers to be sent with the webhook."""
@@ -520,7 +526,7 @@ class Endpoint(ApiBase):
                 "endpoint_id": endpoint_id,
             },
         )
-        return EndpointHeadersOut.from_dict(response.json())
+        return EndpointHeadersOut.model_validate(response.json())
 
     def update_headers(
         self, app_id: str, endpoint_id: str, endpoint_headers_in: EndpointHeadersIn
@@ -533,7 +539,9 @@ class Endpoint(ApiBase):
                 "app_id": app_id,
                 "endpoint_id": endpoint_id,
             },
-            json_body=endpoint_headers_in.to_dict(),
+            json_body=endpoint_headers_in.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
         )
 
     def patch_headers(
@@ -550,7 +558,9 @@ class Endpoint(ApiBase):
                 "app_id": app_id,
                 "endpoint_id": endpoint_id,
             },
-            json_body=endpoint_headers_patch_in.to_dict(),
+            json_body=endpoint_headers_patch_in.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
         )
 
     def recover(
@@ -572,9 +582,9 @@ class Endpoint(ApiBase):
             },
             query_params=options._query_params(),
             header_params=options._header_params(),
-            json_body=recover_in.to_dict(),
+            json_body=recover_in.model_dump_json(exclude_unset=True, by_alias=True),
         )
-        return RecoverOut.from_dict(response.json())
+        return RecoverOut.model_validate(response.json())
 
     def replay_missing(
         self,
@@ -596,9 +606,9 @@ class Endpoint(ApiBase):
             },
             query_params=options._query_params(),
             header_params=options._header_params(),
-            json_body=replay_in.to_dict(),
+            json_body=replay_in.model_dump_json(exclude_unset=True, by_alias=True),
         )
-        return ReplayOut.from_dict(response.json())
+        return ReplayOut.model_validate(response.json())
 
     def get_secret(self, app_id: str, endpoint_id: str) -> EndpointSecretOut:
         """Get the endpoint's signing secret.
@@ -613,7 +623,7 @@ class Endpoint(ApiBase):
                 "endpoint_id": endpoint_id,
             },
         )
-        return EndpointSecretOut.from_dict(response.json())
+        return EndpointSecretOut.model_validate(response.json())
 
     def rotate_secret(
         self,
@@ -634,7 +644,9 @@ class Endpoint(ApiBase):
             },
             query_params=options._query_params(),
             header_params=options._header_params(),
-            json_body=endpoint_secret_rotate_in.to_dict(),
+            json_body=endpoint_secret_rotate_in.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
         )
 
     def send_example(
@@ -654,9 +666,11 @@ class Endpoint(ApiBase):
             },
             query_params=options._query_params(),
             header_params=options._header_params(),
-            json_body=event_example_in.to_dict(),
+            json_body=event_example_in.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
         )
-        return MessageOut.from_dict(response.json())
+        return MessageOut.model_validate(response.json())
 
     def get_stats(
         self,
@@ -675,7 +689,7 @@ class Endpoint(ApiBase):
             query_params=options._query_params(),
             header_params=options._header_params(),
         )
-        return EndpointStats.from_dict(response.json())
+        return EndpointStats.model_validate(response.json())
 
     def transformation_get(
         self, app_id: str, endpoint_id: str
@@ -689,7 +703,7 @@ class Endpoint(ApiBase):
                 "endpoint_id": endpoint_id,
             },
         )
-        return EndpointTransformationOut.from_dict(response.json())
+        return EndpointTransformationOut.model_validate(response.json())
 
     def transformation_partial_update(
         self,
@@ -705,5 +719,7 @@ class Endpoint(ApiBase):
                 "app_id": app_id,
                 "endpoint_id": endpoint_id,
             },
-            json_body=endpoint_transformation_in.to_dict(),
+            json_body=endpoint_transformation_in.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
         )

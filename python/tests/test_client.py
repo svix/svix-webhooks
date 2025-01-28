@@ -87,7 +87,7 @@ def create_svix_endpoint(
             version=1,
             filter_types=[event_type_name],
             channels=[channel] if channel else None,
-            metadata=metadata,  # type: ignore[arg-type]
+            metadata=metadata,
             secret=secret,
         ),
     )

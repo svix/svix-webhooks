@@ -2,11 +2,7 @@
 import typing as t
 from dataclasses import dataclass
 
-from ..internal.openapi_client.models.aggregate_event_types_out import (
-    AggregateEventTypesOut,
-)
-from ..internal.openapi_client.models.app_usage_stats_in import AppUsageStatsIn
-from ..internal.openapi_client.models.app_usage_stats_out import AppUsageStatsOut
+from ..models import AggregateEventTypesOut, AppUsageStatsIn, AppUsageStatsOut
 from .common import ApiBase, BaseOptions, serialize_params
 
 
@@ -38,9 +34,11 @@ class StatisticsAsync(ApiBase):
             path_params={},
             query_params=options._query_params(),
             header_params=options._header_params(),
-            json_body=app_usage_stats_in.to_dict(),
+            json_body=app_usage_stats_in.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
         )
-        return AppUsageStatsOut.from_dict(response.json())
+        return AppUsageStatsOut.model_validate(response.json())
 
     async def aggregate_event_types(self) -> AggregateEventTypesOut:
         """Creates a background task to calculate the listed event types for all apps in the organization.
@@ -50,7 +48,7 @@ class StatisticsAsync(ApiBase):
         response = await self._request_asyncio(
             method="put", path="/api/v1/stats/usage/event-types", path_params={}
         )
-        return AggregateEventTypesOut.from_dict(response.json())
+        return AggregateEventTypesOut.model_validate(response.json())
 
 
 class Statistics(ApiBase):
@@ -69,9 +67,11 @@ class Statistics(ApiBase):
             path_params={},
             query_params=options._query_params(),
             header_params=options._header_params(),
-            json_body=app_usage_stats_in.to_dict(),
+            json_body=app_usage_stats_in.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
         )
-        return AppUsageStatsOut.from_dict(response.json())
+        return AppUsageStatsOut.model_validate(response.json())
 
     def aggregate_event_types(self) -> AggregateEventTypesOut:
         """Creates a background task to calculate the listed event types for all apps in the organization.
@@ -81,4 +81,4 @@ class Statistics(ApiBase):
         response = self._request_sync(
             method="put", path="/api/v1/stats/usage/event-types", path_params={}
         )
-        return AggregateEventTypesOut.from_dict(response.json())
+        return AggregateEventTypesOut.model_validate(response.json())

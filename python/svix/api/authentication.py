@@ -4,12 +4,12 @@ from dataclasses import dataclass
 
 from deprecated import deprecated
 
-from ..internal.openapi_client.models.app_portal_access_in import AppPortalAccessIn
-from ..internal.openapi_client.models.app_portal_access_out import AppPortalAccessOut
-from ..internal.openapi_client.models.application_token_expire_in import (
+from ..models import (
     ApplicationTokenExpireIn,
+    AppPortalAccessIn,
+    AppPortalAccessOut,
+    DashboardAccessOut,
 )
-from ..internal.openapi_client.models.dashboard_access_out import DashboardAccessOut
 from .common import ApiBase, BaseOptions, serialize_params
 
 
@@ -77,9 +77,11 @@ class AuthenticationAsync(ApiBase):
             },
             query_params=options._query_params(),
             header_params=options._header_params(),
-            json_body=app_portal_access_in.to_dict(),
+            json_body=app_portal_access_in.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
         )
-        return AppPortalAccessOut.from_dict(response.json())
+        return AppPortalAccessOut.model_validate(response.json())
 
     async def expire_all(
         self,
@@ -96,7 +98,9 @@ class AuthenticationAsync(ApiBase):
             },
             query_params=options._query_params(),
             header_params=options._header_params(),
-            json_body=application_token_expire_in.to_dict(),
+            json_body=application_token_expire_in.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
         )
 
     @deprecated
@@ -117,7 +121,7 @@ class AuthenticationAsync(ApiBase):
             query_params=options._query_params(),
             header_params=options._header_params(),
         )
-        return DashboardAccessOut.from_dict(response.json())
+        return DashboardAccessOut.model_validate(response.json())
 
     async def logout(
         self, options: AuthenticationLogoutOptions = AuthenticationLogoutOptions()
@@ -150,9 +154,11 @@ class Authentication(ApiBase):
             },
             query_params=options._query_params(),
             header_params=options._header_params(),
-            json_body=app_portal_access_in.to_dict(),
+            json_body=app_portal_access_in.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
         )
-        return AppPortalAccessOut.from_dict(response.json())
+        return AppPortalAccessOut.model_validate(response.json())
 
     def expire_all(
         self,
@@ -169,7 +175,9 @@ class Authentication(ApiBase):
             },
             query_params=options._query_params(),
             header_params=options._header_params(),
-            json_body=application_token_expire_in.to_dict(),
+            json_body=application_token_expire_in.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
         )
 
     @deprecated
@@ -190,7 +198,7 @@ class Authentication(ApiBase):
             query_params=options._query_params(),
             header_params=options._header_params(),
         )
-        return DashboardAccessOut.from_dict(response.json())
+        return DashboardAccessOut.model_validate(response.json())
 
     def logout(
         self, options: AuthenticationLogoutOptions = AuthenticationLogoutOptions()
