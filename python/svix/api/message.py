@@ -23,7 +23,7 @@ class MessageListOptions(BaseOptions):
     """When `true` message payloads are included in the response."""
     tag: t.Optional[str] = None
     """Filter messages matching the provided tag."""
-    event_types: t.Optional[t.Set[str]] = None
+    event_types: t.Optional[t.List[str]] = None
     """Filter response based on the event type"""
 
     def _query_params(self) -> t.Dict[str, str]:

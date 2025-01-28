@@ -35,7 +35,7 @@ class MessageAttemptListByEndpointOptions(BaseOptions):
     """When `true` attempt content is included in the response"""
     with_msg: t.Optional[bool] = None
     """When `true`, the message information is included in the response"""
-    event_types: t.Optional[t.Set[str]] = None
+    event_types: t.Optional[t.List[str]] = None
     """Filter response based on the event type"""
 
     def _query_params(self) -> t.Dict[str, str]:
@@ -78,7 +78,7 @@ class MessageAttemptListByMsgOptions(BaseOptions):
     """Only include items created after a certain date"""
     with_content: t.Optional[bool] = None
     """When `true` attempt content is included in the response"""
-    event_types: t.Optional[t.Set[str]] = None
+    event_types: t.Optional[t.List[str]] = None
     """Filter response based on the event type"""
 
     def _query_params(self) -> t.Dict[str, str]:
@@ -117,7 +117,7 @@ class MessageAttemptListAttemptedMessagesOptions(BaseOptions):
     """Only include items created after a certain date"""
     with_content: t.Optional[bool] = None
     """When `true` message payloads are included in the response"""
-    event_types: t.Optional[t.Set[str]] = None
+    event_types: t.Optional[t.List[str]] = None
     """Filter response based on the event type"""
 
     def _query_params(self) -> t.Dict[str, str]:
