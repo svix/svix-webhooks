@@ -7,6 +7,10 @@ from .common import SvixBaseModel
 
 
 class EventTypeImportOpenApiIn(SvixBaseModel):
+    """Import a list of event types from webhooks defined in an OpenAPI spec.
+
+    The OpenAPI spec can be specified as either `spec` given the spec as a JSON object, or as `specRaw` (a `string`) which will be parsed as YAML or JSON by the server. Sending neither or both is invalid, resulting in a `400` **Bad Request**."""
+
     dry_run: t.Optional[bool] = Field(default=None, alias="dryRun")
     """If `true`, return the event types that would be modified without actually modifying them."""
 

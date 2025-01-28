@@ -9,6 +9,8 @@ from .message_status import MessageStatus
 
 
 class EndpointMessageOut(SvixBaseModel):
+    """A model containing information on a given message plus additional fields on the last attempt for that message."""
+
     channels: t.Optional[t.List[str]] = None
     """List of free-form identifiers that endpoints can filter by"""
 
