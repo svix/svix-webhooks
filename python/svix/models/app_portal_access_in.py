@@ -9,7 +9,9 @@ from .common import SvixBaseModel
 
 class AppPortalAccessIn(SvixBaseModel):
     application: t.Optional[ApplicationIn] = None
-    """Optionally creates a new application while generating the access link. If the application id or uid that is used in the path already exists, this argument is ignored."""
+    """Optionally creates a new application while generating the access link.
+
+    If the application id or uid that is used in the path already exists, this argument is ignored."""
 
     expiry: t.Optional[int] = None
     """How long the token will be valid for, in seconds.
