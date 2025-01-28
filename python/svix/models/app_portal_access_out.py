@@ -5,4 +5,5 @@ from .common import SvixBaseModel
 
 class AppPortalAccessOut(SvixBaseModel):
     token: str
+
     url: str

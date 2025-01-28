@@ -7,5 +7,7 @@ from .common import SvixBaseModel
 
 class ReplayOut(SvixBaseModel):
     id: str
+
     status: BackgroundTaskStatus
+
     task: BackgroundTaskType

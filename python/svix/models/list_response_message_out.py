@@ -9,6 +9,9 @@ from .message_out import MessageOut
 
 class ListResponseMessageOut(SvixBaseModel):
     data: t.List[MessageOut]
+
     done: bool
+
     iterator: str
+
     prev_iterator: t.Optional[str] = Field(default=None, alias="prevIterator")

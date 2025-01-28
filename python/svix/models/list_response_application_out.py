@@ -9,6 +9,9 @@ from .common import SvixBaseModel
 
 class ListResponseApplicationOut(SvixBaseModel):
     data: t.List[ApplicationOut]
+
     done: bool
+
     iterator: str
+
     prev_iterator: t.Optional[str] = Field(default=None, alias="prevIterator")

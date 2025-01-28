@@ -7,4 +7,5 @@ from .common import SvixBaseModel
 
 class RecoverIn(SvixBaseModel):
     since: datetime
+
     until: t.Optional[datetime] = None

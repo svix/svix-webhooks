@@ -9,6 +9,9 @@ from .operational_webhook_endpoint_out import OperationalWebhookEndpointOut
 
 class ListResponseOperationalWebhookEndpointOut(SvixBaseModel):
     data: t.List[OperationalWebhookEndpointOut]
+
     done: bool
+
     iterator: str
+
     prev_iterator: t.Optional[str] = Field(default=None, alias="prevIterator")

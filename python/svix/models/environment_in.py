@@ -12,7 +12,9 @@ class EnvironmentIn(SvixBaseModel):
     event_types: t.Optional[t.List[EventTypeIn]] = Field(
         default=None, alias="eventTypes"
     )
+
     settings: t.Optional[t.Dict[str, t.Any]] = None
+
     transformation_templates: t.Optional[t.List[TemplateIn]] = Field(
         default=None, alias="transformationTemplates"
     )

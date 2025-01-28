@@ -8,6 +8,9 @@ from .common import SvixBaseModel
 
 class BackgroundTaskOut(SvixBaseModel):
     data: BackgroundTaskData
+
     id: str
+
     status: BackgroundTaskStatus
+
     task: BackgroundTaskType

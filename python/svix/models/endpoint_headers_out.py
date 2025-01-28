@@ -6,4 +6,5 @@ from .common import SvixBaseModel
 
 class EndpointHeadersOut(SvixBaseModel):
     headers: t.Dict[str, str]
+
     sensitive: t.List[str]
