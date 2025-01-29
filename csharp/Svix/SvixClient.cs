@@ -46,7 +46,7 @@ namespace Svix
         private readonly ISvixOptions _options;
 
         public SvixClient(string token, ISvixOptions options, ILogger<SvixClient> logger = null
-            , IApplicationApi applicationApi = null, IAuthenticationApi authenticationApi = null, IEndpointApi endpointApi = null
+            , ApplicationApi applicationApi = null, IAuthenticationApi authenticationApi = null, IEndpointApi endpointApi = null
             , IEventTypeApi eventTypeApi = null, IHealthApi healthApi = null, IIntegrationApi integrationApi = null
             , IMessageApi messageApi = null, IMessageAttemptApi messageAttemptApi = null, IStatisticsApi statisticsApi = null
             , IWebhookEndpointApi operationalWebhookEndpointApi = null)

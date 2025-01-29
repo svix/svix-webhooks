@@ -14,9 +14,9 @@ namespace Svix
 {
     public sealed class Application : SvixResourceBase
     {
-        private readonly IApplicationApi _applicationApi;
+        private readonly ApplicationApi _applicationApi;
 
-        public Application(ISvixClient svixClient, IApplicationApi applicationApi)
+        public Application(ISvixClient svixClient, ApplicationApi applicationApi)
             : base(svixClient)
         {
             _applicationApi = applicationApi ?? throw new ArgumentNullException(nameof(applicationApi));

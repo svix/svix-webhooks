@@ -14,7 +14,7 @@ namespace Svix.Tests
     {
         private const string MOCK_TOKEN = ";iuani;ansd;ifgjbnai;sdjfgb";
 
-        private readonly Mock<IApplicationApi> _mockApplicationApi;
+        private readonly Mock<ApplicationApi> _mockApplicationApi;
 
         private readonly Mock<ISvixOptions> _mockOptions;
 
@@ -22,7 +22,7 @@ namespace Svix.Tests
 
         public ApplicationTests()
         {
-            _mockApplicationApi = new Mock<IApplicationApi>();
+            _mockApplicationApi = new Mock<ApplicationApi>();
             _mockOptions = new Mock<ISvixOptions>();
             _svixClient = new SvixClient(
                 MOCK_TOKEN,
