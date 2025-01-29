@@ -24,13 +24,14 @@ pub enum BackgroundTaskType {
 
 impl fmt::Display for BackgroundTaskType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Self::EndpointReplay => f.write_str("endpoint.replay"),
-            Self::EndpointRecover => f.write_str("endpoint.recover"),
-            Self::ApplicationStats => f.write_str("application.stats"),
-            Self::MessageBroadcast => f.write_str("message.broadcast"),
-            Self::SdkGenerate => f.write_str("sdk.generate"),
-            Self::EventTypeAggregate => f.write_str("event-type.aggregate"),
-        }
+        let value = match self {
+            Self::EndpointReplay => "endpoint.replay",
+            Self::EndpointRecover => "endpoint.recover",
+            Self::ApplicationStats => "application.stats",
+            Self::MessageBroadcast => "message.broadcast",
+            Self::SdkGenerate => "sdk.generate",
+            Self::EventTypeAggregate => "event-type.aggregate",
+        };
+        f.write_str(value)
     }
 }

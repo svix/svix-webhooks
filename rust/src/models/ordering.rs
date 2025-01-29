@@ -17,9 +17,10 @@ pub enum Ordering {
 
 impl fmt::Display for Ordering {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Self::Ascending => f.write_str("ascending"),
-            Self::Descending => f.write_str("descending"),
-        }
+        let value = match self {
+            Self::Ascending => "ascending",
+            Self::Descending => "descending",
+        };
+        f.write_str(value)
     }
 }
