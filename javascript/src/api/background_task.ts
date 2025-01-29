@@ -36,7 +36,7 @@ export class BackgroundTask {
     request.setQueryParam("iterator", options?.iterator);
     request.setQueryParam("order", options?.order);
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "ListResponseBackgroundTaskOut");
   }
 
   /**
@@ -56,6 +56,6 @@ export class BackgroundTask {
 
     request.setPathParam("task_id", taskId);
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "BackgroundTaskOut");
   }
 }

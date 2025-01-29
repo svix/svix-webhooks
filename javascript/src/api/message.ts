@@ -57,7 +57,7 @@ export class Message {
     request.setQueryParam("tag", options?.tag);
     request.setQueryParam("event_types", options?.eventTypes);
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "ListResponseMessageOut");
   }
 
   /**
@@ -80,9 +80,9 @@ export class Message {
 
     request.setPathParam("app_id", appId);
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
-    request.body = messageIn;
+    request.setBody(messageIn, "MessageIn");
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "MessageOut");
   }
 
   /** Get a message by its ID or eventID. */
@@ -97,7 +97,7 @@ export class Message {
     request.setPathParam("msg_id", msgId);
     request.setQueryParam("with_content", options?.withContent);
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "MessageOut");
   }
 
   /**

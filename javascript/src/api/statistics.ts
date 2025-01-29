@@ -19,9 +19,9 @@ export class Statistics {
     const request = new SvixRequest(HttpMethod.POST, "/api/v1/stats/usage/app");
 
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
-    request.body = appUsageStatsIn;
+    request.setBody(appUsageStatsIn, "AppUsageStatsIn");
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "AppUsageStatsOut");
   }
 
   /**
@@ -33,6 +33,6 @@ export class Statistics {
   public aggregateEventTypes(): Promise<AggregateEventTypesOut> {
     const request = new SvixRequest(HttpMethod.PUT, "/api/v1/stats/usage/event-types");
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "AggregateEventTypesOut");
   }
 }

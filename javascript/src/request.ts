@@ -1,8 +1,10 @@
 import "svix-fetch";
 import { ApiException } from "./util";
 import { HttpErrorOut, HTTPValidationError } from "./openapi";
+import { ObjectSerializer } from "./openapi/models/ObjectSerializer";
 
 const LIB_VERSION = "1.56.0";
+const USER_AGENT = `svix-libs/${LIB_VERSION}/javascript`;
 
 export enum HttpMethod {
   GET = "GET",
@@ -31,7 +33,7 @@ export class SvixRequest {
     private path: string
   ) {}
 
-  public body?: any;
+  private body?: string;
   private queryParams: Record<string, string> = {};
   private headerParams: Record<string, string> = {};
 
@@ -71,6 +73,10 @@ export class SvixRequest {
     this.headerParams[name] = value;
   }
 
+  public setBody(value: any, type: string) {
+    this.body = JSON.stringify(ObjectSerializer.serialize(value, type, ""));
+  }
+
   /**
    * Send this request, returning the request body as a caller-specified type.
    *
@@ -80,9 +86,9 @@ export class SvixRequest {
    * If the server returns a 5xx error, the request is retried up to two times with exponential backoff.
    * If retries are exhausted, an `ApiException<HttpErrorOut>` is thrown.
    */
-  public async send<R>(ctx: SvixRequestContext): Promise<R> {
+  public async send<R>(ctx: SvixRequestContext, responseType: string): Promise<R> {
     const responseBody = await this.sendInner(ctx);
-    return JSON.parse(responseBody);
+    return ObjectSerializer.deserialize(JSON.parse(responseBody), responseType, "");
   }
 
   /** Same as `send`, but the response body is discarded, not parsed. */
@@ -98,11 +104,6 @@ export class SvixRequest {
 
     const randomId = Math.floor(Math.random() * Math.pow(2, 32));
 
-    let body: string | undefined;
-    if (this.body !== undefined) {
-      body = JSON.stringify(this.body);
-    }
-
     // Cloudflare Workers fail if the credentials option is used in a fetch call.
     // This work around that. Source:
     // https://github.com/cloudflare/workers-sdk/issues/2514#issuecomment-2178070014
@@ -110,10 +111,10 @@ export class SvixRequest {
 
     const response = await sendWithRetry(url, {
       method: this.method.toString(),
-      body,
+      body: this.body,
       headers: {
         accept: "application/json, */*;q=0.8",
-        "user-agent": `svix-libs/${LIB_VERSION}/javascript`,
+        "user-agent": USER_AGENT,
         "svix-req-id": randomId.toString(),
         ...this.headerParams,
       },

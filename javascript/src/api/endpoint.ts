@@ -56,7 +56,7 @@ export class Endpoint {
     request.setQueryParam("iterator", options?.iterator);
     request.setQueryParam("order", options?.order);
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "ListResponseEndpointOut");
   }
 
   /**
@@ -73,9 +73,9 @@ export class Endpoint {
 
     request.setPathParam("app_id", appId);
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
-    request.body = endpointIn;
+    request.setBody(endpointIn, "EndpointIn");
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "EndpointOut");
   }
 
   /** Get an endpoint. */
@@ -88,7 +88,7 @@ export class Endpoint {
     request.setPathParam("app_id", appId);
     request.setPathParam("endpoint_id", endpointId);
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "EndpointOut");
   }
 
   /** Update an endpoint. */
@@ -104,9 +104,9 @@ export class Endpoint {
 
     request.setPathParam("app_id", appId);
     request.setPathParam("endpoint_id", endpointId);
-    request.body = endpointUpdate;
+    request.setBody(endpointUpdate, "EndpointUpdate");
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "EndpointOut");
   }
 
   /** Delete an endpoint. */
@@ -135,9 +135,9 @@ export class Endpoint {
 
     request.setPathParam("app_id", appId);
     request.setPathParam("endpoint_id", endpointId);
-    request.body = endpointPatch;
+    request.setBody(endpointPatch, "EndpointPatch");
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "EndpointOut");
   }
 
   /** Get the additional headers to be sent with the webhook. */
@@ -150,7 +150,7 @@ export class Endpoint {
     request.setPathParam("app_id", appId);
     request.setPathParam("endpoint_id", endpointId);
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "EndpointHeadersOut");
   }
 
   /** Set the additional headers to be sent with the webhook. */
@@ -166,7 +166,7 @@ export class Endpoint {
 
     request.setPathParam("app_id", appId);
     request.setPathParam("endpoint_id", endpointId);
-    request.body = endpointHeadersIn;
+    request.setBody(endpointHeadersIn, "EndpointHeadersIn");
 
     return request.sendNoResponseBody(this.requestCtx);
   }
@@ -192,7 +192,7 @@ export class Endpoint {
 
     request.setPathParam("app_id", appId);
     request.setPathParam("endpoint_id", endpointId);
-    request.body = endpointHeadersPatchIn;
+    request.setBody(endpointHeadersPatchIn, "EndpointHeadersPatchIn");
 
     return request.sendNoResponseBody(this.requestCtx);
   }
@@ -224,9 +224,9 @@ export class Endpoint {
     request.setPathParam("app_id", appId);
     request.setPathParam("endpoint_id", endpointId);
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
-    request.body = recoverIn;
+    request.setBody(recoverIn, "RecoverIn");
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "RecoverOut");
   }
 
   /**
@@ -249,9 +249,9 @@ export class Endpoint {
     request.setPathParam("app_id", appId);
     request.setPathParam("endpoint_id", endpointId);
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
-    request.body = replayIn;
+    request.setBody(replayIn, "ReplayIn");
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "ReplayOut");
   }
 
   /**
@@ -269,7 +269,7 @@ export class Endpoint {
     request.setPathParam("app_id", appId);
     request.setPathParam("endpoint_id", endpointId);
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "EndpointSecretOut");
   }
 
   /**
@@ -291,7 +291,7 @@ export class Endpoint {
     request.setPathParam("app_id", appId);
     request.setPathParam("endpoint_id", endpointId);
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
-    request.body = endpointSecretRotateIn;
+    request.setBody(endpointSecretRotateIn, "EndpointSecretRotateIn");
 
     return request.sendNoResponseBody(this.requestCtx);
   }
@@ -311,9 +311,9 @@ export class Endpoint {
     request.setPathParam("app_id", appId);
     request.setPathParam("endpoint_id", endpointId);
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
-    request.body = eventExampleIn;
+    request.setBody(eventExampleIn, "EventExampleIn");
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "MessageOut");
   }
 
   /** Get basic statistics for the endpoint. */
@@ -332,7 +332,7 @@ export class Endpoint {
     request.setQueryParam("since", options?.since);
     request.setQueryParam("until", options?.until);
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "EndpointStats");
   }
 
   /** Get the transformation code associated with this endpoint. */
@@ -348,7 +348,7 @@ export class Endpoint {
     request.setPathParam("app_id", appId);
     request.setPathParam("endpoint_id", endpointId);
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "EndpointTransformationOut");
   }
 
   /** Set or unset the transformation code associated with this endpoint. */
@@ -364,12 +364,12 @@ export class Endpoint {
 
     request.setPathParam("app_id", appId);
     request.setPathParam("endpoint_id", endpointId);
-    request.body = endpointTransformationIn;
+    request.setBody(endpointTransformationIn, "EndpointTransformationIn");
 
     return request.sendNoResponseBody(this.requestCtx);
   }
 
-  public async oauthUpdate(
+  public oauthUpdate(
     appId: string,
     endpointId: string,
     endpointOauthConfigIn: EndpointOauthConfigIn
@@ -381,12 +381,12 @@ export class Endpoint {
 
     request.setPathParam("app_id", appId);
     request.setPathParam("endpoint_id", endpointId);
-    request.body = endpointOauthConfigIn;
+    request.setBody(endpointOauthConfigIn, "EndpointOauthConfigIn");
 
-    await request.send(this.requestCtx);
+    return request.sendNoResponseBody(this.requestCtx);
   }
 
-  public async oauthDelete(appId: string, endpointId: string): Promise<void> {
+  public oauthDelete(appId: string, endpointId: string): Promise<void> {
     const request = new SvixRequest(
       HttpMethod.DELETE,
       "/app/{app_id}/endpoint/{endpoint_id}/oauth"
@@ -395,6 +395,6 @@ export class Endpoint {
     request.setPathParam("app_id", appId);
     request.setPathParam("endpoint_id", endpointId);
 
-    await request.send(this.requestCtx);
+    return request.sendNoResponseBody(this.requestCtx);
   }
 }

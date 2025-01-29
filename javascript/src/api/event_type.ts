@@ -43,7 +43,7 @@ export class EventType {
     request.setQueryParam("include_archived", options?.includeArchived);
     request.setQueryParam("with_content", options?.withContent);
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "ListResponseEventTypeOut");
   }
 
   /**
@@ -57,9 +57,9 @@ export class EventType {
     const request = new SvixRequest(HttpMethod.POST, "/api/v1/event-type");
 
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
-    request.body = eventTypeIn;
+    request.setBody(eventTypeIn, "EventTypeIn");
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "EventTypeOut");
   }
 
   /**
@@ -76,9 +76,9 @@ export class EventType {
     const request = new SvixRequest(HttpMethod.POST, "/api/v1/event-type/import/openapi");
 
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
-    request.body = eventTypeImportOpenApiIn;
+    request.setBody(eventTypeImportOpenApiIn, "EventTypeImportOpenApiIn");
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "EventTypeImportOpenApiOut");
   }
 
   /** Get an event type. */
@@ -90,7 +90,7 @@ export class EventType {
 
     request.setPathParam("event_type_name", eventTypeName);
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "EventTypeOut");
   }
 
   /** Update an event type. */
@@ -104,9 +104,9 @@ export class EventType {
     );
 
     request.setPathParam("event_type_name", eventTypeName);
-    request.body = eventTypeUpdate;
+    request.setBody(eventTypeUpdate, "EventTypeUpdate");
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "EventTypeOut");
   }
 
   /**
@@ -140,8 +140,8 @@ export class EventType {
     );
 
     request.setPathParam("event_type_name", eventTypeName);
-    request.body = eventTypePatch;
+    request.setBody(eventTypePatch, "EventTypePatch");
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "EventTypeOut");
   }
 }

@@ -146,7 +146,7 @@ export class MessageAttempt {
     request.setQueryParam("with_msg", options?.withMsg);
     request.setQueryParam("event_types", options?.eventTypes);
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "ListResponseMessageAttemptOut");
   }
 
   /**
@@ -181,7 +181,7 @@ export class MessageAttempt {
     request.setQueryParam("with_content", options?.withContent);
     request.setQueryParam("event_types", options?.eventTypes);
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "ListResponseMessageAttemptOut");
   }
 
   /**
@@ -216,7 +216,7 @@ export class MessageAttempt {
     request.setQueryParam("with_content", options?.withContent);
     request.setQueryParam("event_types", options?.eventTypes);
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "ListResponseEndpointMessageOut");
   }
 
   /** `msg_id`: Use a message id or a message `eventId` */
@@ -234,7 +234,7 @@ export class MessageAttempt {
     request.setPathParam("msg_id", msgId);
     request.setPathParam("attempt_id", attemptId);
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "MessageAttemptOut");
   }
 
   /**
@@ -277,7 +277,7 @@ export class MessageAttempt {
     request.setQueryParam("limit", options?.limit);
     request.setQueryParam("iterator", options?.iterator);
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "ListResponseMessageEndpointOut");
   }
 
   /** Resend a message to the specified endpoint. */

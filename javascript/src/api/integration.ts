@@ -34,7 +34,7 @@ export class Integration {
     request.setQueryParam("iterator", options?.iterator);
     request.setQueryParam("order", options?.order);
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "ListResponseIntegrationOut");
   }
 
   /** Create an integration. */
@@ -47,9 +47,9 @@ export class Integration {
 
     request.setPathParam("app_id", appId);
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
-    request.body = integrationIn;
+    request.setBody(integrationIn, "IntegrationIn");
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "IntegrationOut");
   }
 
   /** Get an integration. */
@@ -62,7 +62,7 @@ export class Integration {
     request.setPathParam("app_id", appId);
     request.setPathParam("integ_id", integId);
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "IntegrationOut");
   }
 
   /** Update an integration. */
@@ -78,9 +78,9 @@ export class Integration {
 
     request.setPathParam("app_id", appId);
     request.setPathParam("integ_id", integId);
-    request.body = integrationUpdate;
+    request.setBody(integrationUpdate, "IntegrationUpdate");
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "IntegrationOut");
   }
 
   /** Delete an integration. */
@@ -110,7 +110,7 @@ export class Integration {
     request.setPathParam("app_id", appId);
     request.setPathParam("integ_id", integId);
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "IntegrationKeyOut");
   }
 
   /** Rotate the integration's key. The previous key will be immediately revoked. */
@@ -128,6 +128,6 @@ export class Integration {
     request.setPathParam("integ_id", integId);
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "IntegrationKeyOut");
   }
 }

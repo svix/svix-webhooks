@@ -24,9 +24,9 @@ export class Authentication {
 
     request.setPathParam("app_id", appId);
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
-    request.body = appPortalAccessIn;
+    request.setBody(appPortalAccessIn, "AppPortalAccessIn");
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "AppPortalAccessOut");
   }
 
   /** Expire all of the tokens associated with a specific application. */
@@ -42,7 +42,7 @@ export class Authentication {
 
     request.setPathParam("app_id", appId);
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
-    request.body = applicationTokenExpireIn;
+    request.setBody(applicationTokenExpireIn, "ApplicationTokenExpireIn");
 
     return request.sendNoResponseBody(this.requestCtx);
   }
@@ -66,7 +66,7 @@ export class Authentication {
     request.setPathParam("app_id", appId);
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "DashboardAccessOut");
   }
 
   /**

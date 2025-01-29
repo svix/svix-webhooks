@@ -36,7 +36,7 @@ export class OperationalWebhookEndpoint {
     request.setQueryParam("iterator", options?.iterator);
     request.setQueryParam("order", options?.order);
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "ListResponseOperationalWebhookEndpointOut");
   }
 
   /** Create an operational webhook endpoint. */
@@ -50,9 +50,9 @@ export class OperationalWebhookEndpoint {
     );
 
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
-    request.body = operationalWebhookEndpointIn;
+    request.setBody(operationalWebhookEndpointIn, "OperationalWebhookEndpointIn");
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "OperationalWebhookEndpointOut");
   }
 
   /** Get an operational webhook endpoint. */
@@ -64,7 +64,7 @@ export class OperationalWebhookEndpoint {
 
     request.setPathParam("endpoint_id", endpointId);
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "OperationalWebhookEndpointOut");
   }
 
   /** Update an operational webhook endpoint. */
@@ -78,9 +78,9 @@ export class OperationalWebhookEndpoint {
     );
 
     request.setPathParam("endpoint_id", endpointId);
-    request.body = operationalWebhookEndpointUpdate;
+    request.setBody(operationalWebhookEndpointUpdate, "OperationalWebhookEndpointUpdate");
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "OperationalWebhookEndpointOut");
   }
 
   /** Delete an operational webhook endpoint. */
@@ -109,7 +109,7 @@ export class OperationalWebhookEndpoint {
 
     request.setPathParam("endpoint_id", endpointId);
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "OperationalWebhookEndpointSecretOut");
   }
 
   /**
@@ -129,7 +129,10 @@ export class OperationalWebhookEndpoint {
 
     request.setPathParam("endpoint_id", endpointId);
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
-    request.body = operationalWebhookEndpointSecretIn;
+    request.setBody(
+      operationalWebhookEndpointSecretIn,
+      "OperationalWebhookEndpointSecretIn"
+    );
 
     return request.sendNoResponseBody(this.requestCtx);
   }

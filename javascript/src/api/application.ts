@@ -29,7 +29,7 @@ export class Application {
     request.setQueryParam("iterator", options?.iterator);
     request.setQueryParam("order", options?.order);
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "ListResponseApplicationOut");
   }
 
   /** Create a new application. */
@@ -40,9 +40,9 @@ export class Application {
     const request = new SvixRequest(HttpMethod.POST, "/api/v1/app");
 
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
-    request.body = applicationIn;
+    request.setBody(applicationIn, "ApplicationIn");
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "ApplicationOut");
   }
 
   /** Get the application with the UID from `applicationIn`, or create it if it doesn't exist yet. */
@@ -52,11 +52,11 @@ export class Application {
   ): Promise<ApplicationOut> {
     const request = new SvixRequest(HttpMethod.POST, "/api/v1/app");
 
-    request.body = applicationIn;
     request.setQueryParam("get_if_exists", true);
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
+    request.setBody(applicationIn, "ApplicationIn");
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "ApplicationOut");
   }
 
   /** Get an application. */
@@ -65,7 +65,7 @@ export class Application {
 
     request.setPathParam("app_id", appId);
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "ApplicationOut");
   }
 
   /** Update an application. */
@@ -73,9 +73,9 @@ export class Application {
     const request = new SvixRequest(HttpMethod.PUT, "/api/v1/app/{app_id}");
 
     request.setPathParam("app_id", appId);
-    request.body = applicationIn;
+    request.setBody(applicationIn, "ApplicationIn");
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "ApplicationOut");
   }
 
   /** Delete an application. */
@@ -95,8 +95,8 @@ export class Application {
     const request = new SvixRequest(HttpMethod.PATCH, "/api/v1/app/{app_id}");
 
     request.setPathParam("app_id", appId);
-    request.body = applicationPatch;
+    request.setBody(applicationPatch, "ApplicationPatch");
 
-    return request.send(this.requestCtx);
+    return request.send(this.requestCtx, "ApplicationOut");
   }
 }
