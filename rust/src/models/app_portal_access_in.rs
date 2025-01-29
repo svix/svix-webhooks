@@ -6,6 +6,7 @@ use super::application_in::ApplicationIn;
 #[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
 pub struct AppPortalAccessIn {
     /// Optionally creates a new application while generating the access link.
+    ///
     /// If the application id or uid that is used in the path already exists,
     /// this argument is ignored.
     #[serde(skip_serializing_if = "Option::is_none")]

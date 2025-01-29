@@ -17,6 +17,11 @@ pub struct OperationalWebhookEndpointCreateOptions {
     pub idempotency_key: Option<String>,
 }
 
+#[derive(Default)]
+pub struct OperationalWebhookEndpointRotateSecretOptions {
+    pub idempotency_key: Option<String>,
+}
+
 pub struct OperationalWebhookEndpoint<'a> {
     cfg: &'a Configuration,
 }
@@ -100,6 +105,41 @@ impl<'a> OperationalWebhookEndpoint<'a> {
         .await
     }
 
+    /// Get the additional headers to be sent with the operational webhook.
+    pub async fn get_headers(
+        &self,
+        endpoint_id: String,
+    ) -> Result<OperationalWebhookEndpointHeadersOut> {
+        crate::request::Request::new(
+            http1::Method::GET,
+            "/api/v1/operational-webhook/endpoint/{endpoint_id}/headers",
+        )
+        .with_path_param("endpoint_id", endpoint_id)
+        .execute(self.cfg)
+        .await
+    }
+
+    /// Set the additional headers to be sent with the operational webhook.
+    pub async fn update_headers(
+        &self,
+        endpoint_id: String,
+        operational_webhook_endpoint_headers_in: OperationalWebhookEndpointHeadersIn,
+    ) -> Result<()> {
+        crate::request::Request::new(
+            http1::Method::PUT,
+            "/api/v1/operational-webhook/endpoint/{endpoint_id}/headers",
+        )
+        .with_path_param("endpoint_id", endpoint_id)
+        .with_body_param(operational_webhook_endpoint_headers_in)
+        .returns_nothing()
+        .execute(self.cfg)
+        .await
+    }
+
+    /// Get an operational webhook endpoint's signing secret.
+    ///
+    /// This is used to verify the authenticity of the webhook.
+    /// For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
     pub async fn get_secret(
         &self,
         endpoint_id: String,
@@ -113,17 +153,25 @@ impl<'a> OperationalWebhookEndpoint<'a> {
         .await
     }
 
+    /// Rotates an operational webhook endpoint's signing secret.
+    ///
+    /// The previous secret will remain valid for the next 24 hours.
     pub async fn rotate_secret(
         &self,
         endpoint_id: String,
-        endpoint_secret_rotate_in: OperationalWebhookEndpointSecretIn,
+        operational_webhook_endpoint_secret_in: OperationalWebhookEndpointSecretIn,
+        options: Option<OperationalWebhookEndpointRotateSecretOptions>,
     ) -> Result<()> {
+        let OperationalWebhookEndpointRotateSecretOptions { idempotency_key } =
+            options.unwrap_or_default();
+
         crate::request::Request::new(
             http1::Method::POST,
             "/api/v1/operational-webhook/endpoint/{endpoint_id}/secret/rotate",
         )
         .with_path_param("endpoint_id", endpoint_id)
-        .with_body_param(endpoint_secret_rotate_in)
+        .with_optional_header_param("idempotency-key", idempotency_key)
+        .with_body_param(operational_webhook_endpoint_secret_in)
         .returns_nothing()
         .execute(self.cfg)
         .await

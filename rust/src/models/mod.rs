@@ -62,6 +62,8 @@ pub mod message_events_out;
 pub mod message_in;
 pub mod message_out;
 pub mod message_status;
+pub mod operational_webhook_endpoint_headers_in;
+pub mod operational_webhook_endpoint_headers_out;
 pub mod operational_webhook_endpoint_in;
 pub mod operational_webhook_endpoint_out;
 pub mod operational_webhook_endpoint_secret_in;
@@ -142,6 +144,8 @@ pub use self::{
     message_in::MessageIn,
     message_out::MessageOut,
     message_status::MessageStatus,
+    operational_webhook_endpoint_headers_in::OperationalWebhookEndpointHeadersIn,
+    operational_webhook_endpoint_headers_out::OperationalWebhookEndpointHeadersOut,
     operational_webhook_endpoint_in::OperationalWebhookEndpointIn,
     operational_webhook_endpoint_out::OperationalWebhookEndpointOut,
     operational_webhook_endpoint_secret_in::OperationalWebhookEndpointSecretIn,

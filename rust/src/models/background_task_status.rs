@@ -18,10 +18,11 @@ pub enum BackgroundTaskStatus {
 
 impl fmt::Display for BackgroundTaskStatus {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Self::Running => f.write_str("running"),
-            Self::Finished => f.write_str("finished"),
-            Self::Failed => f.write_str("failed"),
-        }
+        let value = match self {
+            Self::Running => "running",
+            Self::Finished => "finished",
+            Self::Failed => "failed",
+        };
+        f.write_str(value)
     }
 }

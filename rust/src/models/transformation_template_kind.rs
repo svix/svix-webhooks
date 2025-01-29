@@ -36,19 +36,20 @@ pub enum TransformationTemplateKind {
 
 impl fmt::Display for TransformationTemplateKind {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Self::Custom => f.write_str("Custom"),
-            Self::CustomerIo => f.write_str("CustomerIO"),
-            Self::Discord => f.write_str("Discord"),
-            Self::Hubspot => f.write_str("Hubspot"),
-            Self::Inngest => f.write_str("Inngest"),
-            Self::Salesforce => f.write_str("Salesforce"),
-            Self::Segment => f.write_str("Segment"),
-            Self::Slack => f.write_str("Slack"),
-            Self::Teams => f.write_str("Teams"),
-            Self::TriggerDev => f.write_str("TriggerDev"),
-            Self::Windmill => f.write_str("Windmill"),
-            Self::Zapier => f.write_str("Zapier"),
-        }
+        let value = match self {
+            Self::Custom => "Custom",
+            Self::CustomerIo => "CustomerIO",
+            Self::Discord => "Discord",
+            Self::Hubspot => "Hubspot",
+            Self::Inngest => "Inngest",
+            Self::Salesforce => "Salesforce",
+            Self::Segment => "Segment",
+            Self::Slack => "Slack",
+            Self::Teams => "Teams",
+            Self::TriggerDev => "TriggerDev",
+            Self::Windmill => "Windmill",
+            Self::Zapier => "Zapier",
+        };
+        f.write_str(value)
     }
 }

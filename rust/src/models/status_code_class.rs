@@ -1,7 +1,9 @@
+// this file is @generated
+use std::fmt;
+
 use serde_repr::{Deserialize_repr, Serialize_repr};
 
-/// The different classes of HTTP status codes
-///
+/// The different classes of HTTP status codes:
 /// - CodeNone = 0
 /// - Code1xx = 100
 /// - Code2xx = 200
@@ -32,19 +34,16 @@ pub enum StatusCodeClass {
     Code5xx = 500,
 }
 
-impl std::fmt::Display for StatusCodeClass {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "{}",
-            match self {
-                Self::CodeNone => "0",
-                Self::Code1xx => "100",
-                Self::Code2xx => "200",
-                Self::Code3xx => "300",
-                Self::Code4xx => "400",
-                Self::Code5xx => "500",
-            }
-        )
+impl fmt::Display for StatusCodeClass {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let value = match self {
+            Self::CodeNone => "0",
+            Self::Code1xx => "100",
+            Self::Code2xx => "200",
+            Self::Code3xx => "300",
+            Self::Code4xx => "400",
+            Self::Code5xx => "500",
+        };
+        f.write_str(value)
     }
 }
