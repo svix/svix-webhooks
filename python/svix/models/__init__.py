@@ -59,6 +59,10 @@ from .message_endpoint_out import MessageEndpointOut
 from .message_in import MessageIn
 from .message_out import MessageOut
 from .message_status import MessageStatus
+from .operational_webhook_endpoint_headers_in import OperationalWebhookEndpointHeadersIn
+from .operational_webhook_endpoint_headers_out import (
+    OperationalWebhookEndpointHeadersOut,
+)
 from .operational_webhook_endpoint_in import OperationalWebhookEndpointIn
 from .operational_webhook_endpoint_out import OperationalWebhookEndpointOut
 from .operational_webhook_endpoint_secret_in import OperationalWebhookEndpointSecretIn
@@ -133,6 +137,8 @@ __all__ = [
     "MessageIn",
     "MessageOut",
     "MessageStatus",
+    "OperationalWebhookEndpointHeadersIn",
+    "OperationalWebhookEndpointHeadersOut",
     "OperationalWebhookEndpointIn",
     "OperationalWebhookEndpointOut",
     "OperationalWebhookEndpointSecretIn",
