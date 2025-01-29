@@ -12,6 +12,11 @@ using Svix.Models;
 
 namespace Svix
 {
+    public class ApplicationCreateOptions
+    {
+        public bool GetIfExists { get; set; }
+    }
+
     public sealed class Application : SvixResourceBase
     {
         private readonly ApplicationApi _applicationApi;
