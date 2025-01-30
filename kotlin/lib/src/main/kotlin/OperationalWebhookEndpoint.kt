@@ -1,8 +1,11 @@
+// this file is @generated
 package com.svix.kotlin
 
 import com.svix.kotlin.exceptions.ApiException
 import com.svix.kotlin.internal.apis.WebhookEndpointApi as OperationalWebhookEndpointApi
 import com.svix.kotlin.models.ListResponseOperationalWebhookEndpointOut
+import com.svix.kotlin.models.OperationalWebhookEndpointHeadersIn
+import com.svix.kotlin.models.OperationalWebhookEndpointHeadersOut
 import com.svix.kotlin.models.OperationalWebhookEndpointIn
 import com.svix.kotlin.models.OperationalWebhookEndpointOut
 import com.svix.kotlin.models.OperationalWebhookEndpointSecretIn
@@ -26,7 +29,7 @@ class OperationalWebhookEndpointListOptions {
 }
 
 class OperationalWebhookEndpoint internal constructor(token: String, options: SvixOptions) {
-    val api = OperationalWebhookEndpointApi(options.serverUrl)
+    private val api = OperationalWebhookEndpointApi(options.serverUrl)
 
     init {
         api.accessToken = token
@@ -35,6 +38,7 @@ class OperationalWebhookEndpoint internal constructor(token: String, options: Sv
         options.numRetries?.let { api.numRetries = it }
     }
 
+    /** List operational webhook endpoints. */
     suspend fun list(
         options: OperationalWebhookEndpointListOptions = OperationalWebhookEndpointListOptions()
     ): ListResponseOperationalWebhookEndpointOut {
@@ -49,17 +53,22 @@ class OperationalWebhookEndpoint internal constructor(token: String, options: Sv
         }
     }
 
+    /** Create an operational webhook endpoint. */
     suspend fun create(
-        endpointIn: OperationalWebhookEndpointIn,
+        operationalWebhookEndpointIn: OperationalWebhookEndpointIn,
         options: PostOptions = PostOptions(),
     ): OperationalWebhookEndpointOut {
         try {
-            return api.v1OperationalWebhookEndpointCreate(endpointIn, options.idempotencyKey)
+            return api.v1OperationalWebhookEndpointCreate(
+                operationalWebhookEndpointIn,
+                options.idempotencyKey,
+            )
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
     }
 
+    /** Get an operational webhook endpoint. */
     suspend fun get(endpointId: String): OperationalWebhookEndpointOut {
         try {
             return api.v1OperationalWebhookEndpointGet(endpointId)
@@ -68,17 +77,22 @@ class OperationalWebhookEndpoint internal constructor(token: String, options: Sv
         }
     }
 
+    /** Update an operational webhook endpoint. */
     suspend fun update(
         endpointId: String,
-        endpointUpdate: OperationalWebhookEndpointUpdate,
+        operationalWebhookEndpointUpdate: OperationalWebhookEndpointUpdate,
     ): OperationalWebhookEndpointOut {
         try {
-            return api.v1OperationalWebhookEndpointUpdate(endpointId, endpointUpdate)
+            return api.v1OperationalWebhookEndpointUpdate(
+                endpointId,
+                operationalWebhookEndpointUpdate,
+            )
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
     }
 
+    /** Delete an operational webhook endpoint. */
     suspend fun delete(endpointId: String) {
         try {
             api.v1OperationalWebhookEndpointDelete(endpointId)
@@ -87,6 +101,36 @@ class OperationalWebhookEndpoint internal constructor(token: String, options: Sv
         }
     }
 
+    /** Get the additional headers to be sent with the operational webhook. */
+    suspend fun getHeaders(endpointId: String): OperationalWebhookEndpointHeadersOut {
+        try {
+            return api.v1OperationalWebhookEndpointGetHeaders(endpointId)
+        } catch (e: Exception) {
+            throw ApiException.wrap(e)
+        }
+    }
+
+    /** Set the additional headers to be sent with the operational webhook. */
+    suspend fun updateHeaders(
+        endpointId: String,
+        operationalWebhookEndpointHeadersIn: OperationalWebhookEndpointHeadersIn,
+    ) {
+        try {
+            api.v1OperationalWebhookEndpointUpdateHeaders(
+                endpointId,
+                operationalWebhookEndpointHeadersIn,
+            )
+        } catch (e: Exception) {
+            throw ApiException.wrap(e)
+        }
+    }
+
+    /**
+     * Get an operational webhook endpoint's signing secret.
+     *
+     * This is used to verify the authenticity of the webhook. For more information please refer to
+     * [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
+     */
     suspend fun getSecret(endpointId: String): OperationalWebhookEndpointSecretOut {
         try {
             return api.v1OperationalWebhookEndpointGetSecret(endpointId)
@@ -95,15 +139,20 @@ class OperationalWebhookEndpoint internal constructor(token: String, options: Sv
         }
     }
 
+    /**
+     * Rotates an operational webhook endpoint's signing secret.
+     *
+     * The previous secret will remain valid for the next 24 hours.
+     */
     suspend fun rotateSecret(
         endpointId: String,
-        endpointSecretRotateIn: OperationalWebhookEndpointSecretIn,
+        operationalWebhookEndpointSecretIn: OperationalWebhookEndpointSecretIn,
         options: PostOptions = PostOptions(),
     ) {
         try {
             api.v1OperationalWebhookEndpointRotateSecret(
                 endpointId,
-                endpointSecretRotateIn,
+                operationalWebhookEndpointSecretIn,
                 options.idempotencyKey,
             )
         } catch (e: Exception) {

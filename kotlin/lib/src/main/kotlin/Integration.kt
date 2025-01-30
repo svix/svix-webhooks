@@ -1,4 +1,4 @@
-// this file is @generated (with minor manual changes)
+// this file is @generated
 package com.svix.kotlin
 
 import com.svix.kotlin.exceptions.ApiException
@@ -91,6 +91,12 @@ class Integration internal constructor(token: String, options: SvixOptions) {
         }
     }
 
+    /**
+     * Get an integration's key.
+     *
+     * @deprecated
+     */
+    @Deprecated(message = "This endpoint is deprecated.")
     suspend fun getKey(appId: String, integId: String): IntegrationKeyOut {
         try {
             return api.v1IntegrationGetKey(appId, integId)
