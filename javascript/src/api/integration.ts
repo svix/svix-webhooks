@@ -1,7 +1,5 @@
 // this file is @generated
 import {
-  Configuration,
-  IntegrationApi,
   IntegrationIn,
   IntegrationKeyOut,
   IntegrationOut,
@@ -9,6 +7,7 @@ import {
   ListResponseIntegrationOut,
   Ordering,
 } from "../openapi";
+import { HttpMethod, SvixRequest, SvixRequestContext } from "../request";
 import { PostOptions } from "../util";
 
 export interface IntegrationListOptions {
@@ -21,22 +20,21 @@ export interface IntegrationListOptions {
 }
 
 export class Integration {
-  private readonly api: IntegrationApi;
-
-  public constructor(config: Configuration) {
-    this.api = new IntegrationApi(config);
-  }
+  public constructor(private readonly requestCtx: SvixRequestContext) {}
 
   /** List the application's integrations. */
   public list(
     appId: string,
     options?: IntegrationListOptions
   ): Promise<ListResponseIntegrationOut> {
-    return this.api.v1IntegrationList({
-      appId,
-      ...options,
-      iterator: options?.iterator ?? undefined,
-    });
+    const request = new SvixRequest(HttpMethod.GET, "/api/v1/app/{app_id}/integration");
+
+    request.setPathParam("app_id", appId);
+    request.setQueryParam("limit", options?.limit);
+    request.setQueryParam("iterator", options?.iterator);
+    request.setQueryParam("order", options?.order);
+
+    return request.send(this.requestCtx, "ListResponseIntegrationOut");
   }
 
   /** Create an integration. */
@@ -45,19 +43,26 @@ export class Integration {
     integrationIn: IntegrationIn,
     options?: PostOptions
   ): Promise<IntegrationOut> {
-    return this.api.v1IntegrationCreate({
-      appId,
-      integrationIn,
-      ...options,
-    });
+    const request = new SvixRequest(HttpMethod.POST, "/api/v1/app/{app_id}/integration");
+
+    request.setPathParam("app_id", appId);
+    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
+    request.setBody(integrationIn, "IntegrationIn");
+
+    return request.send(this.requestCtx, "IntegrationOut");
   }
 
   /** Get an integration. */
   public get(appId: string, integId: string): Promise<IntegrationOut> {
-    return this.api.v1IntegrationGet({
-      appId,
-      integId,
-    });
+    const request = new SvixRequest(
+      HttpMethod.GET,
+      "/api/v1/app/{app_id}/integration/{integ_id}"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("integ_id", integId);
+
+    return request.send(this.requestCtx, "IntegrationOut");
   }
 
   /** Update an integration. */
@@ -66,19 +71,29 @@ export class Integration {
     integId: string,
     integrationUpdate: IntegrationUpdate
   ): Promise<IntegrationOut> {
-    return this.api.v1IntegrationUpdate({
-      appId,
-      integId,
-      integrationUpdate,
-    });
+    const request = new SvixRequest(
+      HttpMethod.PUT,
+      "/api/v1/app/{app_id}/integration/{integ_id}"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("integ_id", integId);
+    request.setBody(integrationUpdate, "IntegrationUpdate");
+
+    return request.send(this.requestCtx, "IntegrationOut");
   }
 
   /** Delete an integration. */
   public delete(appId: string, integId: string): Promise<void> {
-    return this.api.v1IntegrationDelete({
-      appId,
-      integId,
-    });
+    const request = new SvixRequest(
+      HttpMethod.DELETE,
+      "/api/v1/app/{app_id}/integration/{integ_id}"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("integ_id", integId);
+
+    return request.sendNoResponseBody(this.requestCtx);
   }
 
   /**
@@ -87,10 +102,15 @@ export class Integration {
    * @deprecated
    */
   public getKey(appId: string, integId: string): Promise<IntegrationKeyOut> {
-    return this.api.v1IntegrationGetKey({
-      appId,
-      integId,
-    });
+    const request = new SvixRequest(
+      HttpMethod.GET,
+      "/api/v1/app/{app_id}/integration/{integ_id}/key"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("integ_id", integId);
+
+    return request.send(this.requestCtx, "IntegrationKeyOut");
   }
 
   /** Rotate the integration's key. The previous key will be immediately revoked. */
@@ -99,10 +119,15 @@ export class Integration {
     integId: string,
     options?: PostOptions
   ): Promise<IntegrationKeyOut> {
-    return this.api.v1IntegrationRotateKey({
-      appId,
-      integId,
-      ...options,
-    });
+    const request = new SvixRequest(
+      HttpMethod.POST,
+      "/api/v1/app/{app_id}/integration/{integ_id}/key/rotate"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("integ_id", integId);
+    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
+
+    return request.send(this.requestCtx, "IntegrationKeyOut");
   }
 }

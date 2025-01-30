@@ -1,13 +1,12 @@
 // this file is @generated
 import {
-  Configuration,
-  BackgroundTasksApi,
   BackgroundTaskOut,
   BackgroundTaskStatus,
   BackgroundTaskType,
   ListResponseBackgroundTaskOut,
   Ordering,
 } from "../openapi";
+import { HttpMethod, SvixRequest, SvixRequestContext } from "../request";
 
 export interface BackgroundTaskListOptions {
   /** Filter the response based on the status. */
@@ -23,20 +22,21 @@ export interface BackgroundTaskListOptions {
 }
 
 export class BackgroundTask {
-  private readonly api: BackgroundTasksApi;
-
-  public constructor(config: Configuration) {
-    this.api = new BackgroundTasksApi(config);
-  }
+  public constructor(private readonly requestCtx: SvixRequestContext) {}
 
   /** List background tasks executed in the past 90 days. */
   public list(
     options?: BackgroundTaskListOptions
   ): Promise<ListResponseBackgroundTaskOut> {
-    return this.api.listBackgroundTasks({
-      ...options,
-      iterator: options?.iterator ?? undefined,
-    });
+    const request = new SvixRequest(HttpMethod.GET, "/api/v1/background-task");
+
+    request.setQueryParam("status", options?.status);
+    request.setQueryParam("task", options?.task);
+    request.setQueryParam("limit", options?.limit);
+    request.setQueryParam("iterator", options?.iterator);
+    request.setQueryParam("order", options?.order);
+
+    return request.send(this.requestCtx, "ListResponseBackgroundTaskOut");
   }
 
   /**
@@ -52,8 +52,10 @@ export class BackgroundTask {
 
   /** Get a background task by ID. */
   public get(taskId: string): Promise<BackgroundTaskOut> {
-    return this.api.getBackgroundTask({
-      taskId,
-    });
+    const request = new SvixRequest(HttpMethod.GET, "/api/v1/background-task/{task_id}");
+
+    request.setPathParam("task_id", taskId);
+
+    return request.send(this.requestCtx, "BackgroundTaskOut");
   }
 }

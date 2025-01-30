@@ -1,19 +1,10 @@
 // this file is @generated
-import {
-  Configuration,
-  StatisticsApi,
-  AggregateEventTypesOut,
-  AppUsageStatsIn,
-  AppUsageStatsOut,
-} from "../openapi";
+import { AggregateEventTypesOut, AppUsageStatsIn, AppUsageStatsOut } from "../openapi";
+import { HttpMethod, SvixRequest, SvixRequestContext } from "../request";
 import { PostOptions } from "../util";
 
 export class Statistics {
-  private readonly api: StatisticsApi;
-
-  public constructor(config: Configuration) {
-    this.api = new StatisticsApi(config);
-  }
+  public constructor(private readonly requestCtx: SvixRequestContext) {}
 
   /**
    * Creates a background task to calculate the message destinations for all applications in the environment.
@@ -25,10 +16,12 @@ export class Statistics {
     appUsageStatsIn: AppUsageStatsIn,
     options?: PostOptions
   ): Promise<AppUsageStatsOut> {
-    return this.api.v1StatisticsAggregateAppStats({
-      appUsageStatsIn,
-      ...options,
-    });
+    const request = new SvixRequest(HttpMethod.POST, "/api/v1/stats/usage/app");
+
+    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
+    request.setBody(appUsageStatsIn, "AppUsageStatsIn");
+
+    return request.send(this.requestCtx, "AppUsageStatsOut");
   }
 
   /**
@@ -38,6 +31,8 @@ export class Statistics {
    * retrieve the results of the operation.
    */
   public aggregateEventTypes(): Promise<AggregateEventTypesOut> {
-    return this.api.v1StatisticsAggregateEventTypes({});
+    const request = new SvixRequest(HttpMethod.PUT, "/api/v1/stats/usage/event-types");
+
+    return request.send(this.requestCtx, "AggregateEventTypesOut");
   }
 }

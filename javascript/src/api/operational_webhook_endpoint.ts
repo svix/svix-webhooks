@@ -1,7 +1,5 @@
 // this file is @generated
 import {
-  Configuration,
-  WebhookEndpointApi,
   ListResponseOperationalWebhookEndpointOut,
   OperationalWebhookEndpointIn,
   OperationalWebhookEndpointOut,
@@ -10,6 +8,7 @@ import {
   OperationalWebhookEndpointUpdate,
   Ordering,
 } from "../openapi";
+import { HttpMethod, SvixRequest, SvixRequestContext } from "../request";
 import { PostOptions } from "../util";
 
 export interface OperationalWebhookEndpointListOptions {
@@ -22,20 +21,22 @@ export interface OperationalWebhookEndpointListOptions {
 }
 
 export class OperationalWebhookEndpoint {
-  private readonly api: WebhookEndpointApi;
-
-  public constructor(config: Configuration) {
-    this.api = new WebhookEndpointApi(config);
-  }
+  public constructor(private readonly requestCtx: SvixRequestContext) {}
 
   /** List operational webhook endpoints. */
   public list(
     options?: OperationalWebhookEndpointListOptions
   ): Promise<ListResponseOperationalWebhookEndpointOut> {
-    return this.api.listOperationalWebhookEndpoints({
-      ...options,
-      iterator: options?.iterator ?? undefined,
-    });
+    const request = new SvixRequest(
+      HttpMethod.GET,
+      "/api/v1/operational-webhook/endpoint"
+    );
+
+    request.setQueryParam("limit", options?.limit);
+    request.setQueryParam("iterator", options?.iterator);
+    request.setQueryParam("order", options?.order);
+
+    return request.send(this.requestCtx, "ListResponseOperationalWebhookEndpointOut");
   }
 
   /** Create an operational webhook endpoint. */
@@ -43,17 +44,27 @@ export class OperationalWebhookEndpoint {
     operationalWebhookEndpointIn: OperationalWebhookEndpointIn,
     options?: PostOptions
   ): Promise<OperationalWebhookEndpointOut> {
-    return this.api.createOperationalWebhookEndpoint({
-      operationalWebhookEndpointIn,
-      ...options,
-    });
+    const request = new SvixRequest(
+      HttpMethod.POST,
+      "/api/v1/operational-webhook/endpoint"
+    );
+
+    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
+    request.setBody(operationalWebhookEndpointIn, "OperationalWebhookEndpointIn");
+
+    return request.send(this.requestCtx, "OperationalWebhookEndpointOut");
   }
 
   /** Get an operational webhook endpoint. */
   public get(endpointId: string): Promise<OperationalWebhookEndpointOut> {
-    return this.api.getOperationalWebhookEndpoint({
-      endpointId,
-    });
+    const request = new SvixRequest(
+      HttpMethod.GET,
+      "/api/v1/operational-webhook/endpoint/{endpoint_id}"
+    );
+
+    request.setPathParam("endpoint_id", endpointId);
+
+    return request.send(this.requestCtx, "OperationalWebhookEndpointOut");
   }
 
   /** Update an operational webhook endpoint. */
@@ -61,17 +72,27 @@ export class OperationalWebhookEndpoint {
     endpointId: string,
     operationalWebhookEndpointUpdate: OperationalWebhookEndpointUpdate
   ): Promise<OperationalWebhookEndpointOut> {
-    return this.api.updateOperationalWebhookEndpoint({
-      endpointId,
-      operationalWebhookEndpointUpdate,
-    });
+    const request = new SvixRequest(
+      HttpMethod.PUT,
+      "/api/v1/operational-webhook/endpoint/{endpoint_id}"
+    );
+
+    request.setPathParam("endpoint_id", endpointId);
+    request.setBody(operationalWebhookEndpointUpdate, "OperationalWebhookEndpointUpdate");
+
+    return request.send(this.requestCtx, "OperationalWebhookEndpointOut");
   }
 
   /** Delete an operational webhook endpoint. */
   public delete(endpointId: string): Promise<void> {
-    return this.api.deleteOperationalWebhookEndpoint({
-      endpointId,
-    });
+    const request = new SvixRequest(
+      HttpMethod.DELETE,
+      "/api/v1/operational-webhook/endpoint/{endpoint_id}"
+    );
+
+    request.setPathParam("endpoint_id", endpointId);
+
+    return request.sendNoResponseBody(this.requestCtx);
   }
 
   /**
@@ -81,9 +102,14 @@ export class OperationalWebhookEndpoint {
    * For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
    */
   public getSecret(endpointId: string): Promise<OperationalWebhookEndpointSecretOut> {
-    return this.api.getOperationalWebhookEndpointSecret({
-      endpointId,
-    });
+    const request = new SvixRequest(
+      HttpMethod.GET,
+      "/api/v1/operational-webhook/endpoint/{endpoint_id}/secret"
+    );
+
+    request.setPathParam("endpoint_id", endpointId);
+
+    return request.send(this.requestCtx, "OperationalWebhookEndpointSecretOut");
   }
 
   /**
@@ -96,10 +122,18 @@ export class OperationalWebhookEndpoint {
     operationalWebhookEndpointSecretIn: OperationalWebhookEndpointSecretIn,
     options?: PostOptions
   ): Promise<void> {
-    return this.api.rotateOperationalWebhookEndpointSecret({
-      endpointId,
+    const request = new SvixRequest(
+      HttpMethod.POST,
+      "/api/v1/operational-webhook/endpoint/{endpoint_id}/secret/rotate"
+    );
+
+    request.setPathParam("endpoint_id", endpointId);
+    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
+    request.setBody(
       operationalWebhookEndpointSecretIn,
-      ...options,
-    });
+      "OperationalWebhookEndpointSecretIn"
+    );
+
+    return request.sendNoResponseBody(this.requestCtx);
   }
 }

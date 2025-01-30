@@ -1,20 +1,15 @@
 // this file is @generated
 import {
-  Configuration,
-  AuthenticationApi,
   AppPortalAccessIn,
   AppPortalAccessOut,
   ApplicationTokenExpireIn,
   DashboardAccessOut,
 } from "../openapi";
+import { HttpMethod, SvixRequest, SvixRequestContext } from "../request";
 import { PostOptions } from "../util";
 
 export class Authentication {
-  private readonly api: AuthenticationApi;
-
-  public constructor(config: Configuration) {
-    this.api = new AuthenticationApi(config);
-  }
+  public constructor(private readonly requestCtx: SvixRequestContext) {}
 
   /** Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal. */
   public appPortalAccess(
@@ -22,11 +17,16 @@ export class Authentication {
     appPortalAccessIn: AppPortalAccessIn,
     options?: PostOptions
   ): Promise<AppPortalAccessOut> {
-    return this.api.v1AuthenticationAppPortalAccess({
-      appId,
-      appPortalAccessIn,
-      ...options,
-    });
+    const request = new SvixRequest(
+      HttpMethod.POST,
+      "/api/v1/auth/app-portal-access/{app_id}"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
+    request.setBody(appPortalAccessIn, "AppPortalAccessIn");
+
+    return request.send(this.requestCtx, "AppPortalAccessOut");
   }
 
   /** Expire all of the tokens associated with a specific application. */
@@ -35,11 +35,16 @@ export class Authentication {
     applicationTokenExpireIn: ApplicationTokenExpireIn,
     options?: PostOptions
   ): Promise<void> {
-    return this.api.v1AuthenticationExpireAll({
-      appId,
-      applicationTokenExpireIn,
-      ...options,
-    });
+    const request = new SvixRequest(
+      HttpMethod.POST,
+      "/api/v1/auth/app/{app_id}/expire-all"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
+    request.setBody(applicationTokenExpireIn, "ApplicationTokenExpireIn");
+
+    return request.sendNoResponseBody(this.requestCtx);
   }
 
   /**
@@ -53,10 +58,15 @@ export class Authentication {
     appId: string,
     options?: PostOptions
   ): Promise<DashboardAccessOut> {
-    return this.api.v1AuthenticationDashboardAccess({
-      appId,
-      ...options,
-    });
+    const request = new SvixRequest(
+      HttpMethod.POST,
+      "/api/v1/auth/dashboard-access/{app_id}"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
+
+    return request.send(this.requestCtx, "DashboardAccessOut");
   }
 
   /**
@@ -65,8 +75,10 @@ export class Authentication {
    * Trying to log out other tokens will fail.
    */
   public logout(options?: PostOptions): Promise<void> {
-    return this.api.v1AuthenticationLogout({
-      ...options,
-    });
+    const request = new SvixRequest(HttpMethod.POST, "/api/v1/auth/logout");
+
+    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
+
+    return request.sendNoResponseBody(this.requestCtx);
   }
 }

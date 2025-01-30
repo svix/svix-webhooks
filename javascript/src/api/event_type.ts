@@ -1,7 +1,5 @@
 // this file is @generated
 import {
-  Configuration,
-  EventTypeApi,
   EventTypeImportOpenApiIn,
   EventTypeImportOpenApiOut,
   EventTypeIn,
@@ -11,6 +9,7 @@ import {
   ListResponseEventTypeOut,
   Ordering,
 } from "../openapi";
+import { HttpMethod, SvixRequest, SvixRequestContext } from "../request";
 import { PostOptions } from "../util";
 
 export interface EventTypeListOptions {
@@ -32,18 +31,19 @@ export interface EventTypeDeleteOptions {
 }
 
 export class EventType {
-  private readonly api: EventTypeApi;
-
-  public constructor(config: Configuration) {
-    this.api = new EventTypeApi(config);
-  }
+  public constructor(private readonly requestCtx: SvixRequestContext) {}
 
   /** Return the list of event types. */
   public list(options?: EventTypeListOptions): Promise<ListResponseEventTypeOut> {
-    return this.api.v1EventTypeList({
-      ...options,
-      iterator: options?.iterator ?? undefined,
-    });
+    const request = new SvixRequest(HttpMethod.GET, "/api/v1/event-type");
+
+    request.setQueryParam("limit", options?.limit);
+    request.setQueryParam("iterator", options?.iterator);
+    request.setQueryParam("order", options?.order);
+    request.setQueryParam("include_archived", options?.includeArchived);
+    request.setQueryParam("with_content", options?.withContent);
+
+    return request.send(this.requestCtx, "ListResponseEventTypeOut");
   }
 
   /**
@@ -54,10 +54,12 @@ export class EventType {
    * This operation does not preserve the description and schemas.
    */
   public create(eventTypeIn: EventTypeIn, options?: PostOptions): Promise<EventTypeOut> {
-    return this.api.v1EventTypeCreate({
-      eventTypeIn,
-      ...options,
-    });
+    const request = new SvixRequest(HttpMethod.POST, "/api/v1/event-type");
+
+    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
+    request.setBody(eventTypeIn, "EventTypeIn");
+
+    return request.send(this.requestCtx, "EventTypeOut");
   }
 
   /**
@@ -71,17 +73,24 @@ export class EventType {
     eventTypeImportOpenApiIn: EventTypeImportOpenApiIn,
     options?: PostOptions
   ): Promise<EventTypeImportOpenApiOut> {
-    return this.api.v1EventTypeImportOpenapi({
-      eventTypeImportOpenApiIn,
-      ...options,
-    });
+    const request = new SvixRequest(HttpMethod.POST, "/api/v1/event-type/import/openapi");
+
+    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
+    request.setBody(eventTypeImportOpenApiIn, "EventTypeImportOpenApiIn");
+
+    return request.send(this.requestCtx, "EventTypeImportOpenApiOut");
   }
 
   /** Get an event type. */
   public get(eventTypeName: string): Promise<EventTypeOut> {
-    return this.api.v1EventTypeGet({
-      eventTypeName,
-    });
+    const request = new SvixRequest(
+      HttpMethod.GET,
+      "/api/v1/event-type/{event_type_name}"
+    );
+
+    request.setPathParam("event_type_name", eventTypeName);
+
+    return request.send(this.requestCtx, "EventTypeOut");
   }
 
   /** Update an event type. */
@@ -89,10 +98,15 @@ export class EventType {
     eventTypeName: string,
     eventTypeUpdate: EventTypeUpdate
   ): Promise<EventTypeOut> {
-    return this.api.v1EventTypeUpdate({
-      eventTypeName,
-      eventTypeUpdate,
-    });
+    const request = new SvixRequest(
+      HttpMethod.PUT,
+      "/api/v1/event-type/{event_type_name}"
+    );
+
+    request.setPathParam("event_type_name", eventTypeName);
+    request.setBody(eventTypeUpdate, "EventTypeUpdate");
+
+    return request.send(this.requestCtx, "EventTypeOut");
   }
 
   /**
@@ -104,10 +118,15 @@ export class EventType {
    * [create operation](#operation/create_event_type_api_v1_event_type__post).
    */
   public delete(eventTypeName: string, options?: EventTypeDeleteOptions): Promise<void> {
-    return this.api.v1EventTypeDelete({
-      eventTypeName,
-      ...options,
-    });
+    const request = new SvixRequest(
+      HttpMethod.DELETE,
+      "/api/v1/event-type/{event_type_name}"
+    );
+
+    request.setPathParam("event_type_name", eventTypeName);
+    request.setQueryParam("expunge", options?.expunge);
+
+    return request.sendNoResponseBody(this.requestCtx);
   }
 
   /** Partially update an event type. */
@@ -115,9 +134,14 @@ export class EventType {
     eventTypeName: string,
     eventTypePatch: EventTypePatch
   ): Promise<EventTypeOut> {
-    return this.api.v1EventTypePatch({
-      eventTypeName,
-      eventTypePatch,
-    });
+    const request = new SvixRequest(
+      HttpMethod.PATCH,
+      "/api/v1/event-type/{event_type_name}"
+    );
+
+    request.setPathParam("event_type_name", eventTypeName);
+    request.setBody(eventTypePatch, "EventTypePatch");
+
+    return request.send(this.requestCtx, "EventTypeOut");
   }
 }

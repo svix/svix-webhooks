@@ -1,7 +1,5 @@
-// this file is @generated (with manual changes)
+// this file is @generated
 import {
-  Configuration,
-  EndpointApi,
   EndpointHeadersIn,
   EndpointHeadersOut,
   EndpointHeadersPatchIn,
@@ -24,6 +22,7 @@ import {
   ReplayIn,
   ReplayOut,
 } from "../openapi";
+import { HttpMethod, SvixRequest, SvixRequestContext } from "../request";
 import { PostOptions } from "../util";
 
 export interface EndpointListOptions {
@@ -43,22 +42,21 @@ export interface EndpointGetStatsOptions {
 }
 
 export class Endpoint {
-  private readonly api: EndpointApi;
-
-  public constructor(config: Configuration) {
-    this.api = new EndpointApi(config);
-  }
+  public constructor(private readonly requestCtx: SvixRequestContext) {}
 
   /** List the application's endpoints. */
   public list(
     appId: string,
     options?: EndpointListOptions
   ): Promise<ListResponseEndpointOut> {
-    return this.api.v1EndpointList({
-      appId,
-      ...options,
-      iterator: options?.iterator ?? undefined,
-    });
+    const request = new SvixRequest(HttpMethod.GET, "/api/v1/app/{app_id}/endpoint");
+
+    request.setPathParam("app_id", appId);
+    request.setQueryParam("limit", options?.limit);
+    request.setQueryParam("iterator", options?.iterator);
+    request.setQueryParam("order", options?.order);
+
+    return request.send(this.requestCtx, "ListResponseEndpointOut");
   }
 
   /**
@@ -71,19 +69,26 @@ export class Endpoint {
     endpointIn: EndpointIn,
     options?: PostOptions
   ): Promise<EndpointOut> {
-    return this.api.v1EndpointCreate({
-      appId,
-      endpointIn,
-      ...options,
-    });
+    const request = new SvixRequest(HttpMethod.POST, "/api/v1/app/{app_id}/endpoint");
+
+    request.setPathParam("app_id", appId);
+    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
+    request.setBody(endpointIn, "EndpointIn");
+
+    return request.send(this.requestCtx, "EndpointOut");
   }
 
   /** Get an endpoint. */
   public get(appId: string, endpointId: string): Promise<EndpointOut> {
-    return this.api.v1EndpointGet({
-      appId,
-      endpointId,
-    });
+    const request = new SvixRequest(
+      HttpMethod.GET,
+      "/api/v1/app/{app_id}/endpoint/{endpoint_id}"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("endpoint_id", endpointId);
+
+    return request.send(this.requestCtx, "EndpointOut");
   }
 
   /** Update an endpoint. */
@@ -92,19 +97,29 @@ export class Endpoint {
     endpointId: string,
     endpointUpdate: EndpointUpdate
   ): Promise<EndpointOut> {
-    return this.api.v1EndpointUpdate({
-      appId,
-      endpointId,
-      endpointUpdate,
-    });
+    const request = new SvixRequest(
+      HttpMethod.PUT,
+      "/api/v1/app/{app_id}/endpoint/{endpoint_id}"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("endpoint_id", endpointId);
+    request.setBody(endpointUpdate, "EndpointUpdate");
+
+    return request.send(this.requestCtx, "EndpointOut");
   }
 
   /** Delete an endpoint. */
   public delete(appId: string, endpointId: string): Promise<void> {
-    return this.api.v1EndpointDelete({
-      appId,
-      endpointId,
-    });
+    const request = new SvixRequest(
+      HttpMethod.DELETE,
+      "/api/v1/app/{app_id}/endpoint/{endpoint_id}"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("endpoint_id", endpointId);
+
+    return request.sendNoResponseBody(this.requestCtx);
   }
 
   /** Partially update an endpoint. */
@@ -113,19 +128,29 @@ export class Endpoint {
     endpointId: string,
     endpointPatch: EndpointPatch
   ): Promise<EndpointOut> {
-    return this.api.v1EndpointPatch({
-      appId,
-      endpointId,
-      endpointPatch,
-    });
+    const request = new SvixRequest(
+      HttpMethod.PATCH,
+      "/api/v1/app/{app_id}/endpoint/{endpoint_id}"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("endpoint_id", endpointId);
+    request.setBody(endpointPatch, "EndpointPatch");
+
+    return request.send(this.requestCtx, "EndpointOut");
   }
 
   /** Get the additional headers to be sent with the webhook. */
   public getHeaders(appId: string, endpointId: string): Promise<EndpointHeadersOut> {
-    return this.api.v1EndpointGetHeaders({
-      appId,
-      endpointId,
-    });
+    const request = new SvixRequest(
+      HttpMethod.GET,
+      "/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("endpoint_id", endpointId);
+
+    return request.send(this.requestCtx, "EndpointHeadersOut");
   }
 
   /** Set the additional headers to be sent with the webhook. */
@@ -134,11 +159,16 @@ export class Endpoint {
     endpointId: string,
     endpointHeadersIn: EndpointHeadersIn
   ): Promise<void> {
-    return this.api.v1EndpointUpdateHeaders({
-      appId,
-      endpointId,
-      endpointHeadersIn,
-    });
+    const request = new SvixRequest(
+      HttpMethod.PUT,
+      "/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("endpoint_id", endpointId);
+    request.setBody(endpointHeadersIn, "EndpointHeadersIn");
+
+    return request.sendNoResponseBody(this.requestCtx);
   }
 
   public headersUpdate(
@@ -146,26 +176,25 @@ export class Endpoint {
     endpointId: string,
     endpointHeadersIn: EndpointHeadersIn
   ): Promise<void> {
-    return this.api.v1EndpointUpdateHeaders({
-      appId,
-      endpointId,
-      endpointHeadersIn,
-    });
+    return this.updateHeaders(appId, endpointId, endpointHeadersIn);
   }
 
-  /**
-   * @deprecated Since version 1.30.0. Use `headersPatch` instead.
-   */
+  /** Partially set the additional headers to be sent with the webhook. */
   public patchHeaders(
     appId: string,
     endpointId: string,
     endpointHeadersPatchIn: EndpointHeadersPatchIn
   ): Promise<void> {
-    return this.api.v1EndpointPatchHeaders({
-      appId,
-      endpointId,
-      endpointHeadersPatchIn,
-    });
+    const request = new SvixRequest(
+      HttpMethod.PATCH,
+      "/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("endpoint_id", endpointId);
+    request.setBody(endpointHeadersPatchIn, "EndpointHeadersPatchIn");
+
+    return request.sendNoResponseBody(this.requestCtx);
   }
 
   public headersPatch(
@@ -173,11 +202,7 @@ export class Endpoint {
     endpointId: string,
     endpointHeadersPatchIn: EndpointHeadersPatchIn
   ): Promise<void> {
-    return this.api.v1EndpointPatchHeaders({
-      appId,
-      endpointId,
-      endpointHeadersPatchIn,
-    });
+    return this.patchHeaders(appId, endpointId, endpointHeadersPatchIn);
   }
 
   /**
@@ -191,12 +216,17 @@ export class Endpoint {
     recoverIn: RecoverIn,
     options?: PostOptions
   ): Promise<RecoverOut> {
-    return this.api.v1EndpointRecover({
-      appId,
-      endpointId,
-      recoverIn,
-      ...options,
-    });
+    const request = new SvixRequest(
+      HttpMethod.POST,
+      "/api/v1/app/{app_id}/endpoint/{endpoint_id}/recover"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("endpoint_id", endpointId);
+    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
+    request.setBody(recoverIn, "RecoverIn");
+
+    return request.send(this.requestCtx, "RecoverOut");
   }
 
   /**
@@ -211,12 +241,17 @@ export class Endpoint {
     replayIn: ReplayIn,
     options?: PostOptions
   ): Promise<ReplayOut> {
-    return this.api.v1EndpointReplayMissing({
-      appId,
-      endpointId,
-      replayIn,
-      ...options,
-    });
+    const request = new SvixRequest(
+      HttpMethod.POST,
+      "/api/v1/app/{app_id}/endpoint/{endpoint_id}/replay-missing"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("endpoint_id", endpointId);
+    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
+    request.setBody(replayIn, "ReplayIn");
+
+    return request.send(this.requestCtx, "ReplayOut");
   }
 
   /**
@@ -226,10 +261,15 @@ export class Endpoint {
    * For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
    */
   public getSecret(appId: string, endpointId: string): Promise<EndpointSecretOut> {
-    return this.api.v1EndpointGetSecret({
-      appId,
-      endpointId,
-    });
+    const request = new SvixRequest(
+      HttpMethod.GET,
+      "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("endpoint_id", endpointId);
+
+    return request.send(this.requestCtx, "EndpointSecretOut");
   }
 
   /**
@@ -243,12 +283,17 @@ export class Endpoint {
     endpointSecretRotateIn: EndpointSecretRotateIn,
     options?: PostOptions
   ): Promise<void> {
-    return this.api.v1EndpointRotateSecret({
-      appId,
-      endpointId,
-      endpointSecretRotateIn,
-      ...options,
-    });
+    const request = new SvixRequest(
+      HttpMethod.POST,
+      "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("endpoint_id", endpointId);
+    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
+    request.setBody(endpointSecretRotateIn, "EndpointSecretRotateIn");
+
+    return request.sendNoResponseBody(this.requestCtx);
   }
 
   /** Send an example message for an event. */
@@ -258,12 +303,17 @@ export class Endpoint {
     eventExampleIn: EventExampleIn,
     options?: PostOptions
   ): Promise<MessageOut> {
-    return this.api.v1EndpointSendExample({
-      appId,
-      endpointId,
-      eventExampleIn,
-      ...options,
-    });
+    const request = new SvixRequest(
+      HttpMethod.POST,
+      "/api/v1/app/{app_id}/endpoint/{endpoint_id}/send-example"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("endpoint_id", endpointId);
+    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
+    request.setBody(eventExampleIn, "EventExampleIn");
+
+    return request.send(this.requestCtx, "MessageOut");
   }
 
   /** Get basic statistics for the endpoint. */
@@ -272,13 +322,17 @@ export class Endpoint {
     endpointId: string,
     options?: EndpointGetStatsOptions
   ): Promise<EndpointStats> {
-    return this.api.v1EndpointGetStats({
-      appId,
-      endpointId,
-      ...options,
-      since: options?.since ?? undefined,
-      until: options?.until ?? undefined,
-    });
+    const request = new SvixRequest(
+      HttpMethod.GET,
+      "/api/v1/app/{app_id}/endpoint/{endpoint_id}/stats"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("endpoint_id", endpointId);
+    request.setQueryParam("since", options?.since);
+    request.setQueryParam("until", options?.until);
+
+    return request.send(this.requestCtx, "EndpointStats");
   }
 
   /** Get the transformation code associated with this endpoint. */
@@ -286,10 +340,15 @@ export class Endpoint {
     appId: string,
     endpointId: string
   ): Promise<EndpointTransformationOut> {
-    return this.api.v1EndpointTransformationGet({
-      appId,
-      endpointId,
-    });
+    const request = new SvixRequest(
+      HttpMethod.GET,
+      "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("endpoint_id", endpointId);
+
+    return request.send(this.requestCtx, "EndpointTransformationOut");
   }
 
   /** Set or unset the transformation code associated with this endpoint. */
@@ -298,11 +357,16 @@ export class Endpoint {
     endpointId: string,
     endpointTransformationIn: EndpointTransformationIn
   ): Promise<void> {
-    return this.api.v1EndpointTransformationPartialUpdate({
-      appId,
-      endpointId,
-      endpointTransformationIn,
-    });
+    const request = new SvixRequest(
+      HttpMethod.PATCH,
+      "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("endpoint_id", endpointId);
+    request.setBody(endpointTransformationIn, "EndpointTransformationIn");
+
+    return request.sendNoResponseBody(this.requestCtx);
   }
 
   public oauthUpdate(
@@ -310,17 +374,27 @@ export class Endpoint {
     endpointId: string,
     endpointOauthConfigIn: EndpointOauthConfigIn
   ): Promise<void> {
-    return this.api.v1EndpointUpdateOauthConfig({
-      appId,
-      endpointId,
-      endpointOauthConfigIn,
-    });
+    const request = new SvixRequest(
+      HttpMethod.PUT,
+      "/app/{app_id}/endpoint/{endpoint_id}/oauth"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("endpoint_id", endpointId);
+    request.setBody(endpointOauthConfigIn, "EndpointOauthConfigIn");
+
+    return request.sendNoResponseBody(this.requestCtx);
   }
 
   public oauthDelete(appId: string, endpointId: string): Promise<void> {
-    return this.api.v1EndpointDeleteOauthConfig({
-      appId,
-      endpointId,
-    });
+    const request = new SvixRequest(
+      HttpMethod.DELETE,
+      "/app/{app_id}/endpoint/{endpoint_id}/oauth"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("endpoint_id", endpointId);
+
+    return request.sendNoResponseBody(this.requestCtx);
   }
 }

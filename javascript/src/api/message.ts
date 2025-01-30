@@ -1,11 +1,6 @@
-// this file is @generated (with minor manual changes)
-import {
-  Configuration,
-  MessageApi,
-  ListResponseMessageOut,
-  MessageIn,
-  MessageOut,
-} from "../openapi";
+// this file is @generated
+import { ListResponseMessageOut, MessageIn, MessageOut } from "../openapi";
+import { HttpMethod, SvixRequest, SvixRequestContext } from "../request";
 import { PostOptions } from "../util";
 
 export interface MessageListOptions {
@@ -27,12 +22,13 @@ export interface MessageListOptions {
   eventTypes?: string[];
 }
 
-export class Message {
-  private readonly api: MessageApi;
+export interface MessageGetOptions {
+  /** When `true` message payloads are included in the response. */
+  withContent?: boolean;
+}
 
-  public constructor(config: Configuration) {
-    this.api = new MessageApi(config);
-  }
+export class Message {
+  public constructor(private readonly requestCtx: SvixRequestContext) {}
 
   /**
    * List all of the application's messages.
@@ -49,13 +45,19 @@ export class Message {
     appId: string,
     options?: MessageListOptions
   ): Promise<ListResponseMessageOut> {
-    return this.api.v1MessageList({
-      appId,
-      ...options,
-      iterator: options?.iterator ?? undefined,
-      before: options?.before ?? undefined,
-      after: options?.after ?? undefined,
-    });
+    const request = new SvixRequest(HttpMethod.GET, "/api/v1/app/{app_id}/msg");
+
+    request.setPathParam("app_id", appId);
+    request.setQueryParam("limit", options?.limit);
+    request.setQueryParam("iterator", options?.iterator);
+    request.setQueryParam("channel", options?.channel);
+    request.setQueryParam("before", options?.before);
+    request.setQueryParam("after", options?.after);
+    request.setQueryParam("with_content", options?.withContent);
+    request.setQueryParam("tag", options?.tag);
+    request.setQueryParam("event_types", options?.eventTypes);
+
+    return request.send(this.requestCtx, "ListResponseMessageOut");
   }
 
   /**
@@ -74,19 +76,28 @@ export class Message {
     messageIn: MessageIn,
     options?: PostOptions
   ): Promise<MessageOut> {
-    return this.api.v1MessageCreate({
-      appId,
-      messageIn,
-      ...options,
-    });
+    const request = new SvixRequest(HttpMethod.POST, "/api/v1/app/{app_id}/msg");
+
+    request.setPathParam("app_id", appId);
+    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
+    request.setBody(messageIn, "MessageIn");
+
+    return request.send(this.requestCtx, "MessageOut");
   }
 
   /** Get a message by its ID or eventID. */
-  public get(appId: string, msgId: string): Promise<MessageOut> {
-    return this.api.v1MessageGet({
-      appId,
-      msgId,
-    });
+  public get(
+    appId: string,
+    msgId: string,
+    options?: MessageGetOptions
+  ): Promise<MessageOut> {
+    const request = new SvixRequest(HttpMethod.GET, "/api/v1/app/{app_id}/msg/{msg_id}");
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("msg_id", msgId);
+    request.setQueryParam("with_content", options?.withContent);
+
+    return request.send(this.requestCtx, "MessageOut");
   }
 
   /**
@@ -96,10 +107,15 @@ export class Message {
    * The message can't be replayed or resent once its payload has been deleted or expired.
    */
   public expungeContent(appId: string, msgId: string): Promise<void> {
-    return this.api.v1MessageExpungeContent({
-      appId,
-      msgId,
-    });
+    const request = new SvixRequest(
+      HttpMethod.DELETE,
+      "/api/v1/app/{app_id}/msg/{msg_id}/content"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("msg_id", msgId);
+
+    return request.sendNoResponseBody(this.requestCtx);
   }
 }
 
