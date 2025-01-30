@@ -40,7 +40,7 @@ class BackgroundTask internal constructor(token: String, options: SvixOptions) {
         options: BackgroundTaskListOptions = BackgroundTaskListOptions()
     ): ListResponseBackgroundTaskOut {
         try {
-            return api.listBackgroundTasks(
+            return api.v1BackgroundTaskList(
                 options.status,
                 options.task,
                 options.limit,
@@ -54,7 +54,7 @@ class BackgroundTask internal constructor(token: String, options: SvixOptions) {
 
     suspend fun get(taskId: String): BackgroundTaskOut {
         try {
-            return api.getBackgroundTask(taskId)
+            return api.v1BackgroundTaskGet(taskId)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }

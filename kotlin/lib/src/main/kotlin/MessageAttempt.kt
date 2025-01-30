@@ -220,8 +220,8 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
         options.numRetries?.let { api.numRetries = it }
     }
 
-    /** @deprecated use listByMsg or listByEndpoint instead. */
-    @Deprecated(message = "use listByMsg or listByEndpoint instead.")
+    /** @deprecated use listByMsg instead. */
+    @Deprecated(message = "use listByMsg instead.")
     suspend fun list(
         appId: String,
         msgId: String,
@@ -382,30 +382,25 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    @Deprecated(message = "use listByEndpoint instead.")
+    @Deprecated(message = "use listByMsg instead, passing the endpoint ID through options.")
     suspend fun listAttemptsForEndpoint(
         appId: String,
         endpointId: String,
         msgId: String,
         options: MessageAttemptListOptions = MessageAttemptListOptions(),
-    ): ListResponseMessageAttemptEndpointOut {
-        return try {
-            api.v1MessageAttemptListByEndpointDeprecated(
-                appId,
-                msgId,
-                endpointId,
-                options.limit,
-                options.iterator,
-                options.channel,
-                options.tag,
-                options.messageStatus,
-                options.before,
-                options.after,
-                HashSet(options.eventTypes),
-            )
-        } catch (e: Exception) {
-            throw ApiException.wrap(e)
-        }
+    ): ListResponseMessageAttemptOut {
+        val listByMsgOptions = MessageAttemptListByMsgOptions()
+        listByMsgOptions.limit = options.limit
+        listByMsgOptions.iterator = options.iterator
+        listByMsgOptions.channel = options.channel
+        listByMsgOptions.tag = options.tag
+        listByMsgOptions.status = options.messageStatus
+        listByMsgOptions.before = options.before
+        listByMsgOptions.after = options.after
+        listByMsgOptions.eventTypes = options.eventTypes
+        listByMsgOptions.endpointId = endpointId
+
+        return listByMsg(appId, msgId, listByMsgOptions)
     }
 
     /** Resend a message to the specified endpoint. */
