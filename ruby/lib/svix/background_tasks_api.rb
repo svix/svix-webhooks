@@ -7,11 +7,11 @@ module Svix
     end
 
     def list(options = {})
-      return @api.list_background_tasks(options)
+      return @api.v1_background_task_list(options)
     end
 
     def get(task_id, options = {})
-      return @api.get_background_task(task_id, options)
+      return @api.v1_background_task_get(task_id, options)
     end
   end
 end
