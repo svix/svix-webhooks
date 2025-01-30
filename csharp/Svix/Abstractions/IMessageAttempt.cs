@@ -26,10 +26,10 @@ namespace Svix.Abstractions
 
         Task<ListResponseMessageAttemptOut> ListAttemptsByMessageAsync(string appId, string messageId, AttemptsByMessageListOptions options = null, string idempotencyKey = default, CancellationToken cancellationToken = default);
 
-        ListResponseMessageAttemptEndpointOut ListAttemptsForEndpoint(string appId, string messageId, string endpointId,
+        ListResponseMessageAttemptOut ListAttemptsForEndpoint(string appId, string messageId, string endpointId,
             AttemptsByEndpointListOptions options = null, string idempotencyKey = default);
 
-        Task<ListResponseMessageAttemptEndpointOut> ListAttemptsForEndpointAsync(string appId, string messageId, string endpointId,
+        Task<ListResponseMessageAttemptOut> ListAttemptsForEndpointAsync(string appId, string messageId, string endpointId,
             AttemptsByEndpointListOptions options = null, string idempotencyKey = default,
             CancellationToken cancellationToken = default);
 

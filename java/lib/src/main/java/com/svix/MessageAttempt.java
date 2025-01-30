@@ -19,8 +19,8 @@ public final class MessageAttempt {
 	}
 
 	/*
-	* @deprecated: use listByMsg or listByEndpoint instead
-     */
+	 * @deprecated: use listByMsg or listByEndpoint instead
+	 */
 	@Deprecated
 	public ListResponseMessageAttemptOut list(final String appId, final String msgId, final MessageAttemptListOptions options) throws ApiException {
 		return this.listByMsg(appId, msgId, options);
@@ -122,25 +122,10 @@ public final class MessageAttempt {
 	 * @deprecated: use listByMsg instead, passing the endpoint ID through options
 	 */
 	@Deprecated
-	public ListResponseMessageAttemptEndpointOut listAttemptsForEndpoint(final String appId, final String msgId, final String endpointId,
+	public ListResponseMessageAttemptOut listAttemptsForEndpoint(final String appId, final String msgId, final String endpointId,
 		final MessageAttemptListOptions options) throws ApiException {
-			try {
-				return api.v1MessageAttemptListByEndpointDeprecated(
-						appId,
-						msgId,
-						endpointId,
-						options.getLimit(),
-						options.getIterator(),
-						options.getChannel(),
-						options.getTag(),
-						options.getMessageStatus(),
-						options.getBefore(),
-						options.getAfter(),
-						new HashSet<>(options.getEventTypes())
-				);
-			} catch (com.svix.internal.ApiException e) {
-				throw Utils.wrapInternalApiException(e);
-			}
+			options.setEndpointId(endpointId);
+			return listByMsg(appId, msgId, options);
 	}
 
 	public void expungeContent(final String appId, final String msgId, final String attemptId) throws ApiException {

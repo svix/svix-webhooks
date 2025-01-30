@@ -16,42 +16,42 @@ import (
 	"fmt"
 )
 
-// checks if the EndpointDisabledEvent type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &EndpointDisabledEvent{}
+// checks if the EndpointEnabledEvent type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &EndpointEnabledEvent{}
 
-// EndpointDisabledEvent Sent when an endpoint has been automatically disabled after continuous failures, or manually via an API call.
-type EndpointDisabledEvent struct {
-	Data EndpointDisabledEventData `json:"data"`
+// EndpointEnabledEvent Sent when an endpoint has been enabled.
+type EndpointEnabledEvent struct {
+	Data EndpointEnabledEventData `json:"data"`
 	Type string `json:"type"`
 }
 
-type _EndpointDisabledEvent EndpointDisabledEvent
+type _EndpointEnabledEvent EndpointEnabledEvent
 
-// NewEndpointDisabledEvent instantiates a new EndpointDisabledEvent object
+// NewEndpointEnabledEvent instantiates a new EndpointEnabledEvent object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewEndpointDisabledEvent(data EndpointDisabledEventData, type_ string) *EndpointDisabledEvent {
-	this := EndpointDisabledEvent{}
+func NewEndpointEnabledEvent(data EndpointEnabledEventData, type_ string) *EndpointEnabledEvent {
+	this := EndpointEnabledEvent{}
 	this.Data = data
 	this.Type = type_
 	return &this
 }
 
-// NewEndpointDisabledEventWithDefaults instantiates a new EndpointDisabledEvent object
+// NewEndpointEnabledEventWithDefaults instantiates a new EndpointEnabledEvent object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewEndpointDisabledEventWithDefaults() *EndpointDisabledEvent {
-	this := EndpointDisabledEvent{}
-	var type_ string = "endpoint.disabled"
+func NewEndpointEnabledEventWithDefaults() *EndpointEnabledEvent {
+	this := EndpointEnabledEvent{}
+	var type_ string = "endpoint.enabled"
 	this.Type = type_
 	return &this
 }
 
 // GetData returns the Data field value
-func (o *EndpointDisabledEvent) GetData() EndpointDisabledEventData {
+func (o *EndpointEnabledEvent) GetData() EndpointEnabledEventData {
 	if o == nil {
-		var ret EndpointDisabledEventData
+		var ret EndpointEnabledEventData
 		return ret
 	}
 
@@ -60,7 +60,7 @@ func (o *EndpointDisabledEvent) GetData() EndpointDisabledEventData {
 
 // GetDataOk returns a tuple with the Data field value
 // and a boolean to check if the value has been set.
-func (o *EndpointDisabledEvent) GetDataOk() (*EndpointDisabledEventData, bool) {
+func (o *EndpointEnabledEvent) GetDataOk() (*EndpointEnabledEventData, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -68,12 +68,12 @@ func (o *EndpointDisabledEvent) GetDataOk() (*EndpointDisabledEventData, bool) {
 }
 
 // SetData sets field value
-func (o *EndpointDisabledEvent) SetData(v EndpointDisabledEventData) {
+func (o *EndpointEnabledEvent) SetData(v EndpointEnabledEventData) {
 	o.Data = v
 }
 
 // GetType returns the Type field value
-func (o *EndpointDisabledEvent) GetType() string {
+func (o *EndpointEnabledEvent) GetType() string {
 	if o == nil {
 		var ret string
 		return ret
@@ -84,7 +84,7 @@ func (o *EndpointDisabledEvent) GetType() string {
 
 // GetTypeOk returns a tuple with the Type field value
 // and a boolean to check if the value has been set.
-func (o *EndpointDisabledEvent) GetTypeOk() (*string, bool) {
+func (o *EndpointEnabledEvent) GetTypeOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -92,11 +92,11 @@ func (o *EndpointDisabledEvent) GetTypeOk() (*string, bool) {
 }
 
 // SetType sets field value
-func (o *EndpointDisabledEvent) SetType(v string) {
+func (o *EndpointEnabledEvent) SetType(v string) {
 	o.Type = v
 }
 
-func (o EndpointDisabledEvent) MarshalJSON() ([]byte, error) {
+func (o EndpointEnabledEvent) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -104,14 +104,14 @@ func (o EndpointDisabledEvent) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o EndpointDisabledEvent) ToMap() (map[string]interface{}, error) {
+func (o EndpointEnabledEvent) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["data"] = o.Data
 	toSerialize["type"] = o.Type
 	return toSerialize, nil
 }
 
-func (o *EndpointDisabledEvent) UnmarshalJSON(data []byte) (err error) {
+func (o *EndpointEnabledEvent) UnmarshalJSON(data []byte) (err error) {
 	// This validates that all required properties are included in the JSON object
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
@@ -134,53 +134,53 @@ func (o *EndpointDisabledEvent) UnmarshalJSON(data []byte) (err error) {
 		}
 	}
 
-	varEndpointDisabledEvent := _EndpointDisabledEvent{}
+	varEndpointEnabledEvent := _EndpointEnabledEvent{}
 
 	decoder := json.NewDecoder(bytes.NewReader(data))
 	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varEndpointDisabledEvent)
+	err = decoder.Decode(&varEndpointEnabledEvent)
 
 	if err != nil {
 		return err
 	}
 
-	*o = EndpointDisabledEvent(varEndpointDisabledEvent)
+	*o = EndpointEnabledEvent(varEndpointEnabledEvent)
 
 	return err
 }
 
-type NullableEndpointDisabledEvent struct {
-	value *EndpointDisabledEvent
+type NullableEndpointEnabledEvent struct {
+	value *EndpointEnabledEvent
 	isSet bool
 }
 
-func (v NullableEndpointDisabledEvent) Get() *EndpointDisabledEvent {
+func (v NullableEndpointEnabledEvent) Get() *EndpointEnabledEvent {
 	return v.value
 }
 
-func (v *NullableEndpointDisabledEvent) Set(val *EndpointDisabledEvent) {
+func (v *NullableEndpointEnabledEvent) Set(val *EndpointEnabledEvent) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableEndpointDisabledEvent) IsSet() bool {
+func (v NullableEndpointEnabledEvent) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableEndpointDisabledEvent) Unset() {
+func (v *NullableEndpointEnabledEvent) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableEndpointDisabledEvent(val *EndpointDisabledEvent) *NullableEndpointDisabledEvent {
-	return &NullableEndpointDisabledEvent{value: val, isSet: true}
+func NewNullableEndpointEnabledEvent(val *EndpointEnabledEvent) *NullableEndpointEnabledEvent {
+	return &NullableEndpointEnabledEvent{value: val, isSet: true}
 }
 
-func (v NullableEndpointDisabledEvent) MarshalJSON() ([]byte, error) {
+func (v NullableEndpointEnabledEvent) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableEndpointDisabledEvent) UnmarshalJSON(src []byte) error {
+func (v *NullableEndpointEnabledEvent) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

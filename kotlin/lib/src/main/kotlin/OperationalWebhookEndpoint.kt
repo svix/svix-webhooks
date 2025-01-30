@@ -39,7 +39,7 @@ class OperationalWebhookEndpoint internal constructor(token: String, options: Sv
         options: OperationalWebhookEndpointListOptions = OperationalWebhookEndpointListOptions()
     ): ListResponseOperationalWebhookEndpointOut {
         try {
-            return api.listOperationalWebhookEndpoints(
+            return api.v1OperationalWebhookEndpointList(
                 options.limit,
                 options.iterator,
                 options.order,
@@ -54,7 +54,7 @@ class OperationalWebhookEndpoint internal constructor(token: String, options: Sv
         options: PostOptions = PostOptions(),
     ): OperationalWebhookEndpointOut {
         try {
-            return api.createOperationalWebhookEndpoint(endpointIn, options.idempotencyKey)
+            return api.v1OperationalWebhookEndpointCreate(endpointIn, options.idempotencyKey)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -62,7 +62,7 @@ class OperationalWebhookEndpoint internal constructor(token: String, options: Sv
 
     suspend fun get(endpointId: String): OperationalWebhookEndpointOut {
         try {
-            return api.getOperationalWebhookEndpoint(endpointId)
+            return api.v1OperationalWebhookEndpointGet(endpointId)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -73,7 +73,7 @@ class OperationalWebhookEndpoint internal constructor(token: String, options: Sv
         endpointUpdate: OperationalWebhookEndpointUpdate,
     ): OperationalWebhookEndpointOut {
         try {
-            return api.updateOperationalWebhookEndpoint(endpointId, endpointUpdate)
+            return api.v1OperationalWebhookEndpointUpdate(endpointId, endpointUpdate)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -81,7 +81,7 @@ class OperationalWebhookEndpoint internal constructor(token: String, options: Sv
 
     suspend fun delete(endpointId: String) {
         try {
-            api.deleteOperationalWebhookEndpoint(endpointId)
+            api.v1OperationalWebhookEndpointDelete(endpointId)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -89,7 +89,7 @@ class OperationalWebhookEndpoint internal constructor(token: String, options: Sv
 
     suspend fun getSecret(endpointId: String): OperationalWebhookEndpointSecretOut {
         try {
-            return api.getOperationalWebhookEndpointSecret(endpointId)
+            return api.v1OperationalWebhookEndpointGetSecret(endpointId)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -101,7 +101,7 @@ class OperationalWebhookEndpoint internal constructor(token: String, options: Sv
         options: PostOptions = PostOptions(),
     ) {
         try {
-            api.rotateOperationalWebhookEndpointSecret(
+            api.v1OperationalWebhookEndpointRotateSecret(
                 endpointId,
                 endpointSecretRotateIn,
                 options.idempotencyKey,

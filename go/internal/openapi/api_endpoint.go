@@ -4090,7 +4090,7 @@ func (r ApiV1EndpointUpdateMtlsConfigRequest) Execute() (*http.Response, error) 
 /*
 V1EndpointUpdateMtlsConfig Update Endpoint Mtls Config
 
-Create/update endpoint mTLS configuration.
+Create / update endpoint mTLS configuration.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param appId The app's ID or UID
@@ -4285,7 +4285,7 @@ func (r ApiV1EndpointUpdateOauthConfigRequest) Execute() (*http.Response, error)
 /*
 V1EndpointUpdateOauthConfig Update Endpoint Oauth Config
 
-Create/update endpoint OAuth configuration.
+Create / update endpoint OAuth configuration.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param appId The app's ID or UID

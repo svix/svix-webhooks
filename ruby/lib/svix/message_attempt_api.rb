@@ -6,9 +6,9 @@ module Svix
       @api = MessageAttemptApi.new(api_client)
     end
 
-    # <b>DEPRECATED:</b> Please use <tt>list_by_msg</tt> or <tt>list_by_endpoint</tt> instead.
+    # <b>DEPRECATED:</b> Please use <tt>list_by_msg</tt> instead.
     def list(app_id, msg_id, options = {})
-      warn "[DEPRECATION] `list` is deprecated.  Please use `list_by_msg` or `list_by_endpoint` instead."
+      warn "[DEPRECATION] `list` is deprecated.  Please use `list_by_msg` instead."
       return self.list_by_msg(app_id, msg_id, options)
     end
 
@@ -36,8 +36,12 @@ module Svix
       return @api.v1_message_attempt_list_attempted_destinations(app_id, msg_id, options)
     end
 
+    # <b>DEPRECATED:</b> Please use <tt>list_by_msg</tt> instead.
     def list_attempts_for_endpoint(app_id, endpoint_id, msg_id, options = {})
-      return @api.v1_message_attempt_list_by_endpoint_deprecated(app_id, msg_id, endpoint_id, options)
+      warn "[DEPRECATION] `list` is deprecated.  Please use `list_by_msg` instead, passing the endpoint ID through options."
+
+      options[:'endpoint_id'] = endpoint_id
+      return self.list_by_msg(app_id, msg_id, options)
     end
 
     def expunge_content(app_id, msg_id, attempt_id)

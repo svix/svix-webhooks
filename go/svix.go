@@ -74,7 +74,6 @@ type (
 	ListResponseEndpointOut                   = openapi.ListResponseEndpointOut
 	ListResponseEventTypeOut                  = openapi.ListResponseEventTypeOut
 	ListResponseIntegrationOut                = openapi.ListResponseIntegrationOut
-	ListResponseMessageAttemptEndpointOut     = openapi.ListResponseMessageAttemptEndpointOut
 	ListResponseMessageAttemptOut             = openapi.ListResponseMessageAttemptOut
 	ListResponseMessageEndpointOut            = openapi.ListResponseMessageEndpointOut
 	ListResponseMessageOut                    = openapi.ListResponseMessageOut
@@ -97,8 +96,10 @@ type (
 	ReplayOut                                 = openapi.ReplayOut
 	StatusCodeClass                           = openapi.StatusCodeClass
 
-	// Deprecated: Use EndpointGetStatsOptions directly
+	// Deprecated: Use EndpointGetStatsOptions
 	EndpointStatsOptions = EndpointGetStatsOptions
+	// Deprecated: Use ListResponseMessageAttemptOut
+	ListResponseMessageAttemptEndpointOut = openapi.ListResponseMessageAttemptOut
 )
 
 var defaultHTTPClient = &http.Client{

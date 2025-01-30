@@ -26,7 +26,7 @@ namespace Svix
         {
             try
             {
-                var lBackgroundTask = _backgroundTaskApi.GetBackgroundTask(taskId);
+                var lBackgroundTask = _backgroundTaskApi.V1BackgroundTaskGet(taskId);
 
                 return lBackgroundTask;
             }
@@ -45,7 +45,7 @@ namespace Svix
         {
             try
             {
-                var lBackgroundTask = await _backgroundTaskApi.GetBackgroundTaskAsync(taskId);
+                var lBackgroundTask = await _backgroundTaskApi.V1BackgroundTaskGetAsync(taskId);
 
                 return lBackgroundTask;
             }
@@ -64,7 +64,7 @@ namespace Svix
         {
             try
             {
-                var lResponse = _backgroundTaskApi.ListBackgroundTasks(
+                var lResponse = _backgroundTaskApi.V1BackgroundTaskList(
                     options?.Status,
                     options?.Task,
                     options?.Limit,
@@ -88,7 +88,7 @@ namespace Svix
         {
             try
             {
-                var lResponse = await _backgroundTaskApi.ListBackgroundTasksAsync(
+                var lResponse = await _backgroundTaskApi.V1BackgroundTaskListAsync(
                     options?.Status,
                     options?.Task,
                     options?.Limit,

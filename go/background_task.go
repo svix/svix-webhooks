@@ -29,7 +29,7 @@ func (backgroundTask *BackgroundTask) List(
 	ctx context.Context,
 	options *BackgroundTaskListOptions,
 ) (*ListResponseBackgroundTaskOut, error) {
-	req := backgroundTask.api.BackgroundTasksAPI.ListBackgroundTasks(
+	req := backgroundTask.api.BackgroundTasksAPI.V1BackgroundTaskList(
 		ctx,
 	)
 
@@ -64,7 +64,7 @@ func (backgroundTask *BackgroundTask) Get(
 	ctx context.Context,
 	taskId string,
 ) (*BackgroundTaskOut, error) {
-	req := backgroundTask.api.BackgroundTasksAPI.GetBackgroundTask(
+	req := backgroundTask.api.BackgroundTasksAPI.V1BackgroundTaskGet(
 		ctx,
 		taskId,
 	)

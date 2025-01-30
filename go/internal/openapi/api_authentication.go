@@ -1612,3 +1612,209 @@ func (a *AuthenticationAPIService) V1AuthenticationRotatePollerTokenExecute(r Ap
 
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
+
+type ApiV1AuthenticationStreamPortalAccessRequest struct {
+	ctx context.Context
+	ApiService *AuthenticationAPIService
+	streamId string
+	streamPortalAccessIn *StreamPortalAccessIn
+	idempotencyKey *string
+}
+
+func (r ApiV1AuthenticationStreamPortalAccessRequest) StreamPortalAccessIn(streamPortalAccessIn StreamPortalAccessIn) ApiV1AuthenticationStreamPortalAccessRequest {
+	r.streamPortalAccessIn = &streamPortalAccessIn
+	return r
+}
+
+// The request&#39;s idempotency key
+func (r ApiV1AuthenticationStreamPortalAccessRequest) IdempotencyKey(idempotencyKey string) ApiV1AuthenticationStreamPortalAccessRequest {
+	r.idempotencyKey = &idempotencyKey
+	return r
+}
+
+func (r ApiV1AuthenticationStreamPortalAccessRequest) Execute() (*AppPortalAccessOut, *http.Response, error) {
+	return r.ApiService.V1AuthenticationStreamPortalAccessExecute(r)
+}
+
+/*
+V1AuthenticationStreamPortalAccess Get Stream Portal Access
+
+Use this function to get magic links (and authentication codes) for connecting your users to the Stream Consumer Portal.
+
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param streamId
+ @return ApiV1AuthenticationStreamPortalAccessRequest
+*/
+func (a *AuthenticationAPIService) V1AuthenticationStreamPortalAccess(ctx context.Context, streamId string) ApiV1AuthenticationStreamPortalAccessRequest {
+	return ApiV1AuthenticationStreamPortalAccessRequest{
+		ApiService: a,
+		ctx: ctx,
+		streamId: streamId,
+	}
+}
+
+// Execute executes the request
+//  @return AppPortalAccessOut
+func (a *AuthenticationAPIService) V1AuthenticationStreamPortalAccessExecute(r ApiV1AuthenticationStreamPortalAccessRequest) (*AppPortalAccessOut, *http.Response, error) {
+	var (
+		localVarHTTPMethod   = http.MethodPost
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *AppPortalAccessOut
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "AuthenticationAPIService.V1AuthenticationStreamPortalAccess")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/api/v1/auth/stream-portal-access/{stream_id}"
+	localVarPath = strings.Replace(localVarPath, "{"+"stream_id"+"}", url.PathEscape(parameterValueToString(r.streamId, "streamId")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+	if strlen(r.streamId) < 1 {
+		return localVarReturnValue, nil, reportError("streamId must have at least 1 elements")
+	}
+	if strlen(r.streamId) > 60 {
+		return localVarReturnValue, nil, reportError("streamId must have less than 60 elements")
+	}
+	if r.streamPortalAccessIn == nil {
+		return localVarReturnValue, nil, reportError("streamPortalAccessIn is required and must be specified")
+	}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.idempotencyKey != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "idempotency-key", r.idempotencyKey, "simple", "")
+	}
+	// body params
+	localVarPostBody = r.streamPortalAccessIn
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		if localVarHTTPResponse.StatusCode == 400 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 401 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 403 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 404 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 409 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 422 {
+			var v HTTPValidationError
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 429 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}

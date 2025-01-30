@@ -19,7 +19,7 @@ public final class OperationalWebhookEndpoint {
 
 	public ListResponseOperationalWebhookEndpointOut list(final OperationalWebhookEndpointListOptions options) throws ApiException {
 		try {
-			return api.listOperationalWebhookEndpoints(options.getLimit(), options.getIterator(), options.getOrder());
+			return api.v1OperationalWebhookEndpointList(options.getLimit(), options.getIterator(), options.getOrder());
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
@@ -32,7 +32,7 @@ public final class OperationalWebhookEndpoint {
 	public OperationalWebhookEndpointOut create(final OperationalWebhookEndpointIn endpointIn, final PostOptions options)
 			throws ApiException {
 		try {
-			return api.createOperationalWebhookEndpoint(endpointIn, options.getIdempotencyKey());
+			return api.v1OperationalWebhookEndpointCreate(endpointIn, options.getIdempotencyKey());
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
@@ -40,7 +40,7 @@ public final class OperationalWebhookEndpoint {
 
 	public OperationalWebhookEndpointOut get(final String endpointId) throws ApiException {
 		try {
-			return api.getOperationalWebhookEndpoint(endpointId);
+			return api.v1OperationalWebhookEndpointGet(endpointId);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
@@ -49,7 +49,7 @@ public final class OperationalWebhookEndpoint {
 	public OperationalWebhookEndpointOut update(final String endpointId, final OperationalWebhookEndpointUpdate endpointUpdate)
 			throws ApiException {
 		try {
-			return api.updateOperationalWebhookEndpoint(endpointId, endpointUpdate);
+			return api.v1OperationalWebhookEndpointUpdate(endpointId, endpointUpdate);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
@@ -57,7 +57,7 @@ public final class OperationalWebhookEndpoint {
 
 	public void delete(final String endpointId) throws ApiException {
 		try {
-			api.deleteOperationalWebhookEndpoint(endpointId);
+			api.v1OperationalWebhookEndpointDelete(endpointId);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
@@ -65,7 +65,7 @@ public final class OperationalWebhookEndpoint {
 
 	public OperationalWebhookEndpointSecretOut getSecret(final String endpointId) throws ApiException {
 		try {
-			return api.getOperationalWebhookEndpointSecret(endpointId);
+			return api.v1OperationalWebhookEndpointGetSecret(endpointId);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
@@ -79,7 +79,7 @@ public final class OperationalWebhookEndpoint {
 	public void rotateSecret(final String endpointId,
 			final OperationalWebhookEndpointSecretIn endpointSecretIn, final PostOptions options) throws ApiException {
 		try {
-			api.rotateOperationalWebhookEndpointSecret(endpointId, endpointSecretIn, options.getIdempotencyKey());
+			api.v1OperationalWebhookEndpointRotateSecret(endpointId, endpointSecretIn, options.getIdempotencyKey());
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}

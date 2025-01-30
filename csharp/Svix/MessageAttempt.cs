@@ -266,139 +266,79 @@ namespace Svix
 
         // Deprecated
         [Obsolete("Use ListAttemptsByMessage instead, passing the endpoint ID through options")]
-        public ListResponseMessageAttemptEndpointOut ListAttemptsForEndpoint(string appId, string messageId,
+        public ListResponseMessageAttemptOut ListAttemptsForEndpoint(string appId, string messageId,
             string endpointId, AttemptsByEndpointListOptions options = null, string idempotencyKey = default)
         {
-            try
-            {
-                var lResults = _messageAttemptApi.V1MessageAttemptListByEndpointDeprecated(
-                    appId,
-                    messageId,
-                    endpointId,
-                    options?.Limit,
-                    options?.Iterator,
-                    options?.Channel,
-                    options?.Tag,
-                    (Svix.Model.MessageStatus?)options?.Status,
-                    options?.Before,
-                    options?.After,
-                    options?.EventTypes);
+            var listByMessageOptions = new AttemptsByMessageListOptions();
+            listByMessageOptions.Limit = options?.Limit;
+            listByMessageOptions.Iterator = options?.Iterator;
+            listByMessageOptions.Channel = options?.Channel;
+            listByMessageOptions.Tag = options?.Tag;
+            listByMessageOptions.Status = options?.Status;
+            listByMessageOptions.Before = options?.Before;
+            listByMessageOptions.After = options?.After;
+            listByMessageOptions.EventTypes = options?.EventTypes;
+            listByMessageOptions.EndpointId = endpointId;
 
-                return lResults;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(ListAttemptsForEndpoint)} failed");
-
-                if (Throw)
-                    throw;
-
-                return new ListResponseMessageAttemptEndpointOut();
-            }
+            return ListAttemptsByMessage(appId, messageId, listByMessageOptions, idempotencyKey);
         }
 
         // Deprecated
         [Obsolete("Use ListAttemptsByMessageAsync instead, passing the endpoint ID through options")]
-        public async Task<ListResponseMessageAttemptEndpointOut> ListAttemptsForEndpointAsync(string appId,
+        public async Task<ListResponseMessageAttemptOut> ListAttemptsForEndpointAsync(string appId,
             string messageId, string endpointId, AttemptsByEndpointListOptions options = null, string idempotencyKey = default,
             CancellationToken cancellationToken = default)
         {
-            try
-            {
-                var lResults = await _messageAttemptApi.V1MessageAttemptListByEndpointDeprecatedAsync(
-                    appId,
-                    messageId,
-                    endpointId,
-                    options?.Limit,
-                    options?.Iterator,
-                    options?.Channel,
-                    options?.Tag,
-                    (Svix.Model.MessageStatus?)options?.Status,
-                    options?.Before,
-                    options?.After,
-                    options?.EventTypes?.ToList(),
-                    cancellationToken);
+            var listByMessageOptions = new AttemptsByMessageListOptions();
+            listByMessageOptions.Limit = options?.Limit;
+            listByMessageOptions.Iterator = options?.Iterator;
+            listByMessageOptions.Channel = options?.Channel;
+            listByMessageOptions.Tag = options?.Tag;
+            listByMessageOptions.Status = options?.Status;
+            listByMessageOptions.Before = options?.Before;
+            listByMessageOptions.After = options?.After;
+            listByMessageOptions.EventTypes = options?.EventTypes;
+            listByMessageOptions.EndpointId = endpointId;
 
-                return lResults;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(ListAttemptsForEndpointAsync)} failed");
-
-                if (Throw)
-                    throw;
-
-                return new ListResponseMessageAttemptEndpointOut();
-            }
+            return await ListAttemptsByMessageAsync(appId, messageId, listByMessageOptions, idempotencyKey);
         }
 
         // Deprecated
-        [Obsolete("Use ListAttemptsByEndpoint or ListAttemptsByMessage instead")]
+        [Obsolete("Use ListAttemptsByMessage instead")]
         public ListResponseMessageAttemptOut ListAttempts(string appId, string messageId, MessageAttemptListOptions options = null,
             string idempotencyKey = default)
         {
-            try
-            {
-                var lResults = _messageAttemptApi.V1MessageAttemptListByMsgDeprecated(
-                    appId,
-                    messageId,
-                    options?.Limit,
-                    options?.Iterator,
-                    options?.EndpointId,
-                    options?.Channel,
-                    options?.Tag,
-                    (Svix.Model.MessageStatus?)options?.Status,
-                    options?.Before,
-                    options?.After,
-                    null,
-                    options?.EventTypes);
+            var listByMessageOptions = new AttemptsByMessageListOptions();
+            listByMessageOptions.Limit = options?.Limit;
+            listByMessageOptions.Iterator = options?.Iterator;
+            listByMessageOptions.EndpointId = options?.EndpointId;
+            listByMessageOptions.Channel = options?.Channel;
+            listByMessageOptions.Tag = options?.Tag;
+            listByMessageOptions.Status = options?.Status;
+            listByMessageOptions.Before = options?.Before;
+            listByMessageOptions.After = options?.After;
+            listByMessageOptions.EventTypes = options?.EventTypes;
 
-                return lResults;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(ListAttempts)} failed");
-
-                if (Throw)
-                    throw;
-
-                return new ListResponseMessageAttemptOut();
-            }
+            return ListAttemptsByMessage(appId, messageId, listByMessageOptions, idempotencyKey);
         }
 
         // Deprecated
-        [Obsolete("Use ListAttemptsByEndpointAsync or ListAttemptsByMessageAsync instead")]
+        [Obsolete("Use ListAttemptsByMessageAsync instead")]
         public async Task<ListResponseMessageAttemptOut> ListAttemptsAsync(string appId, string messageId, MessageAttemptListOptions options = null,
             string idempotencyKey = default, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                var lResults = await _messageAttemptApi.V1MessageAttemptListByMsgDeprecatedAsync(
-                    appId,
-                    messageId,
-                    options?.Limit,
-                    options?.Iterator,
-                    options?.EndpointId,
-                    options?.Channel,
-                    options?.Tag,
-                    (Svix.Model.MessageStatus?)options?.Status,
-                    options?.Before,
-                    options?.After,
-                    null,
-                    options?.EventTypes,
-                    cancellationToken);
+            var listByMessageOptions = new AttemptsByMessageListOptions();
+            listByMessageOptions.Limit = options?.Limit;
+            listByMessageOptions.Iterator = options?.Iterator;
+            listByMessageOptions.EndpointId = options?.EndpointId;
+            listByMessageOptions.Channel = options?.Channel;
+            listByMessageOptions.Tag = options?.Tag;
+            listByMessageOptions.Status = options?.Status;
+            listByMessageOptions.Before = options?.Before;
+            listByMessageOptions.After = options?.After;
+            listByMessageOptions.EventTypes = options?.EventTypes;
 
-                return lResults;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(ListAttemptsAsync)} failed");
-
-                if (Throw)
-                    throw;
-
-                return new ListResponseMessageAttemptOut();
-            }
+            return await ListAttemptsByMessageAsync(appId, messageId, listByMessageOptions, idempotencyKey);
         }
 
         public ListResponseMessageEndpointOut ListAttemptedDestinations(string appId, string messageId, ListOptions options = null,

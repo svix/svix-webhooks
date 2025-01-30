@@ -12,8 +12,6 @@ package openapi
 
 import (
 	"encoding/json"
-	"bytes"
-	"fmt"
 )
 
 // checks if the EnvironmentIn type satisfies the MappedNullable interface at compile time
@@ -22,19 +20,16 @@ var _ MappedNullable = &EnvironmentIn{}
 // EnvironmentIn struct for EnvironmentIn
 type EnvironmentIn struct {
 	EventTypes []EventTypeIn `json:"eventTypes,omitempty"`
-	Settings map[string]interface{} `json:"settings"`
+	Settings map[string]interface{} `json:"settings,omitempty"`
 	TransformationTemplates []TemplateIn `json:"transformationTemplates,omitempty"`
 }
-
-type _EnvironmentIn EnvironmentIn
 
 // NewEnvironmentIn instantiates a new EnvironmentIn object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewEnvironmentIn(settings map[string]interface{}) *EnvironmentIn {
+func NewEnvironmentIn() *EnvironmentIn {
 	this := EnvironmentIn{}
-	this.Settings = settings
 	return &this
 }
 
@@ -78,20 +73,17 @@ func (o *EnvironmentIn) SetEventTypes(v []EventTypeIn) {
 	o.EventTypes = v
 }
 
-// GetSettings returns the Settings field value
-// If the value is explicit nil, the zero value for map[string]interface{} will be returned
+// GetSettings returns the Settings field value if set, zero value otherwise.
 func (o *EnvironmentIn) GetSettings() map[string]interface{} {
-	if o == nil {
+	if o == nil || IsNil(o.Settings) {
 		var ret map[string]interface{}
 		return ret
 	}
-
 	return o.Settings
 }
 
-// GetSettingsOk returns a tuple with the Settings field value
+// GetSettingsOk returns a tuple with the Settings field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *EnvironmentIn) GetSettingsOk() (map[string]interface{}, bool) {
 	if o == nil || IsNil(o.Settings) {
 		return map[string]interface{}{}, false
@@ -99,7 +91,16 @@ func (o *EnvironmentIn) GetSettingsOk() (map[string]interface{}, bool) {
 	return o.Settings, true
 }
 
-// SetSettings sets field value
+// HasSettings returns a boolean if a field has been set.
+func (o *EnvironmentIn) HasSettings() bool {
+	if o != nil && !IsNil(o.Settings) {
+		return true
+	}
+
+	return false
+}
+
+// SetSettings gets a reference to the given map[string]interface{} and assigns it to the Settings field.
 func (o *EnvironmentIn) SetSettings(v map[string]interface{}) {
 	o.Settings = v
 }
@@ -149,50 +150,13 @@ func (o EnvironmentIn) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.EventTypes) {
 		toSerialize["eventTypes"] = o.EventTypes
 	}
-	if o.Settings != nil {
+	if !IsNil(o.Settings) {
 		toSerialize["settings"] = o.Settings
 	}
 	if !IsNil(o.TransformationTemplates) {
 		toSerialize["transformationTemplates"] = o.TransformationTemplates
 	}
 	return toSerialize, nil
-}
-
-func (o *EnvironmentIn) UnmarshalJSON(data []byte) (err error) {
-	// This validates that all required properties are included in the JSON object
-	// by unmarshalling the object into a generic map with string keys and checking
-	// that every required field exists as a key in the generic map.
-	requiredProperties := []string{
-		"settings",
-	}
-
-	allProperties := make(map[string]interface{})
-
-	err = json.Unmarshal(data, &allProperties)
-
-	if err != nil {
-		return err;
-	}
-
-	for _, requiredProperty := range(requiredProperties) {
-		if _, exists := allProperties[requiredProperty]; !exists {
-			return fmt.Errorf("no value given for required property %v", requiredProperty)
-		}
-	}
-
-	varEnvironmentIn := _EnvironmentIn{}
-
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varEnvironmentIn)
-
-	if err != nil {
-		return err
-	}
-
-	*o = EnvironmentIn(varEnvironmentIn)
-
-	return err
 }
 
 type NullableEnvironmentIn struct {
