@@ -23,7 +23,6 @@ import {
   ReplayOut,
 } from "../openapi";
 import { HttpMethod, SvixRequest, SvixRequestContext } from "../request";
-import { PostOptions } from "../util";
 
 export interface EndpointListOptions {
   /** Limit the number of returned items */
@@ -32,6 +31,26 @@ export interface EndpointListOptions {
   iterator?: string | null;
   /** The sorting order of the returned items */
   order?: Ordering;
+}
+
+export interface EndpointCreateOptions {
+  idempotencyKey?: string;
+}
+
+export interface EndpointRecoverOptions {
+  idempotencyKey?: string;
+}
+
+export interface EndpointReplayMissingOptions {
+  idempotencyKey?: string;
+}
+
+export interface EndpointRotateSecretOptions {
+  idempotencyKey?: string;
+}
+
+export interface EndpointSendExampleOptions {
+  idempotencyKey?: string;
 }
 
 export interface EndpointGetStatsOptions {
@@ -67,7 +86,7 @@ export class Endpoint {
   public create(
     appId: string,
     endpointIn: EndpointIn,
-    options?: PostOptions
+    options?: EndpointCreateOptions
   ): Promise<EndpointOut> {
     const request = new SvixRequest(HttpMethod.POST, "/api/v1/app/{app_id}/endpoint");
 
@@ -214,7 +233,7 @@ export class Endpoint {
     appId: string,
     endpointId: string,
     recoverIn: RecoverIn,
-    options?: PostOptions
+    options?: EndpointRecoverOptions
   ): Promise<RecoverOut> {
     const request = new SvixRequest(
       HttpMethod.POST,
@@ -239,7 +258,7 @@ export class Endpoint {
     appId: string,
     endpointId: string,
     replayIn: ReplayIn,
-    options?: PostOptions
+    options?: EndpointReplayMissingOptions
   ): Promise<ReplayOut> {
     const request = new SvixRequest(
       HttpMethod.POST,
@@ -281,7 +300,7 @@ export class Endpoint {
     appId: string,
     endpointId: string,
     endpointSecretRotateIn: EndpointSecretRotateIn,
-    options?: PostOptions
+    options?: EndpointRotateSecretOptions
   ): Promise<void> {
     const request = new SvixRequest(
       HttpMethod.POST,
@@ -301,7 +320,7 @@ export class Endpoint {
     appId: string,
     endpointId: string,
     eventExampleIn: EventExampleIn,
-    options?: PostOptions
+    options?: EndpointSendExampleOptions
   ): Promise<MessageOut> {
     const request = new SvixRequest(
       HttpMethod.POST,

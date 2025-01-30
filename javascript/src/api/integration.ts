@@ -8,7 +8,6 @@ import {
   Ordering,
 } from "../openapi";
 import { HttpMethod, SvixRequest, SvixRequestContext } from "../request";
-import { PostOptions } from "../util";
 
 export interface IntegrationListOptions {
   /** Limit the number of returned items */
@@ -17,6 +16,14 @@ export interface IntegrationListOptions {
   iterator?: string | null;
   /** The sorting order of the returned items */
   order?: Ordering;
+}
+
+export interface IntegrationCreateOptions {
+  idempotencyKey?: string;
+}
+
+export interface IntegrationRotateKeyOptions {
+  idempotencyKey?: string;
 }
 
 export class Integration {
@@ -41,7 +48,7 @@ export class Integration {
   public create(
     appId: string,
     integrationIn: IntegrationIn,
-    options?: PostOptions
+    options?: IntegrationCreateOptions
   ): Promise<IntegrationOut> {
     const request = new SvixRequest(HttpMethod.POST, "/api/v1/app/{app_id}/integration");
 
@@ -117,7 +124,7 @@ export class Integration {
   public rotateKey(
     appId: string,
     integId: string,
-    options?: PostOptions
+    options?: IntegrationRotateKeyOptions
   ): Promise<IntegrationKeyOut> {
     const request = new SvixRequest(
       HttpMethod.POST,

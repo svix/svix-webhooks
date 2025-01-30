@@ -8,7 +8,6 @@ import {
   StatusCodeClass,
 } from "../openapi";
 import { HttpMethod, SvixRequest, SvixRequestContext } from "../request";
-import { PostOptions } from "../util";
 
 export interface MessageAttemptListOptions {
   iterator?: string | null;
@@ -98,6 +97,10 @@ export interface MessageAttemptListAttemptedDestinationsOptions {
   limit?: number;
   /** The iterator returned from a prior invocation */
   iterator?: string | null;
+}
+
+export interface MessageAttemptResendOptions {
+  idempotencyKey?: string;
 }
 
 export class MessageAttempt {
@@ -285,7 +288,7 @@ export class MessageAttempt {
     appId: string,
     msgId: string,
     endpointId: string,
-    options?: PostOptions
+    options?: MessageAttemptResendOptions
   ): Promise<void> {
     const request = new SvixRequest(
       HttpMethod.POST,
