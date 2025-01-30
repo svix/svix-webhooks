@@ -1,4 +1,5 @@
-﻿using System;
+﻿// this file is @generated
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading;
@@ -12,9 +13,16 @@ using Svix.Models;
 
 namespace Svix
 {
-    public class ApplicationCreateOptions
+    public partial class ApplicationListOptions
     {
-        public bool GetIfExists { get; set; }
+        public int? Limit { get; set; }
+        public string? Iterator { get; set; }
+        public Ordering? Order { get; set; }
+    }
+
+    public partial class ApplicationCreateOptions
+    {
+        public string? IdempotencyKey { get; set; }
     }
 
     public sealed class Application : SvixResourceBase
@@ -29,21 +37,19 @@ namespace Svix
         }
 
         public async Task<ListResponseApplicationOut> ListAsync(
-            ListOptions options = null,
-            string idempotencyKey = default,
+            ApplicationListOptions options = null,
             CancellationToken cancellationToken = default
         )
         {
             try
             {
-                var lResponse = await _applicationApi.V1ApplicationListAsync(
-                    options?.Limit,
-                    options?.Iterator,
-                    options?.Order,
-                    cancellationToken
+                var response = await _applicationApi.V1ApplicationListWithHttpInfoAsync(
+                    limit: options?.Limit,
+                    iterator: options?.Iterator,
+                    order: options?.Order,
+                    cancellationToken: cancellationToken
                 );
-
-                return lResponse;
+                return response.Data;
             }
             catch (ApiException e)
             {
@@ -51,25 +57,20 @@ namespace Svix
 
                 if (Throw)
                     throw;
-
                 return new ListResponseApplicationOut();
             }
         }
 
-        public ListResponseApplicationOut List(
-            ListOptions options = null,
-            string idempotencyKey = default
-        )
+        public ListResponseApplicationOut List(ApplicationListOptions options = null)
         {
             try
             {
-                var lResponse = _applicationApi.V1ApplicationList(
-                    options?.Limit,
-                    options?.Iterator,
-                    options?.Order
+                var response = _applicationApi.V1ApplicationListWithHttpInfo(
+                    limit: options?.Limit,
+                    iterator: options?.Iterator,
+                    order: options?.Order
                 );
-
-                return lResponse;
+                return response.Data;
             }
             catch (ApiException e)
             {
@@ -77,30 +78,27 @@ namespace Svix
 
                 if (Throw)
                     throw;
-
                 return new ListResponseApplicationOut();
             }
         }
 
         public async Task<ApplicationOut> CreateAsync(
-            ApplicationIn application,
+            ApplicationIn applicationIn,
             ApplicationCreateOptions options = null,
-            string idempotencyKey = default,
             CancellationToken cancellationToken = default
         )
         {
             try
             {
-                application = application ?? throw new ArgumentNullException(nameof(application));
-
-                var lApplication = await _applicationApi.V1ApplicationCreateAsync(
-                    application,
-                    options?.GetIfExists ?? false,
-                    idempotencyKey,
-                    cancellationToken
+                applicationIn =
+                    applicationIn ?? throw new ArgumentNullException(nameof(applicationIn));
+                var response = await _applicationApi.V1ApplicationCreateWithHttpInfoAsync(
+                    applicationIn: applicationIn,
+                    idempotencyKey: options?.IdempotencyKey,
+                    getIfExists: false,
+                    cancellationToken: cancellationToken
                 );
-
-                return lApplication;
+                return response.Data;
             }
             catch (ApiException e)
             {
@@ -108,28 +106,25 @@ namespace Svix
 
                 if (Throw)
                     throw;
-
-                return null;
+                return new ApplicationOut();
             }
         }
 
         public ApplicationOut Create(
-            ApplicationIn application,
-            ApplicationCreateOptions options = null,
-            string idempotencyKey = default
+            ApplicationIn applicationIn,
+            ApplicationCreateOptions options = null
         )
         {
             try
             {
-                application = application ?? throw new ArgumentNullException(nameof(application));
-
-                var lApplication = _applicationApi.V1ApplicationCreate(
-                    application,
-                    options?.GetIfExists ?? false,
-                    idempotencyKey
+                applicationIn =
+                    applicationIn ?? throw new ArgumentNullException(nameof(applicationIn));
+                var response = _applicationApi.V1ApplicationCreateWithHttpInfo(
+                    applicationIn: applicationIn,
+                    idempotencyKey: options?.IdempotencyKey,
+                    getIfExists: false
                 );
-
-                return lApplication;
+                return response.Data;
             }
             catch (ApiException e)
             {
@@ -137,22 +132,72 @@ namespace Svix
 
                 if (Throw)
                     throw;
-
-                return null;
+                return new ApplicationOut();
             }
         }
 
-        public async Task<ApplicationOut> GetAsync(
-            string appId,
-            string idempotencyKey = default,
+        public async Task<ApplicationOut> GetOrCreateAsync(
+            ApplicationIn applicationIn,
+            ApplicationCreateOptions options = null,
             CancellationToken cancellationToken = default
         )
         {
             try
             {
-                var lApplication = await _applicationApi.V1ApplicationGetAsync(appId);
+                var response = await _applicationApi.V1ApplicationCreateWithHttpInfoAsync(
+                    applicationIn: applicationIn,
+                    idempotencyKey: options?.IdempotencyKey,
+                    getIfExists: true,
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(CreateAsync)} failed");
 
-                return lApplication;
+                if (Throw)
+                    throw;
+                return new ApplicationOut();
+            }
+        }
+
+        public ApplicationOut GetOrCreate(
+            ApplicationIn applicationIn,
+            ApplicationCreateOptions options = null
+        )
+        {
+            try
+            {
+                var response = _applicationApi.V1ApplicationCreateWithHttpInfo(
+                    applicationIn: applicationIn,
+                    idempotencyKey: options?.IdempotencyKey,
+                    getIfExists: true
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(Create)} failed");
+
+                if (Throw)
+                    throw;
+                return new ApplicationOut();
+            }
+        }
+
+        public async Task<ApplicationOut> GetAsync(
+            string appId,
+            CancellationToken cancellationToken = default
+        )
+        {
+            try
+            {
+                var response = await _applicationApi.V1ApplicationGetWithHttpInfoAsync(
+                    appId,
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
             }
             catch (ApiException e)
             {
@@ -160,18 +205,16 @@ namespace Svix
 
                 if (Throw)
                     throw;
-
-                return null;
+                return new ApplicationOut();
             }
         }
 
-        public ApplicationOut Get(string appId, string idempotencyKey = default)
+        public ApplicationOut Get(string appId)
         {
             try
             {
-                var lApplication = _applicationApi.V1ApplicationGet(appId);
-
-                return lApplication;
+                var response = _applicationApi.V1ApplicationGetWithHttpInfo(appId);
+                return response.Data;
             }
             catch (ApiException e)
             {
@@ -179,27 +222,26 @@ namespace Svix
 
                 if (Throw)
                     throw;
-
-                return null;
+                return new ApplicationOut();
             }
         }
 
         public async Task<ApplicationOut> UpdateAsync(
             string appId,
-            ApplicationIn application,
-            string idempotencyKey = default,
+            ApplicationIn applicationIn,
             CancellationToken cancellationToken = default
         )
         {
             try
             {
-                var lApplication = await _applicationApi.V1ApplicationUpdateAsync(
+                applicationIn =
+                    applicationIn ?? throw new ArgumentNullException(nameof(applicationIn));
+                var response = await _applicationApi.V1ApplicationUpdateWithHttpInfoAsync(
                     appId,
-                    application,
-                    cancellationToken
+                    applicationIn: applicationIn,
+                    cancellationToken: cancellationToken
                 );
-
-                return lApplication;
+                return response.Data;
             }
             catch (ApiException e)
             {
@@ -207,22 +249,21 @@ namespace Svix
 
                 if (Throw)
                     throw;
-
-                return null;
+                return new ApplicationOut();
             }
         }
 
-        public ApplicationOut Update(
-            string appId,
-            ApplicationIn application,
-            string idempotencyKey = default
-        )
+        public ApplicationOut Update(string appId, ApplicationIn applicationIn)
         {
             try
             {
-                var lApplication = _applicationApi.V1ApplicationUpdate(appId, application);
-
-                return lApplication;
+                applicationIn =
+                    applicationIn ?? throw new ArgumentNullException(nameof(applicationIn));
+                var response = _applicationApi.V1ApplicationUpdateWithHttpInfo(
+                    appId,
+                    applicationIn: applicationIn
+                );
+                return response.Data;
             }
             catch (ApiException e)
             {
@@ -230,25 +271,22 @@ namespace Svix
 
                 if (Throw)
                     throw;
-
-                return null;
+                return new ApplicationOut();
             }
         }
 
         public async Task<bool> DeleteAsync(
             string appId,
-            string idempotencyKey = default,
             CancellationToken cancellationToken = default
         )
         {
             try
             {
-                var lResponse = await _applicationApi.V1ApplicationDeleteWithHttpInfoAsync(
+                var response = await _applicationApi.V1ApplicationDeleteWithHttpInfoAsync(
                     appId,
-                    cancellationToken
+                    cancellationToken: cancellationToken
                 );
-
-                return lResponse.StatusCode == HttpStatusCode.NoContent;
+                return response.StatusCode == HttpStatusCode.NoContent;
             }
             catch (ApiException e)
             {
@@ -256,18 +294,16 @@ namespace Svix
 
                 if (Throw)
                     throw;
-
                 return false;
             }
         }
 
-        public bool Delete(string appId, string idempotencyKey = default)
+        public bool Delete(string appId)
         {
             try
             {
-                var lResponse = _applicationApi.V1ApplicationDeleteWithHttpInfo(appId);
-
-                return lResponse.StatusCode == HttpStatusCode.NoContent;
+                var response = _applicationApi.V1ApplicationDeleteWithHttpInfo(appId);
+                return response.StatusCode == HttpStatusCode.NoContent;
             }
             catch (ApiException e)
             {
@@ -275,27 +311,26 @@ namespace Svix
 
                 if (Throw)
                     throw;
-
                 return false;
             }
         }
 
         public async Task<ApplicationOut> PatchAsync(
             string appId,
-            ApplicationPatch application,
-            string idempotencyKey = default,
+            ApplicationPatch applicationPatch,
             CancellationToken cancellationToken = default
         )
         {
             try
             {
-                var lApplication = await _applicationApi.V1ApplicationPatchAsync(
+                applicationPatch =
+                    applicationPatch ?? throw new ArgumentNullException(nameof(applicationPatch));
+                var response = await _applicationApi.V1ApplicationPatchWithHttpInfoAsync(
                     appId,
-                    application,
-                    cancellationToken
+                    applicationPatch: applicationPatch,
+                    cancellationToken: cancellationToken
                 );
-
-                return lApplication;
+                return response.Data;
             }
             catch (ApiException e)
             {
@@ -303,22 +338,21 @@ namespace Svix
 
                 if (Throw)
                     throw;
-
-                return null;
+                return new ApplicationOut();
             }
         }
 
-        public ApplicationOut Patch(
-            string appId,
-            ApplicationPatch application,
-            string idempotencyKey = default
-        )
+        public ApplicationOut Patch(string appId, ApplicationPatch applicationPatch)
         {
             try
             {
-                var lApplication = _applicationApi.V1ApplicationPatch(appId, application);
-
-                return lApplication;
+                applicationPatch =
+                    applicationPatch ?? throw new ArgumentNullException(nameof(applicationPatch));
+                var response = _applicationApi.V1ApplicationPatchWithHttpInfo(
+                    appId,
+                    applicationPatch: applicationPatch
+                );
+                return response.Data;
             }
             catch (ApiException e)
             {
@@ -326,8 +360,7 @@ namespace Svix
 
                 if (Throw)
                     throw;
-
-                return null;
+                return new ApplicationOut();
             }
         }
     }
