@@ -10,6 +10,6 @@ class ListResponseMessageEndpointOut(BaseModel):
 
     done: bool
 
-    iterator: str
+    iterator: t.Optional[str] = None
 
     prev_iterator: t.Optional[str] = None

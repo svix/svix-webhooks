@@ -12,7 +12,7 @@ class EnvironmentOut(BaseModel):
 
     event_types: t.List[EventTypeOut]
 
-    settings: t.Dict[str, t.Any]
+    settings: t.Optional[t.Dict[str, t.Any]] = None
 
     transformation_templates: t.List[TemplateOut]
 
