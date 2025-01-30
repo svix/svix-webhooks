@@ -10,6 +10,6 @@ class ListResponseApplicationOut(BaseModel):
 
     done: bool
 
-    iterator: t.Optional[str] = None
+    iterator: t.Optional[str]
 
     prev_iterator: t.Optional[str] = None
