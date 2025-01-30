@@ -74,6 +74,8 @@
                             "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "type": "string"
                         },
+                        "maxItems": 25,
+                        "minItems": 1,
                         "type": "array",
                         "uniqueItems": true
                     },
@@ -1467,7 +1469,7 @@
             "EndpointOauthConfigIn": {
                 "properties": {
                     "authMethod": {
-                        "$ref": "#/components/schemas/Oauth2AuthMethodIn"
+                        "$ref": "#/components/schemas/Oauth2AuthMethodInOut"
                     },
                     "clientId": {
                         "description": "The client ID. Required for all authentication types.",
@@ -1487,7 +1489,7 @@
                         "type": "object"
                     },
                     "grantType": {
-                        "$ref": "#/components/schemas/Oauth2GrantTypeIn",
+                        "$ref": "#/components/schemas/Oauth2GrantTypeInOut",
                         "description": "The OAuth grant type."
                     },
                     "jwtParams": {
@@ -1511,6 +1513,43 @@
                     "tokenUrl": {
                         "description": "The URL of the authorization server.",
                         "format": "uri",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "authMethod",
+                    "clientId",
+                    "grantType",
+                    "tokenUrl"
+                ],
+                "type": "object"
+            },
+            "EndpointOauthConfigOut": {
+                "properties": {
+                    "authMethod": {
+                        "$ref": "#/components/schemas/Oauth2AuthMethodInOut"
+                    },
+                    "clientId": {
+                        "type": "string"
+                    },
+                    "extraParams": {
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "nullable": true,
+                        "type": "object"
+                    },
+                    "grantType": {
+                        "$ref": "#/components/schemas/Oauth2GrantTypeInOut"
+                    },
+                    "scopes": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "nullable": true,
+                        "type": "array"
+                    },
+                    "tokenUrl": {
                         "type": "string"
                     }
                 },
@@ -2098,6 +2137,10 @@
                         "type": "string"
                     },
                     "enableChannels": {
+                        "default": false,
+                        "type": "boolean"
+                    },
+                    "enableEndpointOauthConfig": {
                         "default": false,
                         "type": "boolean"
                     },
@@ -4343,7 +4386,7 @@
                 },
                 "type": "object"
             },
-            "Oauth2AuthMethodIn": {
+            "Oauth2AuthMethodInOut": {
                 "description": "The method used for authenticating to the OAuth authorization server.\n\n`clientSecretJwt` will construct a JWT used for authentication with the oauth authorization server. This method is less commonly used and may not be supported by all oauth providers. `clientSecretBasic` will authenticate to the oauth authorization server using an `Authorization` header with the client secret as the value. This is the most common means of authentication. `clientSecretPost` will authenticate to the oauth authorization server by passing the client secret in a `client_secret` field in the request body. This method may not be supported by all oauth providers, and in general `clientSecretBasic` should be preferred.",
                 "enum": [
                     "clientSecretJwt",
@@ -4352,7 +4395,7 @@
                 ],
                 "type": "string"
             },
-            "Oauth2GrantTypeIn": {
+            "Oauth2GrantTypeInOut": {
                 "enum": [
                     "clientCredentials",
                     "refreshToken"
@@ -5592,6 +5635,8 @@
                             "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "type": "string"
                         },
+                        "maxItems": 25,
+                        "minItems": 1,
                         "type": "array",
                         "uniqueItems": true
                     },
@@ -11626,6 +11671,195 @@
                         "label": "cURL",
                         "lang": "Shell",
                         "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/oauth' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                    }
+                ]
+            },
+            "get": {
+                "description": "Get endpoint OAuth configuration.",
+                "operationId": "v1.endpoint.get-oauth-config",
+                "parameters": [
+                    {
+                        "description": "The app's ID or UID",
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The app's ID or UID",
+                            "example": "unique-app-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The ep's ID or UID",
+                        "in": "path",
+                        "name": "endpoint_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The ep's ID or UID",
+                            "example": "unique-ep-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EndpointOauthConfigOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Get Endpoint Oauth Config",
+                "tags": [
+                    "Endpoint"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const endpointOauthConfigOut = await svix.endpoint.getOauthConfig(\"app_id\", \"endpoint_id\");"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const endpointOauthConfigOut = await svix.endpoint.getOauthConfig(\"app_id\", \"endpoint_id\");"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "endpoint_oauth_config_out = svix.endpoint.get_oauth_config(\"app_id\", \"endpoint_id\")"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "endpoint_oauth_config_out = await svix.endpoint.get_oauth_config(\"app_id\", \"endpoint_id\")"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "endpointOauthConfigOut, err := svixClient.Endpoint.GetOauthConfig(ctx, \"app_id\", \"endpoint_id\")"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val endpointOauthConfigOut = svix.endpoint.getOauthConfig(\"app_id\", \"endpoint_id\")"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "EndpointOauthConfigOut endpointOauthConfigOut = svix.getEndpoint().getOauthConfig(\"app_id\", \"endpoint_id\");"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "endpoint_oauth_config_out = svix.endpoint.get_oauth_config(\"app_id\", \"endpoint_id\")"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let endpoint_oauth_config_out = svix.endpoint().get_oauth_config(\"app_id\", \"endpoint_id\").await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var endpointOauthConfigOut = await svix.Endpoint.GetOauthConfigAsync(\"app_id\", \"endpoint_id\");"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix endpoint get-oauth-config \"app_id\" \"endpoint_id\""
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/oauth' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
                     }
                 ]
             },

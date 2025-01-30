@@ -29,6 +29,7 @@ type EnvironmentSettingsOut struct {
 	CustomThemeOverride *CustomThemeOverride `json:"customThemeOverride,omitempty"`
 	DisplayName *string `json:"displayName,omitempty"`
 	EnableChannels *bool `json:"enableChannels,omitempty"`
+	EnableEndpointOauthConfig *bool `json:"enableEndpointOauthConfig,omitempty"`
 	EnableIntegrationManagement *bool `json:"enableIntegrationManagement,omitempty"`
 	EnableMessageStream *bool `json:"enableMessageStream,omitempty"`
 	EnableMessageTags *bool `json:"enableMessageTags,omitempty"`
@@ -45,6 +46,8 @@ func NewEnvironmentSettingsOut() *EnvironmentSettingsOut {
 	this := EnvironmentSettingsOut{}
 	var enableChannels bool = false
 	this.EnableChannels = &enableChannels
+	var enableEndpointOauthConfig bool = false
+	this.EnableEndpointOauthConfig = &enableEndpointOauthConfig
 	var enableIntegrationManagement bool = false
 	this.EnableIntegrationManagement = &enableIntegrationManagement
 	var enableMessageStream bool = false
@@ -67,6 +70,8 @@ func NewEnvironmentSettingsOutWithDefaults() *EnvironmentSettingsOut {
 	this := EnvironmentSettingsOut{}
 	var enableChannels bool = false
 	this.EnableChannels = &enableChannels
+	var enableEndpointOauthConfig bool = false
+	this.EnableEndpointOauthConfig = &enableEndpointOauthConfig
 	var enableIntegrationManagement bool = false
 	this.EnableIntegrationManagement = &enableIntegrationManagement
 	var enableMessageStream bool = false
@@ -402,6 +407,38 @@ func (o *EnvironmentSettingsOut) SetEnableChannels(v bool) {
 	o.EnableChannels = &v
 }
 
+// GetEnableEndpointOauthConfig returns the EnableEndpointOauthConfig field value if set, zero value otherwise.
+func (o *EnvironmentSettingsOut) GetEnableEndpointOauthConfig() bool {
+	if o == nil || IsNil(o.EnableEndpointOauthConfig) {
+		var ret bool
+		return ret
+	}
+	return *o.EnableEndpointOauthConfig
+}
+
+// GetEnableEndpointOauthConfigOk returns a tuple with the EnableEndpointOauthConfig field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *EnvironmentSettingsOut) GetEnableEndpointOauthConfigOk() (*bool, bool) {
+	if o == nil || IsNil(o.EnableEndpointOauthConfig) {
+		return nil, false
+	}
+	return o.EnableEndpointOauthConfig, true
+}
+
+// HasEnableEndpointOauthConfig returns a boolean if a field has been set.
+func (o *EnvironmentSettingsOut) HasEnableEndpointOauthConfig() bool {
+	if o != nil && !IsNil(o.EnableEndpointOauthConfig) {
+		return true
+	}
+
+	return false
+}
+
+// SetEnableEndpointOauthConfig gets a reference to the given bool and assigns it to the EnableEndpointOauthConfig field.
+func (o *EnvironmentSettingsOut) SetEnableEndpointOauthConfig(v bool) {
+	o.EnableEndpointOauthConfig = &v
+}
+
 // GetEnableIntegrationManagement returns the EnableIntegrationManagement field value if set, zero value otherwise.
 func (o *EnvironmentSettingsOut) GetEnableIntegrationManagement() bool {
 	if o == nil || IsNil(o.EnableIntegrationManagement) {
@@ -633,6 +670,9 @@ func (o EnvironmentSettingsOut) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.EnableChannels) {
 		toSerialize["enableChannels"] = o.EnableChannels
+	}
+	if !IsNil(o.EnableEndpointOauthConfig) {
+		toSerialize["enableEndpointOauthConfig"] = o.EnableEndpointOauthConfig
 	}
 	if !IsNil(o.EnableIntegrationManagement) {
 		toSerialize["enableIntegrationManagement"] = o.EnableIntegrationManagement
