@@ -304,39 +304,8 @@ func (messageAttempt *MessageAttempt) ListAttemptsForEndpoint(
 	endpointId string,
 	options *MessageAttemptListOptions,
 ) (*ListResponseMessageAttemptEndpointOut, error) {
-	req := messageAttempt.api.MessageAttemptAPI.V1MessageAttemptListByEndpointDeprecated(ctx, appId, msgId, endpointId)
-	if options != nil {
-		if options.Iterator != nil {
-			req = req.Iterator(*options.Iterator)
-		}
-		if options.Limit != nil {
-			req = req.Limit(*options.Limit)
-		}
-		if options.Status != nil {
-			req = req.Status(openapi.MessageStatus(*options.Status))
-		}
-		if options.EventTypes != nil {
-			req = req.EventTypes(*options.EventTypes)
-		}
-		if options.Before != nil {
-			req = req.Before(*options.Before)
-		}
-		if options.After != nil {
-			req = req.After(*options.After)
-		}
-		if options.Channel != nil {
-			req = req.Channel(*options.Channel)
-		}
-		if options.Tag != nil {
-			req = req.Tag(*options.Tag)
-		}
-	}
-	ret, res, err := req.Execute()
-	if err != nil {
-		return nil, wrapError(err, res)
-	}
-
-	return ret, nil
+	options.EndpointId = &endpointId
+	return messageAttempt.ListByMsg(ctx, appId, msgId, options)
 }
 
 // Resend a message to the specified endpoint.

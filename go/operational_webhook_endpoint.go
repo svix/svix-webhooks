@@ -25,7 +25,7 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) List(
 	ctx context.Context,
 	options *OperationalWebhookEndpointListOptions,
 ) (*ListResponseOperationalWebhookEndpointOut, error) {
-	req := operationalWebhookEndpoint.api.WebhookEndpointAPI.ListOperationalWebhookEndpoints(
+	req := operationalWebhookEndpoint.api.WebhookEndpointAPI.V1OperationalWebhookEndpointList(
 		ctx,
 	)
 
@@ -67,7 +67,7 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) CreateWithOptions(
 	operationalWebhookEndpointIn *OperationalWebhookEndpointIn,
 	options *PostOptions,
 ) (*OperationalWebhookEndpointOut, error) {
-	req := operationalWebhookEndpoint.api.WebhookEndpointAPI.CreateOperationalWebhookEndpoint(
+	req := operationalWebhookEndpoint.api.WebhookEndpointAPI.V1OperationalWebhookEndpointCreate(
 		ctx,
 	).OperationalWebhookEndpointIn(*operationalWebhookEndpointIn)
 
@@ -90,7 +90,7 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Get(
 	ctx context.Context,
 	endpointId string,
 ) (*OperationalWebhookEndpointOut, error) {
-	req := operationalWebhookEndpoint.api.WebhookEndpointAPI.GetOperationalWebhookEndpoint(
+	req := operationalWebhookEndpoint.api.WebhookEndpointAPI.V1OperationalWebhookEndpointGet(
 		ctx,
 		endpointId,
 	)
@@ -109,7 +109,7 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Update(
 	endpointId string,
 	operationalWebhookEndpointUpdate *OperationalWebhookEndpointUpdate,
 ) (*OperationalWebhookEndpointOut, error) {
-	req := operationalWebhookEndpoint.api.WebhookEndpointAPI.UpdateOperationalWebhookEndpoint(
+	req := operationalWebhookEndpoint.api.WebhookEndpointAPI.V1OperationalWebhookEndpointUpdate(
 		ctx,
 		endpointId,
 	).OperationalWebhookEndpointUpdate(*operationalWebhookEndpointUpdate)
@@ -127,7 +127,7 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Delete(
 	ctx context.Context,
 	endpointId string,
 ) error {
-	req := operationalWebhookEndpoint.api.WebhookEndpointAPI.DeleteOperationalWebhookEndpoint(
+	req := operationalWebhookEndpoint.api.WebhookEndpointAPI.V1OperationalWebhookEndpointDelete(
 		ctx,
 		endpointId,
 	)
@@ -144,7 +144,7 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) GetSecret(
 	ctx context.Context,
 	endpointId string,
 ) (*OperationalWebhookEndpointSecretOut, error) {
-	req := operationalWebhookEndpoint.api.WebhookEndpointAPI.GetOperationalWebhookEndpointSecret(
+	req := operationalWebhookEndpoint.api.WebhookEndpointAPI.V1OperationalWebhookEndpointGetSecret(
 		ctx,
 		endpointId,
 	)
@@ -180,7 +180,7 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) RotateSecretWithOp
 	operationalWebhookEndpointSecretIn *OperationalWebhookEndpointSecretIn,
 	options *PostOptions,
 ) error {
-	req := operationalWebhookEndpoint.api.WebhookEndpointAPI.RotateOperationalWebhookEndpointSecret(
+	req := operationalWebhookEndpoint.api.WebhookEndpointAPI.V1OperationalWebhookEndpointRotateSecret(
 		ctx,
 		endpointId,
 	)
