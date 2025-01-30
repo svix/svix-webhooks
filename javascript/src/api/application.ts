@@ -7,7 +7,6 @@ import {
   Ordering,
 } from "../openapi";
 import { HttpMethod, SvixRequest, SvixRequestContext } from "../request";
-import { PostOptions } from "../util";
 
 export interface ApplicationListOptions {
   /** Limit the number of returned items */
@@ -16,6 +15,10 @@ export interface ApplicationListOptions {
   iterator?: string | null;
   /** The sorting order of the returned items */
   order?: Ordering;
+}
+
+export interface ApplicationCreateOptions {
+  idempotencyKey?: string;
 }
 
 export class Application {
@@ -35,7 +38,7 @@ export class Application {
   /** Create a new application. */
   public create(
     applicationIn: ApplicationIn,
-    options?: PostOptions
+    options?: ApplicationCreateOptions
   ): Promise<ApplicationOut> {
     const request = new SvixRequest(HttpMethod.POST, "/api/v1/app");
 
@@ -48,7 +51,7 @@ export class Application {
   /** Get the application with the UID from `applicationIn`, or create it if it doesn't exist yet. */
   public getOrCreate(
     applicationIn: ApplicationIn,
-    options?: PostOptions
+    options?: ApplicationCreateOptions
   ): Promise<ApplicationOut> {
     const request = new SvixRequest(HttpMethod.POST, "/api/v1/app");
 

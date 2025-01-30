@@ -10,7 +10,6 @@ import {
   Ordering,
 } from "../openapi";
 import { HttpMethod, SvixRequest, SvixRequestContext } from "../request";
-import { PostOptions } from "../util";
 
 export interface EventTypeListOptions {
   /** Limit the number of returned items */
@@ -23,6 +22,14 @@ export interface EventTypeListOptions {
   includeArchived?: boolean;
   /** When `true` the full item (including the schema) is included in the response. */
   withContent?: boolean;
+}
+
+export interface EventTypeCreateOptions {
+  idempotencyKey?: string;
+}
+
+export interface EventTypeImportOpenapiOptions {
+  idempotencyKey?: string;
 }
 
 export interface EventTypeDeleteOptions {
@@ -53,7 +60,10 @@ export class EventType {
    * Endpoints filtering on the event type before archival will continue to filter on it.
    * This operation does not preserve the description and schemas.
    */
-  public create(eventTypeIn: EventTypeIn, options?: PostOptions): Promise<EventTypeOut> {
+  public create(
+    eventTypeIn: EventTypeIn,
+    options?: EventTypeCreateOptions
+  ): Promise<EventTypeOut> {
     const request = new SvixRequest(HttpMethod.POST, "/api/v1/event-type");
 
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
@@ -71,7 +81,7 @@ export class EventType {
    */
   public importOpenapi(
     eventTypeImportOpenApiIn: EventTypeImportOpenApiIn,
-    options?: PostOptions
+    options?: EventTypeImportOpenapiOptions
   ): Promise<EventTypeImportOpenApiOut> {
     const request = new SvixRequest(HttpMethod.POST, "/api/v1/event-type/import/openapi");
 

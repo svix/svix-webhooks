@@ -1,7 +1,10 @@
 // this file is @generated
 import { AggregateEventTypesOut, AppUsageStatsIn, AppUsageStatsOut } from "../openapi";
 import { HttpMethod, SvixRequest, SvixRequestContext } from "../request";
-import { PostOptions } from "../util";
+
+export interface StatisticsAggregateAppStatsOptions {
+  idempotencyKey?: string;
+}
 
 export class Statistics {
   public constructor(private readonly requestCtx: SvixRequestContext) {}
@@ -14,7 +17,7 @@ export class Statistics {
    */
   public aggregateAppStats(
     appUsageStatsIn: AppUsageStatsIn,
-    options?: PostOptions
+    options?: StatisticsAggregateAppStatsOptions
   ): Promise<AppUsageStatsOut> {
     const request = new SvixRequest(HttpMethod.POST, "/api/v1/stats/usage/app");
 

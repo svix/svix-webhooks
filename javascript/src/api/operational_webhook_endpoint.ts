@@ -1,6 +1,8 @@
 // this file is @generated
 import {
   ListResponseOperationalWebhookEndpointOut,
+  OperationalWebhookEndpointHeadersIn,
+  OperationalWebhookEndpointHeadersOut,
   OperationalWebhookEndpointIn,
   OperationalWebhookEndpointOut,
   OperationalWebhookEndpointSecretIn,
@@ -9,7 +11,6 @@ import {
   Ordering,
 } from "../openapi";
 import { HttpMethod, SvixRequest, SvixRequestContext } from "../request";
-import { PostOptions } from "../util";
 
 export interface OperationalWebhookEndpointListOptions {
   /** Limit the number of returned items */
@@ -18,6 +19,14 @@ export interface OperationalWebhookEndpointListOptions {
   iterator?: string | null;
   /** The sorting order of the returned items */
   order?: Ordering;
+}
+
+export interface OperationalWebhookEndpointCreateOptions {
+  idempotencyKey?: string;
+}
+
+export interface OperationalWebhookEndpointRotateSecretOptions {
+  idempotencyKey?: string;
 }
 
 export class OperationalWebhookEndpoint {
@@ -42,7 +51,7 @@ export class OperationalWebhookEndpoint {
   /** Create an operational webhook endpoint. */
   public create(
     operationalWebhookEndpointIn: OperationalWebhookEndpointIn,
-    options?: PostOptions
+    options?: OperationalWebhookEndpointCreateOptions
   ): Promise<OperationalWebhookEndpointOut> {
     const request = new SvixRequest(
       HttpMethod.POST,
@@ -95,6 +104,37 @@ export class OperationalWebhookEndpoint {
     return request.sendNoResponseBody(this.requestCtx);
   }
 
+  /** Get the additional headers to be sent with the operational webhook. */
+  public getHeaders(endpointId: string): Promise<OperationalWebhookEndpointHeadersOut> {
+    const request = new SvixRequest(
+      HttpMethod.GET,
+      "/api/v1/operational-webhook/endpoint/{endpoint_id}/headers"
+    );
+
+    request.setPathParam("endpoint_id", endpointId);
+
+    return request.send(this.requestCtx, "OperationalWebhookEndpointHeadersOut");
+  }
+
+  /** Set the additional headers to be sent with the operational webhook. */
+  public updateHeaders(
+    endpointId: string,
+    operationalWebhookEndpointHeadersIn: OperationalWebhookEndpointHeadersIn
+  ): Promise<void> {
+    const request = new SvixRequest(
+      HttpMethod.PUT,
+      "/api/v1/operational-webhook/endpoint/{endpoint_id}/headers"
+    );
+
+    request.setPathParam("endpoint_id", endpointId);
+    request.setBody(
+      operationalWebhookEndpointHeadersIn,
+      "OperationalWebhookEndpointHeadersIn"
+    );
+
+    return request.sendNoResponseBody(this.requestCtx);
+  }
+
   /**
    * Get an operational webhook endpoint's signing secret.
    *
@@ -120,7 +160,7 @@ export class OperationalWebhookEndpoint {
   public rotateSecret(
     endpointId: string,
     operationalWebhookEndpointSecretIn: OperationalWebhookEndpointSecretIn,
-    options?: PostOptions
+    options?: OperationalWebhookEndpointRotateSecretOptions
   ): Promise<void> {
     const request = new SvixRequest(
       HttpMethod.POST,

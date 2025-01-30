@@ -6,7 +6,22 @@ import {
   DashboardAccessOut,
 } from "../openapi";
 import { HttpMethod, SvixRequest, SvixRequestContext } from "../request";
-import { PostOptions } from "../util";
+
+export interface AuthenticationAppPortalAccessOptions {
+  idempotencyKey?: string;
+}
+
+export interface AuthenticationExpireAllOptions {
+  idempotencyKey?: string;
+}
+
+export interface AuthenticationDashboardAccessOptions {
+  idempotencyKey?: string;
+}
+
+export interface AuthenticationLogoutOptions {
+  idempotencyKey?: string;
+}
 
 export class Authentication {
   public constructor(private readonly requestCtx: SvixRequestContext) {}
@@ -15,7 +30,7 @@ export class Authentication {
   public appPortalAccess(
     appId: string,
     appPortalAccessIn: AppPortalAccessIn,
-    options?: PostOptions
+    options?: AuthenticationAppPortalAccessOptions
   ): Promise<AppPortalAccessOut> {
     const request = new SvixRequest(
       HttpMethod.POST,
@@ -33,7 +48,7 @@ export class Authentication {
   public expireAll(
     appId: string,
     applicationTokenExpireIn: ApplicationTokenExpireIn,
-    options?: PostOptions
+    options?: AuthenticationExpireAllOptions
   ): Promise<void> {
     const request = new SvixRequest(
       HttpMethod.POST,
@@ -56,7 +71,7 @@ export class Authentication {
    */
   public dashboardAccess(
     appId: string,
-    options?: PostOptions
+    options?: AuthenticationDashboardAccessOptions
   ): Promise<DashboardAccessOut> {
     const request = new SvixRequest(
       HttpMethod.POST,
@@ -74,7 +89,7 @@ export class Authentication {
    *
    * Trying to log out other tokens will fail.
    */
-  public logout(options?: PostOptions): Promise<void> {
+  public logout(options?: AuthenticationLogoutOptions): Promise<void> {
     const request = new SvixRequest(HttpMethod.POST, "/api/v1/auth/logout");
 
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);

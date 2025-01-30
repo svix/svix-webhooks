@@ -1,7 +1,6 @@
 // this file is @generated
 import { ListResponseMessageOut, MessageIn, MessageOut } from "../openapi";
 import { HttpMethod, SvixRequest, SvixRequestContext } from "../request";
-import { PostOptions } from "../util";
 
 export interface MessageListOptions {
   /** Limit the number of returned items */
@@ -20,6 +19,12 @@ export interface MessageListOptions {
   tag?: string;
   /** Filter response based on the event type */
   eventTypes?: string[];
+}
+
+export interface MessageCreateOptions {
+  /** When `true`, message payloads are included in the response. */
+  withContent?: boolean;
+  idempotencyKey?: string;
 }
 
 export interface MessageGetOptions {
@@ -74,11 +79,12 @@ export class Message {
   public create(
     appId: string,
     messageIn: MessageIn,
-    options?: PostOptions
+    options?: MessageCreateOptions
   ): Promise<MessageOut> {
     const request = new SvixRequest(HttpMethod.POST, "/api/v1/app/{app_id}/msg");
 
     request.setPathParam("app_id", appId);
+    request.setQueryParam("with_content", options?.withContent);
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
     request.setBody(messageIn, "MessageIn");
 
