@@ -27,7 +27,7 @@ namespace Svix
         {
             try
             {
-                var lEndpoint = _opWebhookEndpointApi.CreateOperationalWebhookEndpoint(
+                var lEndpoint = _opWebhookEndpointApi.V1OperationalWebhookEndpointCreate(
                     endpoint,
                     idempotencyKey);
 
@@ -50,7 +50,7 @@ namespace Svix
         {
             try
             {
-                var lEndpoint = await _opWebhookEndpointApi.CreateOperationalWebhookEndpointAsync(
+                var lEndpoint = await _opWebhookEndpointApi.V1OperationalWebhookEndpointCreateAsync(
                     endpoint,
                     idempotencyKey,
                     cancellationToken);
@@ -72,7 +72,7 @@ namespace Svix
         {
             try
             {
-                var lResponse = _opWebhookEndpointApi.DeleteOperationalWebhookEndpointWithHttpInfo(
+                var lResponse = _opWebhookEndpointApi.V1OperationalWebhookEndpointDeleteWithHttpInfo(
                     endpointId);
 
                 return lResponse.StatusCode == HttpStatusCode.NoContent;
@@ -93,7 +93,7 @@ namespace Svix
         {
             try
             {
-                var lResponse = await _opWebhookEndpointApi.DeleteOperationalWebhookEndpointWithHttpInfoAsync(
+                var lResponse = await _opWebhookEndpointApi.V1OperationalWebhookEndpointDeleteWithHttpInfoAsync(
                     endpointId,
                     cancellationToken);
 
@@ -114,7 +114,7 @@ namespace Svix
         {
             try
             {
-                var lEndpoint = _opWebhookEndpointApi.GetOperationalWebhookEndpoint(endpointId);
+                var lEndpoint = _opWebhookEndpointApi.V1OperationalWebhookEndpointGet(endpointId);
                 return lEndpoint;
             }
             catch (ApiException e)
@@ -133,7 +133,7 @@ namespace Svix
         {
             try
             {
-                var lEndpoint = await _opWebhookEndpointApi.GetOperationalWebhookEndpointAsync(
+                var lEndpoint = await _opWebhookEndpointApi.V1OperationalWebhookEndpointGetAsync(
                     endpointId,
                     cancellationToken);
 
@@ -154,7 +154,7 @@ namespace Svix
         {
             try
             {
-                var lSecret = _opWebhookEndpointApi.GetOperationalWebhookEndpointSecret(
+                var lSecret = _opWebhookEndpointApi.V1OperationalWebhookEndpointGetSecret(
                     endpointId);
 
                 return lSecret?.Key;
@@ -175,7 +175,7 @@ namespace Svix
         {
             try
             {
-                var lSecret = await _opWebhookEndpointApi.GetOperationalWebhookEndpointSecretAsync(
+                var lSecret = await _opWebhookEndpointApi.V1OperationalWebhookEndpointGetSecretAsync(
                     endpointId,
                     cancellationToken);
 
@@ -197,7 +197,7 @@ namespace Svix
         {
             try
             {
-                var lEndpoints = _opWebhookEndpointApi.ListOperationalWebhookEndpoints(
+                var lEndpoints = _opWebhookEndpointApi.V1OperationalWebhookEndpointList(
                     options?.Limit,
                     options?.Iterator,
                     options?.Order);
@@ -221,7 +221,7 @@ namespace Svix
         {
             try
             {
-                var lEndpoints = await _opWebhookEndpointApi.ListOperationalWebhookEndpointsAsync(
+                var lEndpoints = await _opWebhookEndpointApi.V1OperationalWebhookEndpointListAsync(
                     options?.Limit,
                     options?.Iterator,
                     options?.Order,
@@ -244,7 +244,7 @@ namespace Svix
         {
             try
             {
-                var lResponse = _opWebhookEndpointApi.RotateOperationalWebhookEndpointSecretWithHttpInfo(
+                var lResponse = _opWebhookEndpointApi.V1OperationalWebhookEndpointRotateSecretWithHttpInfo(
                     endpointId,
                     secret,
                     idempotencyKey);
@@ -267,7 +267,7 @@ namespace Svix
         {
             try
             {
-                var lResponse = await _opWebhookEndpointApi.RotateOperationalWebhookEndpointSecretWithHttpInfoAsync(
+                var lResponse = await _opWebhookEndpointApi.V1OperationalWebhookEndpointRotateSecretWithHttpInfoAsync(
                     endpointId,
                     secret,
                     idempotencyKey);
@@ -290,7 +290,7 @@ namespace Svix
         {
             try
             {
-                var lEndpoint = _opWebhookEndpointApi.UpdateOperationalWebhookEndpoint(
+                var lEndpoint = _opWebhookEndpointApi.V1OperationalWebhookEndpointUpdate(
                     endpointId,
                     endpoint);
 
@@ -313,7 +313,7 @@ namespace Svix
         {
             try
             {
-                var lEndpoint = await _opWebhookEndpointApi.UpdateOperationalWebhookEndpointAsync(
+                var lEndpoint = await _opWebhookEndpointApi.V1OperationalWebhookEndpointUpdateAsync(
                     endpointId,
                     endpoint,
                     cancellationToken);
