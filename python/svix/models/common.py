@@ -1,8 +1,10 @@
-from pydantic import BaseModel, ConfigDict
+import pydantic
+from pydantic.alias_generators import to_camel
 
 
-class SvixBaseModel(BaseModel):
-    model_config = ConfigDict(
+class BaseModel(pydantic.BaseModel):
+    model_config = pydantic.ConfigDict(
+        alias_generator=to_camel,
         populate_by_name=True,
         json_encoders={set: lambda v: list(v)},
     )

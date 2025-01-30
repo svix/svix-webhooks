@@ -2,10 +2,10 @@
 
 from .background_task_status import BackgroundTaskStatus
 from .background_task_type import BackgroundTaskType
-from .common import SvixBaseModel
+from .common import BaseModel
 
 
-class ReplayOut(SvixBaseModel):
+class ReplayOut(BaseModel):
     id: str
 
     status: BackgroundTaskStatus

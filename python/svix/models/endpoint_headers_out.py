@@ -1,10 +1,10 @@
 # this file is @generated
 import typing as t
 
-from .common import SvixBaseModel
+from .common import BaseModel
 
 
-class EndpointHeadersOut(SvixBaseModel):
+class EndpointHeadersOut(BaseModel):
     """The value of the headers is returned in the `headers` field.
 
     Sensitive headers that have been redacted are returned in the sensitive field."""

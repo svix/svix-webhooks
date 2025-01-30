@@ -2,16 +2,14 @@
 import typing as t
 from datetime import datetime
 
-from pydantic import Field
-
-from .common import SvixBaseModel
+from .common import BaseModel
 from .message_attempt_trigger_type import MessageAttemptTriggerType
 from .message_out import MessageOut
 from .message_status import MessageStatus
 
 
-class MessageAttemptOut(SvixBaseModel):
-    endpoint_id: str = Field(alias="endpointId")
+class MessageAttemptOut(BaseModel):
+    endpoint_id: str
     """The ep's ID"""
 
     id: str
@@ -19,20 +17,20 @@ class MessageAttemptOut(SvixBaseModel):
 
     msg: t.Optional[MessageOut] = None
 
-    msg_id: str = Field(alias="msgId")
+    msg_id: str
     """The msg's ID"""
 
     response: str
 
-    response_duration_ms: int = Field(alias="responseDurationMs")
+    response_duration_ms: int
     """Response duration in milliseconds."""
 
-    response_status_code: int = Field(alias="responseStatusCode")
+    response_status_code: int
 
     status: MessageStatus
 
     timestamp: datetime
 
-    trigger_type: MessageAttemptTriggerType = Field(alias="triggerType")
+    trigger_type: MessageAttemptTriggerType
 
     url: str

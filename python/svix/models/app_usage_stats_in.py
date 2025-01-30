@@ -2,13 +2,11 @@
 import typing as t
 from datetime import datetime
 
-from pydantic import Field
-
-from .common import SvixBaseModel
+from .common import BaseModel
 
 
-class AppUsageStatsIn(SvixBaseModel):
-    app_ids: t.Optional[t.List[str]] = Field(default=None, alias="appIds")
+class AppUsageStatsIn(BaseModel):
+    app_ids: t.Optional[t.List[str]] = None
     """Specific app IDs or UIDs to aggregate stats for.
 
     Note that if none of the given IDs or UIDs are resolved, a 422 response will be given."""

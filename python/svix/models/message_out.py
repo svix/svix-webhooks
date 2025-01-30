@@ -2,19 +2,17 @@
 import typing as t
 from datetime import datetime
 
-from pydantic import Field
-
-from .common import SvixBaseModel
+from .common import BaseModel
 
 
-class MessageOut(SvixBaseModel):
+class MessageOut(BaseModel):
     channels: t.Optional[t.List[str]] = None
     """List of free-form identifiers that endpoints can filter by"""
 
-    event_id: t.Optional[str] = Field(default=None, alias="eventId")
+    event_id: t.Optional[str] = None
     """Optional unique identifier for the message"""
 
-    event_type: str = Field(alias="eventType")
+    event_type: str
     """The event type's name"""
 
     id: str

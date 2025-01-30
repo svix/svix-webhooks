@@ -2,10 +2,10 @@
 import typing as t
 from datetime import datetime
 
-from .common import SvixBaseModel
+from .common import BaseModel
 
 
-class RecoverIn(SvixBaseModel):
+class RecoverIn(BaseModel):
     since: datetime
 
     until: t.Optional[datetime] = None

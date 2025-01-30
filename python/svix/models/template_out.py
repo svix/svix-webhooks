@@ -2,26 +2,24 @@
 import typing as t
 from datetime import datetime
 
-from pydantic import Field
-
-from .common import SvixBaseModel
+from .common import BaseModel
 from .transformation_template_kind import TransformationTemplateKind
 
 
-class TemplateOut(SvixBaseModel):
-    created_at: datetime = Field(alias="createdAt")
+class TemplateOut(BaseModel):
+    created_at: datetime
 
     description: str
 
-    feature_flag: t.Optional[str] = Field(default=None, alias="featureFlag")
+    feature_flag: t.Optional[str] = None
 
-    filter_types: t.Optional[t.List[str]] = Field(default=None, alias="filterTypes")
+    filter_types: t.Optional[t.List[str]] = None
 
     id: str
 
     instructions: str
 
-    instructions_link: t.Optional[str] = Field(default=None, alias="instructionsLink")
+    instructions_link: t.Optional[str] = None
 
     kind: TransformationTemplateKind
 
@@ -29,8 +27,8 @@ class TemplateOut(SvixBaseModel):
 
     name: str
 
-    org_id: str = Field(alias="orgId")
+    org_id: str
 
     transformation: str
 
-    updated_at: datetime = Field(alias="updatedAt")
+    updated_at: datetime

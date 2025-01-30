@@ -1,17 +1,15 @@
 # this file is @generated
 import typing as t
 
-from pydantic import Field
-
 from .background_task_out import BackgroundTaskOut
-from .common import SvixBaseModel
+from .common import BaseModel
 
 
-class ListResponseBackgroundTaskOut(SvixBaseModel):
+class ListResponseBackgroundTaskOut(BaseModel):
     data: t.List[BackgroundTaskOut]
 
     done: bool
 
-    iterator: str
+    iterator: t.Optional[str]
 
-    prev_iterator: t.Optional[str] = Field(default=None, alias="prevIterator")
+    prev_iterator: t.Optional[str] = None

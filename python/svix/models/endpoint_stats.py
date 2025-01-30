@@ -1,9 +1,9 @@
 # this file is @generated
 
-from .common import SvixBaseModel
+from .common import BaseModel
 
 
-class EndpointStats(SvixBaseModel):
+class EndpointStats(BaseModel):
     fail: int
 
     pending: int

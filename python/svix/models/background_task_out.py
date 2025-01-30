@@ -1,13 +1,13 @@
 # this file is @generated
+import typing as t
 
-from .background_task_data import BackgroundTaskData
 from .background_task_status import BackgroundTaskStatus
 from .background_task_type import BackgroundTaskType
-from .common import SvixBaseModel
+from .common import BaseModel
 
 
-class BackgroundTaskOut(SvixBaseModel):
-    data: BackgroundTaskData
+class BackgroundTaskOut(BaseModel):
+    data: t.Dict[str, t.Any]
 
     id: str
 

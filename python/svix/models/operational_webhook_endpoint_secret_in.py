@@ -1,10 +1,10 @@
 # this file is @generated
 import typing as t
 
-from .common import SvixBaseModel
+from .common import BaseModel
 
 
-class OperationalWebhookEndpointSecretIn(SvixBaseModel):
+class OperationalWebhookEndpointSecretIn(BaseModel):
     key: t.Optional[str] = None
     """The endpoint's verification secret.
 

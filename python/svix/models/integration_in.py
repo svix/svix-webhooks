@@ -1,7 +1,7 @@
 # this file is @generated
 
-from .common import SvixBaseModel
+from .common import BaseModel
 
 
-class IntegrationIn(SvixBaseModel):
+class IntegrationIn(BaseModel):
     name: str
