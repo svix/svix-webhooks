@@ -1,3 +1,4 @@
+// this file is @generated
 package com.svix.kotlin
 
 import com.svix.kotlin.exceptions.ApiException
@@ -9,21 +10,26 @@ import com.svix.kotlin.models.ListResponseBackgroundTaskOut
 import com.svix.kotlin.models.Ordering
 
 class BackgroundTaskListOptions {
-    var iterator: String? = null
-    var limit: Int? = null
     var status: BackgroundTaskStatus? = null
     var task: BackgroundTaskType? = null
+    var limit: Int? = null
+    var iterator: String? = null
     var order: Ordering? = null
 
-    fun order(order: Ordering) = apply { this.order = order }
-
+    /** Filter the response based on the status. */
     fun status(status: BackgroundTaskStatus) = apply { this.status = status }
 
+    /** Filter the response based on the type. */
     fun task(task: BackgroundTaskType) = apply { this.task = task }
 
+    /** Limit the number of returned items */
+    fun limit(limit: Int) = apply { this.limit = limit }
+
+    /** The iterator returned from a prior invocation */
     fun iterator(iterator: String) = apply { this.iterator = iterator }
 
-    fun limit(limit: Int) = apply { this.limit = limit }
+    /** The sorting order of the returned items */
+    fun order(order: Ordering) = apply { this.order = order }
 }
 
 class BackgroundTask internal constructor(token: String, options: SvixOptions) {
@@ -36,6 +42,7 @@ class BackgroundTask internal constructor(token: String, options: SvixOptions) {
         options.numRetries?.let { api.numRetries = it }
     }
 
+    /** List background tasks executed in the past 90 days. */
     suspend fun list(
         options: BackgroundTaskListOptions = BackgroundTaskListOptions()
     ): ListResponseBackgroundTaskOut {
@@ -52,6 +59,7 @@ class BackgroundTask internal constructor(token: String, options: SvixOptions) {
         }
     }
 
+    /** Get a background task by ID. */
     suspend fun get(taskId: String): BackgroundTaskOut {
         try {
             return api.v1BackgroundTaskGet(taskId)

@@ -1,4 +1,4 @@
-// this file is @generated (with minor manual changes)
+// this file is @generated
 package com.svix.kotlin
 
 import com.svix.kotlin.exceptions.ApiException
@@ -38,17 +38,6 @@ class Authentication internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun dashboardAccess(
-        appId: String,
-        options: PostOptions = PostOptions(),
-    ): DashboardAccessOut {
-        try {
-            return api.v1AuthenticationDashboardAccess(appId, options.idempotencyKey)
-        } catch (e: Exception) {
-            throw ApiException.wrap(e)
-        }
-    }
-
     /** Expire all of the tokens associated with a specific application. */
     suspend fun expireAll(
         appId: String,
@@ -57,6 +46,26 @@ class Authentication internal constructor(token: String, options: SvixOptions) {
     ) {
         try {
             api.v1AuthenticationExpireAll(appId, applicationTokenExpireIn, options.idempotencyKey)
+        } catch (e: Exception) {
+            throw ApiException.wrap(e)
+        }
+    }
+
+    /**
+     * DEPRECATED: Please use `app-portal-access` instead.
+     *
+     * Use this function to get magic links (and authentication codes) for connecting your users to
+     * the Consumer Application Portal.
+     *
+     * @deprecated
+     */
+    @Deprecated(message = "Use appPortalAccess instead.")
+    suspend fun dashboardAccess(
+        appId: String,
+        options: PostOptions = PostOptions(),
+    ): DashboardAccessOut {
+        try {
+            return api.v1AuthenticationDashboardAccess(appId, options.idempotencyKey)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }

@@ -38,6 +38,16 @@ class EventTypeListOptions {
     fun withContent(withContent: Boolean) = apply { this.withContent = withContent }
 }
 
+class EventTypeDeleteOptions {
+    var expunge: Boolean? = null
+
+    /**
+     * By default event types are archived when "deleted". Passing this to `true` deletes them
+     * entirely.
+     */
+    fun expunge(expunge: Boolean) = apply { this.expunge = expunge }
+}
+
 class EventType internal constructor(token: String, options: SvixOptions) {
     private val api = EventTypeApi(options.serverUrl)
 
@@ -127,9 +137,12 @@ class EventType internal constructor(token: String, options: SvixOptions) {
      * An event type can be unarchived with the
      * [create operation](#operation/create_event_type_api_v1_event_type__post).
      */
-    suspend fun delete(eventTypeName: String) {
+    suspend fun delete(
+        eventTypeName: String,
+        options: EventTypeDeleteOptions = EventTypeDeleteOptions(),
+    ) {
         try {
-            api.v1EventTypeDelete(eventTypeName, null)
+            api.v1EventTypeDelete(eventTypeName, options.expunge)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
