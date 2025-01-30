@@ -23,27 +23,27 @@ import (
 // BackgroundTasksAPIService BackgroundTasksAPI service
 type BackgroundTasksAPIService service
 
-type ApiGetBackgroundTaskRequest struct {
+type ApiV1BackgroundTaskGetRequest struct {
 	ctx context.Context
 	ApiService *BackgroundTasksAPIService
 	taskId string
 }
 
-func (r ApiGetBackgroundTaskRequest) Execute() (*BackgroundTaskOut, *http.Response, error) {
-	return r.ApiService.GetBackgroundTaskExecute(r)
+func (r ApiV1BackgroundTaskGetRequest) Execute() (*BackgroundTaskOut, *http.Response, error) {
+	return r.ApiService.V1BackgroundTaskGetExecute(r)
 }
 
 /*
-GetBackgroundTask Get Background Task
+V1BackgroundTaskGet Get Background Task
 
 Get a background task by ID.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param taskId
- @return ApiGetBackgroundTaskRequest
+ @return ApiV1BackgroundTaskGetRequest
 */
-func (a *BackgroundTasksAPIService) GetBackgroundTask(ctx context.Context, taskId string) ApiGetBackgroundTaskRequest {
-	return ApiGetBackgroundTaskRequest{
+func (a *BackgroundTasksAPIService) V1BackgroundTaskGet(ctx context.Context, taskId string) ApiV1BackgroundTaskGetRequest {
+	return ApiV1BackgroundTaskGetRequest{
 		ApiService: a,
 		ctx: ctx,
 		taskId: taskId,
@@ -52,7 +52,7 @@ func (a *BackgroundTasksAPIService) GetBackgroundTask(ctx context.Context, taskI
 
 // Execute executes the request
 //  @return BackgroundTaskOut
-func (a *BackgroundTasksAPIService) GetBackgroundTaskExecute(r ApiGetBackgroundTaskRequest) (*BackgroundTaskOut, *http.Response, error) {
+func (a *BackgroundTasksAPIService) V1BackgroundTaskGetExecute(r ApiV1BackgroundTaskGetRequest) (*BackgroundTaskOut, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
@@ -60,7 +60,7 @@ func (a *BackgroundTasksAPIService) GetBackgroundTaskExecute(r ApiGetBackgroundT
 		localVarReturnValue  *BackgroundTaskOut
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "BackgroundTasksAPIService.GetBackgroundTask")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "BackgroundTasksAPIService.V1BackgroundTaskGet")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
@@ -202,7 +202,7 @@ func (a *BackgroundTasksAPIService) GetBackgroundTaskExecute(r ApiGetBackgroundT
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiListBackgroundTasksRequest struct {
+type ApiV1BackgroundTaskListRequest struct {
 	ctx context.Context
 	ApiService *BackgroundTasksAPIService
 	status *BackgroundTaskStatus
@@ -213,49 +213,49 @@ type ApiListBackgroundTasksRequest struct {
 }
 
 // Filter the response based on the status.
-func (r ApiListBackgroundTasksRequest) Status(status BackgroundTaskStatus) ApiListBackgroundTasksRequest {
+func (r ApiV1BackgroundTaskListRequest) Status(status BackgroundTaskStatus) ApiV1BackgroundTaskListRequest {
 	r.status = &status
 	return r
 }
 
 // Filter the response based on the type.
-func (r ApiListBackgroundTasksRequest) Task(task BackgroundTaskType) ApiListBackgroundTasksRequest {
+func (r ApiV1BackgroundTaskListRequest) Task(task BackgroundTaskType) ApiV1BackgroundTaskListRequest {
 	r.task = &task
 	return r
 }
 
 // Limit the number of returned items
-func (r ApiListBackgroundTasksRequest) Limit(limit int32) ApiListBackgroundTasksRequest {
+func (r ApiV1BackgroundTaskListRequest) Limit(limit int32) ApiV1BackgroundTaskListRequest {
 	r.limit = &limit
 	return r
 }
 
 // The iterator returned from a prior invocation
-func (r ApiListBackgroundTasksRequest) Iterator(iterator string) ApiListBackgroundTasksRequest {
+func (r ApiV1BackgroundTaskListRequest) Iterator(iterator string) ApiV1BackgroundTaskListRequest {
 	r.iterator = &iterator
 	return r
 }
 
 // The sorting order of the returned items
-func (r ApiListBackgroundTasksRequest) Order(order Ordering) ApiListBackgroundTasksRequest {
+func (r ApiV1BackgroundTaskListRequest) Order(order Ordering) ApiV1BackgroundTaskListRequest {
 	r.order = &order
 	return r
 }
 
-func (r ApiListBackgroundTasksRequest) Execute() (*ListResponseBackgroundTaskOut, *http.Response, error) {
-	return r.ApiService.ListBackgroundTasksExecute(r)
+func (r ApiV1BackgroundTaskListRequest) Execute() (*ListResponseBackgroundTaskOut, *http.Response, error) {
+	return r.ApiService.V1BackgroundTaskListExecute(r)
 }
 
 /*
-ListBackgroundTasks List Background Tasks
+V1BackgroundTaskList List Background Tasks
 
 List background tasks executed in the past 90 days.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiListBackgroundTasksRequest
+ @return ApiV1BackgroundTaskListRequest
 */
-func (a *BackgroundTasksAPIService) ListBackgroundTasks(ctx context.Context) ApiListBackgroundTasksRequest {
-	return ApiListBackgroundTasksRequest{
+func (a *BackgroundTasksAPIService) V1BackgroundTaskList(ctx context.Context) ApiV1BackgroundTaskListRequest {
+	return ApiV1BackgroundTaskListRequest{
 		ApiService: a,
 		ctx: ctx,
 	}
@@ -263,7 +263,7 @@ func (a *BackgroundTasksAPIService) ListBackgroundTasks(ctx context.Context) Api
 
 // Execute executes the request
 //  @return ListResponseBackgroundTaskOut
-func (a *BackgroundTasksAPIService) ListBackgroundTasksExecute(r ApiListBackgroundTasksRequest) (*ListResponseBackgroundTaskOut, *http.Response, error) {
+func (a *BackgroundTasksAPIService) V1BackgroundTaskListExecute(r ApiV1BackgroundTaskListRequest) (*ListResponseBackgroundTaskOut, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
@@ -271,7 +271,7 @@ func (a *BackgroundTasksAPIService) ListBackgroundTasksExecute(r ApiListBackgrou
 		localVarReturnValue  *ListResponseBackgroundTaskOut
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "BackgroundTasksAPIService.ListBackgroundTasks")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "BackgroundTasksAPIService.V1BackgroundTaskList")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}

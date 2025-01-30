@@ -21,7 +21,7 @@ var _ MappedNullable = &CreateStreamIn{}
 
 // CreateStreamIn struct for CreateStreamIn
 type CreateStreamIn struct {
-	Messages []EventIn `json:"messages"`
+	Events []EventIn `json:"events"`
 	Stream *StreamIn `json:"stream,omitempty"`
 }
 
@@ -31,9 +31,9 @@ type _CreateStreamIn CreateStreamIn
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewCreateStreamIn(messages []EventIn) *CreateStreamIn {
+func NewCreateStreamIn(events []EventIn) *CreateStreamIn {
 	this := CreateStreamIn{}
-	this.Messages = messages
+	this.Events = events
 	return &this
 }
 
@@ -45,28 +45,28 @@ func NewCreateStreamInWithDefaults() *CreateStreamIn {
 	return &this
 }
 
-// GetMessages returns the Messages field value
-func (o *CreateStreamIn) GetMessages() []EventIn {
+// GetEvents returns the Events field value
+func (o *CreateStreamIn) GetEvents() []EventIn {
 	if o == nil {
 		var ret []EventIn
 		return ret
 	}
 
-	return o.Messages
+	return o.Events
 }
 
-// GetMessagesOk returns a tuple with the Messages field value
+// GetEventsOk returns a tuple with the Events field value
 // and a boolean to check if the value has been set.
-func (o *CreateStreamIn) GetMessagesOk() ([]EventIn, bool) {
+func (o *CreateStreamIn) GetEventsOk() ([]EventIn, bool) {
 	if o == nil {
 		return nil, false
 	}
-	return o.Messages, true
+	return o.Events, true
 }
 
-// SetMessages sets field value
-func (o *CreateStreamIn) SetMessages(v []EventIn) {
-	o.Messages = v
+// SetEvents sets field value
+func (o *CreateStreamIn) SetEvents(v []EventIn) {
+	o.Events = v
 }
 
 // GetStream returns the Stream field value if set, zero value otherwise.
@@ -111,7 +111,7 @@ func (o CreateStreamIn) MarshalJSON() ([]byte, error) {
 
 func (o CreateStreamIn) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["messages"] = o.Messages
+	toSerialize["events"] = o.Events
 	if !IsNil(o.Stream) {
 		toSerialize["stream"] = o.Stream
 	}
@@ -123,7 +123,7 @@ func (o *CreateStreamIn) UnmarshalJSON(data []byte) (err error) {
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
-		"messages",
+		"events",
 	}
 
 	allProperties := make(map[string]interface{})

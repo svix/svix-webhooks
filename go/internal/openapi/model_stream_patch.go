@@ -19,7 +19,9 @@ var _ MappedNullable = &StreamPatch{}
 
 // StreamPatch struct for StreamPatch
 type StreamPatch struct {
+	// The Stream's description.
 	Description *string `json:"description,omitempty"`
+	// The Stream's UID.
 	Uid *string `json:"uid,omitempty" validate:"regexp=^(?!strm_)[a-zA-Z0-9_-]+$"`
 }
 

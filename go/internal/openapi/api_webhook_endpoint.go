@@ -23,38 +23,38 @@ import (
 // WebhookEndpointAPIService WebhookEndpointAPI service
 type WebhookEndpointAPIService service
 
-type ApiCreateOperationalWebhookEndpointRequest struct {
+type ApiV1OperationalWebhookEndpointCreateRequest struct {
 	ctx context.Context
 	ApiService *WebhookEndpointAPIService
 	operationalWebhookEndpointIn *OperationalWebhookEndpointIn
 	idempotencyKey *string
 }
 
-func (r ApiCreateOperationalWebhookEndpointRequest) OperationalWebhookEndpointIn(operationalWebhookEndpointIn OperationalWebhookEndpointIn) ApiCreateOperationalWebhookEndpointRequest {
+func (r ApiV1OperationalWebhookEndpointCreateRequest) OperationalWebhookEndpointIn(operationalWebhookEndpointIn OperationalWebhookEndpointIn) ApiV1OperationalWebhookEndpointCreateRequest {
 	r.operationalWebhookEndpointIn = &operationalWebhookEndpointIn
 	return r
 }
 
 // The request&#39;s idempotency key
-func (r ApiCreateOperationalWebhookEndpointRequest) IdempotencyKey(idempotencyKey string) ApiCreateOperationalWebhookEndpointRequest {
+func (r ApiV1OperationalWebhookEndpointCreateRequest) IdempotencyKey(idempotencyKey string) ApiV1OperationalWebhookEndpointCreateRequest {
 	r.idempotencyKey = &idempotencyKey
 	return r
 }
 
-func (r ApiCreateOperationalWebhookEndpointRequest) Execute() (*OperationalWebhookEndpointOut, *http.Response, error) {
-	return r.ApiService.CreateOperationalWebhookEndpointExecute(r)
+func (r ApiV1OperationalWebhookEndpointCreateRequest) Execute() (*OperationalWebhookEndpointOut, *http.Response, error) {
+	return r.ApiService.V1OperationalWebhookEndpointCreateExecute(r)
 }
 
 /*
-CreateOperationalWebhookEndpoint Create Operational Webhook Endpoint
+V1OperationalWebhookEndpointCreate Create Operational Webhook Endpoint
 
 Create an operational webhook endpoint.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiCreateOperationalWebhookEndpointRequest
+ @return ApiV1OperationalWebhookEndpointCreateRequest
 */
-func (a *WebhookEndpointAPIService) CreateOperationalWebhookEndpoint(ctx context.Context) ApiCreateOperationalWebhookEndpointRequest {
-	return ApiCreateOperationalWebhookEndpointRequest{
+func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointCreate(ctx context.Context) ApiV1OperationalWebhookEndpointCreateRequest {
+	return ApiV1OperationalWebhookEndpointCreateRequest{
 		ApiService: a,
 		ctx: ctx,
 	}
@@ -62,7 +62,7 @@ func (a *WebhookEndpointAPIService) CreateOperationalWebhookEndpoint(ctx context
 
 // Execute executes the request
 //  @return OperationalWebhookEndpointOut
-func (a *WebhookEndpointAPIService) CreateOperationalWebhookEndpointExecute(r ApiCreateOperationalWebhookEndpointRequest) (*OperationalWebhookEndpointOut, *http.Response, error) {
+func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointCreateExecute(r ApiV1OperationalWebhookEndpointCreateRequest) (*OperationalWebhookEndpointOut, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
@@ -70,7 +70,7 @@ func (a *WebhookEndpointAPIService) CreateOperationalWebhookEndpointExecute(r Ap
 		localVarReturnValue  *OperationalWebhookEndpointOut
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "WebhookEndpointAPIService.CreateOperationalWebhookEndpoint")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "WebhookEndpointAPIService.V1OperationalWebhookEndpointCreate")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
@@ -219,27 +219,27 @@ func (a *WebhookEndpointAPIService) CreateOperationalWebhookEndpointExecute(r Ap
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiDeleteOperationalWebhookEndpointRequest struct {
+type ApiV1OperationalWebhookEndpointDeleteRequest struct {
 	ctx context.Context
 	ApiService *WebhookEndpointAPIService
 	endpointId string
 }
 
-func (r ApiDeleteOperationalWebhookEndpointRequest) Execute() (*http.Response, error) {
-	return r.ApiService.DeleteOperationalWebhookEndpointExecute(r)
+func (r ApiV1OperationalWebhookEndpointDeleteRequest) Execute() (*http.Response, error) {
+	return r.ApiService.V1OperationalWebhookEndpointDeleteExecute(r)
 }
 
 /*
-DeleteOperationalWebhookEndpoint Delete Operational Webhook Endpoint
+V1OperationalWebhookEndpointDelete Delete Operational Webhook Endpoint
 
 Delete an operational webhook endpoint.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param endpointId The ep's ID or UID
- @return ApiDeleteOperationalWebhookEndpointRequest
+ @return ApiV1OperationalWebhookEndpointDeleteRequest
 */
-func (a *WebhookEndpointAPIService) DeleteOperationalWebhookEndpoint(ctx context.Context, endpointId string) ApiDeleteOperationalWebhookEndpointRequest {
-	return ApiDeleteOperationalWebhookEndpointRequest{
+func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointDelete(ctx context.Context, endpointId string) ApiV1OperationalWebhookEndpointDeleteRequest {
+	return ApiV1OperationalWebhookEndpointDeleteRequest{
 		ApiService: a,
 		ctx: ctx,
 		endpointId: endpointId,
@@ -247,14 +247,14 @@ func (a *WebhookEndpointAPIService) DeleteOperationalWebhookEndpoint(ctx context
 }
 
 // Execute executes the request
-func (a *WebhookEndpointAPIService) DeleteOperationalWebhookEndpointExecute(r ApiDeleteOperationalWebhookEndpointRequest) (*http.Response, error) {
+func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointDeleteExecute(r ApiV1OperationalWebhookEndpointDeleteRequest) (*http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodDelete
 		localVarPostBody     interface{}
 		formFiles            []formFile
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "WebhookEndpointAPIService.DeleteOperationalWebhookEndpoint")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "WebhookEndpointAPIService.V1OperationalWebhookEndpointDelete")
 	if err != nil {
 		return nil, &GenericOpenAPIError{error: err.Error()}
 	}
@@ -393,27 +393,27 @@ func (a *WebhookEndpointAPIService) DeleteOperationalWebhookEndpointExecute(r Ap
 	return localVarHTTPResponse, nil
 }
 
-type ApiGetOperationalWebhookEndpointRequest struct {
+type ApiV1OperationalWebhookEndpointGetRequest struct {
 	ctx context.Context
 	ApiService *WebhookEndpointAPIService
 	endpointId string
 }
 
-func (r ApiGetOperationalWebhookEndpointRequest) Execute() (*OperationalWebhookEndpointOut, *http.Response, error) {
-	return r.ApiService.GetOperationalWebhookEndpointExecute(r)
+func (r ApiV1OperationalWebhookEndpointGetRequest) Execute() (*OperationalWebhookEndpointOut, *http.Response, error) {
+	return r.ApiService.V1OperationalWebhookEndpointGetExecute(r)
 }
 
 /*
-GetOperationalWebhookEndpoint Get Operational Webhook Endpoint
+V1OperationalWebhookEndpointGet Get Operational Webhook Endpoint
 
 Get an operational webhook endpoint.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param endpointId The ep's ID or UID
- @return ApiGetOperationalWebhookEndpointRequest
+ @return ApiV1OperationalWebhookEndpointGetRequest
 */
-func (a *WebhookEndpointAPIService) GetOperationalWebhookEndpoint(ctx context.Context, endpointId string) ApiGetOperationalWebhookEndpointRequest {
-	return ApiGetOperationalWebhookEndpointRequest{
+func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointGet(ctx context.Context, endpointId string) ApiV1OperationalWebhookEndpointGetRequest {
+	return ApiV1OperationalWebhookEndpointGetRequest{
 		ApiService: a,
 		ctx: ctx,
 		endpointId: endpointId,
@@ -422,7 +422,7 @@ func (a *WebhookEndpointAPIService) GetOperationalWebhookEndpoint(ctx context.Co
 
 // Execute executes the request
 //  @return OperationalWebhookEndpointOut
-func (a *WebhookEndpointAPIService) GetOperationalWebhookEndpointExecute(r ApiGetOperationalWebhookEndpointRequest) (*OperationalWebhookEndpointOut, *http.Response, error) {
+func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointGetExecute(r ApiV1OperationalWebhookEndpointGetRequest) (*OperationalWebhookEndpointOut, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
@@ -430,7 +430,7 @@ func (a *WebhookEndpointAPIService) GetOperationalWebhookEndpointExecute(r ApiGe
 		localVarReturnValue  *OperationalWebhookEndpointOut
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "WebhookEndpointAPIService.GetOperationalWebhookEndpoint")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "WebhookEndpointAPIService.V1OperationalWebhookEndpointGet")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
@@ -578,18 +578,203 @@ func (a *WebhookEndpointAPIService) GetOperationalWebhookEndpointExecute(r ApiGe
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiGetOperationalWebhookEndpointSecretRequest struct {
+type ApiV1OperationalWebhookEndpointGetHeadersRequest struct {
 	ctx context.Context
 	ApiService *WebhookEndpointAPIService
 	endpointId string
 }
 
-func (r ApiGetOperationalWebhookEndpointSecretRequest) Execute() (*OperationalWebhookEndpointSecretOut, *http.Response, error) {
-	return r.ApiService.GetOperationalWebhookEndpointSecretExecute(r)
+func (r ApiV1OperationalWebhookEndpointGetHeadersRequest) Execute() (*OperationalWebhookEndpointHeadersOut, *http.Response, error) {
+	return r.ApiService.V1OperationalWebhookEndpointGetHeadersExecute(r)
 }
 
 /*
-GetOperationalWebhookEndpointSecret Get Operational Webhook Endpoint Secret
+V1OperationalWebhookEndpointGetHeaders Get Operational Webhook Endpoint Headers
+
+Get the additional headers to be sent with the operational webhook.
+
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param endpointId The ep's ID or UID
+ @return ApiV1OperationalWebhookEndpointGetHeadersRequest
+*/
+func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointGetHeaders(ctx context.Context, endpointId string) ApiV1OperationalWebhookEndpointGetHeadersRequest {
+	return ApiV1OperationalWebhookEndpointGetHeadersRequest{
+		ApiService: a,
+		ctx: ctx,
+		endpointId: endpointId,
+	}
+}
+
+// Execute executes the request
+//  @return OperationalWebhookEndpointHeadersOut
+func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointGetHeadersExecute(r ApiV1OperationalWebhookEndpointGetHeadersRequest) (*OperationalWebhookEndpointHeadersOut, *http.Response, error) {
+	var (
+		localVarHTTPMethod   = http.MethodGet
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *OperationalWebhookEndpointHeadersOut
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "WebhookEndpointAPIService.V1OperationalWebhookEndpointGetHeaders")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/api/v1/operational-webhook/endpoint/{endpoint_id}/headers"
+	localVarPath = strings.Replace(localVarPath, "{"+"endpoint_id"+"}", url.PathEscape(parameterValueToString(r.endpointId, "endpointId")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+	if strlen(r.endpointId) < 1 {
+		return localVarReturnValue, nil, reportError("endpointId must have at least 1 elements")
+	}
+	if strlen(r.endpointId) > 256 {
+		return localVarReturnValue, nil, reportError("endpointId must have less than 256 elements")
+	}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		if localVarHTTPResponse.StatusCode == 400 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 401 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 403 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 404 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 409 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 422 {
+			var v HTTPValidationError
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 429 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiV1OperationalWebhookEndpointGetSecretRequest struct {
+	ctx context.Context
+	ApiService *WebhookEndpointAPIService
+	endpointId string
+}
+
+func (r ApiV1OperationalWebhookEndpointGetSecretRequest) Execute() (*OperationalWebhookEndpointSecretOut, *http.Response, error) {
+	return r.ApiService.V1OperationalWebhookEndpointGetSecretExecute(r)
+}
+
+/*
+V1OperationalWebhookEndpointGetSecret Get Operational Webhook Endpoint Secret
 
 Get an operational webhook endpoint's signing secret.
 
@@ -598,10 +783,10 @@ For more information please refer to [the consuming webhooks docs](https://docs.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param endpointId The ep's ID or UID
- @return ApiGetOperationalWebhookEndpointSecretRequest
+ @return ApiV1OperationalWebhookEndpointGetSecretRequest
 */
-func (a *WebhookEndpointAPIService) GetOperationalWebhookEndpointSecret(ctx context.Context, endpointId string) ApiGetOperationalWebhookEndpointSecretRequest {
-	return ApiGetOperationalWebhookEndpointSecretRequest{
+func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointGetSecret(ctx context.Context, endpointId string) ApiV1OperationalWebhookEndpointGetSecretRequest {
+	return ApiV1OperationalWebhookEndpointGetSecretRequest{
 		ApiService: a,
 		ctx: ctx,
 		endpointId: endpointId,
@@ -610,7 +795,7 @@ func (a *WebhookEndpointAPIService) GetOperationalWebhookEndpointSecret(ctx cont
 
 // Execute executes the request
 //  @return OperationalWebhookEndpointSecretOut
-func (a *WebhookEndpointAPIService) GetOperationalWebhookEndpointSecretExecute(r ApiGetOperationalWebhookEndpointSecretRequest) (*OperationalWebhookEndpointSecretOut, *http.Response, error) {
+func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointGetSecretExecute(r ApiV1OperationalWebhookEndpointGetSecretRequest) (*OperationalWebhookEndpointSecretOut, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
@@ -618,7 +803,7 @@ func (a *WebhookEndpointAPIService) GetOperationalWebhookEndpointSecretExecute(r
 		localVarReturnValue  *OperationalWebhookEndpointSecretOut
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "WebhookEndpointAPIService.GetOperationalWebhookEndpointSecret")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "WebhookEndpointAPIService.V1OperationalWebhookEndpointGetSecret")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
@@ -766,7 +951,7 @@ func (a *WebhookEndpointAPIService) GetOperationalWebhookEndpointSecretExecute(r
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiListOperationalWebhookEndpointsRequest struct {
+type ApiV1OperationalWebhookEndpointListRequest struct {
 	ctx context.Context
 	ApiService *WebhookEndpointAPIService
 	limit *int32
@@ -775,37 +960,37 @@ type ApiListOperationalWebhookEndpointsRequest struct {
 }
 
 // Limit the number of returned items
-func (r ApiListOperationalWebhookEndpointsRequest) Limit(limit int32) ApiListOperationalWebhookEndpointsRequest {
+func (r ApiV1OperationalWebhookEndpointListRequest) Limit(limit int32) ApiV1OperationalWebhookEndpointListRequest {
 	r.limit = &limit
 	return r
 }
 
 // The iterator returned from a prior invocation
-func (r ApiListOperationalWebhookEndpointsRequest) Iterator(iterator string) ApiListOperationalWebhookEndpointsRequest {
+func (r ApiV1OperationalWebhookEndpointListRequest) Iterator(iterator string) ApiV1OperationalWebhookEndpointListRequest {
 	r.iterator = &iterator
 	return r
 }
 
 // The sorting order of the returned items
-func (r ApiListOperationalWebhookEndpointsRequest) Order(order Ordering) ApiListOperationalWebhookEndpointsRequest {
+func (r ApiV1OperationalWebhookEndpointListRequest) Order(order Ordering) ApiV1OperationalWebhookEndpointListRequest {
 	r.order = &order
 	return r
 }
 
-func (r ApiListOperationalWebhookEndpointsRequest) Execute() (*ListResponseOperationalWebhookEndpointOut, *http.Response, error) {
-	return r.ApiService.ListOperationalWebhookEndpointsExecute(r)
+func (r ApiV1OperationalWebhookEndpointListRequest) Execute() (*ListResponseOperationalWebhookEndpointOut, *http.Response, error) {
+	return r.ApiService.V1OperationalWebhookEndpointListExecute(r)
 }
 
 /*
-ListOperationalWebhookEndpoints List Operational Webhook Endpoints
+V1OperationalWebhookEndpointList List Operational Webhook Endpoints
 
 List operational webhook endpoints.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiListOperationalWebhookEndpointsRequest
+ @return ApiV1OperationalWebhookEndpointListRequest
 */
-func (a *WebhookEndpointAPIService) ListOperationalWebhookEndpoints(ctx context.Context) ApiListOperationalWebhookEndpointsRequest {
-	return ApiListOperationalWebhookEndpointsRequest{
+func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointList(ctx context.Context) ApiV1OperationalWebhookEndpointListRequest {
+	return ApiV1OperationalWebhookEndpointListRequest{
 		ApiService: a,
 		ctx: ctx,
 	}
@@ -813,7 +998,7 @@ func (a *WebhookEndpointAPIService) ListOperationalWebhookEndpoints(ctx context.
 
 // Execute executes the request
 //  @return ListResponseOperationalWebhookEndpointOut
-func (a *WebhookEndpointAPIService) ListOperationalWebhookEndpointsExecute(r ApiListOperationalWebhookEndpointsRequest) (*ListResponseOperationalWebhookEndpointOut, *http.Response, error) {
+func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointListExecute(r ApiV1OperationalWebhookEndpointListRequest) (*ListResponseOperationalWebhookEndpointOut, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
@@ -821,7 +1006,7 @@ func (a *WebhookEndpointAPIService) ListOperationalWebhookEndpointsExecute(r Api
 		localVarReturnValue  *ListResponseOperationalWebhookEndpointOut
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "WebhookEndpointAPIService.ListOperationalWebhookEndpoints")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "WebhookEndpointAPIService.V1OperationalWebhookEndpointList")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
@@ -971,7 +1156,7 @@ func (a *WebhookEndpointAPIService) ListOperationalWebhookEndpointsExecute(r Api
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiRotateOperationalWebhookEndpointSecretRequest struct {
+type ApiV1OperationalWebhookEndpointRotateSecretRequest struct {
 	ctx context.Context
 	ApiService *WebhookEndpointAPIService
 	endpointId string
@@ -979,23 +1164,23 @@ type ApiRotateOperationalWebhookEndpointSecretRequest struct {
 	idempotencyKey *string
 }
 
-func (r ApiRotateOperationalWebhookEndpointSecretRequest) OperationalWebhookEndpointSecretIn(operationalWebhookEndpointSecretIn OperationalWebhookEndpointSecretIn) ApiRotateOperationalWebhookEndpointSecretRequest {
+func (r ApiV1OperationalWebhookEndpointRotateSecretRequest) OperationalWebhookEndpointSecretIn(operationalWebhookEndpointSecretIn OperationalWebhookEndpointSecretIn) ApiV1OperationalWebhookEndpointRotateSecretRequest {
 	r.operationalWebhookEndpointSecretIn = &operationalWebhookEndpointSecretIn
 	return r
 }
 
 // The request&#39;s idempotency key
-func (r ApiRotateOperationalWebhookEndpointSecretRequest) IdempotencyKey(idempotencyKey string) ApiRotateOperationalWebhookEndpointSecretRequest {
+func (r ApiV1OperationalWebhookEndpointRotateSecretRequest) IdempotencyKey(idempotencyKey string) ApiV1OperationalWebhookEndpointRotateSecretRequest {
 	r.idempotencyKey = &idempotencyKey
 	return r
 }
 
-func (r ApiRotateOperationalWebhookEndpointSecretRequest) Execute() (*http.Response, error) {
-	return r.ApiService.RotateOperationalWebhookEndpointSecretExecute(r)
+func (r ApiV1OperationalWebhookEndpointRotateSecretRequest) Execute() (*http.Response, error) {
+	return r.ApiService.V1OperationalWebhookEndpointRotateSecretExecute(r)
 }
 
 /*
-RotateOperationalWebhookEndpointSecret Rotate Operational Webhook Endpoint Secret
+V1OperationalWebhookEndpointRotateSecret Rotate Operational Webhook Endpoint Secret
 
 Rotates an operational webhook endpoint's signing secret.
 
@@ -1003,10 +1188,10 @@ The previous secret will remain valid for the next 24 hours.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param endpointId The ep's ID or UID
- @return ApiRotateOperationalWebhookEndpointSecretRequest
+ @return ApiV1OperationalWebhookEndpointRotateSecretRequest
 */
-func (a *WebhookEndpointAPIService) RotateOperationalWebhookEndpointSecret(ctx context.Context, endpointId string) ApiRotateOperationalWebhookEndpointSecretRequest {
-	return ApiRotateOperationalWebhookEndpointSecretRequest{
+func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointRotateSecret(ctx context.Context, endpointId string) ApiV1OperationalWebhookEndpointRotateSecretRequest {
+	return ApiV1OperationalWebhookEndpointRotateSecretRequest{
 		ApiService: a,
 		ctx: ctx,
 		endpointId: endpointId,
@@ -1014,14 +1199,14 @@ func (a *WebhookEndpointAPIService) RotateOperationalWebhookEndpointSecret(ctx c
 }
 
 // Execute executes the request
-func (a *WebhookEndpointAPIService) RotateOperationalWebhookEndpointSecretExecute(r ApiRotateOperationalWebhookEndpointSecretRequest) (*http.Response, error) {
+func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointRotateSecretExecute(r ApiV1OperationalWebhookEndpointRotateSecretRequest) (*http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "WebhookEndpointAPIService.RotateOperationalWebhookEndpointSecret")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "WebhookEndpointAPIService.V1OperationalWebhookEndpointRotateSecret")
 	if err != nil {
 		return nil, &GenericOpenAPIError{error: err.Error()}
 	}
@@ -1168,33 +1353,33 @@ func (a *WebhookEndpointAPIService) RotateOperationalWebhookEndpointSecretExecut
 	return localVarHTTPResponse, nil
 }
 
-type ApiUpdateOperationalWebhookEndpointRequest struct {
+type ApiV1OperationalWebhookEndpointUpdateRequest struct {
 	ctx context.Context
 	ApiService *WebhookEndpointAPIService
 	endpointId string
 	operationalWebhookEndpointUpdate *OperationalWebhookEndpointUpdate
 }
 
-func (r ApiUpdateOperationalWebhookEndpointRequest) OperationalWebhookEndpointUpdate(operationalWebhookEndpointUpdate OperationalWebhookEndpointUpdate) ApiUpdateOperationalWebhookEndpointRequest {
+func (r ApiV1OperationalWebhookEndpointUpdateRequest) OperationalWebhookEndpointUpdate(operationalWebhookEndpointUpdate OperationalWebhookEndpointUpdate) ApiV1OperationalWebhookEndpointUpdateRequest {
 	r.operationalWebhookEndpointUpdate = &operationalWebhookEndpointUpdate
 	return r
 }
 
-func (r ApiUpdateOperationalWebhookEndpointRequest) Execute() (*OperationalWebhookEndpointOut, *http.Response, error) {
-	return r.ApiService.UpdateOperationalWebhookEndpointExecute(r)
+func (r ApiV1OperationalWebhookEndpointUpdateRequest) Execute() (*OperationalWebhookEndpointOut, *http.Response, error) {
+	return r.ApiService.V1OperationalWebhookEndpointUpdateExecute(r)
 }
 
 /*
-UpdateOperationalWebhookEndpoint Update Operational Webhook Endpoint
+V1OperationalWebhookEndpointUpdate Update Operational Webhook Endpoint
 
 Update an operational webhook endpoint.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param endpointId The ep's ID or UID
- @return ApiUpdateOperationalWebhookEndpointRequest
+ @return ApiV1OperationalWebhookEndpointUpdateRequest
 */
-func (a *WebhookEndpointAPIService) UpdateOperationalWebhookEndpoint(ctx context.Context, endpointId string) ApiUpdateOperationalWebhookEndpointRequest {
-	return ApiUpdateOperationalWebhookEndpointRequest{
+func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointUpdate(ctx context.Context, endpointId string) ApiV1OperationalWebhookEndpointUpdateRequest {
+	return ApiV1OperationalWebhookEndpointUpdateRequest{
 		ApiService: a,
 		ctx: ctx,
 		endpointId: endpointId,
@@ -1203,7 +1388,7 @@ func (a *WebhookEndpointAPIService) UpdateOperationalWebhookEndpoint(ctx context
 
 // Execute executes the request
 //  @return OperationalWebhookEndpointOut
-func (a *WebhookEndpointAPIService) UpdateOperationalWebhookEndpointExecute(r ApiUpdateOperationalWebhookEndpointRequest) (*OperationalWebhookEndpointOut, *http.Response, error) {
+func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointUpdateExecute(r ApiV1OperationalWebhookEndpointUpdateRequest) (*OperationalWebhookEndpointOut, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPut
 		localVarPostBody     interface{}
@@ -1211,7 +1396,7 @@ func (a *WebhookEndpointAPIService) UpdateOperationalWebhookEndpointExecute(r Ap
 		localVarReturnValue  *OperationalWebhookEndpointOut
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "WebhookEndpointAPIService.UpdateOperationalWebhookEndpoint")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "WebhookEndpointAPIService.V1OperationalWebhookEndpointUpdate")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
@@ -1362,4 +1547,189 @@ func (a *WebhookEndpointAPIService) UpdateOperationalWebhookEndpointExecute(r Ap
 	}
 
 	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiV1OperationalWebhookEndpointUpdateHeadersRequest struct {
+	ctx context.Context
+	ApiService *WebhookEndpointAPIService
+	endpointId string
+	operationalWebhookEndpointHeadersIn *OperationalWebhookEndpointHeadersIn
+}
+
+func (r ApiV1OperationalWebhookEndpointUpdateHeadersRequest) OperationalWebhookEndpointHeadersIn(operationalWebhookEndpointHeadersIn OperationalWebhookEndpointHeadersIn) ApiV1OperationalWebhookEndpointUpdateHeadersRequest {
+	r.operationalWebhookEndpointHeadersIn = &operationalWebhookEndpointHeadersIn
+	return r
+}
+
+func (r ApiV1OperationalWebhookEndpointUpdateHeadersRequest) Execute() (*http.Response, error) {
+	return r.ApiService.V1OperationalWebhookEndpointUpdateHeadersExecute(r)
+}
+
+/*
+V1OperationalWebhookEndpointUpdateHeaders Update Operational Webhook Endpoint Headers
+
+Set the additional headers to be sent with the operational webhook.
+
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param endpointId The ep's ID or UID
+ @return ApiV1OperationalWebhookEndpointUpdateHeadersRequest
+*/
+func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointUpdateHeaders(ctx context.Context, endpointId string) ApiV1OperationalWebhookEndpointUpdateHeadersRequest {
+	return ApiV1OperationalWebhookEndpointUpdateHeadersRequest{
+		ApiService: a,
+		ctx: ctx,
+		endpointId: endpointId,
+	}
+}
+
+// Execute executes the request
+func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointUpdateHeadersExecute(r ApiV1OperationalWebhookEndpointUpdateHeadersRequest) (*http.Response, error) {
+	var (
+		localVarHTTPMethod   = http.MethodPut
+		localVarPostBody     interface{}
+		formFiles            []formFile
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "WebhookEndpointAPIService.V1OperationalWebhookEndpointUpdateHeaders")
+	if err != nil {
+		return nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/api/v1/operational-webhook/endpoint/{endpoint_id}/headers"
+	localVarPath = strings.Replace(localVarPath, "{"+"endpoint_id"+"}", url.PathEscape(parameterValueToString(r.endpointId, "endpointId")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+	if strlen(r.endpointId) < 1 {
+		return nil, reportError("endpointId must have at least 1 elements")
+	}
+	if strlen(r.endpointId) > 256 {
+		return nil, reportError("endpointId must have less than 256 elements")
+	}
+	if r.operationalWebhookEndpointHeadersIn == nil {
+		return nil, reportError("operationalWebhookEndpointHeadersIn is required and must be specified")
+	}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	// body params
+	localVarPostBody = r.operationalWebhookEndpointHeadersIn
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		if localVarHTTPResponse.StatusCode == 400 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 401 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 403 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 404 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 409 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 422 {
+			var v HTTPValidationError
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 429 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+		}
+		return localVarHTTPResponse, newErr
+	}
+
+	return localVarHTTPResponse, nil
 }

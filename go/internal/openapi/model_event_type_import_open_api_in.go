@@ -20,7 +20,9 @@ var _ MappedNullable = &EventTypeImportOpenApiIn{}
 // EventTypeImportOpenApiIn Import a list of event types from webhooks defined in an OpenAPI spec.  The OpenAPI spec can be specified as either `spec` given the spec as a JSON object, or as `specRaw` (a `string`) which will be parsed as YAML or JSON by the server. Sending neither or both is invalid, resulting in a `400` **Bad Request**.
 type EventTypeImportOpenApiIn struct {
 	// If `true`, return the event types that would be modified without actually modifying them.
-	DryRun *bool `json:"dry_run,omitempty"`
+	DryRun *bool `json:"dryRun,omitempty"`
+	// If `true`, all existing event types that are not in the spec will be archived.
+	ReplaceAll *bool `json:"replaceAll,omitempty"`
 	// A pre-parsed JSON spec.
 	Spec map[string]interface{} `json:"spec,omitempty"`
 	// A string, parsed by the server as YAML or JSON.
@@ -35,6 +37,8 @@ func NewEventTypeImportOpenApiIn() *EventTypeImportOpenApiIn {
 	this := EventTypeImportOpenApiIn{}
 	var dryRun bool = false
 	this.DryRun = &dryRun
+	var replaceAll bool = false
+	this.ReplaceAll = &replaceAll
 	return &this
 }
 
@@ -45,6 +49,8 @@ func NewEventTypeImportOpenApiInWithDefaults() *EventTypeImportOpenApiIn {
 	this := EventTypeImportOpenApiIn{}
 	var dryRun bool = false
 	this.DryRun = &dryRun
+	var replaceAll bool = false
+	this.ReplaceAll = &replaceAll
 	return &this
 }
 
@@ -78,6 +84,38 @@ func (o *EventTypeImportOpenApiIn) HasDryRun() bool {
 // SetDryRun gets a reference to the given bool and assigns it to the DryRun field.
 func (o *EventTypeImportOpenApiIn) SetDryRun(v bool) {
 	o.DryRun = &v
+}
+
+// GetReplaceAll returns the ReplaceAll field value if set, zero value otherwise.
+func (o *EventTypeImportOpenApiIn) GetReplaceAll() bool {
+	if o == nil || IsNil(o.ReplaceAll) {
+		var ret bool
+		return ret
+	}
+	return *o.ReplaceAll
+}
+
+// GetReplaceAllOk returns a tuple with the ReplaceAll field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *EventTypeImportOpenApiIn) GetReplaceAllOk() (*bool, bool) {
+	if o == nil || IsNil(o.ReplaceAll) {
+		return nil, false
+	}
+	return o.ReplaceAll, true
+}
+
+// HasReplaceAll returns a boolean if a field has been set.
+func (o *EventTypeImportOpenApiIn) HasReplaceAll() bool {
+	if o != nil && !IsNil(o.ReplaceAll) {
+		return true
+	}
+
+	return false
+}
+
+// SetReplaceAll gets a reference to the given bool and assigns it to the ReplaceAll field.
+func (o *EventTypeImportOpenApiIn) SetReplaceAll(v bool) {
+	o.ReplaceAll = &v
 }
 
 // GetSpec returns the Spec field value if set, zero value otherwise.
@@ -155,7 +193,10 @@ func (o EventTypeImportOpenApiIn) MarshalJSON() ([]byte, error) {
 func (o EventTypeImportOpenApiIn) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.DryRun) {
-		toSerialize["dry_run"] = o.DryRun
+		toSerialize["dryRun"] = o.DryRun
+	}
+	if !IsNil(o.ReplaceAll) {
+		toSerialize["replaceAll"] = o.ReplaceAll
 	}
 	if !IsNil(o.Spec) {
 		toSerialize["spec"] = o.Spec

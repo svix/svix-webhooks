@@ -20,7 +20,7 @@ import (
 // checks if the EndpointDisabledEventData type satisfies the MappedNullable interface at compile time
 var _ MappedNullable = &EndpointDisabledEventData{}
 
-// EndpointDisabledEventData Sent when an endpoint has been automatically disabled after continuous failures.
+// EndpointDisabledEventData Sent when an endpoint has been automatically disabled after continuous failures, or manually via an API call.
 type EndpointDisabledEventData struct {
 	// The app's ID
 	AppId string `json:"appId"`
@@ -30,7 +30,8 @@ type EndpointDisabledEventData struct {
 	EndpointId string `json:"endpointId"`
 	// The ep's UID
 	EndpointUid *string `json:"endpointUid,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
-	FailSince time.Time `json:"failSince"`
+	FailSince *time.Time `json:"failSince,omitempty"`
+	Trigger *EndpointDisabledTrigger `json:"trigger,omitempty"`
 }
 
 type _EndpointDisabledEventData EndpointDisabledEventData
@@ -39,11 +40,10 @@ type _EndpointDisabledEventData EndpointDisabledEventData
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewEndpointDisabledEventData(appId string, endpointId string, failSince time.Time) *EndpointDisabledEventData {
+func NewEndpointDisabledEventData(appId string, endpointId string) *EndpointDisabledEventData {
 	this := EndpointDisabledEventData{}
 	this.AppId = appId
 	this.EndpointId = endpointId
-	this.FailSince = failSince
 	return &this
 }
 
@@ -167,28 +167,68 @@ func (o *EndpointDisabledEventData) SetEndpointUid(v string) {
 	o.EndpointUid = &v
 }
 
-// GetFailSince returns the FailSince field value
+// GetFailSince returns the FailSince field value if set, zero value otherwise.
 func (o *EndpointDisabledEventData) GetFailSince() time.Time {
-	if o == nil {
+	if o == nil || IsNil(o.FailSince) {
 		var ret time.Time
 		return ret
 	}
-
-	return o.FailSince
+	return *o.FailSince
 }
 
-// GetFailSinceOk returns a tuple with the FailSince field value
+// GetFailSinceOk returns a tuple with the FailSince field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *EndpointDisabledEventData) GetFailSinceOk() (*time.Time, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.FailSince) {
 		return nil, false
 	}
-	return &o.FailSince, true
+	return o.FailSince, true
 }
 
-// SetFailSince sets field value
+// HasFailSince returns a boolean if a field has been set.
+func (o *EndpointDisabledEventData) HasFailSince() bool {
+	if o != nil && !IsNil(o.FailSince) {
+		return true
+	}
+
+	return false
+}
+
+// SetFailSince gets a reference to the given time.Time and assigns it to the FailSince field.
 func (o *EndpointDisabledEventData) SetFailSince(v time.Time) {
-	o.FailSince = v
+	o.FailSince = &v
+}
+
+// GetTrigger returns the Trigger field value if set, zero value otherwise.
+func (o *EndpointDisabledEventData) GetTrigger() EndpointDisabledTrigger {
+	if o == nil || IsNil(o.Trigger) {
+		var ret EndpointDisabledTrigger
+		return ret
+	}
+	return *o.Trigger
+}
+
+// GetTriggerOk returns a tuple with the Trigger field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *EndpointDisabledEventData) GetTriggerOk() (*EndpointDisabledTrigger, bool) {
+	if o == nil || IsNil(o.Trigger) {
+		return nil, false
+	}
+	return o.Trigger, true
+}
+
+// HasTrigger returns a boolean if a field has been set.
+func (o *EndpointDisabledEventData) HasTrigger() bool {
+	if o != nil && !IsNil(o.Trigger) {
+		return true
+	}
+
+	return false
+}
+
+// SetTrigger gets a reference to the given EndpointDisabledTrigger and assigns it to the Trigger field.
+func (o *EndpointDisabledEventData) SetTrigger(v EndpointDisabledTrigger) {
+	o.Trigger = &v
 }
 
 func (o EndpointDisabledEventData) MarshalJSON() ([]byte, error) {
@@ -209,7 +249,12 @@ func (o EndpointDisabledEventData) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.EndpointUid) {
 		toSerialize["endpointUid"] = o.EndpointUid
 	}
-	toSerialize["failSince"] = o.FailSince
+	if !IsNil(o.FailSince) {
+		toSerialize["failSince"] = o.FailSince
+	}
+	if !IsNil(o.Trigger) {
+		toSerialize["trigger"] = o.Trigger
+	}
 	return toSerialize, nil
 }
 
@@ -220,7 +265,6 @@ func (o *EndpointDisabledEventData) UnmarshalJSON(data []byte) (err error) {
 	requiredProperties := []string{
 		"appId",
 		"endpointId",
-		"failSince",
 	}
 
 	allProperties := make(map[string]interface{})

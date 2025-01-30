@@ -24,38 +24,458 @@ import (
 // StreamAPIService StreamAPI service
 type StreamAPIService service
 
-type ApiV1StreamCreateRequest struct {
+type ApiV1StreamEventsCreateRequest struct {
+	ctx context.Context
+	ApiService *StreamAPIService
+	streamId string
+	createStreamIn *CreateStreamIn
+	idempotencyKey *string
+}
+
+func (r ApiV1StreamEventsCreateRequest) CreateStreamIn(createStreamIn CreateStreamIn) ApiV1StreamEventsCreateRequest {
+	r.createStreamIn = &createStreamIn
+	return r
+}
+
+// The request&#39;s idempotency key
+func (r ApiV1StreamEventsCreateRequest) IdempotencyKey(idempotencyKey string) ApiV1StreamEventsCreateRequest {
+	r.idempotencyKey = &idempotencyKey
+	return r
+}
+
+func (r ApiV1StreamEventsCreateRequest) Execute() (map[string]interface{}, *http.Response, error) {
+	return r.ApiService.V1StreamEventsCreateExecute(r)
+}
+
+/*
+V1StreamEventsCreate Create Events
+
+Creates events on the Stream.
+
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param streamId
+ @return ApiV1StreamEventsCreateRequest
+*/
+func (a *StreamAPIService) V1StreamEventsCreate(ctx context.Context, streamId string) ApiV1StreamEventsCreateRequest {
+	return ApiV1StreamEventsCreateRequest{
+		ApiService: a,
+		ctx: ctx,
+		streamId: streamId,
+	}
+}
+
+// Execute executes the request
+//  @return map[string]interface{}
+func (a *StreamAPIService) V1StreamEventsCreateExecute(r ApiV1StreamEventsCreateRequest) (map[string]interface{}, *http.Response, error) {
+	var (
+		localVarHTTPMethod   = http.MethodPost
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  map[string]interface{}
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StreamAPIService.V1StreamEventsCreate")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/api/v1/stream/{stream_id}/events"
+	localVarPath = strings.Replace(localVarPath, "{"+"stream_id"+"}", url.PathEscape(parameterValueToString(r.streamId, "streamId")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+	if strlen(r.streamId) < 1 {
+		return localVarReturnValue, nil, reportError("streamId must have at least 1 elements")
+	}
+	if strlen(r.streamId) > 60 {
+		return localVarReturnValue, nil, reportError("streamId must have less than 60 elements")
+	}
+	if r.createStreamIn == nil {
+		return localVarReturnValue, nil, reportError("createStreamIn is required and must be specified")
+	}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.idempotencyKey != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "idempotency-key", r.idempotencyKey, "simple", "")
+	}
+	// body params
+	localVarPostBody = r.createStreamIn
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		if localVarHTTPResponse.StatusCode == 400 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 401 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 403 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 404 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 409 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 422 {
+			var v HTTPValidationError
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 429 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiV1StreamEventsGetRequest struct {
+	ctx context.Context
+	ApiService *StreamAPIService
+	streamId string
+	limit *int32
+	iterator *string
+	after *time.Time
+}
+
+// Limit the number of returned items
+func (r ApiV1StreamEventsGetRequest) Limit(limit int32) ApiV1StreamEventsGetRequest {
+	r.limit = &limit
+	return r
+}
+
+// The iterator returned from a prior invocation
+func (r ApiV1StreamEventsGetRequest) Iterator(iterator string) ApiV1StreamEventsGetRequest {
+	r.iterator = &iterator
+	return r
+}
+
+func (r ApiV1StreamEventsGetRequest) After(after time.Time) ApiV1StreamEventsGetRequest {
+	r.after = &after
+	return r
+}
+
+func (r ApiV1StreamEventsGetRequest) Execute() (*EventStreamOut, *http.Response, error) {
+	return r.ApiService.V1StreamEventsGetExecute(r)
+}
+
+/*
+V1StreamEventsGet Stream Events
+
+Iterate over a stream of events.
+
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param streamId
+ @return ApiV1StreamEventsGetRequest
+*/
+func (a *StreamAPIService) V1StreamEventsGet(ctx context.Context, streamId string) ApiV1StreamEventsGetRequest {
+	return ApiV1StreamEventsGetRequest{
+		ApiService: a,
+		ctx: ctx,
+		streamId: streamId,
+	}
+}
+
+// Execute executes the request
+//  @return EventStreamOut
+func (a *StreamAPIService) V1StreamEventsGetExecute(r ApiV1StreamEventsGetRequest) (*EventStreamOut, *http.Response, error) {
+	var (
+		localVarHTTPMethod   = http.MethodGet
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *EventStreamOut
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StreamAPIService.V1StreamEventsGet")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/api/v1/stream/{stream_id}/events"
+	localVarPath = strings.Replace(localVarPath, "{"+"stream_id"+"}", url.PathEscape(parameterValueToString(r.streamId, "streamId")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+	if strlen(r.streamId) < 1 {
+		return localVarReturnValue, nil, reportError("streamId must have at least 1 elements")
+	}
+	if strlen(r.streamId) > 60 {
+		return localVarReturnValue, nil, reportError("streamId must have less than 60 elements")
+	}
+
+	if r.limit != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "limit", r.limit, "form", "")
+	}
+	if r.iterator != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "iterator", r.iterator, "form", "")
+	}
+	if r.after != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "after", r.after, "form", "")
+	}
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		if localVarHTTPResponse.StatusCode == 400 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 401 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 403 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 404 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 409 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 422 {
+			var v HTTPValidationError
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 429 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiV1StreamStreamCreateRequest struct {
 	ctx context.Context
 	ApiService *StreamAPIService
 	streamIn *StreamIn
 	idempotencyKey *string
 }
 
-func (r ApiV1StreamCreateRequest) StreamIn(streamIn StreamIn) ApiV1StreamCreateRequest {
+func (r ApiV1StreamStreamCreateRequest) StreamIn(streamIn StreamIn) ApiV1StreamStreamCreateRequest {
 	r.streamIn = &streamIn
 	return r
 }
 
 // The request&#39;s idempotency key
-func (r ApiV1StreamCreateRequest) IdempotencyKey(idempotencyKey string) ApiV1StreamCreateRequest {
+func (r ApiV1StreamStreamCreateRequest) IdempotencyKey(idempotencyKey string) ApiV1StreamStreamCreateRequest {
 	r.idempotencyKey = &idempotencyKey
 	return r
 }
 
-func (r ApiV1StreamCreateRequest) Execute() (*StreamOut, *http.Response, error) {
-	return r.ApiService.V1StreamCreateExecute(r)
+func (r ApiV1StreamStreamCreateRequest) Execute() (*StreamOut, *http.Response, error) {
+	return r.ApiService.V1StreamStreamCreateExecute(r)
 }
 
 /*
-V1StreamCreate Create Stream
+V1StreamStreamCreate Create Stream
 
 Creates a new stream.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiV1StreamCreateRequest
+ @return ApiV1StreamStreamCreateRequest
 */
-func (a *StreamAPIService) V1StreamCreate(ctx context.Context) ApiV1StreamCreateRequest {
-	return ApiV1StreamCreateRequest{
+func (a *StreamAPIService) V1StreamStreamCreate(ctx context.Context) ApiV1StreamStreamCreateRequest {
+	return ApiV1StreamStreamCreateRequest{
 		ApiService: a,
 		ctx: ctx,
 	}
@@ -63,7 +483,7 @@ func (a *StreamAPIService) V1StreamCreate(ctx context.Context) ApiV1StreamCreate
 
 // Execute executes the request
 //  @return StreamOut
-func (a *StreamAPIService) V1StreamCreateExecute(r ApiV1StreamCreateRequest) (*StreamOut, *http.Response, error) {
+func (a *StreamAPIService) V1StreamStreamCreateExecute(r ApiV1StreamStreamCreateRequest) (*StreamOut, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
@@ -71,7 +491,7 @@ func (a *StreamAPIService) V1StreamCreateExecute(r ApiV1StreamCreateRequest) (*S
 		localVarReturnValue  *StreamOut
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StreamAPIService.V1StreamCreate")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StreamAPIService.V1StreamStreamCreate")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
@@ -220,227 +640,27 @@ func (a *StreamAPIService) V1StreamCreateExecute(r ApiV1StreamCreateRequest) (*S
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiV1StreamCreateEventsRequest struct {
-	ctx context.Context
-	ApiService *StreamAPIService
-	streamId string
-	createStreamIn *CreateStreamIn
-	idempotencyKey *string
-}
-
-func (r ApiV1StreamCreateEventsRequest) CreateStreamIn(createStreamIn CreateStreamIn) ApiV1StreamCreateEventsRequest {
-	r.createStreamIn = &createStreamIn
-	return r
-}
-
-// The request&#39;s idempotency key
-func (r ApiV1StreamCreateEventsRequest) IdempotencyKey(idempotencyKey string) ApiV1StreamCreateEventsRequest {
-	r.idempotencyKey = &idempotencyKey
-	return r
-}
-
-func (r ApiV1StreamCreateEventsRequest) Execute() (map[string]interface{}, *http.Response, error) {
-	return r.ApiService.V1StreamCreateEventsExecute(r)
-}
-
-/*
-V1StreamCreateEvents Create Events
-
-Creates events on the Stream.
-
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param streamId
- @return ApiV1StreamCreateEventsRequest
-*/
-func (a *StreamAPIService) V1StreamCreateEvents(ctx context.Context, streamId string) ApiV1StreamCreateEventsRequest {
-	return ApiV1StreamCreateEventsRequest{
-		ApiService: a,
-		ctx: ctx,
-		streamId: streamId,
-	}
-}
-
-// Execute executes the request
-//  @return map[string]interface{}
-func (a *StreamAPIService) V1StreamCreateEventsExecute(r ApiV1StreamCreateEventsRequest) (map[string]interface{}, *http.Response, error) {
-	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  map[string]interface{}
-	)
-
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StreamAPIService.V1StreamCreateEvents")
-	if err != nil {
-		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
-	}
-
-	localVarPath := localBasePath + "/api/v1/stream/{stream_id}/events"
-	localVarPath = strings.Replace(localVarPath, "{"+"stream_id"+"}", url.PathEscape(parameterValueToString(r.streamId, "streamId")), -1)
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-	if r.createStreamIn == nil {
-		return localVarReturnValue, nil, reportError("createStreamIn is required and must be specified")
-	}
-
-	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{"application/json"}
-
-	// set Content-Type header
-	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
-	if localVarHTTPContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
-	}
-
-	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
-	if localVarHTTPHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	if r.idempotencyKey != nil {
-		parameterAddToHeaderOrQuery(localVarHeaderParams, "idempotency-key", r.idempotencyKey, "simple", "")
-	}
-	// body params
-	localVarPostBody = r.createStreamIn
-	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
-	if err != nil {
-		return localVarReturnValue, nil, err
-	}
-
-	localVarHTTPResponse, err := a.client.callAPI(req)
-	if err != nil || localVarHTTPResponse == nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
-	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
-	if err != nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	if localVarHTTPResponse.StatusCode >= 300 {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
-		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v HttpErrorOut
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v HttpErrorOut
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 403 {
-			var v HttpErrorOut
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 404 {
-			var v HttpErrorOut
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 409 {
-			var v HttpErrorOut
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 422 {
-			var v HTTPValidationError
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 429 {
-			var v HttpErrorOut
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-	if err != nil {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: err.Error(),
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHTTPResponse, nil
-}
-
-type ApiV1StreamDeleteRequest struct {
+type ApiV1StreamStreamDeleteRequest struct {
 	ctx context.Context
 	ApiService *StreamAPIService
 	streamId string
 }
 
-func (r ApiV1StreamDeleteRequest) Execute() (*http.Response, error) {
-	return r.ApiService.V1StreamDeleteExecute(r)
+func (r ApiV1StreamStreamDeleteRequest) Execute() (*http.Response, error) {
+	return r.ApiService.V1StreamStreamDeleteExecute(r)
 }
 
 /*
-V1StreamDelete Delete Stream
+V1StreamStreamDelete Delete Stream
 
 Delete a stream.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param streamId
- @return ApiV1StreamDeleteRequest
+ @return ApiV1StreamStreamDeleteRequest
 */
-func (a *StreamAPIService) V1StreamDelete(ctx context.Context, streamId string) ApiV1StreamDeleteRequest {
-	return ApiV1StreamDeleteRequest{
+func (a *StreamAPIService) V1StreamStreamDelete(ctx context.Context, streamId string) ApiV1StreamStreamDeleteRequest {
+	return ApiV1StreamStreamDeleteRequest{
 		ApiService: a,
 		ctx: ctx,
 		streamId: streamId,
@@ -448,14 +668,14 @@ func (a *StreamAPIService) V1StreamDelete(ctx context.Context, streamId string) 
 }
 
 // Execute executes the request
-func (a *StreamAPIService) V1StreamDeleteExecute(r ApiV1StreamDeleteRequest) (*http.Response, error) {
+func (a *StreamAPIService) V1StreamStreamDeleteExecute(r ApiV1StreamStreamDeleteRequest) (*http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodDelete
 		localVarPostBody     interface{}
 		formFiles            []formFile
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StreamAPIService.V1StreamDelete")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StreamAPIService.V1StreamStreamDelete")
 	if err != nil {
 		return nil, &GenericOpenAPIError{error: err.Error()}
 	}
@@ -466,6 +686,12 @@ func (a *StreamAPIService) V1StreamDeleteExecute(r ApiV1StreamDeleteRequest) (*h
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
+	if strlen(r.streamId) < 1 {
+		return nil, reportError("streamId must have at least 1 elements")
+	}
+	if strlen(r.streamId) > 60 {
+		return nil, reportError("streamId must have less than 60 elements")
+	}
 
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
@@ -588,235 +814,27 @@ func (a *StreamAPIService) V1StreamDeleteExecute(r ApiV1StreamDeleteRequest) (*h
 	return localVarHTTPResponse, nil
 }
 
-type ApiV1StreamEventsGetRequest struct {
-	ctx context.Context
-	ApiService *StreamAPIService
-	streamId string
-	limit *int32
-	iterator *string
-	after *time.Time
-}
-
-// Limit the number of returned items
-func (r ApiV1StreamEventsGetRequest) Limit(limit int32) ApiV1StreamEventsGetRequest {
-	r.limit = &limit
-	return r
-}
-
-// The iterator returned from a prior invocation
-func (r ApiV1StreamEventsGetRequest) Iterator(iterator string) ApiV1StreamEventsGetRequest {
-	r.iterator = &iterator
-	return r
-}
-
-func (r ApiV1StreamEventsGetRequest) After(after time.Time) ApiV1StreamEventsGetRequest {
-	r.after = &after
-	return r
-}
-
-func (r ApiV1StreamEventsGetRequest) Execute() (*EventStreamOut, *http.Response, error) {
-	return r.ApiService.V1StreamEventsGetExecute(r)
-}
-
-/*
-V1StreamEventsGet Stream Events
-
-Iterate over a stream of events.
-
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param streamId
- @return ApiV1StreamEventsGetRequest
-*/
-func (a *StreamAPIService) V1StreamEventsGet(ctx context.Context, streamId string) ApiV1StreamEventsGetRequest {
-	return ApiV1StreamEventsGetRequest{
-		ApiService: a,
-		ctx: ctx,
-		streamId: streamId,
-	}
-}
-
-// Execute executes the request
-//  @return EventStreamOut
-func (a *StreamAPIService) V1StreamEventsGetExecute(r ApiV1StreamEventsGetRequest) (*EventStreamOut, *http.Response, error) {
-	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *EventStreamOut
-	)
-
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StreamAPIService.V1StreamEventsGet")
-	if err != nil {
-		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
-	}
-
-	localVarPath := localBasePath + "/api/v1/stream/{stream_id}/events"
-	localVarPath = strings.Replace(localVarPath, "{"+"stream_id"+"}", url.PathEscape(parameterValueToString(r.streamId, "streamId")), -1)
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-
-	if r.limit != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "limit", r.limit, "form", "")
-	}
-	if r.iterator != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "iterator", r.iterator, "form", "")
-	}
-	if r.after != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "after", r.after, "form", "")
-	}
-	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{}
-
-	// set Content-Type header
-	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
-	if localVarHTTPContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
-	}
-
-	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
-	if localVarHTTPHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
-	if err != nil {
-		return localVarReturnValue, nil, err
-	}
-
-	localVarHTTPResponse, err := a.client.callAPI(req)
-	if err != nil || localVarHTTPResponse == nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
-	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
-	if err != nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	if localVarHTTPResponse.StatusCode >= 300 {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
-		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v HttpErrorOut
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v HttpErrorOut
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 403 {
-			var v HttpErrorOut
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 404 {
-			var v HttpErrorOut
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 409 {
-			var v HttpErrorOut
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 422 {
-			var v HTTPValidationError
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 429 {
-			var v HttpErrorOut
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-	if err != nil {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: err.Error(),
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHTTPResponse, nil
-}
-
-type ApiV1StreamGetRequest struct {
+type ApiV1StreamStreamGetRequest struct {
 	ctx context.Context
 	ApiService *StreamAPIService
 	streamId string
 }
 
-func (r ApiV1StreamGetRequest) Execute() (*StreamOut, *http.Response, error) {
-	return r.ApiService.V1StreamGetExecute(r)
+func (r ApiV1StreamStreamGetRequest) Execute() (*StreamOut, *http.Response, error) {
+	return r.ApiService.V1StreamStreamGetExecute(r)
 }
 
 /*
-V1StreamGet Get Stream
+V1StreamStreamGet Get Stream
 
 Get a stream by id or uid.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param streamId
- @return ApiV1StreamGetRequest
+ @return ApiV1StreamStreamGetRequest
 */
-func (a *StreamAPIService) V1StreamGet(ctx context.Context, streamId string) ApiV1StreamGetRequest {
-	return ApiV1StreamGetRequest{
+func (a *StreamAPIService) V1StreamStreamGet(ctx context.Context, streamId string) ApiV1StreamStreamGetRequest {
+	return ApiV1StreamStreamGetRequest{
 		ApiService: a,
 		ctx: ctx,
 		streamId: streamId,
@@ -825,7 +843,7 @@ func (a *StreamAPIService) V1StreamGet(ctx context.Context, streamId string) Api
 
 // Execute executes the request
 //  @return StreamOut
-func (a *StreamAPIService) V1StreamGetExecute(r ApiV1StreamGetRequest) (*StreamOut, *http.Response, error) {
+func (a *StreamAPIService) V1StreamStreamGetExecute(r ApiV1StreamStreamGetRequest) (*StreamOut, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
@@ -833,7 +851,7 @@ func (a *StreamAPIService) V1StreamGetExecute(r ApiV1StreamGetRequest) (*StreamO
 		localVarReturnValue  *StreamOut
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StreamAPIService.V1StreamGet")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StreamAPIService.V1StreamStreamGet")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
@@ -844,6 +862,12 @@ func (a *StreamAPIService) V1StreamGetExecute(r ApiV1StreamGetRequest) (*StreamO
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
+	if strlen(r.streamId) < 1 {
+		return localVarReturnValue, nil, reportError("streamId must have at least 1 elements")
+	}
+	if strlen(r.streamId) > 60 {
+		return localVarReturnValue, nil, reportError("streamId must have less than 60 elements")
+	}
 
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
@@ -975,7 +999,7 @@ func (a *StreamAPIService) V1StreamGetExecute(r ApiV1StreamGetRequest) (*StreamO
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiV1StreamListRequest struct {
+type ApiV1StreamStreamListRequest struct {
 	ctx context.Context
 	ApiService *StreamAPIService
 	limit *int32
@@ -984,37 +1008,37 @@ type ApiV1StreamListRequest struct {
 }
 
 // Limit the number of returned items
-func (r ApiV1StreamListRequest) Limit(limit int32) ApiV1StreamListRequest {
+func (r ApiV1StreamStreamListRequest) Limit(limit int32) ApiV1StreamStreamListRequest {
 	r.limit = &limit
 	return r
 }
 
 // The iterator returned from a prior invocation
-func (r ApiV1StreamListRequest) Iterator(iterator string) ApiV1StreamListRequest {
+func (r ApiV1StreamStreamListRequest) Iterator(iterator string) ApiV1StreamStreamListRequest {
 	r.iterator = &iterator
 	return r
 }
 
 // The sorting order of the returned items
-func (r ApiV1StreamListRequest) Order(order Ordering) ApiV1StreamListRequest {
+func (r ApiV1StreamStreamListRequest) Order(order Ordering) ApiV1StreamStreamListRequest {
 	r.order = &order
 	return r
 }
 
-func (r ApiV1StreamListRequest) Execute() (*ListResponseStreamOut, *http.Response, error) {
-	return r.ApiService.V1StreamListExecute(r)
+func (r ApiV1StreamStreamListRequest) Execute() (*ListResponseStreamOut, *http.Response, error) {
+	return r.ApiService.V1StreamStreamListExecute(r)
 }
 
 /*
-V1StreamList List Streams
+V1StreamStreamList List Streams
 
 List of all the organization's streams.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiV1StreamListRequest
+ @return ApiV1StreamStreamListRequest
 */
-func (a *StreamAPIService) V1StreamList(ctx context.Context) ApiV1StreamListRequest {
-	return ApiV1StreamListRequest{
+func (a *StreamAPIService) V1StreamStreamList(ctx context.Context) ApiV1StreamStreamListRequest {
+	return ApiV1StreamStreamListRequest{
 		ApiService: a,
 		ctx: ctx,
 	}
@@ -1022,7 +1046,7 @@ func (a *StreamAPIService) V1StreamList(ctx context.Context) ApiV1StreamListRequ
 
 // Execute executes the request
 //  @return ListResponseStreamOut
-func (a *StreamAPIService) V1StreamListExecute(r ApiV1StreamListRequest) (*ListResponseStreamOut, *http.Response, error) {
+func (a *StreamAPIService) V1StreamStreamListExecute(r ApiV1StreamStreamListRequest) (*ListResponseStreamOut, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
@@ -1030,7 +1054,7 @@ func (a *StreamAPIService) V1StreamListExecute(r ApiV1StreamListRequest) (*ListR
 		localVarReturnValue  *ListResponseStreamOut
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StreamAPIService.V1StreamList")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StreamAPIService.V1StreamStreamList")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
@@ -1180,33 +1204,33 @@ func (a *StreamAPIService) V1StreamListExecute(r ApiV1StreamListRequest) (*ListR
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiV1StreamPatchRequest struct {
+type ApiV1StreamStreamPatchRequest struct {
 	ctx context.Context
 	ApiService *StreamAPIService
 	streamId string
 	streamPatch *StreamPatch
 }
 
-func (r ApiV1StreamPatchRequest) StreamPatch(streamPatch StreamPatch) ApiV1StreamPatchRequest {
+func (r ApiV1StreamStreamPatchRequest) StreamPatch(streamPatch StreamPatch) ApiV1StreamStreamPatchRequest {
 	r.streamPatch = &streamPatch
 	return r
 }
 
-func (r ApiV1StreamPatchRequest) Execute() (*StreamOut, *http.Response, error) {
-	return r.ApiService.V1StreamPatchExecute(r)
+func (r ApiV1StreamStreamPatchRequest) Execute() (*StreamOut, *http.Response, error) {
+	return r.ApiService.V1StreamStreamPatchExecute(r)
 }
 
 /*
-V1StreamPatch Patch Stream
+V1StreamStreamPatch Patch Stream
 
 Partially update a stream.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param streamId
- @return ApiV1StreamPatchRequest
+ @return ApiV1StreamStreamPatchRequest
 */
-func (a *StreamAPIService) V1StreamPatch(ctx context.Context, streamId string) ApiV1StreamPatchRequest {
-	return ApiV1StreamPatchRequest{
+func (a *StreamAPIService) V1StreamStreamPatch(ctx context.Context, streamId string) ApiV1StreamStreamPatchRequest {
+	return ApiV1StreamStreamPatchRequest{
 		ApiService: a,
 		ctx: ctx,
 		streamId: streamId,
@@ -1215,7 +1239,7 @@ func (a *StreamAPIService) V1StreamPatch(ctx context.Context, streamId string) A
 
 // Execute executes the request
 //  @return StreamOut
-func (a *StreamAPIService) V1StreamPatchExecute(r ApiV1StreamPatchRequest) (*StreamOut, *http.Response, error) {
+func (a *StreamAPIService) V1StreamStreamPatchExecute(r ApiV1StreamStreamPatchRequest) (*StreamOut, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPatch
 		localVarPostBody     interface{}
@@ -1223,7 +1247,7 @@ func (a *StreamAPIService) V1StreamPatchExecute(r ApiV1StreamPatchRequest) (*Str
 		localVarReturnValue  *StreamOut
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StreamAPIService.V1StreamPatch")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StreamAPIService.V1StreamStreamPatch")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
@@ -1234,6 +1258,12 @@ func (a *StreamAPIService) V1StreamPatchExecute(r ApiV1StreamPatchRequest) (*Str
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
+	if strlen(r.streamId) < 1 {
+		return localVarReturnValue, nil, reportError("streamId must have at least 1 elements")
+	}
+	if strlen(r.streamId) > 60 {
+		return localVarReturnValue, nil, reportError("streamId must have less than 60 elements")
+	}
 	if r.streamPatch == nil {
 		return localVarReturnValue, nil, reportError("streamPatch is required and must be specified")
 	}
@@ -1370,33 +1400,33 @@ func (a *StreamAPIService) V1StreamPatchExecute(r ApiV1StreamPatchRequest) (*Str
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiV1StreamUpdateRequest struct {
+type ApiV1StreamStreamUpdateRequest struct {
 	ctx context.Context
 	ApiService *StreamAPIService
 	streamId string
 	streamIn *StreamIn
 }
 
-func (r ApiV1StreamUpdateRequest) StreamIn(streamIn StreamIn) ApiV1StreamUpdateRequest {
+func (r ApiV1StreamStreamUpdateRequest) StreamIn(streamIn StreamIn) ApiV1StreamStreamUpdateRequest {
 	r.streamIn = &streamIn
 	return r
 }
 
-func (r ApiV1StreamUpdateRequest) Execute() (*StreamOut, *http.Response, error) {
-	return r.ApiService.V1StreamUpdateExecute(r)
+func (r ApiV1StreamStreamUpdateRequest) Execute() (*StreamOut, *http.Response, error) {
+	return r.ApiService.V1StreamStreamUpdateExecute(r)
 }
 
 /*
-V1StreamUpdate Update Stream
+V1StreamStreamUpdate Update Stream
 
 Update a stream.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param streamId
- @return ApiV1StreamUpdateRequest
+ @return ApiV1StreamStreamUpdateRequest
 */
-func (a *StreamAPIService) V1StreamUpdate(ctx context.Context, streamId string) ApiV1StreamUpdateRequest {
-	return ApiV1StreamUpdateRequest{
+func (a *StreamAPIService) V1StreamStreamUpdate(ctx context.Context, streamId string) ApiV1StreamStreamUpdateRequest {
+	return ApiV1StreamStreamUpdateRequest{
 		ApiService: a,
 		ctx: ctx,
 		streamId: streamId,
@@ -1405,7 +1435,7 @@ func (a *StreamAPIService) V1StreamUpdate(ctx context.Context, streamId string) 
 
 // Execute executes the request
 //  @return StreamOut
-func (a *StreamAPIService) V1StreamUpdateExecute(r ApiV1StreamUpdateRequest) (*StreamOut, *http.Response, error) {
+func (a *StreamAPIService) V1StreamStreamUpdateExecute(r ApiV1StreamStreamUpdateRequest) (*StreamOut, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPut
 		localVarPostBody     interface{}
@@ -1413,7 +1443,7 @@ func (a *StreamAPIService) V1StreamUpdateExecute(r ApiV1StreamUpdateRequest) (*S
 		localVarReturnValue  *StreamOut
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StreamAPIService.V1StreamUpdate")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StreamAPIService.V1StreamStreamUpdate")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
@@ -1424,6 +1454,12 @@ func (a *StreamAPIService) V1StreamUpdateExecute(r ApiV1StreamUpdateRequest) (*S
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
+	if strlen(r.streamId) < 1 {
+		return localVarReturnValue, nil, reportError("streamId must have at least 1 elements")
+	}
+	if strlen(r.streamId) > 60 {
+		return localVarReturnValue, nil, reportError("streamId must have less than 60 elements")
+	}
 	if r.streamIn == nil {
 		return localVarReturnValue, nil, reportError("streamIn is required and must be specified")
 	}

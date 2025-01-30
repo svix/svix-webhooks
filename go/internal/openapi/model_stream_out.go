@@ -23,8 +23,11 @@ var _ MappedNullable = &StreamOut{}
 // StreamOut struct for StreamOut
 type StreamOut struct {
 	CreatedAt time.Time `json:"createdAt"`
+	// The stream's description.
 	Description *string `json:"description,omitempty"`
-	Id string `json:"id"`
+	// The stream's ID.
+	Id string `json:"id" validate:"regexp=^strm_[A-Za-z0-9]{22}$"`
+	// The Stream's UID.
 	Uid *string `json:"uid,omitempty" validate:"regexp=^(?!strm_)[a-zA-Z0-9_-]+$"`
 	UpdatedAt time.Time `json:"updatedAt"`
 }
