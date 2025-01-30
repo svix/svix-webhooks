@@ -1,7 +1,7 @@
 # this file is @generated
 
-from .common import SvixBaseModel
+from .common import BaseModel
 
 
-class IntegrationKeyOut(SvixBaseModel):
+class IntegrationKeyOut(BaseModel):
     key: str

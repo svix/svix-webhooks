@@ -2,23 +2,21 @@
 import typing as t
 from datetime import datetime
 
-from pydantic import Field
-
-from .common import SvixBaseModel
+from .common import BaseModel
 
 
-class EventTypeOut(SvixBaseModel):
+class EventTypeOut(BaseModel):
     archived: t.Optional[bool] = None
 
-    created_at: datetime = Field(alias="createdAt")
+    created_at: datetime
 
     deprecated: bool
 
     description: str
 
-    feature_flag: t.Optional[str] = Field(default=None, alias="featureFlag")
+    feature_flag: t.Optional[str] = None
 
-    group_name: t.Optional[str] = Field(default=None, alias="groupName")
+    group_name: t.Optional[str] = None
     """The event type group's name"""
 
     name: str
@@ -27,4 +25,4 @@ class EventTypeOut(SvixBaseModel):
     schemas: t.Optional[t.Dict[str, t.Any]] = None
     """The schema for the event type for a specific version as a JSON schema."""
 
-    updated_at: datetime = Field(alias="updatedAt")
+    updated_at: datetime

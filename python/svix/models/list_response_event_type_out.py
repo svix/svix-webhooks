@@ -1,17 +1,15 @@
 # this file is @generated
 import typing as t
 
-from pydantic import Field
-
-from .common import SvixBaseModel
+from .common import BaseModel
 from .event_type_out import EventTypeOut
 
 
-class ListResponseEventTypeOut(SvixBaseModel):
+class ListResponseEventTypeOut(BaseModel):
     data: t.List[EventTypeOut]
 
     done: bool
 
     iterator: str
 
-    prev_iterator: t.Optional[str] = Field(default=None, alias="prevIterator")
+    prev_iterator: t.Optional[str] = None

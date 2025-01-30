@@ -1,22 +1,20 @@
 # this file is @generated
 import typing as t
 
-from pydantic import Field
-
-from .common import SvixBaseModel
+from .common import BaseModel
 from .transformation_template_kind import TransformationTemplateKind
 
 
-class TemplateIn(SvixBaseModel):
+class TemplateIn(BaseModel):
     description: t.Optional[str] = None
 
-    feature_flag: t.Optional[str] = Field(default=None, alias="featureFlag")
+    feature_flag: t.Optional[str] = None
 
-    filter_types: t.Optional[t.List[str]] = Field(default=None, alias="filterTypes")
+    filter_types: t.Optional[t.List[str]] = None
 
     instructions: t.Optional[str] = None
 
-    instructions_link: t.Optional[str] = Field(default=None, alias="instructionsLink")
+    instructions_link: t.Optional[str] = None
 
     kind: t.Optional[TransformationTemplateKind] = None
 

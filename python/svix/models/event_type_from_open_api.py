@@ -1,19 +1,17 @@
 # this file is @generated
 import typing as t
 
-from pydantic import Field
-
-from .common import SvixBaseModel
+from .common import BaseModel
 
 
-class EventTypeFromOpenApi(SvixBaseModel):
+class EventTypeFromOpenApi(BaseModel):
     deprecated: bool
 
     description: str
 
-    feature_flag: t.Optional[str] = Field(default=None, alias="featureFlag")
+    feature_flag: t.Optional[str] = None
 
-    group_name: t.Optional[str] = Field(default=None, alias="groupName")
+    group_name: t.Optional[str] = None
     """The event type group's name"""
 
     name: str

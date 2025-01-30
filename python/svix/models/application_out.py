@@ -2,13 +2,11 @@
 import typing as t
 from datetime import datetime
 
-from pydantic import Field
-
-from .common import SvixBaseModel
+from .common import BaseModel
 
 
-class ApplicationOut(SvixBaseModel):
-    created_at: datetime = Field(alias="createdAt")
+class ApplicationOut(BaseModel):
+    created_at: datetime
 
     id: str
     """The app's ID"""
@@ -17,9 +15,9 @@ class ApplicationOut(SvixBaseModel):
 
     name: str
 
-    rate_limit: t.Optional[int] = Field(default=None, alias="rateLimit")
+    rate_limit: t.Optional[int] = None
 
     uid: t.Optional[str] = None
     """The app's UID"""
 
-    updated_at: datetime = Field(alias="updatedAt")
+    updated_at: datetime

@@ -1,9 +1,9 @@
 # this file is @generated
 
-from .common import SvixBaseModel
+from .common import BaseModel
 
 
-class DashboardAccessOut(SvixBaseModel):
+class DashboardAccessOut(BaseModel):
     token: str
 
     url: str

@@ -1,9 +1,9 @@
 # this file is @generated
 import typing as t
 
-from .common import SvixBaseModel
+from .common import BaseModel
 
 
-class ApplicationTokenExpireIn(SvixBaseModel):
+class ApplicationTokenExpireIn(BaseModel):
     expiry: t.Optional[int] = None
     """How many seconds until the old key is expired."""

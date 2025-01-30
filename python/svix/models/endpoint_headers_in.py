@@ -1,8 +1,8 @@
 # this file is @generated
 import typing as t
 
-from .common import SvixBaseModel
+from .common import BaseModel
 
 
-class EndpointHeadersIn(SvixBaseModel):
+class EndpointHeadersIn(BaseModel):
     headers: t.Dict[str, str]

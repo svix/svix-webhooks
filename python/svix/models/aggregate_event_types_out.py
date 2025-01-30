@@ -2,10 +2,10 @@
 
 from .background_task_status import BackgroundTaskStatus
 from .background_task_type import BackgroundTaskType
-from .common import SvixBaseModel
+from .common import BaseModel
 
 
-class AggregateEventTypesOut(SvixBaseModel):
+class AggregateEventTypesOut(BaseModel):
     id: str
 
     status: BackgroundTaskStatus
