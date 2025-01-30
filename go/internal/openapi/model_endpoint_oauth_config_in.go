@@ -21,14 +21,14 @@ var _ MappedNullable = &EndpointOauthConfigIn{}
 
 // EndpointOauthConfigIn struct for EndpointOauthConfigIn
 type EndpointOauthConfigIn struct {
-	AuthMethod Oauth2AuthMethodIn `json:"authMethod"`
+	AuthMethod Oauth2AuthMethodInOut `json:"authMethod"`
 	// The client ID. Required for all authentication types.
 	ClientId string `json:"clientId"`
 	// Optional client secret. This is only used for `clientSecretBasic` and `clientSecretPost`.  For `clientSecretBasic`, the secret will be appended to the `Authorization` header. For `clientSecretPost`, this will be added to the body in a `client_secret` parameter.
 	ClientSecret *string `json:"clientSecret,omitempty"`
 	// Extra parameters added to the request body as key-value pairs.
 	ExtraParams *map[string]string `json:"extraParams,omitempty"`
-	GrantType Oauth2GrantTypeIn `json:"grantType"`
+	GrantType Oauth2GrantTypeInOut `json:"grantType"`
 	JwtParams *ClientSecretJwtParamsIn `json:"jwtParams,omitempty"`
 	// For `refreshToken` grant type.
 	RefreshToken *string `json:"refreshToken,omitempty"`
@@ -44,7 +44,7 @@ type _EndpointOauthConfigIn EndpointOauthConfigIn
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewEndpointOauthConfigIn(authMethod Oauth2AuthMethodIn, clientId string, grantType Oauth2GrantTypeIn, tokenUrl string) *EndpointOauthConfigIn {
+func NewEndpointOauthConfigIn(authMethod Oauth2AuthMethodInOut, clientId string, grantType Oauth2GrantTypeInOut, tokenUrl string) *EndpointOauthConfigIn {
 	this := EndpointOauthConfigIn{}
 	this.AuthMethod = authMethod
 	this.ClientId = clientId
@@ -62,9 +62,9 @@ func NewEndpointOauthConfigInWithDefaults() *EndpointOauthConfigIn {
 }
 
 // GetAuthMethod returns the AuthMethod field value
-func (o *EndpointOauthConfigIn) GetAuthMethod() Oauth2AuthMethodIn {
+func (o *EndpointOauthConfigIn) GetAuthMethod() Oauth2AuthMethodInOut {
 	if o == nil {
-		var ret Oauth2AuthMethodIn
+		var ret Oauth2AuthMethodInOut
 		return ret
 	}
 
@@ -73,7 +73,7 @@ func (o *EndpointOauthConfigIn) GetAuthMethod() Oauth2AuthMethodIn {
 
 // GetAuthMethodOk returns a tuple with the AuthMethod field value
 // and a boolean to check if the value has been set.
-func (o *EndpointOauthConfigIn) GetAuthMethodOk() (*Oauth2AuthMethodIn, bool) {
+func (o *EndpointOauthConfigIn) GetAuthMethodOk() (*Oauth2AuthMethodInOut, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -81,7 +81,7 @@ func (o *EndpointOauthConfigIn) GetAuthMethodOk() (*Oauth2AuthMethodIn, bool) {
 }
 
 // SetAuthMethod sets field value
-func (o *EndpointOauthConfigIn) SetAuthMethod(v Oauth2AuthMethodIn) {
+func (o *EndpointOauthConfigIn) SetAuthMethod(v Oauth2AuthMethodInOut) {
 	o.AuthMethod = v
 }
 
@@ -174,9 +174,9 @@ func (o *EndpointOauthConfigIn) SetExtraParams(v map[string]string) {
 }
 
 // GetGrantType returns the GrantType field value
-func (o *EndpointOauthConfigIn) GetGrantType() Oauth2GrantTypeIn {
+func (o *EndpointOauthConfigIn) GetGrantType() Oauth2GrantTypeInOut {
 	if o == nil {
-		var ret Oauth2GrantTypeIn
+		var ret Oauth2GrantTypeInOut
 		return ret
 	}
 
@@ -185,7 +185,7 @@ func (o *EndpointOauthConfigIn) GetGrantType() Oauth2GrantTypeIn {
 
 // GetGrantTypeOk returns a tuple with the GrantType field value
 // and a boolean to check if the value has been set.
-func (o *EndpointOauthConfigIn) GetGrantTypeOk() (*Oauth2GrantTypeIn, bool) {
+func (o *EndpointOauthConfigIn) GetGrantTypeOk() (*Oauth2GrantTypeInOut, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -193,7 +193,7 @@ func (o *EndpointOauthConfigIn) GetGrantTypeOk() (*Oauth2GrantTypeIn, bool) {
 }
 
 // SetGrantType sets field value
-func (o *EndpointOauthConfigIn) SetGrantType(v Oauth2GrantTypeIn) {
+func (o *EndpointOauthConfigIn) SetGrantType(v Oauth2GrantTypeInOut) {
 	o.GrantType = v
 }
 
