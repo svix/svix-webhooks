@@ -1,4 +1,6 @@
-﻿using System;
+// this file is @generated
+#nullable enable
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading;
@@ -12,306 +14,73 @@ using Svix.Models;
 
 namespace Svix
 {
-    public sealed class Endpoint : SvixResourceBase, IEndpoint
+    public partial class EndpointListOptions
     {
-        private readonly IEndpointApi _endpointApi;
+        public int? Limit { get; set; }
+        public string? Iterator { get; set; }
+        public Ordering? Order { get; set; }
+    }
 
-        public Endpoint(ISvixClient svixClient, IEndpointApi endpointApi)
+    public partial class EndpointCreateOptions
+    {
+        public string? IdempotencyKey { get; set; }
+    }
+
+    public partial class EndpointRecoverOptions
+    {
+        public string? IdempotencyKey { get; set; }
+    }
+
+    public partial class EndpointReplayMissingOptions
+    {
+        public string? IdempotencyKey { get; set; }
+    }
+
+    public partial class EndpointRotateSecretOptions
+    {
+        public string? IdempotencyKey { get; set; }
+    }
+
+    public partial class EndpointSendExampleOptions
+    {
+        public string? IdempotencyKey { get; set; }
+    }
+
+    public partial class EndpointGetStatsOptions
+    {
+        public DateTime? Since { get; set; }
+        public DateTime? Until { get; set; }
+    }
+
+    public sealed class Endpoint : SvixResourceBase
+    {
+        private readonly EndpointApi _endpointApi;
+
+        public Endpoint(ISvixClient svixClient, EndpointApi endpointApi)
             : base(svixClient)
         {
-            _endpointApi = endpointApi ?? throw new ArgumentNullException(nameof(_endpointApi));
+            _endpointApi = endpointApi ?? throw new ArgumentNullException(nameof(endpointApi));
         }
 
-        public EndpointOut Create(
-            string appId,
-            EndpointIn endpoint,
-            string idempotencyKey = default
-        )
-        {
-            try
-            {
-                var lEndpoint = _endpointApi.V1EndpointCreate(appId, endpoint, idempotencyKey);
-
-                return lEndpoint;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(Create)} failed");
-
-                if (Throw)
-                    throw;
-
-                return null;
-            }
-        }
-
-        public async Task<EndpointOut> CreateAsync(
-            string appId,
-            EndpointIn endpoint,
-            string idempotencyKey = default,
-            CancellationToken cancellationToken = default
-        )
-        {
-            try
-            {
-                var lEndpoint = await _endpointApi.V1EndpointCreateAsync(
-                    appId,
-                    endpoint,
-                    idempotencyKey,
-                    cancellationToken
-                );
-
-                return lEndpoint;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(CreateAsync)} failed");
-
-                if (Throw)
-                    throw;
-
-                return null;
-            }
-        }
-
-        public bool Delete(string appId, string endpointId, string idempotencyKey = default)
-        {
-            try
-            {
-                var lResponse = _endpointApi.V1EndpointDeleteWithHttpInfo(appId, endpointId);
-
-                return lResponse.StatusCode == HttpStatusCode.NoContent;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(Delete)} failed");
-
-                if (Throw)
-                    throw;
-
-                return false;
-            }
-        }
-
-        public async Task<bool> DeleteAsync(
-            string appId,
-            string endpointId,
-            string idempotencyKey = default,
-            CancellationToken cancellationToken = default
-        )
-        {
-            try
-            {
-                var lResponse = await _endpointApi.V1EndpointDeleteWithHttpInfoAsync(
-                    appId,
-                    endpointId,
-                    cancellationToken
-                );
-
-                return lResponse.StatusCode == HttpStatusCode.NoContent;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(DeleteAsync)} failed");
-
-                if (Throw)
-                    throw;
-
-                return false;
-            }
-        }
-
-        public EndpointOut Get(string appId, string endpointId, string idempotencyKey = default)
-        {
-            try
-            {
-                var lEndpoint = _endpointApi.V1EndpointGet(appId, endpointId);
-
-                return lEndpoint;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(Get)} failed");
-
-                if (Throw)
-                    throw;
-
-                return null;
-            }
-        }
-
-        public async Task<EndpointOut> GetAsync(
-            string appId,
-            string endpointId,
-            string idempotencyKey = default,
-            CancellationToken cancellationToken = default
-        )
-        {
-            try
-            {
-                var lEndpoint = await _endpointApi.V1EndpointGetAsync(
-                    appId,
-                    endpointId,
-                    cancellationToken
-                );
-
-                return lEndpoint;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(GetAsync)} failed");
-
-                if (Throw)
-                    throw;
-
-                return null;
-            }
-        }
-
-        public EndpointHeadersOut GetHeaders(
-            string appId,
-            string endpointId,
-            string idempotencyKey = default
-        )
-        {
-            try
-            {
-                var lHeaders = _endpointApi.V1EndpointGetHeaders(appId, endpointId);
-
-                return lHeaders;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(GetHeaders)} failed");
-
-                if (Throw)
-                    throw;
-
-                return null;
-            }
-        }
-
-        public async Task<EndpointHeadersOut> GetHeadersAsync(
-            string appId,
-            string endpointId,
-            string idempotencyKey = default,
-            CancellationToken cancellationToken = default
-        )
-        {
-            try
-            {
-                var lHeaders = await _endpointApi.V1EndpointGetHeadersAsync(
-                    appId,
-                    endpointId,
-                    cancellationToken
-                );
-
-                return lHeaders;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(GetHeadersAsync)} failed");
-
-                if (Throw)
-                    throw;
-
-                return null;
-            }
-        }
-
-        public string GetSecret(string appId, string endpointId, string idempotencyKey = default)
-        {
-            try
-            {
-                var lSecret = _endpointApi.V1EndpointGetSecret(appId, endpointId);
-
-                return lSecret?.Key;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(GetSecret)} failed");
-
-                if (Throw)
-                    throw;
-
-                return null;
-            }
-        }
-
-        public async Task<string> GetSecretAsync(
-            string appId,
-            string endpointId,
-            string idempotencyKey = default,
-            CancellationToken cancellationToken = default
-        )
-        {
-            try
-            {
-                var lSecret = await _endpointApi.V1EndpointGetSecretAsync(
-                    appId,
-                    endpointId,
-                    cancellationToken
-                );
-
-                return lSecret.Key;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(GetSecretAsync)} failed");
-
-                if (Throw)
-                    throw;
-
-                return null;
-            }
-        }
-
-        public ListResponseEndpointOut List(
-            string appId,
-            ListOptions options = null,
-            string idempotencyKey = default
-        )
-        {
-            try
-            {
-                var lEndpoints = _endpointApi.V1EndpointList(
-                    appId,
-                    options?.Limit,
-                    options?.Iterator,
-                    options?.Order
-                );
-
-                return lEndpoints;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(List)} failed");
-
-                if (Throw)
-                    throw;
-
-                return new ListResponseEndpointOut();
-            }
-        }
-
+        /// <summary>
+        /// List the application's endpoints.
+        /// </summary>
         public async Task<ListResponseEndpointOut> ListAsync(
             string appId,
-            ListOptions options = null,
-            string idempotencyKey = default,
+            EndpointListOptions? options = null,
             CancellationToken cancellationToken = default
         )
         {
             try
             {
-                var lEndpoints = await _endpointApi.V1EndpointListAsync(
-                    appId,
-                    options?.Limit,
-                    options?.Iterator,
-                    options?.Order,
-                    cancellationToken
+                var response = await _endpointApi.V1EndpointListWithHttpInfoAsync(
+                    appId: appId,
+                    limit: options?.Limit,
+                    iterator: options?.Iterator,
+                    order: options?.Order,
+                    cancellationToken: cancellationToken
                 );
-
-                return lEndpoints;
+                return response.Data;
             }
             catch (ApiException e)
             {
@@ -319,230 +88,171 @@ namespace Svix
 
                 if (Throw)
                     throw;
-
                 return new ListResponseEndpointOut();
             }
         }
 
-        public bool PatchHeaders(
-            string appId,
-            string endpointId,
-            EndpointHeadersPatchIn headers,
-            string idempotencyKey = default
-        )
+        /// <summary>
+        /// List the application's endpoints.
+        /// </summary>
+        public ListResponseEndpointOut List(string appId, EndpointListOptions? options = null)
         {
             try
             {
-                var lResponse = _endpointApi.V1EndpointPatchHeadersWithHttpInfo(
-                    appId,
-                    endpointId,
-                    headers
+                var response = _endpointApi.V1EndpointListWithHttpInfo(
+                    appId: appId,
+                    limit: options?.Limit,
+                    iterator: options?.Iterator,
+                    order: options?.Order
                 );
-
-                return lResponse.StatusCode == HttpStatusCode.NoContent;
+                return response.Data;
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(PatchHeaders)} failed");
+                Logger?.LogError(e, $"{nameof(List)} failed");
 
                 if (Throw)
                     throw;
-
-                return false;
+                return new ListResponseEndpointOut();
             }
         }
 
-        public async Task<bool> PatchHeadersAsync(
+        /// <summary>
+        /// Create a new endpoint for the application.
+        ///
+        /// When `secret` is `null` the secret is automatically generated (recommended).
+        /// </summary>
+        public async Task<EndpointOut> CreateAsync(
             string appId,
-            string endpointId,
-            EndpointHeadersPatchIn headers,
-            string idempotencyKey = default,
+            EndpointIn endpointIn,
+            EndpointCreateOptions? options = null,
             CancellationToken cancellationToken = default
         )
         {
             try
             {
-                var lResponse = await _endpointApi.V1EndpointPatchHeadersWithHttpInfoAsync(
-                    appId,
-                    endpointId,
-                    headers,
-                    cancellationToken
+                endpointIn = endpointIn ?? throw new ArgumentNullException(nameof(endpointIn));
+                var response = await _endpointApi.V1EndpointCreateWithHttpInfoAsync(
+                    appId: appId,
+                    endpointIn: endpointIn,
+                    idempotencyKey: options?.IdempotencyKey,
+                    cancellationToken: cancellationToken
                 );
-
-                return lResponse.StatusCode == HttpStatusCode.NoContent;
+                return response.Data;
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(PatchHeadersAsync)} failed");
+                Logger?.LogError(e, $"{nameof(CreateAsync)} failed");
 
                 if (Throw)
                     throw;
-
-                return false;
+                return new EndpointOut();
             }
         }
 
-        public bool Recover(
+        /// <summary>
+        /// Create a new endpoint for the application.
+        ///
+        /// When `secret` is `null` the secret is automatically generated (recommended).
+        /// </summary>
+        public EndpointOut Create(
             string appId,
-            string endpointId,
-            RecoverIn recover,
-            string idempotencyKey = default
+            EndpointIn endpointIn,
+            EndpointCreateOptions? options = null
         )
         {
             try
             {
-                var lResponse = _endpointApi.V1EndpointRecoverWithHttpInfo(
-                    appId,
-                    endpointId,
-                    recover,
-                    idempotencyKey
+                endpointIn = endpointIn ?? throw new ArgumentNullException(nameof(endpointIn));
+                var response = _endpointApi.V1EndpointCreateWithHttpInfo(
+                    appId: appId,
+                    endpointIn: endpointIn,
+                    idempotencyKey: options?.IdempotencyKey
                 );
-
-                return lResponse.StatusCode == HttpStatusCode.Accepted;
+                return response.Data;
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(Recover)} failed");
+                Logger?.LogError(e, $"{nameof(Create)} failed");
 
                 if (Throw)
                     throw;
-
-                return false;
+                return new EndpointOut();
             }
         }
 
-        public async Task<bool> RecoverAsync(
+        /// <summary>
+        /// Get an endpoint.
+        /// </summary>
+        public async Task<EndpointOut> GetAsync(
             string appId,
             string endpointId,
-            RecoverIn recover,
-            string idempotencyKey = default,
             CancellationToken cancellationToken = default
         )
         {
             try
             {
-                var lResponse = await _endpointApi.V1EndpointRecoverWithHttpInfoAsync(
-                    appId,
-                    endpointId,
-                    recover,
-                    idempotencyKey,
-                    cancellationToken
+                var response = await _endpointApi.V1EndpointGetWithHttpInfoAsync(
+                    appId: appId,
+                    endpointId: endpointId,
+                    cancellationToken: cancellationToken
                 );
-
-                return lResponse.StatusCode == HttpStatusCode.Accepted;
+                return response.Data;
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(RecoverAsync)} failed");
+                Logger?.LogError(e, $"{nameof(GetAsync)} failed");
 
                 if (Throw)
                     throw;
-
-                return false;
+                return new EndpointOut();
             }
         }
 
-        public bool RotateSecret(
-            string appId,
-            string endpointId,
-            EndpointSecretRotateIn secret,
-            string idempotencyKey = default
-        )
+        /// <summary>
+        /// Get an endpoint.
+        /// </summary>
+        public EndpointOut Get(string appId, string endpointId)
         {
             try
             {
-                var lResponse = _endpointApi.V1EndpointRotateSecretWithHttpInfo(
-                    appId,
-                    endpointId,
-                    secret,
-                    idempotencyKey
+                var response = _endpointApi.V1EndpointGetWithHttpInfo(
+                    appId: appId,
+                    endpointId: endpointId
                 );
-
-                return lResponse.StatusCode == HttpStatusCode.NoContent;
+                return response.Data;
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(RotateSecret)} failed");
+                Logger?.LogError(e, $"{nameof(Get)} failed");
 
                 if (Throw)
                     throw;
-
-                return false;
+                return new EndpointOut();
             }
         }
 
-        public async Task<bool> RotateSecretAsync(
-            string appId,
-            string endpointId,
-            EndpointSecretRotateIn secret,
-            string idempotencyKey = default,
-            CancellationToken cancellationToken = default
-        )
-        {
-            try
-            {
-                var lResponse = await _endpointApi.V1EndpointRotateSecretWithHttpInfoAsync(
-                    appId,
-                    endpointId,
-                    secret,
-                    idempotencyKey
-                );
-
-                return lResponse.StatusCode == HttpStatusCode.NoContent;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(RotateSecretAsync)} failed");
-
-                if (Throw)
-                    throw;
-
-                return false;
-            }
-        }
-
-        public EndpointOut Update(
-            string appId,
-            string endpointId,
-            EndpointUpdate endpoint,
-            string idempotencyKey = default
-        )
-        {
-            try
-            {
-                var lEndpoint = _endpointApi.V1EndpointUpdate(appId, endpointId, endpoint);
-
-                return lEndpoint;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(Update)} failed");
-
-                if (Throw)
-                    throw;
-
-                return null;
-            }
-        }
-
+        /// <summary>
+        /// Update an endpoint.
+        /// </summary>
         public async Task<EndpointOut> UpdateAsync(
             string appId,
             string endpointId,
-            EndpointUpdate endpoint,
-            string idempotencyKey = default,
+            EndpointUpdate endpointUpdate,
             CancellationToken cancellationToken = default
         )
         {
             try
             {
-                var lEndpoint = await _endpointApi.V1EndpointUpdateAsync(
-                    appId,
-                    endpointId,
-                    endpoint,
-                    cancellationToken
+                endpointUpdate =
+                    endpointUpdate ?? throw new ArgumentNullException(nameof(endpointUpdate));
+                var response = await _endpointApi.V1EndpointUpdateWithHttpInfoAsync(
+                    appId: appId,
+                    endpointId: endpointId,
+                    endpointUpdate: endpointUpdate,
+                    cancellationToken: cancellationToken
                 );
-
-                return lEndpoint;
+                return response.Data;
             }
             catch (ApiException e)
             {
@@ -550,53 +260,108 @@ namespace Svix
 
                 if (Throw)
                     throw;
-
-                return null;
+                return new EndpointOut();
             }
         }
 
-        public EndpointOut Patch(
-            string appId,
-            string endpointId,
-            EndpointPatch endpoint,
-            string idempotencyKey = default
-        )
+        /// <summary>
+        /// Update an endpoint.
+        /// </summary>
+        public EndpointOut Update(string appId, string endpointId, EndpointUpdate endpointUpdate)
         {
             try
             {
-                var lEndpoint = _endpointApi.V1EndpointPatch(appId, endpointId, endpoint);
-
-                return lEndpoint;
+                endpointUpdate =
+                    endpointUpdate ?? throw new ArgumentNullException(nameof(endpointUpdate));
+                var response = _endpointApi.V1EndpointUpdateWithHttpInfo(
+                    appId: appId,
+                    endpointId: endpointId,
+                    endpointUpdate: endpointUpdate
+                );
+                return response.Data;
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(Patch)} failed");
+                Logger?.LogError(e, $"{nameof(Update)} failed");
 
                 if (Throw)
                     throw;
-
-                return null;
+                return new EndpointOut();
             }
         }
 
-        public async Task<EndpointOut> PatchAsync(
+        /// <summary>
+        /// Delete an endpoint.
+        /// </summary>
+        public async Task<bool> DeleteAsync(
             string appId,
             string endpointId,
-            EndpointPatch endpoint,
-            string idempotencyKey = default,
             CancellationToken cancellationToken = default
         )
         {
             try
             {
-                var lEndpoint = await _endpointApi.V1EndpointPatchAsync(
-                    appId,
-                    endpointId,
-                    endpoint,
-                    cancellationToken
+                var response = await _endpointApi.V1EndpointDeleteWithHttpInfoAsync(
+                    appId: appId,
+                    endpointId: endpointId,
+                    cancellationToken: cancellationToken
                 );
+                return response.StatusCode == HttpStatusCode.NoContent;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(DeleteAsync)} failed");
 
-                return lEndpoint;
+                if (Throw)
+                    throw;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Delete an endpoint.
+        /// </summary>
+        public bool Delete(string appId, string endpointId)
+        {
+            try
+            {
+                var response = _endpointApi.V1EndpointDeleteWithHttpInfo(
+                    appId: appId,
+                    endpointId: endpointId
+                );
+                return response.StatusCode == HttpStatusCode.NoContent;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(Delete)} failed");
+
+                if (Throw)
+                    throw;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Partially update an endpoint.
+        /// </summary>
+        public async Task<EndpointOut> PatchAsync(
+            string appId,
+            string endpointId,
+            EndpointPatch endpointPatch,
+            CancellationToken cancellationToken = default
+        )
+        {
+            try
+            {
+                endpointPatch =
+                    endpointPatch ?? throw new ArgumentNullException(nameof(endpointPatch));
+                var response = await _endpointApi.V1EndpointPatchWithHttpInfoAsync(
+                    appId: appId,
+                    endpointId: endpointId,
+                    endpointPatch: endpointPatch,
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
             }
             catch (ApiException e)
             {
@@ -604,57 +369,108 @@ namespace Svix
 
                 if (Throw)
                     throw;
-
-                return null;
+                return new EndpointOut();
             }
         }
 
-        public bool UpdateHeaders(
-            string appId,
-            string endpointId,
-            EndpointHeadersIn headers,
-            string idempotencyKey = default
-        )
+        /// <summary>
+        /// Partially update an endpoint.
+        /// </summary>
+        public EndpointOut Patch(string appId, string endpointId, EndpointPatch endpointPatch)
         {
             try
             {
-                var lResponse = _endpointApi.V1EndpointUpdateHeadersWithHttpInfo(
-                    appId,
-                    endpointId,
-                    headers
+                endpointPatch =
+                    endpointPatch ?? throw new ArgumentNullException(nameof(endpointPatch));
+                var response = _endpointApi.V1EndpointPatchWithHttpInfo(
+                    appId: appId,
+                    endpointId: endpointId,
+                    endpointPatch: endpointPatch
                 );
-
-                return lResponse.StatusCode == HttpStatusCode.NoContent;
+                return response.Data;
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(UpdateHeaders)} failed");
+                Logger?.LogError(e, $"{nameof(Patch)} failed");
 
                 if (Throw)
                     throw;
-
-                return false;
+                return new EndpointOut();
             }
         }
 
-        public async Task<bool> UpdateHeadersAsync(
+        /// <summary>
+        /// Get the additional headers to be sent with the webhook.
+        /// </summary>
+        public async Task<EndpointHeadersOut> GetHeadersAsync(
             string appId,
             string endpointId,
-            EndpointHeadersIn headers,
-            string idempotencyKey = default,
             CancellationToken cancellationToken = default
         )
         {
             try
             {
-                var lResponse = await _endpointApi.V1EndpointUpdateHeadersWithHttpInfoAsync(
-                    appId,
-                    endpointId,
-                    headers,
-                    cancellationToken
+                var response = await _endpointApi.V1EndpointGetHeadersWithHttpInfoAsync(
+                    appId: appId,
+                    endpointId: endpointId,
+                    cancellationToken: cancellationToken
                 );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(GetHeadersAsync)} failed");
 
-                return lResponse.StatusCode == HttpStatusCode.NoContent;
+                if (Throw)
+                    throw;
+                return new EndpointHeadersOut();
+            }
+        }
+
+        /// <summary>
+        /// Get the additional headers to be sent with the webhook.
+        /// </summary>
+        public EndpointHeadersOut GetHeaders(string appId, string endpointId)
+        {
+            try
+            {
+                var response = _endpointApi.V1EndpointGetHeadersWithHttpInfo(
+                    appId: appId,
+                    endpointId: endpointId
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(GetHeaders)} failed");
+
+                if (Throw)
+                    throw;
+                return new EndpointHeadersOut();
+            }
+        }
+
+        /// <summary>
+        /// Set the additional headers to be sent with the webhook.
+        /// </summary>
+        public async Task<bool> UpdateHeadersAsync(
+            string appId,
+            string endpointId,
+            EndpointHeadersIn endpointHeadersIn,
+            CancellationToken cancellationToken = default
+        )
+        {
+            try
+            {
+                endpointHeadersIn =
+                    endpointHeadersIn ?? throw new ArgumentNullException(nameof(endpointHeadersIn));
+                var response = await _endpointApi.V1EndpointUpdateHeadersWithHttpInfoAsync(
+                    appId: appId,
+                    endpointId: endpointId,
+                    endpointHeadersIn: endpointHeadersIn,
+                    cancellationToken: cancellationToken
+                );
+                return response.StatusCode == HttpStatusCode.NoContent;
             }
             catch (ApiException e)
             {
@@ -662,172 +478,197 @@ namespace Svix
 
                 if (Throw)
                     throw;
-
                 return false;
             }
         }
 
-        public EndpointStats GetStats(
+        /// <summary>
+        /// Set the additional headers to be sent with the webhook.
+        /// </summary>
+        public bool UpdateHeaders(
             string appId,
             string endpointId,
-            string idempotencyKey = default
+            EndpointHeadersIn endpointHeadersIn
         )
         {
             try
             {
-                var lStats = _endpointApi.V1EndpointGetStats(appId, endpointId, null, null);
-
-                return lStats;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(GetStats)} failed");
-
-                if (Throw)
-                    throw;
-
-                return null;
-            }
-        }
-
-        public EndpointStats GetStatsWithOptions(
-            string appId,
-            string endpointId,
-            EndpointStatsOptions options = null,
-            string idempotencyKey = default
-        )
-        {
-            try
-            {
-                var lStats = _endpointApi.V1EndpointGetStats(
-                    appId,
-                    endpointId,
-                    options?.Since,
-                    options?.Until
+                endpointHeadersIn =
+                    endpointHeadersIn ?? throw new ArgumentNullException(nameof(endpointHeadersIn));
+                var response = _endpointApi.V1EndpointUpdateHeadersWithHttpInfo(
+                    appId: appId,
+                    endpointId: endpointId,
+                    endpointHeadersIn: endpointHeadersIn
                 );
-
-                return lStats;
+                return response.StatusCode == HttpStatusCode.NoContent;
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(GetStatsWithOptions)} failed");
+                Logger?.LogError(e, $"{nameof(UpdateHeaders)} failed");
 
                 if (Throw)
                     throw;
-
-                return null;
-            }
-        }
-
-        public async Task<EndpointStats> GetStatsAsync(
-            string appId,
-            string endpointId,
-            string idempotencyKey = default,
-            CancellationToken cancellationToken = default
-        )
-        {
-            try
-            {
-                var lStats = await _endpointApi.V1EndpointGetStatsAsync(
-                    appId,
-                    endpointId,
-                    null,
-                    null,
-                    cancellationToken
-                );
-
-                return lStats;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(GetStatsAsync)} failed");
-
-                if (Throw)
-                    throw;
-
-                return null;
-            }
-        }
-
-        public async Task<EndpointStats> GetStatsWithOptionsAsync(
-            string appId,
-            string endpointId,
-            EndpointStatsOptions options = null,
-            string idempotencyKey = default,
-            CancellationToken cancellationToken = default
-        )
-        {
-            try
-            {
-                var lStats = await _endpointApi.V1EndpointGetStatsAsync(
-                    appId,
-                    endpointId,
-                    options?.Since,
-                    options?.Until,
-                    cancellationToken
-                );
-
-                return lStats;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(GetStatsWithOptionsAsync)} failed");
-
-                if (Throw)
-                    throw;
-
-                return null;
-            }
-        }
-
-        public bool ReplayMissing(
-            string appId,
-            string endpointId,
-            ReplayIn replayIn,
-            string idempotencyKey = default
-        )
-        {
-            try
-            {
-                var response = _endpointApi.V1EndpointReplayMissingWithHttpInfo(
-                    appId,
-                    endpointId,
-                    replayIn,
-                    idempotencyKey
-                );
-
-                return response.StatusCode == HttpStatusCode.Accepted;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(ReplayMissing)} failed");
-
-                if (Throw)
-                    throw;
-
                 return false;
             }
         }
 
-        public async Task<bool> ReplayMissingAsync(
+        /// <summary>
+        /// Partially set the additional headers to be sent with the webhook.
+        /// </summary>
+        public async Task<bool> PatchHeadersAsync(
             string appId,
             string endpointId,
-            ReplayIn replayIn,
-            string idempotencyKey = default,
+            EndpointHeadersPatchIn endpointHeadersPatchIn,
             CancellationToken cancellationToken = default
         )
         {
             try
             {
+                endpointHeadersPatchIn =
+                    endpointHeadersPatchIn
+                    ?? throw new ArgumentNullException(nameof(endpointHeadersPatchIn));
+                var response = await _endpointApi.V1EndpointPatchHeadersWithHttpInfoAsync(
+                    appId: appId,
+                    endpointId: endpointId,
+                    endpointHeadersPatchIn: endpointHeadersPatchIn,
+                    cancellationToken: cancellationToken
+                );
+                return response.StatusCode == HttpStatusCode.NoContent;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(PatchHeadersAsync)} failed");
+
+                if (Throw)
+                    throw;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Partially set the additional headers to be sent with the webhook.
+        /// </summary>
+        public bool PatchHeaders(
+            string appId,
+            string endpointId,
+            EndpointHeadersPatchIn endpointHeadersPatchIn
+        )
+        {
+            try
+            {
+                endpointHeadersPatchIn =
+                    endpointHeadersPatchIn
+                    ?? throw new ArgumentNullException(nameof(endpointHeadersPatchIn));
+                var response = _endpointApi.V1EndpointPatchHeadersWithHttpInfo(
+                    appId: appId,
+                    endpointId: endpointId,
+                    endpointHeadersPatchIn: endpointHeadersPatchIn
+                );
+                return response.StatusCode == HttpStatusCode.NoContent;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(PatchHeaders)} failed");
+
+                if (Throw)
+                    throw;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Resend all failed messages since a given time.
+        ///
+        /// Messages that were sent successfully, even if failed initially, are not resent.
+        /// </summary>
+        public async Task<RecoverOut> RecoverAsync(
+            string appId,
+            string endpointId,
+            RecoverIn recoverIn,
+            EndpointRecoverOptions? options = null,
+            CancellationToken cancellationToken = default
+        )
+        {
+            try
+            {
+                recoverIn = recoverIn ?? throw new ArgumentNullException(nameof(recoverIn));
+                var response = await _endpointApi.V1EndpointRecoverWithHttpInfoAsync(
+                    appId: appId,
+                    endpointId: endpointId,
+                    recoverIn: recoverIn,
+                    idempotencyKey: options?.IdempotencyKey,
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(RecoverAsync)} failed");
+
+                if (Throw)
+                    throw;
+                return new RecoverOut();
+            }
+        }
+
+        /// <summary>
+        /// Resend all failed messages since a given time.
+        ///
+        /// Messages that were sent successfully, even if failed initially, are not resent.
+        /// </summary>
+        public RecoverOut Recover(
+            string appId,
+            string endpointId,
+            RecoverIn recoverIn,
+            EndpointRecoverOptions? options = null
+        )
+        {
+            try
+            {
+                recoverIn = recoverIn ?? throw new ArgumentNullException(nameof(recoverIn));
+                var response = _endpointApi.V1EndpointRecoverWithHttpInfo(
+                    appId: appId,
+                    endpointId: endpointId,
+                    recoverIn: recoverIn,
+                    idempotencyKey: options?.IdempotencyKey
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(Recover)} failed");
+
+                if (Throw)
+                    throw;
+                return new RecoverOut();
+            }
+        }
+
+        /// <summary>
+        /// Replays messages to the endpoint.
+        ///
+        /// Only messages that were created after `since` will be sent.
+        /// Messages that were previously sent to the endpoint are not resent.
+        /// </summary>
+        public async Task<ReplayOut> ReplayMissingAsync(
+            string appId,
+            string endpointId,
+            ReplayIn replayIn,
+            EndpointReplayMissingOptions? options = null,
+            CancellationToken cancellationToken = default
+        )
+        {
+            try
+            {
+                replayIn = replayIn ?? throw new ArgumentNullException(nameof(replayIn));
                 var response = await _endpointApi.V1EndpointReplayMissingWithHttpInfoAsync(
-                    appId,
-                    endpointId,
-                    replayIn,
-                    idempotencyKey,
-                    cancellationToken
+                    appId: appId,
+                    endpointId: endpointId,
+                    replayIn: replayIn,
+                    idempotencyKey: options?.IdempotencyKey,
+                    cancellationToken: cancellationToken
                 );
-
-                return response.StatusCode == HttpStatusCode.Accepted;
+                return response.Data;
             }
             catch (ApiException e)
             {
@@ -835,50 +676,316 @@ namespace Svix
 
                 if (Throw)
                     throw;
-
-                return false;
+                return new ReplayOut();
             }
         }
 
-        public EndpointTransformationOut TransformationGet(
+        /// <summary>
+        /// Replays messages to the endpoint.
+        ///
+        /// Only messages that were created after `since` will be sent.
+        /// Messages that were previously sent to the endpoint are not resent.
+        /// </summary>
+        public ReplayOut ReplayMissing(
             string appId,
             string endpointId,
-            string idempotencyKey = default
+            ReplayIn replayIn,
+            EndpointReplayMissingOptions? options = null
         )
         {
             try
             {
-                var lTransformation = _endpointApi.V1EndpointTransformationGet(appId, endpointId);
-
-                return lTransformation;
+                replayIn = replayIn ?? throw new ArgumentNullException(nameof(replayIn));
+                var response = _endpointApi.V1EndpointReplayMissingWithHttpInfo(
+                    appId: appId,
+                    endpointId: endpointId,
+                    replayIn: replayIn,
+                    idempotencyKey: options?.IdempotencyKey
+                );
+                return response.Data;
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(TransformationGet)} failed");
+                Logger?.LogError(e, $"{nameof(ReplayMissing)} failed");
 
                 if (Throw)
                     throw;
-
-                return null;
+                return new ReplayOut();
             }
         }
 
-        public async Task<EndpointTransformationOut> TransformationGetAsync(
+        /// <summary>
+        /// Get the endpoint's signing secret.
+        ///
+        /// This is used to verify the authenticity of the webhook.
+        /// For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
+        /// </summary>
+        public async Task<EndpointSecretOut> GetSecretAsync(
             string appId,
             string endpointId,
-            string idempotencyKey = default,
             CancellationToken cancellationToken = default
         )
         {
             try
             {
-                var lTransformation = await _endpointApi.V1EndpointTransformationGetAsync(
-                    appId,
-                    endpointId,
-                    cancellationToken
+                var response = await _endpointApi.V1EndpointGetSecretWithHttpInfoAsync(
+                    appId: appId,
+                    endpointId: endpointId,
+                    cancellationToken: cancellationToken
                 );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(GetSecretAsync)} failed");
 
-                return lTransformation;
+                if (Throw)
+                    throw;
+                return new EndpointSecretOut();
+            }
+        }
+
+        /// <summary>
+        /// Get the endpoint's signing secret.
+        ///
+        /// This is used to verify the authenticity of the webhook.
+        /// For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
+        /// </summary>
+        public EndpointSecretOut GetSecret(string appId, string endpointId)
+        {
+            try
+            {
+                var response = _endpointApi.V1EndpointGetSecretWithHttpInfo(
+                    appId: appId,
+                    endpointId: endpointId
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(GetSecret)} failed");
+
+                if (Throw)
+                    throw;
+                return new EndpointSecretOut();
+            }
+        }
+
+        /// <summary>
+        /// Rotates the endpoint's signing secret.
+        ///
+        /// The previous secret will remain valid for the next 24 hours.
+        /// </summary>
+        public async Task<bool> RotateSecretAsync(
+            string appId,
+            string endpointId,
+            EndpointSecretRotateIn endpointSecretRotateIn,
+            EndpointRotateSecretOptions? options = null,
+            CancellationToken cancellationToken = default
+        )
+        {
+            try
+            {
+                endpointSecretRotateIn =
+                    endpointSecretRotateIn
+                    ?? throw new ArgumentNullException(nameof(endpointSecretRotateIn));
+                var response = await _endpointApi.V1EndpointRotateSecretWithHttpInfoAsync(
+                    appId: appId,
+                    endpointId: endpointId,
+                    endpointSecretRotateIn: endpointSecretRotateIn,
+                    idempotencyKey: options?.IdempotencyKey,
+                    cancellationToken: cancellationToken
+                );
+                return response.StatusCode == HttpStatusCode.NoContent;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(RotateSecretAsync)} failed");
+
+                if (Throw)
+                    throw;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Rotates the endpoint's signing secret.
+        ///
+        /// The previous secret will remain valid for the next 24 hours.
+        /// </summary>
+        public bool RotateSecret(
+            string appId,
+            string endpointId,
+            EndpointSecretRotateIn endpointSecretRotateIn,
+            EndpointRotateSecretOptions? options = null
+        )
+        {
+            try
+            {
+                endpointSecretRotateIn =
+                    endpointSecretRotateIn
+                    ?? throw new ArgumentNullException(nameof(endpointSecretRotateIn));
+                var response = _endpointApi.V1EndpointRotateSecretWithHttpInfo(
+                    appId: appId,
+                    endpointId: endpointId,
+                    endpointSecretRotateIn: endpointSecretRotateIn,
+                    idempotencyKey: options?.IdempotencyKey
+                );
+                return response.StatusCode == HttpStatusCode.NoContent;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(RotateSecret)} failed");
+
+                if (Throw)
+                    throw;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Send an example message for an event.
+        /// </summary>
+        public async Task<MessageOut> SendExampleAsync(
+            string appId,
+            string endpointId,
+            EventExampleIn eventExampleIn,
+            EndpointSendExampleOptions? options = null,
+            CancellationToken cancellationToken = default
+        )
+        {
+            try
+            {
+                eventExampleIn =
+                    eventExampleIn ?? throw new ArgumentNullException(nameof(eventExampleIn));
+                var response = await _endpointApi.V1EndpointSendExampleWithHttpInfoAsync(
+                    appId: appId,
+                    endpointId: endpointId,
+                    eventExampleIn: eventExampleIn,
+                    idempotencyKey: options?.IdempotencyKey,
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(SendExampleAsync)} failed");
+
+                if (Throw)
+                    throw;
+                return new MessageOut();
+            }
+        }
+
+        /// <summary>
+        /// Send an example message for an event.
+        /// </summary>
+        public MessageOut SendExample(
+            string appId,
+            string endpointId,
+            EventExampleIn eventExampleIn,
+            EndpointSendExampleOptions? options = null
+        )
+        {
+            try
+            {
+                eventExampleIn =
+                    eventExampleIn ?? throw new ArgumentNullException(nameof(eventExampleIn));
+                var response = _endpointApi.V1EndpointSendExampleWithHttpInfo(
+                    appId: appId,
+                    endpointId: endpointId,
+                    eventExampleIn: eventExampleIn,
+                    idempotencyKey: options?.IdempotencyKey
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(SendExample)} failed");
+
+                if (Throw)
+                    throw;
+                return new MessageOut();
+            }
+        }
+
+        /// <summary>
+        /// Get basic statistics for the endpoint.
+        /// </summary>
+        public async Task<EndpointStats> GetStatsAsync(
+            string appId,
+            string endpointId,
+            EndpointGetStatsOptions? options = null,
+            CancellationToken cancellationToken = default
+        )
+        {
+            try
+            {
+                var response = await _endpointApi.V1EndpointGetStatsWithHttpInfoAsync(
+                    appId: appId,
+                    endpointId: endpointId,
+                    since: options?.Since,
+                    until: options?.Until,
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(GetStatsAsync)} failed");
+
+                if (Throw)
+                    throw;
+                return new EndpointStats();
+            }
+        }
+
+        /// <summary>
+        /// Get basic statistics for the endpoint.
+        /// </summary>
+        public EndpointStats GetStats(
+            string appId,
+            string endpointId,
+            EndpointGetStatsOptions? options = null
+        )
+        {
+            try
+            {
+                var response = _endpointApi.V1EndpointGetStatsWithHttpInfo(
+                    appId: appId,
+                    endpointId: endpointId,
+                    since: options?.Since,
+                    until: options?.Until
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(GetStats)} failed");
+
+                if (Throw)
+                    throw;
+                return new EndpointStats();
+            }
+        }
+
+        /// <summary>
+        /// Get the transformation code associated with this endpoint.
+        /// </summary>
+        public async Task<EndpointTransformationOut> TransformationGetAsync(
+            string appId,
+            string endpointId,
+            CancellationToken cancellationToken = default
+        )
+        {
+            try
+            {
+                var response = await _endpointApi.V1EndpointTransformationGetWithHttpInfoAsync(
+                    appId: appId,
+                    endpointId: endpointId,
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
             }
             catch (ApiException e)
             {
@@ -886,27 +993,22 @@ namespace Svix
 
                 if (Throw)
                     throw;
-
-                return null;
+                return new EndpointTransformationOut();
             }
         }
 
-        public bool TransformationPartialUpdate(
-            string appId,
-            string endpointId,
-            EndpointTransformationIn endpointTransformationIn,
-            string idempotencyKey = default
-        )
+        /// <summary>
+        /// Get the transformation code associated with this endpoint.
+        /// </summary>
+        public EndpointTransformationOut TransformationGet(string appId, string endpointId)
         {
             try
             {
-                var response = _endpointApi.V1EndpointTransformationPartialUpdateWithHttpInfo(
-                    appId,
-                    endpointId,
-                    endpointTransformationIn
+                var response = _endpointApi.V1EndpointTransformationGetWithHttpInfo(
+                    appId: appId,
+                    endpointId: endpointId
                 );
-
-                return response.StatusCode == HttpStatusCode.NoContent;
+                return response.Data;
             }
             catch (ApiException e)
             {
@@ -914,29 +1016,32 @@ namespace Svix
 
                 if (Throw)
                     throw;
-
-                return false;
+                return new EndpointTransformationOut();
             }
         }
 
+        /// <summary>
+        /// Set or unset the transformation code associated with this endpoint.
+        /// </summary>
         public async Task<bool> TransformationPartialUpdateAsync(
             string appId,
             string endpointId,
             EndpointTransformationIn endpointTransformationIn,
-            string idempotencyKey = default,
             CancellationToken cancellationToken = default
         )
         {
             try
             {
+                endpointTransformationIn =
+                    endpointTransformationIn
+                    ?? throw new ArgumentNullException(nameof(endpointTransformationIn));
                 var response =
                     await _endpointApi.V1EndpointTransformationPartialUpdateWithHttpInfoAsync(
-                        appId,
-                        endpointId,
-                        endpointTransformationIn,
-                        cancellationToken
+                        appId: appId,
+                        endpointId: endpointId,
+                        endpointTransformationIn: endpointTransformationIn,
+                        cancellationToken: cancellationToken
                     );
-
                 return response.StatusCode == HttpStatusCode.NoContent;
             }
             catch (ApiException e)
@@ -945,67 +1050,38 @@ namespace Svix
 
                 if (Throw)
                     throw;
-
                 return false;
             }
         }
 
-        public MessageOut SendExample(
+        /// <summary>
+        /// Set or unset the transformation code associated with this endpoint.
+        /// </summary>
+        public bool TransformationPartialUpdate(
             string appId,
             string endpointId,
-            EventExampleIn eventExampleIn,
-            string idempotencyKey = default
+            EndpointTransformationIn endpointTransformationIn
         )
         {
             try
             {
-                var response = _endpointApi.V1EndpointSendExample(
-                    appId,
-                    endpointId,
-                    eventExampleIn,
-                    idempotencyKey
+                endpointTransformationIn =
+                    endpointTransformationIn
+                    ?? throw new ArgumentNullException(nameof(endpointTransformationIn));
+                var response = _endpointApi.V1EndpointTransformationPartialUpdateWithHttpInfo(
+                    appId: appId,
+                    endpointId: endpointId,
+                    endpointTransformationIn: endpointTransformationIn
                 );
-
-                return response;
+                return response.StatusCode == HttpStatusCode.NoContent;
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(SendExample)} failed");
+                Logger?.LogError(e, $"{nameof(TransformationPartialUpdate)} failed");
 
                 if (Throw)
                     throw;
-
-                return null;
-            }
-        }
-
-        public async Task<MessageOut> SendExampleAsync(
-            string appId,
-            string endpointId,
-            EventExampleIn eventExampleIn,
-            string idempotencyKey = default,
-            CancellationToken cancellationToken = default
-        )
-        {
-            try
-            {
-                var response = await _endpointApi.V1EndpointSendExampleAsync(
-                    appId,
-                    endpointId,
-                    eventExampleIn,
-                    idempotencyKey
-                );
-
-                return response;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(SendExampleAsync)} failed");
-
-                if (Throw)
-                    throw;
-
-                return null;
+                return false;
             }
         }
     }

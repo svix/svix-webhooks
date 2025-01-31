@@ -1,6 +1,7 @@
+// this file is @generated
+#nullable enable
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,131 +14,283 @@ using Svix.Models;
 
 namespace Svix
 {
-    public sealed class MessageAttempt : SvixResourceBase, IMessageAttempt
+    public partial class MessageAttemptListByEndpointOptions
     {
-        private readonly IMessageAttemptApi _messageAttemptApi;
+        public int? Limit { get; set; }
+        public string? Iterator { get; set; }
+        public MessageStatus? Status { get; set; }
+        public StatusCodeClass? StatusCodeClass { get; set; }
+        public string? Channel { get; set; }
+        public string? Tag { get; set; }
+        public DateTime? Before { get; set; }
+        public DateTime? After { get; set; }
+        public bool? WithContent { get; set; }
+        public bool? WithMsg { get; set; }
+        public List<string>? EventTypes { get; set; }
+    }
 
-        public MessageAttempt(ISvixClient svixClient, IMessageAttemptApi messageAttemptApi)
+    public partial class MessageAttemptListByMsgOptions
+    {
+        public int? Limit { get; set; }
+        public string? Iterator { get; set; }
+        public MessageStatus? Status { get; set; }
+        public StatusCodeClass? StatusCodeClass { get; set; }
+        public string? Channel { get; set; }
+        public string? Tag { get; set; }
+        public string? EndpointId { get; set; }
+        public DateTime? Before { get; set; }
+        public DateTime? After { get; set; }
+        public bool? WithContent { get; set; }
+        public List<string>? EventTypes { get; set; }
+    }
+
+    public partial class MessageAttemptListAttemptedMessagesOptions
+    {
+        public int? Limit { get; set; }
+        public string? Iterator { get; set; }
+        public string? Channel { get; set; }
+        public string? Tag { get; set; }
+        public MessageStatus? Status { get; set; }
+        public DateTime? Before { get; set; }
+        public DateTime? After { get; set; }
+        public bool? WithContent { get; set; }
+        public List<string>? EventTypes { get; set; }
+    }
+
+    public partial class MessageAttemptListAttemptedDestinationsOptions
+    {
+        public int? Limit { get; set; }
+        public string? Iterator { get; set; }
+    }
+
+    public partial class MessageAttemptResendOptions
+    {
+        public string? IdempotencyKey { get; set; }
+    }
+
+    public sealed class MessageAttempt : SvixResourceBase
+    {
+        private readonly MessageAttemptApi _messageAttemptApi;
+
+        public MessageAttempt(ISvixClient svixClient, MessageAttemptApi messageAttemptApi)
             : base(svixClient)
         {
             _messageAttemptApi =
                 messageAttemptApi ?? throw new ArgumentNullException(nameof(messageAttemptApi));
         }
 
-        public MessageAttemptOut GetAttempt(
+        /// <summary>
+        /// List attempts by endpoint id
+        ///
+        /// Note that by default this endpoint is limited to retrieving 90 days' worth of data
+        /// relative to now or, if an iterator is provided, 90 days before/after the time indicated
+        /// by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
+        /// set the `before` or `after` parameter as appropriate.
+        /// </summary>
+        public async Task<ListResponseMessageAttemptOut> ListByEndpointAsync(
             string appId,
-            string attemptId,
-            string messageId,
-            string idempotencyKey = default
-        )
-        {
-            try
-            {
-                var lAttempt = _messageAttemptApi.V1MessageAttemptGet(appId, messageId, attemptId);
-
-                return lAttempt;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(GetAttempt)} failed");
-
-                if (Throw)
-                    throw;
-
-                return null;
-            }
-        }
-
-        public async Task<MessageAttemptOut> GetAttemptAsync(
-            string appId,
-            string attemptId,
-            string messageId,
-            string idempotencyKey = default,
+            string endpointId,
+            MessageAttemptListByEndpointOptions? options = null,
             CancellationToken cancellationToken = default
         )
         {
             try
             {
-                var lAttempt = await _messageAttemptApi.V1MessageAttemptGetAsync(
-                    appId,
-                    messageId,
-                    attemptId,
-                    cancellationToken
-                );
-
-                return lAttempt;
+                var response =
+                    await _messageAttemptApi.V1MessageAttemptListByEndpointWithHttpInfoAsync(
+                        appId: appId,
+                        endpointId: endpointId,
+                        limit: options?.Limit,
+                        iterator: options?.Iterator,
+                        status: options?.Status,
+                        statusCodeClass: options?.StatusCodeClass,
+                        channel: options?.Channel,
+                        tag: options?.Tag,
+                        before: options?.Before,
+                        after: options?.After,
+                        withContent: options?.WithContent,
+                        withMsg: options?.WithMsg,
+                        eventTypes: options?.EventTypes,
+                        cancellationToken: cancellationToken
+                    );
+                return response.Data;
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(GetAttemptAsync)} failed");
+                Logger?.LogError(e, $"{nameof(ListByEndpointAsync)} failed");
 
                 if (Throw)
                     throw;
-
-                return null;
+                return new ListResponseMessageAttemptOut();
             }
         }
 
-        public ListResponseEndpointMessageOut ListAttemptedMessages(
+        /// <summary>
+        /// List attempts by endpoint id
+        ///
+        /// Note that by default this endpoint is limited to retrieving 90 days' worth of data
+        /// relative to now or, if an iterator is provided, 90 days before/after the time indicated
+        /// by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
+        /// set the `before` or `after` parameter as appropriate.
+        /// </summary>
+        public ListResponseMessageAttemptOut ListByEndpoint(
             string appId,
             string endpointId,
-            MessageAttemptListOptions options = null,
-            string idempotencyKey = default
+            MessageAttemptListByEndpointOptions? options = null
         )
         {
             try
             {
-                var lResults = _messageAttemptApi.V1MessageAttemptListAttemptedMessages(
-                    appId,
-                    endpointId,
-                    options?.Limit,
-                    options?.Iterator,
-                    options?.Channel,
-                    options?.Tag,
-                    (Svix.Model.MessageStatus?)options?.Status,
-                    options?.Before,
-                    options?.After
+                var response = _messageAttemptApi.V1MessageAttemptListByEndpointWithHttpInfo(
+                    appId: appId,
+                    endpointId: endpointId,
+                    limit: options?.Limit,
+                    iterator: options?.Iterator,
+                    status: options?.Status,
+                    statusCodeClass: options?.StatusCodeClass,
+                    channel: options?.Channel,
+                    tag: options?.Tag,
+                    before: options?.Before,
+                    after: options?.After,
+                    withContent: options?.WithContent,
+                    withMsg: options?.WithMsg,
+                    eventTypes: options?.EventTypes
                 );
-
-                return lResults;
+                return response.Data;
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(ListAttemptedMessages)} failed");
+                Logger?.LogError(e, $"{nameof(ListByEndpoint)} failed");
 
                 if (Throw)
                     throw;
-
-                return new ListResponseEndpointMessageOut();
+                return new ListResponseMessageAttemptOut();
             }
         }
 
+        /// <summary>
+        /// List attempts by message ID.
+        ///
+        /// Note that by default this endpoint is limited to retrieving 90 days' worth of data
+        /// relative to now or, if an iterator is provided, 90 days before/after the time indicated
+        /// by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
+        /// set the `before` or `after` parameter as appropriate.
+        /// </summary>
+        public async Task<ListResponseMessageAttemptOut> ListByMsgAsync(
+            string appId,
+            string msgId,
+            MessageAttemptListByMsgOptions? options = null,
+            CancellationToken cancellationToken = default
+        )
+        {
+            try
+            {
+                var response = await _messageAttemptApi.V1MessageAttemptListByMsgWithHttpInfoAsync(
+                    appId: appId,
+                    msgId: msgId,
+                    limit: options?.Limit,
+                    iterator: options?.Iterator,
+                    status: options?.Status,
+                    statusCodeClass: options?.StatusCodeClass,
+                    channel: options?.Channel,
+                    tag: options?.Tag,
+                    endpointId: options?.EndpointId,
+                    before: options?.Before,
+                    after: options?.After,
+                    withContent: options?.WithContent,
+                    eventTypes: options?.EventTypes,
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(ListByMsgAsync)} failed");
+
+                if (Throw)
+                    throw;
+                return new ListResponseMessageAttemptOut();
+            }
+        }
+
+        /// <summary>
+        /// List attempts by message ID.
+        ///
+        /// Note that by default this endpoint is limited to retrieving 90 days' worth of data
+        /// relative to now or, if an iterator is provided, 90 days before/after the time indicated
+        /// by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
+        /// set the `before` or `after` parameter as appropriate.
+        /// </summary>
+        public ListResponseMessageAttemptOut ListByMsg(
+            string appId,
+            string msgId,
+            MessageAttemptListByMsgOptions? options = null
+        )
+        {
+            try
+            {
+                var response = _messageAttemptApi.V1MessageAttemptListByMsgWithHttpInfo(
+                    appId: appId,
+                    msgId: msgId,
+                    limit: options?.Limit,
+                    iterator: options?.Iterator,
+                    status: options?.Status,
+                    statusCodeClass: options?.StatusCodeClass,
+                    channel: options?.Channel,
+                    tag: options?.Tag,
+                    endpointId: options?.EndpointId,
+                    before: options?.Before,
+                    after: options?.After,
+                    withContent: options?.WithContent,
+                    eventTypes: options?.EventTypes
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(ListByMsg)} failed");
+
+                if (Throw)
+                    throw;
+                return new ListResponseMessageAttemptOut();
+            }
+        }
+
+        /// <summary>
+        /// List messages for a particular endpoint. Additionally includes metadata about the latest message attempt.
+        ///
+        /// The `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.
+        ///
+        /// Note that by default this endpoint is limited to retrieving 90 days' worth of data
+        /// relative to now or, if an iterator is provided, 90 days before/after the time indicated
+        /// by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
+        /// set the `before` or `after` parameter as appropriate.
+        /// </summary>
         public async Task<ListResponseEndpointMessageOut> ListAttemptedMessagesAsync(
             string appId,
             string endpointId,
-            MessageAttemptListOptions options = null,
-            string idempotencyKey = default,
+            MessageAttemptListAttemptedMessagesOptions? options = null,
             CancellationToken cancellationToken = default
         )
         {
             try
             {
-                var lResults = await _messageAttemptApi.V1MessageAttemptListAttemptedMessagesAsync(
-                    appId,
-                    endpointId,
-                    options?.Limit,
-                    options?.Iterator,
-                    options?.Channel,
-                    options?.Tag,
-                    (MessageStatus?)options?.Status,
-                    options?.Before,
-                    options?.After,
-                    options?.WithContent,
-                    options?.EventTypes,
-                    cancellationToken
-                );
-
-                return lResults;
+                var response =
+                    await _messageAttemptApi.V1MessageAttemptListAttemptedMessagesWithHttpInfoAsync(
+                        appId: appId,
+                        endpointId: endpointId,
+                        limit: options?.Limit,
+                        iterator: options?.Iterator,
+                        channel: options?.Channel,
+                        tag: options?.Tag,
+                        status: options?.Status,
+                        before: options?.Before,
+                        after: options?.After,
+                        withContent: options?.WithContent,
+                        eventTypes: options?.EventTypes,
+                        cancellationToken: cancellationToken
+                    );
+                return response.Data;
             }
             catch (ApiException e)
             {
@@ -145,443 +298,130 @@ namespace Svix
 
                 if (Throw)
                     throw;
-
                 return new ListResponseEndpointMessageOut();
             }
         }
 
-        public ListResponseMessageAttemptOut ListAttemptsByEndpoint(
+        /// <summary>
+        /// List messages for a particular endpoint. Additionally includes metadata about the latest message attempt.
+        ///
+        /// The `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.
+        ///
+        /// Note that by default this endpoint is limited to retrieving 90 days' worth of data
+        /// relative to now or, if an iterator is provided, 90 days before/after the time indicated
+        /// by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
+        /// set the `before` or `after` parameter as appropriate.
+        /// </summary>
+        public ListResponseEndpointMessageOut ListAttemptedMessages(
             string appId,
             string endpointId,
-            AttemptsByEndpointListOptions options = null,
-            string idempotencyKey = default
+            MessageAttemptListAttemptedMessagesOptions? options = null
         )
         {
             try
             {
-                var lResults = _messageAttemptApi.V1MessageAttemptListByEndpoint(
-                    appId,
-                    endpointId,
-                    options?.Limit,
-                    options?.Iterator,
-                    (Svix.Model.MessageStatus?)options?.Status,
-                    (Svix.Model.StatusCodeClass?)options?.Code,
-                    options?.Channel,
-                    options?.Tag,
-                    options?.Before,
-                    options?.After,
-                    options?.WithContent,
-                    options?.WithMsg,
-                    options?.EventTypes
+                var response = _messageAttemptApi.V1MessageAttemptListAttemptedMessagesWithHttpInfo(
+                    appId: appId,
+                    endpointId: endpointId,
+                    limit: options?.Limit,
+                    iterator: options?.Iterator,
+                    channel: options?.Channel,
+                    tag: options?.Tag,
+                    status: options?.Status,
+                    before: options?.Before,
+                    after: options?.After,
+                    withContent: options?.WithContent,
+                    eventTypes: options?.EventTypes
                 );
-
-                return lResults;
+                return response.Data;
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(ListAttemptsByEndpoint)} failed");
+                Logger?.LogError(e, $"{nameof(ListAttemptedMessages)} failed");
 
                 if (Throw)
                     throw;
-
-                return new ListResponseMessageAttemptOut();
+                return new ListResponseEndpointMessageOut();
             }
         }
 
-        public async Task<ListResponseMessageAttemptOut> ListAttemptsByEndpointAsync(
+        /// <summary>
+        /// `msg_id`: Use a message id or a message `eventId`
+        /// </summary>
+        public async Task<MessageAttemptOut> GetAsync(
             string appId,
-            string endpointId,
-            AttemptsByEndpointListOptions options = null,
-            string idempotencyKey = default,
-            CancellationToken cancellationToken = default
-        )
-        {
-            try
-            {
-                var lResults = await _messageAttemptApi.V1MessageAttemptListByEndpointAsync(
-                    appId,
-                    endpointId,
-                    options?.Limit,
-                    options?.Iterator,
-                    (Svix.Model.MessageStatus?)options?.Status,
-                    (Svix.Model.StatusCodeClass?)options?.Code,
-                    options?.Channel,
-                    options?.Tag,
-                    options?.Before,
-                    options?.After,
-                    options?.WithContent,
-                    options?.WithMsg,
-                    options?.EventTypes,
-                    cancellationToken
-                );
-
-                return lResults;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(ListAttemptsByEndpointAsync)} failed");
-
-                if (Throw)
-                    throw;
-
-                return new ListResponseMessageAttemptOut();
-            }
-        }
-
-        public ListResponseMessageAttemptOut ListAttemptsByMessage(
-            string appId,
-            string messageId,
-            AttemptsByMessageListOptions options = null,
-            string idempotencyKey = default
-        )
-        {
-            try
-            {
-                var lResults = _messageAttemptApi.V1MessageAttemptListByMsg(
-                    appId,
-                    messageId,
-                    options?.Limit,
-                    options?.Iterator,
-                    (Svix.Model.MessageStatus?)options?.Status,
-                    (Svix.Model.StatusCodeClass?)options?.Code,
-                    options?.Channel,
-                    options?.Tag,
-                    options?.EndpointId,
-                    options?.Before,
-                    options?.After,
-                    options?.WithContent,
-                    options?.EventTypes
-                );
-
-                return lResults;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(ListAttemptsByMessage)} failed");
-
-                if (Throw)
-                    throw;
-
-                return new ListResponseMessageAttemptOut();
-            }
-        }
-
-        public async Task<ListResponseMessageAttemptOut> ListAttemptsByMessageAsync(
-            string appId,
-            string messageId,
-            AttemptsByMessageListOptions options = null,
-            string idempotencyKey = default,
-            CancellationToken cancellationToken = default
-        )
-        {
-            try
-            {
-                var lResults = await _messageAttemptApi.V1MessageAttemptListByMsgAsync(
-                    appId,
-                    messageId,
-                    options?.Limit,
-                    options?.Iterator,
-                    (Svix.Model.MessageStatus?)options?.Status,
-                    (Svix.Model.StatusCodeClass?)options?.Code,
-                    options?.Channel,
-                    options?.Tag,
-                    options?.EndpointId,
-                    options?.Before,
-                    options?.After,
-                    options?.WithContent,
-                    options?.EventTypes,
-                    cancellationToken
-                );
-
-                return lResults;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(ListAttemptsByMessageAsync)} failed");
-
-                if (Throw)
-                    throw;
-
-                return new ListResponseMessageAttemptOut();
-            }
-        }
-
-        // Deprecated
-        [Obsolete("Use ListAttemptsByMessage instead, passing the endpoint ID through options")]
-        public ListResponseMessageAttemptOut ListAttemptsForEndpoint(
-            string appId,
-            string messageId,
-            string endpointId,
-            AttemptsByEndpointListOptions options = null,
-            string idempotencyKey = default
-        )
-        {
-            var listByMessageOptions = new AttemptsByMessageListOptions();
-            listByMessageOptions.Limit = options?.Limit;
-            listByMessageOptions.Iterator = options?.Iterator;
-            listByMessageOptions.Channel = options?.Channel;
-            listByMessageOptions.Tag = options?.Tag;
-            listByMessageOptions.Status = options?.Status;
-            listByMessageOptions.Before = options?.Before;
-            listByMessageOptions.After = options?.After;
-            listByMessageOptions.EventTypes = options?.EventTypes;
-            listByMessageOptions.EndpointId = endpointId;
-
-            return ListAttemptsByMessage(appId, messageId, listByMessageOptions, idempotencyKey);
-        }
-
-        // Deprecated
-        [Obsolete(
-            "Use ListAttemptsByMessageAsync instead, passing the endpoint ID through options"
-        )]
-        public async Task<ListResponseMessageAttemptOut> ListAttemptsForEndpointAsync(
-            string appId,
-            string messageId,
-            string endpointId,
-            AttemptsByEndpointListOptions options = null,
-            string idempotencyKey = default,
-            CancellationToken cancellationToken = default
-        )
-        {
-            var listByMessageOptions = new AttemptsByMessageListOptions();
-            listByMessageOptions.Limit = options?.Limit;
-            listByMessageOptions.Iterator = options?.Iterator;
-            listByMessageOptions.Channel = options?.Channel;
-            listByMessageOptions.Tag = options?.Tag;
-            listByMessageOptions.Status = options?.Status;
-            listByMessageOptions.Before = options?.Before;
-            listByMessageOptions.After = options?.After;
-            listByMessageOptions.EventTypes = options?.EventTypes;
-            listByMessageOptions.EndpointId = endpointId;
-
-            return await ListAttemptsByMessageAsync(
-                appId,
-                messageId,
-                listByMessageOptions,
-                idempotencyKey
-            );
-        }
-
-        // Deprecated
-        [Obsolete("Use ListAttemptsByMessage instead")]
-        public ListResponseMessageAttemptOut ListAttempts(
-            string appId,
-            string messageId,
-            MessageAttemptListOptions options = null,
-            string idempotencyKey = default
-        )
-        {
-            var listByMessageOptions = new AttemptsByMessageListOptions();
-            listByMessageOptions.Limit = options?.Limit;
-            listByMessageOptions.Iterator = options?.Iterator;
-            listByMessageOptions.EndpointId = options?.EndpointId;
-            listByMessageOptions.Channel = options?.Channel;
-            listByMessageOptions.Tag = options?.Tag;
-            listByMessageOptions.Status = options?.Status;
-            listByMessageOptions.Before = options?.Before;
-            listByMessageOptions.After = options?.After;
-            listByMessageOptions.EventTypes = options?.EventTypes;
-
-            return ListAttemptsByMessage(appId, messageId, listByMessageOptions, idempotencyKey);
-        }
-
-        // Deprecated
-        [Obsolete("Use ListAttemptsByMessageAsync instead")]
-        public async Task<ListResponseMessageAttemptOut> ListAttemptsAsync(
-            string appId,
-            string messageId,
-            MessageAttemptListOptions options = null,
-            string idempotencyKey = default,
-            CancellationToken cancellationToken = default
-        )
-        {
-            var listByMessageOptions = new AttemptsByMessageListOptions();
-            listByMessageOptions.Limit = options?.Limit;
-            listByMessageOptions.Iterator = options?.Iterator;
-            listByMessageOptions.EndpointId = options?.EndpointId;
-            listByMessageOptions.Channel = options?.Channel;
-            listByMessageOptions.Tag = options?.Tag;
-            listByMessageOptions.Status = options?.Status;
-            listByMessageOptions.Before = options?.Before;
-            listByMessageOptions.After = options?.After;
-            listByMessageOptions.EventTypes = options?.EventTypes;
-
-            return await ListAttemptsByMessageAsync(
-                appId,
-                messageId,
-                listByMessageOptions,
-                idempotencyKey
-            );
-        }
-
-        public ListResponseMessageEndpointOut ListAttemptedDestinations(
-            string appId,
-            string messageId,
-            ListOptions options = null,
-            string idempotencyKey = default
-        )
-        {
-            try
-            {
-                var lResults = _messageAttemptApi.V1MessageAttemptListAttemptedDestinations(
-                    appId,
-                    messageId,
-                    options?.Limit,
-                    options?.Iterator
-                );
-
-                return lResults;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(ListAttemptedDestinations)} failed");
-
-                if (Throw)
-                    throw;
-
-                return new ListResponseMessageEndpointOut();
-            }
-        }
-
-        public async Task<ListResponseMessageEndpointOut> ListAttemptedDestinationsAsync(
-            string appId,
-            string messageId,
-            ListOptions options = null,
-            string idempotencyKey = default,
-            CancellationToken cancellationToken = default
-        )
-        {
-            try
-            {
-                var lResults =
-                    await _messageAttemptApi.V1MessageAttemptListAttemptedDestinationsAsync(
-                        appId,
-                        messageId,
-                        options?.Limit,
-                        options?.Iterator,
-                        cancellationToken
-                    );
-
-                return lResults;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(ListAttemptedDestinationsAsync)} failed");
-
-                if (Throw)
-                    throw;
-
-                return new ListResponseMessageEndpointOut();
-            }
-        }
-
-        public bool ResendWebhook(
-            string appId,
-            string messageId,
-            string endpointId,
-            string idempotencyKey = default
-        )
-        {
-            try
-            {
-                var lResponse = _messageAttemptApi.V1MessageAttemptResendWithHttpInfo(
-                    appId,
-                    messageId,
-                    endpointId,
-                    idempotencyKey
-                );
-
-                return lResponse.StatusCode == HttpStatusCode.Accepted;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(ResendWebhook)} failed");
-
-                if (Throw)
-                    throw;
-
-                return false;
-            }
-        }
-
-        public async Task<bool> ResendWebhookAsync(
-            string appId,
-            string messageId,
-            string endpointId,
-            string idempotencyKey = default,
-            CancellationToken cancellationToken = default
-        )
-        {
-            try
-            {
-                var lResponse = await _messageAttemptApi.V1MessageAttemptResendWithHttpInfoAsync(
-                    appId,
-                    messageId,
-                    endpointId,
-                    idempotencyKey,
-                    cancellationToken
-                );
-
-                return lResponse.StatusCode == HttpStatusCode.Accepted;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(ResendWebhookAsync)} failed");
-
-                if (Throw)
-                    throw;
-
-                return false;
-            }
-        }
-
-        public bool ExpungeContent(
-            string appId,
-            string messageId,
+            string msgId,
             string attemptId,
-            string idempotencyKey = default
+            CancellationToken cancellationToken = default
         )
         {
             try
             {
-                var lResponse = _messageAttemptApi.V1MessageAttemptExpungeContentWithHttpInfo(
-                    appId,
-                    messageId,
-                    attemptId
+                var response = await _messageAttemptApi.V1MessageAttemptGetWithHttpInfoAsync(
+                    appId: appId,
+                    msgId: msgId,
+                    attemptId: attemptId,
+                    cancellationToken: cancellationToken
                 );
-
-                return lResponse.StatusCode == HttpStatusCode.NoContent;
+                return response.Data;
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(ExpungeContent)} failed");
+                Logger?.LogError(e, $"{nameof(GetAsync)} failed");
 
                 if (Throw)
                     throw;
-
-                return false;
+                return new MessageAttemptOut();
             }
         }
 
+        /// <summary>
+        /// `msg_id`: Use a message id or a message `eventId`
+        /// </summary>
+        public MessageAttemptOut Get(string appId, string msgId, string attemptId)
+        {
+            try
+            {
+                var response = _messageAttemptApi.V1MessageAttemptGetWithHttpInfo(
+                    appId: appId,
+                    msgId: msgId,
+                    attemptId: attemptId
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(Get)} failed");
+
+                if (Throw)
+                    throw;
+                return new MessageAttemptOut();
+            }
+        }
+
+        /// <summary>
+        /// Deletes the given attempt's response body.
+        ///
+        /// Useful when an endpoint accidentally returned sensitive content.
+        /// The message can't be replayed or resent once its payload has been deleted or expired.
+        /// </summary>
         public async Task<bool> ExpungeContentAsync(
             string appId,
-            string messageId,
+            string msgId,
             string attemptId,
-            string idempotencyKey = default,
             CancellationToken cancellationToken = default
         )
         {
             try
             {
-                var lResponse =
+                var response =
                     await _messageAttemptApi.V1MessageAttemptExpungeContentWithHttpInfoAsync(
-                        appId,
-                        messageId,
-                        attemptId,
-                        cancellationToken
+                        appId: appId,
+                        msgId: msgId,
+                        attemptId: attemptId,
+                        cancellationToken: cancellationToken
                     );
-
-                return lResponse.StatusCode == HttpStatusCode.NoContent;
+                return response.StatusCode == HttpStatusCode.NoContent;
             }
             catch (ApiException e)
             {
@@ -589,7 +429,163 @@ namespace Svix
 
                 if (Throw)
                     throw;
+                return false;
+            }
+        }
 
+        /// <summary>
+        /// Deletes the given attempt's response body.
+        ///
+        /// Useful when an endpoint accidentally returned sensitive content.
+        /// The message can't be replayed or resent once its payload has been deleted or expired.
+        /// </summary>
+        public bool ExpungeContent(string appId, string msgId, string attemptId)
+        {
+            try
+            {
+                var response = _messageAttemptApi.V1MessageAttemptExpungeContentWithHttpInfo(
+                    appId: appId,
+                    msgId: msgId,
+                    attemptId: attemptId
+                );
+                return response.StatusCode == HttpStatusCode.NoContent;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(ExpungeContent)} failed");
+
+                if (Throw)
+                    throw;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// List endpoints attempted by a given message.
+        ///
+        /// Additionally includes metadata about the latest message attempt.
+        /// By default, endpoints are listed in ascending order by ID.
+        /// </summary>
+        public async Task<ListResponseMessageEndpointOut> ListAttemptedDestinationsAsync(
+            string appId,
+            string msgId,
+            MessageAttemptListAttemptedDestinationsOptions? options = null,
+            CancellationToken cancellationToken = default
+        )
+        {
+            try
+            {
+                var response =
+                    await _messageAttemptApi.V1MessageAttemptListAttemptedDestinationsWithHttpInfoAsync(
+                        appId: appId,
+                        msgId: msgId,
+                        limit: options?.Limit,
+                        iterator: options?.Iterator,
+                        cancellationToken: cancellationToken
+                    );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(ListAttemptedDestinationsAsync)} failed");
+
+                if (Throw)
+                    throw;
+                return new ListResponseMessageEndpointOut();
+            }
+        }
+
+        /// <summary>
+        /// List endpoints attempted by a given message.
+        ///
+        /// Additionally includes metadata about the latest message attempt.
+        /// By default, endpoints are listed in ascending order by ID.
+        /// </summary>
+        public ListResponseMessageEndpointOut ListAttemptedDestinations(
+            string appId,
+            string msgId,
+            MessageAttemptListAttemptedDestinationsOptions? options = null
+        )
+        {
+            try
+            {
+                var response =
+                    _messageAttemptApi.V1MessageAttemptListAttemptedDestinationsWithHttpInfo(
+                        appId: appId,
+                        msgId: msgId,
+                        limit: options?.Limit,
+                        iterator: options?.Iterator
+                    );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(ListAttemptedDestinations)} failed");
+
+                if (Throw)
+                    throw;
+                return new ListResponseMessageEndpointOut();
+            }
+        }
+
+        /// <summary>
+        /// Resend a message to the specified endpoint.
+        /// </summary>
+        public async Task<bool> ResendAsync(
+            string appId,
+            string msgId,
+            string endpointId,
+            MessageAttemptResendOptions? options = null,
+            CancellationToken cancellationToken = default
+        )
+        {
+            try
+            {
+                var response = await _messageAttemptApi.V1MessageAttemptResendWithHttpInfoAsync(
+                    appId: appId,
+                    msgId: msgId,
+                    endpointId: endpointId,
+                    idempotencyKey: options?.IdempotencyKey,
+                    cancellationToken: cancellationToken
+                );
+                return response.StatusCode == HttpStatusCode.NoContent;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(ResendAsync)} failed");
+
+                if (Throw)
+                    throw;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Resend a message to the specified endpoint.
+        /// </summary>
+        public bool Resend(
+            string appId,
+            string msgId,
+            string endpointId,
+            MessageAttemptResendOptions? options = null
+        )
+        {
+            try
+            {
+                var response = _messageAttemptApi.V1MessageAttemptResendWithHttpInfo(
+                    appId: appId,
+                    msgId: msgId,
+                    endpointId: endpointId,
+                    idempotencyKey: options?.IdempotencyKey
+                );
+                return response.StatusCode == HttpStatusCode.NoContent;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(Resend)} failed");
+
+                if (Throw)
+                    throw;
                 return false;
             }
         }

@@ -1,4 +1,5 @@
-﻿// this file is @generated
+// this file is @generated
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -36,8 +37,11 @@ namespace Svix
                 applicationApi ?? throw new ArgumentNullException(nameof(applicationApi));
         }
 
+        /// <summary>
+        /// List of all the organization's applications.
+        /// </summary>
         public async Task<ListResponseApplicationOut> ListAsync(
-            ApplicationListOptions options = null,
+            ApplicationListOptions? options = null,
             CancellationToken cancellationToken = default
         )
         {
@@ -61,7 +65,10 @@ namespace Svix
             }
         }
 
-        public ListResponseApplicationOut List(ApplicationListOptions options = null)
+        /// <summary>
+        /// List of all the organization's applications.
+        /// </summary>
+        public ListResponseApplicationOut List(ApplicationListOptions? options = null)
         {
             try
             {
@@ -82,9 +89,12 @@ namespace Svix
             }
         }
 
+        /// <summary>
+        /// Create a new application.
+        /// </summary>
         public async Task<ApplicationOut> CreateAsync(
             ApplicationIn applicationIn,
-            ApplicationCreateOptions options = null,
+            ApplicationCreateOptions? options = null,
             CancellationToken cancellationToken = default
         )
         {
@@ -110,9 +120,12 @@ namespace Svix
             }
         }
 
+        /// <summary>
+        /// Create a new application.
+        /// </summary>
         public ApplicationOut Create(
             ApplicationIn applicationIn,
-            ApplicationCreateOptions options = null
+            ApplicationCreateOptions? options = null
         )
         {
             try
@@ -138,7 +151,7 @@ namespace Svix
 
         public async Task<ApplicationOut> GetOrCreateAsync(
             ApplicationIn applicationIn,
-            ApplicationCreateOptions options = null,
+            ApplicationCreateOptions? options = null,
             CancellationToken cancellationToken = default
         )
         {
@@ -164,7 +177,7 @@ namespace Svix
 
         public ApplicationOut GetOrCreate(
             ApplicationIn applicationIn,
-            ApplicationCreateOptions options = null
+            ApplicationCreateOptions? options = null
         )
         {
             try
@@ -186,6 +199,9 @@ namespace Svix
             }
         }
 
+        /// <summary>
+        /// Get an application.
+        /// </summary>
         public async Task<ApplicationOut> GetAsync(
             string appId,
             CancellationToken cancellationToken = default
@@ -194,7 +210,7 @@ namespace Svix
             try
             {
                 var response = await _applicationApi.V1ApplicationGetWithHttpInfoAsync(
-                    appId,
+                    appId: appId,
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
@@ -209,11 +225,14 @@ namespace Svix
             }
         }
 
+        /// <summary>
+        /// Get an application.
+        /// </summary>
         public ApplicationOut Get(string appId)
         {
             try
             {
-                var response = _applicationApi.V1ApplicationGetWithHttpInfo(appId);
+                var response = _applicationApi.V1ApplicationGetWithHttpInfo(appId: appId);
                 return response.Data;
             }
             catch (ApiException e)
@@ -226,6 +245,9 @@ namespace Svix
             }
         }
 
+        /// <summary>
+        /// Update an application.
+        /// </summary>
         public async Task<ApplicationOut> UpdateAsync(
             string appId,
             ApplicationIn applicationIn,
@@ -237,7 +259,7 @@ namespace Svix
                 applicationIn =
                     applicationIn ?? throw new ArgumentNullException(nameof(applicationIn));
                 var response = await _applicationApi.V1ApplicationUpdateWithHttpInfoAsync(
-                    appId,
+                    appId: appId,
                     applicationIn: applicationIn,
                     cancellationToken: cancellationToken
                 );
@@ -253,6 +275,9 @@ namespace Svix
             }
         }
 
+        /// <summary>
+        /// Update an application.
+        /// </summary>
         public ApplicationOut Update(string appId, ApplicationIn applicationIn)
         {
             try
@@ -260,7 +285,7 @@ namespace Svix
                 applicationIn =
                     applicationIn ?? throw new ArgumentNullException(nameof(applicationIn));
                 var response = _applicationApi.V1ApplicationUpdateWithHttpInfo(
-                    appId,
+                    appId: appId,
                     applicationIn: applicationIn
                 );
                 return response.Data;
@@ -275,6 +300,9 @@ namespace Svix
             }
         }
 
+        /// <summary>
+        /// Delete an application.
+        /// </summary>
         public async Task<bool> DeleteAsync(
             string appId,
             CancellationToken cancellationToken = default
@@ -283,7 +311,7 @@ namespace Svix
             try
             {
                 var response = await _applicationApi.V1ApplicationDeleteWithHttpInfoAsync(
-                    appId,
+                    appId: appId,
                     cancellationToken: cancellationToken
                 );
                 return response.StatusCode == HttpStatusCode.NoContent;
@@ -298,11 +326,14 @@ namespace Svix
             }
         }
 
+        /// <summary>
+        /// Delete an application.
+        /// </summary>
         public bool Delete(string appId)
         {
             try
             {
-                var response = _applicationApi.V1ApplicationDeleteWithHttpInfo(appId);
+                var response = _applicationApi.V1ApplicationDeleteWithHttpInfo(appId: appId);
                 return response.StatusCode == HttpStatusCode.NoContent;
             }
             catch (ApiException e)
@@ -315,6 +346,9 @@ namespace Svix
             }
         }
 
+        /// <summary>
+        /// Partially update an application.
+        /// </summary>
         public async Task<ApplicationOut> PatchAsync(
             string appId,
             ApplicationPatch applicationPatch,
@@ -326,7 +360,7 @@ namespace Svix
                 applicationPatch =
                     applicationPatch ?? throw new ArgumentNullException(nameof(applicationPatch));
                 var response = await _applicationApi.V1ApplicationPatchWithHttpInfoAsync(
-                    appId,
+                    appId: appId,
                     applicationPatch: applicationPatch,
                     cancellationToken: cancellationToken
                 );
@@ -342,6 +376,9 @@ namespace Svix
             }
         }
 
+        /// <summary>
+        /// Partially update an application.
+        /// </summary>
         public ApplicationOut Patch(string appId, ApplicationPatch applicationPatch)
         {
             try
@@ -349,7 +386,7 @@ namespace Svix
                 applicationPatch =
                     applicationPatch ?? throw new ArgumentNullException(nameof(applicationPatch));
                 var response = _applicationApi.V1ApplicationPatchWithHttpInfo(
-                    appId,
+                    appId: appId,
                     applicationPatch: applicationPatch
                 );
                 return response.Data;

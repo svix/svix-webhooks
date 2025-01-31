@@ -14,23 +14,23 @@ namespace Svix
 
         public Application Application { get; }
 
-        public IAuthentication Authentication { get; }
+        public Authentication Authentication { get; }
 
-        public IEndpoint Endpoint { get; }
+        public Endpoint Endpoint { get; }
 
-        public IEventType EventType { get; }
+        public EventType EventType { get; }
 
-        public IHealth Health { get; }
+        public Health Health { get; }
 
-        public IIntegration Integration { get; }
+        public Integration Integration { get; }
 
-        public IMessage Message { get; }
+        public Message Message { get; }
 
-        public IMessageAttempt MessageAttempt { get; }
+        public MessageAttempt MessageAttempt { get; }
 
-        public IStatistics Statistics { get; }
+        public Statistics Statistics { get; }
 
-        public IOperationalWebhookEndpoint OperationalWebhookEndpoint { get; }
+        public OperationalWebhookEndpoint OperationalWebhookEndpoint { get; }
 
         public ILogger Logger { get; }
 
@@ -47,15 +47,15 @@ namespace Svix
             ISvixOptions options,
             ILogger<SvixClient> logger = null,
             ApplicationApi applicationApi = null,
-            IAuthenticationApi authenticationApi = null,
-            IEndpointApi endpointApi = null,
-            IEventTypeApi eventTypeApi = null,
-            IHealthApi healthApi = null,
-            IIntegrationApi integrationApi = null,
-            IMessageApi messageApi = null,
-            IMessageAttemptApi messageAttemptApi = null,
-            IStatisticsApi statisticsApi = null,
-            IWebhookEndpointApi operationalWebhookEndpointApi = null
+            AuthenticationApi authenticationApi = null,
+            EndpointApi endpointApi = null,
+            EventTypeApi eventTypeApi = null,
+            HealthApi healthApi = null,
+            IntegrationApi integrationApi = null,
+            MessageApi messageApi = null,
+            MessageAttemptApi messageAttemptApi = null,
+            StatisticsApi statisticsApi = null,
+            WebhookEndpointApi operationalWebhookEndpointApi = null
         )
         {
             Logger = logger;

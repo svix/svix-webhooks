@@ -1,4 +1,7 @@
-﻿using System;
+// this file is @generated
+#nullable enable
+using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,155 +10,246 @@ using Svix.Abstractions;
 using Svix.Api;
 using Svix.Client;
 using Svix.Model;
+using Svix.Models;
 
 namespace Svix
 {
-    public sealed class Authentication : SvixResourceBase, IAuthentication
+    public partial class AuthenticationAppPortalAccessOptions
     {
-        private readonly IAuthenticationApi _authenticationApi;
+        public string? IdempotencyKey { get; set; }
+    }
 
-        public Authentication(ISvixClient svixClient, IAuthenticationApi authenticationApi)
+    public partial class AuthenticationExpireAllOptions
+    {
+        public string? IdempotencyKey { get; set; }
+    }
+
+    public partial class AuthenticationDashboardAccessOptions
+    {
+        public string? IdempotencyKey { get; set; }
+    }
+
+    public partial class AuthenticationLogoutOptions
+    {
+        public string? IdempotencyKey { get; set; }
+    }
+
+    public sealed class Authentication : SvixResourceBase
+    {
+        private readonly AuthenticationApi _authenticationApi;
+
+        public Authentication(ISvixClient svixClient, AuthenticationApi authenticationApi)
             : base(svixClient)
         {
             _authenticationApi =
                 authenticationApi ?? throw new ArgumentNullException(nameof(authenticationApi));
         }
 
-        public AppPortalAccessOut GetAppPortalAccess(
+        /// <summary>
+        /// Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal.
+        /// </summary>
+        public async Task<AppPortalAccessOut> AppPortalAccessAsync(
             string appId,
-            AppPortalAccessIn appPortalAccess,
-            string idempotencyKey = default
-        )
-        {
-            try
-            {
-                var lMessage = _authenticationApi.V1AuthenticationAppPortalAccess(
-                    appId,
-                    appPortalAccess,
-                    idempotencyKey
-                );
-
-                return lMessage;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(GetAppPortalAccess)} failed");
-
-                if (Throw)
-                    throw;
-
-                return null;
-            }
-        }
-
-        public async Task<AppPortalAccessOut> GetAppPortalAccessAsync(
-            string appId,
-            AppPortalAccessIn appPortalAccess,
-            string idempotencyKey = default,
+            AppPortalAccessIn appPortalAccessIn,
+            AuthenticationAppPortalAccessOptions? options = null,
             CancellationToken cancellationToken = default
         )
         {
             try
             {
-                var lMessage = await _authenticationApi.V1AuthenticationAppPortalAccessAsync(
-                    appId,
-                    appPortalAccess,
-                    idempotencyKey
-                );
-
-                return lMessage;
+                appPortalAccessIn =
+                    appPortalAccessIn ?? throw new ArgumentNullException(nameof(appPortalAccessIn));
+                var response =
+                    await _authenticationApi.V1AuthenticationAppPortalAccessWithHttpInfoAsync(
+                        appId: appId,
+                        appPortalAccessIn: appPortalAccessIn,
+                        idempotencyKey: options?.IdempotencyKey,
+                        cancellationToken: cancellationToken
+                    );
+                return response.Data;
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(GetAppPortalAccessAsync)} failed");
+                Logger?.LogError(e, $"{nameof(AppPortalAccessAsync)} failed");
 
                 if (Throw)
                     throw;
-
-                return null;
+                return new AppPortalAccessOut();
             }
         }
 
-        public DashboardAccessOut GetDashboardAccess(string appId, string idempotencyKey = default)
+        /// <summary>
+        /// Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal.
+        /// </summary>
+        public AppPortalAccessOut AppPortalAccess(
+            string appId,
+            AppPortalAccessIn appPortalAccessIn,
+            AuthenticationAppPortalAccessOptions? options = null
+        )
         {
             try
             {
-                var lMessage = _authenticationApi.V1AuthenticationDashboardAccess(
-                    appId,
-                    idempotencyKey
+                appPortalAccessIn =
+                    appPortalAccessIn ?? throw new ArgumentNullException(nameof(appPortalAccessIn));
+                var response = _authenticationApi.V1AuthenticationAppPortalAccessWithHttpInfo(
+                    appId: appId,
+                    appPortalAccessIn: appPortalAccessIn,
+                    idempotencyKey: options?.IdempotencyKey
                 );
-
-                return lMessage;
+                return response.Data;
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(GetDashboardAccess)} failed");
+                Logger?.LogError(e, $"{nameof(AppPortalAccess)} failed");
 
                 if (Throw)
                     throw;
-
-                return null;
+                return new AppPortalAccessOut();
             }
         }
 
-        public async Task<DashboardAccessOut> GetDashboardAccessAsync(
+        /// <summary>
+        /// Expire all of the tokens associated with a specific application.
+        /// </summary>
+        public async Task<bool> ExpireAllAsync(
             string appId,
-            string idempotencyKey = default,
+            ApplicationTokenExpireIn applicationTokenExpireIn,
+            AuthenticationExpireAllOptions? options = null,
             CancellationToken cancellationToken = default
         )
         {
             try
             {
-                var lMessage = await _authenticationApi.V1AuthenticationDashboardAccessAsync(
-                    appId,
-                    idempotencyKey
+                applicationTokenExpireIn =
+                    applicationTokenExpireIn
+                    ?? throw new ArgumentNullException(nameof(applicationTokenExpireIn));
+                var response = await _authenticationApi.V1AuthenticationExpireAllWithHttpInfoAsync(
+                    appId: appId,
+                    applicationTokenExpireIn: applicationTokenExpireIn,
+                    idempotencyKey: options?.IdempotencyKey,
+                    cancellationToken: cancellationToken
                 );
-
-                return lMessage;
+                return response.StatusCode == HttpStatusCode.NoContent;
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(GetDashboardAccessAsync)} failed");
+                Logger?.LogError(e, $"{nameof(ExpireAllAsync)} failed");
 
                 if (Throw)
                     throw;
-
-                return null;
-            }
-        }
-
-        public bool Logout(string idempotencyKey = default)
-        {
-            try
-            {
-                var lResult = _authenticationApi.V1AuthenticationLogoutWithHttpInfo(idempotencyKey);
-
-                return lResult.StatusCode == HttpStatusCode.NoContent;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(Logout)} failed");
-
-                if (Throw)
-                    throw;
-
                 return false;
             }
         }
 
-        public async Task<bool> LogoutAsync(
-            string idempotencyKey = default,
+        /// <summary>
+        /// Expire all of the tokens associated with a specific application.
+        /// </summary>
+        public bool ExpireAll(
+            string appId,
+            ApplicationTokenExpireIn applicationTokenExpireIn,
+            AuthenticationExpireAllOptions? options = null
+        )
+        {
+            try
+            {
+                applicationTokenExpireIn =
+                    applicationTokenExpireIn
+                    ?? throw new ArgumentNullException(nameof(applicationTokenExpireIn));
+                var response = _authenticationApi.V1AuthenticationExpireAllWithHttpInfo(
+                    appId: appId,
+                    applicationTokenExpireIn: applicationTokenExpireIn,
+                    idempotencyKey: options?.IdempotencyKey
+                );
+                return response.StatusCode == HttpStatusCode.NoContent;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(ExpireAll)} failed");
+
+                if (Throw)
+                    throw;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// DEPRECATED: Please use `app-portal-access` instead.
+        ///
+        /// Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal.
+        /// </summary>
+        [Obsolete]
+        public async Task<DashboardAccessOut> DashboardAccessAsync(
+            string appId,
+            AuthenticationDashboardAccessOptions? options = null,
             CancellationToken cancellationToken = default
         )
         {
             try
             {
-                var lResult = await _authenticationApi.V1AuthenticationLogoutWithHttpInfoAsync(
-                    idempotencyKey,
-                    cancellationToken
-                );
+                var response =
+                    await _authenticationApi.V1AuthenticationDashboardAccessWithHttpInfoAsync(
+                        appId: appId,
+                        idempotencyKey: options?.IdempotencyKey,
+                        cancellationToken: cancellationToken
+                    );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(DashboardAccessAsync)} failed");
 
-                return lResult.StatusCode == HttpStatusCode.NoContent;
+                if (Throw)
+                    throw;
+                return new DashboardAccessOut();
+            }
+        }
+
+        /// <summary>
+        /// DEPRECATED: Please use `app-portal-access` instead.
+        ///
+        /// Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal.
+        /// </summary>
+        [Obsolete]
+        public DashboardAccessOut DashboardAccess(
+            string appId,
+            AuthenticationDashboardAccessOptions? options = null
+        )
+        {
+            try
+            {
+                var response = _authenticationApi.V1AuthenticationDashboardAccessWithHttpInfo(
+                    appId: appId,
+                    idempotencyKey: options?.IdempotencyKey
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(DashboardAccess)} failed");
+
+                if (Throw)
+                    throw;
+                return new DashboardAccessOut();
+            }
+        }
+
+        /// <summary>
+        /// Logout an app token.
+        ///
+        /// Trying to log out other tokens will fail.
+        /// </summary>
+        public async Task<bool> LogoutAsync(
+            AuthenticationLogoutOptions? options = null,
+            CancellationToken cancellationToken = default
+        )
+        {
+            try
+            {
+                var response = await _authenticationApi.V1AuthenticationLogoutWithHttpInfoAsync(
+                    idempotencyKey: options?.IdempotencyKey,
+                    cancellationToken: cancellationToken
+                );
+                return response.StatusCode == HttpStatusCode.NoContent;
             }
             catch (ApiException e)
             {
@@ -163,7 +257,30 @@ namespace Svix
 
                 if (Throw)
                     throw;
+                return false;
+            }
+        }
 
+        /// <summary>
+        /// Logout an app token.
+        ///
+        /// Trying to log out other tokens will fail.
+        /// </summary>
+        public bool Logout(AuthenticationLogoutOptions? options = null)
+        {
+            try
+            {
+                var response = _authenticationApi.V1AuthenticationLogoutWithHttpInfo(
+                    idempotencyKey: options?.IdempotencyKey
+                );
+                return response.StatusCode == HttpStatusCode.NoContent;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(Logout)} failed");
+
+                if (Throw)
+                    throw;
                 return false;
             }
         }

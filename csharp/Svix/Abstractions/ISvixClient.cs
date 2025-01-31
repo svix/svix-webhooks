@@ -6,19 +6,19 @@ namespace Svix.Abstractions
 {
     public interface ISvixClient
     {
-        public IAuthentication Authentication { get; }
+        public Authentication Authentication { get; }
 
-        public IEndpoint Endpoint { get; }
+        public Endpoint Endpoint { get; }
 
-        public IEventType EventType { get; }
+        public EventType EventType { get; }
 
-        public IIntegration Integration { get; }
+        public Integration Integration { get; }
 
-        public IMessage Message { get; }
+        public Message Message { get; }
 
-        public IMessageAttempt MessageAttempt { get; }
+        public MessageAttempt MessageAttempt { get; }
 
-        public IHealth Health { get; }
+        public Health Health { get; }
 
         public ILogger Logger { get; }
 
