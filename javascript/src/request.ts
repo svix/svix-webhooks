@@ -57,7 +57,9 @@ export class SvixRequest {
     } else if (value instanceof Date) {
       this.queryParams[name] = value.toISOString();
     } else if (value instanceof Array) {
-      this.queryParams[name] = value.join(",");
+      if (value.length > 0) {
+        this.queryParams[name] = value.join(",");
+      }
     } else {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const _assert_unreachable: never = value;
