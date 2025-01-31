@@ -7,6 +7,9 @@ namespace Svix.Abstractions
     {
         bool IsHealthy(string idempotencyKey = default);
 
-        Task<bool> IsHealthyAsync(string idempotencyKey = default, CancellationToken cancellationToken = default);
+        Task<bool> IsHealthyAsync(
+            string idempotencyKey = default,
+            CancellationToken cancellationToken = default
+        );
     }
 }

@@ -26,9 +26,7 @@ namespace Svix
         {
             try
             {
-                var lResponse = _eventTypeApi.V1EventTypeDeleteWithHttpInfo(
-                    eventType,
-                    expunge);
+                var lResponse = _eventTypeApi.V1EventTypeDeleteWithHttpInfo(eventType, expunge);
 
                 return lResponse.StatusCode == HttpStatusCode.NoContent;
             }
@@ -43,14 +41,20 @@ namespace Svix
             }
         }
 
-        public async Task<bool> ArchiveAsync(string eventType, bool? expunge = null, string idempotencyKey = default, CancellationToken cancellationToken = default)
+        public async Task<bool> ArchiveAsync(
+            string eventType,
+            bool? expunge = null,
+            string idempotencyKey = default,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
                 var lResponse = await _eventTypeApi.V1EventTypeDeleteWithHttpInfoAsync(
                     eventType,
                     expunge,
-                    cancellationToken);
+                    cancellationToken
+                );
 
                 return lResponse.StatusCode == HttpStatusCode.NoContent;
             }
@@ -69,9 +73,7 @@ namespace Svix
         {
             try
             {
-                var lEventType = _eventTypeApi.V1EventTypeCreate(
-                    eventType,
-                    idempotencyKey);
+                var lEventType = _eventTypeApi.V1EventTypeCreate(eventType, idempotencyKey);
 
                 return lEventType;
             }
@@ -86,14 +88,19 @@ namespace Svix
             }
         }
 
-        public async Task<EventTypeOut> CreateAsync(EventTypeIn eventType, string idempotencyKey = default, CancellationToken cancellationToken = default)
+        public async Task<EventTypeOut> CreateAsync(
+            EventTypeIn eventType,
+            string idempotencyKey = default,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
                 var lEventType = await _eventTypeApi.V1EventTypeCreateAsync(
                     eventType,
                     idempotencyKey,
-                    cancellationToken);
+                    cancellationToken
+                );
 
                 return lEventType;
             }
@@ -127,13 +134,18 @@ namespace Svix
             }
         }
 
-        public async Task<EventTypeOut> GetAsync(string eventType, string idempotencyKey = default, CancellationToken cancellationToken = default)
+        public async Task<EventTypeOut> GetAsync(
+            string eventType,
+            string idempotencyKey = default,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
                 var lEventType = await _eventTypeApi.V1EventTypeGetAsync(
                     eventType,
-                    cancellationToken);
+                    cancellationToken
+                );
 
                 return lEventType;
             }
@@ -148,7 +160,10 @@ namespace Svix
             }
         }
 
-        public ListResponseEventTypeOut List(EventTypeListOptions options = null, string idempotencyKey = default)
+        public ListResponseEventTypeOut List(
+            EventTypeListOptions options = null,
+            string idempotencyKey = default
+        )
         {
             try
             {
@@ -157,7 +172,8 @@ namespace Svix
                     options?.Iterator,
                     null,
                     options?.IncludeArchived,
-                    options?.WithContent);
+                    options?.WithContent
+                );
 
                 return lResults;
             }
@@ -172,8 +188,11 @@ namespace Svix
             }
         }
 
-        public async Task<ListResponseEventTypeOut> ListAsync(EventTypeListOptions options = null, string idempotencyKey = default,
-            CancellationToken cancellationToken = default)
+        public async Task<ListResponseEventTypeOut> ListAsync(
+            EventTypeListOptions options = null,
+            string idempotencyKey = default,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
@@ -183,7 +202,8 @@ namespace Svix
                     null,
                     options?.IncludeArchived,
                     options?.WithContent,
-                    cancellationToken);
+                    cancellationToken
+                );
 
                 return lResults;
             }
@@ -198,13 +218,15 @@ namespace Svix
             }
         }
 
-        public EventTypeOut Update(string eventType, EventTypeUpdate update, string idempotencyKey = default)
+        public EventTypeOut Update(
+            string eventType,
+            EventTypeUpdate update,
+            string idempotencyKey = default
+        )
         {
             try
             {
-                var lEventType = _eventTypeApi.V1EventTypeUpdate(
-                    eventType,
-                    update);
+                var lEventType = _eventTypeApi.V1EventTypeUpdate(eventType, update);
 
                 return lEventType;
             }
@@ -219,15 +241,20 @@ namespace Svix
             }
         }
 
-        public async Task<EventTypeOut> UpdateAsync(string eventType, EventTypeUpdate update, string idempotencyKey = default,
-            CancellationToken cancellationToken = default)
+        public async Task<EventTypeOut> UpdateAsync(
+            string eventType,
+            EventTypeUpdate update,
+            string idempotencyKey = default,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
                 var lEventType = await _eventTypeApi.V1EventTypeUpdateAsync(
                     eventType,
                     update,
-                    cancellationToken);
+                    cancellationToken
+                );
 
                 return lEventType;
             }
@@ -242,13 +269,15 @@ namespace Svix
             }
         }
 
-        public EventTypeOut Patch(string eventType, EventTypePatch update, string idempotencyKey = default)
+        public EventTypeOut Patch(
+            string eventType,
+            EventTypePatch update,
+            string idempotencyKey = default
+        )
         {
             try
             {
-                var lEventType = _eventTypeApi.V1EventTypePatch(
-                    eventType,
-                    update);
+                var lEventType = _eventTypeApi.V1EventTypePatch(eventType, update);
 
                 return lEventType;
             }
@@ -263,15 +292,20 @@ namespace Svix
             }
         }
 
-        public async Task<EventTypeOut> PatchAsync(string eventType, EventTypePatch update, string idempotencyKey = default,
-            CancellationToken cancellationToken = default)
+        public async Task<EventTypeOut> PatchAsync(
+            string eventType,
+            EventTypePatch update,
+            string idempotencyKey = default,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
                 var lEventType = await _eventTypeApi.V1EventTypePatchAsync(
                     eventType,
                     update,
-                    cancellationToken);
+                    cancellationToken
+                );
 
                 return lEventType;
             }
@@ -286,13 +320,17 @@ namespace Svix
             }
         }
 
-        public EventTypeImportOpenApiOut ImportOpenApi(EventTypeImportOpenApiIn eventTypeImportOpenApiIn, string idempotencyKey = default)
+        public EventTypeImportOpenApiOut ImportOpenApi(
+            EventTypeImportOpenApiIn eventTypeImportOpenApiIn,
+            string idempotencyKey = default
+        )
         {
             try
             {
                 var lEventTypeImportOpenApiOut = _eventTypeApi.V1EventTypeImportOpenapi(
                     eventTypeImportOpenApiIn,
-                    idempotencyKey);
+                    idempotencyKey
+                );
 
                 return lEventTypeImportOpenApiOut;
             }
@@ -307,14 +345,19 @@ namespace Svix
             }
         }
 
-        public async Task<EventTypeImportOpenApiOut> ImportOpenApiAsync(EventTypeImportOpenApiIn eventTypeImportOpenApiIn, string idempotencyKey = default, CancellationToken cancellationToken = default)
+        public async Task<EventTypeImportOpenApiOut> ImportOpenApiAsync(
+            EventTypeImportOpenApiIn eventTypeImportOpenApiIn,
+            string idempotencyKey = default,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
                 var lEventTypeImportOpenApiOut = await _eventTypeApi.V1EventTypeImportOpenapiAsync(
                     eventTypeImportOpenApiIn,
                     idempotencyKey,
-                    cancellationToken);
+                    cancellationToken
+                );
 
                 return lEventTypeImportOpenApiOut;
             }

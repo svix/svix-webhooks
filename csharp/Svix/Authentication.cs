@@ -17,17 +17,23 @@ namespace Svix
         public Authentication(ISvixClient svixClient, IAuthenticationApi authenticationApi)
             : base(svixClient)
         {
-            _authenticationApi = authenticationApi ?? throw new ArgumentNullException(nameof(authenticationApi));
+            _authenticationApi =
+                authenticationApi ?? throw new ArgumentNullException(nameof(authenticationApi));
         }
 
-        public AppPortalAccessOut GetAppPortalAccess(string appId, AppPortalAccessIn appPortalAccess, string idempotencyKey = default)
+        public AppPortalAccessOut GetAppPortalAccess(
+            string appId,
+            AppPortalAccessIn appPortalAccess,
+            string idempotencyKey = default
+        )
         {
             try
             {
                 var lMessage = _authenticationApi.V1AuthenticationAppPortalAccess(
                     appId,
                     appPortalAccess,
-                    idempotencyKey);
+                    idempotencyKey
+                );
 
                 return lMessage;
             }
@@ -42,15 +48,20 @@ namespace Svix
             }
         }
 
-        public async Task<AppPortalAccessOut> GetAppPortalAccessAsync(string appId, AppPortalAccessIn appPortalAccess,
-            string idempotencyKey = default, CancellationToken cancellationToken = default)
+        public async Task<AppPortalAccessOut> GetAppPortalAccessAsync(
+            string appId,
+            AppPortalAccessIn appPortalAccess,
+            string idempotencyKey = default,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
                 var lMessage = await _authenticationApi.V1AuthenticationAppPortalAccessAsync(
                     appId,
                     appPortalAccess,
-                    idempotencyKey);
+                    idempotencyKey
+                );
 
                 return lMessage;
             }
@@ -71,7 +82,8 @@ namespace Svix
             {
                 var lMessage = _authenticationApi.V1AuthenticationDashboardAccess(
                     appId,
-                    idempotencyKey);
+                    idempotencyKey
+                );
 
                 return lMessage;
             }
@@ -86,14 +98,18 @@ namespace Svix
             }
         }
 
-        public async Task<DashboardAccessOut> GetDashboardAccessAsync(string appId, string idempotencyKey = default,
-            CancellationToken cancellationToken = default)
+        public async Task<DashboardAccessOut> GetDashboardAccessAsync(
+            string appId,
+            string idempotencyKey = default,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
                 var lMessage = await _authenticationApi.V1AuthenticationDashboardAccessAsync(
                     appId,
-                    idempotencyKey);
+                    idempotencyKey
+                );
 
                 return lMessage;
             }
@@ -112,8 +128,7 @@ namespace Svix
         {
             try
             {
-                var lResult = _authenticationApi.V1AuthenticationLogoutWithHttpInfo(
-                    idempotencyKey);
+                var lResult = _authenticationApi.V1AuthenticationLogoutWithHttpInfo(idempotencyKey);
 
                 return lResult.StatusCode == HttpStatusCode.NoContent;
             }
@@ -128,13 +143,17 @@ namespace Svix
             }
         }
 
-        public async Task<bool> LogoutAsync(string idempotencyKey = default, CancellationToken cancellationToken = default)
+        public async Task<bool> LogoutAsync(
+            string idempotencyKey = default,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
                 var lResult = await _authenticationApi.V1AuthenticationLogoutWithHttpInfoAsync(
                     idempotencyKey,
-                    cancellationToken);
+                    cancellationToken
+                );
 
                 return lResult.StatusCode == HttpStatusCode.NoContent;
             }

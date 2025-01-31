@@ -19,17 +19,21 @@ namespace Svix
         public OperationalWebhookEndpoint(ISvixClient svixClient, IWebhookEndpointApi endpointApi)
             : base(svixClient)
         {
-            _opWebhookEndpointApi = endpointApi ?? throw new ArgumentNullException(nameof(_opWebhookEndpointApi));
+            _opWebhookEndpointApi =
+                endpointApi ?? throw new ArgumentNullException(nameof(_opWebhookEndpointApi));
         }
 
         public OperationalWebhookEndpointOut Create(
-            OperationalWebhookEndpointIn endpoint, string idempotencyKey = default)
+            OperationalWebhookEndpointIn endpoint,
+            string idempotencyKey = default
+        )
         {
             try
             {
                 var lEndpoint = _opWebhookEndpointApi.V1OperationalWebhookEndpointCreate(
                     endpoint,
-                    idempotencyKey);
+                    idempotencyKey
+                );
 
                 return lEndpoint;
             }
@@ -45,15 +49,18 @@ namespace Svix
         }
 
         public async Task<OperationalWebhookEndpointOut> CreateAsync(
-            OperationalWebhookEndpointIn endpoint, string idempotencyKey = default,
-            CancellationToken cancellationToken = default)
+            OperationalWebhookEndpointIn endpoint,
+            string idempotencyKey = default,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
                 var lEndpoint = await _opWebhookEndpointApi.V1OperationalWebhookEndpointCreateAsync(
                     endpoint,
                     idempotencyKey,
-                    cancellationToken);
+                    cancellationToken
+                );
 
                 return lEndpoint;
             }
@@ -72,8 +79,10 @@ namespace Svix
         {
             try
             {
-                var lResponse = _opWebhookEndpointApi.V1OperationalWebhookEndpointDeleteWithHttpInfo(
-                    endpointId);
+                var lResponse =
+                    _opWebhookEndpointApi.V1OperationalWebhookEndpointDeleteWithHttpInfo(
+                        endpointId
+                    );
 
                 return lResponse.StatusCode == HttpStatusCode.NoContent;
             }
@@ -88,14 +97,19 @@ namespace Svix
             }
         }
 
-        public async Task<bool> DeleteAsync(string endpointId, string idempotencyKey = default,
-            CancellationToken cancellationToken = default)
+        public async Task<bool> DeleteAsync(
+            string endpointId,
+            string idempotencyKey = default,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
-                var lResponse = await _opWebhookEndpointApi.V1OperationalWebhookEndpointDeleteWithHttpInfoAsync(
-                    endpointId,
-                    cancellationToken);
+                var lResponse =
+                    await _opWebhookEndpointApi.V1OperationalWebhookEndpointDeleteWithHttpInfoAsync(
+                        endpointId,
+                        cancellationToken
+                    );
 
                 return lResponse.StatusCode == HttpStatusCode.NoContent;
             }
@@ -128,14 +142,18 @@ namespace Svix
             }
         }
 
-        public async Task<OperationalWebhookEndpointOut> GetAsync(string endpointId, string idempotencyKey = default,
-            CancellationToken cancellationToken = default)
+        public async Task<OperationalWebhookEndpointOut> GetAsync(
+            string endpointId,
+            string idempotencyKey = default,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
                 var lEndpoint = await _opWebhookEndpointApi.V1OperationalWebhookEndpointGetAsync(
                     endpointId,
-                    cancellationToken);
+                    cancellationToken
+                );
 
                 return lEndpoint;
             }
@@ -155,7 +173,8 @@ namespace Svix
             try
             {
                 var lSecret = _opWebhookEndpointApi.V1OperationalWebhookEndpointGetSecret(
-                    endpointId);
+                    endpointId
+                );
 
                 return lSecret?.Key;
             }
@@ -170,14 +189,19 @@ namespace Svix
             }
         }
 
-        public async Task<string> GetSecretAsync(string endpointId, string idempotencyKey = default,
-            CancellationToken cancellationToken = default)
+        public async Task<string> GetSecretAsync(
+            string endpointId,
+            string idempotencyKey = default,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
-                var lSecret = await _opWebhookEndpointApi.V1OperationalWebhookEndpointGetSecretAsync(
-                    endpointId,
-                    cancellationToken);
+                var lSecret =
+                    await _opWebhookEndpointApi.V1OperationalWebhookEndpointGetSecretAsync(
+                        endpointId,
+                        cancellationToken
+                    );
 
                 return lSecret.Key;
             }
@@ -192,15 +216,18 @@ namespace Svix
             }
         }
 
-        public ListResponseOperationalWebhookEndpointOut List(ListOptions options = null,
-            string idempotencyKey = default)
+        public ListResponseOperationalWebhookEndpointOut List(
+            ListOptions options = null,
+            string idempotencyKey = default
+        )
         {
             try
             {
                 var lEndpoints = _opWebhookEndpointApi.V1OperationalWebhookEndpointList(
                     options?.Limit,
                     options?.Iterator,
-                    options?.Order);
+                    options?.Order
+                );
 
                 return lEndpoints;
             }
@@ -216,8 +243,10 @@ namespace Svix
         }
 
         public async Task<ListResponseOperationalWebhookEndpointOut> ListAsync(
-            ListOptions options = null, string idempotencyKey = default,
-            CancellationToken cancellationToken = default)
+            ListOptions options = null,
+            string idempotencyKey = default,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
@@ -225,7 +254,8 @@ namespace Svix
                     options?.Limit,
                     options?.Iterator,
                     options?.Order,
-                    cancellationToken);
+                    cancellationToken
+                );
 
                 return lEndpoints;
             }
@@ -240,14 +270,20 @@ namespace Svix
             }
         }
 
-        public bool RotateSecret(string endpointId, OperationalWebhookEndpointSecretIn secret, string idempotencyKey = default)
+        public bool RotateSecret(
+            string endpointId,
+            OperationalWebhookEndpointSecretIn secret,
+            string idempotencyKey = default
+        )
         {
             try
             {
-                var lResponse = _opWebhookEndpointApi.V1OperationalWebhookEndpointRotateSecretWithHttpInfo(
-                    endpointId,
-                    secret,
-                    idempotencyKey);
+                var lResponse =
+                    _opWebhookEndpointApi.V1OperationalWebhookEndpointRotateSecretWithHttpInfo(
+                        endpointId,
+                        secret,
+                        idempotencyKey
+                    );
 
                 return lResponse.StatusCode == HttpStatusCode.NoContent;
             }
@@ -262,15 +298,21 @@ namespace Svix
             }
         }
 
-        public async Task<bool> RotateSecretAsync(string endpointId, OperationalWebhookEndpointSecretIn secret,
-            string idempotencyKey = default, CancellationToken cancellationToken = default)
+        public async Task<bool> RotateSecretAsync(
+            string endpointId,
+            OperationalWebhookEndpointSecretIn secret,
+            string idempotencyKey = default,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
-                var lResponse = await _opWebhookEndpointApi.V1OperationalWebhookEndpointRotateSecretWithHttpInfoAsync(
-                    endpointId,
-                    secret,
-                    idempotencyKey);
+                var lResponse =
+                    await _opWebhookEndpointApi.V1OperationalWebhookEndpointRotateSecretWithHttpInfoAsync(
+                        endpointId,
+                        secret,
+                        idempotencyKey
+                    );
 
                 return lResponse.StatusCode == HttpStatusCode.NoContent;
             }
@@ -285,14 +327,18 @@ namespace Svix
             }
         }
 
-        public OperationalWebhookEndpointOut Update(string endpointId,
-            OperationalWebhookEndpointUpdate endpoint, string idempotencyKey = default)
+        public OperationalWebhookEndpointOut Update(
+            string endpointId,
+            OperationalWebhookEndpointUpdate endpoint,
+            string idempotencyKey = default
+        )
         {
             try
             {
                 var lEndpoint = _opWebhookEndpointApi.V1OperationalWebhookEndpointUpdate(
                     endpointId,
-                    endpoint);
+                    endpoint
+                );
 
                 return lEndpoint;
             }
@@ -307,16 +353,20 @@ namespace Svix
             }
         }
 
-        public async Task<OperationalWebhookEndpointOut> UpdateAsync(string endpointId,
-            OperationalWebhookEndpointUpdate endpoint, string idempotencyKey = default,
-            CancellationToken cancellationToken = default)
+        public async Task<OperationalWebhookEndpointOut> UpdateAsync(
+            string endpointId,
+            OperationalWebhookEndpointUpdate endpoint,
+            string idempotencyKey = default,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
                 var lEndpoint = await _opWebhookEndpointApi.V1OperationalWebhookEndpointUpdateAsync(
                     endpointId,
                     endpoint,
-                    cancellationToken);
+                    cancellationToken
+                );
 
                 return lEndpoint;
             }

@@ -15,16 +15,21 @@ namespace Svix
         public Statistics(ISvixClient svixClient, IStatisticsApi statisticsApi)
             : base(svixClient)
         {
-            _statisticsApi = statisticsApi ?? throw new ArgumentNullException(nameof(statisticsApi));
+            _statisticsApi =
+                statisticsApi ?? throw new ArgumentNullException(nameof(statisticsApi));
         }
 
-        public AppUsageStatsOut AggregateAppStats(AppUsageStatsIn appUsageStatsIn, string idempotencyKey = default)
+        public AppUsageStatsOut AggregateAppStats(
+            AppUsageStatsIn appUsageStatsIn,
+            string idempotencyKey = default
+        )
         {
             try
             {
                 var res = _statisticsApi.V1StatisticsAggregateAppStats(
                     appUsageStatsIn,
-                    idempotencyKey);
+                    idempotencyKey
+                );
 
                 return res;
             }
@@ -39,13 +44,17 @@ namespace Svix
             }
         }
 
-        public async Task<AppUsageStatsOut> AggregateAppStatsAsync(AppUsageStatsIn appUsageStatsIn, string idempotencyKey = default)
+        public async Task<AppUsageStatsOut> AggregateAppStatsAsync(
+            AppUsageStatsIn appUsageStatsIn,
+            string idempotencyKey = default
+        )
         {
             try
             {
                 var res = await _statisticsApi.V1StatisticsAggregateAppStatsAsync(
                     appUsageStatsIn,
-                    idempotencyKey);
+                    idempotencyKey
+                );
 
                 return res;
             }

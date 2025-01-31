@@ -1,11 +1,11 @@
 ﻿using System;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Svix.Abstractions;
 using Svix.Api;
 using Svix.Client;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Svix
 {
@@ -38,11 +38,15 @@ namespace Svix
             }
         }
 
-        public async Task<bool> IsHealthyAsync(string idempotencyKey = default, CancellationToken cancellationToken = default)
+        public async Task<bool> IsHealthyAsync(
+            string idempotencyKey = default,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
-                var lResponse = await _healthApi.V1HealthGetWithHttpInfoAsync(cancellationToken)
+                var lResponse = await _healthApi
+                    .V1HealthGetWithHttpInfoAsync(cancellationToken)
                     .ConfigureAwait(false);
 
                 return lResponse.StatusCode == HttpStatusCode.NoContent;

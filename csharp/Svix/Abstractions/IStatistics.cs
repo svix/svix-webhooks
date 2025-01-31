@@ -8,13 +8,18 @@ namespace Svix.Abstractions
 {
     public interface IStatistics
     {
-        AppUsageStatsOut AggregateAppStats(AppUsageStatsIn appUsageStatsIn, string idempotencyKey = default);
+        AppUsageStatsOut AggregateAppStats(
+            AppUsageStatsIn appUsageStatsIn,
+            string idempotencyKey = default
+        );
 
-        Task<AppUsageStatsOut> AggregateAppStatsAsync(AppUsageStatsIn appUsageStatsIn, string idempotencyKey = default);
+        Task<AppUsageStatsOut> AggregateAppStatsAsync(
+            AppUsageStatsIn appUsageStatsIn,
+            string idempotencyKey = default
+        );
 
         AggregateEventTypesOut AggregateEventTypes();
 
         Task<AggregateEventTypesOut> AggregateEventTypesAsync();
-
     }
 }

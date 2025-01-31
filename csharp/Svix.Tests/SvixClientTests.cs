@@ -21,7 +21,11 @@ public class SvixClientTests
     [Fact]
     public void Constructor_WhenCalled_AcceptsLogger()
     {
-        var sut = new SvixClient("", new SvixOptions("http://some.url"), new NullLogger<SvixClient>());
+        var sut = new SvixClient(
+            "",
+            new SvixOptions("http://some.url"),
+            new NullLogger<SvixClient>()
+        );
 
         Assert.NotNull(sut);
     }
@@ -36,7 +40,9 @@ public class SvixClientTests
         var app = client.Application.Create(new ApplicationIn(name: "App"));
         try
         {
-            client.EventType.Create(new EventTypeIn(name: "event.started", description: "Something started"));
+            client.EventType.Create(
+                new EventTypeIn(name: "event.started", description: "Something started")
+            );
         }
         catch (ApiException e)
         {
@@ -46,7 +52,9 @@ public class SvixClientTests
 
         try
         {
-            client.EventType.Create(new EventTypeIn(name: "event.ended", description: "Something ended"));
+            client.EventType.Create(
+                new EventTypeIn(name: "event.ended", description: "Something ended")
+            );
         }
         catch (ApiException e)
         {
@@ -54,15 +62,23 @@ public class SvixClientTests
             Assert.Equal(409, e.ErrorCode);
         }
 
-        var ep = client.Endpoint.Create(app.Id,
-            new EndpointIn(url: "https://example.svix.com/", channels: new List<string> { "ch0", "ch1" }));
+        var ep = client.Endpoint.Create(
+            app.Id,
+            new EndpointIn(
+                url: "https://example.svix.com/",
+                channels: new List<string> { "ch0", "ch1" }
+            )
+        );
 
         ep.Channels.Sort();
         Assert.Equal(new List<string> { "ch0", "ch1" }, ep.Channels);
         Assert.Null(ep.FilterTypes);
 
-        var epPatched = client.Endpoint.Patch(app.Id, ep.Id,
-            new EndpointPatch(filterTypes: new List<string> { "event.started", "event.ended" }));
+        var epPatched = client.Endpoint.Patch(
+            app.Id,
+            ep.Id,
+            new EndpointPatch(filterTypes: new List<string> { "event.started", "event.ended" })
+        );
         epPatched.Channels.Sort();
         epPatched.FilterTypes.Sort();
         Assert.Equal(new List<string> { "ch0", "ch1" }, epPatched.Channels);

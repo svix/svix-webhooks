@@ -1,13 +1,10 @@
-using Xunit;
-
 using System;
 using System.Net;
-
 using Svix.Exceptions;
+using Xunit;
 
 namespace Svix.Tests
 {
-
     class TestPayload
     {
         internal const string SVIX_ID_HEADER_KEY = "svix-id";
@@ -24,6 +21,7 @@ namespace Svix.Tests
         public string secret;
         public string payload;
         public string signature;
+
         public TestPayload(DateTimeOffset timestamp)
         {
             id = DEFAULT_MSG_ID;
@@ -54,7 +52,9 @@ namespace Svix.Tests
 
             var wh = new Webhook(testPayload.secret);
 
-            Assert.Throws<WebhookVerificationException>(() => wh.Verify(testPayload.payload, testPayload.headers));
+            Assert.Throws<WebhookVerificationException>(
+                () => wh.Verify(testPayload.payload, testPayload.headers)
+            );
         }
 
         [Fact]
@@ -65,7 +65,9 @@ namespace Svix.Tests
 
             var wh = new Webhook(testPayload.secret);
 
-            Assert.Throws<WebhookVerificationException>(() => wh.Verify(testPayload.payload, testPayload.headers));
+            Assert.Throws<WebhookVerificationException>(
+                () => wh.Verify(testPayload.payload, testPayload.headers)
+            );
         }
 
         [Fact]
@@ -76,18 +78,25 @@ namespace Svix.Tests
 
             var wh = new Webhook(testPayload.secret);
 
-            Assert.Throws<WebhookVerificationException>(() => wh.Verify(testPayload.payload, testPayload.headers));
+            Assert.Throws<WebhookVerificationException>(
+                () => wh.Verify(testPayload.payload, testPayload.headers)
+            );
         }
 
         [Fact]
         public void TestInvalidSignatureThrowsException()
         {
             var testPayload = new TestPayload(DateTimeOffset.UtcNow);
-            testPayload.headers.Set(TestPayload.SVIX_SIGNATURE_HEADER_KEY, "v1,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLawdd");
+            testPayload.headers.Set(
+                TestPayload.SVIX_SIGNATURE_HEADER_KEY,
+                "v1,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLawdd"
+            );
 
             var wh = new Webhook(testPayload.secret);
 
-            Assert.Throws<WebhookVerificationException>(() => wh.Verify(testPayload.payload, testPayload.headers));
+            Assert.Throws<WebhookVerificationException>(
+                () => wh.Verify(testPayload.payload, testPayload.headers)
+            );
         }
 
         [Fact]
@@ -104,9 +113,18 @@ namespace Svix.Tests
         {
             var testPayload = new TestPayload(DateTimeOffset.UtcNow);
             WebHeaderCollection unbrandedHeaders = new WebHeaderCollection();
-            unbrandedHeaders.Set("webhook-id", testPayload.headers.Get(TestPayload.SVIX_ID_HEADER_KEY));
-            unbrandedHeaders.Set("webhook-signature", testPayload.headers.Get(TestPayload.SVIX_SIGNATURE_HEADER_KEY));
-            unbrandedHeaders.Set("webhook-timestamp", testPayload.headers.Get(TestPayload.SVIX_TIMESTAMP_HEADER_KEY));
+            unbrandedHeaders.Set(
+                "webhook-id",
+                testPayload.headers.Get(TestPayload.SVIX_ID_HEADER_KEY)
+            );
+            unbrandedHeaders.Set(
+                "webhook-signature",
+                testPayload.headers.Get(TestPayload.SVIX_SIGNATURE_HEADER_KEY)
+            );
+            unbrandedHeaders.Set(
+                "webhook-timestamp",
+                testPayload.headers.Get(TestPayload.SVIX_TIMESTAMP_HEADER_KEY)
+            );
             testPayload.headers = unbrandedHeaders;
 
             var wh = new Webhook(testPayload.secret);
@@ -117,23 +135,31 @@ namespace Svix.Tests
         [Fact]
         public void TestOldTimestampThrowsException()
         {
-            var testPayload = new TestPayload(DateTimeOffset.UtcNow.AddSeconds(-1 * (TOLERANCE_IN_SECONDS + 1)));
+            var testPayload = new TestPayload(
+                DateTimeOffset.UtcNow.AddSeconds(-1 * (TOLERANCE_IN_SECONDS + 1))
+            );
 
             var wh = new Webhook(testPayload.secret);
 
-            Assert.Throws<WebhookVerificationException>(() => wh.Verify(testPayload.payload, testPayload.headers));
+            Assert.Throws<WebhookVerificationException>(
+                () => wh.Verify(testPayload.payload, testPayload.headers)
+            );
         }
 
         [Fact]
         public void TestNewTimestampThrowsException()
         {
-            var testPayload = new TestPayload(DateTimeOffset.UtcNow.AddSeconds(TOLERANCE_IN_SECONDS + 1));
+            var testPayload = new TestPayload(
+                DateTimeOffset.UtcNow.AddSeconds(TOLERANCE_IN_SECONDS + 1)
+            );
 
             var wh = new Webhook(testPayload.secret);
 
-            Assert.Throws<WebhookVerificationException>(() => wh.Verify(testPayload.payload, testPayload.headers));
+            Assert.Throws<WebhookVerificationException>(
+                () => wh.Verify(testPayload.payload, testPayload.headers)
+            );
         }
-        
+
         [Fact]
         public void TestWebHeaderCollectionNullThrowsException()
         {
@@ -141,9 +167,11 @@ namespace Svix.Tests
 
             var wh = new Webhook(testPayload.secret);
 
-            Assert.Throws<ArgumentNullException>(() => wh.Verify(testPayload.payload, (WebHeaderCollection)null));
+            Assert.Throws<ArgumentNullException>(
+                () => wh.Verify(testPayload.payload, (WebHeaderCollection)null)
+            );
         }
-        
+
         [Fact]
         public void TestWebHeadersProviderNullThrowsException()
         {
@@ -151,9 +179,11 @@ namespace Svix.Tests
 
             var wh = new Webhook(testPayload.secret);
 
-            Assert.Throws<ArgumentNullException>(() => wh.Verify(testPayload.payload, (Func<string, string>)null));
+            Assert.Throws<ArgumentNullException>(
+                () => wh.Verify(testPayload.payload, (Func<string, string>)null)
+            );
         }
-        
+
         [Fact]
         public void TestPayloadNullThrowsException()
         {
@@ -169,7 +199,8 @@ namespace Svix.Tests
         {
             var testPayload = new TestPayload(DateTimeOffset.UtcNow);
 
-            string[] sigs = new string[] {
+            string[] sigs = new string[]
+            {
                 "v1,Ceo5qEr07ixe2NLpvHk3FH9bwy/WavXrAFQ/9tdO6mc=",
                 "v2,Ceo5qEr07ixe2NLpvHk3FH9bwy/WavXrAFQ/9tdO6mc=",
                 testPayload.headers.Get(TestPayload.SVIX_SIGNATURE_HEADER_KEY), // valid signature
@@ -207,7 +238,7 @@ namespace Svix.Tests
             var signature = wh.Sign(msgId, timestamp, payload);
             Assert.Equal(signature, expected);
         }
-        
+
         [Theory]
         [InlineData(1024 * 1024, "v1,txpEUxqWZJ5nteTnymUVa+7C4NHpBeXJ6CsBAW0c3/A=")]
         [InlineData(256 * 1024, "v1,Mw4Pe2WgApuT7NSqnSq0PQPV9gbLdggCl9B865x5Xh0=")]

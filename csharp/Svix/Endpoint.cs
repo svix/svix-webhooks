@@ -22,14 +22,15 @@ namespace Svix
             _endpointApi = endpointApi ?? throw new ArgumentNullException(nameof(_endpointApi));
         }
 
-        public EndpointOut Create(string appId, EndpointIn endpoint, string idempotencyKey = default)
+        public EndpointOut Create(
+            string appId,
+            EndpointIn endpoint,
+            string idempotencyKey = default
+        )
         {
             try
             {
-                var lEndpoint = _endpointApi.V1EndpointCreate(
-                    appId,
-                    endpoint,
-                    idempotencyKey);
+                var lEndpoint = _endpointApi.V1EndpointCreate(appId, endpoint, idempotencyKey);
 
                 return lEndpoint;
             }
@@ -44,8 +45,12 @@ namespace Svix
             }
         }
 
-        public async Task<EndpointOut> CreateAsync(string appId, EndpointIn endpoint, string idempotencyKey = default,
-            CancellationToken cancellationToken = default)
+        public async Task<EndpointOut> CreateAsync(
+            string appId,
+            EndpointIn endpoint,
+            string idempotencyKey = default,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
@@ -53,7 +58,8 @@ namespace Svix
                     appId,
                     endpoint,
                     idempotencyKey,
-                    cancellationToken);
+                    cancellationToken
+                );
 
                 return lEndpoint;
             }
@@ -72,9 +78,7 @@ namespace Svix
         {
             try
             {
-                var lResponse = _endpointApi.V1EndpointDeleteWithHttpInfo(
-                    appId,
-                    endpointId);
+                var lResponse = _endpointApi.V1EndpointDeleteWithHttpInfo(appId, endpointId);
 
                 return lResponse.StatusCode == HttpStatusCode.NoContent;
             }
@@ -89,15 +93,20 @@ namespace Svix
             }
         }
 
-        public async Task<bool> DeleteAsync(string appId, string endpointId, string idempotencyKey = default,
-            CancellationToken cancellationToken = default)
+        public async Task<bool> DeleteAsync(
+            string appId,
+            string endpointId,
+            string idempotencyKey = default,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
                 var lResponse = await _endpointApi.V1EndpointDeleteWithHttpInfoAsync(
                     appId,
                     endpointId,
-                    cancellationToken);
+                    cancellationToken
+                );
 
                 return lResponse.StatusCode == HttpStatusCode.NoContent;
             }
@@ -116,9 +125,7 @@ namespace Svix
         {
             try
             {
-                var lEndpoint = _endpointApi.V1EndpointGet(
-                    appId,
-                    endpointId);
+                var lEndpoint = _endpointApi.V1EndpointGet(appId, endpointId);
 
                 return lEndpoint;
             }
@@ -133,15 +140,20 @@ namespace Svix
             }
         }
 
-        public async Task<EndpointOut> GetAsync(string appId, string endpointId, string idempotencyKey = default,
-            CancellationToken cancellationToken = default)
+        public async Task<EndpointOut> GetAsync(
+            string appId,
+            string endpointId,
+            string idempotencyKey = default,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
                 var lEndpoint = await _endpointApi.V1EndpointGetAsync(
                     appId,
                     endpointId,
-                    cancellationToken);
+                    cancellationToken
+                );
 
                 return lEndpoint;
             }
@@ -156,13 +168,15 @@ namespace Svix
             }
         }
 
-        public EndpointHeadersOut GetHeaders(string appId, string endpointId, string idempotencyKey = default)
+        public EndpointHeadersOut GetHeaders(
+            string appId,
+            string endpointId,
+            string idempotencyKey = default
+        )
         {
             try
             {
-                var lHeaders = _endpointApi.V1EndpointGetHeaders(
-                    appId,
-                    endpointId);
+                var lHeaders = _endpointApi.V1EndpointGetHeaders(appId, endpointId);
 
                 return lHeaders;
             }
@@ -177,15 +191,20 @@ namespace Svix
             }
         }
 
-        public async Task<EndpointHeadersOut> GetHeadersAsync(string appId, string endpointId, string idempotencyKey = default,
-            CancellationToken cancellationToken = default)
+        public async Task<EndpointHeadersOut> GetHeadersAsync(
+            string appId,
+            string endpointId,
+            string idempotencyKey = default,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
                 var lHeaders = await _endpointApi.V1EndpointGetHeadersAsync(
                     appId,
                     endpointId,
-                    cancellationToken);
+                    cancellationToken
+                );
 
                 return lHeaders;
             }
@@ -204,9 +223,7 @@ namespace Svix
         {
             try
             {
-                var lSecret = _endpointApi.V1EndpointGetSecret(
-                    appId,
-                    endpointId);
+                var lSecret = _endpointApi.V1EndpointGetSecret(appId, endpointId);
 
                 return lSecret?.Key;
             }
@@ -221,15 +238,20 @@ namespace Svix
             }
         }
 
-        public async Task<string> GetSecretAsync(string appId, string endpointId, string idempotencyKey = default,
-            CancellationToken cancellationToken = default)
+        public async Task<string> GetSecretAsync(
+            string appId,
+            string endpointId,
+            string idempotencyKey = default,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
                 var lSecret = await _endpointApi.V1EndpointGetSecretAsync(
                     appId,
                     endpointId,
-                    cancellationToken);
+                    cancellationToken
+                );
 
                 return lSecret.Key;
             }
@@ -244,7 +266,11 @@ namespace Svix
             }
         }
 
-        public ListResponseEndpointOut List(string appId, ListOptions options = null, string idempotencyKey = default)
+        public ListResponseEndpointOut List(
+            string appId,
+            ListOptions options = null,
+            string idempotencyKey = default
+        )
         {
             try
             {
@@ -252,7 +278,8 @@ namespace Svix
                     appId,
                     options?.Limit,
                     options?.Iterator,
-                    options?.Order);
+                    options?.Order
+                );
 
                 return lEndpoints;
             }
@@ -267,8 +294,12 @@ namespace Svix
             }
         }
 
-        public async Task<ListResponseEndpointOut> ListAsync(string appId, ListOptions options = null, string idempotencyKey = default,
-            CancellationToken cancellationToken = default)
+        public async Task<ListResponseEndpointOut> ListAsync(
+            string appId,
+            ListOptions options = null,
+            string idempotencyKey = default,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
@@ -277,7 +308,8 @@ namespace Svix
                     options?.Limit,
                     options?.Iterator,
                     options?.Order,
-                    cancellationToken);
+                    cancellationToken
+                );
 
                 return lEndpoints;
             }
@@ -292,14 +324,20 @@ namespace Svix
             }
         }
 
-        public bool PatchHeaders(string appId, string endpointId, EndpointHeadersPatchIn headers, string idempotencyKey = default)
+        public bool PatchHeaders(
+            string appId,
+            string endpointId,
+            EndpointHeadersPatchIn headers,
+            string idempotencyKey = default
+        )
         {
             try
             {
                 var lResponse = _endpointApi.V1EndpointPatchHeadersWithHttpInfo(
                     appId,
                     endpointId,
-                    headers);
+                    headers
+                );
 
                 return lResponse.StatusCode == HttpStatusCode.NoContent;
             }
@@ -314,8 +352,13 @@ namespace Svix
             }
         }
 
-        public async Task<bool> PatchHeadersAsync(string appId, string endpointId, EndpointHeadersPatchIn headers, string idempotencyKey = default,
-            CancellationToken cancellationToken = default)
+        public async Task<bool> PatchHeadersAsync(
+            string appId,
+            string endpointId,
+            EndpointHeadersPatchIn headers,
+            string idempotencyKey = default,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
@@ -323,7 +366,8 @@ namespace Svix
                     appId,
                     endpointId,
                     headers,
-                    cancellationToken);
+                    cancellationToken
+                );
 
                 return lResponse.StatusCode == HttpStatusCode.NoContent;
             }
@@ -338,7 +382,12 @@ namespace Svix
             }
         }
 
-        public bool Recover(string appId, string endpointId, RecoverIn recover, string idempotencyKey = default)
+        public bool Recover(
+            string appId,
+            string endpointId,
+            RecoverIn recover,
+            string idempotencyKey = default
+        )
         {
             try
             {
@@ -346,7 +395,8 @@ namespace Svix
                     appId,
                     endpointId,
                     recover,
-                    idempotencyKey);
+                    idempotencyKey
+                );
 
                 return lResponse.StatusCode == HttpStatusCode.Accepted;
             }
@@ -361,8 +411,13 @@ namespace Svix
             }
         }
 
-        public async Task<bool> RecoverAsync(string appId, string endpointId, RecoverIn recover, string idempotencyKey = default,
-            CancellationToken cancellationToken = default)
+        public async Task<bool> RecoverAsync(
+            string appId,
+            string endpointId,
+            RecoverIn recover,
+            string idempotencyKey = default,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
@@ -371,7 +426,8 @@ namespace Svix
                     endpointId,
                     recover,
                     idempotencyKey,
-                    cancellationToken);
+                    cancellationToken
+                );
 
                 return lResponse.StatusCode == HttpStatusCode.Accepted;
             }
@@ -386,7 +442,12 @@ namespace Svix
             }
         }
 
-        public bool RotateSecret(string appId, string endpointId, EndpointSecretRotateIn secret, string idempotencyKey = default)
+        public bool RotateSecret(
+            string appId,
+            string endpointId,
+            EndpointSecretRotateIn secret,
+            string idempotencyKey = default
+        )
         {
             try
             {
@@ -394,7 +455,8 @@ namespace Svix
                     appId,
                     endpointId,
                     secret,
-                    idempotencyKey);
+                    idempotencyKey
+                );
 
                 return lResponse.StatusCode == HttpStatusCode.NoContent;
             }
@@ -409,8 +471,13 @@ namespace Svix
             }
         }
 
-        public async Task<bool> RotateSecretAsync(string appId, string endpointId, EndpointSecretRotateIn secret, string idempotencyKey = default,
-            CancellationToken cancellationToken = default)
+        public async Task<bool> RotateSecretAsync(
+            string appId,
+            string endpointId,
+            EndpointSecretRotateIn secret,
+            string idempotencyKey = default,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
@@ -418,7 +485,8 @@ namespace Svix
                     appId,
                     endpointId,
                     secret,
-                    idempotencyKey);
+                    idempotencyKey
+                );
 
                 return lResponse.StatusCode == HttpStatusCode.NoContent;
             }
@@ -433,14 +501,16 @@ namespace Svix
             }
         }
 
-        public EndpointOut Update(string appId, string endpointId, EndpointUpdate endpoint, string idempotencyKey = default)
+        public EndpointOut Update(
+            string appId,
+            string endpointId,
+            EndpointUpdate endpoint,
+            string idempotencyKey = default
+        )
         {
             try
             {
-                var lEndpoint = _endpointApi.V1EndpointUpdate(
-                    appId,
-                    endpointId,
-                    endpoint);
+                var lEndpoint = _endpointApi.V1EndpointUpdate(appId, endpointId, endpoint);
 
                 return lEndpoint;
             }
@@ -455,8 +525,13 @@ namespace Svix
             }
         }
 
-        public async Task<EndpointOut> UpdateAsync(string appId, string endpointId, EndpointUpdate endpoint, string idempotencyKey = default,
-            CancellationToken cancellationToken = default)
+        public async Task<EndpointOut> UpdateAsync(
+            string appId,
+            string endpointId,
+            EndpointUpdate endpoint,
+            string idempotencyKey = default,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
@@ -464,7 +539,8 @@ namespace Svix
                     appId,
                     endpointId,
                     endpoint,
-                    cancellationToken);
+                    cancellationToken
+                );
 
                 return lEndpoint;
             }
@@ -479,14 +555,16 @@ namespace Svix
             }
         }
 
-        public EndpointOut Patch(string appId, string endpointId, EndpointPatch endpoint, string idempotencyKey = default)
+        public EndpointOut Patch(
+            string appId,
+            string endpointId,
+            EndpointPatch endpoint,
+            string idempotencyKey = default
+        )
         {
             try
             {
-                var lEndpoint = _endpointApi.V1EndpointPatch(
-                    appId,
-                    endpointId,
-                    endpoint);
+                var lEndpoint = _endpointApi.V1EndpointPatch(appId, endpointId, endpoint);
 
                 return lEndpoint;
             }
@@ -501,8 +579,13 @@ namespace Svix
             }
         }
 
-        public async Task<EndpointOut> PatchAsync(string appId, string endpointId, EndpointPatch endpoint, string idempotencyKey = default,
-            CancellationToken cancellationToken = default)
+        public async Task<EndpointOut> PatchAsync(
+            string appId,
+            string endpointId,
+            EndpointPatch endpoint,
+            string idempotencyKey = default,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
@@ -510,7 +593,8 @@ namespace Svix
                     appId,
                     endpointId,
                     endpoint,
-                    cancellationToken);
+                    cancellationToken
+                );
 
                 return lEndpoint;
             }
@@ -525,14 +609,20 @@ namespace Svix
             }
         }
 
-        public bool UpdateHeaders(string appId, string endpointId, EndpointHeadersIn headers, string idempotencyKey = default)
+        public bool UpdateHeaders(
+            string appId,
+            string endpointId,
+            EndpointHeadersIn headers,
+            string idempotencyKey = default
+        )
         {
             try
             {
                 var lResponse = _endpointApi.V1EndpointUpdateHeadersWithHttpInfo(
                     appId,
                     endpointId,
-                    headers);
+                    headers
+                );
 
                 return lResponse.StatusCode == HttpStatusCode.NoContent;
             }
@@ -547,8 +637,13 @@ namespace Svix
             }
         }
 
-        public async Task<bool> UpdateHeadersAsync(string appId, string endpointId, EndpointHeadersIn headers, string idempotencyKey = default,
-            CancellationToken cancellationToken = default)
+        public async Task<bool> UpdateHeadersAsync(
+            string appId,
+            string endpointId,
+            EndpointHeadersIn headers,
+            string idempotencyKey = default,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
@@ -556,7 +651,8 @@ namespace Svix
                     appId,
                     endpointId,
                     headers,
-                    cancellationToken);
+                    cancellationToken
+                );
 
                 return lResponse.StatusCode == HttpStatusCode.NoContent;
             }
@@ -571,15 +667,15 @@ namespace Svix
             }
         }
 
-        public EndpointStats GetStats(string appId, string endpointId, string idempotencyKey = default)
+        public EndpointStats GetStats(
+            string appId,
+            string endpointId,
+            string idempotencyKey = default
+        )
         {
             try
             {
-                var lStats = _endpointApi.V1EndpointGetStats(
-                    appId,
-                    endpointId,
-                    null,
-                    null);
+                var lStats = _endpointApi.V1EndpointGetStats(appId, endpointId, null, null);
 
                 return lStats;
             }
@@ -594,7 +690,12 @@ namespace Svix
             }
         }
 
-        public EndpointStats GetStatsWithOptions(string appId, string endpointId, EndpointStatsOptions options = null, string idempotencyKey = default)
+        public EndpointStats GetStatsWithOptions(
+            string appId,
+            string endpointId,
+            EndpointStatsOptions options = null,
+            string idempotencyKey = default
+        )
         {
             try
             {
@@ -602,7 +703,8 @@ namespace Svix
                     appId,
                     endpointId,
                     options?.Since,
-                    options?.Until);
+                    options?.Until
+                );
 
                 return lStats;
             }
@@ -617,8 +719,12 @@ namespace Svix
             }
         }
 
-        public async Task<EndpointStats> GetStatsAsync(string appId, string endpointId, string idempotencyKey = default,
-            CancellationToken cancellationToken = default)
+        public async Task<EndpointStats> GetStatsAsync(
+            string appId,
+            string endpointId,
+            string idempotencyKey = default,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
@@ -627,7 +733,8 @@ namespace Svix
                     endpointId,
                     null,
                     null,
-                    cancellationToken);
+                    cancellationToken
+                );
 
                 return lStats;
             }
@@ -642,8 +749,13 @@ namespace Svix
             }
         }
 
-        public async Task<EndpointStats> GetStatsWithOptionsAsync(string appId, string endpointId, EndpointStatsOptions options = null, string idempotencyKey = default,
-            CancellationToken cancellationToken = default)
+        public async Task<EndpointStats> GetStatsWithOptionsAsync(
+            string appId,
+            string endpointId,
+            EndpointStatsOptions options = null,
+            string idempotencyKey = default,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
@@ -652,7 +764,8 @@ namespace Svix
                     endpointId,
                     options?.Since,
                     options?.Until,
-                    cancellationToken);
+                    cancellationToken
+                );
 
                 return lStats;
             }
@@ -667,8 +780,12 @@ namespace Svix
             }
         }
 
-        public bool ReplayMissing(string appId, string endpointId, ReplayIn replayIn,
-            string idempotencyKey = default)
+        public bool ReplayMissing(
+            string appId,
+            string endpointId,
+            ReplayIn replayIn,
+            string idempotencyKey = default
+        )
         {
             try
             {
@@ -676,7 +793,8 @@ namespace Svix
                     appId,
                     endpointId,
                     replayIn,
-                    idempotencyKey);
+                    idempotencyKey
+                );
 
                 return response.StatusCode == HttpStatusCode.Accepted;
             }
@@ -691,8 +809,13 @@ namespace Svix
             }
         }
 
-        public async Task<bool> ReplayMissingAsync(string appId, string endpointId, ReplayIn replayIn,
-            string idempotencyKey = default, CancellationToken cancellationToken = default)
+        public async Task<bool> ReplayMissingAsync(
+            string appId,
+            string endpointId,
+            ReplayIn replayIn,
+            string idempotencyKey = default,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
@@ -701,7 +824,8 @@ namespace Svix
                     endpointId,
                     replayIn,
                     idempotencyKey,
-                    cancellationToken);
+                    cancellationToken
+                );
 
                 return response.StatusCode == HttpStatusCode.Accepted;
             }
@@ -716,13 +840,15 @@ namespace Svix
             }
         }
 
-        public EndpointTransformationOut TransformationGet(string appId, string endpointId, string idempotencyKey = default)
+        public EndpointTransformationOut TransformationGet(
+            string appId,
+            string endpointId,
+            string idempotencyKey = default
+        )
         {
             try
             {
-                var lTransformation = _endpointApi.V1EndpointTransformationGet(
-                    appId,
-                    endpointId);
+                var lTransformation = _endpointApi.V1EndpointTransformationGet(appId, endpointId);
 
                 return lTransformation;
             }
@@ -737,14 +863,20 @@ namespace Svix
             }
         }
 
-        public async Task<EndpointTransformationOut> TransformationGetAsync(string appId, string endpointId, string idempotencyKey = default, CancellationToken cancellationToken = default)
+        public async Task<EndpointTransformationOut> TransformationGetAsync(
+            string appId,
+            string endpointId,
+            string idempotencyKey = default,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
                 var lTransformation = await _endpointApi.V1EndpointTransformationGetAsync(
                     appId,
                     endpointId,
-                    cancellationToken);
+                    cancellationToken
+                );
 
                 return lTransformation;
             }
@@ -759,14 +891,20 @@ namespace Svix
             }
         }
 
-        public bool TransformationPartialUpdate(string appId, string endpointId, EndpointTransformationIn endpointTransformationIn, string idempotencyKey = default)
+        public bool TransformationPartialUpdate(
+            string appId,
+            string endpointId,
+            EndpointTransformationIn endpointTransformationIn,
+            string idempotencyKey = default
+        )
         {
             try
             {
                 var response = _endpointApi.V1EndpointTransformationPartialUpdateWithHttpInfo(
                     appId,
                     endpointId,
-                    endpointTransformationIn);
+                    endpointTransformationIn
+                );
 
                 return response.StatusCode == HttpStatusCode.NoContent;
             }
@@ -781,15 +919,23 @@ namespace Svix
             }
         }
 
-        public async Task<bool> TransformationPartialUpdateAsync(string appId, string endpointId, EndpointTransformationIn endpointTransformationIn, string idempotencyKey = default, CancellationToken cancellationToken = default)
+        public async Task<bool> TransformationPartialUpdateAsync(
+            string appId,
+            string endpointId,
+            EndpointTransformationIn endpointTransformationIn,
+            string idempotencyKey = default,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
-                var response = await _endpointApi.V1EndpointTransformationPartialUpdateWithHttpInfoAsync(
-                    appId,
-                    endpointId,
-                    endpointTransformationIn,
-                    cancellationToken);
+                var response =
+                    await _endpointApi.V1EndpointTransformationPartialUpdateWithHttpInfoAsync(
+                        appId,
+                        endpointId,
+                        endpointTransformationIn,
+                        cancellationToken
+                    );
 
                 return response.StatusCode == HttpStatusCode.NoContent;
             }
@@ -804,7 +950,12 @@ namespace Svix
             }
         }
 
-        public MessageOut SendExample(string appId, string endpointId, EventExampleIn eventExampleIn, string idempotencyKey = default)
+        public MessageOut SendExample(
+            string appId,
+            string endpointId,
+            EventExampleIn eventExampleIn,
+            string idempotencyKey = default
+        )
         {
             try
             {
@@ -812,7 +963,8 @@ namespace Svix
                     appId,
                     endpointId,
                     eventExampleIn,
-                    idempotencyKey);
+                    idempotencyKey
+                );
 
                 return response;
             }
@@ -827,7 +979,13 @@ namespace Svix
             }
         }
 
-        public async Task<MessageOut> SendExampleAsync(string appId, string endpointId, EventExampleIn eventExampleIn, string idempotencyKey = default, CancellationToken cancellationToken = default)
+        public async Task<MessageOut> SendExampleAsync(
+            string appId,
+            string endpointId,
+            EventExampleIn eventExampleIn,
+            string idempotencyKey = default,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
@@ -835,7 +993,8 @@ namespace Svix
                     appId,
                     endpointId,
                     eventExampleIn,
-                    idempotencyKey);
+                    idempotencyKey
+                );
 
                 return response;
             }

@@ -19,7 +19,8 @@ namespace Svix
         public BackgroundTask(ISvixClient svixClient, IBackgroundTasksApi backgroundTaskApi)
             : base(svixClient)
         {
-            _backgroundTaskApi = backgroundTaskApi ?? throw new ArgumentNullException(nameof(backgroundTaskApi));
+            _backgroundTaskApi =
+                backgroundTaskApi ?? throw new ArgumentNullException(nameof(backgroundTaskApi));
         }
 
         public BackgroundTaskOut Get(string taskId, string idempotencyKey = default)
@@ -41,7 +42,11 @@ namespace Svix
             }
         }
 
-        public async Task<BackgroundTaskOut> GetAsync(string taskId, string idempotencyKey = default, CancellationToken cancellationToken = default)
+        public async Task<BackgroundTaskOut> GetAsync(
+            string taskId,
+            string idempotencyKey = default,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
@@ -60,7 +65,10 @@ namespace Svix
             }
         }
 
-        public ListResponseBackgroundTaskOut List(BackgroundTaskListOptions options = null, string idempotencyKey = default)
+        public ListResponseBackgroundTaskOut List(
+            BackgroundTaskListOptions options = null,
+            string idempotencyKey = default
+        )
         {
             try
             {
@@ -69,7 +77,8 @@ namespace Svix
                     options?.Task,
                     options?.Limit,
                     options?.Iterator,
-                    options?.Order);
+                    options?.Order
+                );
 
                 return lResponse;
             }
@@ -84,7 +93,11 @@ namespace Svix
             }
         }
 
-        public async Task<ListResponseBackgroundTaskOut> ListAsync(BackgroundTaskListOptions options = null, string idempotencyKey = default, CancellationToken cancellationToken = default)
+        public async Task<ListResponseBackgroundTaskOut> ListAsync(
+            BackgroundTaskListOptions options = null,
+            string idempotencyKey = default,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
@@ -94,7 +107,8 @@ namespace Svix
                     options?.Limit,
                     options?.Iterator,
                     options?.Order,
-                    cancellationToken);
+                    cancellationToken
+                );
 
                 return lResponse;
             }

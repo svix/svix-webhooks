@@ -9,11 +9,8 @@ namespace Svix
 {
     public sealed class SvixClient : ISvixClient
     {
-        protected Configuration Config => new Configuration
-        {
-            BasePath = ServerUrl,
-            AccessToken = Token
-        };
+        protected Configuration Config =>
+            new Configuration { BasePath = ServerUrl, AccessToken = Token };
 
         public Application Application { get; }
 
@@ -45,27 +42,45 @@ namespace Svix
 
         private readonly ISvixOptions _options;
 
-        public SvixClient(string token, ISvixOptions options, ILogger<SvixClient> logger = null
-            , ApplicationApi applicationApi = null, IAuthenticationApi authenticationApi = null, IEndpointApi endpointApi = null
-            , IEventTypeApi eventTypeApi = null, IHealthApi healthApi = null, IIntegrationApi integrationApi = null
-            , IMessageApi messageApi = null, IMessageAttemptApi messageAttemptApi = null, IStatisticsApi statisticsApi = null
-            , IWebhookEndpointApi operationalWebhookEndpointApi = null)
+        public SvixClient(
+            string token,
+            ISvixOptions options,
+            ILogger<SvixClient> logger = null,
+            ApplicationApi applicationApi = null,
+            IAuthenticationApi authenticationApi = null,
+            IEndpointApi endpointApi = null,
+            IEventTypeApi eventTypeApi = null,
+            IHealthApi healthApi = null,
+            IIntegrationApi integrationApi = null,
+            IMessageApi messageApi = null,
+            IMessageAttemptApi messageAttemptApi = null,
+            IStatisticsApi statisticsApi = null,
+            IWebhookEndpointApi operationalWebhookEndpointApi = null
+        )
         {
             Logger = logger;
             _options = options ?? throw new ArgumentNullException(nameof(options));
             Token = token ?? throw new ArgumentNullException(nameof(token));
 
             Application = new Application(this, applicationApi ?? new ApplicationApi(Config));
-            Authentication = new Authentication(this, authenticationApi ?? new AuthenticationApi(Config));
+            Authentication = new Authentication(
+                this,
+                authenticationApi ?? new AuthenticationApi(Config)
+            );
             Endpoint = new Endpoint(this, endpointApi ?? new EndpointApi(Config));
             EventType = new EventType(this, eventTypeApi ?? new EventTypeApi(Config));
             Health = new Health(this, healthApi ?? new HealthApi(Config));
             Integration = new Integration(this, integrationApi ?? new IntegrationApi(Config));
             Message = new Message(this, messageApi ?? new MessageApi(Config));
-            MessageAttempt = new MessageAttempt(this, messageAttemptApi ?? new MessageAttemptApi(Config));
+            MessageAttempt = new MessageAttempt(
+                this,
+                messageAttemptApi ?? new MessageAttemptApi(Config)
+            );
             Statistics = new Statistics(this, statisticsApi ?? new StatisticsApi(Config));
-            OperationalWebhookEndpoint = new OperationalWebhookEndpoint(this,
-                operationalWebhookEndpointApi ?? new WebhookEndpointApi(Config));
+            OperationalWebhookEndpoint = new OperationalWebhookEndpoint(
+                this,
+                operationalWebhookEndpointApi ?? new WebhookEndpointApi(Config)
+            );
         }
 
         public SvixClient(string token, ISvixOptions options, ILogger<SvixClient> logger)

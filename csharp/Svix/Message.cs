@@ -56,8 +56,10 @@ namespace Svix
             transformationsParams["rawPayload"] = payload;
             if (contentType != null)
             {
-                transformationsParams["headers"] =
-                    new Dictionary<string, string> { ["content-type"] = contentType };
+                transformationsParams["headers"] = new Dictionary<string, string>
+                {
+                    ["content-type"] = contentType,
+                };
             }
 
             return new MessageIn(
@@ -73,7 +75,12 @@ namespace Svix
             );
         }
 
-        public MessageOut Create(string appId, MessageIn message, MessageCreateOptions options = null, string idempotencyKey = default)
+        public MessageOut Create(
+            string appId,
+            MessageIn message,
+            MessageCreateOptions options = null,
+            string idempotencyKey = default
+        )
         {
             try
             {
@@ -83,7 +90,8 @@ namespace Svix
                     appId,
                     message,
                     options?.WithContent,
-                    idempotencyKey);
+                    idempotencyKey
+                );
 
                 return lApplication;
             }
@@ -98,7 +106,13 @@ namespace Svix
             }
         }
 
-        public async Task<MessageOut> CreateAsync(string appId, MessageIn message, MessageCreateOptions options = null, string idempotencyKey = default, CancellationToken cancellationToken = default)
+        public async Task<MessageOut> CreateAsync(
+            string appId,
+            MessageIn message,
+            MessageCreateOptions options = null,
+            string idempotencyKey = default,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
@@ -109,7 +123,8 @@ namespace Svix
                     message,
                     options?.WithContent,
                     idempotencyKey,
-                    cancellationToken);
+                    cancellationToken
+                );
 
                 return lApplication;
             }
@@ -128,9 +143,7 @@ namespace Svix
         {
             try
             {
-                var lMessage = _messageApi.V1MessageGet(
-                    appId,
-                    messageId);
+                var lMessage = _messageApi.V1MessageGet(appId, messageId);
 
                 return lMessage;
             }
@@ -145,13 +158,16 @@ namespace Svix
             }
         }
 
-        public async Task<MessageOut> GetAsync(string appId, string messageId, string idempotencyKey = default, CancellationToken cancellationToken = default)
+        public async Task<MessageOut> GetAsync(
+            string appId,
+            string messageId,
+            string idempotencyKey = default,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
-                var lMessage = await _messageApi.V1MessageGetAsync(
-                    appId,
-                    messageId);
+                var lMessage = await _messageApi.V1MessageGetAsync(appId, messageId);
 
                 return lMessage;
             }
@@ -166,7 +182,11 @@ namespace Svix
             }
         }
 
-        public ListResponseMessageOut List(string appId, MessageListOptions options = null, string idempotencyKey = default)
+        public ListResponseMessageOut List(
+            string appId,
+            MessageListOptions options = null,
+            string idempotencyKey = default
+        )
         {
             try
             {
@@ -180,7 +200,7 @@ namespace Svix
                     options?.WithContent,
                     options?.Tag,
                     options?.EventTypes
-                    );
+                );
 
                 return lResponse;
             }
@@ -195,7 +215,12 @@ namespace Svix
             }
         }
 
-        public async Task<ListResponseMessageOut> ListAsync(string appId, MessageListOptions options = null, string idempotencyKey = default, CancellationToken cancellationToken = default)
+        public async Task<ListResponseMessageOut> ListAsync(
+            string appId,
+            MessageListOptions options = null,
+            string idempotencyKey = default,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
@@ -209,7 +234,8 @@ namespace Svix
                     options?.WithContent,
                     options?.Tag,
                     options?.EventTypes,
-                    cancellationToken);
+                    cancellationToken
+                );
 
                 return lResponse;
             }
@@ -228,9 +254,7 @@ namespace Svix
         {
             try
             {
-                var lResponse = _messageApi.V1MessageExpungeContentWithHttpInfo(
-                    appId,
-                    messageId);
+                var lResponse = _messageApi.V1MessageExpungeContentWithHttpInfo(appId, messageId);
 
                 return lResponse.StatusCode == HttpStatusCode.NoContent;
             }
@@ -245,14 +269,20 @@ namespace Svix
             }
         }
 
-        public async Task<bool> ExpungeContentAsync(string appId, string messageId, string idempotencyKey = default, CancellationToken cancellationToken = default)
+        public async Task<bool> ExpungeContentAsync(
+            string appId,
+            string messageId,
+            string idempotencyKey = default,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
                 var lResponse = await _messageApi.V1MessageExpungeContentWithHttpInfoAsync(
                     appId,
                     messageId,
-                    cancellationToken);
+                    cancellationToken
+                );
 
                 return lResponse.StatusCode == HttpStatusCode.NoContent;
             }

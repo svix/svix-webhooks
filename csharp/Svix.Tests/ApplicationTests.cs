@@ -27,7 +27,8 @@ namespace Svix.Tests
             _svixClient = new SvixClient(
                 MOCK_TOKEN,
                 _mockOptions.Object,
-                applicationApi: _mockApplicationApi.Object);
+                applicationApi: _mockApplicationApi.Object
+            );
         }
 
         [Fact]
@@ -41,7 +42,9 @@ namespace Svix.Tests
         public void ApplicationCreateAsync_WithoutApplication_ThrowsException()
         {
             // Assert
-            Assert.ThrowsAsync<ArgumentNullException>(() => _svixClient.Application.CreateAsync(null, null, default));
+            Assert.ThrowsAsync<ArgumentNullException>(
+                () => _svixClient.Application.CreateAsync(null, null, default)
+            );
         }
     }
 }
