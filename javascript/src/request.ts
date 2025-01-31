@@ -114,6 +114,7 @@ export class SvixRequest {
       body: this.body,
       headers: {
         accept: "application/json, */*;q=0.8",
+        authorization: `Bearer ${ctx.token}`,
         "user-agent": USER_AGENT,
         "svix-req-id": randomId.toString(),
         ...this.headerParams,
