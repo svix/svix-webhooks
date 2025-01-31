@@ -32,6 +32,10 @@
   the old name is used for a version of the method without the `PostOptions`, like elsewhere
 * Libs/Go **(Breaking)**: Change the type of `Message.CreateWithOptions`' parameter `options` from
   `PostOptions` to `MessageCreateOptions` - this type has an extra boolean `WithContent` field
+* Libs/Go **(Breaking**: Change the type of `MessageAttempt.ListAttemptedDestinations`' parameter
+  `option` from `*MessageAttemptListOptions` to `*MessageAttemptListAttemptedDestinationsOptions` -
+  this type only has `Limit` and `Iterator` fields because all other fields of the previous type
+  are not supported on this endpoint and were ignored
 * Libs/Go: Add `Authentication.ExpireAll` (and `ExpireAllWithOptions`)
 
 ## Version 1.56.0
