@@ -30,6 +30,13 @@ type MessageAttemptListOptions struct {
 	Tag             *string
 }
 
+type MessageAttemptListAttemptedDestinationsOptions struct {
+	// Limit the number of returned items
+	Limit *int32
+	// The iterator returned from a prior invocation
+	Iterator *string
+}
+
 // Deprecated: use `ListByMsg` or `ListByEndpoint` instead
 func (messageAttempt *MessageAttempt) List(
 	ctx context.Context,
@@ -273,7 +280,7 @@ func (messageAttempt *MessageAttempt) ListAttemptedDestinations(
 	ctx context.Context,
 	appId string,
 	msgId string,
-	options *MessageAttemptListOptions,
+	options *MessageAttemptListAttemptedDestinationsOptions,
 ) (*ListResponseMessageEndpointOut, error) {
 	req := messageAttempt.api.MessageAttemptAPI.V1MessageAttemptListAttemptedDestinations(
 		ctx,
@@ -289,10 +296,12 @@ func (messageAttempt *MessageAttempt) ListAttemptedDestinations(
 			req = req.Iterator(*options.Iterator)
 		}
 	}
+
 	ret, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
+
 	return ret, nil
 }
 
