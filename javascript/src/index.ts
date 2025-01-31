@@ -8,7 +8,8 @@ import { Message } from "./api/message";
 import { MessageAttempt } from "./api/message_attempt";
 import { OperationalWebhookEndpoint } from "./api/operational_webhook_endpoint";
 import { Statistics } from "./api/statistics";
-import { SvixRequestContext } from "./request";
+import { LIB_VERSION, SvixRequestContext } from "./request";
+import * as openapi from "./openapi";
 
 export * from "./openapi/models/all";
 export * from "./openapi/apis/exception";
@@ -39,14 +40,38 @@ const REGIONS = [
   { region: "in", url: "https://api.in.svix.com" },
 ];
 
+class UserAgentMiddleware implements openapi.Middleware {
+  public pre(context: openapi.RequestContext): Promise<openapi.RequestContext> {
+    context.setHeaderParam("User-Agent", `svix-libs/${LIB_VERSION}/javascript`);
+    return Promise.resolve(context);
+  }
+
+  public post(context: openapi.ResponseContext): Promise<openapi.ResponseContext> {
+    return Promise.resolve(context);
+  }
+}
+
 export class Svix {
   private readonly requestCtx: SvixRequestContext;
+  public readonly _configuration: openapi.Configuration;
 
   public constructor(token: string, options: SvixOptions = {}) {
     const regionalUrl = REGIONS.find((x) => x.region === token.split(".")[1])?.url;
     const baseUrl: string = options.serverUrl ?? regionalUrl ?? "https://api.svix.com";
 
     this.requestCtx = { baseUrl, token };
+
+    this._configuration = openapi.createConfiguration({
+      baseServer: new openapi.ServerConfiguration<any>(baseUrl, {}),
+      promiseMiddleware: [new UserAgentMiddleware()],
+      authMethods: {
+        HTTPBearer: {
+          tokenProvider: {
+            getToken: () => token,
+          },
+        },
+      },
+    });
   }
 
   public get authentication() {
