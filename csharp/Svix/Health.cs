@@ -1,61 +1,36 @@
-﻿using System;
-using Microsoft.Extensions.Logging;
-using Svix.Abstractions;
-using Svix.Api;
-using Svix.Client;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
+// this file is @generated
+#nullable enable
+using Svix.Models;
 
 namespace Svix
 {
-    public sealed class Health : SvixResourceBase, IHealth
+    public class Health(SvixClient client)
     {
-        private readonly IHealthApi _healthApi;
+        readonly SvixClient _client = client;
 
-        public Health(ISvixClient svixClient, IHealthApi healthApi)
-            : base(svixClient)
+        /// <summary>
+        /// Verify the API server is up and running.
+        /// </summary>
+        public async Task<bool> GetAsync(CancellationToken cancellationToken = default)
         {
-            _healthApi = healthApi ?? throw new ArgumentNullException(nameof(healthApi));
+            var response = await this._client.SvixHttpClient.SendRequestAsync<bool>(
+                method: HttpMethod.Get,
+                path: "/api/v1/health",
+                cancellationToken: cancellationToken
+            );
+            return response.Data;
         }
 
-        public bool IsHealthy(string idempotencyKey = default)
+        /// <summary>
+        /// Verify the API server is up and running.
+        /// </summary>
+        public bool Get()
         {
-            try
-            {
-                var lResponse = _healthApi.V1HealthGetWithHttpInfo();
-
-                return lResponse.StatusCode == HttpStatusCode.NoContent;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(IsHealthy)} failed");
-
-                if (Throw)
-                    throw;
-
-                return false;
-            }
-        }
-
-        public async Task<bool> IsHealthyAsync(string idempotencyKey = default, CancellationToken cancellationToken = default)
-        {
-            try
-            {
-                var lResponse = await _healthApi.V1HealthGetWithHttpInfoAsync(cancellationToken)
-                    .ConfigureAwait(false);
-
-                return lResponse.StatusCode == HttpStatusCode.NoContent;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(IsHealthyAsync)} failed");
-
-                if (Throw)
-                    throw;
-
-                return false;
-            }
+            var response = this._client.SvixHttpClient.SendRequest<bool>(
+                method: HttpMethod.Get,
+                path: "/api/v1/health"
+            );
+            return response.Data;
         }
     }
 }

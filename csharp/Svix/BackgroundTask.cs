@@ -1,112 +1,97 @@
-using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Svix.Abstractions;
-using Svix.Api;
-using Svix.Client;
-using Svix.Model;
+// this file is @generated
+#nullable enable
 using Svix.Models;
 
 namespace Svix
 {
-    public sealed class BackgroundTask : SvixResourceBase, IBackgroundTask
+    public class BackgroundTaskListOptions : SvixOptionsBase
     {
-        private readonly IBackgroundTasksApi _backgroundTaskApi;
+        public BackgroundTaskStatus? Status { get; set; }
+        public BackgroundTaskType? Task { get; set; }
+        public ulong? Limit { get; set; }
+        public string? Iterator { get; set; }
+        public Ordering? Order { get; set; }
 
-        public BackgroundTask(ISvixClient svixClient, IBackgroundTasksApi backgroundTaskApi)
-            : base(svixClient)
+        public new Dictionary<string, string> QueryParams()
         {
-            _backgroundTaskApi = backgroundTaskApi ?? throw new ArgumentNullException(nameof(backgroundTaskApi));
+            return SerializeParams(
+                new Dictionary<string, object?>
+                {
+                    { "status", Status },
+                    { "task", Task },
+                    { "limit", Limit },
+                    { "iterator", Iterator },
+                    { "order", Order },
+                }
+            );
+        }
+    }
+
+    public class BackgroundTask(SvixClient client)
+    {
+        readonly SvixClient _client = client;
+
+        /// <summary>
+        /// List background tasks executed in the past 90 days.
+        /// </summary>
+        public async Task<ListResponseBackgroundTaskOut> ListAsync(
+            BackgroundTaskListOptions? options = null,
+            CancellationToken cancellationToken = default
+        )
+        {
+            var response =
+                await this._client.SvixHttpClient.SendRequestAsync<ListResponseBackgroundTaskOut>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/background-task",
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    cancellationToken: cancellationToken
+                );
+            return response.Data;
         }
 
-        public BackgroundTaskOut Get(string taskId, string idempotencyKey = default)
+        /// <summary>
+        /// List background tasks executed in the past 90 days.
+        /// </summary>
+        public ListResponseBackgroundTaskOut List(BackgroundTaskListOptions? options = null)
         {
-            try
-            {
-                var lBackgroundTask = _backgroundTaskApi.V1BackgroundTaskGet(taskId);
-
-                return lBackgroundTask;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(Get)} failed");
-
-                if (Throw)
-                    throw;
-
-                return null;
-            }
+            var response = this._client.SvixHttpClient.SendRequest<ListResponseBackgroundTaskOut>(
+                method: HttpMethod.Get,
+                path: "/api/v1/background-task",
+                queryParams: options?.QueryParams(),
+                headerParams: options?.HeaderParams()
+            );
+            return response.Data;
         }
 
-        public async Task<BackgroundTaskOut> GetAsync(string taskId, string idempotencyKey = default, CancellationToken cancellationToken = default)
+        /// <summary>
+        /// Get a background task by ID.
+        /// </summary>
+        public async Task<BackgroundTaskOut> GetAsync(
+            string taskId,
+            CancellationToken cancellationToken = default
+        )
         {
-            try
-            {
-                var lBackgroundTask = await _backgroundTaskApi.V1BackgroundTaskGetAsync(taskId);
-
-                return lBackgroundTask;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(GetAsync)} failed");
-
-                if (Throw)
-                    throw;
-
-                return null;
-            }
+            var response = await this._client.SvixHttpClient.SendRequestAsync<BackgroundTaskOut>(
+                method: HttpMethod.Get,
+                path: "/api/v1/background-task/{task_id}",
+                pathParams: new Dictionary<string, string> { { "task_id", taskId } },
+                cancellationToken: cancellationToken
+            );
+            return response.Data;
         }
 
-        public ListResponseBackgroundTaskOut List(BackgroundTaskListOptions options = null, string idempotencyKey = default)
+        /// <summary>
+        /// Get a background task by ID.
+        /// </summary>
+        public BackgroundTaskOut Get(string taskId)
         {
-            try
-            {
-                var lResponse = _backgroundTaskApi.V1BackgroundTaskList(
-                    options?.Status,
-                    options?.Task,
-                    options?.Limit,
-                    options?.Iterator,
-                    options?.Order);
-
-                return lResponse;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(List)} failed");
-
-                if (Throw)
-                    throw;
-
-                return new ListResponseBackgroundTaskOut();
-            }
-        }
-
-        public async Task<ListResponseBackgroundTaskOut> ListAsync(BackgroundTaskListOptions options = null, string idempotencyKey = default, CancellationToken cancellationToken = default)
-        {
-            try
-            {
-                var lResponse = await _backgroundTaskApi.V1BackgroundTaskListAsync(
-                    options?.Status,
-                    options?.Task,
-                    options?.Limit,
-                    options?.Iterator,
-                    options?.Order,
-                    cancellationToken);
-
-                return lResponse;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(ListAsync)} failed");
-
-                if (Throw)
-                    throw;
-
-                return new ListResponseBackgroundTaskOut();
-            }
+            var response = this._client.SvixHttpClient.SendRequest<BackgroundTaskOut>(
+                method: HttpMethod.Get,
+                path: "/api/v1/background-task/{task_id}",
+                pathParams: new Dictionary<string, string> { { "task_id", taskId } }
+            );
+            return response.Data;
         }
     }
 }
