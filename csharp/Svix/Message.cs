@@ -1,270 +1,275 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Svix.Abstractions;
-using Svix.Api;
-using Svix.Client;
-using Svix.Model;
+// this file is @generated
+#nullable enable
 using Svix.Models;
 
 namespace Svix
 {
-    public sealed class Message : SvixResourceBase, IMessage
+    public class MessageListOptions : SvixOptionsBase
     {
-        private readonly IMessageApi _messageApi;
+        public ulong? Limit { get; set; }
+        public string? Iterator { get; set; }
+        public string? Channel { get; set; }
+        public DateTime? Before { get; set; }
+        public DateTime? After { get; set; }
+        public bool? WithContent { get; set; }
+        public string? Tag { get; set; }
+        public List<string>? EventTypes { get; set; }
 
-        public Message(ISvixClient svixClient, IMessageApi messageApi)
-            : base(svixClient)
+        public new Dictionary<string, string> QueryParams()
         {
-            _messageApi = messageApi ?? throw new ArgumentException(nameof(messageApi));
+            return SerializeParams(
+                new Dictionary<string, object?>
+                {
+                    { "limit", Limit },
+                    { "iterator", Iterator },
+                    { "channel", Channel },
+                    { "before", Before },
+                    { "after", After },
+                    { "with_content", WithContent },
+                    { "tag", Tag },
+                    { "event_types", EventTypes },
+                }
+            );
         }
+    }
 
-        /// <summary>Creates a [MessageIn] with a raw string payload.
-        /// <para>
-        /// The payload is not normalized on the server. Normally, payloads are
-        /// required to be JSON, and Svix will minify the payload before sending the
-        /// webhooks (for example, by removing extraneous whitespace or unnecessarily
-        /// escaped characters in strings). With this function, the payload will be
-        /// sent "as is", without any minification or other processing.
-        /// </para>
-        /// </summary>
-        /// <param name="payload">Serialized message payload</param>
-        /// <param name="contentType">The `content-type` header of the webhook sent by Svix,
-        /// overwriting the default of `application/json` if specified</param>
-        public static MessageIn messageInRaw(
-            string eventType,
-            string payload,
-            string? contentType = null,
-            ApplicationIn application = default(ApplicationIn),
-            List<string> channels = default(List<string>),
-            string eventId = default(string),
-            long? payloadRetentionHours = default(long?),
-            long? payloadRetentionPeriod = 90,
-            List<string> tags = default(List<string>),
-            Dictionary<string, Object> transformationsParams = default(Dictionary<string, Object>)
-        )
+    public class MessageCreateOptions : SvixOptionsBase
+    {
+        public bool? WithContent { get; set; }
+        public string? IdempotencyKey { get; set; }
+
+        public new Dictionary<string, string> QueryParams()
         {
-            if (transformationsParams == null)
-            {
-                transformationsParams = new Dictionary<string, object>();
-            }
-
-            transformationsParams["rawPayload"] = payload;
-            if (contentType != null)
-            {
-                transformationsParams["headers"] =
-                    new Dictionary<string, string> { ["content-type"] = contentType };
-            }
-
-            return new MessageIn(
-                eventType: eventType,
-                payload: new { },
-                application: application,
-                channels: channels,
-                eventId: eventId,
-                payloadRetentionHours: payloadRetentionHours,
-                payloadRetentionPeriod: payloadRetentionPeriod,
-                tags: tags,
-                transformationsParams: transformationsParams
+            return SerializeParams(
+                new Dictionary<string, object?> { { "with_content", WithContent } }
             );
         }
 
-        public MessageOut Create(string appId, MessageIn message, MessageCreateOptions options = null, string idempotencyKey = default)
+        public new Dictionary<string, string> HeaderParams()
         {
-            try
-            {
-                message = message ?? throw new ArgumentNullException(nameof(message));
+            return SerializeParams(
+                new Dictionary<string, object?> { { "idempotency-key", IdempotencyKey } }
+            );
+        }
+    }
 
-                var lApplication = _messageApi.V1MessageCreate(
-                    appId,
-                    message,
-                    options?.WithContent,
-                    idempotencyKey);
+    public class MessageGetOptions : SvixOptionsBase
+    {
+        public bool? WithContent { get; set; }
 
-                return lApplication;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(Create)} failed");
+        public new Dictionary<string, string> QueryParams()
+        {
+            return SerializeParams(
+                new Dictionary<string, object?> { { "with_content", WithContent } }
+            );
+        }
+    }
 
-                if (Throw)
-                    throw;
+    public class Message(SvixClient client)
+    {
+        readonly SvixClient _client = client;
 
-                return null;
-            }
+        /// <summary>
+        /// List all of the application's messages.
+        ///
+        /// The `before` and `after` parameters let you filter all items created before or after a certain date. These can be used alongside an iterator to paginate over results
+        /// within a certain window.
+        ///
+        /// Note that by default this endpoint is limited to retrieving 90 days' worth of data
+        /// relative to now or, if an iterator is provided, 90 days before/after the time indicated
+        /// by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
+        /// set the `before` or `after` parameter as appropriate.
+        /// </summary>
+        public async Task<ListResponseMessageOut> ListAsync(
+            string appId,
+            MessageListOptions? options = null,
+            CancellationToken cancellationToken = default
+        )
+        {
+            var response =
+                await this._client.SvixHttpClient.SendRequestAsync<ListResponseMessageOut>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/app/{app_id}/msg",
+                    pathParams: new Dictionary<string, string> { { "app_id", appId } },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    cancellationToken: cancellationToken
+                );
+            return response.Data;
         }
 
-        public async Task<MessageOut> CreateAsync(string appId, MessageIn message, MessageCreateOptions options = null, string idempotencyKey = default, CancellationToken cancellationToken = default)
+        /// <summary>
+        /// List all of the application's messages.
+        ///
+        /// The `before` and `after` parameters let you filter all items created before or after a certain date. These can be used alongside an iterator to paginate over results
+        /// within a certain window.
+        ///
+        /// Note that by default this endpoint is limited to retrieving 90 days' worth of data
+        /// relative to now or, if an iterator is provided, 90 days before/after the time indicated
+        /// by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
+        /// set the `before` or `after` parameter as appropriate.
+        /// </summary>
+        public ListResponseMessageOut List(string appId, MessageListOptions? options = null)
         {
-            try
-            {
-                message = message ?? throw new ArgumentNullException(nameof(message));
-
-                var lApplication = await _messageApi.V1MessageCreateAsync(
-                    appId,
-                    message,
-                    options?.WithContent,
-                    idempotencyKey,
-                    cancellationToken);
-
-                return lApplication;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(CreateAsync)} failed");
-
-                if (Throw)
-                    throw;
-
-                return null;
-            }
+            var response = this._client.SvixHttpClient.SendRequest<ListResponseMessageOut>(
+                method: HttpMethod.Get,
+                path: "/api/v1/app/{app_id}/msg",
+                pathParams: new Dictionary<string, string> { { "app_id", appId } },
+                queryParams: options?.QueryParams(),
+                headerParams: options?.HeaderParams()
+            );
+            return response.Data;
         }
 
-        public MessageOut Get(string appId, string messageId, string idempotencyKey = default)
+        /// <summary>
+        /// Creates a new message and dispatches it to all of the application's endpoints.
+        ///
+        /// The `eventId` is an optional custom unique ID. It's verified to be unique only up to a day, after that no verification will be made.
+        /// If a message with the same `eventId` already exists for the application, a 409 conflict error will be returned.
+        ///
+        /// The `eventType` indicates the type and schema of the event. All messages of a certain `eventType` are expected to have the same schema. Endpoints can choose to only listen to specific event types.
+        /// Messages can also have `channels`, which similar to event types let endpoints filter by them. Unlike event types, messages can have multiple channels, and channels don't imply a specific message content or schema.
+        ///
+        /// The `payload` property is the webhook's body (the actual webhook message). Svix supports payload sizes of up to ~350kb, though it's generally a good idea to keep webhook payloads small, probably no larger than 40kb.
+        /// </summary>
+        public async Task<MessageOut> CreateAsync(
+            string appId,
+            MessageIn messageIn,
+            MessageCreateOptions? options = null,
+            CancellationToken cancellationToken = default
+        )
         {
-            try
-            {
-                var lMessage = _messageApi.V1MessageGet(
-                    appId,
-                    messageId);
+            messageIn = messageIn ?? throw new ArgumentNullException(nameof(messageIn));
 
-                return lMessage;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(Get)} failed");
-
-                if (Throw)
-                    throw;
-
-                return null;
-            }
+            var response = await this._client.SvixHttpClient.SendRequestAsync<MessageOut>(
+                method: HttpMethod.Post,
+                path: "/api/v1/app/{app_id}/msg",
+                pathParams: new Dictionary<string, string> { { "app_id", appId } },
+                queryParams: options?.QueryParams(),
+                headerParams: options?.HeaderParams(),
+                content: messageIn,
+                cancellationToken: cancellationToken
+            );
+            return response.Data;
         }
 
-        public async Task<MessageOut> GetAsync(string appId, string messageId, string idempotencyKey = default, CancellationToken cancellationToken = default)
+        /// <summary>
+        /// Creates a new message and dispatches it to all of the application's endpoints.
+        ///
+        /// The `eventId` is an optional custom unique ID. It's verified to be unique only up to a day, after that no verification will be made.
+        /// If a message with the same `eventId` already exists for the application, a 409 conflict error will be returned.
+        ///
+        /// The `eventType` indicates the type and schema of the event. All messages of a certain `eventType` are expected to have the same schema. Endpoints can choose to only listen to specific event types.
+        /// Messages can also have `channels`, which similar to event types let endpoints filter by them. Unlike event types, messages can have multiple channels, and channels don't imply a specific message content or schema.
+        ///
+        /// The `payload` property is the webhook's body (the actual webhook message). Svix supports payload sizes of up to ~350kb, though it's generally a good idea to keep webhook payloads small, probably no larger than 40kb.
+        /// </summary>
+        public MessageOut Create(
+            string appId,
+            MessageIn messageIn,
+            MessageCreateOptions? options = null
+        )
         {
-            try
-            {
-                var lMessage = await _messageApi.V1MessageGetAsync(
-                    appId,
-                    messageId);
+            messageIn = messageIn ?? throw new ArgumentNullException(nameof(messageIn));
 
-                return lMessage;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(GetAsync)} failed");
-
-                if (Throw)
-                    throw;
-
-                return null;
-            }
+            var response = this._client.SvixHttpClient.SendRequest<MessageOut>(
+                method: HttpMethod.Post,
+                path: "/api/v1/app/{app_id}/msg",
+                pathParams: new Dictionary<string, string> { { "app_id", appId } },
+                queryParams: options?.QueryParams(),
+                headerParams: options?.HeaderParams(),
+                content: messageIn
+            );
+            return response.Data;
         }
 
-        public ListResponseMessageOut List(string appId, MessageListOptions options = null, string idempotencyKey = default)
+        /// <summary>
+        /// Get a message by its ID or eventID.
+        /// </summary>
+        public async Task<MessageOut> GetAsync(
+            string appId,
+            string msgId,
+            MessageGetOptions? options = null,
+            CancellationToken cancellationToken = default
+        )
         {
-            try
-            {
-                var lResponse = _messageApi.V1MessageList(
-                    appId,
-                    options?.Limit,
-                    options?.Iterator,
-                    options?.Channel,
-                    options?.Before,
-                    options?.After,
-                    options?.WithContent,
-                    options?.Tag,
-                    options?.EventTypes
-                    );
-
-                return lResponse;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(List)} failed");
-
-                if (Throw)
-                    throw;
-
-                return new ListResponseMessageOut();
-            }
+            var response = await this._client.SvixHttpClient.SendRequestAsync<MessageOut>(
+                method: HttpMethod.Get,
+                path: "/api/v1/app/{app_id}/msg/{msg_id}",
+                pathParams: new Dictionary<string, string>
+                {
+                    { "app_id", appId },
+                    { "msg_id", msgId },
+                },
+                queryParams: options?.QueryParams(),
+                headerParams: options?.HeaderParams(),
+                cancellationToken: cancellationToken
+            );
+            return response.Data;
         }
 
-        public async Task<ListResponseMessageOut> ListAsync(string appId, MessageListOptions options = null, string idempotencyKey = default, CancellationToken cancellationToken = default)
+        /// <summary>
+        /// Get a message by its ID or eventID.
+        /// </summary>
+        public MessageOut Get(string appId, string msgId, MessageGetOptions? options = null)
         {
-            try
-            {
-                var lResponse = await _messageApi.V1MessageListAsync(
-                    appId,
-                    options?.Limit,
-                    options?.Iterator,
-                    options?.Channel,
-                    options?.Before,
-                    options?.After,
-                    options?.WithContent,
-                    options?.Tag,
-                    options?.EventTypes,
-                    cancellationToken);
-
-                return lResponse;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(ListAsync)} failed");
-
-                if (Throw)
-                    throw;
-
-                return new ListResponseMessageOut();
-            }
+            var response = this._client.SvixHttpClient.SendRequest<MessageOut>(
+                method: HttpMethod.Get,
+                path: "/api/v1/app/{app_id}/msg/{msg_id}",
+                pathParams: new Dictionary<string, string>
+                {
+                    { "app_id", appId },
+                    { "msg_id", msgId },
+                },
+                queryParams: options?.QueryParams(),
+                headerParams: options?.HeaderParams()
+            );
+            return response.Data;
         }
 
-        public bool ExpungeContent(string appId, string messageId, string idempotencyKey = default)
+        /// <summary>
+        /// Delete the given message's payload.
+        ///
+        /// Useful in cases when a message was accidentally sent with sensitive content.
+        /// The message can't be replayed or resent once its payload has been deleted or expired.
+        /// </summary>
+        public async Task<bool> ExpungeContentAsync(
+            string appId,
+            string msgId,
+            CancellationToken cancellationToken = default
+        )
         {
-            try
-            {
-                var lResponse = _messageApi.V1MessageExpungeContentWithHttpInfo(
-                    appId,
-                    messageId);
-
-                return lResponse.StatusCode == HttpStatusCode.NoContent;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(ExpungeContent)} failed");
-
-                if (Throw)
-                    throw;
-
-                return false;
-            }
+            var response = await this._client.SvixHttpClient.SendRequestAsync<bool>(
+                method: HttpMethod.Delete,
+                path: "/api/v1/app/{app_id}/msg/{msg_id}/content",
+                pathParams: new Dictionary<string, string>
+                {
+                    { "app_id", appId },
+                    { "msg_id", msgId },
+                },
+                cancellationToken: cancellationToken
+            );
+            return response.Data;
         }
 
-        public async Task<bool> ExpungeContentAsync(string appId, string messageId, string idempotencyKey = default, CancellationToken cancellationToken = default)
+        /// <summary>
+        /// Delete the given message's payload.
+        ///
+        /// Useful in cases when a message was accidentally sent with sensitive content.
+        /// The message can't be replayed or resent once its payload has been deleted or expired.
+        /// </summary>
+        public bool ExpungeContent(string appId, string msgId)
         {
-            try
-            {
-                var lResponse = await _messageApi.V1MessageExpungeContentWithHttpInfoAsync(
-                    appId,
-                    messageId,
-                    cancellationToken);
-
-                return lResponse.StatusCode == HttpStatusCode.NoContent;
-            }
-            catch (ApiException e)
-            {
-                Logger?.LogError(e, $"{nameof(ExpungeContentAsync)} failed");
-
-                if (Throw)
-                    throw;
-
-                return false;
-            }
+            var response = this._client.SvixHttpClient.SendRequest<bool>(
+                method: HttpMethod.Delete,
+                path: "/api/v1/app/{app_id}/msg/{msg_id}/content",
+                pathParams: new Dictionary<string, string>
+                {
+                    { "app_id", appId },
+                    { "msg_id", msgId },
+                }
+            );
+            return response.Data;
         }
     }
 }
