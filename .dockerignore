@@ -1,0 +1,17 @@
+## This is the dockerignore for svix-cli only.
+## We use the top-level directory because we want the rust lib in context.
+
+# The dockerfile
+svix-cli/Dockerfile
+
+# Cargo's artifact dir
+*/target/
+
+# Server config files
+.env
+
+# JS env
+*/node_modules/
+
+# Python env
+*/.venv

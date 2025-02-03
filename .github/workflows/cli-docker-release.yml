@@ -1,0 +1,46 @@
+name: CLI Docker Release
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows:
+      - Mega Releaser
+    types:
+      - completed
+
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  docker:
+    name: release docker
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Login Docker
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Derive Version Numbers
+        run: |
+          export REPO="${{ secrets.DOCKERHUB_USERNAME }}/svix-cli"
+          echo DOCKER_TAGS="$(echo "${{ github.event.release.tag_name }}" | sed -E "s#v([0-9]+)\.([0-9]+)\.([0-9]+)#${REPO}:latest,${REPO}:v\1.\2.\3,${REPO}:v\1.\2,${REPO}:v\1#")" >> "$GITHUB_ENV"
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./
+          file: ./svix-cli/Dockerfile
+          push: true
+          tags: ${{ env.DOCKER_TAGS }}
+          platforms: linux/amd64,linux/arm64
