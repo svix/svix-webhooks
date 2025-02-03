@@ -7,6 +7,7 @@ use http1::header::{HeaderValue, AUTHORIZATION, CONTENT_LENGTH, CONTENT_TYPE, US
 use http_body_util::{BodyExt as _, Full};
 use hyper::body::Bytes;
 use itertools::Itertools as _;
+use rand::Rng;
 use serde::de::DeserializeOwned;
 
 use crate::{error::Error, models, Configuration};
@@ -100,7 +101,7 @@ impl Request {
         }
     }
 
-    pub async fn execute_with_backoff(
+    async fn execute_with_backoff(
         mut self,
         conf: &Configuration,
         mut retries: u32,
@@ -108,6 +109,10 @@ impl Request {
         let mut retry_count = 0;
         const MAX_BACKOFF: Duration = Duration::from_secs(5);
         let mut backoff = Duration::from_millis(20);
+
+        self.header_params
+            .insert("svix-req-id", rand::rng().random::<u32>().to_string());
+
         loop {
             match self.clone().execute_inner(conf).await {
                 Ok(result) => return Ok(result),
