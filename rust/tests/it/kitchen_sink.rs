@@ -141,6 +141,7 @@ async fn test_default_retries() {
     Mock::given(wiremock::matchers::method("POST"))
         .and(wiremock::matchers::path("/api/v1/app"))
         .and(wiremock::matchers::header("svix-retry-count", 1))
+        .and(wiremock::matchers::header_exists("svix-req-id"))
         .respond_with(ResponseTemplate::new(500))
         .up_to_n_times(1)
         .expect(1)
