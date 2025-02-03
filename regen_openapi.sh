@@ -10,7 +10,22 @@ cd $(dirname "$0")
 mkdir -p .codegen-tmp
 # OpenAPI version has to be overwritten to avoid broken codegen paths in OpenAPI generator.
 # Spec version is overwritten to avoid unnecessary diffs on comments. Same for description.
-jq --indent 4 '.openapi = "3.0.2" | .info.version = "1.1.1" | del(.info.description)' \
+# `additionalProperties: true` is removed because OpenAPI generator can't deal with it.
+jq --indent 4 '
+    .openapi = "3.0.2" |
+    .info.version = "1.1.1" |
+    del(.info.description) |
+    .components.schemas |= with_entries(
+        if .value | has("properties") then
+            .value.properties |= with_entries(
+                if .value.additionalProperties == true then
+                    del(.value.additionalProperties)
+                else .
+                end
+            )
+        else .
+        end
+    )' \
     < lib-openapi.json \
     > .codegen-tmp/openapi.json
 
