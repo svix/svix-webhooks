@@ -1,5 +1,6 @@
 // this file is @generated
 #nullable enable
+using Microsoft.Extensions.Logging;
 using Svix.Models;
 
 namespace Svix
@@ -40,14 +41,23 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
-            var response = await this._client.SvixHttpClient.SendRequestAsync<EnvironmentOut>(
-                method: HttpMethod.Post,
-                path: "/api/v1/environment/export",
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams(),
-                cancellationToken: cancellationToken
-            );
-            return response.Data;
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<EnvironmentOut>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/environment/export",
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(ExportAsync)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -55,13 +65,22 @@ namespace Svix
         /// </summary>
         public EnvironmentOut Export(EnvironmentExportOptions? options = null)
         {
-            var response = this._client.SvixHttpClient.SendRequest<EnvironmentOut>(
-                method: HttpMethod.Post,
-                path: "/api/v1/environment/export",
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams()
-            );
-            return response.Data;
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<EnvironmentOut>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/environment/export",
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams()
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(Export)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -75,16 +94,24 @@ namespace Svix
         )
         {
             environmentIn = environmentIn ?? throw new ArgumentNullException(nameof(environmentIn));
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/environment/import",
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    content: environmentIn,
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(ImportAsync)} failed");
 
-            var response = await this._client.SvixHttpClient.SendRequestAsync<bool>(
-                method: HttpMethod.Post,
-                path: "/api/v1/environment/import",
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams(),
-                content: environmentIn,
-                cancellationToken: cancellationToken
-            );
-            return response.Data;
+                throw;
+            }
         }
 
         /// <summary>
@@ -94,15 +121,23 @@ namespace Svix
         public bool Import(EnvironmentIn environmentIn, EnvironmentImportOptions? options = null)
         {
             environmentIn = environmentIn ?? throw new ArgumentNullException(nameof(environmentIn));
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<bool>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/environment/import",
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    content: environmentIn
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(Import)} failed");
 
-            var response = this._client.SvixHttpClient.SendRequest<bool>(
-                method: HttpMethod.Post,
-                path: "/api/v1/environment/import",
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams(),
-                content: environmentIn
-            );
-            return response.Data;
+                throw;
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 // this file is @generated
 #nullable enable
+using Microsoft.Extensions.Logging;
 using Svix.Models;
 
 namespace Svix
@@ -59,15 +60,24 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
-            var response =
-                await this._client.SvixHttpClient.SendRequestAsync<ListResponseOperationalWebhookEndpointOut>(
-                    method: HttpMethod.Get,
-                    path: "/api/v1/operational-webhook/endpoint",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
-                    cancellationToken: cancellationToken
-                );
-            return response.Data;
+            try
+            {
+                var response =
+                    await _client.SvixHttpClient.SendRequestAsync<ListResponseOperationalWebhookEndpointOut>(
+                        method: HttpMethod.Get,
+                        path: "/api/v1/operational-webhook/endpoint",
+                        queryParams: options?.QueryParams(),
+                        headerParams: options?.HeaderParams(),
+                        cancellationToken: cancellationToken
+                    );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(ListAsync)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -77,14 +87,23 @@ namespace Svix
             OperationalWebhookEndpointListOptions? options = null
         )
         {
-            var response =
-                this._client.SvixHttpClient.SendRequest<ListResponseOperationalWebhookEndpointOut>(
-                    method: HttpMethod.Get,
-                    path: "/api/v1/operational-webhook/endpoint",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
-                );
-            return response.Data;
+            try
+            {
+                var response =
+                    _client.SvixHttpClient.SendRequest<ListResponseOperationalWebhookEndpointOut>(
+                        method: HttpMethod.Get,
+                        path: "/api/v1/operational-webhook/endpoint",
+                        queryParams: options?.QueryParams(),
+                        headerParams: options?.HeaderParams()
+                    );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(List)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -99,17 +118,25 @@ namespace Svix
             operationalWebhookEndpointIn =
                 operationalWebhookEndpointIn
                 ?? throw new ArgumentNullException(nameof(operationalWebhookEndpointIn));
+            try
+            {
+                var response =
+                    await _client.SvixHttpClient.SendRequestAsync<OperationalWebhookEndpointOut>(
+                        method: HttpMethod.Post,
+                        path: "/api/v1/operational-webhook/endpoint",
+                        queryParams: options?.QueryParams(),
+                        headerParams: options?.HeaderParams(),
+                        content: operationalWebhookEndpointIn,
+                        cancellationToken: cancellationToken
+                    );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(CreateAsync)} failed");
 
-            var response =
-                await this._client.SvixHttpClient.SendRequestAsync<OperationalWebhookEndpointOut>(
-                    method: HttpMethod.Post,
-                    path: "/api/v1/operational-webhook/endpoint",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
-                    content: operationalWebhookEndpointIn,
-                    cancellationToken: cancellationToken
-                );
-            return response.Data;
+                throw;
+            }
         }
 
         /// <summary>
@@ -123,15 +150,23 @@ namespace Svix
             operationalWebhookEndpointIn =
                 operationalWebhookEndpointIn
                 ?? throw new ArgumentNullException(nameof(operationalWebhookEndpointIn));
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<OperationalWebhookEndpointOut>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/operational-webhook/endpoint",
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    content: operationalWebhookEndpointIn
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(Create)} failed");
 
-            var response = this._client.SvixHttpClient.SendRequest<OperationalWebhookEndpointOut>(
-                method: HttpMethod.Post,
-                path: "/api/v1/operational-webhook/endpoint",
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams(),
-                content: operationalWebhookEndpointIn
-            );
-            return response.Data;
+                throw;
+            }
         }
 
         /// <summary>
@@ -142,14 +177,26 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
-            var response =
-                await this._client.SvixHttpClient.SendRequestAsync<OperationalWebhookEndpointOut>(
-                    method: HttpMethod.Get,
-                    path: "/api/v1/operational-webhook/endpoint/{endpoint_id}",
-                    pathParams: new Dictionary<string, string> { { "endpoint_id", endpointId } },
-                    cancellationToken: cancellationToken
-                );
-            return response.Data;
+            try
+            {
+                var response =
+                    await _client.SvixHttpClient.SendRequestAsync<OperationalWebhookEndpointOut>(
+                        method: HttpMethod.Get,
+                        path: "/api/v1/operational-webhook/endpoint/{endpoint_id}",
+                        pathParams: new Dictionary<string, string>
+                        {
+                            { "endpoint_id", endpointId },
+                        },
+                        cancellationToken: cancellationToken
+                    );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(GetAsync)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -157,12 +204,21 @@ namespace Svix
         /// </summary>
         public OperationalWebhookEndpointOut Get(string endpointId)
         {
-            var response = this._client.SvixHttpClient.SendRequest<OperationalWebhookEndpointOut>(
-                method: HttpMethod.Get,
-                path: "/api/v1/operational-webhook/endpoint/{endpoint_id}",
-                pathParams: new Dictionary<string, string> { { "endpoint_id", endpointId } }
-            );
-            return response.Data;
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<OperationalWebhookEndpointOut>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/operational-webhook/endpoint/{endpoint_id}",
+                    pathParams: new Dictionary<string, string> { { "endpoint_id", endpointId } }
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(Get)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -177,16 +233,27 @@ namespace Svix
             operationalWebhookEndpointUpdate =
                 operationalWebhookEndpointUpdate
                 ?? throw new ArgumentNullException(nameof(operationalWebhookEndpointUpdate));
+            try
+            {
+                var response =
+                    await _client.SvixHttpClient.SendRequestAsync<OperationalWebhookEndpointOut>(
+                        method: HttpMethod.Put,
+                        path: "/api/v1/operational-webhook/endpoint/{endpoint_id}",
+                        pathParams: new Dictionary<string, string>
+                        {
+                            { "endpoint_id", endpointId },
+                        },
+                        content: operationalWebhookEndpointUpdate,
+                        cancellationToken: cancellationToken
+                    );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(UpdateAsync)} failed");
 
-            var response =
-                await this._client.SvixHttpClient.SendRequestAsync<OperationalWebhookEndpointOut>(
-                    method: HttpMethod.Put,
-                    path: "/api/v1/operational-webhook/endpoint/{endpoint_id}",
-                    pathParams: new Dictionary<string, string> { { "endpoint_id", endpointId } },
-                    content: operationalWebhookEndpointUpdate,
-                    cancellationToken: cancellationToken
-                );
-            return response.Data;
+                throw;
+            }
         }
 
         /// <summary>
@@ -200,14 +267,22 @@ namespace Svix
             operationalWebhookEndpointUpdate =
                 operationalWebhookEndpointUpdate
                 ?? throw new ArgumentNullException(nameof(operationalWebhookEndpointUpdate));
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<OperationalWebhookEndpointOut>(
+                    method: HttpMethod.Put,
+                    path: "/api/v1/operational-webhook/endpoint/{endpoint_id}",
+                    pathParams: new Dictionary<string, string> { { "endpoint_id", endpointId } },
+                    content: operationalWebhookEndpointUpdate
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(Update)} failed");
 
-            var response = this._client.SvixHttpClient.SendRequest<OperationalWebhookEndpointOut>(
-                method: HttpMethod.Put,
-                path: "/api/v1/operational-webhook/endpoint/{endpoint_id}",
-                pathParams: new Dictionary<string, string> { { "endpoint_id", endpointId } },
-                content: operationalWebhookEndpointUpdate
-            );
-            return response.Data;
+                throw;
+            }
         }
 
         /// <summary>
@@ -218,13 +293,22 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
-            var response = await this._client.SvixHttpClient.SendRequestAsync<bool>(
-                method: HttpMethod.Delete,
-                path: "/api/v1/operational-webhook/endpoint/{endpoint_id}",
-                pathParams: new Dictionary<string, string> { { "endpoint_id", endpointId } },
-                cancellationToken: cancellationToken
-            );
-            return response.Data;
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
+                    method: HttpMethod.Delete,
+                    path: "/api/v1/operational-webhook/endpoint/{endpoint_id}",
+                    pathParams: new Dictionary<string, string> { { "endpoint_id", endpointId } },
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(DeleteAsync)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -232,12 +316,21 @@ namespace Svix
         /// </summary>
         public bool Delete(string endpointId)
         {
-            var response = this._client.SvixHttpClient.SendRequest<bool>(
-                method: HttpMethod.Delete,
-                path: "/api/v1/operational-webhook/endpoint/{endpoint_id}",
-                pathParams: new Dictionary<string, string> { { "endpoint_id", endpointId } }
-            );
-            return response.Data;
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<bool>(
+                    method: HttpMethod.Delete,
+                    path: "/api/v1/operational-webhook/endpoint/{endpoint_id}",
+                    pathParams: new Dictionary<string, string> { { "endpoint_id", endpointId } }
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(Delete)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -248,14 +341,26 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
-            var response =
-                await this._client.SvixHttpClient.SendRequestAsync<OperationalWebhookEndpointHeadersOut>(
-                    method: HttpMethod.Get,
-                    path: "/api/v1/operational-webhook/endpoint/{endpoint_id}/headers",
-                    pathParams: new Dictionary<string, string> { { "endpoint_id", endpointId } },
-                    cancellationToken: cancellationToken
-                );
-            return response.Data;
+            try
+            {
+                var response =
+                    await _client.SvixHttpClient.SendRequestAsync<OperationalWebhookEndpointHeadersOut>(
+                        method: HttpMethod.Get,
+                        path: "/api/v1/operational-webhook/endpoint/{endpoint_id}/headers",
+                        pathParams: new Dictionary<string, string>
+                        {
+                            { "endpoint_id", endpointId },
+                        },
+                        cancellationToken: cancellationToken
+                    );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(GetHeadersAsync)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -263,13 +368,22 @@ namespace Svix
         /// </summary>
         public OperationalWebhookEndpointHeadersOut GetHeaders(string endpointId)
         {
-            var response =
-                this._client.SvixHttpClient.SendRequest<OperationalWebhookEndpointHeadersOut>(
-                    method: HttpMethod.Get,
-                    path: "/api/v1/operational-webhook/endpoint/{endpoint_id}/headers",
-                    pathParams: new Dictionary<string, string> { { "endpoint_id", endpointId } }
-                );
-            return response.Data;
+            try
+            {
+                var response =
+                    _client.SvixHttpClient.SendRequest<OperationalWebhookEndpointHeadersOut>(
+                        method: HttpMethod.Get,
+                        path: "/api/v1/operational-webhook/endpoint/{endpoint_id}/headers",
+                        pathParams: new Dictionary<string, string> { { "endpoint_id", endpointId } }
+                    );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(GetHeaders)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -284,15 +398,23 @@ namespace Svix
             operationalWebhookEndpointHeadersIn =
                 operationalWebhookEndpointHeadersIn
                 ?? throw new ArgumentNullException(nameof(operationalWebhookEndpointHeadersIn));
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
+                    method: HttpMethod.Put,
+                    path: "/api/v1/operational-webhook/endpoint/{endpoint_id}/headers",
+                    pathParams: new Dictionary<string, string> { { "endpoint_id", endpointId } },
+                    content: operationalWebhookEndpointHeadersIn,
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(UpdateHeadersAsync)} failed");
 
-            var response = await this._client.SvixHttpClient.SendRequestAsync<bool>(
-                method: HttpMethod.Put,
-                path: "/api/v1/operational-webhook/endpoint/{endpoint_id}/headers",
-                pathParams: new Dictionary<string, string> { { "endpoint_id", endpointId } },
-                content: operationalWebhookEndpointHeadersIn,
-                cancellationToken: cancellationToken
-            );
-            return response.Data;
+                throw;
+            }
         }
 
         /// <summary>
@@ -306,14 +428,22 @@ namespace Svix
             operationalWebhookEndpointHeadersIn =
                 operationalWebhookEndpointHeadersIn
                 ?? throw new ArgumentNullException(nameof(operationalWebhookEndpointHeadersIn));
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<bool>(
+                    method: HttpMethod.Put,
+                    path: "/api/v1/operational-webhook/endpoint/{endpoint_id}/headers",
+                    pathParams: new Dictionary<string, string> { { "endpoint_id", endpointId } },
+                    content: operationalWebhookEndpointHeadersIn
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(UpdateHeaders)} failed");
 
-            var response = this._client.SvixHttpClient.SendRequest<bool>(
-                method: HttpMethod.Put,
-                path: "/api/v1/operational-webhook/endpoint/{endpoint_id}/headers",
-                pathParams: new Dictionary<string, string> { { "endpoint_id", endpointId } },
-                content: operationalWebhookEndpointHeadersIn
-            );
-            return response.Data;
+                throw;
+            }
         }
 
         /// <summary>
@@ -327,14 +457,26 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
-            var response =
-                await this._client.SvixHttpClient.SendRequestAsync<OperationalWebhookEndpointSecretOut>(
-                    method: HttpMethod.Get,
-                    path: "/api/v1/operational-webhook/endpoint/{endpoint_id}/secret",
-                    pathParams: new Dictionary<string, string> { { "endpoint_id", endpointId } },
-                    cancellationToken: cancellationToken
-                );
-            return response.Data;
+            try
+            {
+                var response =
+                    await _client.SvixHttpClient.SendRequestAsync<OperationalWebhookEndpointSecretOut>(
+                        method: HttpMethod.Get,
+                        path: "/api/v1/operational-webhook/endpoint/{endpoint_id}/secret",
+                        pathParams: new Dictionary<string, string>
+                        {
+                            { "endpoint_id", endpointId },
+                        },
+                        cancellationToken: cancellationToken
+                    );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(GetSecretAsync)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -345,13 +487,22 @@ namespace Svix
         /// </summary>
         public OperationalWebhookEndpointSecretOut GetSecret(string endpointId)
         {
-            var response =
-                this._client.SvixHttpClient.SendRequest<OperationalWebhookEndpointSecretOut>(
-                    method: HttpMethod.Get,
-                    path: "/api/v1/operational-webhook/endpoint/{endpoint_id}/secret",
-                    pathParams: new Dictionary<string, string> { { "endpoint_id", endpointId } }
-                );
-            return response.Data;
+            try
+            {
+                var response =
+                    _client.SvixHttpClient.SendRequest<OperationalWebhookEndpointSecretOut>(
+                        method: HttpMethod.Get,
+                        path: "/api/v1/operational-webhook/endpoint/{endpoint_id}/secret",
+                        pathParams: new Dictionary<string, string> { { "endpoint_id", endpointId } }
+                    );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(GetSecret)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -369,17 +520,25 @@ namespace Svix
             operationalWebhookEndpointSecretIn =
                 operationalWebhookEndpointSecretIn
                 ?? throw new ArgumentNullException(nameof(operationalWebhookEndpointSecretIn));
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/operational-webhook/endpoint/{endpoint_id}/secret/rotate",
+                    pathParams: new Dictionary<string, string> { { "endpoint_id", endpointId } },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    content: operationalWebhookEndpointSecretIn,
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(RotateSecretAsync)} failed");
 
-            var response = await this._client.SvixHttpClient.SendRequestAsync<bool>(
-                method: HttpMethod.Post,
-                path: "/api/v1/operational-webhook/endpoint/{endpoint_id}/secret/rotate",
-                pathParams: new Dictionary<string, string> { { "endpoint_id", endpointId } },
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams(),
-                content: operationalWebhookEndpointSecretIn,
-                cancellationToken: cancellationToken
-            );
-            return response.Data;
+                throw;
+            }
         }
 
         /// <summary>
@@ -396,16 +555,24 @@ namespace Svix
             operationalWebhookEndpointSecretIn =
                 operationalWebhookEndpointSecretIn
                 ?? throw new ArgumentNullException(nameof(operationalWebhookEndpointSecretIn));
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<bool>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/operational-webhook/endpoint/{endpoint_id}/secret/rotate",
+                    pathParams: new Dictionary<string, string> { { "endpoint_id", endpointId } },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    content: operationalWebhookEndpointSecretIn
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(RotateSecret)} failed");
 
-            var response = this._client.SvixHttpClient.SendRequest<bool>(
-                method: HttpMethod.Post,
-                path: "/api/v1/operational-webhook/endpoint/{endpoint_id}/secret/rotate",
-                pathParams: new Dictionary<string, string> { { "endpoint_id", endpointId } },
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams(),
-                content: operationalWebhookEndpointSecretIn
-            );
-            return response.Data;
+                throw;
+            }
         }
     }
 }
