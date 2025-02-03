@@ -1,7 +1,7 @@
 // Modified version of the file openapi-generator would usually put in
 // apis/request.rs
 
-use std::collections::HashMap;
+use std::{collections::HashMap, time::Duration};
 
 use http1::header::{HeaderValue, AUTHORIZATION, CONTENT_LENGTH, CONTENT_TYPE, USER_AGENT};
 use http_body_util::{BodyExt as _, Full};
@@ -20,6 +20,7 @@ pub(crate) enum Auth {
 /// If the authorization type is unspecified then it will be automatically
 /// detected based on the configuration. This functionality is useful when the
 /// OpenAPI definition does not include an authorization scheme.
+#[derive(Clone)]
 pub(crate) struct Request {
     method: http1::Method,
     path: &'static str,
@@ -87,7 +88,7 @@ impl Request {
     }
 
     pub async fn execute<T: DeserializeOwned>(self, conf: &Configuration) -> Result<T, Error> {
-        match self.execute_inner(conf).await? {
+        match self.execute_with_backoff(conf, conf.num_retries).await? {
             // This is a hack; if there's no_ret_type, T is (), but serde_json gives an
             // error when deserializing "" into (), so deserialize 'null' into it
             // instead.
@@ -96,6 +97,35 @@ impl Request {
             // need to impl default for all models.
             None => Ok(serde_json::from_str("null").expect("serde null value")),
             Some(bytes) => Ok(serde_json::from_slice(&bytes).map_err(Error::generic)?),
+        }
+    }
+
+    pub async fn execute_with_backoff(
+        mut self,
+        conf: &Configuration,
+        mut retries: u32,
+    ) -> Result<Option<Bytes>, Error> {
+        let mut retry_count = 0;
+        const MAX_BACKOFF: Duration = Duration::from_secs(5);
+        let mut backoff = Duration::from_millis(20);
+        loop {
+            match self.clone().execute_inner(conf).await {
+                Ok(result) => return Ok(result),
+                e @ Err(Error::Validation(_)) => return e,
+                Err(Error::Http(err)) if err.status.as_u16() < 500 => return Err(Error::Http(err)),
+                e @ Err(_) => {
+                    if retries == 0 {
+                        return e;
+                    }
+                }
+            }
+
+            tokio::time::sleep(backoff).await;
+            retry_count += 1;
+            retries -= 1;
+            self.header_params
+                .insert("svix-retry-count", retry_count.to_string());
+            backoff = MAX_BACKOFF.min(backoff * 2);
         }
     }
 
