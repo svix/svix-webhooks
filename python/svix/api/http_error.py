@@ -44,9 +44,9 @@ class HttpError(Exception):
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
         d = src_dict.copy()
-        code = d.pop("code")
+        code = d.pop("code", None)
 
-        detail = d.pop("detail")
+        detail = d.pop("detail", None)
 
         http_error = cls(
             code=code,
