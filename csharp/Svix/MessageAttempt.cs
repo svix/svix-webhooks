@@ -1,5 +1,6 @@
 // this file is @generated
 #nullable enable
+using Microsoft.Extensions.Logging;
 using Svix.Models;
 
 namespace Svix
@@ -149,20 +150,29 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
-            var response =
-                await this._client.SvixHttpClient.SendRequestAsync<ListResponseMessageAttemptOut>(
-                    method: HttpMethod.Get,
-                    path: "/api/v1/app/{app_id}/attempt/endpoint/{endpoint_id}",
-                    pathParams: new Dictionary<string, string>
-                    {
-                        { "app_id", appId },
-                        { "endpoint_id", endpointId },
-                    },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
-                    cancellationToken: cancellationToken
-                );
-            return response.Data;
+            try
+            {
+                var response =
+                    await _client.SvixHttpClient.SendRequestAsync<ListResponseMessageAttemptOut>(
+                        method: HttpMethod.Get,
+                        path: "/api/v1/app/{app_id}/attempt/endpoint/{endpoint_id}",
+                        pathParams: new Dictionary<string, string>
+                        {
+                            { "app_id", appId },
+                            { "endpoint_id", endpointId },
+                        },
+                        queryParams: options?.QueryParams(),
+                        headerParams: options?.HeaderParams(),
+                        cancellationToken: cancellationToken
+                    );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(ListByEndpointAsync)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -179,18 +189,27 @@ namespace Svix
             MessageAttemptListByEndpointOptions? options = null
         )
         {
-            var response = this._client.SvixHttpClient.SendRequest<ListResponseMessageAttemptOut>(
-                method: HttpMethod.Get,
-                path: "/api/v1/app/{app_id}/attempt/endpoint/{endpoint_id}",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "endpoint_id", endpointId },
-                },
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams()
-            );
-            return response.Data;
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<ListResponseMessageAttemptOut>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/app/{app_id}/attempt/endpoint/{endpoint_id}",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams()
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(ListByEndpoint)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -208,20 +227,29 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
-            var response =
-                await this._client.SvixHttpClient.SendRequestAsync<ListResponseMessageAttemptOut>(
-                    method: HttpMethod.Get,
-                    path: "/api/v1/app/{app_id}/attempt/msg/{msg_id}",
-                    pathParams: new Dictionary<string, string>
-                    {
-                        { "app_id", appId },
-                        { "msg_id", msgId },
-                    },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
-                    cancellationToken: cancellationToken
-                );
-            return response.Data;
+            try
+            {
+                var response =
+                    await _client.SvixHttpClient.SendRequestAsync<ListResponseMessageAttemptOut>(
+                        method: HttpMethod.Get,
+                        path: "/api/v1/app/{app_id}/attempt/msg/{msg_id}",
+                        pathParams: new Dictionary<string, string>
+                        {
+                            { "app_id", appId },
+                            { "msg_id", msgId },
+                        },
+                        queryParams: options?.QueryParams(),
+                        headerParams: options?.HeaderParams(),
+                        cancellationToken: cancellationToken
+                    );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(ListByMsgAsync)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -238,18 +266,27 @@ namespace Svix
             MessageAttemptListByMsgOptions? options = null
         )
         {
-            var response = this._client.SvixHttpClient.SendRequest<ListResponseMessageAttemptOut>(
-                method: HttpMethod.Get,
-                path: "/api/v1/app/{app_id}/attempt/msg/{msg_id}",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "msg_id", msgId },
-                },
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams()
-            );
-            return response.Data;
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<ListResponseMessageAttemptOut>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/app/{app_id}/attempt/msg/{msg_id}",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "msg_id", msgId },
+                    },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams()
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(ListByMsg)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -269,20 +306,29 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
-            var response =
-                await this._client.SvixHttpClient.SendRequestAsync<ListResponseEndpointMessageOut>(
-                    method: HttpMethod.Get,
-                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/msg",
-                    pathParams: new Dictionary<string, string>
-                    {
-                        { "app_id", appId },
-                        { "endpoint_id", endpointId },
-                    },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
-                    cancellationToken: cancellationToken
-                );
-            return response.Data;
+            try
+            {
+                var response =
+                    await _client.SvixHttpClient.SendRequestAsync<ListResponseEndpointMessageOut>(
+                        method: HttpMethod.Get,
+                        path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/msg",
+                        pathParams: new Dictionary<string, string>
+                        {
+                            { "app_id", appId },
+                            { "endpoint_id", endpointId },
+                        },
+                        queryParams: options?.QueryParams(),
+                        headerParams: options?.HeaderParams(),
+                        cancellationToken: cancellationToken
+                    );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(ListAttemptedMessagesAsync)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -301,18 +347,27 @@ namespace Svix
             MessageAttemptListAttemptedMessagesOptions? options = null
         )
         {
-            var response = this._client.SvixHttpClient.SendRequest<ListResponseEndpointMessageOut>(
-                method: HttpMethod.Get,
-                path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/msg",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "endpoint_id", endpointId },
-                },
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams()
-            );
-            return response.Data;
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<ListResponseEndpointMessageOut>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/msg",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams()
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(ListAttemptedMessages)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -325,18 +380,27 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
-            var response = await this._client.SvixHttpClient.SendRequestAsync<MessageAttemptOut>(
-                method: HttpMethod.Get,
-                path: "/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "msg_id", msgId },
-                    { "attempt_id", attemptId },
-                },
-                cancellationToken: cancellationToken
-            );
-            return response.Data;
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<MessageAttemptOut>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "msg_id", msgId },
+                        { "attempt_id", attemptId },
+                    },
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(GetAsync)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -344,17 +408,26 @@ namespace Svix
         /// </summary>
         public MessageAttemptOut Get(string appId, string msgId, string attemptId)
         {
-            var response = this._client.SvixHttpClient.SendRequest<MessageAttemptOut>(
-                method: HttpMethod.Get,
-                path: "/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "msg_id", msgId },
-                    { "attempt_id", attemptId },
-                }
-            );
-            return response.Data;
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<MessageAttemptOut>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "msg_id", msgId },
+                        { "attempt_id", attemptId },
+                    }
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(Get)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -370,18 +443,27 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
-            var response = await this._client.SvixHttpClient.SendRequestAsync<bool>(
-                method: HttpMethod.Delete,
-                path: "/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/content",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "msg_id", msgId },
-                    { "attempt_id", attemptId },
-                },
-                cancellationToken: cancellationToken
-            );
-            return response.Data;
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
+                    method: HttpMethod.Delete,
+                    path: "/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/content",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "msg_id", msgId },
+                        { "attempt_id", attemptId },
+                    },
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(ExpungeContentAsync)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -392,17 +474,26 @@ namespace Svix
         /// </summary>
         public bool ExpungeContent(string appId, string msgId, string attemptId)
         {
-            var response = this._client.SvixHttpClient.SendRequest<bool>(
-                method: HttpMethod.Delete,
-                path: "/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/content",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "msg_id", msgId },
-                    { "attempt_id", attemptId },
-                }
-            );
-            return response.Data;
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<bool>(
+                    method: HttpMethod.Delete,
+                    path: "/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/content",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "msg_id", msgId },
+                        { "attempt_id", attemptId },
+                    }
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(ExpungeContent)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -418,20 +509,29 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
-            var response =
-                await this._client.SvixHttpClient.SendRequestAsync<ListResponseMessageEndpointOut>(
-                    method: HttpMethod.Get,
-                    path: "/api/v1/app/{app_id}/msg/{msg_id}/endpoint",
-                    pathParams: new Dictionary<string, string>
-                    {
-                        { "app_id", appId },
-                        { "msg_id", msgId },
-                    },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
-                    cancellationToken: cancellationToken
-                );
-            return response.Data;
+            try
+            {
+                var response =
+                    await _client.SvixHttpClient.SendRequestAsync<ListResponseMessageEndpointOut>(
+                        method: HttpMethod.Get,
+                        path: "/api/v1/app/{app_id}/msg/{msg_id}/endpoint",
+                        pathParams: new Dictionary<string, string>
+                        {
+                            { "app_id", appId },
+                            { "msg_id", msgId },
+                        },
+                        queryParams: options?.QueryParams(),
+                        headerParams: options?.HeaderParams(),
+                        cancellationToken: cancellationToken
+                    );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(ListAttemptedDestinationsAsync)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -446,18 +546,27 @@ namespace Svix
             MessageAttemptListAttemptedDestinationsOptions? options = null
         )
         {
-            var response = this._client.SvixHttpClient.SendRequest<ListResponseMessageEndpointOut>(
-                method: HttpMethod.Get,
-                path: "/api/v1/app/{app_id}/msg/{msg_id}/endpoint",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "msg_id", msgId },
-                },
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams()
-            );
-            return response.Data;
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<ListResponseMessageEndpointOut>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/app/{app_id}/msg/{msg_id}/endpoint",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "msg_id", msgId },
+                    },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams()
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(ListAttemptedDestinations)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -471,20 +580,29 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
-            var response = await this._client.SvixHttpClient.SendRequestAsync<bool>(
-                method: HttpMethod.Post,
-                path: "/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/resend",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "msg_id", msgId },
-                    { "endpoint_id", endpointId },
-                },
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams(),
-                cancellationToken: cancellationToken
-            );
-            return response.Data;
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/resend",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "msg_id", msgId },
+                        { "endpoint_id", endpointId },
+                    },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(ResendAsync)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -497,19 +615,28 @@ namespace Svix
             MessageAttemptResendOptions? options = null
         )
         {
-            var response = this._client.SvixHttpClient.SendRequest<bool>(
-                method: HttpMethod.Post,
-                path: "/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/resend",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "msg_id", msgId },
-                    { "endpoint_id", endpointId },
-                },
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams()
-            );
-            return response.Data;
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<bool>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/resend",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "msg_id", msgId },
+                        { "endpoint_id", endpointId },
+                    },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams()
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(Resend)} failed");
+
+                throw;
+            }
         }
     }
 }

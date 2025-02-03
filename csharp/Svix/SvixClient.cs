@@ -24,7 +24,7 @@ namespace Svix
 
         public OperationalWebhookEndpoint OperationalWebhookEndpoint { get; }
 
-        public ILogger Logger { get; }
+        public ILogger? Logger { get; }
 
         public string BaseUrl;
         public string Token;
@@ -34,9 +34,10 @@ namespace Svix
             string baseUrl,
             string token,
             SvixHttpClient? svixHttpClient = null,
-            ILogger<SvixClient> logger = null
+            ILogger<SvixClient>? logger = null
         )
         {
+            Logger = logger;
             BaseUrl = baseUrl;
             Token = token;
             SvixHttpClient = svixHttpClient ?? new SvixHttpClient(baseUrl, token);

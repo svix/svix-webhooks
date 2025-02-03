@@ -1,5 +1,6 @@
 // this file is @generated
 #nullable enable
+using Microsoft.Extensions.Logging;
 using Svix.Models;
 
 namespace Svix
@@ -34,16 +35,24 @@ namespace Svix
         {
             appUsageStatsIn =
                 appUsageStatsIn ?? throw new ArgumentNullException(nameof(appUsageStatsIn));
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<AppUsageStatsOut>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/stats/usage/app",
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    content: appUsageStatsIn,
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(AggregateAppStatsAsync)} failed");
 
-            var response = await this._client.SvixHttpClient.SendRequestAsync<AppUsageStatsOut>(
-                method: HttpMethod.Post,
-                path: "/api/v1/stats/usage/app",
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams(),
-                content: appUsageStatsIn,
-                cancellationToken: cancellationToken
-            );
-            return response.Data;
+                throw;
+            }
         }
 
         /// <summary>
@@ -59,15 +68,23 @@ namespace Svix
         {
             appUsageStatsIn =
                 appUsageStatsIn ?? throw new ArgumentNullException(nameof(appUsageStatsIn));
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<AppUsageStatsOut>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/stats/usage/app",
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    content: appUsageStatsIn
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(AggregateAppStats)} failed");
 
-            var response = this._client.SvixHttpClient.SendRequest<AppUsageStatsOut>(
-                method: HttpMethod.Post,
-                path: "/api/v1/stats/usage/app",
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams(),
-                content: appUsageStatsIn
-            );
-            return response.Data;
+                throw;
+            }
         }
 
         /// <summary>
@@ -80,13 +97,22 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
-            var response =
-                await this._client.SvixHttpClient.SendRequestAsync<AggregateEventTypesOut>(
-                    method: HttpMethod.Put,
-                    path: "/api/v1/stats/usage/event-types",
-                    cancellationToken: cancellationToken
-                );
-            return response.Data;
+            try
+            {
+                var response =
+                    await _client.SvixHttpClient.SendRequestAsync<AggregateEventTypesOut>(
+                        method: HttpMethod.Put,
+                        path: "/api/v1/stats/usage/event-types",
+                        cancellationToken: cancellationToken
+                    );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(AggregateEventTypesAsync)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -97,11 +123,20 @@ namespace Svix
         /// </summary>
         public AggregateEventTypesOut AggregateEventTypes()
         {
-            var response = this._client.SvixHttpClient.SendRequest<AggregateEventTypesOut>(
-                method: HttpMethod.Put,
-                path: "/api/v1/stats/usage/event-types"
-            );
-            return response.Data;
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<AggregateEventTypesOut>(
+                    method: HttpMethod.Put,
+                    path: "/api/v1/stats/usage/event-types"
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(AggregateEventTypes)} failed");
+
+                throw;
+            }
         }
     }
 }

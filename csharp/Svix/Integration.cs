@@ -1,5 +1,6 @@
 // this file is @generated
 #nullable enable
+using Microsoft.Extensions.Logging;
 using Svix.Models;
 
 namespace Svix
@@ -60,16 +61,25 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
-            var response =
-                await this._client.SvixHttpClient.SendRequestAsync<ListResponseIntegrationOut>(
-                    method: HttpMethod.Get,
-                    path: "/api/v1/app/{app_id}/integration",
-                    pathParams: new Dictionary<string, string> { { "app_id", appId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
-                    cancellationToken: cancellationToken
-                );
-            return response.Data;
+            try
+            {
+                var response =
+                    await _client.SvixHttpClient.SendRequestAsync<ListResponseIntegrationOut>(
+                        method: HttpMethod.Get,
+                        path: "/api/v1/app/{app_id}/integration",
+                        pathParams: new Dictionary<string, string> { { "app_id", appId } },
+                        queryParams: options?.QueryParams(),
+                        headerParams: options?.HeaderParams(),
+                        cancellationToken: cancellationToken
+                    );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(ListAsync)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -77,14 +87,23 @@ namespace Svix
         /// </summary>
         public ListResponseIntegrationOut List(string appId, IntegrationListOptions? options = null)
         {
-            var response = this._client.SvixHttpClient.SendRequest<ListResponseIntegrationOut>(
-                method: HttpMethod.Get,
-                path: "/api/v1/app/{app_id}/integration",
-                pathParams: new Dictionary<string, string> { { "app_id", appId } },
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams()
-            );
-            return response.Data;
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<ListResponseIntegrationOut>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/app/{app_id}/integration",
+                    pathParams: new Dictionary<string, string> { { "app_id", appId } },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams()
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(List)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -98,17 +117,25 @@ namespace Svix
         )
         {
             integrationIn = integrationIn ?? throw new ArgumentNullException(nameof(integrationIn));
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<IntegrationOut>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/app/{app_id}/integration",
+                    pathParams: new Dictionary<string, string> { { "app_id", appId } },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    content: integrationIn,
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(CreateAsync)} failed");
 
-            var response = await this._client.SvixHttpClient.SendRequestAsync<IntegrationOut>(
-                method: HttpMethod.Post,
-                path: "/api/v1/app/{app_id}/integration",
-                pathParams: new Dictionary<string, string> { { "app_id", appId } },
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams(),
-                content: integrationIn,
-                cancellationToken: cancellationToken
-            );
-            return response.Data;
+                throw;
+            }
         }
 
         /// <summary>
@@ -121,16 +148,24 @@ namespace Svix
         )
         {
             integrationIn = integrationIn ?? throw new ArgumentNullException(nameof(integrationIn));
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<IntegrationOut>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/app/{app_id}/integration",
+                    pathParams: new Dictionary<string, string> { { "app_id", appId } },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    content: integrationIn
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(Create)} failed");
 
-            var response = this._client.SvixHttpClient.SendRequest<IntegrationOut>(
-                method: HttpMethod.Post,
-                path: "/api/v1/app/{app_id}/integration",
-                pathParams: new Dictionary<string, string> { { "app_id", appId } },
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams(),
-                content: integrationIn
-            );
-            return response.Data;
+                throw;
+            }
         }
 
         /// <summary>
@@ -142,17 +177,26 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
-            var response = await this._client.SvixHttpClient.SendRequestAsync<IntegrationOut>(
-                method: HttpMethod.Get,
-                path: "/api/v1/app/{app_id}/integration/{integ_id}",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "integ_id", integId },
-                },
-                cancellationToken: cancellationToken
-            );
-            return response.Data;
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<IntegrationOut>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/app/{app_id}/integration/{integ_id}",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "integ_id", integId },
+                    },
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(GetAsync)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -160,16 +204,25 @@ namespace Svix
         /// </summary>
         public IntegrationOut Get(string appId, string integId)
         {
-            var response = this._client.SvixHttpClient.SendRequest<IntegrationOut>(
-                method: HttpMethod.Get,
-                path: "/api/v1/app/{app_id}/integration/{integ_id}",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "integ_id", integId },
-                }
-            );
-            return response.Data;
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<IntegrationOut>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/app/{app_id}/integration/{integ_id}",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "integ_id", integId },
+                    }
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(Get)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -184,19 +237,27 @@ namespace Svix
         {
             integrationUpdate =
                 integrationUpdate ?? throw new ArgumentNullException(nameof(integrationUpdate));
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<IntegrationOut>(
+                    method: HttpMethod.Put,
+                    path: "/api/v1/app/{app_id}/integration/{integ_id}",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "integ_id", integId },
+                    },
+                    content: integrationUpdate,
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(UpdateAsync)} failed");
 
-            var response = await this._client.SvixHttpClient.SendRequestAsync<IntegrationOut>(
-                method: HttpMethod.Put,
-                path: "/api/v1/app/{app_id}/integration/{integ_id}",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "integ_id", integId },
-                },
-                content: integrationUpdate,
-                cancellationToken: cancellationToken
-            );
-            return response.Data;
+                throw;
+            }
         }
 
         /// <summary>
@@ -210,18 +271,26 @@ namespace Svix
         {
             integrationUpdate =
                 integrationUpdate ?? throw new ArgumentNullException(nameof(integrationUpdate));
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<IntegrationOut>(
+                    method: HttpMethod.Put,
+                    path: "/api/v1/app/{app_id}/integration/{integ_id}",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "integ_id", integId },
+                    },
+                    content: integrationUpdate
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(Update)} failed");
 
-            var response = this._client.SvixHttpClient.SendRequest<IntegrationOut>(
-                method: HttpMethod.Put,
-                path: "/api/v1/app/{app_id}/integration/{integ_id}",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "integ_id", integId },
-                },
-                content: integrationUpdate
-            );
-            return response.Data;
+                throw;
+            }
         }
 
         /// <summary>
@@ -233,17 +302,26 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
-            var response = await this._client.SvixHttpClient.SendRequestAsync<bool>(
-                method: HttpMethod.Delete,
-                path: "/api/v1/app/{app_id}/integration/{integ_id}",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "integ_id", integId },
-                },
-                cancellationToken: cancellationToken
-            );
-            return response.Data;
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
+                    method: HttpMethod.Delete,
+                    path: "/api/v1/app/{app_id}/integration/{integ_id}",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "integ_id", integId },
+                    },
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(DeleteAsync)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -251,16 +329,25 @@ namespace Svix
         /// </summary>
         public bool Delete(string appId, string integId)
         {
-            var response = this._client.SvixHttpClient.SendRequest<bool>(
-                method: HttpMethod.Delete,
-                path: "/api/v1/app/{app_id}/integration/{integ_id}",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "integ_id", integId },
-                }
-            );
-            return response.Data;
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<bool>(
+                    method: HttpMethod.Delete,
+                    path: "/api/v1/app/{app_id}/integration/{integ_id}",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "integ_id", integId },
+                    }
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(Delete)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -273,17 +360,26 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
-            var response = await this._client.SvixHttpClient.SendRequestAsync<IntegrationKeyOut>(
-                method: HttpMethod.Get,
-                path: "/api/v1/app/{app_id}/integration/{integ_id}/key",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "integ_id", integId },
-                },
-                cancellationToken: cancellationToken
-            );
-            return response.Data;
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<IntegrationKeyOut>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/app/{app_id}/integration/{integ_id}/key",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "integ_id", integId },
+                    },
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(GetKeyAsync)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -292,16 +388,25 @@ namespace Svix
         [Obsolete]
         public IntegrationKeyOut GetKey(string appId, string integId)
         {
-            var response = this._client.SvixHttpClient.SendRequest<IntegrationKeyOut>(
-                method: HttpMethod.Get,
-                path: "/api/v1/app/{app_id}/integration/{integ_id}/key",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "integ_id", integId },
-                }
-            );
-            return response.Data;
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<IntegrationKeyOut>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/app/{app_id}/integration/{integ_id}/key",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "integ_id", integId },
+                    }
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(GetKey)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -314,19 +419,28 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
-            var response = await this._client.SvixHttpClient.SendRequestAsync<IntegrationKeyOut>(
-                method: HttpMethod.Post,
-                path: "/api/v1/app/{app_id}/integration/{integ_id}/key/rotate",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "integ_id", integId },
-                },
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams(),
-                cancellationToken: cancellationToken
-            );
-            return response.Data;
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<IntegrationKeyOut>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/app/{app_id}/integration/{integ_id}/key/rotate",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "integ_id", integId },
+                    },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(RotateKeyAsync)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -338,18 +452,27 @@ namespace Svix
             IntegrationRotateKeyOptions? options = null
         )
         {
-            var response = this._client.SvixHttpClient.SendRequest<IntegrationKeyOut>(
-                method: HttpMethod.Post,
-                path: "/api/v1/app/{app_id}/integration/{integ_id}/key/rotate",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "integ_id", integId },
-                },
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams()
-            );
-            return response.Data;
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<IntegrationKeyOut>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/app/{app_id}/integration/{integ_id}/key/rotate",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "integ_id", integId },
+                    },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams()
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(RotateKey)} failed");
+
+                throw;
+            }
         }
     }
 }

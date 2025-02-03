@@ -1,5 +1,6 @@
 // this file is @generated
 #nullable enable
+using Microsoft.Extensions.Logging;
 using Svix.Models;
 
 namespace Svix
@@ -73,15 +74,24 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
-            var response =
-                await this._client.SvixHttpClient.SendRequestAsync<ListResponseEventTypeOut>(
-                    method: HttpMethod.Get,
-                    path: "/api/v1/event-type",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
-                    cancellationToken: cancellationToken
-                );
-            return response.Data;
+            try
+            {
+                var response =
+                    await _client.SvixHttpClient.SendRequestAsync<ListResponseEventTypeOut>(
+                        method: HttpMethod.Get,
+                        path: "/api/v1/event-type",
+                        queryParams: options?.QueryParams(),
+                        headerParams: options?.HeaderParams(),
+                        cancellationToken: cancellationToken
+                    );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(ListAsync)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -89,13 +99,22 @@ namespace Svix
         /// </summary>
         public ListResponseEventTypeOut List(EventTypeListOptions? options = null)
         {
-            var response = this._client.SvixHttpClient.SendRequest<ListResponseEventTypeOut>(
-                method: HttpMethod.Get,
-                path: "/api/v1/event-type",
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams()
-            );
-            return response.Data;
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<ListResponseEventTypeOut>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/event-type",
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams()
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(List)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -112,16 +131,24 @@ namespace Svix
         )
         {
             eventTypeIn = eventTypeIn ?? throw new ArgumentNullException(nameof(eventTypeIn));
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<EventTypeOut>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/event-type",
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    content: eventTypeIn,
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(CreateAsync)} failed");
 
-            var response = await this._client.SvixHttpClient.SendRequestAsync<EventTypeOut>(
-                method: HttpMethod.Post,
-                path: "/api/v1/event-type",
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams(),
-                content: eventTypeIn,
-                cancellationToken: cancellationToken
-            );
-            return response.Data;
+                throw;
+            }
         }
 
         /// <summary>
@@ -134,15 +161,23 @@ namespace Svix
         public EventTypeOut Create(EventTypeIn eventTypeIn, EventTypeCreateOptions? options = null)
         {
             eventTypeIn = eventTypeIn ?? throw new ArgumentNullException(nameof(eventTypeIn));
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<EventTypeOut>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/event-type",
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    content: eventTypeIn
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(Create)} failed");
 
-            var response = this._client.SvixHttpClient.SendRequest<EventTypeOut>(
-                method: HttpMethod.Post,
-                path: "/api/v1/event-type",
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams(),
-                content: eventTypeIn
-            );
-            return response.Data;
+                throw;
+            }
         }
 
         /// <summary>
@@ -161,17 +196,25 @@ namespace Svix
             eventTypeImportOpenApiIn =
                 eventTypeImportOpenApiIn
                 ?? throw new ArgumentNullException(nameof(eventTypeImportOpenApiIn));
+            try
+            {
+                var response =
+                    await _client.SvixHttpClient.SendRequestAsync<EventTypeImportOpenApiOut>(
+                        method: HttpMethod.Post,
+                        path: "/api/v1/event-type/import/openapi",
+                        queryParams: options?.QueryParams(),
+                        headerParams: options?.HeaderParams(),
+                        content: eventTypeImportOpenApiIn,
+                        cancellationToken: cancellationToken
+                    );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(ImportOpenapiAsync)} failed");
 
-            var response =
-                await this._client.SvixHttpClient.SendRequestAsync<EventTypeImportOpenApiOut>(
-                    method: HttpMethod.Post,
-                    path: "/api/v1/event-type/import/openapi",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
-                    content: eventTypeImportOpenApiIn,
-                    cancellationToken: cancellationToken
-                );
-            return response.Data;
+                throw;
+            }
         }
 
         /// <summary>
@@ -189,15 +232,23 @@ namespace Svix
             eventTypeImportOpenApiIn =
                 eventTypeImportOpenApiIn
                 ?? throw new ArgumentNullException(nameof(eventTypeImportOpenApiIn));
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<EventTypeImportOpenApiOut>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/event-type/import/openapi",
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    content: eventTypeImportOpenApiIn
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(ImportOpenapi)} failed");
 
-            var response = this._client.SvixHttpClient.SendRequest<EventTypeImportOpenApiOut>(
-                method: HttpMethod.Post,
-                path: "/api/v1/event-type/import/openapi",
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams(),
-                content: eventTypeImportOpenApiIn
-            );
-            return response.Data;
+                throw;
+            }
         }
 
         /// <summary>
@@ -208,13 +259,25 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
-            var response = await this._client.SvixHttpClient.SendRequestAsync<EventTypeOut>(
-                method: HttpMethod.Get,
-                path: "/api/v1/event-type/{event_type_name}",
-                pathParams: new Dictionary<string, string> { { "event_type_name", eventTypeName } },
-                cancellationToken: cancellationToken
-            );
-            return response.Data;
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<EventTypeOut>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/event-type/{event_type_name}",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "event_type_name", eventTypeName },
+                    },
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(GetAsync)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -222,12 +285,24 @@ namespace Svix
         /// </summary>
         public EventTypeOut Get(string eventTypeName)
         {
-            var response = this._client.SvixHttpClient.SendRequest<EventTypeOut>(
-                method: HttpMethod.Get,
-                path: "/api/v1/event-type/{event_type_name}",
-                pathParams: new Dictionary<string, string> { { "event_type_name", eventTypeName } }
-            );
-            return response.Data;
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<EventTypeOut>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/event-type/{event_type_name}",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "event_type_name", eventTypeName },
+                    }
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(Get)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -241,15 +316,26 @@ namespace Svix
         {
             eventTypeUpdate =
                 eventTypeUpdate ?? throw new ArgumentNullException(nameof(eventTypeUpdate));
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<EventTypeOut>(
+                    method: HttpMethod.Put,
+                    path: "/api/v1/event-type/{event_type_name}",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "event_type_name", eventTypeName },
+                    },
+                    content: eventTypeUpdate,
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(UpdateAsync)} failed");
 
-            var response = await this._client.SvixHttpClient.SendRequestAsync<EventTypeOut>(
-                method: HttpMethod.Put,
-                path: "/api/v1/event-type/{event_type_name}",
-                pathParams: new Dictionary<string, string> { { "event_type_name", eventTypeName } },
-                content: eventTypeUpdate,
-                cancellationToken: cancellationToken
-            );
-            return response.Data;
+                throw;
+            }
         }
 
         /// <summary>
@@ -259,14 +345,25 @@ namespace Svix
         {
             eventTypeUpdate =
                 eventTypeUpdate ?? throw new ArgumentNullException(nameof(eventTypeUpdate));
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<EventTypeOut>(
+                    method: HttpMethod.Put,
+                    path: "/api/v1/event-type/{event_type_name}",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "event_type_name", eventTypeName },
+                    },
+                    content: eventTypeUpdate
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(Update)} failed");
 
-            var response = this._client.SvixHttpClient.SendRequest<EventTypeOut>(
-                method: HttpMethod.Put,
-                path: "/api/v1/event-type/{event_type_name}",
-                pathParams: new Dictionary<string, string> { { "event_type_name", eventTypeName } },
-                content: eventTypeUpdate
-            );
-            return response.Data;
+                throw;
+            }
         }
 
         /// <summary>
@@ -283,15 +380,27 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
-            var response = await this._client.SvixHttpClient.SendRequestAsync<bool>(
-                method: HttpMethod.Delete,
-                path: "/api/v1/event-type/{event_type_name}",
-                pathParams: new Dictionary<string, string> { { "event_type_name", eventTypeName } },
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams(),
-                cancellationToken: cancellationToken
-            );
-            return response.Data;
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
+                    method: HttpMethod.Delete,
+                    path: "/api/v1/event-type/{event_type_name}",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "event_type_name", eventTypeName },
+                    },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(DeleteAsync)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -304,14 +413,26 @@ namespace Svix
         /// </summary>
         public bool Delete(string eventTypeName, EventTypeDeleteOptions? options = null)
         {
-            var response = this._client.SvixHttpClient.SendRequest<bool>(
-                method: HttpMethod.Delete,
-                path: "/api/v1/event-type/{event_type_name}",
-                pathParams: new Dictionary<string, string> { { "event_type_name", eventTypeName } },
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams()
-            );
-            return response.Data;
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<bool>(
+                    method: HttpMethod.Delete,
+                    path: "/api/v1/event-type/{event_type_name}",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "event_type_name", eventTypeName },
+                    },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams()
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(Delete)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -325,15 +446,26 @@ namespace Svix
         {
             eventTypePatch =
                 eventTypePatch ?? throw new ArgumentNullException(nameof(eventTypePatch));
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<EventTypeOut>(
+                    method: HttpMethod.Patch,
+                    path: "/api/v1/event-type/{event_type_name}",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "event_type_name", eventTypeName },
+                    },
+                    content: eventTypePatch,
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(PatchAsync)} failed");
 
-            var response = await this._client.SvixHttpClient.SendRequestAsync<EventTypeOut>(
-                method: HttpMethod.Patch,
-                path: "/api/v1/event-type/{event_type_name}",
-                pathParams: new Dictionary<string, string> { { "event_type_name", eventTypeName } },
-                content: eventTypePatch,
-                cancellationToken: cancellationToken
-            );
-            return response.Data;
+                throw;
+            }
         }
 
         /// <summary>
@@ -343,14 +475,25 @@ namespace Svix
         {
             eventTypePatch =
                 eventTypePatch ?? throw new ArgumentNullException(nameof(eventTypePatch));
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<EventTypeOut>(
+                    method: HttpMethod.Patch,
+                    path: "/api/v1/event-type/{event_type_name}",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "event_type_name", eventTypeName },
+                    },
+                    content: eventTypePatch
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(Patch)} failed");
 
-            var response = this._client.SvixHttpClient.SendRequest<EventTypeOut>(
-                method: HttpMethod.Patch,
-                path: "/api/v1/event-type/{event_type_name}",
-                pathParams: new Dictionary<string, string> { { "event_type_name", eventTypeName } },
-                content: eventTypePatch
-            );
-            return response.Data;
+                throw;
+            }
         }
     }
 }

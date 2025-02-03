@@ -1,5 +1,6 @@
 // this file is @generated
 #nullable enable
+using Microsoft.Extensions.Logging;
 using Svix.Models;
 
 namespace Svix
@@ -68,17 +69,25 @@ namespace Svix
         {
             appPortalAccessIn =
                 appPortalAccessIn ?? throw new ArgumentNullException(nameof(appPortalAccessIn));
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<AppPortalAccessOut>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/auth/app-portal-access/{app_id}",
+                    pathParams: new Dictionary<string, string> { { "app_id", appId } },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    content: appPortalAccessIn,
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(AppPortalAccessAsync)} failed");
 
-            var response = await this._client.SvixHttpClient.SendRequestAsync<AppPortalAccessOut>(
-                method: HttpMethod.Post,
-                path: "/api/v1/auth/app-portal-access/{app_id}",
-                pathParams: new Dictionary<string, string> { { "app_id", appId } },
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams(),
-                content: appPortalAccessIn,
-                cancellationToken: cancellationToken
-            );
-            return response.Data;
+                throw;
+            }
         }
 
         /// <summary>
@@ -92,16 +101,24 @@ namespace Svix
         {
             appPortalAccessIn =
                 appPortalAccessIn ?? throw new ArgumentNullException(nameof(appPortalAccessIn));
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<AppPortalAccessOut>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/auth/app-portal-access/{app_id}",
+                    pathParams: new Dictionary<string, string> { { "app_id", appId } },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    content: appPortalAccessIn
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(AppPortalAccess)} failed");
 
-            var response = this._client.SvixHttpClient.SendRequest<AppPortalAccessOut>(
-                method: HttpMethod.Post,
-                path: "/api/v1/auth/app-portal-access/{app_id}",
-                pathParams: new Dictionary<string, string> { { "app_id", appId } },
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams(),
-                content: appPortalAccessIn
-            );
-            return response.Data;
+                throw;
+            }
         }
 
         /// <summary>
@@ -117,17 +134,25 @@ namespace Svix
             applicationTokenExpireIn =
                 applicationTokenExpireIn
                 ?? throw new ArgumentNullException(nameof(applicationTokenExpireIn));
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/auth/app/{app_id}/expire-all",
+                    pathParams: new Dictionary<string, string> { { "app_id", appId } },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    content: applicationTokenExpireIn,
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(ExpireAllAsync)} failed");
 
-            var response = await this._client.SvixHttpClient.SendRequestAsync<bool>(
-                method: HttpMethod.Post,
-                path: "/api/v1/auth/app/{app_id}/expire-all",
-                pathParams: new Dictionary<string, string> { { "app_id", appId } },
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams(),
-                content: applicationTokenExpireIn,
-                cancellationToken: cancellationToken
-            );
-            return response.Data;
+                throw;
+            }
         }
 
         /// <summary>
@@ -142,16 +167,24 @@ namespace Svix
             applicationTokenExpireIn =
                 applicationTokenExpireIn
                 ?? throw new ArgumentNullException(nameof(applicationTokenExpireIn));
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<bool>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/auth/app/{app_id}/expire-all",
+                    pathParams: new Dictionary<string, string> { { "app_id", appId } },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    content: applicationTokenExpireIn
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(ExpireAll)} failed");
 
-            var response = this._client.SvixHttpClient.SendRequest<bool>(
-                method: HttpMethod.Post,
-                path: "/api/v1/auth/app/{app_id}/expire-all",
-                pathParams: new Dictionary<string, string> { { "app_id", appId } },
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams(),
-                content: applicationTokenExpireIn
-            );
-            return response.Data;
+                throw;
+            }
         }
 
         /// <summary>
@@ -166,15 +199,24 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
-            var response = await this._client.SvixHttpClient.SendRequestAsync<DashboardAccessOut>(
-                method: HttpMethod.Post,
-                path: "/api/v1/auth/dashboard-access/{app_id}",
-                pathParams: new Dictionary<string, string> { { "app_id", appId } },
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams(),
-                cancellationToken: cancellationToken
-            );
-            return response.Data;
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<DashboardAccessOut>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/auth/dashboard-access/{app_id}",
+                    pathParams: new Dictionary<string, string> { { "app_id", appId } },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(DashboardAccessAsync)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -188,14 +230,23 @@ namespace Svix
             AuthenticationDashboardAccessOptions? options = null
         )
         {
-            var response = this._client.SvixHttpClient.SendRequest<DashboardAccessOut>(
-                method: HttpMethod.Post,
-                path: "/api/v1/auth/dashboard-access/{app_id}",
-                pathParams: new Dictionary<string, string> { { "app_id", appId } },
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams()
-            );
-            return response.Data;
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<DashboardAccessOut>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/auth/dashboard-access/{app_id}",
+                    pathParams: new Dictionary<string, string> { { "app_id", appId } },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams()
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(DashboardAccess)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -208,14 +259,23 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
-            var response = await this._client.SvixHttpClient.SendRequestAsync<bool>(
-                method: HttpMethod.Post,
-                path: "/api/v1/auth/logout",
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams(),
-                cancellationToken: cancellationToken
-            );
-            return response.Data;
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/auth/logout",
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(LogoutAsync)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -225,13 +285,22 @@ namespace Svix
         /// </summary>
         public bool Logout(AuthenticationLogoutOptions? options = null)
         {
-            var response = this._client.SvixHttpClient.SendRequest<bool>(
-                method: HttpMethod.Post,
-                path: "/api/v1/auth/logout",
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams()
-            );
-            return response.Data;
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<bool>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/auth/logout",
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams()
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(Logout)} failed");
+
+                throw;
+            }
         }
     }
 }

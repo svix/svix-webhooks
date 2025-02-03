@@ -1,5 +1,6 @@
 // this file is @generated
 #nullable enable
+using Microsoft.Extensions.Logging;
 using Svix.Models;
 
 namespace Svix
@@ -109,16 +110,25 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
-            var response =
-                await this._client.SvixHttpClient.SendRequestAsync<ListResponseEndpointOut>(
-                    method: HttpMethod.Get,
-                    path: "/api/v1/app/{app_id}/endpoint",
-                    pathParams: new Dictionary<string, string> { { "app_id", appId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
-                    cancellationToken: cancellationToken
-                );
-            return response.Data;
+            try
+            {
+                var response =
+                    await _client.SvixHttpClient.SendRequestAsync<ListResponseEndpointOut>(
+                        method: HttpMethod.Get,
+                        path: "/api/v1/app/{app_id}/endpoint",
+                        pathParams: new Dictionary<string, string> { { "app_id", appId } },
+                        queryParams: options?.QueryParams(),
+                        headerParams: options?.HeaderParams(),
+                        cancellationToken: cancellationToken
+                    );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(ListAsync)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -126,14 +136,23 @@ namespace Svix
         /// </summary>
         public ListResponseEndpointOut List(string appId, EndpointListOptions? options = null)
         {
-            var response = this._client.SvixHttpClient.SendRequest<ListResponseEndpointOut>(
-                method: HttpMethod.Get,
-                path: "/api/v1/app/{app_id}/endpoint",
-                pathParams: new Dictionary<string, string> { { "app_id", appId } },
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams()
-            );
-            return response.Data;
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<ListResponseEndpointOut>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/app/{app_id}/endpoint",
+                    pathParams: new Dictionary<string, string> { { "app_id", appId } },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams()
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(List)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -149,17 +168,25 @@ namespace Svix
         )
         {
             endpointIn = endpointIn ?? throw new ArgumentNullException(nameof(endpointIn));
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<EndpointOut>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/app/{app_id}/endpoint",
+                    pathParams: new Dictionary<string, string> { { "app_id", appId } },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    content: endpointIn,
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(CreateAsync)} failed");
 
-            var response = await this._client.SvixHttpClient.SendRequestAsync<EndpointOut>(
-                method: HttpMethod.Post,
-                path: "/api/v1/app/{app_id}/endpoint",
-                pathParams: new Dictionary<string, string> { { "app_id", appId } },
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams(),
-                content: endpointIn,
-                cancellationToken: cancellationToken
-            );
-            return response.Data;
+                throw;
+            }
         }
 
         /// <summary>
@@ -174,16 +201,24 @@ namespace Svix
         )
         {
             endpointIn = endpointIn ?? throw new ArgumentNullException(nameof(endpointIn));
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<EndpointOut>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/app/{app_id}/endpoint",
+                    pathParams: new Dictionary<string, string> { { "app_id", appId } },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    content: endpointIn
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(Create)} failed");
 
-            var response = this._client.SvixHttpClient.SendRequest<EndpointOut>(
-                method: HttpMethod.Post,
-                path: "/api/v1/app/{app_id}/endpoint",
-                pathParams: new Dictionary<string, string> { { "app_id", appId } },
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams(),
-                content: endpointIn
-            );
-            return response.Data;
+                throw;
+            }
         }
 
         /// <summary>
@@ -195,17 +230,26 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
-            var response = await this._client.SvixHttpClient.SendRequestAsync<EndpointOut>(
-                method: HttpMethod.Get,
-                path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "endpoint_id", endpointId },
-                },
-                cancellationToken: cancellationToken
-            );
-            return response.Data;
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<EndpointOut>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(GetAsync)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -213,16 +257,25 @@ namespace Svix
         /// </summary>
         public EndpointOut Get(string appId, string endpointId)
         {
-            var response = this._client.SvixHttpClient.SendRequest<EndpointOut>(
-                method: HttpMethod.Get,
-                path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "endpoint_id", endpointId },
-                }
-            );
-            return response.Data;
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<EndpointOut>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    }
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(Get)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -237,19 +290,27 @@ namespace Svix
         {
             endpointUpdate =
                 endpointUpdate ?? throw new ArgumentNullException(nameof(endpointUpdate));
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<EndpointOut>(
+                    method: HttpMethod.Put,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    content: endpointUpdate,
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(UpdateAsync)} failed");
 
-            var response = await this._client.SvixHttpClient.SendRequestAsync<EndpointOut>(
-                method: HttpMethod.Put,
-                path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "endpoint_id", endpointId },
-                },
-                content: endpointUpdate,
-                cancellationToken: cancellationToken
-            );
-            return response.Data;
+                throw;
+            }
         }
 
         /// <summary>
@@ -259,18 +320,26 @@ namespace Svix
         {
             endpointUpdate =
                 endpointUpdate ?? throw new ArgumentNullException(nameof(endpointUpdate));
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<EndpointOut>(
+                    method: HttpMethod.Put,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    content: endpointUpdate
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(Update)} failed");
 
-            var response = this._client.SvixHttpClient.SendRequest<EndpointOut>(
-                method: HttpMethod.Put,
-                path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "endpoint_id", endpointId },
-                },
-                content: endpointUpdate
-            );
-            return response.Data;
+                throw;
+            }
         }
 
         /// <summary>
@@ -282,17 +351,26 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
-            var response = await this._client.SvixHttpClient.SendRequestAsync<bool>(
-                method: HttpMethod.Delete,
-                path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "endpoint_id", endpointId },
-                },
-                cancellationToken: cancellationToken
-            );
-            return response.Data;
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
+                    method: HttpMethod.Delete,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(DeleteAsync)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -300,16 +378,25 @@ namespace Svix
         /// </summary>
         public bool Delete(string appId, string endpointId)
         {
-            var response = this._client.SvixHttpClient.SendRequest<bool>(
-                method: HttpMethod.Delete,
-                path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "endpoint_id", endpointId },
-                }
-            );
-            return response.Data;
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<bool>(
+                    method: HttpMethod.Delete,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    }
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(Delete)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -323,19 +410,27 @@ namespace Svix
         )
         {
             endpointPatch = endpointPatch ?? throw new ArgumentNullException(nameof(endpointPatch));
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<EndpointOut>(
+                    method: HttpMethod.Patch,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    content: endpointPatch,
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(PatchAsync)} failed");
 
-            var response = await this._client.SvixHttpClient.SendRequestAsync<EndpointOut>(
-                method: HttpMethod.Patch,
-                path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "endpoint_id", endpointId },
-                },
-                content: endpointPatch,
-                cancellationToken: cancellationToken
-            );
-            return response.Data;
+                throw;
+            }
         }
 
         /// <summary>
@@ -344,18 +439,26 @@ namespace Svix
         public EndpointOut Patch(string appId, string endpointId, EndpointPatch endpointPatch)
         {
             endpointPatch = endpointPatch ?? throw new ArgumentNullException(nameof(endpointPatch));
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<EndpointOut>(
+                    method: HttpMethod.Patch,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    content: endpointPatch
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(Patch)} failed");
 
-            var response = this._client.SvixHttpClient.SendRequest<EndpointOut>(
-                method: HttpMethod.Patch,
-                path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "endpoint_id", endpointId },
-                },
-                content: endpointPatch
-            );
-            return response.Data;
+                throw;
+            }
         }
 
         /// <summary>
@@ -367,17 +470,26 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
-            var response = await this._client.SvixHttpClient.SendRequestAsync<EndpointHeadersOut>(
-                method: HttpMethod.Get,
-                path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "endpoint_id", endpointId },
-                },
-                cancellationToken: cancellationToken
-            );
-            return response.Data;
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<EndpointHeadersOut>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(GetHeadersAsync)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -385,16 +497,25 @@ namespace Svix
         /// </summary>
         public EndpointHeadersOut GetHeaders(string appId, string endpointId)
         {
-            var response = this._client.SvixHttpClient.SendRequest<EndpointHeadersOut>(
-                method: HttpMethod.Get,
-                path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "endpoint_id", endpointId },
-                }
-            );
-            return response.Data;
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<EndpointHeadersOut>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    }
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(GetHeaders)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -409,19 +530,27 @@ namespace Svix
         {
             endpointHeadersIn =
                 endpointHeadersIn ?? throw new ArgumentNullException(nameof(endpointHeadersIn));
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
+                    method: HttpMethod.Put,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    content: endpointHeadersIn,
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(UpdateHeadersAsync)} failed");
 
-            var response = await this._client.SvixHttpClient.SendRequestAsync<bool>(
-                method: HttpMethod.Put,
-                path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "endpoint_id", endpointId },
-                },
-                content: endpointHeadersIn,
-                cancellationToken: cancellationToken
-            );
-            return response.Data;
+                throw;
+            }
         }
 
         /// <summary>
@@ -435,18 +564,26 @@ namespace Svix
         {
             endpointHeadersIn =
                 endpointHeadersIn ?? throw new ArgumentNullException(nameof(endpointHeadersIn));
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<bool>(
+                    method: HttpMethod.Put,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    content: endpointHeadersIn
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(UpdateHeaders)} failed");
 
-            var response = this._client.SvixHttpClient.SendRequest<bool>(
-                method: HttpMethod.Put,
-                path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "endpoint_id", endpointId },
-                },
-                content: endpointHeadersIn
-            );
-            return response.Data;
+                throw;
+            }
         }
 
         /// <summary>
@@ -462,19 +599,27 @@ namespace Svix
             endpointHeadersPatchIn =
                 endpointHeadersPatchIn
                 ?? throw new ArgumentNullException(nameof(endpointHeadersPatchIn));
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
+                    method: HttpMethod.Patch,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    content: endpointHeadersPatchIn,
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(PatchHeadersAsync)} failed");
 
-            var response = await this._client.SvixHttpClient.SendRequestAsync<bool>(
-                method: HttpMethod.Patch,
-                path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "endpoint_id", endpointId },
-                },
-                content: endpointHeadersPatchIn,
-                cancellationToken: cancellationToken
-            );
-            return response.Data;
+                throw;
+            }
         }
 
         /// <summary>
@@ -489,18 +634,26 @@ namespace Svix
             endpointHeadersPatchIn =
                 endpointHeadersPatchIn
                 ?? throw new ArgumentNullException(nameof(endpointHeadersPatchIn));
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<bool>(
+                    method: HttpMethod.Patch,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    content: endpointHeadersPatchIn
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(PatchHeaders)} failed");
 
-            var response = this._client.SvixHttpClient.SendRequest<bool>(
-                method: HttpMethod.Patch,
-                path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "endpoint_id", endpointId },
-                },
-                content: endpointHeadersPatchIn
-            );
-            return response.Data;
+                throw;
+            }
         }
 
         /// <summary>
@@ -517,21 +670,29 @@ namespace Svix
         )
         {
             recoverIn = recoverIn ?? throw new ArgumentNullException(nameof(recoverIn));
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<RecoverOut>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/recover",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    content: recoverIn,
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(RecoverAsync)} failed");
 
-            var response = await this._client.SvixHttpClient.SendRequestAsync<RecoverOut>(
-                method: HttpMethod.Post,
-                path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/recover",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "endpoint_id", endpointId },
-                },
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams(),
-                content: recoverIn,
-                cancellationToken: cancellationToken
-            );
-            return response.Data;
+                throw;
+            }
         }
 
         /// <summary>
@@ -547,20 +708,28 @@ namespace Svix
         )
         {
             recoverIn = recoverIn ?? throw new ArgumentNullException(nameof(recoverIn));
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<RecoverOut>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/recover",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    content: recoverIn
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(Recover)} failed");
 
-            var response = this._client.SvixHttpClient.SendRequest<RecoverOut>(
-                method: HttpMethod.Post,
-                path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/recover",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "endpoint_id", endpointId },
-                },
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams(),
-                content: recoverIn
-            );
-            return response.Data;
+                throw;
+            }
         }
 
         /// <summary>
@@ -578,21 +747,29 @@ namespace Svix
         )
         {
             replayIn = replayIn ?? throw new ArgumentNullException(nameof(replayIn));
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<ReplayOut>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/replay-missing",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    content: replayIn,
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(ReplayMissingAsync)} failed");
 
-            var response = await this._client.SvixHttpClient.SendRequestAsync<ReplayOut>(
-                method: HttpMethod.Post,
-                path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/replay-missing",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "endpoint_id", endpointId },
-                },
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams(),
-                content: replayIn,
-                cancellationToken: cancellationToken
-            );
-            return response.Data;
+                throw;
+            }
         }
 
         /// <summary>
@@ -609,20 +786,28 @@ namespace Svix
         )
         {
             replayIn = replayIn ?? throw new ArgumentNullException(nameof(replayIn));
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<ReplayOut>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/replay-missing",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    content: replayIn
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(ReplayMissing)} failed");
 
-            var response = this._client.SvixHttpClient.SendRequest<ReplayOut>(
-                method: HttpMethod.Post,
-                path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/replay-missing",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "endpoint_id", endpointId },
-                },
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams(),
-                content: replayIn
-            );
-            return response.Data;
+                throw;
+            }
         }
 
         /// <summary>
@@ -637,17 +822,26 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
-            var response = await this._client.SvixHttpClient.SendRequestAsync<EndpointSecretOut>(
-                method: HttpMethod.Get,
-                path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "endpoint_id", endpointId },
-                },
-                cancellationToken: cancellationToken
-            );
-            return response.Data;
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<EndpointSecretOut>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(GetSecretAsync)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -658,16 +852,25 @@ namespace Svix
         /// </summary>
         public EndpointSecretOut GetSecret(string appId, string endpointId)
         {
-            var response = this._client.SvixHttpClient.SendRequest<EndpointSecretOut>(
-                method: HttpMethod.Get,
-                path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "endpoint_id", endpointId },
-                }
-            );
-            return response.Data;
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<EndpointSecretOut>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    }
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(GetSecret)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -686,21 +889,29 @@ namespace Svix
             endpointSecretRotateIn =
                 endpointSecretRotateIn
                 ?? throw new ArgumentNullException(nameof(endpointSecretRotateIn));
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    content: endpointSecretRotateIn,
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(RotateSecretAsync)} failed");
 
-            var response = await this._client.SvixHttpClient.SendRequestAsync<bool>(
-                method: HttpMethod.Post,
-                path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "endpoint_id", endpointId },
-                },
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams(),
-                content: endpointSecretRotateIn,
-                cancellationToken: cancellationToken
-            );
-            return response.Data;
+                throw;
+            }
         }
 
         /// <summary>
@@ -718,20 +929,28 @@ namespace Svix
             endpointSecretRotateIn =
                 endpointSecretRotateIn
                 ?? throw new ArgumentNullException(nameof(endpointSecretRotateIn));
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<bool>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    content: endpointSecretRotateIn
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(RotateSecret)} failed");
 
-            var response = this._client.SvixHttpClient.SendRequest<bool>(
-                method: HttpMethod.Post,
-                path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "endpoint_id", endpointId },
-                },
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams(),
-                content: endpointSecretRotateIn
-            );
-            return response.Data;
+                throw;
+            }
         }
 
         /// <summary>
@@ -747,21 +966,29 @@ namespace Svix
         {
             eventExampleIn =
                 eventExampleIn ?? throw new ArgumentNullException(nameof(eventExampleIn));
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<MessageOut>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/send-example",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    content: eventExampleIn,
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(SendExampleAsync)} failed");
 
-            var response = await this._client.SvixHttpClient.SendRequestAsync<MessageOut>(
-                method: HttpMethod.Post,
-                path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/send-example",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "endpoint_id", endpointId },
-                },
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams(),
-                content: eventExampleIn,
-                cancellationToken: cancellationToken
-            );
-            return response.Data;
+                throw;
+            }
         }
 
         /// <summary>
@@ -776,20 +1003,28 @@ namespace Svix
         {
             eventExampleIn =
                 eventExampleIn ?? throw new ArgumentNullException(nameof(eventExampleIn));
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<MessageOut>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/send-example",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    content: eventExampleIn
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(SendExample)} failed");
 
-            var response = this._client.SvixHttpClient.SendRequest<MessageOut>(
-                method: HttpMethod.Post,
-                path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/send-example",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "endpoint_id", endpointId },
-                },
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams(),
-                content: eventExampleIn
-            );
-            return response.Data;
+                throw;
+            }
         }
 
         /// <summary>
@@ -802,19 +1037,28 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
-            var response = await this._client.SvixHttpClient.SendRequestAsync<EndpointStats>(
-                method: HttpMethod.Get,
-                path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/stats",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "endpoint_id", endpointId },
-                },
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams(),
-                cancellationToken: cancellationToken
-            );
-            return response.Data;
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<EndpointStats>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/stats",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(GetStatsAsync)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -826,18 +1070,27 @@ namespace Svix
             EndpointGetStatsOptions? options = null
         )
         {
-            var response = this._client.SvixHttpClient.SendRequest<EndpointStats>(
-                method: HttpMethod.Get,
-                path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/stats",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "endpoint_id", endpointId },
-                },
-                queryParams: options?.QueryParams(),
-                headerParams: options?.HeaderParams()
-            );
-            return response.Data;
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<EndpointStats>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/stats",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams()
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(GetStats)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -849,18 +1102,27 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
-            var response =
-                await this._client.SvixHttpClient.SendRequestAsync<EndpointTransformationOut>(
-                    method: HttpMethod.Get,
-                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
-                    pathParams: new Dictionary<string, string>
-                    {
-                        { "app_id", appId },
-                        { "endpoint_id", endpointId },
-                    },
-                    cancellationToken: cancellationToken
-                );
-            return response.Data;
+            try
+            {
+                var response =
+                    await _client.SvixHttpClient.SendRequestAsync<EndpointTransformationOut>(
+                        method: HttpMethod.Get,
+                        path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
+                        pathParams: new Dictionary<string, string>
+                        {
+                            { "app_id", appId },
+                            { "endpoint_id", endpointId },
+                        },
+                        cancellationToken: cancellationToken
+                    );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(TransformationGetAsync)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -868,16 +1130,25 @@ namespace Svix
         /// </summary>
         public EndpointTransformationOut TransformationGet(string appId, string endpointId)
         {
-            var response = this._client.SvixHttpClient.SendRequest<EndpointTransformationOut>(
-                method: HttpMethod.Get,
-                path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "endpoint_id", endpointId },
-                }
-            );
-            return response.Data;
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<EndpointTransformationOut>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    }
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(TransformationGet)} failed");
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -893,19 +1164,27 @@ namespace Svix
             endpointTransformationIn =
                 endpointTransformationIn
                 ?? throw new ArgumentNullException(nameof(endpointTransformationIn));
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
+                    method: HttpMethod.Patch,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    content: endpointTransformationIn,
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(TransformationPartialUpdateAsync)} failed");
 
-            var response = await this._client.SvixHttpClient.SendRequestAsync<bool>(
-                method: HttpMethod.Patch,
-                path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "endpoint_id", endpointId },
-                },
-                content: endpointTransformationIn,
-                cancellationToken: cancellationToken
-            );
-            return response.Data;
+                throw;
+            }
         }
 
         /// <summary>
@@ -920,18 +1199,26 @@ namespace Svix
             endpointTransformationIn =
                 endpointTransformationIn
                 ?? throw new ArgumentNullException(nameof(endpointTransformationIn));
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<bool>(
+                    method: HttpMethod.Patch,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    content: endpointTransformationIn
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(TransformationPartialUpdate)} failed");
 
-            var response = this._client.SvixHttpClient.SendRequest<bool>(
-                method: HttpMethod.Patch,
-                path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
-                pathParams: new Dictionary<string, string>
-                {
-                    { "app_id", appId },
-                    { "endpoint_id", endpointId },
-                },
-                content: endpointTransformationIn
-            );
-            return response.Data;
+                throw;
+            }
         }
     }
 }
