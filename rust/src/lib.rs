@@ -26,6 +26,7 @@ pub struct Configuration {
     pub client: HyperClient<Connector, http_body_util::Full<Bytes>>,
     pub bearer_access_token: Option<String>,
     pub timeout: Option<Duration>,
+    pub num_retries: u32,
 }
 
 // If no TLS backend is enabled, use plain http connector.

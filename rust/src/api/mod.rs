@@ -75,6 +75,13 @@ pub struct SvixOptions {
     ///
     /// Default: 15 seconds.
     pub timeout: Option<std::time::Duration>,
+    /// Number of retries
+    ///
+    /// The number of times the client will retry if a server-side error
+    /// or timeout is received.
+    ///
+    /// Default: 2
+    pub num_retries: Option<u32>,
 }
 
 impl Default for SvixOptions {
@@ -83,6 +90,7 @@ impl Default for SvixOptions {
             debug: false,
             server_url: None,
             timeout: Some(std::time::Duration::from_secs(15)),
+            num_retries: None,
         }
     }
 }
@@ -105,6 +113,7 @@ impl Svix {
             // These fields will be set by `with_token` below
             base_path: String::new(),
             bearer_access_token: None,
+            num_retries: options.num_retries.unwrap_or(2),
         });
         let svix = Self {
             cfg,
@@ -135,6 +144,7 @@ impl Svix {
             bearer_access_token: Some(token),
             client: self.cfg.client.clone(),
             timeout: self.cfg.timeout,
+            num_retries: self.cfg.num_retries,
         });
 
         Self {

@@ -45,6 +45,7 @@ js_option = "0.1.1"
 
 [dev-dependencies]
 tokio = { version = "1.41.0", features = ["macros"] }
+wiremock = "0.6.2"
 
 [package.metadata.cargo-public-api-crates]
 allowed = [

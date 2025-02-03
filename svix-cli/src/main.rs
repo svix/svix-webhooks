@@ -4,6 +4,7 @@ use clap_complete::Shell;
 use cmds::api::application::ApplicationArgs;
 use colored_json::{ColorMode, Output};
 use concolor_clap::{Color, ColorChoice};
+use svix::api::SvixOptions;
 
 use crate::{
     cmds::{
@@ -148,5 +149,6 @@ fn get_client_options(cfg: &Config) -> Result<svix::api::SvixOptions> {
         debug: false,
         server_url: cfg.server_url().map(Into::into),
         timeout: None,
+        ..SvixOptions::default()
     })
 }
