@@ -47,10 +47,9 @@ class HTTPValidationError(Exception):
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-
         d = src_dict.copy()
         detail = []
-        _detail = d.pop("detail","")
+        _detail = d.pop("detail", "")
         for detail_item_data in _detail:
             detail_item = ValidationError.from_dict(detail_item_data)
 
