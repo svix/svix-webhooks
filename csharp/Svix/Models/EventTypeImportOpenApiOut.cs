@@ -3,9 +3,9 @@ using System.Text.Json.Serialization;
 
 namespace Svix.Models
 {
-    public class EventTypeImportOpenApiOut : BaseModel
+    public class EventTypeImportOpenApiOut(EventTypeImportOpenApiOutData data) : BaseModel
     {
         [JsonPropertyName("data")]
-        public required EventTypeImportOpenApiOutData Data { get; set; }
+        public EventTypeImportOpenApiOutData Data { get; set; } = data;
     }
 }

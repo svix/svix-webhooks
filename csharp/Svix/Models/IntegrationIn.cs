@@ -3,9 +3,9 @@ using System.Text.Json.Serialization;
 
 namespace Svix.Models
 {
-    public class IntegrationIn : BaseModel
+    public class IntegrationIn(string name) : BaseModel
     {
         [JsonPropertyName("name")]
-        public required string Name { get; set; }
+        public string Name { get; set; } = name;
     }
 }

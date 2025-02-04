@@ -3,39 +3,51 @@ using System.Text.Json.Serialization;
 
 namespace Svix.Models
 {
-    public class MessageAttemptOut : BaseModel
+    public class MessageAttemptOut(
+        string url,
+        MessageAttemptTriggerType triggerType,
+        DateTime timestamp,
+        MessageStatus status,
+        short responseStatusCode,
+        long responseDurationMs,
+        string response,
+        string msgId,
+        string id,
+        string endpointId,
+        MessageOut? msg = null
+    ) : BaseModel
     {
         [JsonPropertyName("endpointId")]
-        public required string EndpointId { get; set; }
+        public string EndpointId { get; set; } = endpointId;
 
         [JsonPropertyName("id")]
-        public required string Id { get; set; }
+        public string Id { get; set; } = id;
 
         [JsonPropertyName("msg")]
-        public MessageOut? Msg { get; set; }
+        public MessageOut? Msg { get; set; } = msg;
 
         [JsonPropertyName("msgId")]
-        public required string MsgId { get; set; }
+        public string MsgId { get; set; } = msgId;
 
         [JsonPropertyName("response")]
-        public required string Response { get; set; }
+        public string Response { get; set; } = response;
 
         [JsonPropertyName("responseDurationMs")]
-        public required long ResponseDurationMs { get; set; }
+        public long ResponseDurationMs { get; set; } = responseDurationMs;
 
         [JsonPropertyName("responseStatusCode")]
-        public required short ResponseStatusCode { get; set; }
+        public short ResponseStatusCode { get; set; } = responseStatusCode;
 
         [JsonPropertyName("status")]
-        public required MessageStatus Status { get; set; }
+        public MessageStatus Status { get; set; } = status;
 
         [JsonPropertyName("timestamp")]
-        public required DateTime Timestamp { get; set; }
+        public DateTime Timestamp { get; set; } = timestamp;
 
         [JsonPropertyName("triggerType")]
-        public required MessageAttemptTriggerType TriggerType { get; set; }
+        public MessageAttemptTriggerType TriggerType { get; set; } = triggerType;
 
         [JsonPropertyName("url")]
-        public required string Url { get; set; }
+        public string Url { get; set; } = url;
     }
 }

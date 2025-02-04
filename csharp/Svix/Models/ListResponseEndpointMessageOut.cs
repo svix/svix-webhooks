@@ -3,18 +3,23 @@ using System.Text.Json.Serialization;
 
 namespace Svix.Models
 {
-    public class ListResponseEndpointMessageOut : BaseModel
+    public class ListResponseEndpointMessageOut(
+        string? iterator,
+        bool done,
+        List<EndpointMessageOut> data,
+        string? prevIterator = null
+    ) : BaseModel
     {
         [JsonPropertyName("data")]
-        public required List<EndpointMessageOut> Data { get; set; }
+        public List<EndpointMessageOut> Data { get; set; } = data;
 
         [JsonPropertyName("done")]
-        public required bool Done { get; set; }
+        public bool Done { get; set; } = done;
 
         [JsonPropertyName("iterator")]
-        public required string? Iterator { get; set; }
+        public string? Iterator { get; set; } = iterator;
 
         [JsonPropertyName("prevIterator")]
-        public string? PrevIterator { get; set; }
+        public string? PrevIterator { get; set; } = prevIterator;
     }
 }

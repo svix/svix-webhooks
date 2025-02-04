@@ -3,9 +3,9 @@ using System.Text.Json.Serialization;
 
 namespace Svix.Models
 {
-    public class ApplicationTokenExpireIn : BaseModel
+    public class ApplicationTokenExpireIn(long? expiry = null) : BaseModel
     {
         [JsonPropertyName("expiry")]
-        public long? Expiry { get; set; }
+        public long? Expiry { get; set; } = expiry;
     }
 }

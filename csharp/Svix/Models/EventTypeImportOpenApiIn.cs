@@ -9,18 +9,23 @@ namespace Svix.Models
     /// The OpenAPI spec can be specified as either `spec` given the spec as a JSON object, or as `specRaw` (a `string`) which will be parsed as YAML or JSON by the server. Sending neither or both is invalid, resulting in a `400` **Bad Request**.
     /// <summary>
 
-    public class EventTypeImportOpenApiIn : BaseModel
+    public class EventTypeImportOpenApiIn(
+        string? specRaw = null,
+        Object? spec = null,
+        bool? replaceAll = null,
+        bool? dryRun = null
+    ) : BaseModel
     {
         [JsonPropertyName("dryRun")]
-        public bool? DryRun { get; set; }
+        public bool? DryRun { get; set; } = dryRun;
 
         [JsonPropertyName("replaceAll")]
-        public bool? ReplaceAll { get; set; }
+        public bool? ReplaceAll { get; set; } = replaceAll;
 
         [JsonPropertyName("spec")]
-        public Object? Spec { get; set; }
+        public Object? Spec { get; set; } = spec;
 
         [JsonPropertyName("specRaw")]
-        public string? SpecRaw { get; set; }
+        public string? SpecRaw { get; set; } = specRaw;
     }
 }

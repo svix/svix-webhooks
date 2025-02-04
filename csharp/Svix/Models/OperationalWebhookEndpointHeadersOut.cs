@@ -3,12 +3,15 @@ using System.Text.Json.Serialization;
 
 namespace Svix.Models
 {
-    public class OperationalWebhookEndpointHeadersOut : BaseModel
+    public class OperationalWebhookEndpointHeadersOut(
+        List<string> sensitive,
+        Dictionary<string, string> headers
+    ) : BaseModel
     {
         [JsonPropertyName("headers")]
-        public required Dictionary<string, string> Headers { get; set; }
+        public Dictionary<string, string> Headers { get; set; } = headers;
 
         [JsonPropertyName("sensitive")]
-        public required List<string> Sensitive { get; set; }
+        public List<string> Sensitive { get; set; } = sensitive;
     }
 }

@@ -3,12 +3,12 @@ using System.Text.Json.Serialization;
 
 namespace Svix.Models
 {
-    public class AppPortalAccessOut : BaseModel
+    public class AppPortalAccessOut(string url, string token) : BaseModel
     {
         [JsonPropertyName("token")]
-        public required string Token { get; set; }
+        public string Token { get; set; } = token;
 
         [JsonPropertyName("url")]
-        public required string Url { get; set; }
+        public string Url { get; set; } = url;
     }
 }

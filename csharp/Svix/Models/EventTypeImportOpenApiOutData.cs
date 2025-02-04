@@ -3,12 +3,15 @@ using System.Text.Json.Serialization;
 
 namespace Svix.Models
 {
-    public class EventTypeImportOpenApiOutData : BaseModel
+    public class EventTypeImportOpenApiOutData(
+        List<string> modified,
+        List<EventTypeFromOpenApi>? toModify = null
+    ) : BaseModel
     {
         [JsonPropertyName("modified")]
-        public required List<string> Modified { get; set; }
+        public List<string> Modified { get; set; } = modified;
 
         [JsonPropertyName("to_modify")]
-        public List<EventTypeFromOpenApi>? ToModify { get; set; }
+        public List<EventTypeFromOpenApi>? ToModify { get; set; } = toModify;
     }
 }

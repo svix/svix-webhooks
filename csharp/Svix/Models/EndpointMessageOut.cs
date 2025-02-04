@@ -7,33 +7,43 @@ namespace Svix.Models
     /// A model containing information on a given message plus additional fields on the last attempt for that message.
     /// <summary>
 
-    public class EndpointMessageOut : BaseModel
+    public class EndpointMessageOut(
+        DateTime timestamp,
+        MessageStatus status,
+        Object payload,
+        string id,
+        string eventType,
+        List<string>? tags = null,
+        DateTime? nextAttempt = null,
+        string? eventId = null,
+        List<string>? channels = null
+    ) : BaseModel
     {
         [JsonPropertyName("channels")]
-        public List<string>? Channels { get; set; }
+        public List<string>? Channels { get; set; } = channels;
 
         [JsonPropertyName("eventId")]
-        public string? EventId { get; set; }
+        public string? EventId { get; set; } = eventId;
 
         [JsonPropertyName("eventType")]
-        public required string EventType { get; set; }
+        public string EventType { get; set; } = eventType;
 
         [JsonPropertyName("id")]
-        public required string Id { get; set; }
+        public string Id { get; set; } = id;
 
         [JsonPropertyName("nextAttempt")]
-        public DateTime? NextAttempt { get; set; }
+        public DateTime? NextAttempt { get; set; } = nextAttempt;
 
         [JsonPropertyName("payload")]
-        public required Object Payload { get; set; }
+        public Object Payload { get; set; } = payload;
 
         [JsonPropertyName("status")]
-        public required MessageStatus Status { get; set; }
+        public MessageStatus Status { get; set; } = status;
 
         [JsonPropertyName("tags")]
-        public List<string>? Tags { get; set; }
+        public List<string>? Tags { get; set; } = tags;
 
         [JsonPropertyName("timestamp")]
-        public required DateTime Timestamp { get; set; }
+        public DateTime Timestamp { get; set; } = timestamp;
     }
 }

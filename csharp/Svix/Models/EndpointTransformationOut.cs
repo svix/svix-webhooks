@@ -3,12 +3,12 @@ using System.Text.Json.Serialization;
 
 namespace Svix.Models
 {
-    public class EndpointTransformationOut : BaseModel
+    public class EndpointTransformationOut(bool? enabled = null, string? code = null) : BaseModel
     {
         [JsonPropertyName("code")]
-        public string? Code { get; set; }
+        public string? Code { get; set; } = code;
 
         [JsonPropertyName("enabled")]
-        public bool? Enabled { get; set; }
+        public bool? Enabled { get; set; } = enabled;
     }
 }

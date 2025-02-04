@@ -3,9 +3,9 @@ using System.Text.Json.Serialization;
 
 namespace Svix.Models
 {
-    public class OperationalWebhookEndpointSecretOut : BaseModel
+    public class OperationalWebhookEndpointSecretOut(string key) : BaseModel
     {
         [JsonPropertyName("key")]
-        public required string Key { get; set; }
+        public string Key { get; set; } = key;
     }
 }

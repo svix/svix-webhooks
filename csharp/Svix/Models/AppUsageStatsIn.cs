@@ -3,15 +3,16 @@ using System.Text.Json.Serialization;
 
 namespace Svix.Models
 {
-    public class AppUsageStatsIn : BaseModel
+    public class AppUsageStatsIn(DateTime until, DateTime since, List<string>? appIds = null)
+        : BaseModel
     {
         [JsonPropertyName("appIds")]
-        public List<string>? AppIds { get; set; }
+        public List<string>? AppIds { get; set; } = appIds;
 
         [JsonPropertyName("since")]
-        public required DateTime Since { get; set; }
+        public DateTime Since { get; set; } = since;
 
         [JsonPropertyName("until")]
-        public required DateTime Until { get; set; }
+        public DateTime Until { get; set; } = until;
     }
 }

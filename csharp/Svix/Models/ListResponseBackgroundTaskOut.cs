@@ -3,18 +3,23 @@ using System.Text.Json.Serialization;
 
 namespace Svix.Models
 {
-    public class ListResponseBackgroundTaskOut : BaseModel
+    public class ListResponseBackgroundTaskOut(
+        string? iterator,
+        bool done,
+        List<BackgroundTaskOut> data,
+        string? prevIterator = null
+    ) : BaseModel
     {
         [JsonPropertyName("data")]
-        public required List<BackgroundTaskOut> Data { get; set; }
+        public List<BackgroundTaskOut> Data { get; set; } = data;
 
         [JsonPropertyName("done")]
-        public required bool Done { get; set; }
+        public bool Done { get; set; } = done;
 
         [JsonPropertyName("iterator")]
-        public required string? Iterator { get; set; }
+        public string? Iterator { get; set; } = iterator;
 
         [JsonPropertyName("prevIterator")]
-        public string? PrevIterator { get; set; }
+        public string? PrevIterator { get; set; } = prevIterator;
     }
 }
