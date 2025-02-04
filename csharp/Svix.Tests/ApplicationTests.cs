@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Net;
 using Moq;
-using Svix.Models;
 using Svix;
+using Svix.Models;
 using Xunit;
 
 namespace Svix.Tests
@@ -24,7 +24,8 @@ namespace Svix.Tests
             _svixClient = new SvixClient(
                 MOCK_TOKEN,
                 _mockOptions.Object,
-                application: _mockApplication.Object);
+                application: _mockApplication.Object
+            );
         }
 
         [Fact]
@@ -38,7 +39,9 @@ namespace Svix.Tests
         public void ApplicationCreateAsync_WithoutApplication_ThrowsException()
         {
             // Assert
-            Assert.ThrowsAsync<ArgumentNullException>(() => _svixClient.Application.CreateAsync(null, null, default));
+            Assert.ThrowsAsync<ArgumentNullException>(
+                () => _svixClient.Application.CreateAsync(null, null, default)
+            );
         }
     }
 }

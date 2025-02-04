@@ -1,6 +1,6 @@
-﻿using Newtonsoft.Json;
-using System.Net;
+﻿using System.Net;
 using System.Text;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
 namespace Svix
@@ -89,7 +89,10 @@ namespace Svix
             if (content != null)
             {
                 var encoded_content = new StringContent(
-                    JsonConvert.SerializeObject(content, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }),
+                    JsonConvert.SerializeObject(
+                        content,
+                        new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }
+                    ),
                     Encoding.UTF8,
                     "application/json"
                 );
@@ -98,18 +101,29 @@ namespace Svix
             var response = await _httpClient.SendAsync(request, cancellationToken);
             if (response.IsSuccessStatusCode)
             {
-                if ((int)response.StatusCode == 204){
-                    return new ApiResponse<T> { Data = (T)(object)true, StatusCode = response.StatusCode };
+                if ((int)response.StatusCode == 204)
+                {
+                    return new ApiResponse<T>
+                    {
+                        Data = (T)(object)true,
+                        StatusCode = response.StatusCode,
+                    };
                 }
 
                 var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
                 var data =
                     JsonConvert.DeserializeObject<T>(responseContent)
-                    ?? throw new ApiException((int)response.StatusCode, $"Failed to deserialize response body");
+                    ?? throw new ApiException(
+                        (int)response.StatusCode,
+                        $"Failed to deserialize response body"
+                    );
                 return new ApiResponse<T> { Data = data, StatusCode = response.StatusCode };
             }
 
-            throw new ApiException((int)response.StatusCode, $"Request failed with status code {response.StatusCode}");
+            throw new ApiException(
+                (int)response.StatusCode,
+                $"Request failed with status code {response.StatusCode}"
+            );
         }
     }
 
@@ -121,22 +135,27 @@ namespace Svix
 
     public class ApiException : Exception
     {
-        public ApiException(int errorCode, string message) : base(message)
+        public ApiException(int errorCode, string message)
+            : base(message)
         {
             ErrorCode = errorCode;
         }
-        public ApiException(int errorCode, string message, object errorContent = null, Dictionary<string, string> headers = null) : base(message)
+
+        public ApiException(
+            int errorCode,
+            string message,
+            object errorContent = null,
+            Dictionary<string, string> headers = null
+        )
+            : base(message)
         {
             ErrorCode = errorCode;
             ErrorContent = errorContent;
             Headers = headers;
         }
 
-
         public int ErrorCode { get; set; }
         public object? ErrorContent { get; private set; }
         public Dictionary<string, string>? Headers { get; private set; }
-
-
     }
 }

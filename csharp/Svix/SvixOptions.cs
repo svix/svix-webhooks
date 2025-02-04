@@ -8,9 +8,7 @@ namespace Svix
         {
             BaseUrl = baseUrl;
         }
-        public SvixOptions()
-        {
-            
-        }
+
+        public SvixOptions() { }
     }
 }
