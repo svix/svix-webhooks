@@ -32,6 +32,8 @@ export { OperationalWebhookEndpointListOptions } from "./api/operational_webhook
 export interface SvixOptions {
   debug?: boolean;
   serverUrl?: string;
+  /** Time in milliseconds to wait for requests to get a response. */
+  requestTimeout?: number;
 }
 
 const REGIONS = [
@@ -59,7 +61,7 @@ export class Svix {
     const regionalUrl = REGIONS.find((x) => x.region === token.split(".")[1])?.url;
     const baseUrl: string = options.serverUrl ?? regionalUrl ?? "https://api.svix.com";
 
-    this.requestCtx = { baseUrl, token };
+    this.requestCtx = { baseUrl, token, timeout: options.requestTimeout };
 
     this._configuration = openapi.createConfiguration({
       baseServer: new openapi.ServerConfiguration<any>(baseUrl, {}),

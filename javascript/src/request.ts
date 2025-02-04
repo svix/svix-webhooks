@@ -23,6 +23,8 @@ export interface SvixRequestContext {
   baseUrl: string;
   /** The 'bearer' scheme access token */
   token: string;
+  /** Time in milliseconds to wait for requests to get a response. */
+  timeout?: number;
 }
 
 type QueryParameter = string | boolean | number | Date | string[] | null | undefined;
@@ -122,6 +124,7 @@ export class SvixRequest {
         ...this.headerParams,
       },
       credentials: isCredentialsSupported ? "same-origin" : undefined,
+      signal: ctx.timeout !== undefined ? AbortSignal.timeout(ctx.timeout) : undefined,
     });
 
     const responseBody = await response.text();
