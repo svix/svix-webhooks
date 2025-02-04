@@ -26,7 +26,7 @@ type TemplateUpdate struct {
 	FilterTypes []string `json:"filterTypes,omitempty"`
 	Instructions *string `json:"instructions,omitempty"`
 	InstructionsLink *string `json:"instructionsLink,omitempty"`
-	Kind *TransformationTemplateKind `json:"kind,omitempty"`
+	Kind *ConnectorKind `json:"kind,omitempty"`
 	Logo string `json:"logo"`
 	Name *string `json:"name,omitempty"`
 	Transformation string `json:"transformation"`
@@ -226,9 +226,9 @@ func (o *TemplateUpdate) SetInstructionsLink(v string) {
 }
 
 // GetKind returns the Kind field value if set, zero value otherwise.
-func (o *TemplateUpdate) GetKind() TransformationTemplateKind {
+func (o *TemplateUpdate) GetKind() ConnectorKind {
 	if o == nil || IsNil(o.Kind) {
-		var ret TransformationTemplateKind
+		var ret ConnectorKind
 		return ret
 	}
 	return *o.Kind
@@ -236,7 +236,7 @@ func (o *TemplateUpdate) GetKind() TransformationTemplateKind {
 
 // GetKindOk returns a tuple with the Kind field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *TemplateUpdate) GetKindOk() (*TransformationTemplateKind, bool) {
+func (o *TemplateUpdate) GetKindOk() (*ConnectorKind, bool) {
 	if o == nil || IsNil(o.Kind) {
 		return nil, false
 	}
@@ -252,8 +252,8 @@ func (o *TemplateUpdate) HasKind() bool {
 	return false
 }
 
-// SetKind gets a reference to the given TransformationTemplateKind and assigns it to the Kind field.
-func (o *TemplateUpdate) SetKind(v TransformationTemplateKind) {
+// SetKind gets a reference to the given ConnectorKind and assigns it to the Kind field.
+func (o *TemplateUpdate) SetKind(v ConnectorKind) {
 	o.Kind = &v
 }
 

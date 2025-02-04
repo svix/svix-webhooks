@@ -223,12 +223,12 @@ func (a *TransformationTemplateAPIService) V1EndpointUpdateHubspotOauthConfigExe
 type ApiV1TransformationTemplateCreateRequest struct {
 	ctx context.Context
 	ApiService *TransformationTemplateAPIService
-	templateIn *TemplateIn
+	connectorIn *ConnectorIn
 	idempotencyKey *string
 }
 
-func (r ApiV1TransformationTemplateCreateRequest) TemplateIn(templateIn TemplateIn) ApiV1TransformationTemplateCreateRequest {
-	r.templateIn = &templateIn
+func (r ApiV1TransformationTemplateCreateRequest) ConnectorIn(connectorIn ConnectorIn) ApiV1TransformationTemplateCreateRequest {
+	r.connectorIn = &connectorIn
 	return r
 }
 
@@ -277,8 +277,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateCreateExecute
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.templateIn == nil {
-		return localVarReturnValue, nil, reportError("templateIn is required and must be specified")
+	if r.connectorIn == nil {
+		return localVarReturnValue, nil, reportError("connectorIn is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -302,7 +302,7 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateCreateExecute
 		parameterAddToHeaderOrQuery(localVarHeaderParams, "idempotency-key", r.idempotencyKey, "simple", "")
 	}
 	// body params
-	localVarPostBody = r.templateIn
+	localVarPostBody = r.connectorIn
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return localVarReturnValue, nil, err

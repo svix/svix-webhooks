@@ -19,9 +19,9 @@ var _ MappedNullable = &EnvironmentIn{}
 
 // EnvironmentIn struct for EnvironmentIn
 type EnvironmentIn struct {
+	Connectors []ConnectorIn `json:"connectors,omitempty"`
 	EventTypes []EventTypeIn `json:"eventTypes,omitempty"`
 	Settings map[string]interface{} `json:"settings,omitempty"`
-	TransformationTemplates []TemplateIn `json:"transformationTemplates,omitempty"`
 }
 
 // NewEnvironmentIn instantiates a new EnvironmentIn object
@@ -39,6 +39,38 @@ func NewEnvironmentIn() *EnvironmentIn {
 func NewEnvironmentInWithDefaults() *EnvironmentIn {
 	this := EnvironmentIn{}
 	return &this
+}
+
+// GetConnectors returns the Connectors field value if set, zero value otherwise.
+func (o *EnvironmentIn) GetConnectors() []ConnectorIn {
+	if o == nil || IsNil(o.Connectors) {
+		var ret []ConnectorIn
+		return ret
+	}
+	return o.Connectors
+}
+
+// GetConnectorsOk returns a tuple with the Connectors field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *EnvironmentIn) GetConnectorsOk() ([]ConnectorIn, bool) {
+	if o == nil || IsNil(o.Connectors) {
+		return nil, false
+	}
+	return o.Connectors, true
+}
+
+// HasConnectors returns a boolean if a field has been set.
+func (o *EnvironmentIn) HasConnectors() bool {
+	if o != nil && !IsNil(o.Connectors) {
+		return true
+	}
+
+	return false
+}
+
+// SetConnectors gets a reference to the given []ConnectorIn and assigns it to the Connectors field.
+func (o *EnvironmentIn) SetConnectors(v []ConnectorIn) {
+	o.Connectors = v
 }
 
 // GetEventTypes returns the EventTypes field value if set, zero value otherwise.
@@ -105,38 +137,6 @@ func (o *EnvironmentIn) SetSettings(v map[string]interface{}) {
 	o.Settings = v
 }
 
-// GetTransformationTemplates returns the TransformationTemplates field value if set, zero value otherwise.
-func (o *EnvironmentIn) GetTransformationTemplates() []TemplateIn {
-	if o == nil || IsNil(o.TransformationTemplates) {
-		var ret []TemplateIn
-		return ret
-	}
-	return o.TransformationTemplates
-}
-
-// GetTransformationTemplatesOk returns a tuple with the TransformationTemplates field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *EnvironmentIn) GetTransformationTemplatesOk() ([]TemplateIn, bool) {
-	if o == nil || IsNil(o.TransformationTemplates) {
-		return nil, false
-	}
-	return o.TransformationTemplates, true
-}
-
-// HasTransformationTemplates returns a boolean if a field has been set.
-func (o *EnvironmentIn) HasTransformationTemplates() bool {
-	if o != nil && !IsNil(o.TransformationTemplates) {
-		return true
-	}
-
-	return false
-}
-
-// SetTransformationTemplates gets a reference to the given []TemplateIn and assigns it to the TransformationTemplates field.
-func (o *EnvironmentIn) SetTransformationTemplates(v []TemplateIn) {
-	o.TransformationTemplates = v
-}
-
 func (o EnvironmentIn) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -147,14 +147,14 @@ func (o EnvironmentIn) MarshalJSON() ([]byte, error) {
 
 func (o EnvironmentIn) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
+	if !IsNil(o.Connectors) {
+		toSerialize["connectors"] = o.Connectors
+	}
 	if !IsNil(o.EventTypes) {
 		toSerialize["eventTypes"] = o.EventTypes
 	}
 	if !IsNil(o.Settings) {
 		toSerialize["settings"] = o.Settings
-	}
-	if !IsNil(o.TransformationTemplates) {
-		toSerialize["transformationTemplates"] = o.TransformationTemplates
 	}
 	return toSerialize, nil
 }

@@ -16,30 +16,30 @@ import (
 	"fmt"
 )
 
-// checks if the TemplateIn type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &TemplateIn{}
+// checks if the ConnectorIn type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ConnectorIn{}
 
-// TemplateIn struct for TemplateIn
-type TemplateIn struct {
+// ConnectorIn struct for ConnectorIn
+type ConnectorIn struct {
 	Description *string `json:"description,omitempty"`
 	FeatureFlag *string `json:"featureFlag,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
 	FilterTypes []string `json:"filterTypes,omitempty"`
 	Instructions *string `json:"instructions,omitempty"`
 	InstructionsLink *string `json:"instructionsLink,omitempty"`
-	Kind *TransformationTemplateKind `json:"kind,omitempty"`
+	Kind *ConnectorKind `json:"kind,omitempty"`
 	Logo string `json:"logo"`
 	Name string `json:"name"`
 	Transformation string `json:"transformation"`
 }
 
-type _TemplateIn TemplateIn
+type _ConnectorIn ConnectorIn
 
-// NewTemplateIn instantiates a new TemplateIn object
+// NewConnectorIn instantiates a new ConnectorIn object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewTemplateIn(logo string, name string, transformation string) *TemplateIn {
-	this := TemplateIn{}
+func NewConnectorIn(logo string, name string, transformation string) *ConnectorIn {
+	this := ConnectorIn{}
 	var description string = ""
 	this.Description = &description
 	var instructions string = ""
@@ -50,11 +50,11 @@ func NewTemplateIn(logo string, name string, transformation string) *TemplateIn 
 	return &this
 }
 
-// NewTemplateInWithDefaults instantiates a new TemplateIn object
+// NewConnectorInWithDefaults instantiates a new ConnectorIn object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewTemplateInWithDefaults() *TemplateIn {
-	this := TemplateIn{}
+func NewConnectorInWithDefaults() *ConnectorIn {
+	this := ConnectorIn{}
 	var description string = ""
 	this.Description = &description
 	var instructions string = ""
@@ -63,7 +63,7 @@ func NewTemplateInWithDefaults() *TemplateIn {
 }
 
 // GetDescription returns the Description field value if set, zero value otherwise.
-func (o *TemplateIn) GetDescription() string {
+func (o *ConnectorIn) GetDescription() string {
 	if o == nil || IsNil(o.Description) {
 		var ret string
 		return ret
@@ -73,7 +73,7 @@ func (o *TemplateIn) GetDescription() string {
 
 // GetDescriptionOk returns a tuple with the Description field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *TemplateIn) GetDescriptionOk() (*string, bool) {
+func (o *ConnectorIn) GetDescriptionOk() (*string, bool) {
 	if o == nil || IsNil(o.Description) {
 		return nil, false
 	}
@@ -81,7 +81,7 @@ func (o *TemplateIn) GetDescriptionOk() (*string, bool) {
 }
 
 // HasDescription returns a boolean if a field has been set.
-func (o *TemplateIn) HasDescription() bool {
+func (o *ConnectorIn) HasDescription() bool {
 	if o != nil && !IsNil(o.Description) {
 		return true
 	}
@@ -90,12 +90,12 @@ func (o *TemplateIn) HasDescription() bool {
 }
 
 // SetDescription gets a reference to the given string and assigns it to the Description field.
-func (o *TemplateIn) SetDescription(v string) {
+func (o *ConnectorIn) SetDescription(v string) {
 	o.Description = &v
 }
 
 // GetFeatureFlag returns the FeatureFlag field value if set, zero value otherwise.
-func (o *TemplateIn) GetFeatureFlag() string {
+func (o *ConnectorIn) GetFeatureFlag() string {
 	if o == nil || IsNil(o.FeatureFlag) {
 		var ret string
 		return ret
@@ -105,7 +105,7 @@ func (o *TemplateIn) GetFeatureFlag() string {
 
 // GetFeatureFlagOk returns a tuple with the FeatureFlag field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *TemplateIn) GetFeatureFlagOk() (*string, bool) {
+func (o *ConnectorIn) GetFeatureFlagOk() (*string, bool) {
 	if o == nil || IsNil(o.FeatureFlag) {
 		return nil, false
 	}
@@ -113,7 +113,7 @@ func (o *TemplateIn) GetFeatureFlagOk() (*string, bool) {
 }
 
 // HasFeatureFlag returns a boolean if a field has been set.
-func (o *TemplateIn) HasFeatureFlag() bool {
+func (o *ConnectorIn) HasFeatureFlag() bool {
 	if o != nil && !IsNil(o.FeatureFlag) {
 		return true
 	}
@@ -122,12 +122,12 @@ func (o *TemplateIn) HasFeatureFlag() bool {
 }
 
 // SetFeatureFlag gets a reference to the given string and assigns it to the FeatureFlag field.
-func (o *TemplateIn) SetFeatureFlag(v string) {
+func (o *ConnectorIn) SetFeatureFlag(v string) {
 	o.FeatureFlag = &v
 }
 
 // GetFilterTypes returns the FilterTypes field value if set, zero value otherwise.
-func (o *TemplateIn) GetFilterTypes() []string {
+func (o *ConnectorIn) GetFilterTypes() []string {
 	if o == nil || IsNil(o.FilterTypes) {
 		var ret []string
 		return ret
@@ -137,7 +137,7 @@ func (o *TemplateIn) GetFilterTypes() []string {
 
 // GetFilterTypesOk returns a tuple with the FilterTypes field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *TemplateIn) GetFilterTypesOk() ([]string, bool) {
+func (o *ConnectorIn) GetFilterTypesOk() ([]string, bool) {
 	if o == nil || IsNil(o.FilterTypes) {
 		return nil, false
 	}
@@ -145,7 +145,7 @@ func (o *TemplateIn) GetFilterTypesOk() ([]string, bool) {
 }
 
 // HasFilterTypes returns a boolean if a field has been set.
-func (o *TemplateIn) HasFilterTypes() bool {
+func (o *ConnectorIn) HasFilterTypes() bool {
 	if o != nil && !IsNil(o.FilterTypes) {
 		return true
 	}
@@ -154,12 +154,12 @@ func (o *TemplateIn) HasFilterTypes() bool {
 }
 
 // SetFilterTypes gets a reference to the given []string and assigns it to the FilterTypes field.
-func (o *TemplateIn) SetFilterTypes(v []string) {
+func (o *ConnectorIn) SetFilterTypes(v []string) {
 	o.FilterTypes = v
 }
 
 // GetInstructions returns the Instructions field value if set, zero value otherwise.
-func (o *TemplateIn) GetInstructions() string {
+func (o *ConnectorIn) GetInstructions() string {
 	if o == nil || IsNil(o.Instructions) {
 		var ret string
 		return ret
@@ -169,7 +169,7 @@ func (o *TemplateIn) GetInstructions() string {
 
 // GetInstructionsOk returns a tuple with the Instructions field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *TemplateIn) GetInstructionsOk() (*string, bool) {
+func (o *ConnectorIn) GetInstructionsOk() (*string, bool) {
 	if o == nil || IsNil(o.Instructions) {
 		return nil, false
 	}
@@ -177,7 +177,7 @@ func (o *TemplateIn) GetInstructionsOk() (*string, bool) {
 }
 
 // HasInstructions returns a boolean if a field has been set.
-func (o *TemplateIn) HasInstructions() bool {
+func (o *ConnectorIn) HasInstructions() bool {
 	if o != nil && !IsNil(o.Instructions) {
 		return true
 	}
@@ -186,12 +186,12 @@ func (o *TemplateIn) HasInstructions() bool {
 }
 
 // SetInstructions gets a reference to the given string and assigns it to the Instructions field.
-func (o *TemplateIn) SetInstructions(v string) {
+func (o *ConnectorIn) SetInstructions(v string) {
 	o.Instructions = &v
 }
 
 // GetInstructionsLink returns the InstructionsLink field value if set, zero value otherwise.
-func (o *TemplateIn) GetInstructionsLink() string {
+func (o *ConnectorIn) GetInstructionsLink() string {
 	if o == nil || IsNil(o.InstructionsLink) {
 		var ret string
 		return ret
@@ -201,7 +201,7 @@ func (o *TemplateIn) GetInstructionsLink() string {
 
 // GetInstructionsLinkOk returns a tuple with the InstructionsLink field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *TemplateIn) GetInstructionsLinkOk() (*string, bool) {
+func (o *ConnectorIn) GetInstructionsLinkOk() (*string, bool) {
 	if o == nil || IsNil(o.InstructionsLink) {
 		return nil, false
 	}
@@ -209,7 +209,7 @@ func (o *TemplateIn) GetInstructionsLinkOk() (*string, bool) {
 }
 
 // HasInstructionsLink returns a boolean if a field has been set.
-func (o *TemplateIn) HasInstructionsLink() bool {
+func (o *ConnectorIn) HasInstructionsLink() bool {
 	if o != nil && !IsNil(o.InstructionsLink) {
 		return true
 	}
@@ -218,14 +218,14 @@ func (o *TemplateIn) HasInstructionsLink() bool {
 }
 
 // SetInstructionsLink gets a reference to the given string and assigns it to the InstructionsLink field.
-func (o *TemplateIn) SetInstructionsLink(v string) {
+func (o *ConnectorIn) SetInstructionsLink(v string) {
 	o.InstructionsLink = &v
 }
 
 // GetKind returns the Kind field value if set, zero value otherwise.
-func (o *TemplateIn) GetKind() TransformationTemplateKind {
+func (o *ConnectorIn) GetKind() ConnectorKind {
 	if o == nil || IsNil(o.Kind) {
-		var ret TransformationTemplateKind
+		var ret ConnectorKind
 		return ret
 	}
 	return *o.Kind
@@ -233,7 +233,7 @@ func (o *TemplateIn) GetKind() TransformationTemplateKind {
 
 // GetKindOk returns a tuple with the Kind field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *TemplateIn) GetKindOk() (*TransformationTemplateKind, bool) {
+func (o *ConnectorIn) GetKindOk() (*ConnectorKind, bool) {
 	if o == nil || IsNil(o.Kind) {
 		return nil, false
 	}
@@ -241,7 +241,7 @@ func (o *TemplateIn) GetKindOk() (*TransformationTemplateKind, bool) {
 }
 
 // HasKind returns a boolean if a field has been set.
-func (o *TemplateIn) HasKind() bool {
+func (o *ConnectorIn) HasKind() bool {
 	if o != nil && !IsNil(o.Kind) {
 		return true
 	}
@@ -249,13 +249,13 @@ func (o *TemplateIn) HasKind() bool {
 	return false
 }
 
-// SetKind gets a reference to the given TransformationTemplateKind and assigns it to the Kind field.
-func (o *TemplateIn) SetKind(v TransformationTemplateKind) {
+// SetKind gets a reference to the given ConnectorKind and assigns it to the Kind field.
+func (o *ConnectorIn) SetKind(v ConnectorKind) {
 	o.Kind = &v
 }
 
 // GetLogo returns the Logo field value
-func (o *TemplateIn) GetLogo() string {
+func (o *ConnectorIn) GetLogo() string {
 	if o == nil {
 		var ret string
 		return ret
@@ -266,7 +266,7 @@ func (o *TemplateIn) GetLogo() string {
 
 // GetLogoOk returns a tuple with the Logo field value
 // and a boolean to check if the value has been set.
-func (o *TemplateIn) GetLogoOk() (*string, bool) {
+func (o *ConnectorIn) GetLogoOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -274,12 +274,12 @@ func (o *TemplateIn) GetLogoOk() (*string, bool) {
 }
 
 // SetLogo sets field value
-func (o *TemplateIn) SetLogo(v string) {
+func (o *ConnectorIn) SetLogo(v string) {
 	o.Logo = v
 }
 
 // GetName returns the Name field value
-func (o *TemplateIn) GetName() string {
+func (o *ConnectorIn) GetName() string {
 	if o == nil {
 		var ret string
 		return ret
@@ -290,7 +290,7 @@ func (o *TemplateIn) GetName() string {
 
 // GetNameOk returns a tuple with the Name field value
 // and a boolean to check if the value has been set.
-func (o *TemplateIn) GetNameOk() (*string, bool) {
+func (o *ConnectorIn) GetNameOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -298,12 +298,12 @@ func (o *TemplateIn) GetNameOk() (*string, bool) {
 }
 
 // SetName sets field value
-func (o *TemplateIn) SetName(v string) {
+func (o *ConnectorIn) SetName(v string) {
 	o.Name = v
 }
 
 // GetTransformation returns the Transformation field value
-func (o *TemplateIn) GetTransformation() string {
+func (o *ConnectorIn) GetTransformation() string {
 	if o == nil {
 		var ret string
 		return ret
@@ -314,7 +314,7 @@ func (o *TemplateIn) GetTransformation() string {
 
 // GetTransformationOk returns a tuple with the Transformation field value
 // and a boolean to check if the value has been set.
-func (o *TemplateIn) GetTransformationOk() (*string, bool) {
+func (o *ConnectorIn) GetTransformationOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -322,11 +322,11 @@ func (o *TemplateIn) GetTransformationOk() (*string, bool) {
 }
 
 // SetTransformation sets field value
-func (o *TemplateIn) SetTransformation(v string) {
+func (o *ConnectorIn) SetTransformation(v string) {
 	o.Transformation = v
 }
 
-func (o TemplateIn) MarshalJSON() ([]byte, error) {
+func (o ConnectorIn) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -334,7 +334,7 @@ func (o TemplateIn) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o TemplateIn) ToMap() (map[string]interface{}, error) {
+func (o ConnectorIn) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Description) {
 		toSerialize["description"] = o.Description
@@ -360,7 +360,7 @@ func (o TemplateIn) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-func (o *TemplateIn) UnmarshalJSON(data []byte) (err error) {
+func (o *ConnectorIn) UnmarshalJSON(data []byte) (err error) {
 	// This validates that all required properties are included in the JSON object
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
@@ -384,53 +384,53 @@ func (o *TemplateIn) UnmarshalJSON(data []byte) (err error) {
 		}
 	}
 
-	varTemplateIn := _TemplateIn{}
+	varConnectorIn := _ConnectorIn{}
 
 	decoder := json.NewDecoder(bytes.NewReader(data))
 	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varTemplateIn)
+	err = decoder.Decode(&varConnectorIn)
 
 	if err != nil {
 		return err
 	}
 
-	*o = TemplateIn(varTemplateIn)
+	*o = ConnectorIn(varConnectorIn)
 
 	return err
 }
 
-type NullableTemplateIn struct {
-	value *TemplateIn
+type NullableConnectorIn struct {
+	value *ConnectorIn
 	isSet bool
 }
 
-func (v NullableTemplateIn) Get() *TemplateIn {
+func (v NullableConnectorIn) Get() *ConnectorIn {
 	return v.value
 }
 
-func (v *NullableTemplateIn) Set(val *TemplateIn) {
+func (v *NullableConnectorIn) Set(val *ConnectorIn) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableTemplateIn) IsSet() bool {
+func (v NullableConnectorIn) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableTemplateIn) Unset() {
+func (v *NullableConnectorIn) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableTemplateIn(val *TemplateIn) *NullableTemplateIn {
-	return &NullableTemplateIn{value: val, isSet: true}
+func NewNullableConnectorIn(val *ConnectorIn) *NullableConnectorIn {
+	return &NullableConnectorIn{value: val, isSet: true}
 }
 
-func (v NullableTemplateIn) MarshalJSON() ([]byte, error) {
+func (v NullableConnectorIn) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableTemplateIn) UnmarshalJSON(src []byte) error {
+func (v *NullableConnectorIn) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

@@ -284,7 +284,7 @@ func (r ApiV1EventsPublicRequest) After(after time.Time) ApiV1EventsPublicReques
 	return r
 }
 
-func (r ApiV1EventsPublicRequest) Execute() (*MessageEventsOut, *http.Response, error) {
+func (r ApiV1EventsPublicRequest) Execute() (*PollingEndpointOut, *http.Response, error) {
 	return r.ApiService.V1EventsPublicExecute(r)
 }
 
@@ -308,13 +308,13 @@ func (a *MessageAPIService) V1EventsPublic(ctx context.Context, appId string, si
 }
 
 // Execute executes the request
-//  @return MessageEventsOut
-func (a *MessageAPIService) V1EventsPublicExecute(r ApiV1EventsPublicRequest) (*MessageEventsOut, *http.Response, error) {
+//  @return PollingEndpointOut
+func (a *MessageAPIService) V1EventsPublicExecute(r ApiV1EventsPublicRequest) (*PollingEndpointOut, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *MessageEventsOut
+		localVarReturnValue  *PollingEndpointOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MessageAPIService.V1EventsPublic")

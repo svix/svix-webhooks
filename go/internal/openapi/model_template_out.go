@@ -29,7 +29,7 @@ type TemplateOut struct {
 	Id string `json:"id"`
 	Instructions string `json:"instructions"`
 	InstructionsLink *string `json:"instructionsLink,omitempty"`
-	Kind TransformationTemplateKind `json:"kind"`
+	Kind ConnectorKind `json:"kind"`
 	Logo string `json:"logo"`
 	Name string `json:"name"`
 	OrgId string `json:"orgId"`
@@ -43,7 +43,7 @@ type _TemplateOut TemplateOut
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewTemplateOut(createdAt time.Time, description string, id string, instructions string, kind TransformationTemplateKind, logo string, name string, orgId string, transformation string, updatedAt time.Time) *TemplateOut {
+func NewTemplateOut(createdAt time.Time, description string, id string, instructions string, kind ConnectorKind, logo string, name string, orgId string, transformation string, updatedAt time.Time) *TemplateOut {
 	this := TemplateOut{}
 	this.CreatedAt = createdAt
 	this.Description = description
@@ -259,9 +259,9 @@ func (o *TemplateOut) SetInstructionsLink(v string) {
 }
 
 // GetKind returns the Kind field value
-func (o *TemplateOut) GetKind() TransformationTemplateKind {
+func (o *TemplateOut) GetKind() ConnectorKind {
 	if o == nil {
-		var ret TransformationTemplateKind
+		var ret ConnectorKind
 		return ret
 	}
 
@@ -270,7 +270,7 @@ func (o *TemplateOut) GetKind() TransformationTemplateKind {
 
 // GetKindOk returns a tuple with the Kind field value
 // and a boolean to check if the value has been set.
-func (o *TemplateOut) GetKindOk() (*TransformationTemplateKind, bool) {
+func (o *TemplateOut) GetKindOk() (*ConnectorKind, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -278,7 +278,7 @@ func (o *TemplateOut) GetKindOk() (*TransformationTemplateKind, bool) {
 }
 
 // SetKind sets field value
-func (o *TemplateOut) SetKind(v TransformationTemplateKind) {
+func (o *TemplateOut) SetKind(v ConnectorKind) {
 	o.Kind = v
 }
 
