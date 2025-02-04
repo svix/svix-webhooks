@@ -28,10 +28,6 @@ pub enum MessageAttemptTriggerType {
 
 impl fmt::Display for MessageAttemptTriggerType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let value = match self {
-            Self::Scheduled => "0",
-            Self::Manual => "1",
-        };
-        f.write_str(value)
+        write!(f, "{}", *self as i64)
     }
 }

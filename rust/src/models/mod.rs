@@ -12,6 +12,8 @@ pub mod application_token_expire_in;
 pub mod background_task_out;
 pub mod background_task_status;
 pub mod background_task_type;
+pub mod connector_in;
+pub mod connector_kind;
 pub mod dashboard_access_out;
 pub mod endpoint_headers_in;
 pub mod endpoint_headers_out;
@@ -75,9 +77,7 @@ pub mod recover_out;
 pub mod replay_in;
 pub mod replay_out;
 pub mod status_code_class;
-pub mod template_in;
 pub mod template_out;
-pub mod transformation_template_kind;
 pub mod validation_error;
 
 #[rustfmt::skip]
@@ -94,6 +94,8 @@ pub use self::{
     background_task_out::BackgroundTaskOut,
     background_task_status::BackgroundTaskStatus,
     background_task_type::BackgroundTaskType,
+    connector_in::ConnectorIn,
+    connector_kind::ConnectorKind,
     dashboard_access_out::DashboardAccessOut,
     endpoint_headers_in::EndpointHeadersIn,
     endpoint_headers_out::EndpointHeadersOut,
@@ -157,8 +159,6 @@ pub use self::{
     replay_in::ReplayIn,
     replay_out::ReplayOut,
     status_code_class::StatusCodeClass,
-    template_in::TemplateIn,
     template_out::TemplateOut,
-    transformation_template_kind::TransformationTemplateKind,
     validation_error::ValidationError,
 };

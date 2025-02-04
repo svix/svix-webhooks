@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 #[derive(
     Clone, Copy, Debug, Default, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize,
 )]
-pub enum TransformationTemplateKind {
+pub enum ConnectorKind {
     #[default]
     #[serde(rename = "Custom")]
     Custom,
@@ -34,7 +34,7 @@ pub enum TransformationTemplateKind {
     Zapier,
 }
 
-impl fmt::Display for TransformationTemplateKind {
+impl fmt::Display for ConnectorKind {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let value = match self {
             Self::Custom => "Custom",

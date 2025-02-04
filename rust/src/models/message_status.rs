@@ -32,12 +32,6 @@ pub enum MessageStatus {
 
 impl fmt::Display for MessageStatus {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let value = match self {
-            Self::Success => "0",
-            Self::Pending => "1",
-            Self::Fail => "2",
-            Self::Sending => "3",
-        };
-        f.write_str(value)
+        write!(f, "{}", *self as i64)
     }
 }
