@@ -20,6 +20,11 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
+      - name: Regen openapi libs
+        run: |
+          yarn
+          ./regen_openapi.sh
+
       - name: Install dependencies
         run: |
           cd csharp
@@ -27,4 +32,8 @@ jobs:
 
       - name: Build
         run: dotnet build --configuration Release --no-restore
+        working-directory: ./csharp
+
+      - name: Test
+        run: dotnet test Svix.Tests
         working-directory: ./csharp
