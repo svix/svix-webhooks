@@ -26,22 +26,21 @@ namespace Svix
 
         public ILogger? Logger { get; }
 
-        public string BaseUrl;
-        public string Token;
+        private readonly SvixOptions Options;
         public SvixHttpClient SvixHttpClient;
 
         public SvixClient(
-            string baseUrl,
             string token,
+            SvixOptions options,
+            ILogger<SvixClient>? logger = null,
             SvixHttpClient? svixHttpClient = null,
-            ILogger<SvixClient>? logger = null
+            Application? application = null
         )
         {
+            Options = options;
             Logger = logger;
-            BaseUrl = baseUrl;
-            Token = token;
-            SvixHttpClient = svixHttpClient ?? new SvixHttpClient(baseUrl, token);
-            Application = new Application(this);
+            SvixHttpClient = svixHttpClient ?? new SvixHttpClient(token, options);
+            Application = application ?? new Application(this);
             Authentication = new Authentication(this);
             Endpoint = new Endpoint(this);
             EventType = new EventType(this);
