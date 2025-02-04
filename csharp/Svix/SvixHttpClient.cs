@@ -1,22 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
 using System.Net;
 using System.Text;
-using System.Text.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace Svix
 {
-    public class SvixHttpClient
+    public class SvixHttpClient(string token, SvixOptions options)
     {
-        readonly string _baseUrl;
-        readonly HttpClient _httpClient;
-        private readonly string _token;
-
-        public SvixHttpClient(string baseUrl, string token)
-        {
-            _baseUrl = baseUrl;
-            _httpClient = new HttpClient();
-            _token = token;
-        }
+        readonly SvixOptions _options = options;
+        readonly HttpClient _httpClient = new();
+        private readonly string _token = token;
 
         public ApiResponse<T> SendRequest<T>(
             HttpMethod method,
@@ -50,7 +43,7 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
-            var url = _baseUrl;
+            var url = _options.BaseUrl;
 
             // Apply path parameters if provided
             if (pathParams != null)
@@ -81,7 +74,6 @@ namespace Svix
                         )
                     );
             }
-            Console.WriteLine(url);
             using var request = new HttpRequestMessage(method, url);
             if (headerParams != null)
             {
@@ -92,28 +84,32 @@ namespace Svix
             }
 
             request.Headers.Add("Authorization", $"Bearer {_token}");
+            uint req_id = (uint)new Random().NextInt64(0, (long)uint.MaxValue + 1);
+            request.Headers.Add("svix-req-id", req_id.ToString());
             if (content != null)
             {
-                request.Content = new StringContent(
-                    JsonSerializer.Serialize(content),
+                var encoded_content = new StringContent(
+                    JsonConvert.SerializeObject(content, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }),
                     Encoding.UTF8,
                     "application/json"
                 );
+                request.Content = encoded_content;
             }
-
             var response = await _httpClient.SendAsync(request, cancellationToken);
-            Console.WriteLine(response.ToString());
-            Console.WriteLine(await response.Content.ReadAsStringAsync());
             if (response.IsSuccessStatusCode)
             {
+                if ((int)response.StatusCode == 204){
+                    return new ApiResponse<T> { Data = (T)(object)true, StatusCode = response.StatusCode };
+                }
+
                 var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
                 var data =
-                    JsonSerializer.Deserialize<T>(responseContent)
-                    ?? throw new ApiException($"Failed to deserialize response body");
+                    JsonConvert.DeserializeObject<T>(responseContent)
+                    ?? throw new ApiException((int)response.StatusCode, $"Failed to deserialize response body");
                 return new ApiResponse<T> { Data = data, StatusCode = response.StatusCode };
             }
 
-            throw new ApiException($"Request failed with status code {response.StatusCode}");
+            throw new ApiException((int)response.StatusCode, $"Request failed with status code {response.StatusCode}");
         }
     }
 
@@ -125,7 +121,22 @@ namespace Svix
 
     public class ApiException : Exception
     {
-        public ApiException(string message)
-            : base(message) { }
+        public ApiException(int errorCode, string message) : base(message)
+        {
+            ErrorCode = errorCode;
+        }
+        public ApiException(int errorCode, string message, object errorContent = null, Dictionary<string, string> headers = null) : base(message)
+        {
+            ErrorCode = errorCode;
+            ErrorContent = errorContent;
+            Headers = headers;
+        }
+
+
+        public int ErrorCode { get; set; }
+        public object? ErrorContent { get; private set; }
+        public Dictionary<string, string>? Headers { get; private set; }
+
+
     }
 }

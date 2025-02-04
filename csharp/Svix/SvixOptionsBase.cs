@@ -1,4 +1,4 @@
-using System.Text.Json;
+using Newtonsoft.Json;
 
 namespace Svix
 {
@@ -21,7 +21,7 @@ namespace Svix
                 }
                 else
                 {
-                    var jsonStr = JsonSerializer.Serialize(entry.Value);
+                    var jsonStr = JsonConvert.SerializeObject(entry.Value);
                     // enum values get serialized as single value json objects (just a string)
                     // so I need to strip the start and ending quotes.
                     // FIXME: find a better way to do this :(
