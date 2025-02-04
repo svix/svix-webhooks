@@ -36,10 +36,16 @@ namespace Svix
         }
     }
 
-    public class Application(SvixClient client)
+    public class Application
     {
-        readonly SvixClient _client = client;
+        readonly SvixClient _client;
+        public Application(SvixClient client) {
+            _client = client;
 
+        }
+        public Application(){
+
+        }
         /// <summary>
         /// List of all the organization's applications.
         /// </summary>
