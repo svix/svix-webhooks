@@ -1,18 +1,17 @@
 // this file is @generated
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Svix.Models
 {
-    public class RecoverOut(BackgroundTaskType task, BackgroundTaskStatus status, string id)
-        : BaseModel
+    public class RecoverOut : BaseModel
     {
-        [JsonPropertyName("id")]
-        public string Id { get; set; } = id;
+        [JsonProperty("id")]
+        public required string Id { get; set; }
 
-        [JsonPropertyName("status")]
-        public BackgroundTaskStatus Status { get; set; } = status;
+        [JsonProperty("status")]
+        public required BackgroundTaskStatus Status { get; set; }
 
-        [JsonPropertyName("task")]
-        public BackgroundTaskType Task { get; set; } = task;
+        [JsonProperty("task")]
+        public required BackgroundTaskType Task { get; set; }
     }
 }

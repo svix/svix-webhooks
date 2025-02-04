@@ -1,33 +1,26 @@
 // this file is @generated
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Svix.Models
 {
-    public class EventTypeUpdate(
-        string description,
-        Object? schemas = null,
-        string? groupName = null,
-        string? featureFlag = null,
-        bool? deprecated = null,
-        bool? archived = null
-    ) : BaseModel
+    public class EventTypeUpdate : BaseModel
     {
-        [JsonPropertyName("archived")]
-        public bool? Archived { get; set; } = archived;
+        [JsonProperty("archived")]
+        public bool? Archived { get; set; } = null;
 
-        [JsonPropertyName("deprecated")]
-        public bool? Deprecated { get; set; } = deprecated;
+        [JsonProperty("deprecated")]
+        public bool? Deprecated { get; set; } = null;
 
-        [JsonPropertyName("description")]
-        public string Description { get; set; } = description;
+        [JsonProperty("description")]
+        public required string Description { get; set; }
 
-        [JsonPropertyName("featureFlag")]
-        public string? FeatureFlag { get; set; } = featureFlag;
+        [JsonProperty("featureFlag")]
+        public string? FeatureFlag { get; set; } = null;
 
-        [JsonPropertyName("groupName")]
-        public string? GroupName { get; set; } = groupName;
+        [JsonProperty("groupName")]
+        public string? GroupName { get; set; } = null;
 
-        [JsonPropertyName("schemas")]
-        public Object? Schemas { get; set; } = schemas;
+        [JsonProperty("schemas")]
+        public Object? Schemas { get; set; } = null;
     }
 }

@@ -1,21 +1,17 @@
 // this file is @generated
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Svix.Models
 {
-    public class EnvironmentIn(
-        List<TemplateIn>? transformationTemplates = null,
-        Object? settings = null,
-        List<EventTypeIn>? eventTypes = null
-    ) : BaseModel
+    public class EnvironmentIn : BaseModel
     {
-        [JsonPropertyName("eventTypes")]
-        public List<EventTypeIn>? EventTypes { get; set; } = eventTypes;
+        [JsonProperty("eventTypes")]
+        public List<EventTypeIn>? EventTypes { get; set; } = null;
 
-        [JsonPropertyName("settings")]
-        public Object? Settings { get; set; } = settings;
+        [JsonProperty("settings")]
+        public Object? Settings { get; set; } = null;
 
-        [JsonPropertyName("transformationTemplates")]
-        public List<TemplateIn>? TransformationTemplates { get; set; } = transformationTemplates;
+        [JsonProperty("transformationTemplates")]
+        public List<TemplateIn>? TransformationTemplates { get; set; } = null;
     }
 }

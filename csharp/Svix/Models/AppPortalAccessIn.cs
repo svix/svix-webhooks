@@ -1,25 +1,20 @@
 // this file is @generated
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Svix.Models
 {
-    public class AppPortalAccessIn(
-        bool? readOnly = null,
-        List<string>? featureFlags = null,
-        ulong? expiry = null,
-        ApplicationIn? application = null
-    ) : BaseModel
+    public class AppPortalAccessIn : BaseModel
     {
-        [JsonPropertyName("application")]
-        public ApplicationIn? Application { get; set; } = application;
+        [JsonProperty("application")]
+        public ApplicationIn? Application { get; set; } = null;
 
-        [JsonPropertyName("expiry")]
-        public ulong? Expiry { get; set; } = expiry;
+        [JsonProperty("expiry")]
+        public ulong? Expiry { get; set; } = null;
 
-        [JsonPropertyName("featureFlags")]
-        public List<string>? FeatureFlags { get; set; } = featureFlags;
+        [JsonProperty("featureFlags")]
+        public List<string>? FeatureFlags { get; set; } = null;
 
-        [JsonPropertyName("readOnly")]
-        public bool? ReadOnly { get; set; } = readOnly;
+        [JsonProperty("readOnly")]
+        public bool? ReadOnly { get; set; } = null;
     }
 }

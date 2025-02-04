@@ -1,21 +1,20 @@
 // this file is @generated
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Svix.Models
 {
-    public class IntegrationOut(DateTime updatedAt, string name, string id, DateTime createdAt)
-        : BaseModel
+    public class IntegrationOut : BaseModel
     {
-        [JsonPropertyName("createdAt")]
-        public DateTime CreatedAt { get; set; } = createdAt;
+        [JsonProperty("createdAt")]
+        public required DateTime CreatedAt { get; set; }
 
-        [JsonPropertyName("id")]
-        public string Id { get; set; } = id;
+        [JsonProperty("id")]
+        public required string Id { get; set; }
 
-        [JsonPropertyName("name")]
-        public string Name { get; set; } = name;
+        [JsonProperty("name")]
+        public required string Name { get; set; }
 
-        [JsonPropertyName("updatedAt")]
-        public DateTime UpdatedAt { get; set; } = updatedAt;
+        [JsonProperty("updatedAt")]
+        public required DateTime UpdatedAt { get; set; }
     }
 }

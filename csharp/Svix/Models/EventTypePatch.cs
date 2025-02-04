@@ -1,33 +1,32 @@
 // this file is @generated
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Svix.Models
 {
-    public class EventTypePatch(
-        Object? schemas = null,
-        string? groupName = null,
-        string? featureFlag = null,
-        string? description = null,
-        bool? deprecated = null,
-        bool? archived = null
-    ) : BaseModel
+    public class EventTypePatch : BaseModel
     {
-        [JsonPropertyName("archived")]
-        public bool? Archived { get; set; } = archived;
+        [JsonProperty("archived")]
+        public bool? Archived { get; set; } = null;
 
-        [JsonPropertyName("deprecated")]
-        public bool? Deprecated { get; set; } = deprecated;
+        [JsonProperty("deprecated")]
+        public bool? Deprecated { get; set; } = null;
 
-        [JsonPropertyName("description")]
-        public string? Description { get; set; } = description;
+        [JsonProperty("description")]
+        public string? Description { get; set; } = null;
 
-        [JsonPropertyName("featureFlag")]
-        public string? FeatureFlag { get; set; } = featureFlag;
+        [JsonProperty("featureFlag")]
+        public MaybeUnset<string?> FeatureFlag { get; set; } = MaybeUnset<string?>.Unset();
 
-        [JsonPropertyName("groupName")]
-        public string? GroupName { get; set; } = groupName;
+        public bool ShouldSerializeFeatureFlag() => !FeatureFlag.IsUnset;
 
-        [JsonPropertyName("schemas")]
-        public Object? Schemas { get; set; } = schemas;
+        [JsonProperty("groupName")]
+        public MaybeUnset<string?> GroupName { get; set; } = MaybeUnset<string?>.Unset();
+
+        public bool ShouldSerializeGroupName() => !GroupName.IsUnset;
+
+        [JsonProperty("schemas")]
+        public MaybeUnset<Object?> Schemas { get; set; } = MaybeUnset<Object?>.Unset();
+
+        public bool ShouldSerializeSchemas() => !Schemas.IsUnset;
     }
 }

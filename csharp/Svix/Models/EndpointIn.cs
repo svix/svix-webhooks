@@ -1,49 +1,38 @@
 // this file is @generated
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Svix.Models
 {
-    public class EndpointIn(
-        string url,
-        ushort? version = null,
-        string? uid = null,
-        string? secret = null,
-        ushort? rateLimit = null,
-        Dictionary<string, string>? metadata = null,
-        List<string>? filterTypes = null,
-        bool? disabled = null,
-        string? description = null,
-        List<string>? channels = null
-    ) : BaseModel
+    public class EndpointIn : BaseModel
     {
-        [JsonPropertyName("channels")]
-        public List<string>? Channels { get; set; } = channels;
+        [JsonProperty("channels")]
+        public List<string>? Channels { get; set; } = null;
 
-        [JsonPropertyName("description")]
-        public string? Description { get; set; } = description;
+        [JsonProperty("description")]
+        public string? Description { get; set; } = null;
 
-        [JsonPropertyName("disabled")]
-        public bool? Disabled { get; set; } = disabled;
+        [JsonProperty("disabled")]
+        public bool? Disabled { get; set; } = null;
 
-        [JsonPropertyName("filterTypes")]
-        public List<string>? FilterTypes { get; set; } = filterTypes;
+        [JsonProperty("filterTypes")]
+        public List<string>? FilterTypes { get; set; } = null;
 
-        [JsonPropertyName("metadata")]
-        public Dictionary<string, string>? Metadata { get; set; } = metadata;
+        [JsonProperty("metadata")]
+        public Dictionary<string, string>? Metadata { get; set; } = null;
 
-        [JsonPropertyName("rateLimit")]
-        public ushort? RateLimit { get; set; } = rateLimit;
+        [JsonProperty("rateLimit")]
+        public ushort? RateLimit { get; set; } = null;
 
-        [JsonPropertyName("secret")]
-        public string? Secret { get; set; } = secret;
+        [JsonProperty("secret")]
+        public string? Secret { get; set; } = null;
 
-        [JsonPropertyName("uid")]
-        public string? Uid { get; set; } = uid;
+        [JsonProperty("uid")]
+        public string? Uid { get; set; } = null;
 
-        [JsonPropertyName("url")]
-        public string Url { get; set; } = url;
+        [JsonProperty("url")]
+        public required string Url { get; set; }
 
-        [JsonPropertyName("version")]
-        public ushort? Version { get; set; } = version;
+        [JsonProperty("version")]
+        public ushort? Version { get; set; } = null;
     }
 }

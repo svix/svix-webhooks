@@ -1,13 +1,14 @@
 // this file is @generated
 using System.Runtime.Serialization;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Svix.Models
 {
     /// <summary>
     /// Defines the ordering in a listing of results.
     /// </summary>
-    [JsonConverter(typeof(JsonEnumMemberStringEnumConverter))]
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum Ordering
     {
         [EnumMember(Value = "ascending")]

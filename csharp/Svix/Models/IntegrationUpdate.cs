@@ -1,11 +1,11 @@
 // this file is @generated
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Svix.Models
 {
-    public class IntegrationUpdate(string name) : BaseModel
+    public class IntegrationUpdate : BaseModel
     {
-        [JsonPropertyName("name")]
-        public string Name { get; set; } = name;
+        [JsonProperty("name")]
+        public required string Name { get; set; }
     }
 }

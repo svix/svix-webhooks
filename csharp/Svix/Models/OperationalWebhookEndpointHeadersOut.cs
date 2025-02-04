@@ -1,17 +1,14 @@
 // this file is @generated
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Svix.Models
 {
-    public class OperationalWebhookEndpointHeadersOut(
-        List<string> sensitive,
-        Dictionary<string, string> headers
-    ) : BaseModel
+    public class OperationalWebhookEndpointHeadersOut : BaseModel
     {
-        [JsonPropertyName("headers")]
-        public Dictionary<string, string> Headers { get; set; } = headers;
+        [JsonProperty("headers")]
+        public required Dictionary<string, string> Headers { get; set; }
 
-        [JsonPropertyName("sensitive")]
-        public List<string> Sensitive { get; set; } = sensitive;
+        [JsonProperty("sensitive")]
+        public required List<string> Sensitive { get; set; }
     }
 }

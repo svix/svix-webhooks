@@ -1,25 +1,20 @@
 // this file is @generated
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Svix.Models
 {
-    public class BackgroundTaskOut(
-        BackgroundTaskType task,
-        BackgroundTaskStatus status,
-        string id,
-        Object data
-    ) : BaseModel
+    public class BackgroundTaskOut : BaseModel
     {
-        [JsonPropertyName("data")]
-        public Object Data { get; set; } = data;
+        [JsonProperty("data")]
+        public required Object Data { get; set; }
 
-        [JsonPropertyName("id")]
-        public string Id { get; set; } = id;
+        [JsonProperty("id")]
+        public required string Id { get; set; }
 
-        [JsonPropertyName("status")]
-        public BackgroundTaskStatus Status { get; set; } = status;
+        [JsonProperty("status")]
+        public required BackgroundTaskStatus Status { get; set; }
 
-        [JsonPropertyName("task")]
-        public BackgroundTaskType Task { get; set; } = task;
+        [JsonProperty("task")]
+        public required BackgroundTaskType Task { get; set; }
     }
 }

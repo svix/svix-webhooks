@@ -1,61 +1,47 @@
 // this file is @generated
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Svix.Models
 {
-    public class TemplateOut(
-        DateTime updatedAt,
-        string transformation,
-        string orgId,
-        string name,
-        string logo,
-        TransformationTemplateKind kind,
-        string instructions,
-        string id,
-        string description,
-        DateTime createdAt,
-        string? instructionsLink = null,
-        List<string>? filterTypes = null,
-        string? featureFlag = null
-    ) : BaseModel
+    public class TemplateOut : BaseModel
     {
-        [JsonPropertyName("createdAt")]
-        public DateTime CreatedAt { get; set; } = createdAt;
+        [JsonProperty("createdAt")]
+        public required DateTime CreatedAt { get; set; }
 
-        [JsonPropertyName("description")]
-        public string Description { get; set; } = description;
+        [JsonProperty("description")]
+        public required string Description { get; set; }
 
-        [JsonPropertyName("featureFlag")]
-        public string? FeatureFlag { get; set; } = featureFlag;
+        [JsonProperty("featureFlag")]
+        public string? FeatureFlag { get; set; } = null;
 
-        [JsonPropertyName("filterTypes")]
-        public List<string>? FilterTypes { get; set; } = filterTypes;
+        [JsonProperty("filterTypes")]
+        public List<string>? FilterTypes { get; set; } = null;
 
-        [JsonPropertyName("id")]
-        public string Id { get; set; } = id;
+        [JsonProperty("id")]
+        public required string Id { get; set; }
 
-        [JsonPropertyName("instructions")]
-        public string Instructions { get; set; } = instructions;
+        [JsonProperty("instructions")]
+        public required string Instructions { get; set; }
 
-        [JsonPropertyName("instructionsLink")]
-        public string? InstructionsLink { get; set; } = instructionsLink;
+        [JsonProperty("instructionsLink")]
+        public string? InstructionsLink { get; set; } = null;
 
-        [JsonPropertyName("kind")]
-        public TransformationTemplateKind Kind { get; set; } = kind;
+        [JsonProperty("kind")]
+        public required TransformationTemplateKind Kind { get; set; }
 
-        [JsonPropertyName("logo")]
-        public string Logo { get; set; } = logo;
+        [JsonProperty("logo")]
+        public required string Logo { get; set; }
 
-        [JsonPropertyName("name")]
-        public string Name { get; set; } = name;
+        [JsonProperty("name")]
+        public required string Name { get; set; }
 
-        [JsonPropertyName("orgId")]
-        public string OrgId { get; set; } = orgId;
+        [JsonProperty("orgId")]
+        public required string OrgId { get; set; }
 
-        [JsonPropertyName("transformation")]
-        public string Transformation { get; set; } = transformation;
+        [JsonProperty("transformation")]
+        public required string Transformation { get; set; }
 
-        [JsonPropertyName("updatedAt")]
-        public DateTime UpdatedAt { get; set; } = updatedAt;
+        [JsonProperty("updatedAt")]
+        public required DateTime UpdatedAt { get; set; }
     }
 }

@@ -1,17 +1,14 @@
 // this file is @generated
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Svix.Models
 {
-    public class EventTypeImportOpenApiOutData(
-        List<string> modified,
-        List<EventTypeFromOpenApi>? toModify = null
-    ) : BaseModel
+    public class EventTypeImportOpenApiOutData : BaseModel
     {
-        [JsonPropertyName("modified")]
-        public List<string> Modified { get; set; } = modified;
+        [JsonProperty("modified")]
+        public required List<string> Modified { get; set; }
 
-        [JsonPropertyName("to_modify")]
-        public List<EventTypeFromOpenApi>? ToModify { get; set; } = toModify;
+        [JsonProperty("to_modify")]
+        public List<EventTypeFromOpenApi>? ToModify { get; set; } = null;
     }
 }

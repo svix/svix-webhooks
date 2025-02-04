@@ -1,5 +1,5 @@
 // this file is @generated
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Svix.Models
 {
@@ -9,13 +9,12 @@ namespace Svix.Models
     /// Sensitive headers that have been redacted are returned in the sensitive field.
     /// <summary>
 
-    public class EndpointHeadersOut(List<string> sensitive, Dictionary<string, string> headers)
-        : BaseModel
+    public class EndpointHeadersOut : BaseModel
     {
-        [JsonPropertyName("headers")]
-        public Dictionary<string, string> Headers { get; set; } = headers;
+        [JsonProperty("headers")]
+        public required Dictionary<string, string> Headers { get; set; }
 
-        [JsonPropertyName("sensitive")]
-        public List<string> Sensitive { get; set; } = sensitive;
+        [JsonProperty("sensitive")]
+        public required List<string> Sensitive { get; set; }
     }
 }

@@ -1,14 +1,14 @@
 // this file is @generated
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Svix.Models
 {
-    public class EventExampleIn(string eventType, ulong? exampleIndex = null) : BaseModel
+    public class EventExampleIn : BaseModel
     {
-        [JsonPropertyName("eventType")]
-        public string EventType { get; set; } = eventType;
+        [JsonProperty("eventType")]
+        public required string EventType { get; set; }
 
-        [JsonPropertyName("exampleIndex")]
-        public ulong? ExampleIndex { get; set; } = exampleIndex;
+        [JsonProperty("exampleIndex")]
+        public ulong? ExampleIndex { get; set; } = null;
     }
 }

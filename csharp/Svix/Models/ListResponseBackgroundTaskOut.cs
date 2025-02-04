@@ -1,25 +1,20 @@
 // this file is @generated
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Svix.Models
 {
-    public class ListResponseBackgroundTaskOut(
-        string? iterator,
-        bool done,
-        List<BackgroundTaskOut> data,
-        string? prevIterator = null
-    ) : BaseModel
+    public class ListResponseBackgroundTaskOut : BaseModel
     {
-        [JsonPropertyName("data")]
-        public List<BackgroundTaskOut> Data { get; set; } = data;
+        [JsonProperty("data")]
+        public required List<BackgroundTaskOut> Data { get; set; }
 
-        [JsonPropertyName("done")]
-        public bool Done { get; set; } = done;
+        [JsonProperty("done")]
+        public required bool Done { get; set; }
 
-        [JsonPropertyName("iterator")]
-        public string? Iterator { get; set; } = iterator;
+        [JsonProperty("iterator")]
+        public string? Iterator { get; set; } = null;
 
-        [JsonPropertyName("prevIterator")]
-        public string? PrevIterator { get; set; } = prevIterator;
+        [JsonProperty("prevIterator")]
+        public string? PrevIterator { get; set; } = null;
     }
 }

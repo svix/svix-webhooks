@@ -1,45 +1,35 @@
 // this file is @generated
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Svix.Models
 {
-    public class MessageIn(
-        Object payload,
-        string eventType,
-        Object? transformationsParams = null,
-        List<string>? tags = null,
-        long? payloadRetentionPeriod = null,
-        long? payloadRetentionHours = null,
-        string? eventId = null,
-        List<string>? channels = null,
-        ApplicationIn? application = null
-    ) : BaseModel
+    public class MessageIn : BaseModel
     {
-        [JsonPropertyName("application")]
-        public ApplicationIn? Application { get; set; } = application;
+        [JsonProperty("application")]
+        public ApplicationIn? Application { get; set; } = null;
 
-        [JsonPropertyName("channels")]
-        public List<string>? Channels { get; set; } = channels;
+        [JsonProperty("channels")]
+        public List<string>? Channels { get; set; } = null;
 
-        [JsonPropertyName("eventId")]
-        public string? EventId { get; set; } = eventId;
+        [JsonProperty("eventId")]
+        public string? EventId { get; set; } = null;
 
-        [JsonPropertyName("eventType")]
-        public string EventType { get; set; } = eventType;
+        [JsonProperty("eventType")]
+        public required string EventType { get; set; }
 
-        [JsonPropertyName("payload")]
-        public Object Payload { get; set; } = payload;
+        [JsonProperty("payload")]
+        public required Object Payload { get; set; }
 
-        [JsonPropertyName("payloadRetentionHours")]
-        public long? PayloadRetentionHours { get; set; } = payloadRetentionHours;
+        [JsonProperty("payloadRetentionHours")]
+        public long? PayloadRetentionHours { get; set; } = null;
 
-        [JsonPropertyName("payloadRetentionPeriod")]
-        public long? PayloadRetentionPeriod { get; set; } = payloadRetentionPeriod;
+        [JsonProperty("payloadRetentionPeriod")]
+        public long? PayloadRetentionPeriod { get; set; } = null;
 
-        [JsonPropertyName("tags")]
-        public List<string>? Tags { get; set; } = tags;
+        [JsonProperty("tags")]
+        public List<string>? Tags { get; set; } = null;
 
-        [JsonPropertyName("transformationsParams")]
-        public Object? TransformationsParams { get; set; } = transformationsParams;
+        [JsonProperty("transformationsParams")]
+        public Object? TransformationsParams { get; set; } = null;
     }
 }

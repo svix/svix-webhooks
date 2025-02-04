@@ -1,53 +1,41 @@
 // this file is @generated
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Svix.Models
 {
-    public class MessageAttemptOut(
-        string url,
-        MessageAttemptTriggerType triggerType,
-        DateTime timestamp,
-        MessageStatus status,
-        short responseStatusCode,
-        long responseDurationMs,
-        string response,
-        string msgId,
-        string id,
-        string endpointId,
-        MessageOut? msg = null
-    ) : BaseModel
+    public class MessageAttemptOut : BaseModel
     {
-        [JsonPropertyName("endpointId")]
-        public string EndpointId { get; set; } = endpointId;
+        [JsonProperty("endpointId")]
+        public required string EndpointId { get; set; }
 
-        [JsonPropertyName("id")]
-        public string Id { get; set; } = id;
+        [JsonProperty("id")]
+        public required string Id { get; set; }
 
-        [JsonPropertyName("msg")]
-        public MessageOut? Msg { get; set; } = msg;
+        [JsonProperty("msg")]
+        public MessageOut? Msg { get; set; } = null;
 
-        [JsonPropertyName("msgId")]
-        public string MsgId { get; set; } = msgId;
+        [JsonProperty("msgId")]
+        public required string MsgId { get; set; }
 
-        [JsonPropertyName("response")]
-        public string Response { get; set; } = response;
+        [JsonProperty("response")]
+        public required string Response { get; set; }
 
-        [JsonPropertyName("responseDurationMs")]
-        public long ResponseDurationMs { get; set; } = responseDurationMs;
+        [JsonProperty("responseDurationMs")]
+        public required long ResponseDurationMs { get; set; }
 
-        [JsonPropertyName("responseStatusCode")]
-        public short ResponseStatusCode { get; set; } = responseStatusCode;
+        [JsonProperty("responseStatusCode")]
+        public required short ResponseStatusCode { get; set; }
 
-        [JsonPropertyName("status")]
-        public MessageStatus Status { get; set; } = status;
+        [JsonProperty("status")]
+        public required MessageStatus Status { get; set; }
 
-        [JsonPropertyName("timestamp")]
-        public DateTime Timestamp { get; set; } = timestamp;
+        [JsonProperty("timestamp")]
+        public required DateTime Timestamp { get; set; }
 
-        [JsonPropertyName("triggerType")]
-        public MessageAttemptTriggerType TriggerType { get; set; } = triggerType;
+        [JsonProperty("triggerType")]
+        public required MessageAttemptTriggerType TriggerType { get; set; }
 
-        [JsonPropertyName("url")]
-        public string Url { get; set; } = url;
+        [JsonProperty("url")]
+        public required string Url { get; set; }
     }
 }

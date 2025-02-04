@@ -1,37 +1,29 @@
 // this file is @generated
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Svix.Models
 {
-    public class ApplicationOut(
-        DateTime updatedAt,
-        string name,
-        Dictionary<string, string> metadata,
-        string id,
-        DateTime createdAt,
-        string? uid = null,
-        ushort? rateLimit = null
-    ) : BaseModel
+    public class ApplicationOut : BaseModel
     {
-        [JsonPropertyName("createdAt")]
-        public DateTime CreatedAt { get; set; } = createdAt;
+        [JsonProperty("createdAt")]
+        public required DateTime CreatedAt { get; set; }
 
-        [JsonPropertyName("id")]
-        public string Id { get; set; } = id;
+        [JsonProperty("id")]
+        public required string Id { get; set; }
 
-        [JsonPropertyName("metadata")]
-        public Dictionary<string, string> Metadata { get; set; } = metadata;
+        [JsonProperty("metadata")]
+        public required Dictionary<string, string> Metadata { get; set; }
 
-        [JsonPropertyName("name")]
-        public string Name { get; set; } = name;
+        [JsonProperty("name")]
+        public required string Name { get; set; }
 
-        [JsonPropertyName("rateLimit")]
-        public ushort? RateLimit { get; set; } = rateLimit;
+        [JsonProperty("rateLimit")]
+        public ushort? RateLimit { get; set; } = null;
 
-        [JsonPropertyName("uid")]
-        public string? Uid { get; set; } = uid;
+        [JsonProperty("uid")]
+        public string? Uid { get; set; } = null;
 
-        [JsonPropertyName("updatedAt")]
-        public DateTime UpdatedAt { get; set; } = updatedAt;
+        [JsonProperty("updatedAt")]
+        public required DateTime UpdatedAt { get; set; }
     }
 }
