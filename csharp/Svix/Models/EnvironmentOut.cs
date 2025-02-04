@@ -3,21 +3,27 @@ using System.Text.Json.Serialization;
 
 namespace Svix.Models
 {
-    public class EnvironmentOut : BaseModel
+    public class EnvironmentOut(
+        List<TemplateOut> transformationTemplates,
+        Object? settings,
+        List<EventTypeOut> eventTypes,
+        DateTime createdAt,
+        long? version = null
+    ) : BaseModel
     {
         [JsonPropertyName("createdAt")]
-        public required DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = createdAt;
 
         [JsonPropertyName("eventTypes")]
-        public required List<EventTypeOut> EventTypes { get; set; }
+        public List<EventTypeOut> EventTypes { get; set; } = eventTypes;
 
         [JsonPropertyName("settings")]
-        public required Object? Settings { get; set; }
+        public Object? Settings { get; set; } = settings;
 
         [JsonPropertyName("transformationTemplates")]
-        public required List<TemplateOut> TransformationTemplates { get; set; }
+        public List<TemplateOut> TransformationTemplates { get; set; } = transformationTemplates;
 
         [JsonPropertyName("version")]
-        public long? Version { get; set; }
+        public long? Version { get; set; } = version;
     }
 }

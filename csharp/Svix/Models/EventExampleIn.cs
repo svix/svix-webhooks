@@ -3,12 +3,12 @@ using System.Text.Json.Serialization;
 
 namespace Svix.Models
 {
-    public class EventExampleIn : BaseModel
+    public class EventExampleIn(string eventType, ulong? exampleIndex = null) : BaseModel
     {
         [JsonPropertyName("eventType")]
-        public required string EventType { get; set; }
+        public string EventType { get; set; } = eventType;
 
         [JsonPropertyName("exampleIndex")]
-        public ulong? ExampleIndex { get; set; }
+        public ulong? ExampleIndex { get; set; } = exampleIndex;
     }
 }

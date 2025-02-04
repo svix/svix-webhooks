@@ -3,18 +3,19 @@ using System.Text.Json.Serialization;
 
 namespace Svix.Models
 {
-    public class IntegrationOut : BaseModel
+    public class IntegrationOut(DateTime updatedAt, string name, string id, DateTime createdAt)
+        : BaseModel
     {
         [JsonPropertyName("createdAt")]
-        public required DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = createdAt;
 
         [JsonPropertyName("id")]
-        public required string Id { get; set; }
+        public string Id { get; set; } = id;
 
         [JsonPropertyName("name")]
-        public required string Name { get; set; }
+        public string Name { get; set; } = name;
 
         [JsonPropertyName("updatedAt")]
-        public required DateTime UpdatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; } = updatedAt;
     }
 }

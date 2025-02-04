@@ -3,45 +3,59 @@ using System.Text.Json.Serialization;
 
 namespace Svix.Models
 {
-    public class MessageEndpointOut : BaseModel
+    public class MessageEndpointOut(
+        int version,
+        string url,
+        DateTime updatedAt,
+        MessageStatus status,
+        string id,
+        string description,
+        DateTime createdAt,
+        string? uid = null,
+        ushort? rateLimit = null,
+        DateTime? nextAttempt = null,
+        List<string>? filterTypes = null,
+        bool? disabled = null,
+        List<string>? channels = null
+    ) : BaseModel
     {
         [JsonPropertyName("channels")]
-        public List<string>? Channels { get; set; }
+        public List<string>? Channels { get; set; } = channels;
 
         [JsonPropertyName("createdAt")]
-        public required DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = createdAt;
 
         [JsonPropertyName("description")]
-        public required string Description { get; set; }
+        public string Description { get; set; } = description;
 
         [JsonPropertyName("disabled")]
-        public bool? Disabled { get; set; }
+        public bool? Disabled { get; set; } = disabled;
 
         [JsonPropertyName("filterTypes")]
-        public List<string>? FilterTypes { get; set; }
+        public List<string>? FilterTypes { get; set; } = filterTypes;
 
         [JsonPropertyName("id")]
-        public required string Id { get; set; }
+        public string Id { get; set; } = id;
 
         [JsonPropertyName("nextAttempt")]
-        public DateTime? NextAttempt { get; set; }
+        public DateTime? NextAttempt { get; set; } = nextAttempt;
 
         [JsonPropertyName("rateLimit")]
-        public ushort? RateLimit { get; set; }
+        public ushort? RateLimit { get; set; } = rateLimit;
 
         [JsonPropertyName("status")]
-        public required MessageStatus Status { get; set; }
+        public MessageStatus Status { get; set; } = status;
 
         [JsonPropertyName("uid")]
-        public string? Uid { get; set; }
+        public string? Uid { get; set; } = uid;
 
         [JsonPropertyName("updatedAt")]
-        public required DateTime UpdatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; } = updatedAt;
 
         [JsonPropertyName("url")]
-        public required string Url { get; set; }
+        public string Url { get; set; } = url;
 
         [JsonPropertyName("version")]
-        public required int Version { get; set; }
+        public int Version { get; set; } = version;
     }
 }

@@ -9,12 +9,13 @@ namespace Svix.Models
     /// Sensitive headers that have been redacted are returned in the sensitive field.
     /// <summary>
 
-    public class EndpointHeadersOut : BaseModel
+    public class EndpointHeadersOut(List<string> sensitive, Dictionary<string, string> headers)
+        : BaseModel
     {
         [JsonPropertyName("headers")]
-        public required Dictionary<string, string> Headers { get; set; }
+        public Dictionary<string, string> Headers { get; set; } = headers;
 
         [JsonPropertyName("sensitive")]
-        public required List<string> Sensitive { get; set; }
+        public List<string> Sensitive { get; set; } = sensitive;
     }
 }

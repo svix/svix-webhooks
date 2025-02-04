@@ -3,9 +3,9 @@ using System.Text.Json.Serialization;
 
 namespace Svix.Models
 {
-    public class EndpointHeadersPatchIn : BaseModel
+    public class EndpointHeadersPatchIn(Dictionary<string, string> headers) : BaseModel
     {
         [JsonPropertyName("headers")]
-        public required Dictionary<string, string> Headers { get; set; }
+        public Dictionary<string, string> Headers { get; set; } = headers;
     }
 }

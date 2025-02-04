@@ -3,18 +3,23 @@ using System.Text.Json.Serialization;
 
 namespace Svix.Models
 {
-    public class BackgroundTaskOut : BaseModel
+    public class BackgroundTaskOut(
+        BackgroundTaskType task,
+        BackgroundTaskStatus status,
+        string id,
+        Object data
+    ) : BaseModel
     {
         [JsonPropertyName("data")]
-        public required Object Data { get; set; }
+        public Object Data { get; set; } = data;
 
         [JsonPropertyName("id")]
-        public required string Id { get; set; }
+        public string Id { get; set; } = id;
 
         [JsonPropertyName("status")]
-        public required BackgroundTaskStatus Status { get; set; }
+        public BackgroundTaskStatus Status { get; set; } = status;
 
         [JsonPropertyName("task")]
-        public required BackgroundTaskType Task { get; set; }
+        public BackgroundTaskType Task { get; set; } = task;
     }
 }
