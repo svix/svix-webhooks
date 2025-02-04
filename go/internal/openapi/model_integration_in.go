@@ -21,6 +21,8 @@ var _ MappedNullable = &IntegrationIn{}
 
 // IntegrationIn struct for IntegrationIn
 type IntegrationIn struct {
+	// The set of feature flags the integration will have access to.
+	FeatureFlags []string `json:"featureFlags,omitempty"`
 	Name string `json:"name"`
 }
 
@@ -42,6 +44,38 @@ func NewIntegrationIn(name string) *IntegrationIn {
 func NewIntegrationInWithDefaults() *IntegrationIn {
 	this := IntegrationIn{}
 	return &this
+}
+
+// GetFeatureFlags returns the FeatureFlags field value if set, zero value otherwise.
+func (o *IntegrationIn) GetFeatureFlags() []string {
+	if o == nil || IsNil(o.FeatureFlags) {
+		var ret []string
+		return ret
+	}
+	return o.FeatureFlags
+}
+
+// GetFeatureFlagsOk returns a tuple with the FeatureFlags field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *IntegrationIn) GetFeatureFlagsOk() ([]string, bool) {
+	if o == nil || IsNil(o.FeatureFlags) {
+		return nil, false
+	}
+	return o.FeatureFlags, true
+}
+
+// HasFeatureFlags returns a boolean if a field has been set.
+func (o *IntegrationIn) HasFeatureFlags() bool {
+	if o != nil && !IsNil(o.FeatureFlags) {
+		return true
+	}
+
+	return false
+}
+
+// SetFeatureFlags gets a reference to the given []string and assigns it to the FeatureFlags field.
+func (o *IntegrationIn) SetFeatureFlags(v []string) {
+	o.FeatureFlags = v
 }
 
 // GetName returns the Name field value
@@ -78,6 +112,9 @@ func (o IntegrationIn) MarshalJSON() ([]byte, error) {
 
 func (o IntegrationIn) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
+	if !IsNil(o.FeatureFlags) {
+		toSerialize["featureFlags"] = o.FeatureFlags
+	}
 	toSerialize["name"] = o.Name
 	return toSerialize, nil
 }

@@ -23,6 +23,8 @@ var _ MappedNullable = &IntegrationOut{}
 // IntegrationOut struct for IntegrationOut
 type IntegrationOut struct {
 	CreatedAt time.Time `json:"createdAt"`
+	// The set of feature flags the integration has access to.
+	FeatureFlags []string `json:"featureFlags,omitempty"`
 	// The integ's ID
 	Id string `json:"id"`
 	Name string `json:"name"`
@@ -74,6 +76,38 @@ func (o *IntegrationOut) GetCreatedAtOk() (*time.Time, bool) {
 // SetCreatedAt sets field value
 func (o *IntegrationOut) SetCreatedAt(v time.Time) {
 	o.CreatedAt = v
+}
+
+// GetFeatureFlags returns the FeatureFlags field value if set, zero value otherwise.
+func (o *IntegrationOut) GetFeatureFlags() []string {
+	if o == nil || IsNil(o.FeatureFlags) {
+		var ret []string
+		return ret
+	}
+	return o.FeatureFlags
+}
+
+// GetFeatureFlagsOk returns a tuple with the FeatureFlags field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *IntegrationOut) GetFeatureFlagsOk() ([]string, bool) {
+	if o == nil || IsNil(o.FeatureFlags) {
+		return nil, false
+	}
+	return o.FeatureFlags, true
+}
+
+// HasFeatureFlags returns a boolean if a field has been set.
+func (o *IntegrationOut) HasFeatureFlags() bool {
+	if o != nil && !IsNil(o.FeatureFlags) {
+		return true
+	}
+
+	return false
+}
+
+// SetFeatureFlags gets a reference to the given []string and assigns it to the FeatureFlags field.
+func (o *IntegrationOut) SetFeatureFlags(v []string) {
+	o.FeatureFlags = v
 }
 
 // GetId returns the Id field value
@@ -159,6 +193,9 @@ func (o IntegrationOut) MarshalJSON() ([]byte, error) {
 func (o IntegrationOut) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["createdAt"] = o.CreatedAt
+	if !IsNil(o.FeatureFlags) {
+		toSerialize["featureFlags"] = o.FeatureFlags
+	}
 	toSerialize["id"] = o.Id
 	toSerialize["name"] = o.Name
 	toSerialize["updatedAt"] = o.UpdatedAt

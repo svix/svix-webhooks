@@ -539,6 +539,7 @@
             "BackgroundTaskOut": {
                 "properties": {
                     "data": {
+                        "additionalProperties": true,
                         "type": "object"
                     },
                     "id": {
@@ -693,6 +694,87 @@
                     "role"
                 ],
                 "type": "object"
+            },
+            "ConnectorIn": {
+                "properties": {
+                    "description": {
+                        "default": "",
+                        "type": "string"
+                    },
+                    "featureFlag": {
+                        "example": "cool-new-feature",
+                        "maxLength": 256,
+                        "nullable": true,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                        "type": "string"
+                    },
+                    "filterTypes": {
+                        "example": [
+                            "user.signup",
+                            "user.deleted"
+                        ],
+                        "items": {
+                            "description": "The event type's name",
+                            "example": "user.signup",
+                            "maxLength": 256,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "minItems": 1,
+                        "nullable": true,
+                        "type": "array",
+                        "uniqueItems": true
+                    },
+                    "instructions": {
+                        "default": "",
+                        "type": "string"
+                    },
+                    "instructionsLink": {
+                        "default": null,
+                        "format": "uri",
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "kind": {
+                        "$ref": "#/components/schemas/ConnectorKind",
+                        "default": "Custom"
+                    },
+                    "logo": {
+                        "format": "uri",
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "transformation": {
+                        "maxLength": 51200,
+                        "minLength": 10,
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "logo",
+                    "name",
+                    "transformation"
+                ],
+                "type": "object"
+            },
+            "ConnectorKind": {
+                "enum": [
+                    "Custom",
+                    "CustomerIO",
+                    "Discord",
+                    "Hubspot",
+                    "Inngest",
+                    "Salesforce",
+                    "Segment",
+                    "Slack",
+                    "Teams",
+                    "TriggerDev",
+                    "Windmill",
+                    "Zapier"
+                ],
+                "type": "string"
             },
             "CountOut": {
                 "properties": {
@@ -1414,6 +1496,7 @@
                         "type": "string"
                     },
                     "payload": {
+                        "additionalProperties": true,
                         "example": {
                             "email": "test@example.com",
                             "type": "user.created",
@@ -1849,6 +1932,7 @@
                         "type": "string"
                     },
                     "payload": {
+                        "additionalProperties": true,
                         "type": "object"
                     }
                 },
@@ -2032,6 +2116,13 @@
             },
             "EnvironmentIn": {
                 "properties": {
+                    "connectors": {
+                        "items": {
+                            "$ref": "#/components/schemas/ConnectorIn"
+                        },
+                        "nullable": true,
+                        "type": "array"
+                    },
                     "eventTypes": {
                         "items": {
                             "$ref": "#/components/schemas/EventTypeIn"
@@ -2040,15 +2131,9 @@
                         "type": "array"
                     },
                     "settings": {
+                        "additionalProperties": true,
                         "nullable": true,
                         "type": "object"
-                    },
-                    "transformationTemplates": {
-                        "items": {
-                            "$ref": "#/components/schemas/TemplateIn"
-                        },
-                        "nullable": true,
-                        "type": "array"
                     }
                 },
                 "type": "object"
@@ -2066,6 +2151,7 @@
                         "type": "array"
                     },
                     "settings": {
+                        "additionalProperties": true,
                         "nullable": true,
                         "type": "object"
                     },
@@ -2261,6 +2347,7 @@
             "EventTypeExampleOut": {
                 "properties": {
                     "example": {
+                        "additionalProperties": true,
                         "example": {
                             "data": {
                                 "email": "test@example.com",
@@ -2307,6 +2394,7 @@
                         "type": "string"
                     },
                     "schemas": {
+                        "additionalProperties": true,
                         "example": {
                             "description": "An invoice was paid by a user",
                             "properties": {
@@ -2351,6 +2439,7 @@
                         "type": "boolean"
                     },
                     "spec": {
+                        "additionalProperties": true,
                         "description": "A pre-parsed JSON spec.",
                         "example": {
                             "info": {
@@ -2400,49 +2489,7 @@
                     },
                     "specRaw": {
                         "description": "A string, parsed by the server as YAML or JSON.",
-                        "example": {
-                            "info": {
-                                "title": "Webhook Example",
-                                "version": "1.0.0"
-                            },
-                            "openapi": "3.1.0",
-                            "webhooks": {
-                                "pet.new": {
-                                    "post": {
-                                        "requestBody": {
-                                            "content": {
-                                                "application/json": {
-                                                    "schema": {
-                                                        "properties": {
-                                                            "id": {
-                                                                "format": "int64",
-                                                                "type": "integer"
-                                                            },
-                                                            "name": {
-                                                                "type": "string"
-                                                            },
-                                                            "tag": {
-                                                                "type": "string"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "id",
-                                                            "name"
-                                                        ]
-                                                    }
-                                                }
-                                            },
-                                            "description": "Information about a new pet in the system"
-                                        },
-                                        "responses": {
-                                            "200": {
-                                                "description": "Return a 200 status to indicate that the data was received successfully"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        },
+                        "example": "\n# Both YAML and JSON are supported\nopenapi: 3.1.0\ninfo:\n  title: Webhook Example\n  version: 1.0.0\n# Since OAS 3.1.0 the paths element isn't necessary. Now a valid OpenAPI Document can describe only paths, webhooks, or even only reusable components\nwebhooks:\n  # Each webhook needs a name\n  \"pet.new\":\n    # This is a Path Item Object, the only difference is that the request is initiated by the API provider\n    post:\n      requestBody:\n        description: Information about a new pet in the system\n        content:\n          application/json:\n            schema:\n              $ref: \"#/components/schemas/Pet\"\n      responses:\n        \"200\":\n          description: Return a 200 status to indicate that the data was received successfully\n\ncomponents:\n  schemas:\n    Pet:\n      required:\n        - id\n        - name\n      properties:\n        id:\n          type: integer\n          format: int64\n        name:\n          type: string\n        tag:\n          type: string\n",
                         "nullable": true,
                         "type": "string"
                     }
@@ -2523,6 +2570,7 @@
                         "type": "string"
                     },
                     "schemas": {
+                        "additionalProperties": true,
                         "description": "The schema for the event type for a specific version as a JSON schema.",
                         "example": {
                             "1": {
@@ -2596,6 +2644,7 @@
                         "type": "string"
                     },
                     "schemas": {
+                        "additionalProperties": true,
                         "description": "The schema for the event type for a specific version as a JSON schema.",
                         "example": {
                             "1": {
@@ -2662,6 +2711,7 @@
                         "type": "string"
                     },
                     "schemas": {
+                        "additionalProperties": true,
                         "example": {
                             "description": "An invoice was paid by a user",
                             "properties": {
@@ -2690,6 +2740,7 @@
             "EventTypeSchemaIn": {
                 "properties": {
                     "schema": {
+                        "additionalProperties": true,
                         "example": {
                             "description": "An invoice was paid by a user",
                             "properties": {
@@ -2748,6 +2799,7 @@
                         "type": "string"
                     },
                     "schemas": {
+                        "additionalProperties": true,
                         "description": "The schema for the event type for a specific version as a JSON schema.",
                         "example": {
                             "1": {
@@ -2949,6 +3001,20 @@
             },
             "IntegrationIn": {
                 "properties": {
+                    "featureFlags": {
+                        "description": "The set of feature flags the integration will have access to.",
+                        "example": [],
+                        "items": {
+                            "example": "cool-new-feature",
+                            "maxLength": 256,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "maxItems": 25,
+                        "minItems": 1,
+                        "type": "array",
+                        "uniqueItems": true
+                    },
                     "name": {
                         "example": "Example Integration",
                         "type": "string"
@@ -2977,6 +3043,21 @@
                         "format": "date-time",
                         "type": "string"
                     },
+                    "featureFlags": {
+                        "default": [],
+                        "description": "The set of feature flags the integration has access to.",
+                        "example": [],
+                        "items": {
+                            "example": "cool-new-feature",
+                            "maxLength": 256,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "maxItems": 25,
+                        "minItems": 1,
+                        "type": "array",
+                        "uniqueItems": true
+                    },
                     "id": {
                         "description": "The integ's ID",
                         "example": "integ_1srOrx2ZWZBpBUvZwXKQmoEYga2",
@@ -3001,6 +3082,20 @@
             },
             "IntegrationUpdate": {
                 "properties": {
+                    "featureFlags": {
+                        "description": "The set of feature flags the integration will have access to.",
+                        "example": [],
+                        "items": {
+                            "example": "cool-new-feature",
+                            "maxLength": 256,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "maxItems": 25,
+                        "minItems": 1,
+                        "type": "array",
+                        "uniqueItems": true
+                    },
                     "name": {
                         "example": "Example Integration",
                         "type": "string"
@@ -3957,6 +4052,7 @@
                         "type": "string"
                     },
                     "payload": {
+                        "additionalProperties": true,
                         "example": {
                             "email": "test@example.com",
                             "type": "user.created",
@@ -4181,6 +4277,7 @@
                         "type": "string"
                     },
                     "payload": {
+                        "additionalProperties": true,
                         "description": "JSON payload to send as the request body of the webhook.\n\nWe also support sending non-JSON payloads. Please contact us for more information.",
                         "example": {
                             "email": "test@example.com",
@@ -4226,6 +4323,7 @@
                         "uniqueItems": true
                     },
                     "transformationsParams": {
+                        "additionalProperties": true,
                         "description": "Extra parameters to pass to Transformations (for future use)",
                         "nullable": true,
                         "type": "object"
@@ -4279,6 +4377,7 @@
                         "type": "string"
                     },
                     "payload": {
+                        "additionalProperties": true,
                         "example": {
                             "email": "test@example.com",
                             "type": "user.created",
@@ -4723,6 +4822,110 @@
                     "descending"
                 ],
                 "type": "string"
+            },
+            "PollingEndpointMessageOut": {
+                "description": "The MessageOut equivalent of polling endpoint",
+                "properties": {
+                    "channels": {
+                        "description": "List of free-form identifiers that endpoints can filter by",
+                        "example": [
+                            "project_123",
+                            "group_2"
+                        ],
+                        "items": {
+                            "example": "project_1337",
+                            "maxLength": 128,
+                            "pattern": "^[a-zA-Z0-9\\-_.:]+$",
+                            "type": "string"
+                        },
+                        "maxItems": 10,
+                        "minItems": 1,
+                        "nullable": true,
+                        "type": "array",
+                        "uniqueItems": true
+                    },
+                    "eventId": {
+                        "description": "Optional unique identifier for the message",
+                        "example": "unique-msg-identifier",
+                        "maxLength": 256,
+                        "minLength": 1,
+                        "nullable": true,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                        "type": "string"
+                    },
+                    "eventType": {
+                        "description": "The event type's name",
+                        "example": "user.signup",
+                        "maxLength": 256,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                        "type": "string"
+                    },
+                    "headers": {
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "nullable": true,
+                        "type": "object"
+                    },
+                    "id": {
+                        "description": "The msg's ID",
+                        "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "type": "string"
+                    },
+                    "payload": {
+                        "additionalProperties": true,
+                        "example": {
+                            "email": "test@example.com",
+                            "type": "user.created",
+                            "username": "test_user"
+                        },
+                        "type": "object"
+                    },
+                    "tags": {
+                        "items": {
+                            "example": "project_1337",
+                            "maxLength": 128,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "nullable": true,
+                        "type": "array",
+                        "uniqueItems": true
+                    },
+                    "timestamp": {
+                        "format": "date-time",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "eventType",
+                    "id",
+                    "payload",
+                    "timestamp"
+                ],
+                "type": "object"
+            },
+            "PollingEndpointOut": {
+                "properties": {
+                    "data": {
+                        "items": {
+                            "$ref": "#/components/schemas/PollingEndpointMessageOut"
+                        },
+                        "type": "array"
+                    },
+                    "done": {
+                        "type": "boolean"
+                    },
+                    "iterator": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "data",
+                    "done",
+                    "iterator"
+                ],
+                "type": "object"
             },
             "RecoverIn": {
                 "properties": {
@@ -6270,70 +6473,6 @@
                 "pattern": "^(?!strm_)[a-zA-Z0-9_-]+$",
                 "type": "string"
             },
-            "TemplateIn": {
-                "properties": {
-                    "description": {
-                        "default": "",
-                        "type": "string"
-                    },
-                    "featureFlag": {
-                        "example": "cool-new-feature",
-                        "maxLength": 256,
-                        "nullable": true,
-                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                        "type": "string"
-                    },
-                    "filterTypes": {
-                        "example": [
-                            "user.signup",
-                            "user.deleted"
-                        ],
-                        "items": {
-                            "description": "The event type's name",
-                            "example": "user.signup",
-                            "maxLength": 256,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                            "type": "string"
-                        },
-                        "minItems": 1,
-                        "nullable": true,
-                        "type": "array",
-                        "uniqueItems": true
-                    },
-                    "instructions": {
-                        "default": "",
-                        "type": "string"
-                    },
-                    "instructionsLink": {
-                        "default": null,
-                        "format": "uri",
-                        "nullable": true,
-                        "type": "string"
-                    },
-                    "kind": {
-                        "$ref": "#/components/schemas/TransformationTemplateKind",
-                        "default": "Custom"
-                    },
-                    "logo": {
-                        "format": "uri",
-                        "type": "string"
-                    },
-                    "name": {
-                        "type": "string"
-                    },
-                    "transformation": {
-                        "maxLength": 51200,
-                        "minLength": 10,
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "logo",
-                    "name",
-                    "transformation"
-                ],
-                "type": "object"
-            },
             "TemplateOut": {
                 "properties": {
                     "createdAt": {
@@ -6379,7 +6518,7 @@
                         "type": "string"
                     },
                     "kind": {
-                        "$ref": "#/components/schemas/TransformationTemplateKind"
+                        "$ref": "#/components/schemas/ConnectorKind"
                     },
                     "logo": {
                         "format": "uri",
@@ -6451,7 +6590,7 @@
                         "type": "string"
                     },
                     "kind": {
-                        "$ref": "#/components/schemas/TransformationTemplateKind"
+                        "$ref": "#/components/schemas/ConnectorKind"
                     },
                     "logo": {
                         "format": "uri",
@@ -6508,7 +6647,7 @@
                         "type": "string"
                     },
                     "kind": {
-                        "$ref": "#/components/schemas/TransformationTemplateKind",
+                        "$ref": "#/components/schemas/ConnectorKind",
                         "default": "Custom"
                     },
                     "logo": {
@@ -6565,6 +6704,7 @@
                         "type": "string"
                     },
                     "payload": {
+                        "additionalProperties": true,
                         "type": "object"
                     }
                 },
@@ -6596,23 +6736,6 @@
                     "url"
                 ],
                 "type": "object"
-            },
-            "TransformationTemplateKind": {
-                "enum": [
-                    "Custom",
-                    "CustomerIO",
-                    "Discord",
-                    "Hubspot",
-                    "Inngest",
-                    "Salesforce",
-                    "Segment",
-                    "Slack",
-                    "Teams",
-                    "TriggerDev",
-                    "Windmill",
-                    "Zapier"
-                ],
-                "type": "string"
             },
             "ValidationError": {
                 "description": "Validation errors have their own schema to provide context for invalid requests eg. mismatched types and out of bounds values. There may be any number of these per 422 UNPROCESSABLE ENTITY error.",
@@ -7209,7 +7332,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/stats/usage' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
                     }
-                ]
+                ],
+                "x-hidden": true
             }
         },
         "/api/v1/app/{app_id}": {
@@ -8549,7 +8673,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/attempt/endpoint/{endpoint_id}/count' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
                     }
-                ]
+                ],
+                "x-hidden": true
             }
         },
         "/api/v1/app/{app_id}/attempt/msg/{msg_id}": {
@@ -11112,7 +11237,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/msg/test-attempt' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"eventId\": \"unique-msg-identifier\",\n        \"eventType\": \"user.signup\",\n        \"payload\": {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n        \"channels\": [\"project_123\", \"group_2\"],\n        \"application\": null,\n        \"tags\": [\"my_tag\", \"other\"],\n        \"transformationsParams\": null,\n        \"payloadRetentionPeriod\": 90,\n        \"payloadRetentionHours\": null\n    }'"
                     }
-                ]
+                ],
+                "x-hidden": true
             }
         },
         "/api/v1/app/{app_id}/endpoint/{endpoint_id}/mtls": {
@@ -11296,7 +11422,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/mtls' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
                     }
-                ]
+                ],
+                "x-hidden": true
             },
             "put": {
                 "description": "Create / update endpoint mTLS configuration.",
@@ -11488,7 +11615,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/mtls' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"serverCaCert\": null\n    }'"
                     }
-                ]
+                ],
+                "x-hidden": true
             }
         },
         "/api/v1/app/{app_id}/endpoint/{endpoint_id}/oauth": {
@@ -11672,7 +11800,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/oauth' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
                     }
-                ]
+                ],
+                "x-hidden": true
             },
             "get": {
                 "description": "Get endpoint OAuth configuration.",
@@ -11861,7 +11990,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/oauth' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
                     }
-                ]
+                ],
+                "x-hidden": true
             },
             "put": {
                 "description": "Create / update endpoint OAuth configuration.",
@@ -12053,7 +12183,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/oauth' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"jwtParams\": null,\n        \"clientSecret\": null,\n        \"scopes\": null,\n        \"extraParams\": null,\n        \"refreshToken\": null\n    }'"
                     }
-                ]
+                ],
+                "x-hidden": true
             }
         },
         "/api/v1/app/{app_id}/endpoint/{endpoint_id}/recover": {
@@ -13869,7 +14000,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation-template/oauth/hubspot' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '\n    }'"
                     }
-                ]
+                ],
+                "x-hidden": true
             }
         },
         "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation/simulate": {
@@ -14079,7 +14211,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation/simulate' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"eventType\": \"user.signup\",\n        \"channels\": null\n    }'"
                     }
-                ]
+                ],
+                "x-hidden": true
             }
         },
         "/api/v1/app/{app_id}/events": {
@@ -14326,7 +14459,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/events' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
                     }
-                ]
+                ],
+                "x-hidden": true
             }
         },
         "/api/v1/app/{app_id}/events/subscription/{subscription_id}": {
@@ -14588,7 +14722,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/events/subscription/{subscription_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
                     }
-                ]
+                ],
+                "x-hidden": true
             }
         },
         "/api/v1/app/{app_id}/events/subscription/{subscription_id}/create-token": {
@@ -14733,7 +14868,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/events/subscription/{subscription_id}/create-token' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
                     }
-                ]
+                ],
+                "x-hidden": true
             }
         },
         "/api/v1/app/{app_id}/inbound/msg/{inbound_token}": {
@@ -14951,7 +15087,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/inbound/msg/{inbound_token}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
                     }
-                ]
+                ],
+                "x-hidden": true
             }
         },
         "/api/v1/app/{app_id}/inbound/rotate-url": {
@@ -15136,7 +15273,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/inbound/rotate-url' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
                     }
-                ]
+                ],
+                "x-hidden": true
             }
         },
         "/api/v1/app/{app_id}/integration": {
@@ -15484,62 +15622,62 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const integrationOut = await svix.integration.create(\"app_id\", {\n    name: \"Example Integration\"\n});"
+                        "source": "const integrationOut = await svix.integration.create(\"app_id\", {\n    name: \"Example Integration\",\n    featureFlags: []\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const integrationOut = await svix.integration.create(\"app_id\", {\n    name: \"Example Integration\"\n});"
+                        "source": "const integrationOut = await svix.integration.create(\"app_id\", {\n    name: \"Example Integration\",\n    featureFlags: []\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "integration_out = svix.integration.create(\"app_id\", IntegrationIn(\n    name=\"Example Integration\"\n), options=...)"
+                        "source": "integration_out = svix.integration.create(\"app_id\", IntegrationIn(\n    name=\"Example Integration\",\n    feature_flags=[]\n), options=...)"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "integration_out = await svix.integration.create(\"app_id\", IntegrationIn(\n    name=\"Example Integration\"\n), options=...)"
+                        "source": "integration_out = await svix.integration.create(\"app_id\", IntegrationIn(\n    name=\"Example Integration\",\n    feature_flags=[]\n), options=...)"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "integrationOut, err := svixClient.Integration.Create(ctx, \"app_id\", &IntegrationIn{\n    Name: \"Example Integration\",\n})"
+                        "source": "integrationOut, err := svixClient.Integration.Create(ctx, \"app_id\", &IntegrationIn{\n    Name: \"Example Integration\",\n    FeatureFlags: []interface{}{},\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val integrationOut = svix.integration.create(\"app_id\", IntegrationIn()\n    .name(\"Example Integration\")\n)"
+                        "source": "val integrationOut = svix.integration.create(\"app_id\", IntegrationIn()\n    .name(\"Example Integration\")\n    .featureFlags(arrayOf())\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "IntegrationOut integrationOut = svix.getIntegration().create(\"app_id\", new IntegrationIn()\n    .name(\"Example Integration\")\n);"
+                        "source": "IntegrationOut integrationOut = svix.getIntegration().create(\"app_id\", new IntegrationIn()\n    .name(\"Example Integration\")\n    .featureFlags(new Object[]{})\n);"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "integration_out = svix.integration.create(\"app_id\", Svix::IntegrationIn.new({\n    \"name\": \"Example Integration\"\n}))"
+                        "source": "integration_out = svix.integration.create(\"app_id\", Svix::IntegrationIn.new({\n    \"name\": \"Example Integration\",\n    \"feature_flags\": []\n}))"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let integration_out = svix.integration().create(\"app_id\", IntegrationIn {\n    name: \"Example Integration\".to_string(),\n}, None).await?;"
+                        "source": "let integration_out = svix.integration().create(\"app_id\", IntegrationIn {\n    name: \"Example Integration\".to_string(),\n    feature_flags: Some(vec![]),\n}, None).await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var integrationOut = await svix.Integration.CreateAsync(\"app_id\", new IntegrationIn{\n    name: \"Example Integration\"\n});"
+                        "source": "var integrationOut = await svix.Integration.CreateAsync(\"app_id\", new IntegrationIn{\n    name: \"Example Integration\",\n    featureFlags: new Object[] {}\n});"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix integration create \"app_id\" '{\n    \"name\": \"Example Integration\"\n}'"
+                        "source": "svix integration create \"app_id\" '{\n    \"name\": \"Example Integration\",\n    \"featureFlags\": []\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/integration' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"name\": \"Example Integration\"\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/integration' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"name\": \"Example Integration\",\n        \"featureFlags\": []\n    }'"
                     }
                 ]
             }
@@ -16047,62 +16185,62 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const integrationOut = await svix.integration.update(\"app_id\", \"integ_id\", {\n    name: \"Example Integration\"\n});"
+                        "source": "const integrationOut = await svix.integration.update(\"app_id\", \"integ_id\", {\n    name: \"Example Integration\",\n    featureFlags: []\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const integrationOut = await svix.integration.update(\"app_id\", \"integ_id\", {\n    name: \"Example Integration\"\n});"
+                        "source": "const integrationOut = await svix.integration.update(\"app_id\", \"integ_id\", {\n    name: \"Example Integration\",\n    featureFlags: []\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "integration_out = svix.integration.update(\"app_id\", \"integ_id\", IntegrationUpdate(\n    name=\"Example Integration\"\n))"
+                        "source": "integration_out = svix.integration.update(\"app_id\", \"integ_id\", IntegrationUpdate(\n    name=\"Example Integration\",\n    feature_flags=[]\n))"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "integration_out = await svix.integration.update(\"app_id\", \"integ_id\", IntegrationUpdate(\n    name=\"Example Integration\"\n))"
+                        "source": "integration_out = await svix.integration.update(\"app_id\", \"integ_id\", IntegrationUpdate(\n    name=\"Example Integration\",\n    feature_flags=[]\n))"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "integrationOut, err := svixClient.Integration.Update(ctx, \"app_id\", \"integ_id\", &IntegrationUpdate{\n    Name: \"Example Integration\",\n})"
+                        "source": "integrationOut, err := svixClient.Integration.Update(ctx, \"app_id\", \"integ_id\", &IntegrationUpdate{\n    Name: \"Example Integration\",\n    FeatureFlags: []interface{}{},\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val integrationOut = svix.integration.update(\"app_id\", \"integ_id\", IntegrationUpdate()\n    .name(\"Example Integration\")\n)"
+                        "source": "val integrationOut = svix.integration.update(\"app_id\", \"integ_id\", IntegrationUpdate()\n    .name(\"Example Integration\")\n    .featureFlags(arrayOf())\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "IntegrationOut integrationOut = svix.getIntegration().update(\"app_id\", \"integ_id\", new IntegrationUpdate()\n    .name(\"Example Integration\")\n);"
+                        "source": "IntegrationOut integrationOut = svix.getIntegration().update(\"app_id\", \"integ_id\", new IntegrationUpdate()\n    .name(\"Example Integration\")\n    .featureFlags(new Object[]{})\n);"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "integration_out = svix.integration.update(\"app_id\", \"integ_id\", Svix::IntegrationUpdate.new({\n    \"name\": \"Example Integration\"\n}))"
+                        "source": "integration_out = svix.integration.update(\"app_id\", \"integ_id\", Svix::IntegrationUpdate.new({\n    \"name\": \"Example Integration\",\n    \"feature_flags\": []\n}))"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let integration_out = svix.integration().update(\"app_id\", \"integ_id\", IntegrationUpdate {\n    name: \"Example Integration\".to_string(),\n}).await?;"
+                        "source": "let integration_out = svix.integration().update(\"app_id\", \"integ_id\", IntegrationUpdate {\n    name: \"Example Integration\".to_string(),\n    feature_flags: Some(vec![]),\n}).await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var integrationOut = await svix.Integration.UpdateAsync(\"app_id\", \"integ_id\", new IntegrationUpdate{\n    name: \"Example Integration\"\n});"
+                        "source": "var integrationOut = await svix.Integration.UpdateAsync(\"app_id\", \"integ_id\", new IntegrationUpdate{\n    name: \"Example Integration\",\n    featureFlags: new Object[] {}\n});"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix integration update \"app_id\" \"integ_id\" '{\n    \"name\": \"Example Integration\"\n}'"
+                        "source": "svix integration update \"app_id\" \"integ_id\" '{\n    \"name\": \"Example Integration\",\n    \"featureFlags\": []\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/integration/{integ_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"name\": \"Example Integration\"\n    }'"
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/integration/{integ_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"name\": \"Example Integration\",\n        \"featureFlags\": []\n    }'"
                     }
                 ]
             }
@@ -17791,7 +17929,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/headers' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
                     }
-                ]
+                ],
+                "x-hidden": true
             }
         },
         "/api/v1/app/{app_id}/msg/{msg_id}/content": {
@@ -18590,7 +18729,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg/{msg_id}/raw' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
                     }
-                ]
+                ],
+                "x-hidden": true
             }
         },
         "/api/v1/app/{app_id}/poller/{sink_id}": {
@@ -18696,7 +18836,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/MessageEventsOut"
+                                    "$ref": "#/components/schemas/PollingEndpointOut"
                                 }
                             }
                         },
@@ -18788,7 +18928,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/poller/{sink_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
                     }
-                ]
+                ],
+                "x-hidden": true
             }
         },
         "/api/v1/app/{app_id}/sink": {
@@ -19000,7 +19141,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/sink' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
                     }
-                ]
+                ],
+                "x-hidden": true
             },
             "post": {
                 "description": "Create a new sink for the application.",
@@ -19193,7 +19335,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/sink' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"description\": \"An example endpoint name\",\n        \"rateLimit\": null,\n        \"uid\": \"unique-ep-identifier\",\n        \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n        \"disabled\": false,\n        \"filterTypes\": [\"user.signup\", \"user.deleted\"],\n        \"channels\": [\"project_123\", \"group_2\"]\n    }'"
                     }
-                ]
+                ],
+                "x-hidden": true
             }
         },
         "/api/v1/app/{app_id}/sink/{sink_id}": {
@@ -19384,7 +19527,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/sink/{sink_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
                     }
-                ]
+                ],
+                "x-hidden": true
             }
         },
         "/api/v1/app/{app_id}/stats": {
@@ -19584,7 +19728,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/stats' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
                     }
-                ]
+                ],
+                "x-hidden": true
             }
         },
         "/api/v1/auth/app-portal-access/{app_id}": {
@@ -19974,7 +20119,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/auth/app/{app_id}/create-message-token' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"expiry\": null\n    }'"
                     }
-                ]
+                ],
+                "x-hidden": true
             }
         },
         "/api/v1/auth/app/{app_id}/expire-all": {
@@ -20353,7 +20499,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/auth/app/{app_id}/poller/{endpoint_id}/token' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
                     }
-                ]
+                ],
+                "x-hidden": true
             }
         },
         "/api/v1/auth/app/{app_id}/poller/{endpoint_id}/token/rotate": {
@@ -20563,7 +20710,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/auth/app/{app_id}/poller/{endpoint_id}/token/rotate' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"expiry\": null\n    }'"
                     }
-                ]
+                ],
+                "x-hidden": true
             }
         },
         "/api/v1/auth/dashboard-access/{app_id}": {
@@ -21092,7 +21240,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/auth/one-time-token' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '\n    }'"
                     }
-                ]
+                ],
+                "x-hidden": true
             }
         },
         "/api/v1/auth/stream-portal-access/{stream_id}": {
@@ -21281,7 +21430,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/auth/stream-portal-access/{stream_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"featureFlags\": [],\n        \"expiry\": null,\n        \"readOnly\": null\n    }'"
                     }
-                ]
+                ],
+                "x-hidden": true
             }
         },
         "/api/v1/background-task": {
@@ -21955,62 +22105,62 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "await svix.environment.import({\n    eventTypes: null,\n    settings: null,\n    transformationTemplates: null\n});"
+                        "source": "await svix.environment.import({\n    eventTypes: null,\n    settings: null,\n    connectors: null\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "await svix.environment.import({\n    eventTypes: null,\n    settings: null,\n    transformationTemplates: null\n});"
+                        "source": "await svix.environment.import({\n    eventTypes: null,\n    settings: null,\n    connectors: null\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "svix.environment.import(EnvironmentIn(\n    event_types=None,\n    settings=None,\n    transformation_templates=None\n), options=...)"
+                        "source": "svix.environment.import(EnvironmentIn(\n    event_types=None,\n    settings=None,\n    connectors=None\n), options=...)"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "await svix.environment.import(EnvironmentIn(\n    event_types=None,\n    settings=None,\n    transformation_templates=None\n), options=...)"
+                        "source": "await svix.environment.import(EnvironmentIn(\n    event_types=None,\n    settings=None,\n    connectors=None\n), options=...)"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "err := svixClient.Environment.Import(ctx, &EnvironmentIn{\n    EventTypes: nil,\n    Settings: nil,\n    TransformationTemplates: nil,\n})"
+                        "source": "err := svixClient.Environment.Import(ctx, &EnvironmentIn{\n    EventTypes: nil,\n    Settings: nil,\n    Connectors: nil,\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "svix.environment.import(EnvironmentIn()\n    .eventTypes(null)\n    .settings(null)\n    .transformationTemplates(null)\n)"
+                        "source": "svix.environment.import(EnvironmentIn()\n    .eventTypes(null)\n    .settings(null)\n    .connectors(null)\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "svix.getEnvironment().import(new EnvironmentIn()\n    .eventTypes(null)\n    .settings(null)\n    .transformationTemplates(null)\n);"
+                        "source": "svix.getEnvironment().import(new EnvironmentIn()\n    .eventTypes(null)\n    .settings(null)\n    .connectors(null)\n);"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "svix.environment.import(Svix::EnvironmentIn.new({\n    \"event_types\": nil,\n    \"settings\": nil,\n    \"transformation_templates\": nil\n}))"
+                        "source": "svix.environment.import(Svix::EnvironmentIn.new({\n    \"event_types\": nil,\n    \"settings\": nil,\n    \"connectors\": nil\n}))"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "svix.environment().import(EnvironmentIn {\n    event_types: None,\n    settings: None,\n    transformation_templates: None,\n}, None).await?;"
+                        "source": "svix.environment().import(EnvironmentIn {\n    event_types: None,\n    settings: None,\n    connectors: None,\n}, None).await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "await svix.Environment.ImportAsync(new EnvironmentIn{\n    eventTypes: null,\n    settings: null,\n    transformationTemplates: null\n});"
+                        "source": "await svix.Environment.ImportAsync(new EnvironmentIn{\n    eventTypes: null,\n    settings: null,\n    connectors: null\n});"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix environment import '{\n    \"eventTypes\": null,\n    \"settings\": null,\n    \"transformationTemplates\": null\n}'"
+                        "source": "svix environment import '{\n    \"eventTypes\": null,\n    \"settings\": null,\n    \"connectors\": null\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/environment/import' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"eventTypes\": null,\n        \"settings\": null,\n        \"transformationTemplates\": null\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/environment/import' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"eventTypes\": null,\n        \"settings\": null,\n        \"connectors\": null\n    }'"
                     }
                 ]
             }
@@ -22171,7 +22321,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/environment/settings' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
                     }
-                ]
+                ],
+                "x-hidden": true
             }
         },
         "/api/v1/event-type": {
@@ -22740,7 +22891,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/event-type/export/openapi' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
                     }
-                ]
+                ],
+                "x-hidden": true
             }
         },
         "/api/v1/event-type/import/openapi": {
@@ -22864,62 +23016,62 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const eventTypeImportOpenApiOut = await svix.eventType.importOpenapi({\n    spec: {\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}},\n    specRaw: {\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}}\n});"
+                        "source": "const eventTypeImportOpenApiOut = await svix.eventType.importOpenapi({\n    spec: {\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}},\n    specRaw: \"\n# Both YAML and JSON are supported\nopenapi: 3.1.0\ninfo:\n  title: Webhook Example\n  version: 1.0.0\n# Since OAS 3.1.0 the paths element isn't necessary. Now a valid OpenAPI Document can describe only paths, webhooks, or even only reusable components\nwebhooks:\n  # Each webhook needs a name\n  \"pet.new\":\n    # This is a Path Item Object, the only difference is that the request is initiated by the API provider\n    post:\n      requestBody:\n        description: Information about a new pet in the system\n        content:\n          application/json:\n            schema:\n              $ref: \"#/components/schemas/Pet\"\n      responses:\n        \"200\":\n          description: Return a 200 status to indicate that the data was received successfully\n\ncomponents:\n  schemas:\n    Pet:\n      required:\n        - id\n        - name\n      properties:\n        id:\n          type: integer\n          format: int64\n        name:\n          type: string\n        tag:\n          type: string\n\"\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const eventTypeImportOpenApiOut = await svix.eventType.importOpenapi({\n    spec: {\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}},\n    specRaw: {\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}}\n});"
+                        "source": "const eventTypeImportOpenApiOut = await svix.eventType.importOpenapi({\n    spec: {\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}},\n    specRaw: \"\n# Both YAML and JSON are supported\nopenapi: 3.1.0\ninfo:\n  title: Webhook Example\n  version: 1.0.0\n# Since OAS 3.1.0 the paths element isn't necessary. Now a valid OpenAPI Document can describe only paths, webhooks, or even only reusable components\nwebhooks:\n  # Each webhook needs a name\n  \"pet.new\":\n    # This is a Path Item Object, the only difference is that the request is initiated by the API provider\n    post:\n      requestBody:\n        description: Information about a new pet in the system\n        content:\n          application/json:\n            schema:\n              $ref: \"#/components/schemas/Pet\"\n      responses:\n        \"200\":\n          description: Return a 200 status to indicate that the data was received successfully\n\ncomponents:\n  schemas:\n    Pet:\n      required:\n        - id\n        - name\n      properties:\n        id:\n          type: integer\n          format: int64\n        name:\n          type: string\n        tag:\n          type: string\n\"\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "event_type_import_open_api_out = svix.event_type.import_openapi(EventTypeImportOpenApiIn(\n    spec={\"info\": {\"title\": \"Webhook Example\", \"version\": \"1.0.0\"}, \"openapi\": \"3.1.0\", \"webhooks\": {\"pet.new\": {\"post\": {\"requestBody\": {\"content\": {\"application/json\": {\"schema\": {\"properties\": {\"id\": {\"format\": \"int64\", \"type\": \"integer\"}, \"name\": {\"type\": \"string\"}, \"tag\": {\"type\": \"string\"}}, \"required\": [\"id\", \"name\"]}}}, \"description\": \"Information about a new pet in the system\"}, \"responses\": {\"200\": {\"description\": \"Return a 200 status to indicate that the data was received successfully\"}}}}}},\n    spec_raw={\"info\": {\"title\": \"Webhook Example\", \"version\": \"1.0.0\"}, \"openapi\": \"3.1.0\", \"webhooks\": {\"pet.new\": {\"post\": {\"requestBody\": {\"content\": {\"application/json\": {\"schema\": {\"properties\": {\"id\": {\"format\": \"int64\", \"type\": \"integer\"}, \"name\": {\"type\": \"string\"}, \"tag\": {\"type\": \"string\"}}, \"required\": [\"id\", \"name\"]}}}, \"description\": \"Information about a new pet in the system\"}, \"responses\": {\"200\": {\"description\": \"Return a 200 status to indicate that the data was received successfully\"}}}}}}\n), options=...)"
+                        "source": "event_type_import_open_api_out = svix.event_type.import_openapi(EventTypeImportOpenApiIn(\n    spec={\"info\": {\"title\": \"Webhook Example\", \"version\": \"1.0.0\"}, \"openapi\": \"3.1.0\", \"webhooks\": {\"pet.new\": {\"post\": {\"requestBody\": {\"content\": {\"application/json\": {\"schema\": {\"properties\": {\"id\": {\"format\": \"int64\", \"type\": \"integer\"}, \"name\": {\"type\": \"string\"}, \"tag\": {\"type\": \"string\"}}, \"required\": [\"id\", \"name\"]}}}, \"description\": \"Information about a new pet in the system\"}, \"responses\": {\"200\": {\"description\": \"Return a 200 status to indicate that the data was received successfully\"}}}}}},\n    spec_raw=\"\n# Both YAML and JSON are supported\nopenapi: 3.1.0\ninfo:\n  title: Webhook Example\n  version: 1.0.0\n# Since OAS 3.1.0 the paths element isn't necessary. Now a valid OpenAPI Document can describe only paths, webhooks, or even only reusable components\nwebhooks:\n  # Each webhook needs a name\n  \"pet.new\":\n    # This is a Path Item Object, the only difference is that the request is initiated by the API provider\n    post:\n      requestBody:\n        description: Information about a new pet in the system\n        content:\n          application/json:\n            schema:\n              $ref: \"#/components/schemas/Pet\"\n      responses:\n        \"200\":\n          description: Return a 200 status to indicate that the data was received successfully\n\ncomponents:\n  schemas:\n    Pet:\n      required:\n        - id\n        - name\n      properties:\n        id:\n          type: integer\n          format: int64\n        name:\n          type: string\n        tag:\n          type: string\n\"\n), options=...)"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "event_type_import_open_api_out = await svix.event_type.import_openapi(EventTypeImportOpenApiIn(\n    spec={\"info\": {\"title\": \"Webhook Example\", \"version\": \"1.0.0\"}, \"openapi\": \"3.1.0\", \"webhooks\": {\"pet.new\": {\"post\": {\"requestBody\": {\"content\": {\"application/json\": {\"schema\": {\"properties\": {\"id\": {\"format\": \"int64\", \"type\": \"integer\"}, \"name\": {\"type\": \"string\"}, \"tag\": {\"type\": \"string\"}}, \"required\": [\"id\", \"name\"]}}}, \"description\": \"Information about a new pet in the system\"}, \"responses\": {\"200\": {\"description\": \"Return a 200 status to indicate that the data was received successfully\"}}}}}},\n    spec_raw={\"info\": {\"title\": \"Webhook Example\", \"version\": \"1.0.0\"}, \"openapi\": \"3.1.0\", \"webhooks\": {\"pet.new\": {\"post\": {\"requestBody\": {\"content\": {\"application/json\": {\"schema\": {\"properties\": {\"id\": {\"format\": \"int64\", \"type\": \"integer\"}, \"name\": {\"type\": \"string\"}, \"tag\": {\"type\": \"string\"}}, \"required\": [\"id\", \"name\"]}}}, \"description\": \"Information about a new pet in the system\"}, \"responses\": {\"200\": {\"description\": \"Return a 200 status to indicate that the data was received successfully\"}}}}}}\n), options=...)"
+                        "source": "event_type_import_open_api_out = await svix.event_type.import_openapi(EventTypeImportOpenApiIn(\n    spec={\"info\": {\"title\": \"Webhook Example\", \"version\": \"1.0.0\"}, \"openapi\": \"3.1.0\", \"webhooks\": {\"pet.new\": {\"post\": {\"requestBody\": {\"content\": {\"application/json\": {\"schema\": {\"properties\": {\"id\": {\"format\": \"int64\", \"type\": \"integer\"}, \"name\": {\"type\": \"string\"}, \"tag\": {\"type\": \"string\"}}, \"required\": [\"id\", \"name\"]}}}, \"description\": \"Information about a new pet in the system\"}, \"responses\": {\"200\": {\"description\": \"Return a 200 status to indicate that the data was received successfully\"}}}}}},\n    spec_raw=\"\n# Both YAML and JSON are supported\nopenapi: 3.1.0\ninfo:\n  title: Webhook Example\n  version: 1.0.0\n# Since OAS 3.1.0 the paths element isn't necessary. Now a valid OpenAPI Document can describe only paths, webhooks, or even only reusable components\nwebhooks:\n  # Each webhook needs a name\n  \"pet.new\":\n    # This is a Path Item Object, the only difference is that the request is initiated by the API provider\n    post:\n      requestBody:\n        description: Information about a new pet in the system\n        content:\n          application/json:\n            schema:\n              $ref: \"#/components/schemas/Pet\"\n      responses:\n        \"200\":\n          description: Return a 200 status to indicate that the data was received successfully\n\ncomponents:\n  schemas:\n    Pet:\n      required:\n        - id\n        - name\n      properties:\n        id:\n          type: integer\n          format: int64\n        name:\n          type: string\n        tag:\n          type: string\n\"\n), options=...)"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "eventTypeImportOpenApiOut, err := svixClient.EventType.ImportOpenapi(ctx, &EventTypeImportOpenApiIn{\n    Spec: map[interface{}]interface{}{\"info\": map[string]interface{}{\"title\": \"Webhook Example\", \"version\": \"1.0.0\"}, \"openapi\": \"3.1.0\", \"webhooks\": map[interface{}]interface{}{\"pet.new\": map[interface{}]interface{}{\"post\": map[interface{}]interface{}{\"requestBody\": map[interface{}]interface{}{\"content\": map[interface{}]interface{}{\"application/json\": map[interface{}]interface{}{\"schema\": map[interface{}]interface{}{\"properties\": map[interface{}]interface{}{\"id\": map[string]interface{}{\"format\": \"int64\", \"type\": \"integer\"}, \"name\": map[string]interface{}{\"type\": \"string\"}, \"tag\": map[string]interface{}{\"type\": \"string\"}}, \"required\": []string{\"id\", \"name\"}}}}, \"description\": \"Information about a new pet in the system\"}, \"responses\": map[interface{}]interface{}{\"200\": map[string]interface{}{\"description\": \"Return a 200 status to indicate that the data was received successfully\"}}}}}},\n    SpecRaw: map[interface{}]interface{}{\"info\": map[string]interface{}{\"title\": \"Webhook Example\", \"version\": \"1.0.0\"}, \"openapi\": \"3.1.0\", \"webhooks\": map[interface{}]interface{}{\"pet.new\": map[interface{}]interface{}{\"post\": map[interface{}]interface{}{\"requestBody\": map[interface{}]interface{}{\"content\": map[interface{}]interface{}{\"application/json\": map[interface{}]interface{}{\"schema\": map[interface{}]interface{}{\"properties\": map[interface{}]interface{}{\"id\": map[string]interface{}{\"format\": \"int64\", \"type\": \"integer\"}, \"name\": map[string]interface{}{\"type\": \"string\"}, \"tag\": map[string]interface{}{\"type\": \"string\"}}, \"required\": []string{\"id\", \"name\"}}}}, \"description\": \"Information about a new pet in the system\"}, \"responses\": map[interface{}]interface{}{\"200\": map[string]interface{}{\"description\": \"Return a 200 status to indicate that the data was received successfully\"}}}}}},\n})"
+                        "source": "eventTypeImportOpenApiOut, err := svixClient.EventType.ImportOpenapi(ctx, &EventTypeImportOpenApiIn{\n    Spec: map[interface{}]interface{}{\"info\": map[string]interface{}{\"title\": \"Webhook Example\", \"version\": \"1.0.0\"}, \"openapi\": \"3.1.0\", \"webhooks\": map[interface{}]interface{}{\"pet.new\": map[interface{}]interface{}{\"post\": map[interface{}]interface{}{\"requestBody\": map[interface{}]interface{}{\"content\": map[interface{}]interface{}{\"application/json\": map[interface{}]interface{}{\"schema\": map[interface{}]interface{}{\"properties\": map[interface{}]interface{}{\"id\": map[string]interface{}{\"format\": \"int64\", \"type\": \"integer\"}, \"name\": map[string]interface{}{\"type\": \"string\"}, \"tag\": map[string]interface{}{\"type\": \"string\"}}, \"required\": []string{\"id\", \"name\"}}}}, \"description\": \"Information about a new pet in the system\"}, \"responses\": map[interface{}]interface{}{\"200\": map[string]interface{}{\"description\": \"Return a 200 status to indicate that the data was received successfully\"}}}}}},\n    SpecRaw: \"\n# Both YAML and JSON are supported\nopenapi: 3.1.0\ninfo:\n  title: Webhook Example\n  version: 1.0.0\n# Since OAS 3.1.0 the paths element isn't necessary. Now a valid OpenAPI Document can describe only paths, webhooks, or even only reusable components\nwebhooks:\n  # Each webhook needs a name\n  \"pet.new\":\n    # This is a Path Item Object, the only difference is that the request is initiated by the API provider\n    post:\n      requestBody:\n        description: Information about a new pet in the system\n        content:\n          application/json:\n            schema:\n              $ref: \"#/components/schemas/Pet\"\n      responses:\n        \"200\":\n          description: Return a 200 status to indicate that the data was received successfully\n\ncomponents:\n  schemas:\n    Pet:\n      required:\n        - id\n        - name\n      properties:\n        id:\n          type: integer\n          format: int64\n        name:\n          type: string\n        tag:\n          type: string\n\",\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val eventTypeImportOpenApiOut = svix.eventType.importOpenapi(EventTypeImportOpenApiIn()\n    .spec(/* ... */)\n    .specRaw(/* ... */)\n)"
+                        "source": "val eventTypeImportOpenApiOut = svix.eventType.importOpenapi(EventTypeImportOpenApiIn()\n    .spec(/* ... */)\n    .specRaw(\"\n# Both YAML and JSON are supported\nopenapi: 3.1.0\ninfo:\n  title: Webhook Example\n  version: 1.0.0\n# Since OAS 3.1.0 the paths element isn't necessary. Now a valid OpenAPI Document can describe only paths, webhooks, or even only reusable components\nwebhooks:\n  # Each webhook needs a name\n  \"pet.new\":\n    # This is a Path Item Object, the only difference is that the request is initiated by the API provider\n    post:\n      requestBody:\n        description: Information about a new pet in the system\n        content:\n          application/json:\n            schema:\n              $ref: \"#/components/schemas/Pet\"\n      responses:\n        \"200\":\n          description: Return a 200 status to indicate that the data was received successfully\n\ncomponents:\n  schemas:\n    Pet:\n      required:\n        - id\n        - name\n      properties:\n        id:\n          type: integer\n          format: int64\n        name:\n          type: string\n        tag:\n          type: string\n\")\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "EventTypeImportOpenApiOut eventTypeImportOpenApiOut = svix.getEventType().importOpenapi(new EventTypeImportOpenApiIn()\n    .spec(/* ... */)\n    .specRaw(/* ... */)\n);"
+                        "source": "EventTypeImportOpenApiOut eventTypeImportOpenApiOut = svix.getEventType().importOpenapi(new EventTypeImportOpenApiIn()\n    .spec(/* ... */)\n    .specRaw(\"\n# Both YAML and JSON are supported\nopenapi: 3.1.0\ninfo:\n  title: Webhook Example\n  version: 1.0.0\n# Since OAS 3.1.0 the paths element isn't necessary. Now a valid OpenAPI Document can describe only paths, webhooks, or even only reusable components\nwebhooks:\n  # Each webhook needs a name\n  \"pet.new\":\n    # This is a Path Item Object, the only difference is that the request is initiated by the API provider\n    post:\n      requestBody:\n        description: Information about a new pet in the system\n        content:\n          application/json:\n            schema:\n              $ref: \"#/components/schemas/Pet\"\n      responses:\n        \"200\":\n          description: Return a 200 status to indicate that the data was received successfully\n\ncomponents:\n  schemas:\n    Pet:\n      required:\n        - id\n        - name\n      properties:\n        id:\n          type: integer\n          format: int64\n        name:\n          type: string\n        tag:\n          type: string\n\")\n);"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "event_type_import_open_api_out = svix.event_type.import_openapi(Svix::EventTypeImportOpenApiIn.new({\n    \"spec\": {\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}},\n    \"spec_raw\": {\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}}\n}))"
+                        "source": "event_type_import_open_api_out = svix.event_type.import_openapi(Svix::EventTypeImportOpenApiIn.new({\n    \"spec\": {\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}},\n    \"spec_raw\": \"\n# Both YAML and JSON are supported\nopenapi: 3.1.0\ninfo:\n  title: Webhook Example\n  version: 1.0.0\n# Since OAS 3.1.0 the paths element isn't necessary. Now a valid OpenAPI Document can describe only paths, webhooks, or even only reusable components\nwebhooks:\n  # Each webhook needs a name\n  \"pet.new\":\n    # This is a Path Item Object, the only difference is that the request is initiated by the API provider\n    post:\n      requestBody:\n        description: Information about a new pet in the system\n        content:\n          application/json:\n            schema:\n              $ref: \"#/components/schemas/Pet\"\n      responses:\n        \"200\":\n          description: Return a 200 status to indicate that the data was received successfully\n\ncomponents:\n  schemas:\n    Pet:\n      required:\n        - id\n        - name\n      properties:\n        id:\n          type: integer\n          format: int64\n        name:\n          type: string\n        tag:\n          type: string\n\"\n}))"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let event_type_import_open_api_out = svix.event_type().import_openapi(EventTypeImportOpenApiIn {\n    spec: Some(json!({\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}})),\n    spec_raw: Some(json!({\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}})),\n}, None).await?;"
+                        "source": "let event_type_import_open_api_out = svix.event_type().import_openapi(EventTypeImportOpenApiIn {\n    spec: Some(json!({\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}})),\n    spec_raw: Some(\"\n# Both YAML and JSON are supported\nopenapi: 3.1.0\ninfo:\n  title: Webhook Example\n  version: 1.0.0\n# Since OAS 3.1.0 the paths element isn't necessary. Now a valid OpenAPI Document can describe only paths, webhooks, or even only reusable components\nwebhooks:\n  # Each webhook needs a name\n  \"pet.new\":\n    # This is a Path Item Object, the only difference is that the request is initiated by the API provider\n    post:\n      requestBody:\n        description: Information about a new pet in the system\n        content:\n          application/json:\n            schema:\n              $ref: \"#/components/schemas/Pet\"\n      responses:\n        \"200\":\n          description: Return a 200 status to indicate that the data was received successfully\n\ncomponents:\n  schemas:\n    Pet:\n      required:\n        - id\n        - name\n      properties:\n        id:\n          type: integer\n          format: int64\n        name:\n          type: string\n        tag:\n          type: string\n\".to_string()),\n}, None).await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var eventTypeImportOpenApiOut = await svix.EventType.ImportOpenapiAsync(new EventTypeImportOpenApiIn{\n    spec: /* ... */,\n    specRaw: /* ... */\n});"
+                        "source": "var eventTypeImportOpenApiOut = await svix.EventType.ImportOpenapiAsync(new EventTypeImportOpenApiIn{\n    spec: /* ... */,\n    specRaw: \"\n# Both YAML and JSON are supported\nopenapi: 3.1.0\ninfo:\n  title: Webhook Example\n  version: 1.0.0\n# Since OAS 3.1.0 the paths element isn't necessary. Now a valid OpenAPI Document can describe only paths, webhooks, or even only reusable components\nwebhooks:\n  # Each webhook needs a name\n  \"pet.new\":\n    # This is a Path Item Object, the only difference is that the request is initiated by the API provider\n    post:\n      requestBody:\n        description: Information about a new pet in the system\n        content:\n          application/json:\n            schema:\n              $ref: \"#/components/schemas/Pet\"\n      responses:\n        \"200\":\n          description: Return a 200 status to indicate that the data was received successfully\n\ncomponents:\n  schemas:\n    Pet:\n      required:\n        - id\n        - name\n      properties:\n        id:\n          type: integer\n          format: int64\n        name:\n          type: string\n        tag:\n          type: string\n\"\n});"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix event-type import-openapi '{\n    \"spec\": {\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}},\n    \"specRaw\": {\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}}\n}'"
+                        "source": "svix event-type import-openapi '{\n    \"spec\": {\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}},\n    \"specRaw\": \"\n# Both YAML and JSON are supported\nopenapi: 3.1.0\ninfo:\n  title: Webhook Example\n  version: 1.0.0\n# Since OAS 3.1.0 the paths element isn't necessary. Now a valid OpenAPI Document can describe only paths, webhooks, or even only reusable components\nwebhooks:\n  # Each webhook needs a name\n  \"pet.new\":\n    # This is a Path Item Object, the only difference is that the request is initiated by the API provider\n    post:\n      requestBody:\n        description: Information about a new pet in the system\n        content:\n          application/json:\n            schema:\n              $ref: \"#/components/schemas/Pet\"\n      responses:\n        \"200\":\n          description: Return a 200 status to indicate that the data was received successfully\n\ncomponents:\n  schemas:\n    Pet:\n      required:\n        - id\n        - name\n      properties:\n        id:\n          type: integer\n          format: int64\n        name:\n          type: string\n        tag:\n          type: string\n\"\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/event-type/import/openapi' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"spec\": {\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}},\n        \"specRaw\": {\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}}\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/event-type/import/openapi' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"spec\": {\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}},\n        \"specRaw\": \"\n    # Both YAML and JSON are supported\n    openapi: 3.1.0\n    info:\n      title: Webhook Example\n      version: 1.0.0\n    # Since OAS 3.1.0 the paths element isn't necessary. Now a valid OpenAPI Document can describe only paths, webhooks, or even only reusable components\n    webhooks:\n      # Each webhook needs a name\n      \"pet.new\":\n        # This is a Path Item Object, the only difference is that the request is initiated by the API provider\n        post:\n          requestBody:\n            description: Information about a new pet in the system\n            content:\n              application/json:\n                schema:\n                  $ref: \"#/components/schemas/Pet\"\n          responses:\n            \"200\":\n              description: Return a 200 status to indicate that the data was received successfully\n    \n    components:\n      schemas:\n        Pet:\n          required:\n            - id\n            - name\n          properties:\n            id:\n              type: integer\n              format: int64\n            name:\n              type: string\n            tag:\n              type: string\n    \"\n    }'"
                     }
                 ]
             }
@@ -23101,7 +23253,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/event-type/schema/generate-example' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"schema\": {\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}\n    }'"
                     }
-                ]
+                ],
+                "x-hidden": true
             }
         },
         "/api/v1/event-type/{event_type_name}": {
@@ -24004,7 +24157,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/event-type/{event_type_name}/retry-schedule' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
                     }
-                ]
+                ],
+                "x-hidden": true
             },
             "put": {
                 "description": "Sets a retry schedule for all messages using the given event type.",
@@ -24187,7 +24341,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/event-type/{event_type_name}/retry-schedule' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"retrySchedule\": null\n    }'"
                     }
-                ]
+                ],
+                "x-hidden": true
             }
         },
         "/api/v1/events": {
@@ -24364,7 +24519,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/events' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
                     }
-                ]
+                ],
+                "x-hidden": true
             }
         },
         "/api/v1/health": {
@@ -24581,7 +24737,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/msg/broadcast' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"eventId\": \"unique-msg-identifier\",\n        \"eventType\": \"user.signup\",\n        \"payload\": {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n        \"channels\": [\"project_123\", \"group_2\"],\n        \"payloadRetentionPeriod\": 90,\n        \"payloadRetentionHours\": null\n    }'"
                     }
-                ]
+                ],
+                "x-hidden": true
             }
         },
         "/api/v1/operational-webhook/endpoint": {
@@ -25905,7 +26062,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/stats/app/{app_id}/attempt' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
                     }
-                ]
+                ],
+                "x-hidden": true
             }
         },
         "/api/v1/stats/app/{app_id}/ep/{endpoint_id}/attempt": {
@@ -26120,7 +26278,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/stats/app/{app_id}/ep/{endpoint_id}/attempt' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
                     }
-                ]
+                ],
+                "x-hidden": true
             }
         },
         "/api/v1/stats/usage/app": {
@@ -26604,7 +26763,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/stream' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
                     }
-                ]
+                ],
+                "x-hidden": true
             },
             "post": {
                 "description": "Creates a new stream.",
@@ -26737,7 +26897,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/stream' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"uid\": null\n    }'"
                     }
-                ]
+                ],
+                "x-hidden": true
             }
         },
         "/api/v1/stream/event-type": {
@@ -26881,7 +27042,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/stream/event-type' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
                     }
-                ]
+                ],
+                "x-hidden": true
             },
             "post": {
                 "description": "Create an event type for Streams.",
@@ -27004,7 +27166,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/stream/event-type' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"name\": \"user.signup\",\n        \"description\": null\n    }'"
                     }
-                ]
+                ],
+                "x-hidden": true
             }
         },
         "/api/v1/stream/event-type/{name}": {
@@ -27117,7 +27280,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/stream/event-type/{name}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
                     }
-                ]
+                ],
+                "x-hidden": true
             },
             "get": {
                 "description": "Get an event type.",
@@ -27235,7 +27399,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/stream/event-type/{name}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
                     }
-                ]
+                ],
+                "x-hidden": true
             },
             "patch": {
                 "description": "Patch an event type for Streams.",
@@ -27363,7 +27528,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/stream/event-type/{name}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"name\": \"user.signup\",\n        \"description\": null\n    }'"
                     }
-                ]
+                ],
+                "x-hidden": true
             },
             "put": {
                 "description": "Update or create a event type for Streams.",
@@ -27501,7 +27667,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/stream/event-type/{name}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"name\": \"user.signup\",\n        \"description\": null\n    }'"
                     }
-                ]
+                ],
+                "x-hidden": true
             }
         },
         "/api/v1/stream/{stream_id}": {
@@ -27609,7 +27776,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/stream/{stream_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
                     }
-                ]
+                ],
+                "x-hidden": true
             },
             "get": {
                 "description": "Get a stream by id or uid.",
@@ -27722,7 +27890,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/stream/{stream_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
                     }
-                ]
+                ],
+                "x-hidden": true
             },
             "patch": {
                 "description": "Partially update a stream.",
@@ -27845,7 +28014,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/stream/{stream_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"uid\": null\n    }'"
                     }
-                ]
+                ],
+                "x-hidden": true
             },
             "put": {
                 "description": "Update a stream.",
@@ -27978,7 +28148,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/stream/{stream_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"uid\": null\n    }'"
                     }
-                ]
+                ],
+                "x-hidden": true
             }
         },
         "/api/v1/stream/{stream_id}/events": {
@@ -28127,7 +28298,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/stream/{stream_id}/events' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
                     }
-                ]
+                ],
+                "x-hidden": true
             },
             "post": {
                 "description": "Creates events on the Stream.",
@@ -28259,7 +28431,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/stream/{stream_id}/events' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"stream\": null\n    }'"
                     }
-                ]
+                ],
+                "x-hidden": true
             }
         },
         "/api/v1/transformation-template": {
@@ -28455,7 +28628,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/transformation-template' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
                     }
-                ]
+                ],
+                "x-hidden": true
             },
             "post": {
                 "description": "Create a new transformation template.",
@@ -28475,7 +28649,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/TemplateIn"
+                                "$ref": "#/components/schemas/ConnectorIn"
                             }
                         }
                     },
@@ -28586,42 +28760,42 @@
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "template_out = svix.transformation_template.create(TemplateIn(\n    instructions_link=None,\n    filter_types=[\"user.signup\", \"user.deleted\"],\n    feature_flag=\"cool-new-feature\"\n), options=...)"
+                        "source": "template_out = svix.transformation_template.create(ConnectorIn(\n    instructions_link=None,\n    filter_types=[\"user.signup\", \"user.deleted\"],\n    feature_flag=\"cool-new-feature\"\n), options=...)"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "template_out = await svix.transformation_template.create(TemplateIn(\n    instructions_link=None,\n    filter_types=[\"user.signup\", \"user.deleted\"],\n    feature_flag=\"cool-new-feature\"\n), options=...)"
+                        "source": "template_out = await svix.transformation_template.create(ConnectorIn(\n    instructions_link=None,\n    filter_types=[\"user.signup\", \"user.deleted\"],\n    feature_flag=\"cool-new-feature\"\n), options=...)"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "templateOut, err := svixClient.TransformationTemplate.Create(ctx, &TemplateIn{\n    InstructionsLink: nil,\n    FilterTypes: []string{\"user.signup\", \"user.deleted\"},\n    FeatureFlag: \"cool-new-feature\",\n})"
+                        "source": "templateOut, err := svixClient.TransformationTemplate.Create(ctx, &ConnectorIn{\n    InstructionsLink: nil,\n    FilterTypes: []string{\"user.signup\", \"user.deleted\"},\n    FeatureFlag: \"cool-new-feature\",\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val templateOut = svix.transformationTemplate.create(TemplateIn()\n    .instructionsLink(null)\n    .filterTypes(arrayOf(\"user.signup\", \"user.deleted\"))\n    .featureFlag(\"cool-new-feature\")\n)"
+                        "source": "val templateOut = svix.transformationTemplate.create(ConnectorIn()\n    .instructionsLink(null)\n    .filterTypes(arrayOf(\"user.signup\", \"user.deleted\"))\n    .featureFlag(\"cool-new-feature\")\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "TemplateOut templateOut = svix.getTransformationTemplate().create(new TemplateIn()\n    .instructionsLink(null)\n    .filterTypes(new String[]{\"user.signup\", \"user.deleted\"})\n    .featureFlag(\"cool-new-feature\")\n);"
+                        "source": "TemplateOut templateOut = svix.getTransformationTemplate().create(new ConnectorIn()\n    .instructionsLink(null)\n    .filterTypes(new String[]{\"user.signup\", \"user.deleted\"})\n    .featureFlag(\"cool-new-feature\")\n);"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "template_out = svix.transformation_template.create(Svix::TemplateIn.new({\n    \"instructions_link\": nil,\n    \"filter_types\": [\"user.signup\", \"user.deleted\"],\n    \"feature_flag\": \"cool-new-feature\"\n}))"
+                        "source": "template_out = svix.transformation_template.create(Svix::ConnectorIn.new({\n    \"instructions_link\": nil,\n    \"filter_types\": [\"user.signup\", \"user.deleted\"],\n    \"feature_flag\": \"cool-new-feature\"\n}))"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let template_out = svix.transformation_template().create(TemplateIn {\n    instructions_link: None,\n    filter_types: Some(vec![\"user.signup\".to_string(), \"user.deleted\".to_string()]),\n    feature_flag: Some(\"cool-new-feature\".to_string()),\n}, None).await?;"
+                        "source": "let template_out = svix.transformation_template().create(ConnectorIn {\n    instructions_link: None,\n    filter_types: Some(vec![\"user.signup\".to_string(), \"user.deleted\".to_string()]),\n    feature_flag: Some(\"cool-new-feature\".to_string()),\n}, None).await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var templateOut = await svix.TransformationTemplate.CreateAsync(new TemplateIn{\n    instructionsLink: null,\n    filterTypes: new string[] {\"user.signup\", \"user.deleted\"},\n    featureFlag: \"cool-new-feature\"\n});"
+                        "source": "var templateOut = await svix.TransformationTemplate.CreateAsync(new ConnectorIn{\n    instructionsLink: null,\n    filterTypes: new string[] {\"user.signup\", \"user.deleted\"},\n    featureFlag: \"cool-new-feature\"\n});"
                     },
                     {
                         "label": "CLI",
@@ -28633,7 +28807,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/transformation-template' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"instructionsLink\": null,\n        \"filterTypes\": [\"user.signup\", \"user.deleted\"],\n        \"featureFlag\": \"cool-new-feature\"\n    }'"
                     }
-                ]
+                ],
+                "x-hidden": true
             }
         },
         "/api/v1/transformation-template/generate": {
@@ -28813,7 +28988,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/generate' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '\n    }'"
                     }
-                ]
+                ],
+                "x-hidden": true
             }
         },
         "/api/v1/transformation-template/oauth/discord": {
@@ -28938,7 +29114,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/oauth/discord' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '\n    }'"
                     }
-                ]
+                ],
+                "x-hidden": true
             }
         },
         "/api/v1/transformation-template/oauth/hubspot": {
@@ -29063,7 +29240,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/oauth/hubspot' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '\n    }'"
                     }
-                ]
+                ],
+                "x-hidden": true
             }
         },
         "/api/v1/transformation-template/oauth/slack": {
@@ -29188,7 +29366,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/oauth/slack' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '\n    }'"
                     }
-                ]
+                ],
+                "x-hidden": true
             }
         },
         "/api/v1/transformation-template/simulate": {
@@ -29368,7 +29547,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/simulate' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"eventType\": \"user.signup\",\n        \"channels\": null\n    }'"
                     }
-                ]
+                ],
+                "x-hidden": true
             }
         },
         "/api/v1/transformation-template/{transformation_template_id}": {
@@ -29531,7 +29711,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/{transformation_template_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
                     }
-                ]
+                ],
+                "x-hidden": true
             },
             "get": {
                 "description": "Get a transformation template.",
@@ -29699,7 +29880,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/{transformation_template_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
                     }
-                ]
+                ],
+                "x-hidden": true
             },
             "patch": {
                 "description": "Partially update a transformation template.",
@@ -29877,7 +30059,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/{transformation_template_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"instructionsLink\": null,\n        \"filterTypes\": [\"user.signup\", \"user.deleted\"],\n        \"featureFlag\": \"cool-new-feature\"\n    }'"
                     }
-                ]
+                ],
+                "x-hidden": true
             },
             "put": {
                 "description": "Update a transformation template.",
@@ -30065,7 +30248,8 @@
                         "lang": "Shell",
                         "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/{transformation_template_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"instructionsLink\": null,\n        \"filterTypes\": [\"user.signup\", \"user.deleted\"],\n        \"featureFlag\": \"cool-new-feature\"\n    }'"
                     }
-                ]
+                ],
+                "x-hidden": true
             }
         }
     },
