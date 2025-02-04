@@ -126,7 +126,6 @@ pub enum EndpointCommands {
     /// List the application's endpoints.
     List {
         app_id: String,
-
         #[clap(flatten)]
         options: EndpointListOptions,
     },
@@ -217,7 +216,6 @@ pub enum EndpointCommands {
     GetStats {
         app_id: String,
         id: String,
-
         #[clap(flatten)]
         options: EndpointGetStatsOptions,
     },
