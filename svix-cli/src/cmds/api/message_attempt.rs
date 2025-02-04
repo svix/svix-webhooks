@@ -254,7 +254,6 @@ pub enum MessageAttemptCommands {
     ListByEndpoint {
         app_id: String,
         endpoint_id: String,
-
         #[clap(flatten)]
         options: MessageAttemptListByEndpointOptions,
     },
@@ -267,7 +266,6 @@ pub enum MessageAttemptCommands {
     ListByMsg {
         app_id: String,
         msg_id: String,
-
         #[clap(flatten)]
         options: MessageAttemptListByMsgOptions,
     },
@@ -282,7 +280,6 @@ pub enum MessageAttemptCommands {
     ListAttemptedMessages {
         app_id: String,
         endpoint_id: String,
-
         #[clap(flatten)]
         options: MessageAttemptListAttemptedMessagesOptions,
     },
@@ -308,7 +305,6 @@ pub enum MessageAttemptCommands {
     ListAttemptedDestinations {
         app_id: String,
         msg_id: String,
-
         #[clap(flatten)]
         options: MessageAttemptListAttemptedDestinationsOptions,
     },

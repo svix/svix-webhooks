@@ -115,7 +115,6 @@ pub enum MessageCommands {
     /// set the `before` or `after` parameter as appropriate.
     List {
         app_id: String,
-
         #[clap(flatten)]
         options: MessageListOptions,
     },

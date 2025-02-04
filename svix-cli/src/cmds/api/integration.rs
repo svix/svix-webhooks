@@ -68,7 +68,6 @@ pub enum IntegrationCommands {
     /// List the application's integrations.
     List {
         app_id: String,
-
         #[clap(flatten)]
         options: IntegrationListOptions,
     },
