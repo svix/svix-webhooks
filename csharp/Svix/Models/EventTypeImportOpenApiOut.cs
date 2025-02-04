@@ -1,11 +1,11 @@
 // this file is @generated
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Svix.Models
 {
-    public class EventTypeImportOpenApiOut(EventTypeImportOpenApiOutData data) : BaseModel
+    public class EventTypeImportOpenApiOut : BaseModel
     {
-        [JsonPropertyName("data")]
-        public EventTypeImportOpenApiOutData Data { get; set; } = data;
+        [JsonProperty("data")]
+        public required EventTypeImportOpenApiOutData Data { get; set; }
     }
 }

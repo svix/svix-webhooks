@@ -1,5 +1,5 @@
 // this file is @generated
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Svix.Models
 {
@@ -9,23 +9,18 @@ namespace Svix.Models
     /// The OpenAPI spec can be specified as either `spec` given the spec as a JSON object, or as `specRaw` (a `string`) which will be parsed as YAML or JSON by the server. Sending neither or both is invalid, resulting in a `400` **Bad Request**.
     /// <summary>
 
-    public class EventTypeImportOpenApiIn(
-        string? specRaw = null,
-        Object? spec = null,
-        bool? replaceAll = null,
-        bool? dryRun = null
-    ) : BaseModel
+    public class EventTypeImportOpenApiIn : BaseModel
     {
-        [JsonPropertyName("dryRun")]
-        public bool? DryRun { get; set; } = dryRun;
+        [JsonProperty("dryRun")]
+        public bool? DryRun { get; set; } = null;
 
-        [JsonPropertyName("replaceAll")]
-        public bool? ReplaceAll { get; set; } = replaceAll;
+        [JsonProperty("replaceAll")]
+        public bool? ReplaceAll { get; set; } = null;
 
-        [JsonPropertyName("spec")]
-        public Object? Spec { get; set; } = spec;
+        [JsonProperty("spec")]
+        public Object? Spec { get; set; } = null;
 
-        [JsonPropertyName("specRaw")]
-        public string? SpecRaw { get; set; } = specRaw;
+        [JsonProperty("specRaw")]
+        public string? SpecRaw { get; set; } = null;
     }
 }

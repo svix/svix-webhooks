@@ -1,25 +1,24 @@
 // this file is @generated
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Svix.Models
 {
-    public class ApplicationPatch(
-        string? uid = null,
-        ushort? rateLimit = null,
-        string? name = null,
-        Dictionary<string, string>? metadata = null
-    ) : BaseModel
+    public class ApplicationPatch : BaseModel
     {
-        [JsonPropertyName("metadata")]
-        public Dictionary<string, string>? Metadata { get; set; } = metadata;
+        [JsonProperty("metadata")]
+        public Dictionary<string, string>? Metadata { get; set; } = null;
 
-        [JsonPropertyName("name")]
-        public string? Name { get; set; } = name;
+        [JsonProperty("name")]
+        public string? Name { get; set; } = null;
 
-        [JsonPropertyName("rateLimit")]
-        public ushort? RateLimit { get; set; } = rateLimit;
+        [JsonProperty("rateLimit")]
+        public MaybeUnset<ushort?> RateLimit { get; set; } = MaybeUnset<ushort?>.Unset();
 
-        [JsonPropertyName("uid")]
-        public string? Uid { get; set; } = uid;
+        public bool ShouldSerializeRateLimit() => !RateLimit.IsUnset;
+
+        [JsonProperty("uid")]
+        public MaybeUnset<string?> Uid { get; set; } = MaybeUnset<string?>.Unset();
+
+        public bool ShouldSerializeUid() => !Uid.IsUnset;
     }
 }

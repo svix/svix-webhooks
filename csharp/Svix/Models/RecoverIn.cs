@@ -1,14 +1,14 @@
 // this file is @generated
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Svix.Models
 {
-    public class RecoverIn(DateTime since, DateTime? until = null) : BaseModel
+    public class RecoverIn : BaseModel
     {
-        [JsonPropertyName("since")]
-        public DateTime Since { get; set; } = since;
+        [JsonProperty("since")]
+        public required DateTime Since { get; set; }
 
-        [JsonPropertyName("until")]
-        public DateTime? Until { get; set; } = until;
+        [JsonProperty("until")]
+        public DateTime? Until { get; set; } = null;
     }
 }

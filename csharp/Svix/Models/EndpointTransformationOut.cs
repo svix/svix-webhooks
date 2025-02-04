@@ -1,14 +1,14 @@
 // this file is @generated
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Svix.Models
 {
-    public class EndpointTransformationOut(bool? enabled = null, string? code = null) : BaseModel
+    public class EndpointTransformationOut : BaseModel
     {
-        [JsonPropertyName("code")]
-        public string? Code { get; set; } = code;
+        [JsonProperty("code")]
+        public string? Code { get; set; } = null;
 
-        [JsonPropertyName("enabled")]
-        public bool? Enabled { get; set; } = enabled;
+        [JsonProperty("enabled")]
+        public bool? Enabled { get; set; } = null;
     }
 }

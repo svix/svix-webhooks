@@ -1,25 +1,20 @@
 // this file is @generated
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Svix.Models
 {
-    public class ApplicationIn(
-        string name,
-        string? uid = null,
-        ushort? rateLimit = null,
-        Dictionary<string, string>? metadata = null
-    ) : BaseModel
+    public class ApplicationIn : BaseModel
     {
-        [JsonPropertyName("metadata")]
-        public Dictionary<string, string>? Metadata { get; set; } = metadata;
+        [JsonProperty("metadata")]
+        public Dictionary<string, string>? Metadata { get; set; } = null;
 
-        [JsonPropertyName("name")]
-        public string Name { get; set; } = name;
+        [JsonProperty("name")]
+        public required string Name { get; set; }
 
-        [JsonPropertyName("rateLimit")]
-        public ushort? RateLimit { get; set; } = rateLimit;
+        [JsonProperty("rateLimit")]
+        public ushort? RateLimit { get; set; } = null;
 
-        [JsonPropertyName("uid")]
-        public string? Uid { get; set; } = uid;
+        [JsonProperty("uid")]
+        public string? Uid { get; set; } = null;
     }
 }

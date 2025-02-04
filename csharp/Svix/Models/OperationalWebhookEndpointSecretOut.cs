@@ -1,11 +1,11 @@
 // this file is @generated
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Svix.Models
 {
-    public class OperationalWebhookEndpointSecretOut(string key) : BaseModel
+    public class OperationalWebhookEndpointSecretOut : BaseModel
     {
-        [JsonPropertyName("key")]
-        public string Key { get; set; } = key;
+        [JsonProperty("key")]
+        public required string Key { get; set; }
     }
 }

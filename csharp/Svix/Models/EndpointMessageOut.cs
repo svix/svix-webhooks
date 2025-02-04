@@ -1,5 +1,5 @@
 // this file is @generated
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Svix.Models
 {
@@ -7,43 +7,33 @@ namespace Svix.Models
     /// A model containing information on a given message plus additional fields on the last attempt for that message.
     /// <summary>
 
-    public class EndpointMessageOut(
-        DateTime timestamp,
-        MessageStatus status,
-        Object payload,
-        string id,
-        string eventType,
-        List<string>? tags = null,
-        DateTime? nextAttempt = null,
-        string? eventId = null,
-        List<string>? channels = null
-    ) : BaseModel
+    public class EndpointMessageOut : BaseModel
     {
-        [JsonPropertyName("channels")]
-        public List<string>? Channels { get; set; } = channels;
+        [JsonProperty("channels")]
+        public List<string>? Channels { get; set; } = null;
 
-        [JsonPropertyName("eventId")]
-        public string? EventId { get; set; } = eventId;
+        [JsonProperty("eventId")]
+        public string? EventId { get; set; } = null;
 
-        [JsonPropertyName("eventType")]
-        public string EventType { get; set; } = eventType;
+        [JsonProperty("eventType")]
+        public required string EventType { get; set; }
 
-        [JsonPropertyName("id")]
-        public string Id { get; set; } = id;
+        [JsonProperty("id")]
+        public required string Id { get; set; }
 
-        [JsonPropertyName("nextAttempt")]
-        public DateTime? NextAttempt { get; set; } = nextAttempt;
+        [JsonProperty("nextAttempt")]
+        public DateTime? NextAttempt { get; set; } = null;
 
-        [JsonPropertyName("payload")]
-        public Object Payload { get; set; } = payload;
+        [JsonProperty("payload")]
+        public required Object Payload { get; set; }
 
-        [JsonPropertyName("status")]
-        public MessageStatus Status { get; set; } = status;
+        [JsonProperty("status")]
+        public required MessageStatus Status { get; set; }
 
-        [JsonPropertyName("tags")]
-        public List<string>? Tags { get; set; } = tags;
+        [JsonProperty("tags")]
+        public List<string>? Tags { get; set; } = null;
 
-        [JsonPropertyName("timestamp")]
-        public DateTime Timestamp { get; set; } = timestamp;
+        [JsonProperty("timestamp")]
+        public required DateTime Timestamp { get; set; }
     }
 }

@@ -1,61 +1,47 @@
 // this file is @generated
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Svix.Models
 {
-    public class MessageEndpointOut(
-        int version,
-        string url,
-        DateTime updatedAt,
-        MessageStatus status,
-        string id,
-        string description,
-        DateTime createdAt,
-        string? uid = null,
-        ushort? rateLimit = null,
-        DateTime? nextAttempt = null,
-        List<string>? filterTypes = null,
-        bool? disabled = null,
-        List<string>? channels = null
-    ) : BaseModel
+    public class MessageEndpointOut : BaseModel
     {
-        [JsonPropertyName("channels")]
-        public List<string>? Channels { get; set; } = channels;
+        [JsonProperty("channels")]
+        public List<string>? Channels { get; set; } = null;
 
-        [JsonPropertyName("createdAt")]
-        public DateTime CreatedAt { get; set; } = createdAt;
+        [JsonProperty("createdAt")]
+        public required DateTime CreatedAt { get; set; }
 
-        [JsonPropertyName("description")]
-        public string Description { get; set; } = description;
+        [JsonProperty("description")]
+        public required string Description { get; set; }
 
-        [JsonPropertyName("disabled")]
-        public bool? Disabled { get; set; } = disabled;
+        [JsonProperty("disabled")]
+        public bool? Disabled { get; set; } = null;
 
-        [JsonPropertyName("filterTypes")]
-        public List<string>? FilterTypes { get; set; } = filterTypes;
+        [JsonProperty("filterTypes")]
+        public List<string>? FilterTypes { get; set; } = null;
 
-        [JsonPropertyName("id")]
-        public string Id { get; set; } = id;
+        [JsonProperty("id")]
+        public required string Id { get; set; }
 
-        [JsonPropertyName("nextAttempt")]
-        public DateTime? NextAttempt { get; set; } = nextAttempt;
+        [JsonProperty("nextAttempt")]
+        public DateTime? NextAttempt { get; set; } = null;
 
-        [JsonPropertyName("rateLimit")]
-        public ushort? RateLimit { get; set; } = rateLimit;
+        [JsonProperty("rateLimit")]
+        public ushort? RateLimit { get; set; } = null;
 
-        [JsonPropertyName("status")]
-        public MessageStatus Status { get; set; } = status;
+        [JsonProperty("status")]
+        public required MessageStatus Status { get; set; }
 
-        [JsonPropertyName("uid")]
-        public string? Uid { get; set; } = uid;
+        [JsonProperty("uid")]
+        public string? Uid { get; set; } = null;
 
-        [JsonPropertyName("updatedAt")]
-        public DateTime UpdatedAt { get; set; } = updatedAt;
+        [JsonProperty("updatedAt")]
+        public required DateTime UpdatedAt { get; set; }
 
-        [JsonPropertyName("url")]
-        public string Url { get; set; } = url;
+        [JsonProperty("url")]
+        public required string Url { get; set; }
 
-        [JsonPropertyName("version")]
-        public int Version { get; set; } = version;
+        [JsonProperty("version")]
+        public required int Version { get; set; }
     }
 }

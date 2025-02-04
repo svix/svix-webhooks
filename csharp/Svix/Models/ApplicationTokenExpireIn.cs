@@ -1,11 +1,11 @@
 // this file is @generated
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Svix.Models
 {
-    public class ApplicationTokenExpireIn(long? expiry = null) : BaseModel
+    public class ApplicationTokenExpireIn : BaseModel
     {
-        [JsonPropertyName("expiry")]
-        public long? Expiry { get; set; } = expiry;
+        [JsonProperty("expiry")]
+        public long? Expiry { get; set; } = null;
     }
 }

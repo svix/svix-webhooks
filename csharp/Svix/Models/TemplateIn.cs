@@ -1,45 +1,35 @@
 // this file is @generated
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Svix.Models
 {
-    public class TemplateIn(
-        string transformation,
-        string name,
-        string logo,
-        TransformationTemplateKind? kind = null,
-        string? instructionsLink = null,
-        string? instructions = null,
-        List<string>? filterTypes = null,
-        string? featureFlag = null,
-        string? description = null
-    ) : BaseModel
+    public class TemplateIn : BaseModel
     {
-        [JsonPropertyName("description")]
-        public string? Description { get; set; } = description;
+        [JsonProperty("description")]
+        public string? Description { get; set; } = null;
 
-        [JsonPropertyName("featureFlag")]
-        public string? FeatureFlag { get; set; } = featureFlag;
+        [JsonProperty("featureFlag")]
+        public string? FeatureFlag { get; set; } = null;
 
-        [JsonPropertyName("filterTypes")]
-        public List<string>? FilterTypes { get; set; } = filterTypes;
+        [JsonProperty("filterTypes")]
+        public List<string>? FilterTypes { get; set; } = null;
 
-        [JsonPropertyName("instructions")]
-        public string? Instructions { get; set; } = instructions;
+        [JsonProperty("instructions")]
+        public string? Instructions { get; set; } = null;
 
-        [JsonPropertyName("instructionsLink")]
-        public string? InstructionsLink { get; set; } = instructionsLink;
+        [JsonProperty("instructionsLink")]
+        public string? InstructionsLink { get; set; } = null;
 
-        [JsonPropertyName("kind")]
-        public TransformationTemplateKind? Kind { get; set; } = kind;
+        [JsonProperty("kind")]
+        public TransformationTemplateKind? Kind { get; set; } = null;
 
-        [JsonPropertyName("logo")]
-        public string Logo { get; set; } = logo;
+        [JsonProperty("logo")]
+        public required string Logo { get; set; }
 
-        [JsonPropertyName("name")]
-        public string Name { get; set; } = name;
+        [JsonProperty("name")]
+        public required string Name { get; set; }
 
-        [JsonPropertyName("transformation")]
-        public string Transformation { get; set; } = transformation;
+        [JsonProperty("transformation")]
+        public required string Transformation { get; set; }
     }
 }

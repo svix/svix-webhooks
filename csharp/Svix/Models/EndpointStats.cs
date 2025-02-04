@@ -1,20 +1,20 @@
 // this file is @generated
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Svix.Models
 {
-    public class EndpointStats(long success, long sending, long pending, long fail) : BaseModel
+    public class EndpointStats : BaseModel
     {
-        [JsonPropertyName("fail")]
-        public long Fail { get; set; } = fail;
+        [JsonProperty("fail")]
+        public required long Fail { get; set; }
 
-        [JsonPropertyName("pending")]
-        public long Pending { get; set; } = pending;
+        [JsonProperty("pending")]
+        public required long Pending { get; set; }
 
-        [JsonPropertyName("sending")]
-        public long Sending { get; set; } = sending;
+        [JsonProperty("sending")]
+        public required long Sending { get; set; }
 
-        [JsonPropertyName("success")]
-        public long Success { get; set; } = success;
+        [JsonProperty("success")]
+        public required long Success { get; set; }
     }
 }

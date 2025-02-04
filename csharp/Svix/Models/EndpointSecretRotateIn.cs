@@ -1,11 +1,11 @@
 // this file is @generated
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Svix.Models
 {
-    public class EndpointSecretRotateIn(string? key = null) : BaseModel
+    public class EndpointSecretRotateIn : BaseModel
     {
-        [JsonPropertyName("key")]
-        public string? Key { get; set; } = key;
+        [JsonProperty("key")]
+        public string? Key { get; set; } = null;
     }
 }

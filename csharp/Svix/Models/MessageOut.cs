@@ -1,37 +1,29 @@
 // this file is @generated
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Svix.Models
 {
-    public class MessageOut(
-        DateTime timestamp,
-        Object payload,
-        string id,
-        string eventType,
-        List<string>? tags = null,
-        string? eventId = null,
-        List<string>? channels = null
-    ) : BaseModel
+    public class MessageOut : BaseModel
     {
-        [JsonPropertyName("channels")]
-        public List<string>? Channels { get; set; } = channels;
+        [JsonProperty("channels")]
+        public List<string>? Channels { get; set; } = null;
 
-        [JsonPropertyName("eventId")]
-        public string? EventId { get; set; } = eventId;
+        [JsonProperty("eventId")]
+        public string? EventId { get; set; } = null;
 
-        [JsonPropertyName("eventType")]
-        public string EventType { get; set; } = eventType;
+        [JsonProperty("eventType")]
+        public required string EventType { get; set; }
 
-        [JsonPropertyName("id")]
-        public string Id { get; set; } = id;
+        [JsonProperty("id")]
+        public required string Id { get; set; }
 
-        [JsonPropertyName("payload")]
-        public Object Payload { get; set; } = payload;
+        [JsonProperty("payload")]
+        public required Object Payload { get; set; }
 
-        [JsonPropertyName("tags")]
-        public List<string>? Tags { get; set; } = tags;
+        [JsonProperty("tags")]
+        public List<string>? Tags { get; set; } = null;
 
-        [JsonPropertyName("timestamp")]
-        public DateTime Timestamp { get; set; } = timestamp;
+        [JsonProperty("timestamp")]
+        public required DateTime Timestamp { get; set; }
     }
 }

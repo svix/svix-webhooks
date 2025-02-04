@@ -1,11 +1,11 @@
 // this file is @generated
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Svix.Models
 {
-    public class OperationalWebhookEndpointHeadersIn(Dictionary<string, string> headers) : BaseModel
+    public class OperationalWebhookEndpointHeadersIn : BaseModel
     {
-        [JsonPropertyName("headers")]
-        public Dictionary<string, string> Headers { get; set; } = headers;
+        [JsonProperty("headers")]
+        public required Dictionary<string, string> Headers { get; set; }
     }
 }

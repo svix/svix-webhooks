@@ -1,14 +1,14 @@
 // this file is @generated
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Svix.Models
 {
-    public class AppPortalAccessOut(string url, string token) : BaseModel
+    public class AppPortalAccessOut : BaseModel
     {
-        [JsonPropertyName("token")]
-        public string Token { get; set; } = token;
+        [JsonProperty("token")]
+        public required string Token { get; set; }
 
-        [JsonPropertyName("url")]
-        public string Url { get; set; } = url;
+        [JsonProperty("url")]
+        public required string Url { get; set; }
     }
 }

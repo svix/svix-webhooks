@@ -1,18 +1,17 @@
 // this file is @generated
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Svix.Models
 {
-    public class AppUsageStatsIn(DateTime until, DateTime since, List<string>? appIds = null)
-        : BaseModel
+    public class AppUsageStatsIn : BaseModel
     {
-        [JsonPropertyName("appIds")]
-        public List<string>? AppIds { get; set; } = appIds;
+        [JsonProperty("appIds")]
+        public List<string>? AppIds { get; set; } = null;
 
-        [JsonPropertyName("since")]
-        public DateTime Since { get; set; } = since;
+        [JsonProperty("since")]
+        public required DateTime Since { get; set; }
 
-        [JsonPropertyName("until")]
-        public DateTime Until { get; set; } = until;
+        [JsonProperty("until")]
+        public required DateTime Until { get; set; }
     }
 }

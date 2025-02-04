@@ -1,49 +1,38 @@
 // this file is @generated
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Svix.Models
 {
-    public class OperationalWebhookEndpointOut(
-        string url,
-        DateTime updatedAt,
-        Dictionary<string, string> metadata,
-        string id,
-        string description,
-        DateTime createdAt,
-        string? uid = null,
-        ushort? rateLimit = null,
-        List<string>? filterTypes = null,
-        bool? disabled = null
-    ) : BaseModel
+    public class OperationalWebhookEndpointOut : BaseModel
     {
-        [JsonPropertyName("createdAt")]
-        public DateTime CreatedAt { get; set; } = createdAt;
+        [JsonProperty("createdAt")]
+        public required DateTime CreatedAt { get; set; }
 
-        [JsonPropertyName("description")]
-        public string Description { get; set; } = description;
+        [JsonProperty("description")]
+        public required string Description { get; set; }
 
-        [JsonPropertyName("disabled")]
-        public bool? Disabled { get; set; } = disabled;
+        [JsonProperty("disabled")]
+        public bool? Disabled { get; set; } = null;
 
-        [JsonPropertyName("filterTypes")]
-        public List<string>? FilterTypes { get; set; } = filterTypes;
+        [JsonProperty("filterTypes")]
+        public List<string>? FilterTypes { get; set; } = null;
 
-        [JsonPropertyName("id")]
-        public string Id { get; set; } = id;
+        [JsonProperty("id")]
+        public required string Id { get; set; }
 
-        [JsonPropertyName("metadata")]
-        public Dictionary<string, string> Metadata { get; set; } = metadata;
+        [JsonProperty("metadata")]
+        public required Dictionary<string, string> Metadata { get; set; }
 
-        [JsonPropertyName("rateLimit")]
-        public ushort? RateLimit { get; set; } = rateLimit;
+        [JsonProperty("rateLimit")]
+        public ushort? RateLimit { get; set; } = null;
 
-        [JsonPropertyName("uid")]
-        public string? Uid { get; set; } = uid;
+        [JsonProperty("uid")]
+        public string? Uid { get; set; } = null;
 
-        [JsonPropertyName("updatedAt")]
-        public DateTime UpdatedAt { get; set; } = updatedAt;
+        [JsonProperty("updatedAt")]
+        public required DateTime UpdatedAt { get; set; }
 
-        [JsonPropertyName("url")]
-        public string Url { get; set; } = url;
+        [JsonProperty("url")]
+        public required string Url { get; set; }
     }
 }

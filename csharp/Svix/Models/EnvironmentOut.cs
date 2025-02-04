@@ -1,29 +1,23 @@
 // this file is @generated
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Svix.Models
 {
-    public class EnvironmentOut(
-        List<TemplateOut> transformationTemplates,
-        Object? settings,
-        List<EventTypeOut> eventTypes,
-        DateTime createdAt,
-        long? version = null
-    ) : BaseModel
+    public class EnvironmentOut : BaseModel
     {
-        [JsonPropertyName("createdAt")]
-        public DateTime CreatedAt { get; set; } = createdAt;
+        [JsonProperty("createdAt")]
+        public required DateTime CreatedAt { get; set; }
 
-        [JsonPropertyName("eventTypes")]
-        public List<EventTypeOut> EventTypes { get; set; } = eventTypes;
+        [JsonProperty("eventTypes")]
+        public required List<EventTypeOut> EventTypes { get; set; }
 
-        [JsonPropertyName("settings")]
-        public Object? Settings { get; set; } = settings;
+        [JsonProperty("settings")]
+        public Object? Settings { get; set; } = null;
 
-        [JsonPropertyName("transformationTemplates")]
-        public List<TemplateOut> TransformationTemplates { get; set; } = transformationTemplates;
+        [JsonProperty("transformationTemplates")]
+        public required List<TemplateOut> TransformationTemplates { get; set; }
 
-        [JsonPropertyName("version")]
-        public long? Version { get; set; } = version;
+        [JsonProperty("version")]
+        public long? Version { get; set; } = null;
     }
 }
