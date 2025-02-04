@@ -176,5 +176,4 @@ def test_sign_function():
 
     wh = Webhook(key)
     signature = wh.sign(msg_id=msg_id, timestamp=timestamp, data=payload)
-    print(signature)
     assert signature == expected

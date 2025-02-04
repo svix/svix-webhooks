@@ -8,7 +8,9 @@ from datetime import datetime, timezone
 import httpx
 
 from .client import AuthenticatedClient
-from .http_error import HttpError
+
+from .errors.http_error import HttpError
+from .errors.http_validation_error import HTTPValidationError
 
 
 def ensure_tz(x: t.Optional[datetime]) -> t.Optional[datetime]:
@@ -181,4 +183,9 @@ def _filter_response_for_errors_response(response: httpx.Response) -> httpx.Resp
     if 200 <= response.status_code <= 299:
         return response
     else:
-        raise HttpError.init_exception(response.json(), response.status_code)
+        if response.status_code == 422:
+            raise HTTPValidationError.init_exception(
+                response.json(), response.status_code
+            )
+        else:
+            raise HttpError.init_exception(response.json(), response.status_code)
