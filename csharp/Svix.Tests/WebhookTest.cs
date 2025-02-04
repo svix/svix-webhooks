@@ -20,7 +20,6 @@ namespace Svix.Tests
 
         public string secret;
         public string payload;
-        public string signature;
 
         public TestPayload(DateTimeOffset timestamp)
         {
