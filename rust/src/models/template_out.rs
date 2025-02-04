@@ -1,7 +1,7 @@
 // this file is @generated
 use serde::{Deserialize, Serialize};
 
-use super::transformation_template_kind::TransformationTemplateKind;
+use super::connector_kind::ConnectorKind;
 
 #[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
 pub struct TemplateOut {
@@ -26,7 +26,7 @@ pub struct TemplateOut {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub instructions_link: Option<String>,
 
-    pub kind: TransformationTemplateKind,
+    pub kind: ConnectorKind,
 
     pub logo: String,
 
@@ -47,7 +47,7 @@ impl TemplateOut {
         description: String,
         id: String,
         instructions: String,
-        kind: TransformationTemplateKind,
+        kind: ConnectorKind,
         logo: String,
         name: String,
         org_id: String,

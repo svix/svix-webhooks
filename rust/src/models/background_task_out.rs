@@ -1,4 +1,4 @@
-// this file is @generated (with minor manual edits)
+// this file is @generated
 use serde::{Deserialize, Serialize};
 
 use super::{

@@ -1,10 +1,10 @@
 // this file is @generated
 use serde::{Deserialize, Serialize};
 
-use super::transformation_template_kind::TransformationTemplateKind;
+use super::connector_kind::ConnectorKind;
 
 #[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
-pub struct TemplateIn {
+pub struct ConnectorIn {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
 
@@ -24,7 +24,7 @@ pub struct TemplateIn {
     pub instructions_link: Option<String>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub kind: Option<TransformationTemplateKind>,
+    pub kind: Option<ConnectorKind>,
 
     pub logo: String,
 
@@ -33,7 +33,7 @@ pub struct TemplateIn {
     pub transformation: String,
 }
 
-impl TemplateIn {
+impl ConnectorIn {
     pub fn new(logo: String, name: String, transformation: String) -> Self {
         Self {
             description: None,

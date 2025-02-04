@@ -36,14 +36,6 @@ pub enum StatusCodeClass {
 
 impl fmt::Display for StatusCodeClass {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let value = match self {
-            Self::CodeNone => "0",
-            Self::Code1xx => "100",
-            Self::Code2xx => "200",
-            Self::Code3xx => "300",
-            Self::Code4xx => "400",
-            Self::Code5xx => "500",
-        };
-        f.write_str(value)
+        write!(f, "{}", *self as i64)
     }
 }
