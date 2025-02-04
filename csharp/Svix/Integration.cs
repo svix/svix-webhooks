@@ -1,339 +1,477 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
+// this file is @generated
+#nullable enable
 using Microsoft.Extensions.Logging;
-using Svix.Abstractions;
-using Svix.Api;
-using Svix.Client;
-using Svix.Model;
 using Svix.Models;
 
 namespace Svix
 {
-    public sealed class Integration : SvixResourceBase, IIntegration
+    public class IntegrationListOptions : SvixOptionsBase
     {
-        private readonly IIntegrationApi _integrationApi;
+        public ulong? Limit { get; set; }
+        public string? Iterator { get; set; }
+        public Ordering? Order { get; set; }
 
-        public Integration(ISvixClient svixClient, IIntegrationApi integrationApi) : base(svixClient)
+        public new Dictionary<string, string> QueryParams()
         {
-            _integrationApi = integrationApi ?? throw new ArgumentNullException(nameof(integrationApi));
+            return SerializeParams(
+                new Dictionary<string, object?>
+                {
+                    { "limit", Limit },
+                    { "iterator", Iterator },
+                    { "order", Order },
+                }
+            );
         }
+    }
 
-        public IntegrationOut Create(string appId, IntegrationIn integration, string idempotencyKey = default)
+    public class IntegrationCreateOptions : SvixOptionsBase
+    {
+        public string? IdempotencyKey { get; set; }
+
+        public new Dictionary<string, string> HeaderParams()
+        {
+            return SerializeParams(
+                new Dictionary<string, object?> { { "idempotency-key", IdempotencyKey } }
+            );
+        }
+    }
+
+    public class IntegrationRotateKeyOptions : SvixOptionsBase
+    {
+        public string? IdempotencyKey { get; set; }
+
+        public new Dictionary<string, string> HeaderParams()
+        {
+            return SerializeParams(
+                new Dictionary<string, object?> { { "idempotency-key", IdempotencyKey } }
+            );
+        }
+    }
+
+    public class Integration(SvixClient client)
+    {
+        readonly SvixClient _client = client;
+
+        /// <summary>
+        /// List the application's integrations.
+        /// </summary>
+        public async Task<ListResponseIntegrationOut> ListAsync(
+            string appId,
+            IntegrationListOptions? options = null,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
-                var lIntegration = _integrationApi.V1IntegrationCreate(
-                    appId,
-                    integration,
-                    idempotencyKey);
-
-                return lIntegration;
+                var response =
+                    await _client.SvixHttpClient.SendRequestAsync<ListResponseIntegrationOut>(
+                        method: HttpMethod.Get,
+                        path: "/api/v1/app/{app_id}/integration",
+                        pathParams: new Dictionary<string, string> { { "app_id", appId } },
+                        queryParams: options?.QueryParams(),
+                        headerParams: options?.HeaderParams(),
+                        cancellationToken: cancellationToken
+                    );
+                return response.Data;
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(Create)} failed");
+                _client.Logger?.LogError(e, $"{nameof(ListAsync)} failed");
 
-                if (Throw)
-                    throw;
-
-                return null;
+                throw;
             }
         }
 
-        public async Task<IntegrationOut> CreateAsync(string appId, IntegrationIn integration, string idempotencyKey = default,
-            CancellationToken cancellationToken = default)
+        /// <summary>
+        /// List the application's integrations.
+        /// </summary>
+        public ListResponseIntegrationOut List(string appId, IntegrationListOptions? options = null)
         {
             try
             {
-                var lIntegration = await _integrationApi.V1IntegrationCreateAsync(
-                    appId,
-                    integration,
-                    idempotencyKey,
-                    cancellationToken);
-
-                return lIntegration;
+                var response = _client.SvixHttpClient.SendRequest<ListResponseIntegrationOut>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/app/{app_id}/integration",
+                    pathParams: new Dictionary<string, string> { { "app_id", appId } },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams()
+                );
+                return response.Data;
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(CreateAsync)} failed");
+                _client.Logger?.LogError(e, $"{nameof(List)} failed");
 
-                if (Throw)
-                    throw;
-
-                return null;
+                throw;
             }
         }
 
-        public bool Delete(string appId, string integrationId, string idempotencyKey = default)
+        /// <summary>
+        /// Create an integration.
+        /// </summary>
+        public async Task<IntegrationOut> CreateAsync(
+            string appId,
+            IntegrationIn integrationIn,
+            IntegrationCreateOptions? options = null,
+            CancellationToken cancellationToken = default
+        )
         {
+            integrationIn = integrationIn ?? throw new ArgumentNullException(nameof(integrationIn));
             try
             {
-                var lResponse = _integrationApi.V1IntegrationDeleteWithHttpInfo(
-                    appId,
-                    integrationId);
-
-                return lResponse.StatusCode == HttpStatusCode.NoContent;
+                var response = await _client.SvixHttpClient.SendRequestAsync<IntegrationOut>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/app/{app_id}/integration",
+                    pathParams: new Dictionary<string, string> { { "app_id", appId } },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    content: integrationIn,
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(Delete)} failed");
+                _client.Logger?.LogError(e, $"{nameof(CreateAsync)} failed");
 
-                if (Throw)
-                    throw;
-
-                return false;
+                throw;
             }
         }
 
-        public async Task<bool> DeleteAsync(string appId, string integrationId, string idempotencyKey = default,
-            CancellationToken cancellationToken = default)
+        /// <summary>
+        /// Create an integration.
+        /// </summary>
+        public IntegrationOut Create(
+            string appId,
+            IntegrationIn integrationIn,
+            IntegrationCreateOptions? options = null
+        )
         {
+            integrationIn = integrationIn ?? throw new ArgumentNullException(nameof(integrationIn));
             try
             {
-                var lResponse = await _integrationApi.V1IntegrationDeleteWithHttpInfoAsync(
-                    appId,
-                    integrationId,
-                    cancellationToken);
-
-                return lResponse.StatusCode == HttpStatusCode.NoContent;
+                var response = _client.SvixHttpClient.SendRequest<IntegrationOut>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/app/{app_id}/integration",
+                    pathParams: new Dictionary<string, string> { { "app_id", appId } },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    content: integrationIn
+                );
+                return response.Data;
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(DeleteAsync)} failed");
+                _client.Logger?.LogError(e, $"{nameof(Create)} failed");
 
-                if (Throw)
-                    throw;
-
-                return false;
+                throw;
             }
         }
 
-        public IntegrationOut Get(string appId, string integrationId, string idempotencyKey = default)
+        /// <summary>
+        /// Get an integration.
+        /// </summary>
+        public async Task<IntegrationOut> GetAsync(
+            string appId,
+            string integId,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
-                var lIntegration = _integrationApi.V1IntegrationGet(
-                    appId,
-                    integrationId);
-
-                return lIntegration;
+                var response = await _client.SvixHttpClient.SendRequestAsync<IntegrationOut>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/app/{app_id}/integration/{integ_id}",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "integ_id", integId },
+                    },
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(Get)} failed");
+                _client.Logger?.LogError(e, $"{nameof(GetAsync)} failed");
 
-                if (Throw)
-                    throw;
-
-                return null;
+                throw;
             }
         }
 
-        public async Task<IntegrationOut> GetAsync(string appId, string integrationId, string idempotencyKey = default, CancellationToken cancellationToken = default)
+        /// <summary>
+        /// Get an integration.
+        /// </summary>
+        public IntegrationOut Get(string appId, string integId)
         {
             try
             {
-                var lIntegration = await _integrationApi.V1IntegrationGetAsync(
-                    appId,
-                    integrationId,
-                    cancellationToken);
-
-                return lIntegration;
+                var response = _client.SvixHttpClient.SendRequest<IntegrationOut>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/app/{app_id}/integration/{integ_id}",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "integ_id", integId },
+                    }
+                );
+                return response.Data;
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(GetAsync)} failed");
+                _client.Logger?.LogError(e, $"{nameof(Get)} failed");
 
-                if (Throw)
-                    throw;
-
-                return null;
+                throw;
             }
         }
 
-        public string GetKey(string appId, string integrationId, string idempotencyKey = default)
+        /// <summary>
+        /// Update an integration.
+        /// </summary>
+        public async Task<IntegrationOut> UpdateAsync(
+            string appId,
+            string integId,
+            IntegrationUpdate integrationUpdate,
+            CancellationToken cancellationToken = default
+        )
         {
+            integrationUpdate =
+                integrationUpdate ?? throw new ArgumentNullException(nameof(integrationUpdate));
             try
             {
-                var lResponse = _integrationApi.V1IntegrationGetKey(
-                    appId,
-                    integrationId);
-
-                return lResponse.Key;
+                var response = await _client.SvixHttpClient.SendRequestAsync<IntegrationOut>(
+                    method: HttpMethod.Put,
+                    path: "/api/v1/app/{app_id}/integration/{integ_id}",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "integ_id", integId },
+                    },
+                    content: integrationUpdate,
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(GetKey)} failed");
+                _client.Logger?.LogError(e, $"{nameof(UpdateAsync)} failed");
 
-                if (Throw)
-                    throw;
-
-                return null;
+                throw;
             }
         }
 
-        public async Task<string> GetKeyAsync(string appId, string integrationId, string idempotencyKey = default,
-            CancellationToken cancellationToken = default)
+        /// <summary>
+        /// Update an integration.
+        /// </summary>
+        public IntegrationOut Update(
+            string appId,
+            string integId,
+            IntegrationUpdate integrationUpdate
+        )
         {
+            integrationUpdate =
+                integrationUpdate ?? throw new ArgumentNullException(nameof(integrationUpdate));
             try
             {
-                var lResponse = await _integrationApi.V1IntegrationGetKeyAsync(
-                    appId,
-                    integrationId,
-                    cancellationToken);
-
-                return lResponse.Key;
+                var response = _client.SvixHttpClient.SendRequest<IntegrationOut>(
+                    method: HttpMethod.Put,
+                    path: "/api/v1/app/{app_id}/integration/{integ_id}",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "integ_id", integId },
+                    },
+                    content: integrationUpdate
+                );
+                return response.Data;
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(GetKeyAsync)} failed");
+                _client.Logger?.LogError(e, $"{nameof(Update)} failed");
 
-                if (Throw)
-                    throw;
-
-                return null;
+                throw;
             }
         }
 
-        public ListResponseIntegrationOut List(string appId, ListOptions options = null, string idempotencyKey = default)
+        /// <summary>
+        /// Delete an integration.
+        /// </summary>
+        public async Task<bool> DeleteAsync(
+            string appId,
+            string integId,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
-                var lResult = _integrationApi.V1IntegrationList(
-                    appId,
-                    options?.Limit,
-                    options?.Iterator,
-                    options?.Order);
-
-                return lResult;
+                var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
+                    method: HttpMethod.Delete,
+                    path: "/api/v1/app/{app_id}/integration/{integ_id}",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "integ_id", integId },
+                    },
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(List)} failed");
+                _client.Logger?.LogError(e, $"{nameof(DeleteAsync)} failed");
 
-                if (Throw)
-                    throw;
-
-                return new ListResponseIntegrationOut();
+                throw;
             }
         }
 
-        public async Task<ListResponseIntegrationOut> ListAsync(string appId, ListOptions options = null, string idempotencyKey = default,
-            CancellationToken cancellationToken = default)
+        /// <summary>
+        /// Delete an integration.
+        /// </summary>
+        public bool Delete(string appId, string integId)
         {
             try
             {
-                var lResult = await _integrationApi.V1IntegrationListAsync(
-                    appId,
-                    options?.Limit,
-                    options?.Iterator,
-                    options?.Order,
-                    cancellationToken);
-
-                return lResult;
+                var response = _client.SvixHttpClient.SendRequest<bool>(
+                    method: HttpMethod.Delete,
+                    path: "/api/v1/app/{app_id}/integration/{integ_id}",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "integ_id", integId },
+                    }
+                );
+                return response.Data;
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(ListAsync)} failed");
+                _client.Logger?.LogError(e, $"{nameof(Delete)} failed");
 
-                if (Throw)
-                    throw;
-
-                return new ListResponseIntegrationOut();
+                throw;
             }
         }
 
-        public string RotateKey(string appId, string integrationId, string idempotencyKey = default)
+        /// <summary>
+        /// Get an integration's key.
+        /// </summary>
+        [Obsolete]
+        public async Task<IntegrationKeyOut> GetKeyAsync(
+            string appId,
+            string integId,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
-                var lResponse = _integrationApi.V1IntegrationRotateKey(
-                    appId,
-                    integrationId,
-                    idempotencyKey);
-
-                return lResponse.Key;
+                var response = await _client.SvixHttpClient.SendRequestAsync<IntegrationKeyOut>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/app/{app_id}/integration/{integ_id}/key",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "integ_id", integId },
+                    },
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(RotateKey)} failed");
+                _client.Logger?.LogError(e, $"{nameof(GetKeyAsync)} failed");
 
-                if (Throw)
-                    throw;
-
-                return null;
+                throw;
             }
         }
 
-        public async Task<string> RotateKeyAsync(string appId, string integrationId, string idempotencyKey = default,
-            CancellationToken cancellationToken = default)
+        /// <summary>
+        /// Get an integration's key.
+        /// </summary>
+        [Obsolete]
+        public IntegrationKeyOut GetKey(string appId, string integId)
         {
             try
             {
-                var lResponse = await _integrationApi.V1IntegrationRotateKeyAsync(
-                    appId,
-                    integrationId,
-                    idempotencyKey,
-                    cancellationToken);
-
-                return lResponse.Key;
+                var response = _client.SvixHttpClient.SendRequest<IntegrationKeyOut>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/app/{app_id}/integration/{integ_id}/key",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "integ_id", integId },
+                    }
+                );
+                return response.Data;
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(RotateKeyAsync)} failed");
+                _client.Logger?.LogError(e, $"{nameof(GetKey)} failed");
 
-                if (Throw)
-                    throw;
-
-                return null;
+                throw;
             }
         }
 
-        public IntegrationOut Update(string appId, string integrationId, IntegrationUpdate integration, string idempotencyKey = default)
+        /// <summary>
+        /// Rotate the integration's key. The previous key will be immediately revoked.
+        /// </summary>
+        public async Task<IntegrationKeyOut> RotateKeyAsync(
+            string appId,
+            string integId,
+            IntegrationRotateKeyOptions? options = null,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
-                var lIntegration = _integrationApi.V1IntegrationUpdate(
-                    appId,
-                    integrationId,
-                    integration);
-
-                return lIntegration;
+                var response = await _client.SvixHttpClient.SendRequestAsync<IntegrationKeyOut>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/app/{app_id}/integration/{integ_id}/key/rotate",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "integ_id", integId },
+                    },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(Update)} failed");
+                _client.Logger?.LogError(e, $"{nameof(RotateKeyAsync)} failed");
 
-                if (Throw)
-                    throw;
-
-                return null;
+                throw;
             }
         }
 
-        public async Task<IntegrationOut> UpdateAsync(string appId, string integrationId, IntegrationUpdate integration, string idempotencyKey = default, CancellationToken cancellationToken = default)
+        /// <summary>
+        /// Rotate the integration's key. The previous key will be immediately revoked.
+        /// </summary>
+        public IntegrationKeyOut RotateKey(
+            string appId,
+            string integId,
+            IntegrationRotateKeyOptions? options = null
+        )
         {
             try
             {
-                var lIntegration = await _integrationApi.V1IntegrationUpdateAsync(
-                    appId,
-                    integrationId,
-                    integration,
-                    cancellationToken);
-
-                return lIntegration;
+                var response = _client.SvixHttpClient.SendRequest<IntegrationKeyOut>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/app/{app_id}/integration/{integ_id}/key/rotate",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "integ_id", integId },
+                    },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams()
+                );
+                return response.Data;
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(UpdateAsync)} failed");
+                _client.Logger?.LogError(e, $"{nameof(RotateKey)} failed");
 
-                if (Throw)
-                    throw;
-
-                return null;
+                throw;
             }
         }
     }

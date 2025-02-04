@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Net;
 using Moq;
-using Svix.Abstractions;
-using Svix.Api;
-using Svix.Client;
-using Svix.Model;
+using Svix;
 using Svix.Models;
 using Xunit;
 
@@ -14,20 +11,21 @@ namespace Svix.Tests
     {
         private const string MOCK_TOKEN = ";iuani;ansd;ifgjbnai;sdjfgb";
 
-        private readonly Mock<IApplicationApi> _mockApplicationApi;
+        private readonly Mock<Application> _mockApplication;
 
-        private readonly Mock<ISvixOptions> _mockOptions;
+        private readonly Mock<SvixOptions> _mockOptions;
 
         private readonly SvixClient _svixClient;
 
         public ApplicationTests()
         {
-            _mockApplicationApi = new Mock<IApplicationApi>();
-            _mockOptions = new Mock<ISvixOptions>();
+            _mockApplication = new Mock<Application>();
+            _mockOptions = new Mock<SvixOptions>();
             _svixClient = new SvixClient(
                 MOCK_TOKEN,
                 _mockOptions.Object,
-                applicationApi: _mockApplicationApi.Object);
+                application: _mockApplication.Object
+            );
         }
 
         [Fact]
@@ -41,7 +39,9 @@ namespace Svix.Tests
         public void ApplicationCreateAsync_WithoutApplication_ThrowsException()
         {
             // Assert
-            Assert.ThrowsAsync<ArgumentNullException>(() => _svixClient.Application.CreateAsync(null, null, null, default));
+            Assert.ThrowsAsync<ArgumentNullException>(
+                () => _svixClient.Application.CreateAsync(null, null, default)
+            );
         }
     }
 }
