@@ -24,6 +24,13 @@ jobs:
         run: |
           cd csharp
           dotnet restore
+          dotnet tool install csharpier -g
+
+      - name: Check formatting
+        run: |
+          cd csharp
+          dotnet csharpier --check Svix.Tests
+          dotnet csharpier --check Svix
 
       - name: Build
         run: dotnet build --configuration Release --no-restore
