@@ -10,6 +10,11 @@ namespace Svix
         readonly SvixOptions _options = options;
         readonly HttpClient _httpClient = new();
         private readonly string _token = token;
+        private readonly JsonSerializerSettings patchJsonOptions = new();
+        private readonly JsonSerializerSettings JsonOptions = new JsonSerializerSettings
+        {
+            NullValueHandling = NullValueHandling.Ignore,
+        };
 
         public ApiResponse<T> SendRequest<T>(
             HttpMethod method,
@@ -88,11 +93,17 @@ namespace Svix
             request.Headers.Add("svix-req-id", req_id.ToString());
             if (content != null)
             {
+                string json_body;
+                if (request.Method == HttpMethod.Patch)
+                {
+                    json_body = JsonConvert.SerializeObject(content, patchJsonOptions);
+                }
+                else
+                {
+                    json_body = JsonConvert.SerializeObject(content, JsonOptions);
+                }
                 var encoded_content = new StringContent(
-                    JsonConvert.SerializeObject(
-                        content,
-                        new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }
-                    ),
+                    json_body,
                     Encoding.UTF8,
                     "application/json"
                 );
