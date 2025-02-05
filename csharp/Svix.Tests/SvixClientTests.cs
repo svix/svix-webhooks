@@ -93,5 +93,15 @@ public class SvixClientTests
         client.OperationalWebhookEndpoint.Create(
             new OperationalWebhookEndpointIn { Url = "https://example.svix.com/" }
         );
+
+        // Test idempotency key
+        uint idempotencyKey = (uint)new Random().NextInt64(0, (long)uint.MaxValue + 1);
+        var createOpts = new ApplicationCreateOptions
+        {
+            IdempotencyKey = idempotencyKey.ToString(),
+        };
+        var app1 = client.Application.Create(new ApplicationIn { Name = "test app" }, createOpts);
+        var app2 = client.Application.Create(new ApplicationIn { Name = "test app" }, createOpts);
+        Assert.Equal(app1.Id, app2.Id);
     }
 }
