@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Net.Http.Headers;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -11,7 +12,7 @@ namespace Svix
         readonly HttpClient _httpClient = new();
         private readonly string _token = token;
         private readonly JsonSerializerSettings patchJsonOptions = new();
-        private readonly JsonSerializerSettings JsonOptions = new JsonSerializerSettings
+        private readonly JsonSerializerSettings JsonOptions = new()
         {
             NullValueHandling = NullValueHandling.Ignore,
         };
@@ -133,7 +134,9 @@ namespace Svix
 
             throw new ApiException(
                 (int)response.StatusCode,
-                $"Request failed with status code {response.StatusCode}"
+                $"Request failed with status code {response.StatusCode}",
+                response.Content,
+                response.Headers
             );
         }
     }
@@ -155,8 +158,8 @@ namespace Svix
         public ApiException(
             int errorCode,
             string message,
-            object errorContent = null,
-            Dictionary<string, string> headers = null
+            object? errorContent = null,
+            HttpResponseHeaders? headers = null
         )
             : base(message)
         {
@@ -167,6 +170,6 @@ namespace Svix
 
         public int ErrorCode { get; set; }
         public object? ErrorContent { get; private set; }
-        public Dictionary<string, string>? Headers { get; private set; }
+        public HttpResponseHeaders? Headers { get; private set; }
     }
 }
