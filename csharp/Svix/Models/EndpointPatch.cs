@@ -11,10 +11,14 @@ namespace Svix.Models
         public bool ShouldSerializeChannels() => !Channels.IsUnset;
 
         [JsonProperty("description")]
-        public string? Description { get; set; } = null;
+        public MaybeUnset<string?> Description { get; set; } = MaybeUnset<string?>.Unset();
+
+        public bool ShouldSerializeDescription() => !Description.IsUnset;
 
         [JsonProperty("disabled")]
-        public bool? Disabled { get; set; } = null;
+        public MaybeUnset<bool?> Disabled { get; set; } = MaybeUnset<bool?>.Unset();
+
+        public bool ShouldSerializeDisabled() => !Disabled.IsUnset;
 
         [JsonProperty("filterTypes")]
         public MaybeUnset<List<string>?> FilterTypes { get; set; } =
@@ -23,7 +27,10 @@ namespace Svix.Models
         public bool ShouldSerializeFilterTypes() => !FilterTypes.IsUnset;
 
         [JsonProperty("metadata")]
-        public Dictionary<string, string>? Metadata { get; set; } = null;
+        public MaybeUnset<Dictionary<string, string>?> Metadata { get; set; } =
+            MaybeUnset<Dictionary<string, string>?>.Unset();
+
+        public bool ShouldSerializeMetadata() => !Metadata.IsUnset;
 
         [JsonProperty("rateLimit")]
         public MaybeUnset<ushort?> RateLimit { get; set; } = MaybeUnset<ushort?>.Unset();
@@ -41,9 +48,13 @@ namespace Svix.Models
         public bool ShouldSerializeUid() => !Uid.IsUnset;
 
         [JsonProperty("url")]
-        public string? Url { get; set; } = null;
+        public MaybeUnset<string?> Url { get; set; } = MaybeUnset<string?>.Unset();
+
+        public bool ShouldSerializeUrl() => !Url.IsUnset;
 
         [JsonProperty("version")]
-        public ushort? Version { get; set; } = null;
+        public MaybeUnset<ushort?> Version { get; set; } = MaybeUnset<ushort?>.Unset();
+
+        public bool ShouldSerializeVersion() => !Version.IsUnset;
     }
 }

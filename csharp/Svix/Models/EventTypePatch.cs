@@ -6,13 +6,19 @@ namespace Svix.Models
     public class EventTypePatch : BaseModel
     {
         [JsonProperty("archived")]
-        public bool? Archived { get; set; } = null;
+        public MaybeUnset<bool?> Archived { get; set; } = MaybeUnset<bool?>.Unset();
+
+        public bool ShouldSerializeArchived() => !Archived.IsUnset;
 
         [JsonProperty("deprecated")]
-        public bool? Deprecated { get; set; } = null;
+        public MaybeUnset<bool?> Deprecated { get; set; } = MaybeUnset<bool?>.Unset();
+
+        public bool ShouldSerializeDeprecated() => !Deprecated.IsUnset;
 
         [JsonProperty("description")]
-        public string? Description { get; set; } = null;
+        public MaybeUnset<string?> Description { get; set; } = MaybeUnset<string?>.Unset();
+
+        public bool ShouldSerializeDescription() => !Description.IsUnset;
 
         [JsonProperty("featureFlag")]
         public MaybeUnset<string?> FeatureFlag { get; set; } = MaybeUnset<string?>.Unset();

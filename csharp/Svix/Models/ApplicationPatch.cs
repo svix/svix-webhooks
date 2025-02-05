@@ -6,10 +6,15 @@ namespace Svix.Models
     public class ApplicationPatch : BaseModel
     {
         [JsonProperty("metadata")]
-        public Dictionary<string, string>? Metadata { get; set; } = null;
+        public MaybeUnset<Dictionary<string, string>?> Metadata { get; set; } =
+            MaybeUnset<Dictionary<string, string>?>.Unset();
+
+        public bool ShouldSerializeMetadata() => !Metadata.IsUnset;
 
         [JsonProperty("name")]
-        public string? Name { get; set; } = null;
+        public MaybeUnset<string?> Name { get; set; } = MaybeUnset<string?>.Unset();
+
+        public bool ShouldSerializeName() => !Name.IsUnset;
 
         [JsonProperty("rateLimit")]
         public MaybeUnset<ushort?> RateLimit { get; set; } = MaybeUnset<ushort?>.Unset();
