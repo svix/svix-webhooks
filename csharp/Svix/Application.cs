@@ -45,7 +45,10 @@ namespace Svix
             _client = client;
         }
 
+#pragma warning disable CS8618
+// just here for some tests
         public Application() { }
+#pragma warning restore CS8618
 
         /// <summary>
         /// List of all the organization's applications.
