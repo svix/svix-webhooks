@@ -46,7 +46,7 @@ namespace Svix
         }
 
 #pragma warning disable CS8618
-        // just here for some tests
+        // TODO: Remove this when I rewrite the tests
         public Application() { }
 #pragma warning restore CS8618
 
