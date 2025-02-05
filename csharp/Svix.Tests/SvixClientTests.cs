@@ -88,5 +88,10 @@ public class SvixClientTests
 
         // Should not throw an exception if the serialization code handles empty bodies properly
         client.Endpoint.Delete(app.Id, ep.Id);
+
+        // Test a subresources route
+        client.OperationalWebhookEndpoint.Create(
+            new OperationalWebhookEndpointIn { Url = "https://example.svix.com/" }
+        );
     }
 }
