@@ -21,7 +21,5 @@ namespace Svix
             }
             RetryScheduleMilliseconds = retryScheduleMilliseconds;
         }
-
-        public SvixOptions() { }
     }
 }
