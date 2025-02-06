@@ -56,7 +56,7 @@ namespace Svix
             Verify(payload, headers.Get);
         }
 
-        public void Verify(ReadOnlySpan<char> payload, Func<string, string> headersProvider)
+        public void Verify(ReadOnlySpan<char> payload, Func<string?, string?> headersProvider)
         {
             if (payload == null)
             {
