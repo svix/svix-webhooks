@@ -48,6 +48,86 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            uint req_id = (uint)new Random().NextInt64(0, (long)uint.MaxValue + 1);
+            // In C# they don't let you send the same request twice :(
+            var request = BuildRequest(
+                method,
+                path,
+                req_id,
+                pathParams,
+                queryParams,
+                headerParams,
+                content
+            );
+            var response = await _httpClient.SendAsync(request, cancellationToken);
+            for (var index = 0; index < _options.RetryScheduleMilliseconds.Count; index++)
+            {
+                if ((int)response.StatusCode < 500)
+                {
+                    break;
+                }
+                Thread.Sleep(_options.RetryScheduleMilliseconds[index]);
+                HttpRequestMessage retryRequest = BuildRequest(
+                    method,
+                    path,
+                    req_id,
+                    pathParams,
+                    queryParams,
+                    headerParams,
+                    content
+                );
+                retryRequest.Headers.Add("svix-retry-count", (index + 1).ToString());
+                response = await _httpClient.SendAsync(retryRequest, cancellationToken);
+            }
+            return await FilterResponseForErrors<T>(response, cancellationToken);
+        }
+
+        async Task<ApiResponse<T>> FilterResponseForErrors<T>(
+            HttpResponseMessage response,
+            CancellationToken cancellationToken
+        )
+        {
+            if (response.IsSuccessStatusCode)
+            {
+                if ((int)response.StatusCode == 204)
+                {
+                    return new ApiResponse<T>
+                    {
+                        Data = (T)(object)true,
+                        StatusCode = response.StatusCode,
+                    };
+                }
+
+                var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
+                var data =
+                    JsonConvert.DeserializeObject<T>(responseContent)
+                    ?? throw new ApiException(
+                        (int)response.StatusCode,
+                        $"Failed to deserialize response body, status code: {(int)response.StatusCode}",
+                        responseContent,
+                        response.Headers
+                    );
+                return new ApiResponse<T> { Data = data, StatusCode = response.StatusCode };
+            }
+
+            throw new ApiException(
+                (int)response.StatusCode,
+                $"Request failed with status code {response.StatusCode}",
+                await response.Content.ReadAsStringAsync(cancellationToken),
+                response.Headers
+            );
+        }
+
+        HttpRequestMessage BuildRequest(
+            HttpMethod method,
+            string path,
+            uint req_id,
+            IDictionary<string, string>? pathParams = null,
+            IDictionary<string, string>? queryParams = null,
+            IDictionary<string, string>? headerParams = null,
+            object? content = null
+        )
+        {
             var url = _options.BaseUrl;
 
             // Apply path parameters if provided
@@ -79,7 +159,7 @@ namespace Svix
                         )
                     );
             }
-            using var request = new HttpRequestMessage(method, url);
+            var request = new HttpRequestMessage(method, url);
             if (headerParams != null)
             {
                 foreach (KeyValuePair<string, string> entry in headerParams)
@@ -89,7 +169,6 @@ namespace Svix
             }
 
             request.Headers.Add("Authorization", $"Bearer {_token}");
-            uint req_id = (uint)new Random().NextInt64(0, (long)uint.MaxValue + 1);
             request.Headers.Add("svix-req-id", req_id.ToString());
             if (content != null)
             {
@@ -109,36 +188,7 @@ namespace Svix
                 );
                 request.Content = encoded_content;
             }
-            var response = await _httpClient.SendAsync(request, cancellationToken);
-            if (response.IsSuccessStatusCode)
-            {
-                if ((int)response.StatusCode == 204)
-                {
-                    return new ApiResponse<T>
-                    {
-                        Data = (T)(object)true,
-                        StatusCode = response.StatusCode,
-                    };
-                }
-
-                var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
-                var data =
-                    JsonConvert.DeserializeObject<T>(responseContent)
-                    ?? throw new ApiException(
-                        (int)response.StatusCode,
-                        $"Failed to deserialize response body, status code: {(int)response.StatusCode}",
-                        responseContent,
-                        response.Headers
-                    );
-                return new ApiResponse<T> { Data = data, StatusCode = response.StatusCode };
-            }
-
-            throw new ApiException(
-                (int)response.StatusCode,
-                $"Request failed with status code {response.StatusCode}",
-                await response.Content.ReadAsStringAsync(cancellationToken),
-                response.Headers
-            );
+            return request;
         }
     }
 
