@@ -1,8 +1,5 @@
-using System;
-
 namespace Svix.Exceptions
 {
-    [Serializable]
     public class WebhookVerificationException : Exception
     {
         public WebhookVerificationException()
@@ -13,11 +10,5 @@ namespace Svix.Exceptions
 
         public WebhookVerificationException(string message, Exception inner)
             : base(message, inner) { }
-
-        protected WebhookVerificationException(
-            System.Runtime.Serialization.SerializationInfo info,
-            System.Runtime.Serialization.StreamingContext context
-        )
-            : base(info, context) { }
     }
 }
