@@ -86,13 +86,13 @@ namespace Svix
             string eventType,
             string payload,
             string? contentType = null,
-            ApplicationIn application = default,
-            List<string> channels = default,
-            string eventId = default,
-            long? payloadRetentionHours = default,
-            long? payloadRetentionPeriod = default,
-            List<string> tags = default,
-            Dictionary<string, Object> transformationsParams = default
+            ApplicationIn? application = null,
+            List<string>? channels = null,
+            string? eventId = null,
+            long? payloadRetentionHours = null,
+            long? payloadRetentionPeriod = null,
+            List<string>? tags = null,
+            Dictionary<string, Object>? transformationsParams = null
         )
         {
             if (transformationsParams == null)
