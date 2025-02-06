@@ -173,5 +173,30 @@ namespace Svix.Tests
             Assert.Equal(1, stub.LogEntries.Count);
             Assert.Equal(expected_json_body, stub.LogEntries[0].RequestMessage.Body);
         }
+
+        [Fact]
+        public void MessageInRawIsSerializedCorrectly()
+        {
+            // just checking that the correct body is sent to the server, response is discarded
+
+            stub.Given(Request.Create().WithPath("/api/v1/app/app_asd123/msg"))
+                .RespondWith(
+                    Response
+                        .Create()
+                        .WithStatusCode(200)
+                        .WithBody(
+                            """{"id":"msg_asd13","eventType":"event.type","payload":{},"timestamp":"2025-01-13T17:00:32.241022Z"}"""
+                        )
+                );
+
+            var msg = Message.messageInRaw("event.type", "not json", "nonstandard/content_type");
+            client.Message.Create("app_asd123", msg);
+
+            string expected_json_body = """
+                {"eventType":"event.type","payload":{},"transformationsParams":{"rawPayload":"not json","headers":{"content-type":"nonstandard/content_type"}}}
+                """;
+            Assert.Equal(1, stub.LogEntries.Count);
+            Assert.Equal(expected_json_body, stub.LogEntries[0].RequestMessage.Body);
+        }
     }
 }
