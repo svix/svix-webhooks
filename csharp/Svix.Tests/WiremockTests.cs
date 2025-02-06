@@ -198,5 +198,22 @@ namespace Svix.Tests
             Assert.Equal(1, stub.LogEntries.Count);
             Assert.Equal(expected_json_body, stub.LogEntries[0].RequestMessage.Body);
         }
+
+        [Fact]
+        public void ApplicationCreate_WithoutApplication_ThrowsException()
+        {
+            // Assert
+            Assert.Throws<ArgumentNullException>(() => client.Application.Create(null, null));
+        }
+
+        [Fact]
+        public void ApplicationCreateAsync_WithoutApplication_ThrowsException()
+        {
+            // Assert
+            Assert.ThrowsAsync<ArgumentNullException>(
+                () => client.Application.CreateAsync(null, null, default)
+            );
+        }
+
     }
 }
