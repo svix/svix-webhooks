@@ -1,4 +1,5 @@
 // this file is @generated
+using System.Text;
 using Newtonsoft.Json;
 
 namespace Svix.Models
@@ -10,5 +11,16 @@ namespace Svix.Models
 
         [JsonProperty("url", Required = Required.Always)]
         public required string Url { get; set; }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb.Append("class AppPortalAccessOut {\n");
+            sb.Append("  Token: ").Append(Token).Append('\n');
+            sb.Append("  Url: ").Append(Url).Append('\n');
+            sb.Append("}\n");
+            return sb.ToString();
+        }
     }
 }

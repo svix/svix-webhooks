@@ -1,4 +1,5 @@
 // this file is @generated
+using System.Text;
 using Newtonsoft.Json;
 
 namespace Svix.Models
@@ -22,5 +23,18 @@ namespace Svix.Models
 
         [JsonProperty("specRaw")]
         public string? SpecRaw { get; set; } = null;
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb.Append("class EventTypeImportOpenApiIn {\n");
+            sb.Append("  DryRun: ").Append(DryRun).Append('\n');
+            sb.Append("  ReplaceAll: ").Append(ReplaceAll).Append('\n');
+            sb.Append("  Spec: ").Append(Spec).Append('\n');
+            sb.Append("  SpecRaw: ").Append(SpecRaw).Append('\n');
+            sb.Append("}\n");
+            return sb.ToString();
+        }
     }
 }

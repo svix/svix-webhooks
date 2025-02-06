@@ -1,4 +1,5 @@
 // this file is @generated
+using System.Text;
 using Newtonsoft.Json;
 
 namespace Svix.Models
@@ -34,5 +35,20 @@ namespace Svix.Models
         public MaybeUnset<Object?> Schemas { get; set; } = MaybeUnset<Object?>.Unset();
 
         public bool ShouldSerializeSchemas() => !Schemas.IsUnset;
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb.Append("class EventTypePatch {\n");
+            sb.Append("  Archived: ").Append(Archived).Append('\n');
+            sb.Append("  Deprecated: ").Append(Deprecated).Append('\n');
+            sb.Append("  Description: ").Append(Description).Append('\n');
+            sb.Append("  FeatureFlag: ").Append(FeatureFlag).Append('\n');
+            sb.Append("  GroupName: ").Append(GroupName).Append('\n');
+            sb.Append("  Schemas: ").Append(Schemas).Append('\n');
+            sb.Append("}\n");
+            return sb.ToString();
+        }
     }
 }

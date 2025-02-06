@@ -1,4 +1,5 @@
 // this file is @generated
+using System.Text;
 using Newtonsoft.Json;
 
 namespace Svix.Models
@@ -7,5 +8,15 @@ namespace Svix.Models
     {
         [JsonProperty("data", Required = Required.Always)]
         public required EventTypeImportOpenApiOutData Data { get; set; }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb.Append("class EventTypeImportOpenApiOut {\n");
+            sb.Append("  Data: ").Append(Data).Append('\n');
+            sb.Append("}\n");
+            return sb.ToString();
+        }
     }
 }

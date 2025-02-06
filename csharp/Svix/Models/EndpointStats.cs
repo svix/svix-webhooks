@@ -1,4 +1,5 @@
 // this file is @generated
+using System.Text;
 using Newtonsoft.Json;
 
 namespace Svix.Models
@@ -16,5 +17,18 @@ namespace Svix.Models
 
         [JsonProperty("success", Required = Required.Always)]
         public required long Success { get; set; }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb.Append("class EndpointStats {\n");
+            sb.Append("  Fail: ").Append(Fail).Append('\n');
+            sb.Append("  Pending: ").Append(Pending).Append('\n');
+            sb.Append("  Sending: ").Append(Sending).Append('\n');
+            sb.Append("  Success: ").Append(Success).Append('\n');
+            sb.Append("}\n");
+            return sb.ToString();
+        }
     }
 }
