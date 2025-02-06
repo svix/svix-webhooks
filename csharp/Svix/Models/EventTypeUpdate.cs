@@ -11,7 +11,7 @@ namespace Svix.Models
         [JsonProperty("deprecated")]
         public bool? Deprecated { get; set; } = null;
 
-        [JsonProperty("description")]
+        [JsonProperty("description", Required = Required.Always)]
         public required string Description { get; set; }
 
         [JsonProperty("featureFlag")]

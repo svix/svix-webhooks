@@ -5,10 +5,10 @@ namespace Svix.Models
 {
     public class AppPortalAccessOut : BaseModel
     {
-        [JsonProperty("token")]
+        [JsonProperty("token", Required = Required.Always)]
         public required string Token { get; set; }
 
-        [JsonProperty("url")]
+        [JsonProperty("url", Required = Required.Always)]
         public required string Url { get; set; }
     }
 }

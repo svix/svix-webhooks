@@ -5,37 +5,37 @@ namespace Svix.Models
 {
     public class MessageAttemptOut : BaseModel
     {
-        [JsonProperty("endpointId")]
+        [JsonProperty("endpointId", Required = Required.Always)]
         public required string EndpointId { get; set; }
 
-        [JsonProperty("id")]
+        [JsonProperty("id", Required = Required.Always)]
         public required string Id { get; set; }
 
         [JsonProperty("msg")]
         public MessageOut? Msg { get; set; } = null;
 
-        [JsonProperty("msgId")]
+        [JsonProperty("msgId", Required = Required.Always)]
         public required string MsgId { get; set; }
 
-        [JsonProperty("response")]
+        [JsonProperty("response", Required = Required.Always)]
         public required string Response { get; set; }
 
-        [JsonProperty("responseDurationMs")]
+        [JsonProperty("responseDurationMs", Required = Required.Always)]
         public required long ResponseDurationMs { get; set; }
 
-        [JsonProperty("responseStatusCode")]
+        [JsonProperty("responseStatusCode", Required = Required.Always)]
         public required short ResponseStatusCode { get; set; }
 
-        [JsonProperty("status")]
+        [JsonProperty("status", Required = Required.Always)]
         public required MessageStatus Status { get; set; }
 
-        [JsonProperty("timestamp")]
+        [JsonProperty("timestamp", Required = Required.Always)]
         public required DateTime Timestamp { get; set; }
 
-        [JsonProperty("triggerType")]
+        [JsonProperty("triggerType", Required = Required.Always)]
         public required MessageAttemptTriggerType TriggerType { get; set; }
 
-        [JsonProperty("url")]
+        [JsonProperty("url", Required = Required.Always)]
         public required string Url { get; set; }
     }
 }

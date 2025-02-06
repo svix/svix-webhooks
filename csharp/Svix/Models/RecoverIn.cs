@@ -5,7 +5,7 @@ namespace Svix.Models
 {
     public class RecoverIn : BaseModel
     {
-        [JsonProperty("since")]
+        [JsonProperty("since", Required = Required.Always)]
         public required DateTime Since { get; set; }
 
         [JsonProperty("until")]

@@ -5,7 +5,7 @@ namespace Svix.Models
 {
     public class EventTypeImportOpenApiOut : BaseModel
     {
-        [JsonProperty("data")]
+        [JsonProperty("data", Required = Required.Always)]
         public required EventTypeImportOpenApiOutData Data { get; set; }
     }
 }

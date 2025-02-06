@@ -5,7 +5,7 @@ namespace Svix.Models
 {
     public class IntegrationKeyOut : BaseModel
     {
-        [JsonProperty("key")]
+        [JsonProperty("key", Required = Required.Always)]
         public required string Key { get; set; }
     }
 }

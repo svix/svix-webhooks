@@ -15,25 +15,25 @@ namespace Svix.Models
         [JsonProperty("eventId")]
         public string? EventId { get; set; } = null;
 
-        [JsonProperty("eventType")]
+        [JsonProperty("eventType", Required = Required.Always)]
         public required string EventType { get; set; }
 
-        [JsonProperty("id")]
+        [JsonProperty("id", Required = Required.Always)]
         public required string Id { get; set; }
 
         [JsonProperty("nextAttempt")]
         public DateTime? NextAttempt { get; set; } = null;
 
-        [JsonProperty("payload")]
+        [JsonProperty("payload", Required = Required.Always)]
         public required Object Payload { get; set; }
 
-        [JsonProperty("status")]
+        [JsonProperty("status", Required = Required.Always)]
         public required MessageStatus Status { get; set; }
 
         [JsonProperty("tags")]
         public List<string>? Tags { get; set; } = null;
 
-        [JsonProperty("timestamp")]
+        [JsonProperty("timestamp", Required = Required.Always)]
         public required DateTime Timestamp { get; set; }
     }
 }

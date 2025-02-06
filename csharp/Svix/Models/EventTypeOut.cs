@@ -8,13 +8,13 @@ namespace Svix.Models
         [JsonProperty("archived")]
         public bool? Archived { get; set; } = null;
 
-        [JsonProperty("createdAt")]
+        [JsonProperty("createdAt", Required = Required.Always)]
         public required DateTime CreatedAt { get; set; }
 
-        [JsonProperty("deprecated")]
+        [JsonProperty("deprecated", Required = Required.Always)]
         public required bool Deprecated { get; set; }
 
-        [JsonProperty("description")]
+        [JsonProperty("description", Required = Required.Always)]
         public required string Description { get; set; }
 
         [JsonProperty("featureFlag")]
@@ -23,13 +23,13 @@ namespace Svix.Models
         [JsonProperty("groupName")]
         public string? GroupName { get; set; } = null;
 
-        [JsonProperty("name")]
+        [JsonProperty("name", Required = Required.Always)]
         public required string Name { get; set; }
 
         [JsonProperty("schemas")]
         public Object? Schemas { get; set; } = null;
 
-        [JsonProperty("updatedAt")]
+        [JsonProperty("updatedAt", Required = Required.Always)]
         public required DateTime UpdatedAt { get; set; }
     }
 }

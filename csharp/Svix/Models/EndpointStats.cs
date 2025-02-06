@@ -5,16 +5,16 @@ namespace Svix.Models
 {
     public class EndpointStats : BaseModel
     {
-        [JsonProperty("fail")]
+        [JsonProperty("fail", Required = Required.Always)]
         public required long Fail { get; set; }
 
-        [JsonProperty("pending")]
+        [JsonProperty("pending", Required = Required.Always)]
         public required long Pending { get; set; }
 
-        [JsonProperty("sending")]
+        [JsonProperty("sending", Required = Required.Always)]
         public required long Sending { get; set; }
 
-        [JsonProperty("success")]
+        [JsonProperty("success", Required = Required.Always)]
         public required long Success { get; set; }
     }
 }

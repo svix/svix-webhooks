@@ -26,7 +26,7 @@ namespace Svix.Models
         [JsonProperty("uid")]
         public string? Uid { get; set; } = null;
 
-        [JsonProperty("url")]
+        [JsonProperty("url", Required = Required.Always)]
         public required string Url { get; set; }
     }
 }

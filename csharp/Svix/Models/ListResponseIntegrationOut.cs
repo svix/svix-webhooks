@@ -5,10 +5,10 @@ namespace Svix.Models
 {
     public class ListResponseIntegrationOut : BaseModel
     {
-        [JsonProperty("data")]
+        [JsonProperty("data", Required = Required.Always)]
         public required List<IntegrationOut> Data { get; set; }
 
-        [JsonProperty("done")]
+        [JsonProperty("done", Required = Required.Always)]
         public required bool Done { get; set; }
 
         [JsonProperty("iterator")]

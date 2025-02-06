@@ -5,10 +5,10 @@ namespace Svix.Models
 {
     public class ListResponseEventTypeOut : BaseModel
     {
-        [JsonProperty("data")]
+        [JsonProperty("data", Required = Required.Always)]
         public required List<EventTypeOut> Data { get; set; }
 
-        [JsonProperty("done")]
+        [JsonProperty("done", Required = Required.Always)]
         public required bool Done { get; set; }
 
         [JsonProperty("iterator")]

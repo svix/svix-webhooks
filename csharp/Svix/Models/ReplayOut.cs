@@ -5,13 +5,13 @@ namespace Svix.Models
 {
     public class ReplayOut : BaseModel
     {
-        [JsonProperty("id")]
+        [JsonProperty("id", Required = Required.Always)]
         public required string Id { get; set; }
 
-        [JsonProperty("status")]
+        [JsonProperty("status", Required = Required.Always)]
         public required BackgroundTaskStatus Status { get; set; }
 
-        [JsonProperty("task")]
+        [JsonProperty("task", Required = Required.Always)]
         public required BackgroundTaskType Task { get; set; }
     }
 }

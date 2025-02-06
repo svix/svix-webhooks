@@ -5,7 +5,7 @@ namespace Svix.Models
 {
     public class EndpointHeadersPatchIn : BaseModel
     {
-        [JsonProperty("headers")]
+        [JsonProperty("headers", Required = Required.Always)]
         public required Dictionary<string, string> Headers { get; set; }
     }
 }

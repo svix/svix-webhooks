@@ -5,7 +5,7 @@ namespace Svix.Models
 {
     public class IntegrationIn : BaseModel
     {
-        [JsonProperty("name")]
+        [JsonProperty("name", Required = Required.Always)]
         public required string Name { get; set; }
     }
 }

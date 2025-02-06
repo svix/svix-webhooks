@@ -5,16 +5,16 @@ namespace Svix.Models
 {
     public class IntegrationOut : BaseModel
     {
-        [JsonProperty("createdAt")]
+        [JsonProperty("createdAt", Required = Required.Always)]
         public required DateTime CreatedAt { get; set; }
 
-        [JsonProperty("id")]
+        [JsonProperty("id", Required = Required.Always)]
         public required string Id { get; set; }
 
-        [JsonProperty("name")]
+        [JsonProperty("name", Required = Required.Always)]
         public required string Name { get; set; }
 
-        [JsonProperty("updatedAt")]
+        [JsonProperty("updatedAt", Required = Required.Always)]
         public required DateTime UpdatedAt { get; set; }
     }
 }

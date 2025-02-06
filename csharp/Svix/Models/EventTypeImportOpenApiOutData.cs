@@ -5,7 +5,7 @@ namespace Svix.Models
 {
     public class EventTypeImportOpenApiOutData : BaseModel
     {
-        [JsonProperty("modified")]
+        [JsonProperty("modified", Required = Required.Always)]
         public required List<string> Modified { get; set; }
 
         [JsonProperty("to_modify")]

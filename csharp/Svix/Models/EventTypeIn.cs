@@ -11,7 +11,7 @@ namespace Svix.Models
         [JsonProperty("deprecated")]
         public bool? Deprecated { get; set; } = null;
 
-        [JsonProperty("description")]
+        [JsonProperty("description", Required = Required.Always)]
         public required string Description { get; set; }
 
         [JsonProperty("featureFlag")]
@@ -20,7 +20,7 @@ namespace Svix.Models
         [JsonProperty("groupName")]
         public string? GroupName { get; set; } = null;
 
-        [JsonProperty("name")]
+        [JsonProperty("name", Required = Required.Always)]
         public required string Name { get; set; }
 
         [JsonProperty("schemas")]

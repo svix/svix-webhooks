@@ -5,10 +5,10 @@ namespace Svix.Models
 {
     public class ListResponseMessageAttemptOut : BaseModel
     {
-        [JsonProperty("data")]
+        [JsonProperty("data", Required = Required.Always)]
         public required List<MessageAttemptOut> Data { get; set; }
 
-        [JsonProperty("done")]
+        [JsonProperty("done", Required = Required.Always)]
         public required bool Done { get; set; }
 
         [JsonProperty("iterator")]

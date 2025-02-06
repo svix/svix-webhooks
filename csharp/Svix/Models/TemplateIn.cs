@@ -23,13 +23,13 @@ namespace Svix.Models
         [JsonProperty("kind")]
         public TransformationTemplateKind? Kind { get; set; } = null;
 
-        [JsonProperty("logo")]
+        [JsonProperty("logo", Required = Required.Always)]
         public required string Logo { get; set; }
 
-        [JsonProperty("name")]
+        [JsonProperty("name", Required = Required.Always)]
         public required string Name { get; set; }
 
-        [JsonProperty("transformation")]
+        [JsonProperty("transformation", Required = Required.Always)]
         public required string Transformation { get; set; }
     }
 }

@@ -5,16 +5,16 @@ namespace Svix.Models
 {
     public class ApplicationOut : BaseModel
     {
-        [JsonProperty("createdAt")]
+        [JsonProperty("createdAt", Required = Required.Always)]
         public required DateTime CreatedAt { get; set; }
 
-        [JsonProperty("id")]
+        [JsonProperty("id", Required = Required.Always)]
         public required string Id { get; set; }
 
-        [JsonProperty("metadata")]
+        [JsonProperty("metadata", Required = Required.Always)]
         public required Dictionary<string, string> Metadata { get; set; }
 
-        [JsonProperty("name")]
+        [JsonProperty("name", Required = Required.Always)]
         public required string Name { get; set; }
 
         [JsonProperty("rateLimit")]
@@ -23,7 +23,7 @@ namespace Svix.Models
         [JsonProperty("uid")]
         public string? Uid { get; set; } = null;
 
-        [JsonProperty("updatedAt")]
+        [JsonProperty("updatedAt", Required = Required.Always)]
         public required DateTime UpdatedAt { get; set; }
     }
 }
