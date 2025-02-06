@@ -126,7 +126,9 @@ namespace Svix
                     JsonConvert.DeserializeObject<T>(responseContent)
                     ?? throw new ApiException(
                         (int)response.StatusCode,
-                        $"Failed to deserialize response body"
+                        $"Failed to deserialize response body, status code: {(int)response.StatusCode}",
+                        responseContent,
+                        response.Headers
                     );
                 return new ApiResponse<T> { Data = data, StatusCode = response.StatusCode };
             }
@@ -134,7 +136,7 @@ namespace Svix
             throw new ApiException(
                 (int)response.StatusCode,
                 $"Request failed with status code {response.StatusCode}",
-                response.Content,
+                await response.Content.ReadAsStringAsync(cancellationToken),
                 response.Headers
             );
         }
