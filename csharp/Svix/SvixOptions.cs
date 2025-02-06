@@ -2,14 +2,14 @@ namespace Svix
 {
     public class SvixOptions
     {
-        public string BaseUrl;
-        public List<int> RetryScheduleMilliseconds = [50, 100, 200];
-        public int TimeoutMilliseconds = 15000;
+        public string BaseUrl { get; }
+        public List<int> RetryScheduleMilliseconds { get; } = [50, 100, 200];
+        public int TimeoutMilliseconds { get; } = 15000;
 
         public SvixOptions(
             string baseUrl,
-            List<int>? retryScheduleMilliseconds = null,
-            int timeoutMilliseconds = 15000
+            int timeoutMilliseconds = 15000,
+            List<int>? retryScheduleMilliseconds = null
         )
         {
             BaseUrl = baseUrl;
