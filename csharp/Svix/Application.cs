@@ -171,7 +171,7 @@ namespace Svix
             applicationIn = applicationIn ?? throw new ArgumentNullException(nameof(applicationIn));
             try
             {
-                var queryParams = options?.QueryParams();
+                var queryParams = options?.QueryParams() ?? [];
                 queryParams?.Add("get_if_exists", "true");
 
                 var response = await _client.SvixHttpClient.SendRequestAsync<ApplicationOut>(
@@ -203,7 +203,7 @@ namespace Svix
             applicationIn = applicationIn ?? throw new ArgumentNullException(nameof(applicationIn));
             try
             {
-                var queryParams = options?.QueryParams();
+                var queryParams = options?.QueryParams() ?? [];
                 queryParams?.Add("get_if_exists", "true");
 
                 var response = _client.SvixHttpClient.SendRequest<ApplicationOut>(
