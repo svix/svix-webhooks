@@ -90,7 +90,7 @@ namespace Svix
             List<string> channels = default,
             string eventId = default,
             long? payloadRetentionHours = default,
-            long? payloadRetentionPeriod = 90,
+            long? payloadRetentionPeriod = default,
             List<string> tags = default,
             Dictionary<string, Object> transformationsParams = default
         )
