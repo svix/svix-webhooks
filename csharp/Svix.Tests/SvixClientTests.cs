@@ -103,5 +103,14 @@ public class SvixClientTests
         var app1 = client.Application.Create(new ApplicationIn { Name = "test app" }, createOpts);
         var app2 = client.Application.Create(new ApplicationIn { Name = "test app" }, createOpts);
         Assert.Equal(app1.Id, app2.Id);
+
+        // Test get or create
+        var app3 = client.Application.GetOrCreate(
+            new ApplicationIn { Name = "same app", Uid = "test-app-get-or-create-csharp-tests" }
+        );
+        var app4 = client.Application.GetOrCreate(
+            new ApplicationIn { Name = "same app", Uid = "test-app-get-or-create-csharp-tests" }
+        );
+        Assert.Equal(app3.Id, app4.Id);
     }
 }
