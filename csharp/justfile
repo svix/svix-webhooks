@@ -1,6 +1,0 @@
-_default:
-    just --list --justfile {{ justfile() }}
-
-fmt *args='':
-    dotnet csharpier Svix {{ args }}
-    dotnet csharpier Svix.Tests {{ args }}

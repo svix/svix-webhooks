@@ -1,141 +1,100 @@
-// this file is @generated
-#nullable enable
+using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Svix.Models;
+using Svix.Abstractions;
+using Svix.Api;
+using Svix.Client;
+using Svix.Model;
 
 namespace Svix
 {
-    public class StatisticsAggregateAppStatsOptions : SvixOptionsBase
+    public sealed class Statistics : SvixResourceBase, IStatistics
     {
-        public string? IdempotencyKey { get; set; }
+        private readonly IStatisticsApi _statisticsApi;
 
-        public new Dictionary<string, string> HeaderParams()
+        public Statistics(ISvixClient svixClient, IStatisticsApi statisticsApi)
+            : base(svixClient)
         {
-            return SerializeParams(
-                new Dictionary<string, object?> { { "idempotency-key", IdempotencyKey } }
-            );
-        }
-    }
-
-    public class Statistics(SvixClient client)
-    {
-        readonly SvixClient _client = client;
-
-        /// <summary>
-        /// Creates a background task to calculate the message destinations for all applications in the environment.
-        ///
-        /// Note that this endpoint is asynchronous. You will need to poll the `Get Background Task` endpoint to
-        /// retrieve the results of the operation.
-        /// </summary>
-        public async Task<AppUsageStatsOut> AggregateAppStatsAsync(
-            AppUsageStatsIn appUsageStatsIn,
-            StatisticsAggregateAppStatsOptions? options = null,
-            CancellationToken cancellationToken = default
-        )
-        {
-            appUsageStatsIn =
-                appUsageStatsIn ?? throw new ArgumentNullException(nameof(appUsageStatsIn));
-            try
-            {
-                var response = await _client.SvixHttpClient.SendRequestAsync<AppUsageStatsOut>(
-                    method: HttpMethod.Post,
-                    path: "/api/v1/stats/usage/app",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
-                    content: appUsageStatsIn,
-                    cancellationToken: cancellationToken
-                );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(AggregateAppStatsAsync)} failed");
-
-                throw;
-            }
+            _statisticsApi = statisticsApi ?? throw new ArgumentNullException(nameof(statisticsApi));
         }
 
-        /// <summary>
-        /// Creates a background task to calculate the message destinations for all applications in the environment.
-        ///
-        /// Note that this endpoint is asynchronous. You will need to poll the `Get Background Task` endpoint to
-        /// retrieve the results of the operation.
-        /// </summary>
-        public AppUsageStatsOut AggregateAppStats(
-            AppUsageStatsIn appUsageStatsIn,
-            StatisticsAggregateAppStatsOptions? options = null
-        )
-        {
-            appUsageStatsIn =
-                appUsageStatsIn ?? throw new ArgumentNullException(nameof(appUsageStatsIn));
-            try
-            {
-                var response = _client.SvixHttpClient.SendRequest<AppUsageStatsOut>(
-                    method: HttpMethod.Post,
-                    path: "/api/v1/stats/usage/app",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
-                    content: appUsageStatsIn
-                );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(AggregateAppStats)} failed");
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Creates a background task to calculate the listed event types for all apps in the organization.
-        ///
-        /// Note that this endpoint is asynchronous. You will need to poll the `Get Background Task` endpoint to
-        /// retrieve the results of the operation.
-        /// </summary>
-        public async Task<AggregateEventTypesOut> AggregateEventTypesAsync(
-            CancellationToken cancellationToken = default
-        )
+        public AppUsageStatsOut AggregateAppStats(AppUsageStatsIn appUsageStatsIn, string idempotencyKey = default)
         {
             try
             {
-                var response =
-                    await _client.SvixHttpClient.SendRequestAsync<AggregateEventTypesOut>(
-                        method: HttpMethod.Put,
-                        path: "/api/v1/stats/usage/event-types",
-                        cancellationToken: cancellationToken
-                    );
-                return response.Data;
+                var res = _statisticsApi.V1StatisticsAggregateAppStats(
+                    appUsageStatsIn,
+                    idempotencyKey);
+
+                return res;
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(AggregateEventTypesAsync)} failed");
+                Logger?.LogError(e, $"{nameof(AggregateAppStats)} failed");
 
-                throw;
+                if (Throw)
+                    throw;
+
+                return null;
             }
         }
 
-        /// <summary>
-        /// Creates a background task to calculate the listed event types for all apps in the organization.
-        ///
-        /// Note that this endpoint is asynchronous. You will need to poll the `Get Background Task` endpoint to
-        /// retrieve the results of the operation.
-        /// </summary>
+        public async Task<AppUsageStatsOut> AggregateAppStatsAsync(AppUsageStatsIn appUsageStatsIn, string idempotencyKey = default)
+        {
+            try
+            {
+                var res = await _statisticsApi.V1StatisticsAggregateAppStatsAsync(
+                    appUsageStatsIn,
+                    idempotencyKey);
+
+                return res;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(AggregateAppStatsAsync)} failed");
+
+                if (Throw)
+                    throw;
+
+                return null;
+            }
+        }
+
         public AggregateEventTypesOut AggregateEventTypes()
         {
             try
             {
-                var response = _client.SvixHttpClient.SendRequest<AggregateEventTypesOut>(
-                    method: HttpMethod.Put,
-                    path: "/api/v1/stats/usage/event-types"
-                );
-                return response.Data;
+                var res = _statisticsApi.V1StatisticsAggregateEventTypes();
+
+                return res;
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(AggregateEventTypes)} failed");
+                Logger?.LogError(e, $"{nameof(AggregateAppStatsAsync)} failed");
 
-                throw;
+                if (Throw)
+                    throw;
+
+                return null;
+            }
+        }
+
+        public async Task<AggregateEventTypesOut> AggregateEventTypesAsync()
+        {
+            try
+            {
+                var res = await _statisticsApi.V1StatisticsAggregateEventTypesAsync();
+
+                return res;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(AggregateAppStatsAsync)} failed");
+
+                if (Throw)
+                    throw;
+
+                return null;
             }
         }
     }
