@@ -1,12 +1,6 @@
 # Changelog
 
 ## Unreleased
-* Libs/C# **(Breaking)**: All uses of `ListOptions` are removed, and renamed to `{Resource}{Operation}Options`. For example in `Endpoint.List` you would now use `EndpointListOptions`
-* Libs/C# **(Breaking)**: All `IdempotencyKey` method parameters are removed, and are now part of `{Resource}{Operation}Options`. For example in `Message.Create`; to the use `IdempotencyKey`, simply pass it in the `MessageCreateOptions`
-* Libs/C# **(Breaking)**: The `Throw` parameter is removed from `SvixOptions`
-* Libs/C# **(Breaking)**: All redundant interfaces along with the `Svix.Abstractions` namespace are removed
-* Libs/C# **(Breaking)**: The `Svix.Model` and `Svix.Models` namespaces are now merged into a single `Svix.Models` namespace
-* Libs/C# **(Breaking)**: The `Svix.Client` namespace is removed, The `SvixClient` class can now be found in the `Svix` namespace
 * Libs/Python **(Breaking)**: `PostOptions` and `ListOptions` are no longer used in methods for `Authentication`,`Endpoint`,`EventType`,`Integration`,`MessageAttempt`,`Message`, `Statistics` and `OperationalWebhookEndpoint` resources. Instead each API call now has its own `{Resource}{Operation}Options`. (Both sync and async)
 * Libs/Python: In `Application` the `dashboard_access` method is deprecated in favor of `app_portal_access`. (Both sync and async)
 * Libs/Python **(Breaking)**: `EndpointStatsOptions` is renamed to `EndpointGetStatsOptions`
