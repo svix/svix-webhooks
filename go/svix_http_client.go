@@ -11,26 +11,32 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"os"
 	"reflect"
 	"strconv"
 	"strings"
 	"time"
 )
 
-type Configuration struct {
+type SvixHttpClient struct {
 	DefaultHeaders map[string]string
 	HTTPClient     *http.Client
-	Debug          bool
 	RetrySchedule  []time.Duration
 	BaseURL        string
 }
-type APIClient struct {
-	cfg *Configuration
+
+func defaultSvixHttpClient() SvixHttpClient {
+	return SvixHttpClient{
+		DefaultHeaders: map[string]string{},
+		HTTPClient:     &http.Client{Timeout: 60 * time.Second},
+		RetrySchedule:  []time.Duration{50 * time.Microsecond, 100 * time.Microsecond, 200 * time.Microsecond},
+		BaseURL:        "https://api.eu.staging.svix.com",
+	}
 }
 
 func executeRequest[T any](
 	ctx context.Context,
-	c *APIClient,
+	client *SvixHttpClient,
 	method string,
 	path string,
 	pathParams map[string]string,
@@ -40,7 +46,7 @@ func executeRequest[T any](
 
 ) (*T, error) {
 
-	urlWithPath := c.cfg.BaseURL + replacePathKeys(path, pathParams)
+	urlWithPath := client.BaseURL + replacePathKeys(path, pathParams)
 	urlStr, err := addQueryParams(urlWithPath, queryParams)
 	if err != nil {
 		return nil, err
@@ -51,14 +57,14 @@ func executeRequest[T any](
 	}
 
 	req.Header.Set("svix-req-id", strconv.FormatUint(rand.Uint64(), 10))
-	for hKey, hVal := range c.cfg.DefaultHeaders {
+	for hKey, hVal := range client.DefaultHeaders {
 		req.Header.Add(hKey, hVal)
 	}
 	for hKey, hVal := range headerParams {
 		req.Header.Add(hKey, hVal)
 	}
 
-	res, err := c.executeRequestWithRetries(req)
+	res, err := executeRequestWithRetries(client, req)
 
 	if err != nil {
 		return nil, err
@@ -89,9 +95,8 @@ func executeRequest[T any](
 
 }
 
-// callAPI do the request.
-func (c *APIClient) executeRequestWithRetries(request *http.Request) (*http.Response, error) {
-	if c.cfg.Debug {
+func executeRequestWithRetries(client *SvixHttpClient, request *http.Request) (*http.Response, error) {
+	if os.Getenv("DEBUG") == "true" {
 		log.Printf("URL: %s", request.URL)
 		dump, err := httputil.DumpRequestOut(request, true)
 		if err != nil {
@@ -101,18 +106,18 @@ func (c *APIClient) executeRequestWithRetries(request *http.Request) (*http.Resp
 		// panic("Not running request")
 	}
 
-	resp, err := c.cfg.HTTPClient.Do(request)
-	for try := 0; try < len(c.cfg.RetrySchedule); try++ {
+	resp, err := client.HTTPClient.Do(request)
+	for try := 0; try < len(client.RetrySchedule); try++ {
 		if err == nil && resp.StatusCode < 500 {
 			break
 		}
 		request.Header.Set("svix-retry-count", strconv.Itoa(try+1))
-		sleepTime := c.cfg.RetrySchedule[try]
+		sleepTime := client.RetrySchedule[try]
 		time.Sleep(sleepTime)
-		resp, err = c.cfg.HTTPClient.Do(request)
+		resp, err = client.HTTPClient.Do(request)
 	}
 
-	if c.cfg.Debug {
+	if os.Getenv("DEBUG") == "true" {
 		dump, err := httputil.DumpResponse(resp, true)
 		if err != nil {
 			return resp, err
