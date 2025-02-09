@@ -33,15 +33,19 @@ func getTestClient(t *testing.T) *svix.Svix {
 	if err != nil {
 		panic(err)
 	}
-	return svix.New(token, &svix.SvixOptions{
+	svx, err := svix.New(token, &svix.SvixOptions{
 		ServerUrl: serverUrl,
 	})
+	if err != nil {
+		panic(err)
+	}
+	return svx
 }
 
 // Suppresses a request error response if it's a 409
 func isNotConflict(err error) error {
 	if err != nil {
-		var svixError *svix.Error
+		var svixError svix.Error
 		if errors.As(err, &svixError) {
 			if svixError.Status() == http.StatusConflict {
 				// Pass if we see the suppressed status
@@ -64,20 +68,20 @@ func TestKitchenSink(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	_, err = client.EventType.Create(ctx, &svix.EventTypeIn{Name: "event.started", Description: "Something started"})
+	_, err = client.EventType.Create(ctx, &svix.EventTypeIn{Name: "event.started", Description: "Something started"}, nil)
 
 	if isNotConflict(err) != nil {
 		t.Fatal(err)
 	}
 
-	_, err = client.EventType.Create(ctx, &svix.EventTypeIn{Name: "event.ended", Description: "Something ended"})
+	_, err = client.EventType.Create(ctx, &svix.EventTypeIn{Name: "event.ended", Description: "Something ended"}, nil)
 	if isNotConflict(err) != nil {
 		t.Fatal(err)
 	}
 
 	endp, err := client.Endpoint.Create(ctx, app.Id, &svix.EndpointIn{
 		Url: "https://example.svix.com/",
-	})
+	}, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
