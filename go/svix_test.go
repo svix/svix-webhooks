@@ -59,7 +59,7 @@ func TestKitchenSink(t *testing.T) {
 
 	app, err := client.Application.Create(ctx, &svix.ApplicationIn{
 		Name: "test",
-	})
+	}, nil)
 	if err != nil {
 		t.Fatal(err)
 	}

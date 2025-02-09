@@ -161,14 +161,24 @@ func New(token string, options *SvixOptions) *Svix {
 		}
 	}
 	conf.AddDefaultHeader("Authorization", fmt.Sprintf("Bearer %s", token))
-	conf.UserAgent = fmt.Sprintf("svix-libs/%s/go", version.Version)
+	conf.AddDefaultHeader("User-Agent", fmt.Sprintf("svix-libs/%s/go", version.Version))
 	apiClient := openapi.NewAPIClient(conf)
+
+	newClient := APIClient{
+		cfg: &Configuration{
+			DefaultHeaders: conf.DefaultHeader,
+			Debug:          true,
+			HTTPClient:     http.DefaultClient,
+			RetrySchedule:  []time.Duration{time.Second},
+			BaseURL:        "https://api.eu.staging.svix.com",
+		},
+	}
 	return &Svix{
 		Authentication: &Authentication{
 			api: apiClient,
 		},
 		Application: &Application{
-			api: apiClient,
+			_client: &newClient,
 		},
 		Endpoint: &Endpoint{
 			api: apiClient,
