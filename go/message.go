@@ -1,15 +1,15 @@
-// this file is @generated (with some manual changes)
+// Package svix this file is @generated DO NOT EDIT
 package svix
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"time"
-
-	"github.com/svix/svix-webhooks/go/internal/openapi"
 )
 
 type Message struct {
-	api *openapi.APIClient
+	_client *SvixHttpClient
 }
 
 type MessageListOptions struct {
@@ -33,9 +33,13 @@ type MessageListOptions struct {
 
 type MessageCreateOptions struct {
 	// When `true`, message payloads are included in the response.
-	WithContent *bool
-
+	WithContent    *bool
 	IdempotencyKey *string
+}
+
+type MessageGetOptions struct {
+	// When `true` message payloads are included in the response.
+	WithContent *bool
 }
 
 // List all of the application's messages.
@@ -50,45 +54,42 @@ type MessageCreateOptions struct {
 func (message *Message) List(
 	ctx context.Context,
 	appId string,
-	options *MessageListOptions,
+	o *MessageListOptions,
 ) (*ListResponseMessageOut, error) {
-	req := message.api.MessageAPI.V1MessageList(
+	pathMap := map[string]string{
+		"app_id": appId,
+	}
+	queryMap := map[string]string{}
+	headerMap := map[string]string{}
+	var jsonBody []byte
+
+	if o != nil {
+		var err error
+		SerializeParamToMap("limit", o.Limit, queryMap, &err)
+		SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+		SerializeParamToMap("channel", o.Channel, queryMap, &err)
+		SerializeParamToMap("before", o.Before, queryMap, &err)
+		SerializeParamToMap("after", o.After, queryMap, &err)
+		SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
+		SerializeParamToMap("tag", o.Tag, queryMap, &err)
+		SerializeParamToMap("event_types", o.EventTypes, queryMap, &err)
+		if err != nil {
+			return nil, err
+		}
+	}
+	ret, apiErr := executeRequest[ListResponseMessageOut](
 		ctx,
-		appId,
+		message._client,
+		"GET",
+		"/api/v1/app/{app_id}/msg",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
 	)
-
-	if options != nil {
-		if options.Limit != nil {
-			req = req.Limit(*options.Limit)
-		}
-		if options.Iterator != nil {
-			req = req.Iterator(*options.Iterator)
-		}
-		if options.Channel != nil {
-			req = req.Channel(*options.Channel)
-		}
-		if options.Before != nil {
-			req = req.Before(*options.Before)
-		}
-		if options.After != nil {
-			req = req.After(*options.After)
-		}
-		if options.WithContent != nil {
-			req = req.WithContent(*options.WithContent)
-		}
-		if options.Tag != nil {
-			req = req.Tag(*options.Tag)
-		}
-		if options.EventTypes != nil {
-			req = req.EventTypes(*options.EventTypes)
-		}
+	if apiErr != nil {
+		return nil, apiErr
 	}
-
-	ret, res, err := req.Execute()
-	if err != nil {
-		return nil, wrapError(err, res)
-	}
-
 	return ret, nil
 }
 
@@ -105,49 +106,43 @@ func (message *Message) Create(
 	ctx context.Context,
 	appId string,
 	messageIn *MessageIn,
+	o *MessageCreateOptions,
 ) (*MessageOut, error) {
-	return message.CreateWithOptions(
-		ctx,
-		appId,
-		messageIn,
-		nil,
-	)
-}
+	if messageIn == nil {
+		return nil, fmt.Errorf("Message.Create(), messageIn must not be nil")
+	}
+	pathMap := map[string]string{
+		"app_id": appId,
+	}
+	queryMap := map[string]string{}
+	headerMap := map[string]string{}
+	var jsonBody []byte
 
-// Creates a new message and dispatches it to all of the application's endpoints.
-//
-// The `eventId` is an optional custom unique ID. It's verified to be unique only up to a day, after that no verification will be made.
-// If a message with the same `eventId` already exists for the application, a 409 conflict error will be returned.
-//
-// The `eventType` indicates the type and schema of the event. All messages of a certain `eventType` are expected to have the same schema. Endpoints can choose to only listen to specific event types.
-// Messages can also have `channels`, which similar to event types let endpoints filter by them. Unlike event types, messages can have multiple channels, and channels don't imply a specific message content or schema.
-//
-// The `payload` property is the webhook's body (the actual webhook message). Svix supports payload sizes of up to ~350kb, though it's generally a good idea to keep webhook payloads small, probably no larger than 40kb.
-func (message *Message) CreateWithOptions(
-	ctx context.Context,
-	appId string,
-	messageIn *MessageIn,
-	options *MessageCreateOptions,
-) (*MessageOut, error) {
-	req := message.api.MessageAPI.V1MessageCreate(
-		ctx,
-		appId,
-	).MessageIn(*messageIn)
-
-	if options != nil {
-		if options.WithContent != nil {
-			req = req.WithContent(*options.WithContent)
-		}
-		if options.IdempotencyKey != nil {
-			req = req.IdempotencyKey(*options.IdempotencyKey)
+	if o != nil {
+		var err error
+		SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
+		if err != nil {
+			return nil, err
 		}
 	}
-
-	ret, res, err := req.Execute()
+	jsonBody, err := json.Marshal(messageIn)
 	if err != nil {
-		return nil, wrapError(err, res)
+		return nil, err
 	}
-
+	ret, apiErr := executeRequest[MessageOut](
+		ctx,
+		message._client,
+		"POST",
+		"/api/v1/app/{app_id}/msg",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
+	)
+	if apiErr != nil {
+		return nil, apiErr
+	}
 	return ret, nil
 }
 
@@ -156,18 +151,36 @@ func (message *Message) Get(
 	ctx context.Context,
 	appId string,
 	msgId string,
+	o *MessageGetOptions,
 ) (*MessageOut, error) {
-	req := message.api.MessageAPI.V1MessageGet(
-		ctx,
-		appId,
-		msgId,
-	)
-
-	ret, res, err := req.Execute()
-	if err != nil {
-		return nil, wrapError(err, res)
+	pathMap := map[string]string{
+		"app_id": appId,
+		"msg_id": msgId,
 	}
+	queryMap := map[string]string{}
+	headerMap := map[string]string{}
+	var jsonBody []byte
 
+	if o != nil {
+		var err error
+		SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
+		if err != nil {
+			return nil, err
+		}
+	}
+	ret, apiErr := executeRequest[MessageOut](
+		ctx,
+		message._client,
+		"GET",
+		"/api/v1/app/{app_id}/msg/{msg_id}",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
+	)
+	if apiErr != nil {
+		return nil, apiErr
+	}
 	return ret, nil
 }
 
@@ -180,44 +193,26 @@ func (message *Message) ExpungeContent(
 	appId string,
 	msgId string,
 ) error {
-	req := message.api.MessageAPI.V1MessageExpungeContent(
+	pathMap := map[string]string{
+		"app_id": appId,
+		"msg_id": msgId,
+	}
+	queryMap := map[string]string{}
+	headerMap := map[string]string{}
+	var jsonBody []byte
+
+	_, apiErr := executeRequest[any](
 		ctx,
-		appId,
-		msgId,
+		message._client,
+		"DELETE",
+		"/api/v1/app/{app_id}/msg/{msg_id}/content",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
 	)
-
-	res, err := req.Execute()
-	return wrapError(err, res)
-}
-
-// Instantiates a new MessageIn object with a raw string payload.
-//
-// The payload is not normalized on the server. Normally, payloads are required
-// to be JSON, and Svix will minify the payload before sending the webhook
-// (for example, by removing extraneous whitespace or unnecessarily escaped
-// characters in strings). With this function, the payload will be sent
-// "as is", without any minification or other processing.
-//
-// The `contentType` parameter can be used to change the `content-type` header
-// of the webhook sent by Svix overriding the default of `application/json`.
-//
-// See the class documentation for details about the other parameters.
-func NewMessageInRaw(
-	eventType string,
-	payload string,
-	contentType openapi.NullableString,
-) *MessageIn {
-	msgIn := openapi.NewMessageIn(eventType, make(map[string]interface{}))
-
-	transformationsParams := map[string]interface{}{
-		"rawPayload": payload,
+	if apiErr != nil {
+		return apiErr
 	}
-	if contentType.IsSet() {
-		transformationsParams["headers"] = map[string]string{
-			"content-type": *contentType.Get(),
-		}
-	}
-	msgIn.SetTransformationsParams(transformationsParams)
-
-	return msgIn
+	return nil
 }

@@ -1,14 +1,12 @@
-// this file is @generated (with minor manual changes)
+// Package svix this file is @generated DO NOT EDIT
 package svix
 
 import (
 	"context"
-
-	"github.com/svix/svix-webhooks/go/internal/openapi"
 )
 
 type BackgroundTask struct {
-	api *openapi.APIClient
+	_client *SvixHttpClient
 }
 
 type BackgroundTaskListOptions struct {
@@ -27,35 +25,37 @@ type BackgroundTaskListOptions struct {
 // List background tasks executed in the past 90 days.
 func (backgroundTask *BackgroundTask) List(
 	ctx context.Context,
-	options *BackgroundTaskListOptions,
+	o *BackgroundTaskListOptions,
 ) (*ListResponseBackgroundTaskOut, error) {
-	req := backgroundTask.api.BackgroundTasksAPI.V1BackgroundTaskList(
+	pathMap := map[string]string{}
+	queryMap := map[string]string{}
+	headerMap := map[string]string{}
+	var jsonBody []byte
+
+	if o != nil {
+		var err error
+		SerializeParamToMap("status", o.Status, queryMap, &err)
+		SerializeParamToMap("task", o.Task, queryMap, &err)
+		SerializeParamToMap("limit", o.Limit, queryMap, &err)
+		SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+		SerializeParamToMap("order", o.Order, queryMap, &err)
+		if err != nil {
+			return nil, err
+		}
+	}
+	ret, apiErr := executeRequest[ListResponseBackgroundTaskOut](
 		ctx,
+		backgroundTask._client,
+		"GET",
+		"/api/v1/background-task",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
 	)
-
-	if options != nil {
-		if options.Status != nil {
-			req = req.Status(*options.Status)
-		}
-		if options.Task != nil {
-			req = req.Task(*options.Task)
-		}
-		if options.Limit != nil {
-			req = req.Limit(*options.Limit)
-		}
-		if options.Iterator != nil {
-			req = req.Iterator(*options.Iterator)
-		}
-		if options.Order != nil {
-			req = req.Order(*options.Order)
-		}
+	if apiErr != nil {
+		return nil, apiErr
 	}
-
-	ret, res, err := req.Execute()
-	if err != nil {
-		return nil, wrapError(err, res)
-	}
-
 	return ret, nil
 }
 
@@ -64,15 +64,25 @@ func (backgroundTask *BackgroundTask) Get(
 	ctx context.Context,
 	taskId string,
 ) (*BackgroundTaskOut, error) {
-	req := backgroundTask.api.BackgroundTasksAPI.V1BackgroundTaskGet(
-		ctx,
-		taskId,
-	)
-
-	ret, res, err := req.Execute()
-	if err != nil {
-		return nil, wrapError(err, res)
+	pathMap := map[string]string{
+		"task_id": taskId,
 	}
+	queryMap := map[string]string{}
+	headerMap := map[string]string{}
+	var jsonBody []byte
 
+	ret, apiErr := executeRequest[BackgroundTaskOut](
+		ctx,
+		backgroundTask._client,
+		"GET",
+		"/api/v1/background-task/{task_id}",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
+	)
+	if apiErr != nil {
+		return nil, apiErr
+	}
 	return ret, nil
 }

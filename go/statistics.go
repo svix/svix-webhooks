@@ -1,14 +1,18 @@
-// this file is @generated
+// Package svix this file is @generated DO NOT EDIT
 package svix
 
 import (
 	"context"
-
-	"github.com/svix/svix-webhooks/go/internal/openapi"
+	"encoding/json"
+	"fmt"
 )
 
 type Statistics struct {
-	api *openapi.APIClient
+	_client *SvixHttpClient
+}
+
+type StatisticsAggregateAppStatsOptions struct {
+	IdempotencyKey *string
 }
 
 // Creates a background task to calculate the message destinations for all applications in the environment.
@@ -18,38 +22,40 @@ type Statistics struct {
 func (statistics *Statistics) AggregateAppStats(
 	ctx context.Context,
 	appUsageStatsIn *AppUsageStatsIn,
+	o *StatisticsAggregateAppStatsOptions,
 ) (*AppUsageStatsOut, error) {
-	return statistics.AggregateAppStatsWithOptions(
-		ctx,
-		appUsageStatsIn,
-		nil,
-	)
-}
+	if appUsageStatsIn == nil {
+		return nil, fmt.Errorf("Statistics.AggregateAppStats(), appUsageStatsIn must not be nil")
+	}
+	pathMap := map[string]string{}
+	queryMap := map[string]string{}
+	headerMap := map[string]string{}
+	var jsonBody []byte
 
-// Creates a background task to calculate the message destinations for all applications in the environment.
-//
-// Note that this endpoint is asynchronous. You will need to poll the `Get Background Task` endpoint to
-// retrieve the results of the operation.
-func (statistics *Statistics) AggregateAppStatsWithOptions(
-	ctx context.Context,
-	appUsageStatsIn *AppUsageStatsIn,
-	options *PostOptions,
-) (*AppUsageStatsOut, error) {
-	req := statistics.api.StatisticsAPI.V1StatisticsAggregateAppStats(
-		ctx,
-	).AppUsageStatsIn(*appUsageStatsIn)
-
-	if options != nil {
-		if options.IdempotencyKey != nil {
-			req = req.IdempotencyKey(*options.IdempotencyKey)
+	if o != nil {
+		var err error
+		SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		if err != nil {
+			return nil, err
 		}
 	}
-
-	ret, res, err := req.Execute()
+	jsonBody, err := json.Marshal(appUsageStatsIn)
 	if err != nil {
-		return nil, wrapError(err, res)
+		return nil, err
 	}
-
+	ret, apiErr := executeRequest[AppUsageStatsOut](
+		ctx,
+		statistics._client,
+		"POST",
+		"/api/v1/stats/usage/app",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
+	)
+	if apiErr != nil {
+		return nil, apiErr
+	}
 	return ret, nil
 }
 
@@ -60,14 +66,23 @@ func (statistics *Statistics) AggregateAppStatsWithOptions(
 func (statistics *Statistics) AggregateEventTypes(
 	ctx context.Context,
 ) (*AggregateEventTypesOut, error) {
-	req := statistics.api.StatisticsAPI.V1StatisticsAggregateEventTypes(
+	pathMap := map[string]string{}
+	queryMap := map[string]string{}
+	headerMap := map[string]string{}
+	var jsonBody []byte
+
+	ret, apiErr := executeRequest[AggregateEventTypesOut](
 		ctx,
+		statistics._client,
+		"PUT",
+		"/api/v1/stats/usage/event-types",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
 	)
-
-	ret, res, err := req.Execute()
-	if err != nil {
-		return nil, wrapError(err, res)
+	if apiErr != nil {
+		return nil, apiErr
 	}
-
 	return ret, nil
 }

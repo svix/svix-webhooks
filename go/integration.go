@@ -1,14 +1,14 @@
-// this file is @generated
+// Package svix this file is @generated DO NOT EDIT
 package svix
 
 import (
 	"context"
-
-	"github.com/svix/svix-webhooks/go/internal/openapi"
+	"encoding/json"
+	"fmt"
 )
 
 type Integration struct {
-	api *openapi.APIClient
+	_client *SvixHttpClient
 }
 
 type IntegrationListOptions struct {
@@ -20,34 +20,49 @@ type IntegrationListOptions struct {
 	Order *Ordering
 }
 
+type IntegrationCreateOptions struct {
+	IdempotencyKey *string
+}
+
+type IntegrationRotateKeyOptions struct {
+	IdempotencyKey *string
+}
+
 // List the application's integrations.
 func (integration *Integration) List(
 	ctx context.Context,
 	appId string,
-	options *IntegrationListOptions,
+	o *IntegrationListOptions,
 ) (*ListResponseIntegrationOut, error) {
-	req := integration.api.IntegrationAPI.V1IntegrationList(
+	pathMap := map[string]string{
+		"app_id": appId,
+	}
+	queryMap := map[string]string{}
+	headerMap := map[string]string{}
+	var jsonBody []byte
+
+	if o != nil {
+		var err error
+		SerializeParamToMap("limit", o.Limit, queryMap, &err)
+		SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+		SerializeParamToMap("order", o.Order, queryMap, &err)
+		if err != nil {
+			return nil, err
+		}
+	}
+	ret, apiErr := executeRequest[ListResponseIntegrationOut](
 		ctx,
-		appId,
+		integration._client,
+		"GET",
+		"/api/v1/app/{app_id}/integration",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
 	)
-
-	if options != nil {
-		if options.Limit != nil {
-			req = req.Limit(*options.Limit)
-		}
-		if options.Iterator != nil {
-			req = req.Iterator(*options.Iterator)
-		}
-		if options.Order != nil {
-			req = req.Order(*options.Order)
-		}
+	if apiErr != nil {
+		return nil, apiErr
 	}
-
-	ret, res, err := req.Execute()
-	if err != nil {
-		return nil, wrapError(err, res)
-	}
-
 	return ret, nil
 }
 
@@ -56,38 +71,42 @@ func (integration *Integration) Create(
 	ctx context.Context,
 	appId string,
 	integrationIn *IntegrationIn,
+	o *IntegrationCreateOptions,
 ) (*IntegrationOut, error) {
-	return integration.CreateWithOptions(
-		ctx,
-		appId,
-		integrationIn,
-		nil,
-	)
-}
+	if integrationIn == nil {
+		return nil, fmt.Errorf("Integration.Create(), integrationIn must not be nil")
+	}
+	pathMap := map[string]string{
+		"app_id": appId,
+	}
+	queryMap := map[string]string{}
+	headerMap := map[string]string{}
+	var jsonBody []byte
 
-// Create an integration.
-func (integration *Integration) CreateWithOptions(
-	ctx context.Context,
-	appId string,
-	integrationIn *IntegrationIn,
-	options *PostOptions,
-) (*IntegrationOut, error) {
-	req := integration.api.IntegrationAPI.V1IntegrationCreate(
-		ctx,
-		appId,
-	).IntegrationIn(*integrationIn)
-
-	if options != nil {
-		if options.IdempotencyKey != nil {
-			req = req.IdempotencyKey(*options.IdempotencyKey)
+	if o != nil {
+		var err error
+		SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		if err != nil {
+			return nil, err
 		}
 	}
-
-	ret, res, err := req.Execute()
+	jsonBody, err := json.Marshal(integrationIn)
 	if err != nil {
-		return nil, wrapError(err, res)
+		return nil, err
 	}
-
+	ret, apiErr := executeRequest[IntegrationOut](
+		ctx,
+		integration._client,
+		"POST",
+		"/api/v1/app/{app_id}/integration",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
+	)
+	if apiErr != nil {
+		return nil, apiErr
+	}
 	return ret, nil
 }
 
@@ -97,17 +116,27 @@ func (integration *Integration) Get(
 	appId string,
 	integId string,
 ) (*IntegrationOut, error) {
-	req := integration.api.IntegrationAPI.V1IntegrationGet(
-		ctx,
-		appId,
-		integId,
-	)
-
-	ret, res, err := req.Execute()
-	if err != nil {
-		return nil, wrapError(err, res)
+	pathMap := map[string]string{
+		"app_id":   appId,
+		"integ_id": integId,
 	}
+	queryMap := map[string]string{}
+	headerMap := map[string]string{}
+	var jsonBody []byte
 
+	ret, apiErr := executeRequest[IntegrationOut](
+		ctx,
+		integration._client,
+		"GET",
+		"/api/v1/app/{app_id}/integration/{integ_id}",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
+	)
+	if apiErr != nil {
+		return nil, apiErr
+	}
 	return ret, nil
 }
 
@@ -118,17 +147,34 @@ func (integration *Integration) Update(
 	integId string,
 	integrationUpdate *IntegrationUpdate,
 ) (*IntegrationOut, error) {
-	req := integration.api.IntegrationAPI.V1IntegrationUpdate(
-		ctx,
-		appId,
-		integId,
-	).IntegrationUpdate(*integrationUpdate)
-
-	ret, res, err := req.Execute()
-	if err != nil {
-		return nil, wrapError(err, res)
+	if integrationUpdate == nil {
+		return nil, fmt.Errorf("Integration.Update(), integrationUpdate must not be nil")
 	}
+	pathMap := map[string]string{
+		"app_id":   appId,
+		"integ_id": integId,
+	}
+	queryMap := map[string]string{}
+	headerMap := map[string]string{}
+	var jsonBody []byte
 
+	jsonBody, err := json.Marshal(integrationUpdate)
+	if err != nil {
+		return nil, err
+	}
+	ret, apiErr := executeRequest[IntegrationOut](
+		ctx,
+		integration._client,
+		"PUT",
+		"/api/v1/app/{app_id}/integration/{integ_id}",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
+	)
+	if apiErr != nil {
+		return nil, apiErr
+	}
 	return ret, nil
 }
 
@@ -138,33 +184,59 @@ func (integration *Integration) Delete(
 	appId string,
 	integId string,
 ) error {
-	req := integration.api.IntegrationAPI.V1IntegrationDelete(
-		ctx,
-		appId,
-		integId,
-	)
+	pathMap := map[string]string{
+		"app_id":   appId,
+		"integ_id": integId,
+	}
+	queryMap := map[string]string{}
+	headerMap := map[string]string{}
+	var jsonBody []byte
 
-	res, err := req.Execute()
-	return wrapError(err, res)
+	_, apiErr := executeRequest[any](
+		ctx,
+		integration._client,
+		"DELETE",
+		"/api/v1/app/{app_id}/integration/{integ_id}",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
+	)
+	if apiErr != nil {
+		return apiErr
+	}
+	return nil
 }
 
 // Get an integration's key.
+//
+// Deprecated: GetKey is deprecated.
 func (integration *Integration) GetKey(
 	ctx context.Context,
 	appId string,
 	integId string,
 ) (*IntegrationKeyOut, error) {
-	req := integration.api.IntegrationAPI.V1IntegrationGetKey(
-		ctx,
-		appId,
-		integId,
-	)
-
-	ret, res, err := req.Execute()
-	if err != nil {
-		return nil, wrapError(err, res)
+	pathMap := map[string]string{
+		"app_id":   appId,
+		"integ_id": integId,
 	}
+	queryMap := map[string]string{}
+	headerMap := map[string]string{}
+	var jsonBody []byte
 
+	ret, apiErr := executeRequest[IntegrationKeyOut](
+		ctx,
+		integration._client,
+		"GET",
+		"/api/v1/app/{app_id}/integration/{integ_id}/key",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
+	)
+	if apiErr != nil {
+		return nil, apiErr
+	}
 	return ret, nil
 }
 
@@ -173,38 +245,35 @@ func (integration *Integration) RotateKey(
 	ctx context.Context,
 	appId string,
 	integId string,
+	o *IntegrationRotateKeyOptions,
 ) (*IntegrationKeyOut, error) {
-	return integration.RotateKeyWithOptions(
-		ctx,
-		appId,
-		integId,
-		nil,
-	)
-}
+	pathMap := map[string]string{
+		"app_id":   appId,
+		"integ_id": integId,
+	}
+	queryMap := map[string]string{}
+	headerMap := map[string]string{}
+	var jsonBody []byte
 
-// Rotate the integration's key. The previous key will be immediately revoked.
-func (integration *Integration) RotateKeyWithOptions(
-	ctx context.Context,
-	appId string,
-	integId string,
-	options *PostOptions,
-) (*IntegrationKeyOut, error) {
-	req := integration.api.IntegrationAPI.V1IntegrationRotateKey(
-		ctx,
-		appId,
-		integId,
-	)
-
-	if options != nil {
-		if options.IdempotencyKey != nil {
-			req = req.IdempotencyKey(*options.IdempotencyKey)
+	if o != nil {
+		var err error
+		SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		if err != nil {
+			return nil, err
 		}
 	}
-
-	ret, res, err := req.Execute()
-	if err != nil {
-		return nil, wrapError(err, res)
+	ret, apiErr := executeRequest[IntegrationKeyOut](
+		ctx,
+		integration._client,
+		"POST",
+		"/api/v1/app/{app_id}/integration/{integ_id}/key/rotate",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
+	)
+	if apiErr != nil {
+		return nil, apiErr
 	}
-
 	return ret, nil
 }

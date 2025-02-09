@@ -1,15 +1,15 @@
-// this file is @generated (with minor manual changes)
+// Package svix this file is @generated DO NOT EDIT
 package svix
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"time"
-
-	"github.com/svix/svix-webhooks/go/internal/openapi"
 )
 
 type Endpoint struct {
-	api *openapi.APIClient
+	_client *SvixHttpClient
 }
 
 type EndpointListOptions struct {
@@ -19,6 +19,26 @@ type EndpointListOptions struct {
 	Iterator *string
 	// The sorting order of the returned items
 	Order *Ordering
+}
+
+type EndpointCreateOptions struct {
+	IdempotencyKey *string
+}
+
+type EndpointRecoverOptions struct {
+	IdempotencyKey *string
+}
+
+type EndpointReplayMissingOptions struct {
+	IdempotencyKey *string
+}
+
+type EndpointRotateSecretOptions struct {
+	IdempotencyKey *string
+}
+
+type EndpointSendExampleOptions struct {
+	IdempotencyKey *string
 }
 
 type EndpointGetStatsOptions struct {
@@ -32,30 +52,37 @@ type EndpointGetStatsOptions struct {
 func (endpoint *Endpoint) List(
 	ctx context.Context,
 	appId string,
-	options *EndpointListOptions,
+	o *EndpointListOptions,
 ) (*ListResponseEndpointOut, error) {
-	req := endpoint.api.EndpointAPI.V1EndpointList(
+	pathMap := map[string]string{
+		"app_id": appId,
+	}
+	queryMap := map[string]string{}
+	headerMap := map[string]string{}
+	var jsonBody []byte
+
+	if o != nil {
+		var err error
+		SerializeParamToMap("limit", o.Limit, queryMap, &err)
+		SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+		SerializeParamToMap("order", o.Order, queryMap, &err)
+		if err != nil {
+			return nil, err
+		}
+	}
+	ret, apiErr := executeRequest[ListResponseEndpointOut](
 		ctx,
-		appId,
+		endpoint._client,
+		"GET",
+		"/api/v1/app/{app_id}/endpoint",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
 	)
-
-	if options != nil {
-		if options.Limit != nil {
-			req = req.Limit(*options.Limit)
-		}
-		if options.Iterator != nil {
-			req = req.Iterator(*options.Iterator)
-		}
-		if options.Order != nil {
-			req = req.Order(*options.Order)
-		}
+	if apiErr != nil {
+		return nil, apiErr
 	}
-
-	ret, res, err := req.Execute()
-	if err != nil {
-		return nil, wrapError(err, res)
-	}
-
 	return ret, nil
 }
 
@@ -66,40 +93,42 @@ func (endpoint *Endpoint) Create(
 	ctx context.Context,
 	appId string,
 	endpointIn *EndpointIn,
+	o *EndpointCreateOptions,
 ) (*EndpointOut, error) {
-	return endpoint.CreateWithOptions(
-		ctx,
-		appId,
-		endpointIn,
-		nil,
-	)
-}
+	if endpointIn == nil {
+		return nil, fmt.Errorf("Endpoint.Create(), endpointIn must not be nil")
+	}
+	pathMap := map[string]string{
+		"app_id": appId,
+	}
+	queryMap := map[string]string{}
+	headerMap := map[string]string{}
+	var jsonBody []byte
 
-// Create a new endpoint for the application.
-//
-// When `secret` is `null` the secret is automatically generated (recommended).
-func (endpoint *Endpoint) CreateWithOptions(
-	ctx context.Context,
-	appId string,
-	endpointIn *EndpointIn,
-	options *PostOptions,
-) (*EndpointOut, error) {
-	req := endpoint.api.EndpointAPI.V1EndpointCreate(
-		ctx,
-		appId,
-	).EndpointIn(*endpointIn)
-
-	if options != nil {
-		if options.IdempotencyKey != nil {
-			req = req.IdempotencyKey(*options.IdempotencyKey)
+	if o != nil {
+		var err error
+		SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		if err != nil {
+			return nil, err
 		}
 	}
-
-	ret, res, err := req.Execute()
+	jsonBody, err := json.Marshal(endpointIn)
 	if err != nil {
-		return nil, wrapError(err, res)
+		return nil, err
 	}
-
+	ret, apiErr := executeRequest[EndpointOut](
+		ctx,
+		endpoint._client,
+		"POST",
+		"/api/v1/app/{app_id}/endpoint",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
+	)
+	if apiErr != nil {
+		return nil, apiErr
+	}
 	return ret, nil
 }
 
@@ -109,17 +138,27 @@ func (endpoint *Endpoint) Get(
 	appId string,
 	endpointId string,
 ) (*EndpointOut, error) {
-	req := endpoint.api.EndpointAPI.V1EndpointGet(
-		ctx,
-		appId,
-		endpointId,
-	)
-
-	ret, res, err := req.Execute()
-	if err != nil {
-		return nil, wrapError(err, res)
+	pathMap := map[string]string{
+		"app_id":      appId,
+		"endpoint_id": endpointId,
 	}
+	queryMap := map[string]string{}
+	headerMap := map[string]string{}
+	var jsonBody []byte
 
+	ret, apiErr := executeRequest[EndpointOut](
+		ctx,
+		endpoint._client,
+		"GET",
+		"/api/v1/app/{app_id}/endpoint/{endpoint_id}",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
+	)
+	if apiErr != nil {
+		return nil, apiErr
+	}
 	return ret, nil
 }
 
@@ -130,17 +169,34 @@ func (endpoint *Endpoint) Update(
 	endpointId string,
 	endpointUpdate *EndpointUpdate,
 ) (*EndpointOut, error) {
-	req := endpoint.api.EndpointAPI.V1EndpointUpdate(
-		ctx,
-		appId,
-		endpointId,
-	).EndpointUpdate(*endpointUpdate)
-
-	ret, res, err := req.Execute()
-	if err != nil {
-		return nil, wrapError(err, res)
+	if endpointUpdate == nil {
+		return nil, fmt.Errorf("Endpoint.Update(), endpointUpdate must not be nil")
 	}
+	pathMap := map[string]string{
+		"app_id":      appId,
+		"endpoint_id": endpointId,
+	}
+	queryMap := map[string]string{}
+	headerMap := map[string]string{}
+	var jsonBody []byte
 
+	jsonBody, err := json.Marshal(endpointUpdate)
+	if err != nil {
+		return nil, err
+	}
+	ret, apiErr := executeRequest[EndpointOut](
+		ctx,
+		endpoint._client,
+		"PUT",
+		"/api/v1/app/{app_id}/endpoint/{endpoint_id}",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
+	)
+	if apiErr != nil {
+		return nil, apiErr
+	}
 	return ret, nil
 }
 
@@ -150,14 +206,28 @@ func (endpoint *Endpoint) Delete(
 	appId string,
 	endpointId string,
 ) error {
-	req := endpoint.api.EndpointAPI.V1EndpointDelete(
-		ctx,
-		appId,
-		endpointId,
-	)
+	pathMap := map[string]string{
+		"app_id":      appId,
+		"endpoint_id": endpointId,
+	}
+	queryMap := map[string]string{}
+	headerMap := map[string]string{}
+	var jsonBody []byte
 
-	res, err := req.Execute()
-	return wrapError(err, res)
+	_, apiErr := executeRequest[any](
+		ctx,
+		endpoint._client,
+		"DELETE",
+		"/api/v1/app/{app_id}/endpoint/{endpoint_id}",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
+	)
+	if apiErr != nil {
+		return apiErr
+	}
+	return nil
 }
 
 // Partially update an endpoint.
@@ -167,17 +237,34 @@ func (endpoint *Endpoint) Patch(
 	endpointId string,
 	endpointPatch *EndpointPatch,
 ) (*EndpointOut, error) {
-	req := endpoint.api.EndpointAPI.V1EndpointPatch(
-		ctx,
-		appId,
-		endpointId,
-	).EndpointPatch(*endpointPatch)
-
-	ret, res, err := req.Execute()
-	if err != nil {
-		return nil, wrapError(err, res)
+	if endpointPatch == nil {
+		return nil, fmt.Errorf("Endpoint.Patch(), endpointPatch must not be nil")
 	}
+	pathMap := map[string]string{
+		"app_id":      appId,
+		"endpoint_id": endpointId,
+	}
+	queryMap := map[string]string{}
+	headerMap := map[string]string{}
+	var jsonBody []byte
 
+	jsonBody, err := json.Marshal(endpointPatch)
+	if err != nil {
+		return nil, err
+	}
+	ret, apiErr := executeRequest[EndpointOut](
+		ctx,
+		endpoint._client,
+		"PATCH",
+		"/api/v1/app/{app_id}/endpoint/{endpoint_id}",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
+	)
+	if apiErr != nil {
+		return nil, apiErr
+	}
 	return ret, nil
 }
 
@@ -187,17 +274,27 @@ func (endpoint *Endpoint) GetHeaders(
 	appId string,
 	endpointId string,
 ) (*EndpointHeadersOut, error) {
-	req := endpoint.api.EndpointAPI.V1EndpointGetHeaders(
-		ctx,
-		appId,
-		endpointId,
-	)
-
-	ret, res, err := req.Execute()
-	if err != nil {
-		return nil, wrapError(err, res)
+	pathMap := map[string]string{
+		"app_id":      appId,
+		"endpoint_id": endpointId,
 	}
+	queryMap := map[string]string{}
+	headerMap := map[string]string{}
+	var jsonBody []byte
 
+	ret, apiErr := executeRequest[EndpointHeadersOut](
+		ctx,
+		endpoint._client,
+		"GET",
+		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
+	)
+	if apiErr != nil {
+		return nil, apiErr
+	}
 	return ret, nil
 }
 
@@ -208,14 +305,35 @@ func (endpoint *Endpoint) UpdateHeaders(
 	endpointId string,
 	endpointHeadersIn *EndpointHeadersIn,
 ) error {
-	req := endpoint.api.EndpointAPI.V1EndpointUpdateHeaders(
-		ctx,
-		appId,
-		endpointId,
-	).EndpointHeadersIn(*endpointHeadersIn)
+	if endpointHeadersIn == nil {
+		return fmt.Errorf("Endpoint.UpdateHeaders(), endpointHeadersIn must not be nil")
+	}
+	pathMap := map[string]string{
+		"app_id":      appId,
+		"endpoint_id": endpointId,
+	}
+	queryMap := map[string]string{}
+	headerMap := map[string]string{}
+	var jsonBody []byte
 
-	res, err := req.Execute()
-	return wrapError(err, res)
+	jsonBody, err := json.Marshal(endpointHeadersIn)
+	if err != nil {
+		return err
+	}
+	_, apiErr := executeRequest[any](
+		ctx,
+		endpoint._client,
+		"PUT",
+		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
+	)
+	if apiErr != nil {
+		return apiErr
+	}
+	return nil
 }
 
 // Partially set the additional headers to be sent with the webhook.
@@ -225,14 +343,35 @@ func (endpoint *Endpoint) PatchHeaders(
 	endpointId string,
 	endpointHeadersPatchIn *EndpointHeadersPatchIn,
 ) error {
-	req := endpoint.api.EndpointAPI.V1EndpointPatchHeaders(
-		ctx,
-		appId,
-		endpointId,
-	).EndpointHeadersPatchIn(*endpointHeadersPatchIn)
+	if endpointHeadersPatchIn == nil {
+		return fmt.Errorf("Endpoint.PatchHeaders(), endpointHeadersPatchIn must not be nil")
+	}
+	pathMap := map[string]string{
+		"app_id":      appId,
+		"endpoint_id": endpointId,
+	}
+	queryMap := map[string]string{}
+	headerMap := map[string]string{}
+	var jsonBody []byte
 
-	res, err := req.Execute()
-	return wrapError(err, res)
+	jsonBody, err := json.Marshal(endpointHeadersPatchIn)
+	if err != nil {
+		return err
+	}
+	_, apiErr := executeRequest[any](
+		ctx,
+		endpoint._client,
+		"PATCH",
+		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
+	)
+	if apiErr != nil {
+		return apiErr
+	}
+	return nil
 }
 
 // Resend all failed messages since a given time.
@@ -243,43 +382,43 @@ func (endpoint *Endpoint) Recover(
 	appId string,
 	endpointId string,
 	recoverIn *RecoverIn,
+	o *EndpointRecoverOptions,
 ) (*RecoverOut, error) {
-	return endpoint.RecoverWithOptions(
-		ctx,
-		appId,
-		endpointId,
-		recoverIn,
-		nil,
-	)
-}
+	if recoverIn == nil {
+		return nil, fmt.Errorf("Endpoint.Recover(), recoverIn must not be nil")
+	}
+	pathMap := map[string]string{
+		"app_id":      appId,
+		"endpoint_id": endpointId,
+	}
+	queryMap := map[string]string{}
+	headerMap := map[string]string{}
+	var jsonBody []byte
 
-// Resend all failed messages since a given time.
-//
-// Messages that were sent successfully, even if failed initially, are not resent.
-func (endpoint *Endpoint) RecoverWithOptions(
-	ctx context.Context,
-	appId string,
-	endpointId string,
-	recoverIn *RecoverIn,
-	options *PostOptions,
-) (*RecoverOut, error) {
-	req := endpoint.api.EndpointAPI.V1EndpointRecover(
-		ctx,
-		appId,
-		endpointId,
-	).RecoverIn(*recoverIn)
-
-	if options != nil {
-		if options.IdempotencyKey != nil {
-			req = req.IdempotencyKey(*options.IdempotencyKey)
+	if o != nil {
+		var err error
+		SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		if err != nil {
+			return nil, err
 		}
 	}
-
-	ret, res, err := req.Execute()
+	jsonBody, err := json.Marshal(recoverIn)
 	if err != nil {
-		return nil, wrapError(err, res)
+		return nil, err
 	}
-
+	ret, apiErr := executeRequest[RecoverOut](
+		ctx,
+		endpoint._client,
+		"POST",
+		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/recover",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
+	)
+	if apiErr != nil {
+		return nil, apiErr
+	}
 	return ret, nil
 }
 
@@ -292,44 +431,43 @@ func (endpoint *Endpoint) ReplayMissing(
 	appId string,
 	endpointId string,
 	replayIn *ReplayIn,
+	o *EndpointReplayMissingOptions,
 ) (*ReplayOut, error) {
-	return endpoint.ReplayMissingWithOptions(
-		ctx,
-		appId,
-		endpointId,
-		replayIn,
-		nil,
-	)
-}
+	if replayIn == nil {
+		return nil, fmt.Errorf("Endpoint.ReplayMissing(), replayIn must not be nil")
+	}
+	pathMap := map[string]string{
+		"app_id":      appId,
+		"endpoint_id": endpointId,
+	}
+	queryMap := map[string]string{}
+	headerMap := map[string]string{}
+	var jsonBody []byte
 
-// Replays messages to the endpoint.
-//
-// Only messages that were created after `since` will be sent.
-// Messages that were previously sent to the endpoint are not resent.
-func (endpoint *Endpoint) ReplayMissingWithOptions(
-	ctx context.Context,
-	appId string,
-	endpointId string,
-	replayIn *ReplayIn,
-	options *PostOptions,
-) (*ReplayOut, error) {
-	req := endpoint.api.EndpointAPI.V1EndpointReplayMissing(
-		ctx,
-		appId,
-		endpointId,
-	).ReplayIn(*replayIn)
-
-	if options != nil {
-		if options.IdempotencyKey != nil {
-			req = req.IdempotencyKey(*options.IdempotencyKey)
+	if o != nil {
+		var err error
+		SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		if err != nil {
+			return nil, err
 		}
 	}
-
-	ret, res, err := req.Execute()
+	jsonBody, err := json.Marshal(replayIn)
 	if err != nil {
-		return nil, wrapError(err, res)
+		return nil, err
 	}
-
+	ret, apiErr := executeRequest[ReplayOut](
+		ctx,
+		endpoint._client,
+		"POST",
+		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/replay-missing",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
+	)
+	if apiErr != nil {
+		return nil, apiErr
+	}
 	return ret, nil
 }
 
@@ -342,17 +480,27 @@ func (endpoint *Endpoint) GetSecret(
 	appId string,
 	endpointId string,
 ) (*EndpointSecretOut, error) {
-	req := endpoint.api.EndpointAPI.V1EndpointGetSecret(
-		ctx,
-		appId,
-		endpointId,
-	)
-
-	ret, res, err := req.Execute()
-	if err != nil {
-		return nil, wrapError(err, res)
+	pathMap := map[string]string{
+		"app_id":      appId,
+		"endpoint_id": endpointId,
 	}
+	queryMap := map[string]string{}
+	headerMap := map[string]string{}
+	var jsonBody []byte
 
+	ret, apiErr := executeRequest[EndpointSecretOut](
+		ctx,
+		endpoint._client,
+		"GET",
+		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
+	)
+	if apiErr != nil {
+		return nil, apiErr
+	}
 	return ret, nil
 }
 
@@ -364,40 +512,44 @@ func (endpoint *Endpoint) RotateSecret(
 	appId string,
 	endpointId string,
 	endpointSecretRotateIn *EndpointSecretRotateIn,
+	o *EndpointRotateSecretOptions,
 ) error {
-	return endpoint.RotateSecretWithOptions(
-		ctx,
-		appId,
-		endpointId,
-		endpointSecretRotateIn,
-		nil,
-	)
-}
+	if endpointSecretRotateIn == nil {
+		return fmt.Errorf("Endpoint.RotateSecret(), endpointSecretRotateIn must not be nil")
+	}
+	pathMap := map[string]string{
+		"app_id":      appId,
+		"endpoint_id": endpointId,
+	}
+	queryMap := map[string]string{}
+	headerMap := map[string]string{}
+	var jsonBody []byte
 
-// Rotates the endpoint's signing secret.
-//
-// The previous secret will remain valid for the next 24 hours.
-func (endpoint *Endpoint) RotateSecretWithOptions(
-	ctx context.Context,
-	appId string,
-	endpointId string,
-	endpointSecretRotateIn *EndpointSecretRotateIn,
-	options *PostOptions,
-) error {
-	req := endpoint.api.EndpointAPI.V1EndpointRotateSecret(
-		ctx,
-		appId,
-		endpointId,
-	).EndpointSecretRotateIn(*endpointSecretRotateIn)
-
-	if options != nil {
-		if options.IdempotencyKey != nil {
-			req = req.IdempotencyKey(*options.IdempotencyKey)
+	if o != nil {
+		var err error
+		SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		if err != nil {
+			return err
 		}
 	}
-
-	res, err := req.Execute()
-	return wrapError(err, res)
+	jsonBody, err := json.Marshal(endpointSecretRotateIn)
+	if err != nil {
+		return err
+	}
+	_, apiErr := executeRequest[any](
+		ctx,
+		endpoint._client,
+		"POST",
+		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
+	)
+	if apiErr != nil {
+		return apiErr
+	}
+	return nil
 }
 
 // Send an example message for an event.
@@ -406,41 +558,43 @@ func (endpoint *Endpoint) SendExample(
 	appId string,
 	endpointId string,
 	eventExampleIn *EventExampleIn,
+	o *EndpointSendExampleOptions,
 ) (*MessageOut, error) {
-	return endpoint.SendExampleWithOptions(
-		ctx,
-		appId,
-		endpointId,
-		eventExampleIn,
-		nil,
-	)
-}
+	if eventExampleIn == nil {
+		return nil, fmt.Errorf("Endpoint.SendExample(), eventExampleIn must not be nil")
+	}
+	pathMap := map[string]string{
+		"app_id":      appId,
+		"endpoint_id": endpointId,
+	}
+	queryMap := map[string]string{}
+	headerMap := map[string]string{}
+	var jsonBody []byte
 
-// Send an example message for an event.
-func (endpoint *Endpoint) SendExampleWithOptions(
-	ctx context.Context,
-	appId string,
-	endpointId string,
-	eventExampleIn *EventExampleIn,
-	options *PostOptions,
-) (*MessageOut, error) {
-	req := endpoint.api.EndpointAPI.V1EndpointSendExample(
-		ctx,
-		appId,
-		endpointId,
-	).EventExampleIn(*eventExampleIn)
-
-	if options != nil {
-		if options.IdempotencyKey != nil {
-			req = req.IdempotencyKey(*options.IdempotencyKey)
+	if o != nil {
+		var err error
+		SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		if err != nil {
+			return nil, err
 		}
 	}
-
-	ret, res, err := req.Execute()
+	jsonBody, err := json.Marshal(eventExampleIn)
 	if err != nil {
-		return nil, wrapError(err, res)
+		return nil, err
 	}
-
+	ret, apiErr := executeRequest[MessageOut](
+		ctx,
+		endpoint._client,
+		"POST",
+		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/send-example",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
+	)
+	if apiErr != nil {
+		return nil, apiErr
+	}
 	return ret, nil
 }
 
@@ -449,35 +603,37 @@ func (endpoint *Endpoint) GetStats(
 	ctx context.Context,
 	appId string,
 	endpointId string,
+	o *EndpointGetStatsOptions,
 ) (*EndpointStats, error) {
-	return endpoint.GetStatsWithOptions(ctx, appId, endpointId, EndpointStatsOptions{})
-}
+	pathMap := map[string]string{
+		"app_id":      appId,
+		"endpoint_id": endpointId,
+	}
+	queryMap := map[string]string{}
+	headerMap := map[string]string{}
+	var jsonBody []byte
 
-// Get basic statistics for the endpoint.
-func (endpoint *Endpoint) GetStatsWithOptions(
-	ctx context.Context,
-	appId string,
-	endpointId string,
-	options EndpointStatsOptions,
-) (*EndpointStats, error) {
-	req := endpoint.api.EndpointAPI.V1EndpointGetStats(
+	if o != nil {
+		var err error
+		SerializeParamToMap("since", o.Since, queryMap, &err)
+		SerializeParamToMap("until", o.Until, queryMap, &err)
+		if err != nil {
+			return nil, err
+		}
+	}
+	ret, apiErr := executeRequest[EndpointStats](
 		ctx,
-		appId,
-		endpointId,
+		endpoint._client,
+		"GET",
+		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/stats",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
 	)
-
-	if options.Since != nil {
-		req = req.Since(*options.Since)
+	if apiErr != nil {
+		return nil, apiErr
 	}
-	if options.Until != nil {
-		req = req.Until(*options.Until)
-	}
-
-	ret, res, err := req.Execute()
-	if err != nil {
-		return nil, wrapError(err, res)
-	}
-
 	return ret, nil
 }
 
@@ -487,17 +643,27 @@ func (endpoint *Endpoint) TransformationGet(
 	appId string,
 	endpointId string,
 ) (*EndpointTransformationOut, error) {
-	req := endpoint.api.EndpointAPI.V1EndpointTransformationGet(
-		ctx,
-		appId,
-		endpointId,
-	)
-
-	ret, res, err := req.Execute()
-	if err != nil {
-		return nil, wrapError(err, res)
+	pathMap := map[string]string{
+		"app_id":      appId,
+		"endpoint_id": endpointId,
 	}
+	queryMap := map[string]string{}
+	headerMap := map[string]string{}
+	var jsonBody []byte
 
+	ret, apiErr := executeRequest[EndpointTransformationOut](
+		ctx,
+		endpoint._client,
+		"GET",
+		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
+	)
+	if apiErr != nil {
+		return nil, apiErr
+	}
 	return ret, nil
 }
 
@@ -508,12 +674,33 @@ func (endpoint *Endpoint) TransformationPartialUpdate(
 	endpointId string,
 	endpointTransformationIn *EndpointTransformationIn,
 ) error {
-	req := endpoint.api.EndpointAPI.V1EndpointTransformationPartialUpdate(
-		ctx,
-		appId,
-		endpointId,
-	).EndpointTransformationIn(*endpointTransformationIn)
+	if endpointTransformationIn == nil {
+		return fmt.Errorf("Endpoint.TransformationPartialUpdate(), endpointTransformationIn must not be nil")
+	}
+	pathMap := map[string]string{
+		"app_id":      appId,
+		"endpoint_id": endpointId,
+	}
+	queryMap := map[string]string{}
+	headerMap := map[string]string{}
+	var jsonBody []byte
 
-	res, err := req.Execute()
-	return wrapError(err, res)
+	jsonBody, err := json.Marshal(endpointTransformationIn)
+	if err != nil {
+		return err
+	}
+	_, apiErr := executeRequest[any](
+		ctx,
+		endpoint._client,
+		"PATCH",
+		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
+	)
+	if apiErr != nil {
+		return apiErr
+	}
+	return nil
 }

@@ -1,14 +1,14 @@
-// this file is @generated (with some manual changes)
+// Package svix this file is @generated DO NOT EDIT
 package svix
 
 import (
 	"context"
-
-	"github.com/svix/svix-webhooks/go/internal/openapi"
+	"encoding/json"
+	"fmt"
 )
 
 type EventType struct {
-	api *openapi.APIClient
+	_client *SvixHttpClient
 }
 
 type EventTypeListOptions struct {
@@ -24,6 +24,14 @@ type EventTypeListOptions struct {
 	WithContent *bool
 }
 
+type EventTypeCreateOptions struct {
+	IdempotencyKey *string
+}
+
+type EventTypeImportOpenapiOptions struct {
+	IdempotencyKey *string
+}
+
 type EventTypeDeleteOptions struct {
 	// By default event types are archived when "deleted". Passing this to `true` deletes them entirely.
 	Expunge *bool
@@ -32,35 +40,37 @@ type EventTypeDeleteOptions struct {
 // Return the list of event types.
 func (eventType *EventType) List(
 	ctx context.Context,
-	options *EventTypeListOptions,
+	o *EventTypeListOptions,
 ) (*ListResponseEventTypeOut, error) {
-	req := eventType.api.EventTypeAPI.V1EventTypeList(
+	pathMap := map[string]string{}
+	queryMap := map[string]string{}
+	headerMap := map[string]string{}
+	var jsonBody []byte
+
+	if o != nil {
+		var err error
+		SerializeParamToMap("limit", o.Limit, queryMap, &err)
+		SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+		SerializeParamToMap("order", o.Order, queryMap, &err)
+		SerializeParamToMap("include_archived", o.IncludeArchived, queryMap, &err)
+		SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
+		if err != nil {
+			return nil, err
+		}
+	}
+	ret, apiErr := executeRequest[ListResponseEventTypeOut](
 		ctx,
+		eventType._client,
+		"GET",
+		"/api/v1/event-type",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
 	)
-
-	if options != nil {
-		if options.Limit != nil {
-			req = req.Limit(*options.Limit)
-		}
-		if options.Iterator != nil {
-			req = req.Iterator(*options.Iterator)
-		}
-		if options.Order != nil {
-			req = req.Order(*options.Order)
-		}
-		if options.IncludeArchived != nil {
-			req = req.IncludeArchived(*options.IncludeArchived)
-		}
-		if options.WithContent != nil {
-			req = req.WithContent(*options.WithContent)
-		}
+	if apiErr != nil {
+		return nil, apiErr
 	}
-
-	ret, res, err := req.Execute()
-	if err != nil {
-		return nil, wrapError(err, res)
-	}
-
 	return ret, nil
 }
 
@@ -72,39 +82,40 @@ func (eventType *EventType) List(
 func (eventType *EventType) Create(
 	ctx context.Context,
 	eventTypeIn *EventTypeIn,
+	o *EventTypeCreateOptions,
 ) (*EventTypeOut, error) {
-	return eventType.CreateWithOptions(
-		ctx,
-		eventTypeIn,
-		nil,
-	)
-}
+	if eventTypeIn == nil {
+		return nil, fmt.Errorf("EventType.Create(), eventTypeIn must not be nil")
+	}
+	pathMap := map[string]string{}
+	queryMap := map[string]string{}
+	headerMap := map[string]string{}
+	var jsonBody []byte
 
-// Create new or unarchive existing event type.
-//
-// Unarchiving an event type will allow endpoints to filter on it and messages to be sent with it.
-// Endpoints filtering on the event type before archival will continue to filter on it.
-// This operation does not preserve the description and schemas.
-func (eventType *EventType) CreateWithOptions(
-	ctx context.Context,
-	eventTypeIn *EventTypeIn,
-	options *PostOptions,
-) (*EventTypeOut, error) {
-	req := eventType.api.EventTypeAPI.V1EventTypeCreate(
-		ctx,
-	).EventTypeIn(*eventTypeIn)
-
-	if options != nil {
-		if options.IdempotencyKey != nil {
-			req = req.IdempotencyKey(*options.IdempotencyKey)
+	if o != nil {
+		var err error
+		SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		if err != nil {
+			return nil, err
 		}
 	}
-
-	ret, res, err := req.Execute()
+	jsonBody, err := json.Marshal(eventTypeIn)
 	if err != nil {
-		return nil, wrapError(err, res)
+		return nil, err
 	}
-
+	ret, apiErr := executeRequest[EventTypeOut](
+		ctx,
+		eventType._client,
+		"POST",
+		"/api/v1/event-type",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
+	)
+	if apiErr != nil {
+		return nil, apiErr
+	}
 	return ret, nil
 }
 
@@ -116,57 +127,41 @@ func (eventType *EventType) CreateWithOptions(
 func (eventType *EventType) ImportOpenapi(
 	ctx context.Context,
 	eventTypeImportOpenApiIn *EventTypeImportOpenApiIn,
+	o *EventTypeImportOpenapiOptions,
 ) (*EventTypeImportOpenApiOut, error) {
-	return eventType.ImportOpenapiWithOptions(
-		ctx,
-		eventTypeImportOpenApiIn,
-		nil,
-	)
-}
+	if eventTypeImportOpenApiIn == nil {
+		return nil, fmt.Errorf("EventType.ImportOpenapi(), eventTypeImportOpenApiIn must not be nil")
+	}
+	pathMap := map[string]string{}
+	queryMap := map[string]string{}
+	headerMap := map[string]string{}
+	var jsonBody []byte
 
-// Given an OpenAPI spec, create new or update existing event types.
-// If an existing `archived` event type is updated, it will be unarchived.
-//
-// The importer will convert all webhooks found in the either the `webhooks` or `x-webhooks`
-// top-level.
-func (eventType *EventType) ImportOpenapiWithOptions(
-	ctx context.Context,
-	eventTypeImportOpenApiIn *EventTypeImportOpenApiIn,
-	options *PostOptions,
-) (*EventTypeImportOpenApiOut, error) {
-	req := eventType.api.EventTypeAPI.V1EventTypeImportOpenapi(
-		ctx,
-	).EventTypeImportOpenApiIn(*eventTypeImportOpenApiIn)
-
-	if options != nil {
-		if options.IdempotencyKey != nil {
-			req = req.IdempotencyKey(*options.IdempotencyKey)
+	if o != nil {
+		var err error
+		SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		if err != nil {
+			return nil, err
 		}
 	}
-
-	ret, res, err := req.Execute()
+	jsonBody, err := json.Marshal(eventTypeImportOpenApiIn)
 	if err != nil {
-		return nil, wrapError(err, res)
+		return nil, err
 	}
-
+	ret, apiErr := executeRequest[EventTypeImportOpenApiOut](
+		ctx,
+		eventType._client,
+		"POST",
+		"/api/v1/event-type/import/openapi",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
+	)
+	if apiErr != nil {
+		return nil, apiErr
+	}
 	return ret, nil
-}
-
-// Deprecated: Use eventType.ImportOpenapi instead
-func (eventType *EventType) ImportOpenApi(
-	ctx context.Context,
-	eventTypeImportOpenApiIn EventTypeImportOpenApiIn,
-) (*EventTypeImportOpenApiOut, error) {
-	return eventType.ImportOpenapi(ctx, &eventTypeImportOpenApiIn)
-}
-
-// Deprecated: Use eventType.ImportOpenapiWithOptions instead
-func (eventType *EventType) ImportOpenApiWithOptions(
-	ctx context.Context,
-	eventTypeImportOpenApiIn EventTypeImportOpenApiIn,
-	options *PostOptions,
-) (*EventTypeImportOpenApiOut, error) {
-	return eventType.ImportOpenapiWithOptions(ctx, &eventTypeImportOpenApiIn, options)
 }
 
 // Get an event type.
@@ -174,16 +169,26 @@ func (eventType *EventType) Get(
 	ctx context.Context,
 	eventTypeName string,
 ) (*EventTypeOut, error) {
-	req := eventType.api.EventTypeAPI.V1EventTypeGet(
-		ctx,
-		eventTypeName,
-	)
-
-	ret, res, err := req.Execute()
-	if err != nil {
-		return nil, wrapError(err, res)
+	pathMap := map[string]string{
+		"event_type_name": eventTypeName,
 	}
+	queryMap := map[string]string{}
+	headerMap := map[string]string{}
+	var jsonBody []byte
 
+	ret, apiErr := executeRequest[EventTypeOut](
+		ctx,
+		eventType._client,
+		"GET",
+		"/api/v1/event-type/{event_type_name}",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
+	)
+	if apiErr != nil {
+		return nil, apiErr
+	}
 	return ret, nil
 }
 
@@ -193,16 +198,33 @@ func (eventType *EventType) Update(
 	eventTypeName string,
 	eventTypeUpdate *EventTypeUpdate,
 ) (*EventTypeOut, error) {
-	req := eventType.api.EventTypeAPI.V1EventTypeUpdate(
-		ctx,
-		eventTypeName,
-	).EventTypeUpdate(*eventTypeUpdate)
-
-	ret, res, err := req.Execute()
-	if err != nil {
-		return nil, wrapError(err, res)
+	if eventTypeUpdate == nil {
+		return nil, fmt.Errorf("EventType.Update(), eventTypeUpdate must not be nil")
 	}
+	pathMap := map[string]string{
+		"event_type_name": eventTypeName,
+	}
+	queryMap := map[string]string{}
+	headerMap := map[string]string{}
+	var jsonBody []byte
 
+	jsonBody, err := json.Marshal(eventTypeUpdate)
+	if err != nil {
+		return nil, err
+	}
+	ret, apiErr := executeRequest[EventTypeOut](
+		ctx,
+		eventType._client,
+		"PUT",
+		"/api/v1/event-type/{event_type_name}",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
+	)
+	if apiErr != nil {
+		return nil, apiErr
+	}
 	return ret, nil
 }
 
@@ -210,32 +232,41 @@ func (eventType *EventType) Update(
 //
 // Endpoints already configured to filter on an event type will continue to do so after archival.
 // However, new messages can not be sent with it and endpoints can not filter on it.
-// An event type can be unarchived with the create operation.
+// An event type can be unarchived with the
+// [create operation](#operation/create_event_type_api_v1_event_type__post).
 func (eventType *EventType) Delete(
 	ctx context.Context,
 	eventTypeName string,
+	o *EventTypeDeleteOptions,
 ) error {
-	return eventType.DeleteWithOptions(ctx, eventTypeName, nil)
-}
+	pathMap := map[string]string{
+		"event_type_name": eventTypeName,
+	}
+	queryMap := map[string]string{}
+	headerMap := map[string]string{}
+	var jsonBody []byte
 
-func (eventType *EventType) DeleteWithOptions(
-	ctx context.Context,
-	eventTypeName string,
-	options *EventTypeDeleteOptions,
-) error {
-	req := eventType.api.EventTypeAPI.V1EventTypeDelete(
-		ctx,
-		eventTypeName,
-	)
-
-	if options != nil {
-		if options.Expunge != nil {
-			req = req.Expunge(*options.Expunge)
+	if o != nil {
+		var err error
+		SerializeParamToMap("expunge", o.Expunge, queryMap, &err)
+		if err != nil {
+			return err
 		}
 	}
-
-	res, err := req.Execute()
-	return wrapError(err, res)
+	_, apiErr := executeRequest[any](
+		ctx,
+		eventType._client,
+		"DELETE",
+		"/api/v1/event-type/{event_type_name}",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
+	)
+	if apiErr != nil {
+		return apiErr
+	}
+	return nil
 }
 
 // Partially update an event type.
@@ -244,15 +275,32 @@ func (eventType *EventType) Patch(
 	eventTypeName string,
 	eventTypePatch *EventTypePatch,
 ) (*EventTypeOut, error) {
-	req := eventType.api.EventTypeAPI.V1EventTypePatch(
-		ctx,
-		eventTypeName,
-	).EventTypePatch(*eventTypePatch)
-
-	ret, res, err := req.Execute()
-	if err != nil {
-		return nil, wrapError(err, res)
+	if eventTypePatch == nil {
+		return nil, fmt.Errorf("EventType.Patch(), eventTypePatch must not be nil")
 	}
+	pathMap := map[string]string{
+		"event_type_name": eventTypeName,
+	}
+	queryMap := map[string]string{}
+	headerMap := map[string]string{}
+	var jsonBody []byte
 
+	jsonBody, err := json.Marshal(eventTypePatch)
+	if err != nil {
+		return nil, err
+	}
+	ret, apiErr := executeRequest[EventTypeOut](
+		ctx,
+		eventType._client,
+		"PATCH",
+		"/api/v1/event-type/{event_type_name}",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
+	)
+	if apiErr != nil {
+		return nil, apiErr
+	}
 	return ret, nil
 }

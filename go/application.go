@@ -8,7 +8,7 @@ import (
 )
 
 type Application struct {
-	_client *APIClient
+	_client *SvixHttpClient
 }
 
 type ApplicationListOptions struct {
