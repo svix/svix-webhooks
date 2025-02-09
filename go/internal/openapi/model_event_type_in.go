@@ -11,8 +11,8 @@ API version: 1.1.1
 package openapi
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -21,9 +21,9 @@ var _ MappedNullable = &EventTypeIn{}
 
 // EventTypeIn struct for EventTypeIn
 type EventTypeIn struct {
-	Archived *bool `json:"archived,omitempty"`
-	Deprecated *bool `json:"deprecated,omitempty"`
-	Description string `json:"description"`
+	Archived    *bool   `json:"archived,omitempty"`
+	Deprecated  *bool   `json:"deprecated,omitempty"`
+	Description string  `json:"description"`
 	FeatureFlag *string `json:"featureFlag,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
 	// The event type group's name
 	GroupName *string `json:"groupName,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
@@ -271,7 +271,7 @@ func (o *EventTypeIn) SetSchemas(v map[string]interface{}) {
 }
 
 func (o EventTypeIn) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -314,10 +314,10 @@ func (o *EventTypeIn) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -373,5 +373,3 @@ func (v *NullableEventTypeIn) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

@@ -11,10 +11,10 @@ API version: 1.1.1
 package openapi
 
 import (
-	"encoding/json"
-	"time"
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"time"
 )
 
 // checks if the EnvironmentOut type satisfies the MappedNullable interface at compile time
@@ -22,11 +22,11 @@ var _ MappedNullable = &EnvironmentOut{}
 
 // EnvironmentOut struct for EnvironmentOut
 type EnvironmentOut struct {
-	CreatedAt time.Time `json:"createdAt"`
-	EventTypes []EventTypeOut `json:"eventTypes"`
-	Settings map[string]interface{} `json:"settings"`
-	TransformationTemplates []TemplateOut `json:"transformationTemplates"`
-	Version *int32 `json:"version,omitempty"`
+	CreatedAt               time.Time              `json:"createdAt"`
+	EventTypes              []EventTypeOut         `json:"eventTypes"`
+	Settings                map[string]interface{} `json:"settings"`
+	TransformationTemplates []TemplateOut          `json:"transformationTemplates"`
+	Version                 *int32                 `json:"version,omitempty"`
 }
 
 type _EnvironmentOut EnvironmentOut
@@ -187,7 +187,7 @@ func (o *EnvironmentOut) SetVersion(v int32) {
 }
 
 func (o EnvironmentOut) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -224,10 +224,10 @@ func (o *EnvironmentOut) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -283,5 +283,3 @@ func (v *NullableEnvironmentOut) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

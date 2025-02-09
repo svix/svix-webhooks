@@ -11,10 +11,10 @@ API version: 1.1.1
 package openapi
 
 import (
-	"encoding/json"
-	"time"
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"time"
 )
 
 // checks if the TemplateOut type satisfies the MappedNullable interface at compile time
@@ -22,19 +22,19 @@ var _ MappedNullable = &TemplateOut{}
 
 // TemplateOut struct for TemplateOut
 type TemplateOut struct {
-	CreatedAt time.Time `json:"createdAt"`
-	Description string `json:"description"`
-	FeatureFlag *string `json:"featureFlag,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
-	FilterTypes []string `json:"filterTypes,omitempty"`
-	Id string `json:"id"`
-	Instructions string `json:"instructions"`
-	InstructionsLink *string `json:"instructionsLink,omitempty"`
-	Kind ConnectorKind `json:"kind"`
-	Logo string `json:"logo"`
-	Name string `json:"name"`
-	OrgId string `json:"orgId"`
-	Transformation string `json:"transformation"`
-	UpdatedAt time.Time `json:"updatedAt"`
+	CreatedAt        time.Time     `json:"createdAt"`
+	Description      string        `json:"description"`
+	FeatureFlag      *string       `json:"featureFlag,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
+	FilterTypes      []string      `json:"filterTypes,omitempty"`
+	Id               string        `json:"id"`
+	Instructions     string        `json:"instructions"`
+	InstructionsLink *string       `json:"instructionsLink,omitempty"`
+	Kind             ConnectorKind `json:"kind"`
+	Logo             string        `json:"logo"`
+	Name             string        `json:"name"`
+	OrgId            string        `json:"orgId"`
+	Transformation   string        `json:"transformation"`
+	UpdatedAt        time.Time     `json:"updatedAt"`
 }
 
 type _TemplateOut TemplateOut
@@ -403,7 +403,7 @@ func (o *TemplateOut) SetUpdatedAt(v time.Time) {
 }
 
 func (o TemplateOut) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -456,10 +456,10 @@ func (o *TemplateOut) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -515,5 +515,3 @@ func (v *NullableTemplateOut) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

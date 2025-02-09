@@ -21,8 +21,8 @@ type KafkaSecurityProtocolType string
 // List of KafkaSecurityProtocolType
 const (
 	KAFKASECURITYPROTOCOLTYPE_PLAINTEXT KafkaSecurityProtocolType = "plaintext"
-	KAFKASECURITYPROTOCOLTYPE_SSL KafkaSecurityProtocolType = "ssl"
-	KAFKASECURITYPROTOCOLTYPE_SASL_SSL KafkaSecurityProtocolType = "sasl-ssl"
+	KAFKASECURITYPROTOCOLTYPE_SSL       KafkaSecurityProtocolType = "ssl"
+	KAFKASECURITYPROTOCOLTYPE_SASL_SSL  KafkaSecurityProtocolType = "sasl-ssl"
 )
 
 // All allowed values of KafkaSecurityProtocolType enum
@@ -110,4 +110,3 @@ func (v *NullableKafkaSecurityProtocolType) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-

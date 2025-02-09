@@ -21,11 +21,11 @@ type StatusCodeClass int32
 // List of StatusCodeClass
 const (
 	STATUSCODECLASS_CodeNone StatusCodeClass = 0
-	STATUSCODECLASS_Code1xx StatusCodeClass = 100
-	STATUSCODECLASS_Code2xx StatusCodeClass = 200
-	STATUSCODECLASS_Code3xx StatusCodeClass = 300
-	STATUSCODECLASS_Code4xx StatusCodeClass = 400
-	STATUSCODECLASS_Code5xx StatusCodeClass = 500
+	STATUSCODECLASS_Code1xx  StatusCodeClass = 100
+	STATUSCODECLASS_Code2xx  StatusCodeClass = 200
+	STATUSCODECLASS_Code3xx  StatusCodeClass = 300
+	STATUSCODECLASS_Code4xx  StatusCodeClass = 400
+	STATUSCODECLASS_Code5xx  StatusCodeClass = 500
 )
 
 // All allowed values of StatusCodeClass enum
@@ -116,4 +116,3 @@ func (v *NullableStatusCodeClass) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-

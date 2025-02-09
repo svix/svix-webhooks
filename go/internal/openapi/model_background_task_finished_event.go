@@ -11,8 +11,8 @@ API version: 1.1.1
 package openapi
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -22,7 +22,7 @@ var _ MappedNullable = &BackgroundTaskFinishedEvent{}
 // BackgroundTaskFinishedEvent Sent when a background task is finished.
 type BackgroundTaskFinishedEvent struct {
 	Data BackgroundTaskFinishedEvent2 `json:"data"`
-	Type string `json:"type"`
+	Type string                       `json:"type"`
 }
 
 type _BackgroundTaskFinishedEvent BackgroundTaskFinishedEvent
@@ -97,7 +97,7 @@ func (o *BackgroundTaskFinishedEvent) SetType(v string) {
 }
 
 func (o BackgroundTaskFinishedEvent) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -125,10 +125,10 @@ func (o *BackgroundTaskFinishedEvent) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -184,5 +184,3 @@ func (v *NullableBackgroundTaskFinishedEvent) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

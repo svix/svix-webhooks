@@ -19,9 +19,9 @@ var _ MappedNullable = &ApplicationPatch{}
 
 // ApplicationPatch struct for ApplicationPatch
 type ApplicationPatch struct {
-	Metadata *map[string]string `json:"metadata,omitempty"`
-	Name *string `json:"name,omitempty"`
-	RateLimit NullableInt32 `json:"rateLimit,omitempty"`
+	Metadata  *map[string]string `json:"metadata,omitempty"`
+	Name      *string            `json:"name,omitempty"`
+	RateLimit NullableInt32      `json:"rateLimit,omitempty"`
 	// The app's UID
 	Uid NullableString `json:"uid,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
 }
@@ -139,6 +139,7 @@ func (o *ApplicationPatch) HasRateLimit() bool {
 func (o *ApplicationPatch) SetRateLimit(v int32) {
 	o.RateLimit.Set(&v)
 }
+
 // SetRateLimitNil sets the value for RateLimit to be an explicit nil
 func (o *ApplicationPatch) SetRateLimitNil() {
 	o.RateLimit.Set(nil)
@@ -181,6 +182,7 @@ func (o *ApplicationPatch) HasUid() bool {
 func (o *ApplicationPatch) SetUid(v string) {
 	o.Uid.Set(&v)
 }
+
 // SetUidNil sets the value for Uid to be an explicit nil
 func (o *ApplicationPatch) SetUidNil() {
 	o.Uid.Set(nil)
@@ -192,7 +194,7 @@ func (o *ApplicationPatch) UnsetUid() {
 }
 
 func (o ApplicationPatch) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -251,5 +253,3 @@ func (v *NullableApplicationPatch) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

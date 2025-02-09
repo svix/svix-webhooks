@@ -11,8 +11,8 @@ API version: 1.1.1
 package openapi
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -24,7 +24,7 @@ type ClientSecretJwtParamsIn struct {
 	// The base64-encoded secret used for signing the JWT.
 	SecretBase64 string `json:"secretBase64"`
 	// Optional secret identifier. If supplied, this will be populated in the JWT header in the `kid` field.
-	SecretId *string `json:"secretId,omitempty"`
+	SecretId         *string                  `json:"secretId,omitempty"`
 	SigningAlgorithm OauthJwsSigningAlgorithm `json:"signingAlgorithm"`
 	// Optional number of seconds after which the JWT should expire. Defaults to 300 seconds.
 	TokenExpirySecs *int32 `json:"tokenExpirySecs,omitempty"`
@@ -164,7 +164,7 @@ func (o *ClientSecretJwtParamsIn) SetTokenExpirySecs(v int32) {
 }
 
 func (o ClientSecretJwtParamsIn) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -198,10 +198,10 @@ func (o *ClientSecretJwtParamsIn) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -257,5 +257,3 @@ func (v *NullableClientSecretJwtParamsIn) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

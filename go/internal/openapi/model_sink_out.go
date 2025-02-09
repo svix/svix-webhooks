@@ -12,13 +12,14 @@ package openapi
 
 import (
 	"encoding/json"
-	"gopkg.in/validator.v2"
 	"fmt"
+
+	"gopkg.in/validator.v2"
 )
 
 // SinkOut - struct for SinkOut
 type SinkOut struct {
-	SinkInOneOf *SinkInOneOf
+	SinkInOneOf  *SinkInOneOf
 	SinkInOneOf1 *SinkInOneOf1
 	SinkInOneOf2 *SinkInOneOf2
 	SinkInOneOf3 *SinkInOneOf3
@@ -59,7 +60,6 @@ func SinkInOneOf4AsSinkOut(v *SinkInOneOf4) SinkOut {
 		SinkInOneOf4: v,
 	}
 }
-
 
 // Unmarshal JSON data into one of the pointers in the struct
 func (dst *SinkOut) UnmarshalJSON(data []byte) error {
@@ -192,7 +192,7 @@ func (src SinkOut) MarshalJSON() ([]byte, error) {
 }
 
 // Get the actual instance
-func (obj *SinkOut) GetActualInstance() (interface{}) {
+func (obj *SinkOut) GetActualInstance() interface{} {
 	if obj == nil {
 		return nil
 	}
@@ -255,5 +255,3 @@ func (v *NullableSinkOut) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

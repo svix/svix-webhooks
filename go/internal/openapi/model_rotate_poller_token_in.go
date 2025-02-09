@@ -111,7 +111,7 @@ func (o *RotatePollerTokenIn) SetOldTokenExpiry(v int64) {
 }
 
 func (o RotatePollerTokenIn) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -164,5 +164,3 @@ func (v *NullableRotatePollerTokenIn) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

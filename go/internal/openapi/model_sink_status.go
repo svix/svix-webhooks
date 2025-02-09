@@ -20,8 +20,8 @@ type SinkStatus string
 
 // List of SinkStatus
 const (
-	SINKSTATUS_ENABLED SinkStatus = "enabled"
-	SINKSTATUS_PAUSED SinkStatus = "paused"
+	SINKSTATUS_ENABLED  SinkStatus = "enabled"
+	SINKSTATUS_PAUSED   SinkStatus = "paused"
 	SINKSTATUS_DISABLED SinkStatus = "disabled"
 )
 
@@ -110,4 +110,3 @@ func (v *NullableSinkStatus) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-

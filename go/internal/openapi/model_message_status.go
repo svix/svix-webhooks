@@ -22,7 +22,7 @@ type MessageStatus int32
 const (
 	MESSAGESTATUS_Success MessageStatus = 0
 	MESSAGESTATUS_Pending MessageStatus = 1
-	MESSAGESTATUS_Fail MessageStatus = 2
+	MESSAGESTATUS_Fail    MessageStatus = 2
 	MESSAGESTATUS_Sending MessageStatus = 3
 )
 
@@ -112,4 +112,3 @@ func (v *NullableMessageStatus) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-

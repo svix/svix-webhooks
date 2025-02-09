@@ -11,8 +11,8 @@ API version: 1.1.1
 package openapi
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -21,9 +21,9 @@ var _ MappedNullable = &S3Config{}
 
 // S3Config struct for S3Config
 type S3Config struct {
-	AccessKeyId string `json:"accessKeyId"`
-	Bucket string `json:"bucket"`
-	Region string `json:"region"`
+	AccessKeyId     string `json:"accessKeyId"`
+	Bucket          string `json:"bucket"`
+	Region          string `json:"region"`
 	SecretAccessKey string `json:"secretAccessKey"`
 }
 
@@ -147,7 +147,7 @@ func (o *S3Config) SetSecretAccessKey(v string) {
 }
 
 func (o S3Config) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -179,10 +179,10 @@ func (o *S3Config) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -238,5 +238,3 @@ func (v *NullableS3Config) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

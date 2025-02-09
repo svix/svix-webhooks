@@ -11,8 +11,8 @@ API version: 1.1.1
 package openapi
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -22,7 +22,7 @@ var _ MappedNullable = &InboundPathParams{}
 // InboundPathParams struct for InboundPathParams
 type InboundPathParams struct {
 	// The app's ID or UID
-	AppId string `json:"app_id" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
+	AppId        string `json:"app_id" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
 	InboundToken string `json:"inbound_token"`
 }
 
@@ -96,7 +96,7 @@ func (o *InboundPathParams) SetInboundToken(v string) {
 }
 
 func (o InboundPathParams) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -124,10 +124,10 @@ func (o *InboundPathParams) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -183,5 +183,3 @@ func (v *NullableInboundPathParams) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

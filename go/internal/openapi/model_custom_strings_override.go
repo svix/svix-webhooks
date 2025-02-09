@@ -21,7 +21,7 @@ var _ MappedNullable = &CustomStringsOverride{}
 type CustomStringsOverride struct {
 	ChannelsHelp *string `json:"channelsHelp,omitempty"`
 	ChannelsMany *string `json:"channelsMany,omitempty"`
-	ChannelsOne *string `json:"channelsOne,omitempty"`
+	ChannelsOne  *string `json:"channelsOne,omitempty"`
 }
 
 // NewCustomStringsOverride instantiates a new CustomStringsOverride object
@@ -138,7 +138,7 @@ func (o *CustomStringsOverride) SetChannelsOne(v string) {
 }
 
 func (o CustomStringsOverride) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -194,5 +194,3 @@ func (v *NullableCustomStringsOverride) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

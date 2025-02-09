@@ -11,10 +11,10 @@ API version: 1.1.1
 package openapi
 
 import (
-	"encoding/json"
-	"time"
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"time"
 )
 
 // checks if the EventTypeOut type satisfies the MappedNullable interface at compile time
@@ -22,18 +22,18 @@ var _ MappedNullable = &EventTypeOut{}
 
 // EventTypeOut struct for EventTypeOut
 type EventTypeOut struct {
-	Archived *bool `json:"archived,omitempty"`
-	CreatedAt time.Time `json:"createdAt"`
-	Deprecated bool `json:"deprecated"`
-	Description string `json:"description"`
-	FeatureFlag *string `json:"featureFlag,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
+	Archived    *bool     `json:"archived,omitempty"`
+	CreatedAt   time.Time `json:"createdAt"`
+	Deprecated  bool      `json:"deprecated"`
+	Description string    `json:"description"`
+	FeatureFlag *string   `json:"featureFlag,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
 	// The event type group's name
 	GroupName *string `json:"groupName,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
 	// The event type's name
 	Name string `json:"name" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
 	// The schema for the event type for a specific version as a JSON schema.
-	Schemas map[string]interface{} `json:"schemas,omitempty"`
-	UpdatedAt time.Time `json:"updatedAt"`
+	Schemas   map[string]interface{} `json:"schemas,omitempty"`
+	UpdatedAt time.Time              `json:"updatedAt"`
 }
 
 type _EventTypeOut EventTypeOut
@@ -313,7 +313,7 @@ func (o *EventTypeOut) SetUpdatedAt(v time.Time) {
 }
 
 func (o EventTypeOut) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -359,10 +359,10 @@ func (o *EventTypeOut) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -418,5 +418,3 @@ func (v *NullableEventTypeOut) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

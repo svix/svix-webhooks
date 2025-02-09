@@ -11,8 +11,8 @@ API version: 1.1.1
 package openapi
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -22,10 +22,10 @@ var _ MappedNullable = &SinkInOneOf1{}
 // SinkInOneOf1 struct for SinkInOneOf1
 type SinkInOneOf1 struct {
 	AccessKey string `json:"accessKey"`
-	QueueDsn string `json:"queueDsn"`
-	Region string `json:"region"`
+	QueueDsn  string `json:"queueDsn"`
+	Region    string `json:"region"`
 	SecretKey string `json:"secretKey"`
-	Type string `json:"type"`
+	Type      string `json:"type"`
 }
 
 type _SinkInOneOf1 SinkInOneOf1
@@ -173,7 +173,7 @@ func (o *SinkInOneOf1) SetType(v string) {
 }
 
 func (o SinkInOneOf1) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -207,10 +207,10 @@ func (o *SinkInOneOf1) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -266,5 +266,3 @@ func (v *NullableSinkInOneOf1) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

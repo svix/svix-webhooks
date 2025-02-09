@@ -20,7 +20,7 @@ type StatisticsPeriod string
 
 // List of StatisticsPeriod
 const (
-	STATISTICSPERIOD_ONE_DAY StatisticsPeriod = "OneDay"
+	STATISTICSPERIOD_ONE_DAY      StatisticsPeriod = "OneDay"
 	STATISTICSPERIOD_FIVE_MINUTES StatisticsPeriod = "FiveMinutes"
 )
 
@@ -108,4 +108,3 @@ func (v *NullableStatisticsPeriod) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-

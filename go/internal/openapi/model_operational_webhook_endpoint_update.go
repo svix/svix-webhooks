@@ -11,8 +11,8 @@ API version: 1.1.1
 package openapi
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -21,14 +21,14 @@ var _ MappedNullable = &OperationalWebhookEndpointUpdate{}
 
 // OperationalWebhookEndpointUpdate struct for OperationalWebhookEndpointUpdate
 type OperationalWebhookEndpointUpdate struct {
-	Description *string `json:"description,omitempty"`
-	Disabled *bool `json:"disabled,omitempty"`
-	FilterTypes []string `json:"filterTypes,omitempty"`
-	Metadata *map[string]string `json:"metadata,omitempty"`
-	RateLimit *int32 `json:"rateLimit,omitempty"`
+	Description *string            `json:"description,omitempty"`
+	Disabled    *bool              `json:"disabled,omitempty"`
+	FilterTypes []string           `json:"filterTypes,omitempty"`
+	Metadata    *map[string]string `json:"metadata,omitempty"`
+	RateLimit   *int32             `json:"rateLimit,omitempty"`
 	// Optional unique identifier for the endpoint.
 	Uid *string `json:"uid,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
-	Url string `json:"url"`
+	Url string  `json:"url"`
 }
 
 type _OperationalWebhookEndpointUpdate OperationalWebhookEndpointUpdate
@@ -276,7 +276,7 @@ func (o *OperationalWebhookEndpointUpdate) SetUrl(v string) {
 }
 
 func (o OperationalWebhookEndpointUpdate) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -320,10 +320,10 @@ func (o *OperationalWebhookEndpointUpdate) UnmarshalJSON(data []byte) (err error
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -379,5 +379,3 @@ func (v *NullableOperationalWebhookEndpointUpdate) UnmarshalJSON(src []byte) err
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

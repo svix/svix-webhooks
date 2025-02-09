@@ -11,8 +11,8 @@ API version: 1.1.1
 package openapi
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -22,7 +22,7 @@ var _ MappedNullable = &StreamSinkInOneOf7{}
 // StreamSinkInOneOf7 struct for StreamSinkInOneOf7
 type StreamSinkInOneOf7 struct {
 	Config BigQueryConfig `json:"config"`
-	Type string `json:"type"`
+	Type   string         `json:"type"`
 }
 
 type _StreamSinkInOneOf7 StreamSinkInOneOf7
@@ -95,7 +95,7 @@ func (o *StreamSinkInOneOf7) SetType(v string) {
 }
 
 func (o StreamSinkInOneOf7) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -123,10 +123,10 @@ func (o *StreamSinkInOneOf7) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -182,5 +182,3 @@ func (v *NullableStreamSinkInOneOf7) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

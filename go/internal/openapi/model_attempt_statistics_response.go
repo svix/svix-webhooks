@@ -11,10 +11,10 @@ API version: 1.1.1
 package openapi
 
 import (
-	"encoding/json"
-	"time"
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"time"
 )
 
 // checks if the AttemptStatisticsResponse type satisfies the MappedNullable interface at compile time
@@ -22,10 +22,10 @@ var _ MappedNullable = &AttemptStatisticsResponse{}
 
 // AttemptStatisticsResponse struct for AttemptStatisticsResponse
 type AttemptStatisticsResponse struct {
-	Data AttemptStatisticsData `json:"data"`
-	EndDate time.Time `json:"endDate"`
-	Period StatisticsPeriod `json:"period"`
-	StartDate time.Time `json:"startDate"`
+	Data      AttemptStatisticsData `json:"data"`
+	EndDate   time.Time             `json:"endDate"`
+	Period    StatisticsPeriod      `json:"period"`
+	StartDate time.Time             `json:"startDate"`
 }
 
 type _AttemptStatisticsResponse AttemptStatisticsResponse
@@ -148,7 +148,7 @@ func (o *AttemptStatisticsResponse) SetStartDate(v time.Time) {
 }
 
 func (o AttemptStatisticsResponse) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -180,10 +180,10 @@ func (o *AttemptStatisticsResponse) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -239,5 +239,3 @@ func (v *NullableAttemptStatisticsResponse) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

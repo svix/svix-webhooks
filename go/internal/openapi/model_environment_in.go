@@ -19,9 +19,9 @@ var _ MappedNullable = &EnvironmentIn{}
 
 // EnvironmentIn struct for EnvironmentIn
 type EnvironmentIn struct {
-	Connectors []ConnectorIn `json:"connectors,omitempty"`
-	EventTypes []EventTypeIn `json:"eventTypes,omitempty"`
-	Settings map[string]interface{} `json:"settings,omitempty"`
+	Connectors []ConnectorIn          `json:"connectors,omitempty"`
+	EventTypes []EventTypeIn          `json:"eventTypes,omitempty"`
+	Settings   map[string]interface{} `json:"settings,omitempty"`
 }
 
 // NewEnvironmentIn instantiates a new EnvironmentIn object
@@ -138,7 +138,7 @@ func (o *EnvironmentIn) SetSettings(v map[string]interface{}) {
 }
 
 func (o EnvironmentIn) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -194,5 +194,3 @@ func (v *NullableEnvironmentIn) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

@@ -11,8 +11,8 @@ API version: 1.1.1
 package openapi
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -21,9 +21,9 @@ var _ MappedNullable = &EndpointTransformationSimulateOut{}
 
 // EndpointTransformationSimulateOut struct for EndpointTransformationSimulateOut
 type EndpointTransformationSimulateOut struct {
-	Method *TransformationHttpMethod `json:"method,omitempty"`
-	Payload string `json:"payload"`
-	Url string `json:"url"`
+	Method  *TransformationHttpMethod `json:"method,omitempty"`
+	Payload string                    `json:"payload"`
+	Url     string                    `json:"url"`
 }
 
 type _EndpointTransformationSimulateOut EndpointTransformationSimulateOut
@@ -128,7 +128,7 @@ func (o *EndpointTransformationSimulateOut) SetUrl(v string) {
 }
 
 func (o EndpointTransformationSimulateOut) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -159,10 +159,10 @@ func (o *EndpointTransformationSimulateOut) UnmarshalJSON(data []byte) (err erro
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -218,5 +218,3 @@ func (v *NullableEndpointTransformationSimulateOut) UnmarshalJSON(src []byte) er
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

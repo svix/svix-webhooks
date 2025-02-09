@@ -15,10 +15,9 @@ import (
 	"fmt"
 )
 
-
 // Data A copy of [`backgroundtask::Data`], but serialized with camelCase fields for customers.
 type Data struct {
-	DataAnyOf *DataAnyOf
+	DataAnyOf  *DataAnyOf
 	DataAnyOf1 *DataAnyOf1
 	DataAnyOf2 *DataAnyOf2
 	DataAnyOf3 *DataAnyOf3
@@ -28,7 +27,7 @@ type Data struct {
 func (dst *Data) UnmarshalJSON(data []byte) error {
 	var err error
 	// try to unmarshal JSON data into DataAnyOf
-	err = json.Unmarshal(data, &dst.DataAnyOf);
+	err = json.Unmarshal(data, &dst.DataAnyOf)
 	if err == nil {
 		jsonDataAnyOf, _ := json.Marshal(dst.DataAnyOf)
 		if string(jsonDataAnyOf) == "{}" { // empty struct
@@ -41,7 +40,7 @@ func (dst *Data) UnmarshalJSON(data []byte) error {
 	}
 
 	// try to unmarshal JSON data into DataAnyOf1
-	err = json.Unmarshal(data, &dst.DataAnyOf1);
+	err = json.Unmarshal(data, &dst.DataAnyOf1)
 	if err == nil {
 		jsonDataAnyOf1, _ := json.Marshal(dst.DataAnyOf1)
 		if string(jsonDataAnyOf1) == "{}" { // empty struct
@@ -54,7 +53,7 @@ func (dst *Data) UnmarshalJSON(data []byte) error {
 	}
 
 	// try to unmarshal JSON data into DataAnyOf2
-	err = json.Unmarshal(data, &dst.DataAnyOf2);
+	err = json.Unmarshal(data, &dst.DataAnyOf2)
 	if err == nil {
 		jsonDataAnyOf2, _ := json.Marshal(dst.DataAnyOf2)
 		if string(jsonDataAnyOf2) == "{}" { // empty struct
@@ -67,7 +66,7 @@ func (dst *Data) UnmarshalJSON(data []byte) error {
 	}
 
 	// try to unmarshal JSON data into DataAnyOf3
-	err = json.Unmarshal(data, &dst.DataAnyOf3);
+	err = json.Unmarshal(data, &dst.DataAnyOf3)
 	if err == nil {
 		jsonDataAnyOf3, _ := json.Marshal(dst.DataAnyOf3)
 		if string(jsonDataAnyOf3) == "{}" { // empty struct
@@ -102,7 +101,6 @@ func (src *Data) MarshalJSON() ([]byte, error) {
 
 	return nil, nil // no data in anyOf schemas
 }
-
 
 type NullableData struct {
 	value *Data
@@ -139,5 +137,3 @@ func (v *NullableData) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

@@ -18,12 +18,11 @@ import (
 	"net/url"
 )
 
-
 // EnvironmentSettingsAPIService EnvironmentSettingsAPI service
 type EnvironmentSettingsAPIService service
 
 type ApiV1EnvironmentGetSettingsRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *EnvironmentSettingsAPIService
 }
 
@@ -36,24 +35,25 @@ V1EnvironmentGetSettings Get Org Settings
 
 Get the environment's settings.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiV1EnvironmentGetSettingsRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiV1EnvironmentGetSettingsRequest
 */
 func (a *EnvironmentSettingsAPIService) V1EnvironmentGetSettings(ctx context.Context) ApiV1EnvironmentGetSettingsRequest {
 	return ApiV1EnvironmentGetSettingsRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return EnvironmentSettingsOut
+//
+//	@return EnvironmentSettingsOut
 func (a *EnvironmentSettingsAPIService) V1EnvironmentGetSettingsExecute(r ApiV1EnvironmentGetSettingsRequest) (*EnvironmentSettingsOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *EnvironmentSettingsOut
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *EnvironmentSettingsOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "EnvironmentSettingsAPIService.V1EnvironmentGetSettings")
@@ -113,8 +113,8 @@ func (a *EnvironmentSettingsAPIService) V1EnvironmentGetSettingsExecute(r ApiV1E
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -124,8 +124,8 @@ func (a *EnvironmentSettingsAPIService) V1EnvironmentGetSettingsExecute(r ApiV1E
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -135,8 +135,8 @@ func (a *EnvironmentSettingsAPIService) V1EnvironmentGetSettingsExecute(r ApiV1E
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -146,8 +146,8 @@ func (a *EnvironmentSettingsAPIService) V1EnvironmentGetSettingsExecute(r ApiV1E
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -157,8 +157,8 @@ func (a *EnvironmentSettingsAPIService) V1EnvironmentGetSettingsExecute(r ApiV1E
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -168,8 +168,8 @@ func (a *EnvironmentSettingsAPIService) V1EnvironmentGetSettingsExecute(r ApiV1E
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -179,8 +179,8 @@ func (a *EnvironmentSettingsAPIService) V1EnvironmentGetSettingsExecute(r ApiV1E
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}

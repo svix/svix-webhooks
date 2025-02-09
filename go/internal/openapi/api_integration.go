@@ -19,15 +19,14 @@ import (
 	"strings"
 )
 
-
 // IntegrationAPIService IntegrationAPI service
 type IntegrationAPIService service
 
 type ApiV1IntegrationCreateRequest struct {
-	ctx context.Context
-	ApiService *IntegrationAPIService
-	appId string
-	integrationIn *IntegrationIn
+	ctx            context.Context
+	ApiService     *IntegrationAPIService
+	appId          string
+	integrationIn  *IntegrationIn
 	idempotencyKey *string
 }
 
@@ -51,26 +50,27 @@ V1IntegrationCreate Create Integration
 
 Create an integration.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param appId The app's ID or UID
- @return ApiV1IntegrationCreateRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param appId The app's ID or UID
+	@return ApiV1IntegrationCreateRequest
 */
 func (a *IntegrationAPIService) V1IntegrationCreate(ctx context.Context, appId string) ApiV1IntegrationCreateRequest {
 	return ApiV1IntegrationCreateRequest{
 		ApiService: a,
-		ctx: ctx,
-		appId: appId,
+		ctx:        ctx,
+		appId:      appId,
 	}
 }
 
 // Execute executes the request
-//  @return IntegrationOut
+//
+//	@return IntegrationOut
 func (a *IntegrationAPIService) V1IntegrationCreateExecute(r ApiV1IntegrationCreateRequest) (*IntegrationOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *IntegrationOut
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *IntegrationOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "IntegrationAPIService.V1IntegrationCreate")
@@ -145,8 +145,8 @@ func (a *IntegrationAPIService) V1IntegrationCreateExecute(r ApiV1IntegrationCre
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -156,8 +156,8 @@ func (a *IntegrationAPIService) V1IntegrationCreateExecute(r ApiV1IntegrationCre
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -167,8 +167,8 @@ func (a *IntegrationAPIService) V1IntegrationCreateExecute(r ApiV1IntegrationCre
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -178,8 +178,8 @@ func (a *IntegrationAPIService) V1IntegrationCreateExecute(r ApiV1IntegrationCre
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -189,8 +189,8 @@ func (a *IntegrationAPIService) V1IntegrationCreateExecute(r ApiV1IntegrationCre
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -200,8 +200,8 @@ func (a *IntegrationAPIService) V1IntegrationCreateExecute(r ApiV1IntegrationCre
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -211,8 +211,8 @@ func (a *IntegrationAPIService) V1IntegrationCreateExecute(r ApiV1IntegrationCre
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -230,10 +230,10 @@ func (a *IntegrationAPIService) V1IntegrationCreateExecute(r ApiV1IntegrationCre
 }
 
 type ApiV1IntegrationDeleteRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *IntegrationAPIService
-	appId string
-	integId string
+	appId      string
+	integId    string
 }
 
 func (r ApiV1IntegrationDeleteRequest) Execute() (*http.Response, error) {
@@ -245,26 +245,26 @@ V1IntegrationDelete Delete Integration
 
 Delete an integration.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param appId The app's ID or UID
- @param integId The integ's ID
- @return ApiV1IntegrationDeleteRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param appId The app's ID or UID
+	@param integId The integ's ID
+	@return ApiV1IntegrationDeleteRequest
 */
 func (a *IntegrationAPIService) V1IntegrationDelete(ctx context.Context, appId string, integId string) ApiV1IntegrationDeleteRequest {
 	return ApiV1IntegrationDeleteRequest{
 		ApiService: a,
-		ctx: ctx,
-		appId: appId,
-		integId: integId,
+		ctx:        ctx,
+		appId:      appId,
+		integId:    integId,
 	}
 }
 
 // Execute executes the request
 func (a *IntegrationAPIService) V1IntegrationDeleteExecute(r ApiV1IntegrationDeleteRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodDelete
-		localVarPostBody     interface{}
-		formFiles            []formFile
+		localVarHTTPMethod = http.MethodDelete
+		localVarPostBody   interface{}
+		formFiles          []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "IntegrationAPIService.V1IntegrationDelete")
@@ -332,8 +332,8 @@ func (a *IntegrationAPIService) V1IntegrationDeleteExecute(r ApiV1IntegrationDel
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -343,8 +343,8 @@ func (a *IntegrationAPIService) V1IntegrationDeleteExecute(r ApiV1IntegrationDel
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -354,8 +354,8 @@ func (a *IntegrationAPIService) V1IntegrationDeleteExecute(r ApiV1IntegrationDel
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -365,8 +365,8 @@ func (a *IntegrationAPIService) V1IntegrationDeleteExecute(r ApiV1IntegrationDel
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -376,8 +376,8 @@ func (a *IntegrationAPIService) V1IntegrationDeleteExecute(r ApiV1IntegrationDel
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -387,8 +387,8 @@ func (a *IntegrationAPIService) V1IntegrationDeleteExecute(r ApiV1IntegrationDel
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -398,8 +398,8 @@ func (a *IntegrationAPIService) V1IntegrationDeleteExecute(r ApiV1IntegrationDel
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarHTTPResponse, newErr
 	}
@@ -408,10 +408,10 @@ func (a *IntegrationAPIService) V1IntegrationDeleteExecute(r ApiV1IntegrationDel
 }
 
 type ApiV1IntegrationGetRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *IntegrationAPIService
-	appId string
-	integId string
+	appId      string
+	integId    string
 }
 
 func (r ApiV1IntegrationGetRequest) Execute() (*IntegrationOut, *http.Response, error) {
@@ -423,28 +423,29 @@ V1IntegrationGet Get Integration
 
 Get an integration.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param appId The app's ID or UID
- @param integId The integ's ID
- @return ApiV1IntegrationGetRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param appId The app's ID or UID
+	@param integId The integ's ID
+	@return ApiV1IntegrationGetRequest
 */
 func (a *IntegrationAPIService) V1IntegrationGet(ctx context.Context, appId string, integId string) ApiV1IntegrationGetRequest {
 	return ApiV1IntegrationGetRequest{
 		ApiService: a,
-		ctx: ctx,
-		appId: appId,
-		integId: integId,
+		ctx:        ctx,
+		appId:      appId,
+		integId:    integId,
 	}
 }
 
 // Execute executes the request
-//  @return IntegrationOut
+//
+//	@return IntegrationOut
 func (a *IntegrationAPIService) V1IntegrationGetExecute(r ApiV1IntegrationGetRequest) (*IntegrationOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *IntegrationOut
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *IntegrationOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "IntegrationAPIService.V1IntegrationGet")
@@ -512,8 +513,8 @@ func (a *IntegrationAPIService) V1IntegrationGetExecute(r ApiV1IntegrationGetReq
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -523,8 +524,8 @@ func (a *IntegrationAPIService) V1IntegrationGetExecute(r ApiV1IntegrationGetReq
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -534,8 +535,8 @@ func (a *IntegrationAPIService) V1IntegrationGetExecute(r ApiV1IntegrationGetReq
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -545,8 +546,8 @@ func (a *IntegrationAPIService) V1IntegrationGetExecute(r ApiV1IntegrationGetReq
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -556,8 +557,8 @@ func (a *IntegrationAPIService) V1IntegrationGetExecute(r ApiV1IntegrationGetReq
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -567,8 +568,8 @@ func (a *IntegrationAPIService) V1IntegrationGetExecute(r ApiV1IntegrationGetReq
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -578,8 +579,8 @@ func (a *IntegrationAPIService) V1IntegrationGetExecute(r ApiV1IntegrationGetReq
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -597,10 +598,10 @@ func (a *IntegrationAPIService) V1IntegrationGetExecute(r ApiV1IntegrationGetReq
 }
 
 type ApiV1IntegrationGetKeyRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *IntegrationAPIService
-	appId string
-	integId string
+	appId      string
+	integId    string
 }
 
 func (r ApiV1IntegrationGetKeyRequest) Execute() (*IntegrationKeyOut, *http.Response, error) {
@@ -612,31 +613,33 @@ V1IntegrationGetKey Get Integration Key
 
 Get an integration's key.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param appId The app's ID or UID
- @param integId The integ's ID
- @return ApiV1IntegrationGetKeyRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param appId The app's ID or UID
+	@param integId The integ's ID
+	@return ApiV1IntegrationGetKeyRequest
 
 Deprecated
 */
 func (a *IntegrationAPIService) V1IntegrationGetKey(ctx context.Context, appId string, integId string) ApiV1IntegrationGetKeyRequest {
 	return ApiV1IntegrationGetKeyRequest{
 		ApiService: a,
-		ctx: ctx,
-		appId: appId,
-		integId: integId,
+		ctx:        ctx,
+		appId:      appId,
+		integId:    integId,
 	}
 }
 
 // Execute executes the request
-//  @return IntegrationKeyOut
+//
+//	@return IntegrationKeyOut
+//
 // Deprecated
 func (a *IntegrationAPIService) V1IntegrationGetKeyExecute(r ApiV1IntegrationGetKeyRequest) (*IntegrationKeyOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *IntegrationKeyOut
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *IntegrationKeyOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "IntegrationAPIService.V1IntegrationGetKey")
@@ -704,8 +707,8 @@ func (a *IntegrationAPIService) V1IntegrationGetKeyExecute(r ApiV1IntegrationGet
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -715,8 +718,8 @@ func (a *IntegrationAPIService) V1IntegrationGetKeyExecute(r ApiV1IntegrationGet
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -726,8 +729,8 @@ func (a *IntegrationAPIService) V1IntegrationGetKeyExecute(r ApiV1IntegrationGet
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -737,8 +740,8 @@ func (a *IntegrationAPIService) V1IntegrationGetKeyExecute(r ApiV1IntegrationGet
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -748,8 +751,8 @@ func (a *IntegrationAPIService) V1IntegrationGetKeyExecute(r ApiV1IntegrationGet
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -759,8 +762,8 @@ func (a *IntegrationAPIService) V1IntegrationGetKeyExecute(r ApiV1IntegrationGet
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -770,8 +773,8 @@ func (a *IntegrationAPIService) V1IntegrationGetKeyExecute(r ApiV1IntegrationGet
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -789,12 +792,12 @@ func (a *IntegrationAPIService) V1IntegrationGetKeyExecute(r ApiV1IntegrationGet
 }
 
 type ApiV1IntegrationListRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *IntegrationAPIService
-	appId string
-	limit *int32
-	iterator *string
-	order *Ordering
+	appId      string
+	limit      *int32
+	iterator   *string
+	order      *Ordering
 }
 
 // Limit the number of returned items
@@ -824,26 +827,27 @@ V1IntegrationList List Integrations
 
 List the application's integrations.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param appId The app's ID or UID
- @return ApiV1IntegrationListRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param appId The app's ID or UID
+	@return ApiV1IntegrationListRequest
 */
 func (a *IntegrationAPIService) V1IntegrationList(ctx context.Context, appId string) ApiV1IntegrationListRequest {
 	return ApiV1IntegrationListRequest{
 		ApiService: a,
-		ctx: ctx,
-		appId: appId,
+		ctx:        ctx,
+		appId:      appId,
 	}
 }
 
 // Execute executes the request
-//  @return ListResponseIntegrationOut
+//
+//	@return ListResponseIntegrationOut
 func (a *IntegrationAPIService) V1IntegrationListExecute(r ApiV1IntegrationListRequest) (*ListResponseIntegrationOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *ListResponseIntegrationOut
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *ListResponseIntegrationOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "IntegrationAPIService.V1IntegrationList")
@@ -919,8 +923,8 @@ func (a *IntegrationAPIService) V1IntegrationListExecute(r ApiV1IntegrationListR
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -930,8 +934,8 @@ func (a *IntegrationAPIService) V1IntegrationListExecute(r ApiV1IntegrationListR
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -941,8 +945,8 @@ func (a *IntegrationAPIService) V1IntegrationListExecute(r ApiV1IntegrationListR
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -952,8 +956,8 @@ func (a *IntegrationAPIService) V1IntegrationListExecute(r ApiV1IntegrationListR
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -963,8 +967,8 @@ func (a *IntegrationAPIService) V1IntegrationListExecute(r ApiV1IntegrationListR
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -974,8 +978,8 @@ func (a *IntegrationAPIService) V1IntegrationListExecute(r ApiV1IntegrationListR
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -985,8 +989,8 @@ func (a *IntegrationAPIService) V1IntegrationListExecute(r ApiV1IntegrationListR
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -1004,10 +1008,10 @@ func (a *IntegrationAPIService) V1IntegrationListExecute(r ApiV1IntegrationListR
 }
 
 type ApiV1IntegrationRotateKeyRequest struct {
-	ctx context.Context
-	ApiService *IntegrationAPIService
-	appId string
-	integId string
+	ctx            context.Context
+	ApiService     *IntegrationAPIService
+	appId          string
+	integId        string
 	idempotencyKey *string
 }
 
@@ -1026,28 +1030,29 @@ V1IntegrationRotateKey Rotate Integration Key
 
 Rotate the integration's key. The previous key will be immediately revoked.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param appId The app's ID or UID
- @param integId The integ's ID
- @return ApiV1IntegrationRotateKeyRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param appId The app's ID or UID
+	@param integId The integ's ID
+	@return ApiV1IntegrationRotateKeyRequest
 */
 func (a *IntegrationAPIService) V1IntegrationRotateKey(ctx context.Context, appId string, integId string) ApiV1IntegrationRotateKeyRequest {
 	return ApiV1IntegrationRotateKeyRequest{
 		ApiService: a,
-		ctx: ctx,
-		appId: appId,
-		integId: integId,
+		ctx:        ctx,
+		appId:      appId,
+		integId:    integId,
 	}
 }
 
 // Execute executes the request
-//  @return IntegrationKeyOut
+//
+//	@return IntegrationKeyOut
 func (a *IntegrationAPIService) V1IntegrationRotateKeyExecute(r ApiV1IntegrationRotateKeyRequest) (*IntegrationKeyOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *IntegrationKeyOut
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *IntegrationKeyOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "IntegrationAPIService.V1IntegrationRotateKey")
@@ -1118,8 +1123,8 @@ func (a *IntegrationAPIService) V1IntegrationRotateKeyExecute(r ApiV1Integration
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -1129,8 +1134,8 @@ func (a *IntegrationAPIService) V1IntegrationRotateKeyExecute(r ApiV1Integration
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -1140,8 +1145,8 @@ func (a *IntegrationAPIService) V1IntegrationRotateKeyExecute(r ApiV1Integration
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -1151,8 +1156,8 @@ func (a *IntegrationAPIService) V1IntegrationRotateKeyExecute(r ApiV1Integration
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -1162,8 +1167,8 @@ func (a *IntegrationAPIService) V1IntegrationRotateKeyExecute(r ApiV1Integration
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -1173,8 +1178,8 @@ func (a *IntegrationAPIService) V1IntegrationRotateKeyExecute(r ApiV1Integration
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -1184,8 +1189,8 @@ func (a *IntegrationAPIService) V1IntegrationRotateKeyExecute(r ApiV1Integration
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -1203,10 +1208,10 @@ func (a *IntegrationAPIService) V1IntegrationRotateKeyExecute(r ApiV1Integration
 }
 
 type ApiV1IntegrationUpdateRequest struct {
-	ctx context.Context
-	ApiService *IntegrationAPIService
-	appId string
-	integId string
+	ctx               context.Context
+	ApiService        *IntegrationAPIService
+	appId             string
+	integId           string
 	integrationUpdate *IntegrationUpdate
 }
 
@@ -1224,28 +1229,29 @@ V1IntegrationUpdate Update Integration
 
 Update an integration.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param appId The app's ID or UID
- @param integId The integ's ID
- @return ApiV1IntegrationUpdateRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param appId The app's ID or UID
+	@param integId The integ's ID
+	@return ApiV1IntegrationUpdateRequest
 */
 func (a *IntegrationAPIService) V1IntegrationUpdate(ctx context.Context, appId string, integId string) ApiV1IntegrationUpdateRequest {
 	return ApiV1IntegrationUpdateRequest{
 		ApiService: a,
-		ctx: ctx,
-		appId: appId,
-		integId: integId,
+		ctx:        ctx,
+		appId:      appId,
+		integId:    integId,
 	}
 }
 
 // Execute executes the request
-//  @return IntegrationOut
+//
+//	@return IntegrationOut
 func (a *IntegrationAPIService) V1IntegrationUpdateExecute(r ApiV1IntegrationUpdateRequest) (*IntegrationOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPut
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *IntegrationOut
+		localVarHTTPMethod  = http.MethodPut
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *IntegrationOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "IntegrationAPIService.V1IntegrationUpdate")
@@ -1318,8 +1324,8 @@ func (a *IntegrationAPIService) V1IntegrationUpdateExecute(r ApiV1IntegrationUpd
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -1329,8 +1335,8 @@ func (a *IntegrationAPIService) V1IntegrationUpdateExecute(r ApiV1IntegrationUpd
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -1340,8 +1346,8 @@ func (a *IntegrationAPIService) V1IntegrationUpdateExecute(r ApiV1IntegrationUpd
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -1351,8 +1357,8 @@ func (a *IntegrationAPIService) V1IntegrationUpdateExecute(r ApiV1IntegrationUpd
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -1362,8 +1368,8 @@ func (a *IntegrationAPIService) V1IntegrationUpdateExecute(r ApiV1IntegrationUpd
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -1373,8 +1379,8 @@ func (a *IntegrationAPIService) V1IntegrationUpdateExecute(r ApiV1IntegrationUpd
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -1384,8 +1390,8 @@ func (a *IntegrationAPIService) V1IntegrationUpdateExecute(r ApiV1IntegrationUpd
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}

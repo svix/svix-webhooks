@@ -19,17 +19,16 @@ import (
 	"strings"
 )
 
-
 // InboundAPIService InboundAPI service
 type InboundAPIService service
 
 type ApiV1InboundMsgRequest struct {
-	ctx context.Context
-	ApiService *InboundAPIService
-	appId string
-	inboundToken string
-	body *string
-	eventType *string
+	ctx            context.Context
+	ApiService     *InboundAPIService
+	appId          string
+	inboundToken   string
+	body           *string
+	eventType      *string
 	idempotencyKey *string
 }
 
@@ -59,28 +58,29 @@ V1InboundMsg Handle Inbound
 
 Handles a raw inbound webhook for the application.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param appId The app's ID or UID
- @param inboundToken
- @return ApiV1InboundMsgRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param appId The app's ID or UID
+	@param inboundToken
+	@return ApiV1InboundMsgRequest
 */
 func (a *InboundAPIService) V1InboundMsg(ctx context.Context, appId string, inboundToken string) ApiV1InboundMsgRequest {
 	return ApiV1InboundMsgRequest{
-		ApiService: a,
-		ctx: ctx,
-		appId: appId,
+		ApiService:   a,
+		ctx:          ctx,
+		appId:        appId,
 		inboundToken: inboundToken,
 	}
 }
 
 // Execute executes the request
-//  @return MessageOut
+//
+//	@return MessageOut
 func (a *InboundAPIService) V1InboundMsgExecute(r ApiV1InboundMsgRequest) (*MessageOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *MessageOut
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *MessageOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "InboundAPIService.V1InboundMsg")
@@ -159,8 +159,8 @@ func (a *InboundAPIService) V1InboundMsgExecute(r ApiV1InboundMsgRequest) (*Mess
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -170,8 +170,8 @@ func (a *InboundAPIService) V1InboundMsgExecute(r ApiV1InboundMsgRequest) (*Mess
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -181,8 +181,8 @@ func (a *InboundAPIService) V1InboundMsgExecute(r ApiV1InboundMsgRequest) (*Mess
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -192,8 +192,8 @@ func (a *InboundAPIService) V1InboundMsgExecute(r ApiV1InboundMsgRequest) (*Mess
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -203,8 +203,8 @@ func (a *InboundAPIService) V1InboundMsgExecute(r ApiV1InboundMsgRequest) (*Mess
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -214,8 +214,8 @@ func (a *InboundAPIService) V1InboundMsgExecute(r ApiV1InboundMsgRequest) (*Mess
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -225,8 +225,8 @@ func (a *InboundAPIService) V1InboundMsgExecute(r ApiV1InboundMsgRequest) (*Mess
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -244,9 +244,9 @@ func (a *InboundAPIService) V1InboundMsgExecute(r ApiV1InboundMsgRequest) (*Mess
 }
 
 type ApiV1InboundRotateUrlRequest struct {
-	ctx context.Context
-	ApiService *InboundAPIService
-	appId string
+	ctx            context.Context
+	ApiService     *InboundAPIService
+	appId          string
 	idempotencyKey *string
 }
 
@@ -266,26 +266,27 @@ V1InboundRotateUrl Rotate Url
 Invalidates the previous inbound url (if one exists), producing a new inbound
 URL for this app.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param appId The app's ID or UID
- @return ApiV1InboundRotateUrlRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param appId The app's ID or UID
+	@return ApiV1InboundRotateUrlRequest
 */
 func (a *InboundAPIService) V1InboundRotateUrl(ctx context.Context, appId string) ApiV1InboundRotateUrlRequest {
 	return ApiV1InboundRotateUrlRequest{
 		ApiService: a,
-		ctx: ctx,
-		appId: appId,
+		ctx:        ctx,
+		appId:      appId,
 	}
 }
 
 // Execute executes the request
-//  @return RotatedUrlOut
+//
+//	@return RotatedUrlOut
 func (a *InboundAPIService) V1InboundRotateUrlExecute(r ApiV1InboundRotateUrlRequest) (*RotatedUrlOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *RotatedUrlOut
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *RotatedUrlOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "InboundAPIService.V1InboundRotateUrl")
@@ -355,8 +356,8 @@ func (a *InboundAPIService) V1InboundRotateUrlExecute(r ApiV1InboundRotateUrlReq
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -366,8 +367,8 @@ func (a *InboundAPIService) V1InboundRotateUrlExecute(r ApiV1InboundRotateUrlReq
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -377,8 +378,8 @@ func (a *InboundAPIService) V1InboundRotateUrlExecute(r ApiV1InboundRotateUrlReq
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -388,8 +389,8 @@ func (a *InboundAPIService) V1InboundRotateUrlExecute(r ApiV1InboundRotateUrlReq
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -399,8 +400,8 @@ func (a *InboundAPIService) V1InboundRotateUrlExecute(r ApiV1InboundRotateUrlReq
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -410,8 +411,8 @@ func (a *InboundAPIService) V1InboundRotateUrlExecute(r ApiV1InboundRotateUrlReq
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -421,8 +422,8 @@ func (a *InboundAPIService) V1InboundRotateUrlExecute(r ApiV1InboundRotateUrlReq
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}

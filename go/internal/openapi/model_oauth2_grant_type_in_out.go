@@ -21,7 +21,7 @@ type Oauth2GrantTypeInOut string
 // List of Oauth2GrantTypeInOut
 const (
 	OAUTH2GRANTTYPEINOUT_CLIENT_CREDENTIALS Oauth2GrantTypeInOut = "clientCredentials"
-	OAUTH2GRANTTYPEINOUT_REFRESH_TOKEN Oauth2GrantTypeInOut = "refreshToken"
+	OAUTH2GRANTTYPEINOUT_REFRESH_TOKEN      Oauth2GrantTypeInOut = "refreshToken"
 )
 
 // All allowed values of Oauth2GrantTypeInOut enum
@@ -108,4 +108,3 @@ func (v *NullableOauth2GrantTypeInOut) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-

@@ -20,9 +20,9 @@ type Oauth2AuthMethodInOut string
 
 // List of Oauth2AuthMethodInOut
 const (
-	OAUTH2AUTHMETHODINOUT_CLIENT_SECRET_JWT Oauth2AuthMethodInOut = "clientSecretJwt"
+	OAUTH2AUTHMETHODINOUT_CLIENT_SECRET_JWT   Oauth2AuthMethodInOut = "clientSecretJwt"
 	OAUTH2AUTHMETHODINOUT_CLIENT_SECRET_BASIC Oauth2AuthMethodInOut = "clientSecretBasic"
-	OAUTH2AUTHMETHODINOUT_CLIENT_SECRET_POST Oauth2AuthMethodInOut = "clientSecretPost"
+	OAUTH2AUTHMETHODINOUT_CLIENT_SECRET_POST  Oauth2AuthMethodInOut = "clientSecretPost"
 )
 
 // All allowed values of Oauth2AuthMethodInOut enum
@@ -110,4 +110,3 @@ func (v *NullableOauth2AuthMethodInOut) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-

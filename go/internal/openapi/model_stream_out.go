@@ -11,10 +11,10 @@ API version: 1.1.1
 package openapi
 
 import (
-	"encoding/json"
-	"time"
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"time"
 )
 
 // checks if the StreamOut type satisfies the MappedNullable interface at compile time
@@ -28,7 +28,7 @@ type StreamOut struct {
 	// The stream's ID.
 	Id string `json:"id" validate:"regexp=^strm_[A-Za-z0-9]{22}$"`
 	// The Stream's UID.
-	Uid *string `json:"uid,omitempty" validate:"regexp=^(?!strm_)[a-zA-Z0-9_-]+$"`
+	Uid       *string   `json:"uid,omitempty" validate:"regexp=^(?!strm_)[a-zA-Z0-9_-]+$"`
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
@@ -191,7 +191,7 @@ func (o *StreamOut) SetUpdatedAt(v time.Time) {
 }
 
 func (o StreamOut) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -227,10 +227,10 @@ func (o *StreamOut) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -286,5 +286,3 @@ func (v *NullableStreamOut) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

@@ -11,8 +11,8 @@ API version: 1.1.1
 package openapi
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -26,8 +26,8 @@ type MessageBroadcastIn struct {
 	// Optional unique identifier for the message.
 	EventId *string `json:"eventId,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
 	// The event type's name
-	EventType string `json:"eventType" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
-	Payload map[string]interface{} `json:"payload"`
+	EventType string                 `json:"eventType" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
+	Payload   map[string]interface{} `json:"payload"`
 	// Optional number of hours to retain the message payload. Note that this is mutually exclusive with `payloadRetentionPeriod`.
 	PayloadRetentionHours *int64 `json:"payloadRetentionHours,omitempty"`
 	// Optional number of days to retain the message payload. Defaults to 90. Note that this is mutually exclusive with `payloadRetentionHours`.
@@ -236,7 +236,7 @@ func (o *MessageBroadcastIn) SetPayloadRetentionPeriod(v int64) {
 }
 
 func (o MessageBroadcastIn) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -276,10 +276,10 @@ func (o *MessageBroadcastIn) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -335,5 +335,3 @@ func (v *NullableMessageBroadcastIn) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

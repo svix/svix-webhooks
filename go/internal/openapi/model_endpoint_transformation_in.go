@@ -19,8 +19,8 @@ var _ MappedNullable = &EndpointTransformationIn{}
 
 // EndpointTransformationIn struct for EndpointTransformationIn
 type EndpointTransformationIn struct {
-	Code *string `json:"code,omitempty"`
-	Enabled *bool `json:"enabled,omitempty"`
+	Code    *string `json:"code,omitempty"`
+	Enabled *bool   `json:"enabled,omitempty"`
 }
 
 // NewEndpointTransformationIn instantiates a new EndpointTransformationIn object
@@ -105,7 +105,7 @@ func (o *EndpointTransformationIn) SetEnabled(v bool) {
 }
 
 func (o EndpointTransformationIn) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -158,5 +158,3 @@ func (v *NullableEndpointTransformationIn) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

@@ -20,7 +20,7 @@ type Ordering string
 
 // List of Ordering
 const (
-	ORDERING_ASCENDING Ordering = "ascending"
+	ORDERING_ASCENDING  Ordering = "ascending"
 	ORDERING_DESCENDING Ordering = "descending"
 )
 
@@ -108,4 +108,3 @@ func (v *NullableOrdering) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-

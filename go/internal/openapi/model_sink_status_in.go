@@ -21,7 +21,7 @@ type SinkStatusIn string
 // List of SinkStatusIn
 const (
 	SINKSTATUSIN_ENABLED SinkStatusIn = "enabled"
-	SINKSTATUSIN_PAUSED SinkStatusIn = "paused"
+	SINKSTATUSIN_PAUSED  SinkStatusIn = "paused"
 )
 
 // All allowed values of SinkStatusIn enum
@@ -108,4 +108,3 @@ func (v *NullableSinkStatusIn) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-

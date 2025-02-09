@@ -11,8 +11,8 @@ API version: 1.1.1
 package openapi
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -21,10 +21,10 @@ var _ MappedNullable = &ListResponseMessageAttemptEndpointOut{}
 
 // ListResponseMessageAttemptEndpointOut struct for ListResponseMessageAttemptEndpointOut
 type ListResponseMessageAttemptEndpointOut struct {
-	Data []MessageAttemptEndpointOut `json:"data"`
-	Done bool `json:"done"`
-	Iterator NullableString `json:"iterator"`
-	PrevIterator *string `json:"prevIterator,omitempty"`
+	Data         []MessageAttemptEndpointOut `json:"data"`
+	Done         bool                        `json:"done"`
+	Iterator     NullableString              `json:"iterator"`
+	PrevIterator *string                     `json:"prevIterator,omitempty"`
 }
 
 type _ListResponseMessageAttemptEndpointOut ListResponseMessageAttemptEndpointOut
@@ -156,7 +156,7 @@ func (o *ListResponseMessageAttemptEndpointOut) SetPrevIterator(v string) {
 }
 
 func (o ListResponseMessageAttemptEndpointOut) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -189,10 +189,10 @@ func (o *ListResponseMessageAttemptEndpointOut) UnmarshalJSON(data []byte) (err 
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -248,5 +248,3 @@ func (v *NullableListResponseMessageAttemptEndpointOut) UnmarshalJSON(src []byte
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

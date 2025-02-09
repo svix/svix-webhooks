@@ -19,15 +19,14 @@ import (
 	"strings"
 )
 
-
 // WebhookEndpointAPIService WebhookEndpointAPI service
 type WebhookEndpointAPIService service
 
 type ApiV1OperationalWebhookEndpointCreateRequest struct {
-	ctx context.Context
-	ApiService *WebhookEndpointAPIService
+	ctx                          context.Context
+	ApiService                   *WebhookEndpointAPIService
 	operationalWebhookEndpointIn *OperationalWebhookEndpointIn
-	idempotencyKey *string
+	idempotencyKey               *string
 }
 
 func (r ApiV1OperationalWebhookEndpointCreateRequest) OperationalWebhookEndpointIn(operationalWebhookEndpointIn OperationalWebhookEndpointIn) ApiV1OperationalWebhookEndpointCreateRequest {
@@ -50,24 +49,25 @@ V1OperationalWebhookEndpointCreate Create Operational Webhook Endpoint
 
 Create an operational webhook endpoint.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiV1OperationalWebhookEndpointCreateRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiV1OperationalWebhookEndpointCreateRequest
 */
 func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointCreate(ctx context.Context) ApiV1OperationalWebhookEndpointCreateRequest {
 	return ApiV1OperationalWebhookEndpointCreateRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return OperationalWebhookEndpointOut
+//
+//	@return OperationalWebhookEndpointOut
 func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointCreateExecute(r ApiV1OperationalWebhookEndpointCreateRequest) (*OperationalWebhookEndpointOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *OperationalWebhookEndpointOut
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *OperationalWebhookEndpointOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "WebhookEndpointAPIService.V1OperationalWebhookEndpointCreate")
@@ -135,8 +135,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointCreateExecute(r 
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -146,8 +146,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointCreateExecute(r 
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -157,8 +157,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointCreateExecute(r 
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -168,8 +168,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointCreateExecute(r 
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -179,8 +179,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointCreateExecute(r 
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -190,8 +190,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointCreateExecute(r 
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -201,8 +201,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointCreateExecute(r 
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -220,7 +220,7 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointCreateExecute(r 
 }
 
 type ApiV1OperationalWebhookEndpointDeleteRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *WebhookEndpointAPIService
 	endpointId string
 }
@@ -234,14 +234,14 @@ V1OperationalWebhookEndpointDelete Delete Operational Webhook Endpoint
 
 Delete an operational webhook endpoint.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param endpointId The ep's ID or UID
- @return ApiV1OperationalWebhookEndpointDeleteRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param endpointId The ep's ID or UID
+	@return ApiV1OperationalWebhookEndpointDeleteRequest
 */
 func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointDelete(ctx context.Context, endpointId string) ApiV1OperationalWebhookEndpointDeleteRequest {
 	return ApiV1OperationalWebhookEndpointDeleteRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 		endpointId: endpointId,
 	}
 }
@@ -249,9 +249,9 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointDelete(ctx conte
 // Execute executes the request
 func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointDeleteExecute(r ApiV1OperationalWebhookEndpointDeleteRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodDelete
-		localVarPostBody     interface{}
-		formFiles            []formFile
+		localVarHTTPMethod = http.MethodDelete
+		localVarPostBody   interface{}
+		formFiles          []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "WebhookEndpointAPIService.V1OperationalWebhookEndpointDelete")
@@ -318,8 +318,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointDeleteExecute(r 
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -329,8 +329,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointDeleteExecute(r 
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -340,8 +340,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointDeleteExecute(r 
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -351,8 +351,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointDeleteExecute(r 
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -362,8 +362,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointDeleteExecute(r 
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -373,8 +373,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointDeleteExecute(r 
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -384,8 +384,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointDeleteExecute(r 
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarHTTPResponse, newErr
 	}
@@ -394,7 +394,7 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointDeleteExecute(r 
 }
 
 type ApiV1OperationalWebhookEndpointGetRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *WebhookEndpointAPIService
 	endpointId string
 }
@@ -408,26 +408,27 @@ V1OperationalWebhookEndpointGet Get Operational Webhook Endpoint
 
 Get an operational webhook endpoint.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param endpointId The ep's ID or UID
- @return ApiV1OperationalWebhookEndpointGetRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param endpointId The ep's ID or UID
+	@return ApiV1OperationalWebhookEndpointGetRequest
 */
 func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointGet(ctx context.Context, endpointId string) ApiV1OperationalWebhookEndpointGetRequest {
 	return ApiV1OperationalWebhookEndpointGetRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 		endpointId: endpointId,
 	}
 }
 
 // Execute executes the request
-//  @return OperationalWebhookEndpointOut
+//
+//	@return OperationalWebhookEndpointOut
 func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointGetExecute(r ApiV1OperationalWebhookEndpointGetRequest) (*OperationalWebhookEndpointOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *OperationalWebhookEndpointOut
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *OperationalWebhookEndpointOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "WebhookEndpointAPIService.V1OperationalWebhookEndpointGet")
@@ -494,8 +495,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointGetExecute(r Api
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -505,8 +506,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointGetExecute(r Api
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -516,8 +517,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointGetExecute(r Api
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -527,8 +528,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointGetExecute(r Api
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -538,8 +539,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointGetExecute(r Api
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -549,8 +550,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointGetExecute(r Api
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -560,8 +561,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointGetExecute(r Api
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -579,7 +580,7 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointGetExecute(r Api
 }
 
 type ApiV1OperationalWebhookEndpointGetHeadersRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *WebhookEndpointAPIService
 	endpointId string
 }
@@ -593,26 +594,27 @@ V1OperationalWebhookEndpointGetHeaders Get Operational Webhook Endpoint Headers
 
 Get the additional headers to be sent with the operational webhook.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param endpointId The ep's ID or UID
- @return ApiV1OperationalWebhookEndpointGetHeadersRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param endpointId The ep's ID or UID
+	@return ApiV1OperationalWebhookEndpointGetHeadersRequest
 */
 func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointGetHeaders(ctx context.Context, endpointId string) ApiV1OperationalWebhookEndpointGetHeadersRequest {
 	return ApiV1OperationalWebhookEndpointGetHeadersRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 		endpointId: endpointId,
 	}
 }
 
 // Execute executes the request
-//  @return OperationalWebhookEndpointHeadersOut
+//
+//	@return OperationalWebhookEndpointHeadersOut
 func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointGetHeadersExecute(r ApiV1OperationalWebhookEndpointGetHeadersRequest) (*OperationalWebhookEndpointHeadersOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *OperationalWebhookEndpointHeadersOut
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *OperationalWebhookEndpointHeadersOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "WebhookEndpointAPIService.V1OperationalWebhookEndpointGetHeaders")
@@ -679,8 +681,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointGetHeadersExecut
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -690,8 +692,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointGetHeadersExecut
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -701,8 +703,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointGetHeadersExecut
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -712,8 +714,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointGetHeadersExecut
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -723,8 +725,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointGetHeadersExecut
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -734,8 +736,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointGetHeadersExecut
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -745,8 +747,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointGetHeadersExecut
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -764,7 +766,7 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointGetHeadersExecut
 }
 
 type ApiV1OperationalWebhookEndpointGetSecretRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *WebhookEndpointAPIService
 	endpointId string
 }
@@ -781,26 +783,27 @@ Get an operational webhook endpoint's signing secret.
 This is used to verify the authenticity of the webhook.
 For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param endpointId The ep's ID or UID
- @return ApiV1OperationalWebhookEndpointGetSecretRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param endpointId The ep's ID or UID
+	@return ApiV1OperationalWebhookEndpointGetSecretRequest
 */
 func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointGetSecret(ctx context.Context, endpointId string) ApiV1OperationalWebhookEndpointGetSecretRequest {
 	return ApiV1OperationalWebhookEndpointGetSecretRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 		endpointId: endpointId,
 	}
 }
 
 // Execute executes the request
-//  @return OperationalWebhookEndpointSecretOut
+//
+//	@return OperationalWebhookEndpointSecretOut
 func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointGetSecretExecute(r ApiV1OperationalWebhookEndpointGetSecretRequest) (*OperationalWebhookEndpointSecretOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *OperationalWebhookEndpointSecretOut
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *OperationalWebhookEndpointSecretOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "WebhookEndpointAPIService.V1OperationalWebhookEndpointGetSecret")
@@ -867,8 +870,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointGetSecretExecute
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -878,8 +881,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointGetSecretExecute
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -889,8 +892,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointGetSecretExecute
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -900,8 +903,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointGetSecretExecute
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -911,8 +914,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointGetSecretExecute
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -922,8 +925,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointGetSecretExecute
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -933,8 +936,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointGetSecretExecute
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -952,11 +955,11 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointGetSecretExecute
 }
 
 type ApiV1OperationalWebhookEndpointListRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *WebhookEndpointAPIService
-	limit *int32
-	iterator *string
-	order *Ordering
+	limit      *int32
+	iterator   *string
+	order      *Ordering
 }
 
 // Limit the number of returned items
@@ -986,24 +989,25 @@ V1OperationalWebhookEndpointList List Operational Webhook Endpoints
 
 List operational webhook endpoints.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiV1OperationalWebhookEndpointListRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiV1OperationalWebhookEndpointListRequest
 */
 func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointList(ctx context.Context) ApiV1OperationalWebhookEndpointListRequest {
 	return ApiV1OperationalWebhookEndpointListRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return ListResponseOperationalWebhookEndpointOut
+//
+//	@return ListResponseOperationalWebhookEndpointOut
 func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointListExecute(r ApiV1OperationalWebhookEndpointListRequest) (*ListResponseOperationalWebhookEndpointOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *ListResponseOperationalWebhookEndpointOut
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *ListResponseOperationalWebhookEndpointOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "WebhookEndpointAPIService.V1OperationalWebhookEndpointList")
@@ -1072,8 +1076,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointListExecute(r Ap
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -1083,8 +1087,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointListExecute(r Ap
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -1094,8 +1098,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointListExecute(r Ap
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -1105,8 +1109,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointListExecute(r Ap
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -1116,8 +1120,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointListExecute(r Ap
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -1127,8 +1131,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointListExecute(r Ap
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -1138,8 +1142,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointListExecute(r Ap
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -1157,11 +1161,11 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointListExecute(r Ap
 }
 
 type ApiV1OperationalWebhookEndpointRotateSecretRequest struct {
-	ctx context.Context
-	ApiService *WebhookEndpointAPIService
-	endpointId string
+	ctx                                context.Context
+	ApiService                         *WebhookEndpointAPIService
+	endpointId                         string
 	operationalWebhookEndpointSecretIn *OperationalWebhookEndpointSecretIn
-	idempotencyKey *string
+	idempotencyKey                     *string
 }
 
 func (r ApiV1OperationalWebhookEndpointRotateSecretRequest) OperationalWebhookEndpointSecretIn(operationalWebhookEndpointSecretIn OperationalWebhookEndpointSecretIn) ApiV1OperationalWebhookEndpointRotateSecretRequest {
@@ -1186,14 +1190,14 @@ Rotates an operational webhook endpoint's signing secret.
 
 The previous secret will remain valid for the next 24 hours.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param endpointId The ep's ID or UID
- @return ApiV1OperationalWebhookEndpointRotateSecretRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param endpointId The ep's ID or UID
+	@return ApiV1OperationalWebhookEndpointRotateSecretRequest
 */
 func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointRotateSecret(ctx context.Context, endpointId string) ApiV1OperationalWebhookEndpointRotateSecretRequest {
 	return ApiV1OperationalWebhookEndpointRotateSecretRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 		endpointId: endpointId,
 	}
 }
@@ -1201,9 +1205,9 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointRotateSecret(ctx
 // Execute executes the request
 func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointRotateSecretExecute(r ApiV1OperationalWebhookEndpointRotateSecretRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
+		localVarHTTPMethod = http.MethodPost
+		localVarPostBody   interface{}
+		formFiles          []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "WebhookEndpointAPIService.V1OperationalWebhookEndpointRotateSecret")
@@ -1278,8 +1282,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointRotateSecretExec
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -1289,8 +1293,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointRotateSecretExec
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -1300,8 +1304,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointRotateSecretExec
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -1311,8 +1315,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointRotateSecretExec
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -1322,8 +1326,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointRotateSecretExec
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -1333,8 +1337,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointRotateSecretExec
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -1344,8 +1348,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointRotateSecretExec
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarHTTPResponse, newErr
 	}
@@ -1354,9 +1358,9 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointRotateSecretExec
 }
 
 type ApiV1OperationalWebhookEndpointUpdateRequest struct {
-	ctx context.Context
-	ApiService *WebhookEndpointAPIService
-	endpointId string
+	ctx                              context.Context
+	ApiService                       *WebhookEndpointAPIService
+	endpointId                       string
 	operationalWebhookEndpointUpdate *OperationalWebhookEndpointUpdate
 }
 
@@ -1374,26 +1378,27 @@ V1OperationalWebhookEndpointUpdate Update Operational Webhook Endpoint
 
 Update an operational webhook endpoint.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param endpointId The ep's ID or UID
- @return ApiV1OperationalWebhookEndpointUpdateRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param endpointId The ep's ID or UID
+	@return ApiV1OperationalWebhookEndpointUpdateRequest
 */
 func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointUpdate(ctx context.Context, endpointId string) ApiV1OperationalWebhookEndpointUpdateRequest {
 	return ApiV1OperationalWebhookEndpointUpdateRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 		endpointId: endpointId,
 	}
 }
 
 // Execute executes the request
-//  @return OperationalWebhookEndpointOut
+//
+//	@return OperationalWebhookEndpointOut
 func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointUpdateExecute(r ApiV1OperationalWebhookEndpointUpdateRequest) (*OperationalWebhookEndpointOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPut
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *OperationalWebhookEndpointOut
+		localVarHTTPMethod  = http.MethodPut
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *OperationalWebhookEndpointOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "WebhookEndpointAPIService.V1OperationalWebhookEndpointUpdate")
@@ -1465,8 +1470,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointUpdateExecute(r 
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -1476,8 +1481,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointUpdateExecute(r 
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -1487,8 +1492,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointUpdateExecute(r 
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -1498,8 +1503,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointUpdateExecute(r 
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -1509,8 +1514,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointUpdateExecute(r 
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -1520,8 +1525,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointUpdateExecute(r 
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -1531,8 +1536,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointUpdateExecute(r 
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -1550,9 +1555,9 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointUpdateExecute(r 
 }
 
 type ApiV1OperationalWebhookEndpointUpdateHeadersRequest struct {
-	ctx context.Context
-	ApiService *WebhookEndpointAPIService
-	endpointId string
+	ctx                                 context.Context
+	ApiService                          *WebhookEndpointAPIService
+	endpointId                          string
 	operationalWebhookEndpointHeadersIn *OperationalWebhookEndpointHeadersIn
 }
 
@@ -1570,14 +1575,14 @@ V1OperationalWebhookEndpointUpdateHeaders Update Operational Webhook Endpoint He
 
 Set the additional headers to be sent with the operational webhook.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param endpointId The ep's ID or UID
- @return ApiV1OperationalWebhookEndpointUpdateHeadersRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param endpointId The ep's ID or UID
+	@return ApiV1OperationalWebhookEndpointUpdateHeadersRequest
 */
 func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointUpdateHeaders(ctx context.Context, endpointId string) ApiV1OperationalWebhookEndpointUpdateHeadersRequest {
 	return ApiV1OperationalWebhookEndpointUpdateHeadersRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 		endpointId: endpointId,
 	}
 }
@@ -1585,9 +1590,9 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointUpdateHeaders(ct
 // Execute executes the request
 func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointUpdateHeadersExecute(r ApiV1OperationalWebhookEndpointUpdateHeadersRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPut
-		localVarPostBody     interface{}
-		formFiles            []formFile
+		localVarHTTPMethod = http.MethodPut
+		localVarPostBody   interface{}
+		formFiles          []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "WebhookEndpointAPIService.V1OperationalWebhookEndpointUpdateHeaders")
@@ -1659,8 +1664,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointUpdateHeadersExe
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -1670,8 +1675,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointUpdateHeadersExe
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -1681,8 +1686,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointUpdateHeadersExe
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -1692,8 +1697,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointUpdateHeadersExe
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -1703,8 +1708,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointUpdateHeadersExe
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -1714,8 +1719,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointUpdateHeadersExe
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -1725,8 +1730,8 @@ func (a *WebhookEndpointAPIService) V1OperationalWebhookEndpointUpdateHeadersExe
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarHTTPResponse, newErr
 	}

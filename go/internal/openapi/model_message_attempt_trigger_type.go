@@ -21,7 +21,7 @@ type MessageAttemptTriggerType int32
 // List of MessageAttemptTriggerType
 const (
 	MESSAGEATTEMPTTRIGGERTYPE_Scheduled MessageAttemptTriggerType = 0
-	MESSAGEATTEMPTTRIGGERTYPE_Manual MessageAttemptTriggerType = 1
+	MESSAGEATTEMPTTRIGGERTYPE_Manual    MessageAttemptTriggerType = 1
 )
 
 // All allowed values of MessageAttemptTriggerType enum
@@ -108,4 +108,3 @@ func (v *NullableMessageAttemptTriggerType) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-

@@ -19,15 +19,14 @@ import (
 	"strings"
 )
 
-
 // StreamEventTypesAPIService StreamEventTypesAPI service
 type StreamEventTypesAPIService service
 
 type ApiV1StreamEventTypeCreateRequest struct {
-	ctx context.Context
-	ApiService *StreamEventTypesAPIService
+	ctx               context.Context
+	ApiService        *StreamEventTypesAPIService
 	streamEventTypeIn *StreamEventTypeIn
-	idempotencyKey *string
+	idempotencyKey    *string
 }
 
 func (r ApiV1StreamEventTypeCreateRequest) StreamEventTypeIn(streamEventTypeIn StreamEventTypeIn) ApiV1StreamEventTypeCreateRequest {
@@ -50,24 +49,25 @@ V1StreamEventTypeCreate Create Stream Event Type
 
 Create an event type for Streams.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiV1StreamEventTypeCreateRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiV1StreamEventTypeCreateRequest
 */
 func (a *StreamEventTypesAPIService) V1StreamEventTypeCreate(ctx context.Context) ApiV1StreamEventTypeCreateRequest {
 	return ApiV1StreamEventTypeCreateRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return StreamEventTypeOut
+//
+//	@return StreamEventTypeOut
 func (a *StreamEventTypesAPIService) V1StreamEventTypeCreateExecute(r ApiV1StreamEventTypeCreateRequest) (*StreamEventTypeOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *StreamEventTypeOut
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *StreamEventTypeOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StreamEventTypesAPIService.V1StreamEventTypeCreate")
@@ -135,8 +135,8 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypeCreateExecute(r ApiV1Strea
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -146,8 +146,8 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypeCreateExecute(r ApiV1Strea
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -157,8 +157,8 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypeCreateExecute(r ApiV1Strea
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -168,8 +168,8 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypeCreateExecute(r ApiV1Strea
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -179,8 +179,8 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypeCreateExecute(r ApiV1Strea
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -190,8 +190,8 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypeCreateExecute(r ApiV1Strea
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -201,8 +201,8 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypeCreateExecute(r ApiV1Strea
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -220,9 +220,9 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypeCreateExecute(r ApiV1Strea
 }
 
 type ApiV1StreamEventTypeDeleteRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *StreamEventTypesAPIService
-	name string
+	name       string
 }
 
 func (r ApiV1StreamEventTypeDeleteRequest) Execute() (*http.Response, error) {
@@ -234,24 +234,24 @@ V1StreamEventTypeDelete Delete Stream Event Type
 
 Delete an event type.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param name The event type's name
- @return ApiV1StreamEventTypeDeleteRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param name The event type's name
+	@return ApiV1StreamEventTypeDeleteRequest
 */
 func (a *StreamEventTypesAPIService) V1StreamEventTypeDelete(ctx context.Context, name string) ApiV1StreamEventTypeDeleteRequest {
 	return ApiV1StreamEventTypeDeleteRequest{
 		ApiService: a,
-		ctx: ctx,
-		name: name,
+		ctx:        ctx,
+		name:       name,
 	}
 }
 
 // Execute executes the request
 func (a *StreamEventTypesAPIService) V1StreamEventTypeDeleteExecute(r ApiV1StreamEventTypeDeleteRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodDelete
-		localVarPostBody     interface{}
-		formFiles            []formFile
+		localVarHTTPMethod = http.MethodDelete
+		localVarPostBody   interface{}
+		formFiles          []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StreamEventTypesAPIService.V1StreamEventTypeDelete")
@@ -315,8 +315,8 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypeDeleteExecute(r ApiV1Strea
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -326,8 +326,8 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypeDeleteExecute(r ApiV1Strea
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -337,8 +337,8 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypeDeleteExecute(r ApiV1Strea
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -348,8 +348,8 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypeDeleteExecute(r ApiV1Strea
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -359,8 +359,8 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypeDeleteExecute(r ApiV1Strea
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -370,8 +370,8 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypeDeleteExecute(r ApiV1Strea
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -381,8 +381,8 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypeDeleteExecute(r ApiV1Strea
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarHTTPResponse, newErr
 	}
@@ -391,9 +391,9 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypeDeleteExecute(r ApiV1Strea
 }
 
 type ApiV1StreamEventTypeGetRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *StreamEventTypesAPIService
-	name string
+	name       string
 }
 
 func (r ApiV1StreamEventTypeGetRequest) Execute() (*StreamEventTypeOut, *http.Response, error) {
@@ -405,26 +405,27 @@ V1StreamEventTypeGet Get Stream Event Type
 
 Get an event type.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param name The event type's name
- @return ApiV1StreamEventTypeGetRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param name The event type's name
+	@return ApiV1StreamEventTypeGetRequest
 */
 func (a *StreamEventTypesAPIService) V1StreamEventTypeGet(ctx context.Context, name string) ApiV1StreamEventTypeGetRequest {
 	return ApiV1StreamEventTypeGetRequest{
 		ApiService: a,
-		ctx: ctx,
-		name: name,
+		ctx:        ctx,
+		name:       name,
 	}
 }
 
 // Execute executes the request
-//  @return StreamEventTypeOut
+//
+//	@return StreamEventTypeOut
 func (a *StreamEventTypesAPIService) V1StreamEventTypeGetExecute(r ApiV1StreamEventTypeGetRequest) (*StreamEventTypeOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *StreamEventTypeOut
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *StreamEventTypeOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StreamEventTypesAPIService.V1StreamEventTypeGet")
@@ -488,8 +489,8 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypeGetExecute(r ApiV1StreamEv
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -499,8 +500,8 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypeGetExecute(r ApiV1StreamEv
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -510,8 +511,8 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypeGetExecute(r ApiV1StreamEv
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -521,8 +522,8 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypeGetExecute(r ApiV1StreamEv
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -532,8 +533,8 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypeGetExecute(r ApiV1StreamEv
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -543,8 +544,8 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypeGetExecute(r ApiV1StreamEv
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -554,8 +555,8 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypeGetExecute(r ApiV1StreamEv
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -573,11 +574,11 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypeGetExecute(r ApiV1StreamEv
 }
 
 type ApiV1StreamEventTypeListRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *StreamEventTypesAPIService
-	limit *int32
-	iterator *string
-	order *Ordering
+	limit      *int32
+	iterator   *string
+	order      *Ordering
 }
 
 // Limit the number of returned items
@@ -607,24 +608,25 @@ V1StreamEventTypeList List Stream Event Types
 
 List of all the organization's event types for streaming.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiV1StreamEventTypeListRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiV1StreamEventTypeListRequest
 */
 func (a *StreamEventTypesAPIService) V1StreamEventTypeList(ctx context.Context) ApiV1StreamEventTypeListRequest {
 	return ApiV1StreamEventTypeListRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return ListResponseStreamEventTypeOut
+//
+//	@return ListResponseStreamEventTypeOut
 func (a *StreamEventTypesAPIService) V1StreamEventTypeListExecute(r ApiV1StreamEventTypeListRequest) (*ListResponseStreamEventTypeOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *ListResponseStreamEventTypeOut
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *ListResponseStreamEventTypeOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StreamEventTypesAPIService.V1StreamEventTypeList")
@@ -693,8 +695,8 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypeListExecute(r ApiV1StreamE
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -704,8 +706,8 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypeListExecute(r ApiV1StreamE
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -715,8 +717,8 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypeListExecute(r ApiV1StreamE
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -726,8 +728,8 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypeListExecute(r ApiV1StreamE
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -737,8 +739,8 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypeListExecute(r ApiV1StreamE
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -748,8 +750,8 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypeListExecute(r ApiV1StreamE
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -759,8 +761,8 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypeListExecute(r ApiV1StreamE
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -778,9 +780,9 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypeListExecute(r ApiV1StreamE
 }
 
 type ApiV1StreamEventTypePatchRequest struct {
-	ctx context.Context
-	ApiService *StreamEventTypesAPIService
-	name string
+	ctx                  context.Context
+	ApiService           *StreamEventTypesAPIService
+	name                 string
 	streamEventTypePatch *StreamEventTypePatch
 }
 
@@ -798,26 +800,27 @@ V1StreamEventTypePatch Patch Stream Event Type
 
 Patch an event type for Streams.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param name The event type's name
- @return ApiV1StreamEventTypePatchRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param name The event type's name
+	@return ApiV1StreamEventTypePatchRequest
 */
 func (a *StreamEventTypesAPIService) V1StreamEventTypePatch(ctx context.Context, name string) ApiV1StreamEventTypePatchRequest {
 	return ApiV1StreamEventTypePatchRequest{
 		ApiService: a,
-		ctx: ctx,
-		name: name,
+		ctx:        ctx,
+		name:       name,
 	}
 }
 
 // Execute executes the request
-//  @return StreamEventTypeOut
+//
+//	@return StreamEventTypeOut
 func (a *StreamEventTypesAPIService) V1StreamEventTypePatchExecute(r ApiV1StreamEventTypePatchRequest) (*StreamEventTypeOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPatch
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *StreamEventTypeOut
+		localVarHTTPMethod  = http.MethodPatch
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *StreamEventTypeOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StreamEventTypesAPIService.V1StreamEventTypePatch")
@@ -886,8 +889,8 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypePatchExecute(r ApiV1Stream
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -897,8 +900,8 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypePatchExecute(r ApiV1Stream
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -908,8 +911,8 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypePatchExecute(r ApiV1Stream
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -919,8 +922,8 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypePatchExecute(r ApiV1Stream
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -930,8 +933,8 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypePatchExecute(r ApiV1Stream
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -941,8 +944,8 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypePatchExecute(r ApiV1Stream
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -952,8 +955,8 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypePatchExecute(r ApiV1Stream
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -971,9 +974,9 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypePatchExecute(r ApiV1Stream
 }
 
 type ApiV1StreamEventTypeUpdateRequest struct {
-	ctx context.Context
-	ApiService *StreamEventTypesAPIService
-	name string
+	ctx               context.Context
+	ApiService        *StreamEventTypesAPIService
+	name              string
 	streamEventTypeIn *StreamEventTypeIn
 }
 
@@ -991,26 +994,27 @@ V1StreamEventTypeUpdate Update Stream Event Type
 
 Update or create a event type for Streams.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param name The event type's name
- @return ApiV1StreamEventTypeUpdateRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param name The event type's name
+	@return ApiV1StreamEventTypeUpdateRequest
 */
 func (a *StreamEventTypesAPIService) V1StreamEventTypeUpdate(ctx context.Context, name string) ApiV1StreamEventTypeUpdateRequest {
 	return ApiV1StreamEventTypeUpdateRequest{
 		ApiService: a,
-		ctx: ctx,
-		name: name,
+		ctx:        ctx,
+		name:       name,
 	}
 }
 
 // Execute executes the request
-//  @return StreamEventTypeOut
+//
+//	@return StreamEventTypeOut
 func (a *StreamEventTypesAPIService) V1StreamEventTypeUpdateExecute(r ApiV1StreamEventTypeUpdateRequest) (*StreamEventTypeOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPut
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *StreamEventTypeOut
+		localVarHTTPMethod  = http.MethodPut
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *StreamEventTypeOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StreamEventTypesAPIService.V1StreamEventTypeUpdate")
@@ -1079,8 +1083,8 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypeUpdateExecute(r ApiV1Strea
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -1090,8 +1094,8 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypeUpdateExecute(r ApiV1Strea
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -1101,8 +1105,8 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypeUpdateExecute(r ApiV1Strea
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -1112,8 +1116,8 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypeUpdateExecute(r ApiV1Strea
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -1123,8 +1127,8 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypeUpdateExecute(r ApiV1Strea
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -1134,8 +1138,8 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypeUpdateExecute(r ApiV1Strea
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -1145,8 +1149,8 @@ func (a *StreamEventTypesAPIService) V1StreamEventTypeUpdateExecute(r ApiV1Strea
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}

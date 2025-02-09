@@ -11,8 +11,8 @@ API version: 1.1.1
 package openapi
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -21,9 +21,9 @@ var _ MappedNullable = &EventStreamOut{}
 
 // EventStreamOut struct for EventStreamOut
 type EventStreamOut struct {
-	Data []EventOut `json:"data"`
-	Done bool `json:"done"`
-	Iterator string `json:"iterator"`
+	Data     []EventOut `json:"data"`
+	Done     bool       `json:"done"`
+	Iterator string     `json:"iterator"`
 }
 
 type _EventStreamOut EventStreamOut
@@ -121,7 +121,7 @@ func (o *EventStreamOut) SetIterator(v string) {
 }
 
 func (o EventStreamOut) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -151,10 +151,10 @@ func (o *EventStreamOut) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -210,5 +210,3 @@ func (v *NullableEventStreamOut) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

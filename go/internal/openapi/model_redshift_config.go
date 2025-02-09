@@ -11,8 +11,8 @@ API version: 1.1.1
 package openapi
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -21,15 +21,15 @@ var _ MappedNullable = &RedshiftConfig{}
 
 // RedshiftConfig Configuration parameters for defining a Redshift sink.
 type RedshiftConfig struct {
-	AccessKeyId string `json:"accessKeyId"`
+	AccessKeyId       string `json:"accessKeyId"`
 	ClusterIdentifier string `json:"clusterIdentifier"`
 	// Database name.  Only required if not using transformations.
 	DbName *string `json:"dbName,omitempty"`
-	DbUser string `json:"dbUser"`
-	Region string `json:"region"`
+	DbUser string  `json:"dbUser"`
+	Region string  `json:"region"`
 	// Schema name.  Only used if not using transformations.
-	SchemaName *string `json:"schemaName,omitempty"`
-	SecretAccessKey string `json:"secretAccessKey"`
+	SchemaName      *string `json:"schemaName,omitempty"`
+	SecretAccessKey string  `json:"secretAccessKey"`
 	// Table name.  Only required if not using transformations.
 	TableName *string `json:"tableName,omitempty"`
 }
@@ -275,7 +275,7 @@ func (o *RedshiftConfig) SetTableName(v string) {
 }
 
 func (o RedshiftConfig) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -318,10 +318,10 @@ func (o *RedshiftConfig) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -377,5 +377,3 @@ func (v *NullableRedshiftConfig) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

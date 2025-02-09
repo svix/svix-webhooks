@@ -11,8 +11,8 @@ API version: 1.1.1
 package openapi
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -27,9 +27,9 @@ type EndpointOauthConfigIn struct {
 	// Optional client secret. This is only used for `clientSecretBasic` and `clientSecretPost`.  For `clientSecretBasic`, the secret will be appended to the `Authorization` header. For `clientSecretPost`, this will be added to the body in a `client_secret` parameter.
 	ClientSecret *string `json:"clientSecret,omitempty"`
 	// Extra parameters added to the request body as key-value pairs.
-	ExtraParams *map[string]string `json:"extraParams,omitempty"`
-	GrantType Oauth2GrantTypeInOut `json:"grantType"`
-	JwtParams *ClientSecretJwtParamsIn `json:"jwtParams,omitempty"`
+	ExtraParams *map[string]string       `json:"extraParams,omitempty"`
+	GrantType   Oauth2GrantTypeInOut     `json:"grantType"`
+	JwtParams   *ClientSecretJwtParamsIn `json:"jwtParams,omitempty"`
 	// For `refreshToken` grant type.
 	RefreshToken *string `json:"refreshToken,omitempty"`
 	// Optional OAuth scopes added to the request body.
@@ -318,7 +318,7 @@ func (o *EndpointOauthConfigIn) SetTokenUrl(v string) {
 }
 
 func (o EndpointOauthConfigIn) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -365,10 +365,10 @@ func (o *EndpointOauthConfigIn) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -424,5 +424,3 @@ func (v *NullableEndpointOauthConfigIn) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

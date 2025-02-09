@@ -19,15 +19,15 @@ var _ MappedNullable = &CustomColorPalette{}
 
 // CustomColorPalette struct for CustomColorPalette
 type CustomColorPalette struct {
-	BackgroundHover *string `json:"backgroundHover,omitempty"`
-	BackgroundPrimary *string `json:"backgroundPrimary,omitempty"`
+	BackgroundHover     *string `json:"backgroundHover,omitempty"`
+	BackgroundPrimary   *string `json:"backgroundPrimary,omitempty"`
 	BackgroundSecondary *string `json:"backgroundSecondary,omitempty"`
-	ButtonPrimary *string `json:"buttonPrimary,omitempty"`
-	InteractiveAccent *string `json:"interactiveAccent,omitempty"`
-	NavigationAccent *string `json:"navigationAccent,omitempty"`
-	Primary *string `json:"primary,omitempty"`
-	TextDanger *string `json:"textDanger,omitempty"`
-	TextPrimary *string `json:"textPrimary,omitempty"`
+	ButtonPrimary       *string `json:"buttonPrimary,omitempty"`
+	InteractiveAccent   *string `json:"interactiveAccent,omitempty"`
+	NavigationAccent    *string `json:"navigationAccent,omitempty"`
+	Primary             *string `json:"primary,omitempty"`
+	TextDanger          *string `json:"textDanger,omitempty"`
+	TextPrimary         *string `json:"textPrimary,omitempty"`
 }
 
 // NewCustomColorPalette instantiates a new CustomColorPalette object
@@ -336,7 +336,7 @@ func (o *CustomColorPalette) SetTextPrimary(v string) {
 }
 
 func (o CustomColorPalette) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -410,5 +410,3 @@ func (v *NullableCustomColorPalette) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

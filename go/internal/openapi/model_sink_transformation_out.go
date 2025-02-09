@@ -19,8 +19,8 @@ var _ MappedNullable = &SinkTransformationOut{}
 
 // SinkTransformationOut struct for SinkTransformationOut
 type SinkTransformationOut struct {
-	Code *string `json:"code,omitempty"`
-	Enabled *bool `json:"enabled,omitempty"`
+	Code    *string `json:"code,omitempty"`
+	Enabled *bool   `json:"enabled,omitempty"`
 }
 
 // NewSinkTransformationOut instantiates a new SinkTransformationOut object
@@ -109,7 +109,7 @@ func (o *SinkTransformationOut) SetEnabled(v bool) {
 }
 
 func (o SinkTransformationOut) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -162,5 +162,3 @@ func (v *NullableSinkTransformationOut) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

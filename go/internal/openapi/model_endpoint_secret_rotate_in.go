@@ -73,7 +73,7 @@ func (o *EndpointSecretRotateIn) SetKey(v string) {
 }
 
 func (o EndpointSecretRotateIn) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -123,5 +123,3 @@ func (v *NullableEndpointSecretRotateIn) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

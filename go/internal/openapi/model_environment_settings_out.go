@@ -19,23 +19,23 @@ var _ MappedNullable = &EnvironmentSettingsOut{}
 
 // EnvironmentSettingsOut struct for EnvironmentSettingsOut
 type EnvironmentSettingsOut struct {
-	ColorPaletteDark *CustomColorPalette `json:"colorPaletteDark,omitempty"`
-	ColorPaletteLight *CustomColorPalette `json:"colorPaletteLight,omitempty"`
-	CustomColor *string `json:"customColor,omitempty"`
-	CustomFontFamily *string `json:"customFontFamily,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_ ]+$"`
-	CustomFontFamilyUrl *string `json:"customFontFamilyUrl,omitempty"`
-	CustomLogoUrl *string `json:"customLogoUrl,omitempty"`
-	CustomStringsOverride *CustomStringsOverride `json:"customStringsOverride,omitempty"`
-	CustomThemeOverride *CustomThemeOverride `json:"customThemeOverride,omitempty"`
-	DisplayName *string `json:"displayName,omitempty"`
-	EnableChannels *bool `json:"enableChannels,omitempty"`
-	EnableEndpointOauthConfig *bool `json:"enableEndpointOauthConfig,omitempty"`
-	EnableIntegrationManagement *bool `json:"enableIntegrationManagement,omitempty"`
-	EnableMessageStream *bool `json:"enableMessageStream,omitempty"`
-	EnableMessageTags *bool `json:"enableMessageTags,omitempty"`
-	EnableTransformations *bool `json:"enableTransformations,omitempty"`
-	ShowUseSvixPlay *bool `json:"showUseSvixPlay,omitempty"`
-	WipeSuccessfulPayload *bool `json:"wipeSuccessfulPayload,omitempty"`
+	ColorPaletteDark            *CustomColorPalette    `json:"colorPaletteDark,omitempty"`
+	ColorPaletteLight           *CustomColorPalette    `json:"colorPaletteLight,omitempty"`
+	CustomColor                 *string                `json:"customColor,omitempty"`
+	CustomFontFamily            *string                `json:"customFontFamily,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_ ]+$"`
+	CustomFontFamilyUrl         *string                `json:"customFontFamilyUrl,omitempty"`
+	CustomLogoUrl               *string                `json:"customLogoUrl,omitempty"`
+	CustomStringsOverride       *CustomStringsOverride `json:"customStringsOverride,omitempty"`
+	CustomThemeOverride         *CustomThemeOverride   `json:"customThemeOverride,omitempty"`
+	DisplayName                 *string                `json:"displayName,omitempty"`
+	EnableChannels              *bool                  `json:"enableChannels,omitempty"`
+	EnableEndpointOauthConfig   *bool                  `json:"enableEndpointOauthConfig,omitempty"`
+	EnableIntegrationManagement *bool                  `json:"enableIntegrationManagement,omitempty"`
+	EnableMessageStream         *bool                  `json:"enableMessageStream,omitempty"`
+	EnableMessageTags           *bool                  `json:"enableMessageTags,omitempty"`
+	EnableTransformations       *bool                  `json:"enableTransformations,omitempty"`
+	ShowUseSvixPlay             *bool                  `json:"showUseSvixPlay,omitempty"`
+	WipeSuccessfulPayload       *bool                  `json:"wipeSuccessfulPayload,omitempty"`
 }
 
 // NewEnvironmentSettingsOut instantiates a new EnvironmentSettingsOut object
@@ -632,7 +632,7 @@ func (o *EnvironmentSettingsOut) SetWipeSuccessfulPayload(v bool) {
 }
 
 func (o EnvironmentSettingsOut) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -730,5 +730,3 @@ func (v *NullableEnvironmentSettingsOut) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

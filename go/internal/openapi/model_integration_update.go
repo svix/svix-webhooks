@@ -11,8 +11,8 @@ API version: 1.1.1
 package openapi
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -23,7 +23,7 @@ var _ MappedNullable = &IntegrationUpdate{}
 type IntegrationUpdate struct {
 	// The set of feature flags the integration will have access to.
 	FeatureFlags []string `json:"featureFlags,omitempty"`
-	Name string `json:"name"`
+	Name         string   `json:"name"`
 }
 
 type _IntegrationUpdate IntegrationUpdate
@@ -103,7 +103,7 @@ func (o *IntegrationUpdate) SetName(v string) {
 }
 
 func (o IntegrationUpdate) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -132,10 +132,10 @@ func (o *IntegrationUpdate) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -191,5 +191,3 @@ func (v *NullableIntegrationUpdate) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

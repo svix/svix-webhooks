@@ -19,13 +19,13 @@ var _ MappedNullable = &EventTypePatch{}
 
 // EventTypePatch struct for EventTypePatch
 type EventTypePatch struct {
-	Archived *bool `json:"archived,omitempty"`
-	Deprecated *bool `json:"deprecated,omitempty"`
-	Description *string `json:"description,omitempty"`
+	Archived    *bool          `json:"archived,omitempty"`
+	Deprecated  *bool          `json:"deprecated,omitempty"`
+	Description *string        `json:"description,omitempty"`
 	FeatureFlag NullableString `json:"featureFlag,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
 	// The event type group's name
-	GroupName NullableString `json:"groupName,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
-	Schemas map[string]interface{} `json:"schemas,omitempty"`
+	GroupName NullableString         `json:"groupName,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
+	Schemas   map[string]interface{} `json:"schemas,omitempty"`
 }
 
 // NewEventTypePatch instantiates a new EventTypePatch object
@@ -173,6 +173,7 @@ func (o *EventTypePatch) HasFeatureFlag() bool {
 func (o *EventTypePatch) SetFeatureFlag(v string) {
 	o.FeatureFlag.Set(&v)
 }
+
 // SetFeatureFlagNil sets the value for FeatureFlag to be an explicit nil
 func (o *EventTypePatch) SetFeatureFlagNil() {
 	o.FeatureFlag.Set(nil)
@@ -215,6 +216,7 @@ func (o *EventTypePatch) HasGroupName() bool {
 func (o *EventTypePatch) SetGroupName(v string) {
 	o.GroupName.Set(&v)
 }
+
 // SetGroupNameNil sets the value for GroupName to be an explicit nil
 func (o *EventTypePatch) SetGroupNameNil() {
 	o.GroupName.Set(nil)
@@ -259,7 +261,7 @@ func (o *EventTypePatch) SetSchemas(v map[string]interface{}) {
 }
 
 func (o EventTypePatch) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -324,5 +326,3 @@ func (v *NullableEventTypePatch) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

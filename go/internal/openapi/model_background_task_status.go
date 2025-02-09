@@ -20,9 +20,9 @@ type BackgroundTaskStatus string
 
 // List of BackgroundTaskStatus
 const (
-	BACKGROUNDTASKSTATUS_RUNNING BackgroundTaskStatus = "running"
+	BACKGROUNDTASKSTATUS_RUNNING  BackgroundTaskStatus = "running"
 	BACKGROUNDTASKSTATUS_FINISHED BackgroundTaskStatus = "finished"
-	BACKGROUNDTASKSTATUS_FAILED BackgroundTaskStatus = "failed"
+	BACKGROUNDTASKSTATUS_FAILED   BackgroundTaskStatus = "failed"
 )
 
 // All allowed values of BackgroundTaskStatus enum
@@ -110,4 +110,3 @@ func (v *NullableBackgroundTaskStatus) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-

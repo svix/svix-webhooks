@@ -19,8 +19,8 @@ var _ MappedNullable = &OAuthPayloadOut{}
 
 // OAuthPayloadOut struct for OAuthPayloadOut
 type OAuthPayloadOut struct {
-	AccessToken *string `json:"accessToken,omitempty"`
-	Error *string `json:"error,omitempty"`
+	AccessToken  *string `json:"accessToken,omitempty"`
+	Error        *string `json:"error,omitempty"`
 	RefreshToken *string `json:"refreshToken,omitempty"`
 }
 
@@ -138,7 +138,7 @@ func (o *OAuthPayloadOut) SetRefreshToken(v string) {
 }
 
 func (o OAuthPayloadOut) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -194,5 +194,3 @@ func (v *NullableOAuthPayloadOut) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

@@ -11,8 +11,8 @@ API version: 1.1.1
 package openapi
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -21,9 +21,9 @@ var _ MappedNullable = &ApplicationIn{}
 
 // ApplicationIn struct for ApplicationIn
 type ApplicationIn struct {
-	Metadata *map[string]string `json:"metadata,omitempty"`
-	Name string `json:"name"`
-	RateLimit *int32 `json:"rateLimit,omitempty"`
+	Metadata  *map[string]string `json:"metadata,omitempty"`
+	Name      string             `json:"name"`
+	RateLimit *int32             `json:"rateLimit,omitempty"`
 	// Optional unique identifier for the application.
 	Uid *string `json:"uid,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
 }
@@ -169,7 +169,7 @@ func (o *ApplicationIn) SetUid(v string) {
 }
 
 func (o ApplicationIn) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -204,10 +204,10 @@ func (o *ApplicationIn) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -263,5 +263,3 @@ func (v *NullableApplicationIn) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

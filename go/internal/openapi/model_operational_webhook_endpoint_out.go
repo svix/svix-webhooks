@@ -11,10 +11,10 @@ API version: 1.1.1
 package openapi
 
 import (
-	"encoding/json"
-	"time"
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"time"
 )
 
 // checks if the OperationalWebhookEndpointOut type satisfies the MappedNullable interface at compile time
@@ -24,17 +24,17 @@ var _ MappedNullable = &OperationalWebhookEndpointOut{}
 type OperationalWebhookEndpointOut struct {
 	CreatedAt time.Time `json:"createdAt"`
 	// An example endpoint name.
-	Description string `json:"description"`
-	Disabled *bool `json:"disabled,omitempty"`
+	Description string   `json:"description"`
+	Disabled    *bool    `json:"disabled,omitempty"`
 	FilterTypes []string `json:"filterTypes,omitempty"`
 	// The ep's ID
-	Id string `json:"id"`
-	Metadata map[string]string `json:"metadata"`
-	RateLimit *int32 `json:"rateLimit,omitempty"`
+	Id        string            `json:"id"`
+	Metadata  map[string]string `json:"metadata"`
+	RateLimit *int32            `json:"rateLimit,omitempty"`
 	// Optional unique identifier for the endpoint.
-	Uid *string `json:"uid,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
+	Uid       *string   `json:"uid,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
 	UpdatedAt time.Time `json:"updatedAt"`
-	Url string `json:"url"`
+	Url       string    `json:"url"`
 }
 
 type _OperationalWebhookEndpointOut OperationalWebhookEndpointOut
@@ -339,7 +339,7 @@ func (o *OperationalWebhookEndpointOut) SetUrl(v string) {
 }
 
 func (o OperationalWebhookEndpointOut) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -387,10 +387,10 @@ func (o *OperationalWebhookEndpointOut) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -446,5 +446,3 @@ func (v *NullableOperationalWebhookEndpointOut) UnmarshalJSON(src []byte) error 
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

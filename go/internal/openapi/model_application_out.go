@@ -11,10 +11,10 @@ API version: 1.1.1
 package openapi
 
 import (
-	"encoding/json"
-	"time"
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"time"
 )
 
 // checks if the ApplicationOut type satisfies the MappedNullable interface at compile time
@@ -24,12 +24,12 @@ var _ MappedNullable = &ApplicationOut{}
 type ApplicationOut struct {
 	CreatedAt time.Time `json:"createdAt"`
 	// The app's ID
-	Id string `json:"id"`
-	Metadata map[string]string `json:"metadata"`
-	Name string `json:"name"`
-	RateLimit *int32 `json:"rateLimit,omitempty"`
+	Id        string            `json:"id"`
+	Metadata  map[string]string `json:"metadata"`
+	Name      string            `json:"name"`
+	RateLimit *int32            `json:"rateLimit,omitempty"`
 	// The app's UID
-	Uid *string `json:"uid,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
+	Uid       *string   `json:"uid,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
@@ -242,7 +242,7 @@ func (o *ApplicationOut) SetUpdatedAt(v time.Time) {
 }
 
 func (o ApplicationOut) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -282,10 +282,10 @@ func (o *ApplicationOut) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -341,5 +341,3 @@ func (v *NullableApplicationOut) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

@@ -11,8 +11,8 @@ API version: 1.1.1
 package openapi
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -25,10 +25,10 @@ type SinkInOneOf2 struct {
 	// Password for SASL, if `security_protocol` is `sasl-ssl`.
 	SaslPassword NullableString `json:"saslPassword,omitempty"`
 	// Username for SASL, if `security_protocol` is `sasl-ssl`.
-	SaslUsername NullableString `json:"saslUsername,omitempty"`
+	SaslUsername     NullableString            `json:"saslUsername,omitempty"`
 	SecurityProtocol KafkaSecurityProtocolType `json:"securityProtocol"`
-	Topic string `json:"topic"`
-	Type string `json:"type"`
+	Topic            string                    `json:"topic"`
+	Type             string                    `json:"type"`
 }
 
 type _SinkInOneOf2 SinkInOneOf2
@@ -110,6 +110,7 @@ func (o *SinkInOneOf2) HasSaslPassword() bool {
 func (o *SinkInOneOf2) SetSaslPassword(v string) {
 	o.SaslPassword.Set(&v)
 }
+
 // SetSaslPasswordNil sets the value for SaslPassword to be an explicit nil
 func (o *SinkInOneOf2) SetSaslPasswordNil() {
 	o.SaslPassword.Set(nil)
@@ -152,6 +153,7 @@ func (o *SinkInOneOf2) HasSaslUsername() bool {
 func (o *SinkInOneOf2) SetSaslUsername(v string) {
 	o.SaslUsername.Set(&v)
 }
+
 // SetSaslUsernameNil sets the value for SaslUsername to be an explicit nil
 func (o *SinkInOneOf2) SetSaslUsernameNil() {
 	o.SaslUsername.Set(nil)
@@ -235,7 +237,7 @@ func (o *SinkInOneOf2) SetType(v string) {
 }
 
 func (o SinkInOneOf2) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -273,10 +275,10 @@ func (o *SinkInOneOf2) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -332,5 +334,3 @@ func (v *NullableSinkInOneOf2) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

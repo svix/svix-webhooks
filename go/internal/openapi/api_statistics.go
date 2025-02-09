@@ -20,15 +20,14 @@ import (
 	"time"
 )
 
-
 // StatisticsAPIService StatisticsAPI service
 type StatisticsAPIService service
 
 type ApiV1StatisticsAggregateAppStatsRequest struct {
-	ctx context.Context
-	ApiService *StatisticsAPIService
+	ctx             context.Context
+	ApiService      *StatisticsAPIService
 	appUsageStatsIn *AppUsageStatsIn
-	idempotencyKey *string
+	idempotencyKey  *string
 }
 
 func (r ApiV1StatisticsAggregateAppStatsRequest) AppUsageStatsIn(appUsageStatsIn AppUsageStatsIn) ApiV1StatisticsAggregateAppStatsRequest {
@@ -54,24 +53,25 @@ Creates a background task to calculate the message destinations for all applicat
 Note that this endpoint is asynchronous. You will need to poll the `Get Background Task` endpoint to
 retrieve the results of the operation.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiV1StatisticsAggregateAppStatsRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiV1StatisticsAggregateAppStatsRequest
 */
 func (a *StatisticsAPIService) V1StatisticsAggregateAppStats(ctx context.Context) ApiV1StatisticsAggregateAppStatsRequest {
 	return ApiV1StatisticsAggregateAppStatsRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return AppUsageStatsOut
+//
+//	@return AppUsageStatsOut
 func (a *StatisticsAPIService) V1StatisticsAggregateAppStatsExecute(r ApiV1StatisticsAggregateAppStatsRequest) (*AppUsageStatsOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *AppUsageStatsOut
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *AppUsageStatsOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StatisticsAPIService.V1StatisticsAggregateAppStats")
@@ -139,8 +139,8 @@ func (a *StatisticsAPIService) V1StatisticsAggregateAppStatsExecute(r ApiV1Stati
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -150,8 +150,8 @@ func (a *StatisticsAPIService) V1StatisticsAggregateAppStatsExecute(r ApiV1Stati
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -161,8 +161,8 @@ func (a *StatisticsAPIService) V1StatisticsAggregateAppStatsExecute(r ApiV1Stati
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -172,8 +172,8 @@ func (a *StatisticsAPIService) V1StatisticsAggregateAppStatsExecute(r ApiV1Stati
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -183,8 +183,8 @@ func (a *StatisticsAPIService) V1StatisticsAggregateAppStatsExecute(r ApiV1Stati
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -194,8 +194,8 @@ func (a *StatisticsAPIService) V1StatisticsAggregateAppStatsExecute(r ApiV1Stati
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -205,8 +205,8 @@ func (a *StatisticsAPIService) V1StatisticsAggregateAppStatsExecute(r ApiV1Stati
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -224,7 +224,7 @@ func (a *StatisticsAPIService) V1StatisticsAggregateAppStatsExecute(r ApiV1Stati
 }
 
 type ApiV1StatisticsAggregateEventTypesRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *StatisticsAPIService
 }
 
@@ -240,24 +240,25 @@ Creates a background task to calculate the listed event types for all apps in th
 Note that this endpoint is asynchronous. You will need to poll the `Get Background Task` endpoint to
 retrieve the results of the operation.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiV1StatisticsAggregateEventTypesRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiV1StatisticsAggregateEventTypesRequest
 */
 func (a *StatisticsAPIService) V1StatisticsAggregateEventTypes(ctx context.Context) ApiV1StatisticsAggregateEventTypesRequest {
 	return ApiV1StatisticsAggregateEventTypesRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return AggregateEventTypesOut
+//
+//	@return AggregateEventTypesOut
 func (a *StatisticsAPIService) V1StatisticsAggregateEventTypesExecute(r ApiV1StatisticsAggregateEventTypesRequest) (*AggregateEventTypesOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPut
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *AggregateEventTypesOut
+		localVarHTTPMethod  = http.MethodPut
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *AggregateEventTypesOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StatisticsAPIService.V1StatisticsAggregateEventTypes")
@@ -317,8 +318,8 @@ func (a *StatisticsAPIService) V1StatisticsAggregateEventTypesExecute(r ApiV1Sta
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -328,8 +329,8 @@ func (a *StatisticsAPIService) V1StatisticsAggregateEventTypesExecute(r ApiV1Sta
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -339,8 +340,8 @@ func (a *StatisticsAPIService) V1StatisticsAggregateEventTypesExecute(r ApiV1Sta
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -350,8 +351,8 @@ func (a *StatisticsAPIService) V1StatisticsAggregateEventTypesExecute(r ApiV1Sta
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -361,8 +362,8 @@ func (a *StatisticsAPIService) V1StatisticsAggregateEventTypesExecute(r ApiV1Sta
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -372,8 +373,8 @@ func (a *StatisticsAPIService) V1StatisticsAggregateEventTypesExecute(r ApiV1Sta
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -383,8 +384,8 @@ func (a *StatisticsAPIService) V1StatisticsAggregateEventTypesExecute(r ApiV1Sta
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -402,11 +403,11 @@ func (a *StatisticsAPIService) V1StatisticsAggregateEventTypesExecute(r ApiV1Sta
 }
 
 type ApiV1StatsAppAttemptsRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *StatisticsAPIService
-	appId string
-	startDate *time.Time
-	endDate *time.Time
+	appId      string
+	startDate  *time.Time
+	endDate    *time.Time
 }
 
 // Filter the range to data starting from this date.
@@ -430,26 +431,27 @@ V1StatsAppAttempts Get App Attempt Stats
 
 Returns application-level statistics on message attempts
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param appId The app's ID or UID
- @return ApiV1StatsAppAttemptsRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param appId The app's ID or UID
+	@return ApiV1StatsAppAttemptsRequest
 */
 func (a *StatisticsAPIService) V1StatsAppAttempts(ctx context.Context, appId string) ApiV1StatsAppAttemptsRequest {
 	return ApiV1StatsAppAttemptsRequest{
 		ApiService: a,
-		ctx: ctx,
-		appId: appId,
+		ctx:        ctx,
+		appId:      appId,
 	}
 }
 
 // Execute executes the request
-//  @return AttemptStatisticsResponse
+//
+//	@return AttemptStatisticsResponse
 func (a *StatisticsAPIService) V1StatsAppAttemptsExecute(r ApiV1StatsAppAttemptsRequest) (*AttemptStatisticsResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *AttemptStatisticsResponse
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *AttemptStatisticsResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StatisticsAPIService.V1StatsAppAttempts")
@@ -522,8 +524,8 @@ func (a *StatisticsAPIService) V1StatsAppAttemptsExecute(r ApiV1StatsAppAttempts
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -533,8 +535,8 @@ func (a *StatisticsAPIService) V1StatsAppAttemptsExecute(r ApiV1StatsAppAttempts
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -544,8 +546,8 @@ func (a *StatisticsAPIService) V1StatsAppAttemptsExecute(r ApiV1StatsAppAttempts
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -555,8 +557,8 @@ func (a *StatisticsAPIService) V1StatsAppAttemptsExecute(r ApiV1StatsAppAttempts
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -566,8 +568,8 @@ func (a *StatisticsAPIService) V1StatsAppAttemptsExecute(r ApiV1StatsAppAttempts
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -577,8 +579,8 @@ func (a *StatisticsAPIService) V1StatsAppAttemptsExecute(r ApiV1StatsAppAttempts
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -588,8 +590,8 @@ func (a *StatisticsAPIService) V1StatsAppAttemptsExecute(r ApiV1StatsAppAttempts
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -607,12 +609,12 @@ func (a *StatisticsAPIService) V1StatsAppAttemptsExecute(r ApiV1StatsAppAttempts
 }
 
 type ApiV1StatsEndpointAttemptsRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *StatisticsAPIService
-	appId string
+	appId      string
 	endpointId string
-	startDate *time.Time
-	endDate *time.Time
+	startDate  *time.Time
+	endDate    *time.Time
 }
 
 // Filter the range to data starting from this date.
@@ -636,28 +638,29 @@ V1StatsEndpointAttempts Get Ep Stats
 
 Returns endpoint-level statistics on message attempts.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param appId The app's ID or UID
- @param endpointId The ep's ID or UID
- @return ApiV1StatsEndpointAttemptsRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param appId The app's ID or UID
+	@param endpointId The ep's ID or UID
+	@return ApiV1StatsEndpointAttemptsRequest
 */
 func (a *StatisticsAPIService) V1StatsEndpointAttempts(ctx context.Context, appId string, endpointId string) ApiV1StatsEndpointAttemptsRequest {
 	return ApiV1StatsEndpointAttemptsRequest{
 		ApiService: a,
-		ctx: ctx,
-		appId: appId,
+		ctx:        ctx,
+		appId:      appId,
 		endpointId: endpointId,
 	}
 }
 
 // Execute executes the request
-//  @return AttemptStatisticsResponse
+//
+//	@return AttemptStatisticsResponse
 func (a *StatisticsAPIService) V1StatsEndpointAttemptsExecute(r ApiV1StatsEndpointAttemptsRequest) (*AttemptStatisticsResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *AttemptStatisticsResponse
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *AttemptStatisticsResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StatisticsAPIService.V1StatsEndpointAttempts")
@@ -737,8 +740,8 @@ func (a *StatisticsAPIService) V1StatsEndpointAttemptsExecute(r ApiV1StatsEndpoi
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -748,8 +751,8 @@ func (a *StatisticsAPIService) V1StatsEndpointAttemptsExecute(r ApiV1StatsEndpoi
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -759,8 +762,8 @@ func (a *StatisticsAPIService) V1StatsEndpointAttemptsExecute(r ApiV1StatsEndpoi
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -770,8 +773,8 @@ func (a *StatisticsAPIService) V1StatsEndpointAttemptsExecute(r ApiV1StatsEndpoi
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -781,8 +784,8 @@ func (a *StatisticsAPIService) V1StatsEndpointAttemptsExecute(r ApiV1StatsEndpoi
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -792,8 +795,8 @@ func (a *StatisticsAPIService) V1StatsEndpointAttemptsExecute(r ApiV1StatsEndpoi
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -803,8 +806,8 @@ func (a *StatisticsAPIService) V1StatsEndpointAttemptsExecute(r ApiV1StatsEndpoi
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}

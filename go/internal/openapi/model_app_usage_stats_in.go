@@ -11,10 +11,10 @@ API version: 1.1.1
 package openapi
 
 import (
-	"encoding/json"
-	"time"
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"time"
 )
 
 // checks if the AppUsageStatsIn type satisfies the MappedNullable interface at compile time
@@ -23,9 +23,9 @@ var _ MappedNullable = &AppUsageStatsIn{}
 // AppUsageStatsIn struct for AppUsageStatsIn
 type AppUsageStatsIn struct {
 	// Specific app IDs or UIDs to aggregate stats for.  Note that if none of the given IDs or UIDs are resolved, a 422 response will be given.
-	AppIds []string `json:"appIds,omitempty"`
-	Since time.Time `json:"since"`
-	Until time.Time `json:"until"`
+	AppIds []string  `json:"appIds,omitempty"`
+	Since  time.Time `json:"since"`
+	Until  time.Time `json:"until"`
 }
 
 type _AppUsageStatsIn AppUsageStatsIn
@@ -130,7 +130,7 @@ func (o *AppUsageStatsIn) SetUntil(v time.Time) {
 }
 
 func (o AppUsageStatsIn) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -161,10 +161,10 @@ func (o *AppUsageStatsIn) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -220,5 +220,3 @@ func (v *NullableAppUsageStatsIn) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

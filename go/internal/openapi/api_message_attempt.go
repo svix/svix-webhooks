@@ -16,27 +16,26 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"reflect"
 	"strings"
 	"time"
-	"reflect"
 )
-
 
 // MessageAttemptAPIService MessageAttemptAPI service
 type MessageAttemptAPIService service
 
 type ApiV1MessageAttemptCountByEndpointRequest struct {
-	ctx context.Context
-	ApiService *MessageAttemptAPIService
-	appId string
-	endpointId string
-	status *MessageStatus
+	ctx             context.Context
+	ApiService      *MessageAttemptAPIService
+	appId           string
+	endpointId      string
+	status          *MessageStatus
 	statusCodeClass *StatusCodeClass
-	channel *string
-	tag *string
-	before *time.Time
-	after *time.Time
-	eventTypes *[]string
+	channel         *string
+	tag             *string
+	before          *time.Time
+	after           *time.Time
+	eventTypes      *[]string
 }
 
 // Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)
@@ -90,28 +89,29 @@ V1MessageAttemptCountByEndpoint Count Attempts By Endpoint
 
 Like `v1.message-attempt.list-by-endpoint` but returning a count only.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param appId The app's ID or UID
- @param endpointId The ep's ID or UID
- @return ApiV1MessageAttemptCountByEndpointRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param appId The app's ID or UID
+	@param endpointId The ep's ID or UID
+	@return ApiV1MessageAttemptCountByEndpointRequest
 */
 func (a *MessageAttemptAPIService) V1MessageAttemptCountByEndpoint(ctx context.Context, appId string, endpointId string) ApiV1MessageAttemptCountByEndpointRequest {
 	return ApiV1MessageAttemptCountByEndpointRequest{
 		ApiService: a,
-		ctx: ctx,
-		appId: appId,
+		ctx:        ctx,
+		appId:      appId,
 		endpointId: endpointId,
 	}
 }
 
 // Execute executes the request
-//  @return CountOut
+//
+//	@return CountOut
 func (a *MessageAttemptAPIService) V1MessageAttemptCountByEndpointExecute(r ApiV1MessageAttemptCountByEndpointRequest) (*CountOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *CountOut
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *CountOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MessageAttemptAPIService.V1MessageAttemptCountByEndpoint")
@@ -214,8 +214,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptCountByEndpointExecute(r ApiV
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -225,8 +225,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptCountByEndpointExecute(r ApiV
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -236,8 +236,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptCountByEndpointExecute(r ApiV
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -247,8 +247,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptCountByEndpointExecute(r ApiV
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -258,8 +258,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptCountByEndpointExecute(r ApiV
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -269,8 +269,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptCountByEndpointExecute(r ApiV
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -280,8 +280,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptCountByEndpointExecute(r ApiV
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -299,11 +299,11 @@ func (a *MessageAttemptAPIService) V1MessageAttemptCountByEndpointExecute(r ApiV
 }
 
 type ApiV1MessageAttemptExpungeContentRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *MessageAttemptAPIService
-	appId string
-	msgId string
-	attemptId string
+	appId      string
+	msgId      string
+	attemptId  string
 }
 
 func (r ApiV1MessageAttemptExpungeContentRequest) Execute() (*http.Response, error) {
@@ -318,28 +318,28 @@ Deletes the given attempt's response body.
 Useful when an endpoint accidentally returned sensitive content.
 The message can't be replayed or resent once its payload has been deleted or expired.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param appId The app's ID or UID
- @param msgId The msg's ID or UID
- @param attemptId The attempt's ID
- @return ApiV1MessageAttemptExpungeContentRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param appId The app's ID or UID
+	@param msgId The msg's ID or UID
+	@param attemptId The attempt's ID
+	@return ApiV1MessageAttemptExpungeContentRequest
 */
 func (a *MessageAttemptAPIService) V1MessageAttemptExpungeContent(ctx context.Context, appId string, msgId string, attemptId string) ApiV1MessageAttemptExpungeContentRequest {
 	return ApiV1MessageAttemptExpungeContentRequest{
 		ApiService: a,
-		ctx: ctx,
-		appId: appId,
-		msgId: msgId,
-		attemptId: attemptId,
+		ctx:        ctx,
+		appId:      appId,
+		msgId:      msgId,
+		attemptId:  attemptId,
 	}
 }
 
 // Execute executes the request
 func (a *MessageAttemptAPIService) V1MessageAttemptExpungeContentExecute(r ApiV1MessageAttemptExpungeContentRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodDelete
-		localVarPostBody     interface{}
-		formFiles            []formFile
+		localVarHTTPMethod = http.MethodDelete
+		localVarPostBody   interface{}
+		formFiles          []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MessageAttemptAPIService.V1MessageAttemptExpungeContent")
@@ -414,8 +414,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptExpungeContentExecute(r ApiV1
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -425,8 +425,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptExpungeContentExecute(r ApiV1
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -436,8 +436,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptExpungeContentExecute(r ApiV1
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -447,8 +447,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptExpungeContentExecute(r ApiV1
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -458,8 +458,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptExpungeContentExecute(r ApiV1
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -469,8 +469,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptExpungeContentExecute(r ApiV1
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -480,8 +480,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptExpungeContentExecute(r ApiV1
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarHTTPResponse, newErr
 	}
@@ -490,11 +490,11 @@ func (a *MessageAttemptAPIService) V1MessageAttemptExpungeContentExecute(r ApiV1
 }
 
 type ApiV1MessageAttemptGetRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *MessageAttemptAPIService
-	appId string
-	msgId string
-	attemptId string
+	appId      string
+	msgId      string
+	attemptId  string
 }
 
 func (r ApiV1MessageAttemptGetRequest) Execute() (*MessageAttemptOut, *http.Response, error) {
@@ -506,30 +506,31 @@ V1MessageAttemptGet Get Attempt
 
 `msg_id`: Use a message id or a message `eventId`
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param appId The app's ID or UID
- @param msgId The msg's ID or UID
- @param attemptId The attempt's ID
- @return ApiV1MessageAttemptGetRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param appId The app's ID or UID
+	@param msgId The msg's ID or UID
+	@param attemptId The attempt's ID
+	@return ApiV1MessageAttemptGetRequest
 */
 func (a *MessageAttemptAPIService) V1MessageAttemptGet(ctx context.Context, appId string, msgId string, attemptId string) ApiV1MessageAttemptGetRequest {
 	return ApiV1MessageAttemptGetRequest{
 		ApiService: a,
-		ctx: ctx,
-		appId: appId,
-		msgId: msgId,
-		attemptId: attemptId,
+		ctx:        ctx,
+		appId:      appId,
+		msgId:      msgId,
+		attemptId:  attemptId,
 	}
 }
 
 // Execute executes the request
-//  @return MessageAttemptOut
+//
+//	@return MessageAttemptOut
 func (a *MessageAttemptAPIService) V1MessageAttemptGetExecute(r ApiV1MessageAttemptGetRequest) (*MessageAttemptOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *MessageAttemptOut
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *MessageAttemptOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MessageAttemptAPIService.V1MessageAttemptGet")
@@ -604,8 +605,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptGetExecute(r ApiV1MessageAtte
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -615,8 +616,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptGetExecute(r ApiV1MessageAtte
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -626,8 +627,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptGetExecute(r ApiV1MessageAtte
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -637,8 +638,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptGetExecute(r ApiV1MessageAtte
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -648,8 +649,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptGetExecute(r ApiV1MessageAtte
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -659,8 +660,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptGetExecute(r ApiV1MessageAtte
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -670,8 +671,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptGetExecute(r ApiV1MessageAtte
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -689,11 +690,11 @@ func (a *MessageAttemptAPIService) V1MessageAttemptGetExecute(r ApiV1MessageAtte
 }
 
 type ApiV1MessageAttemptGetHeadersRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *MessageAttemptAPIService
-	appId string
-	msgId string
-	attemptId string
+	appId      string
+	msgId      string
+	attemptId  string
 }
 
 func (r ApiV1MessageAttemptGetHeadersRequest) Execute() (*MessageAttemptHeadersOut, *http.Response, error) {
@@ -705,30 +706,31 @@ V1MessageAttemptGetHeaders Get Attempt Headers
 
 Calculate and return headers used on a given message attempt
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param appId The app's ID or UID
- @param msgId The msg's ID or UID
- @param attemptId The attempt's ID
- @return ApiV1MessageAttemptGetHeadersRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param appId The app's ID or UID
+	@param msgId The msg's ID or UID
+	@param attemptId The attempt's ID
+	@return ApiV1MessageAttemptGetHeadersRequest
 */
 func (a *MessageAttemptAPIService) V1MessageAttemptGetHeaders(ctx context.Context, appId string, msgId string, attemptId string) ApiV1MessageAttemptGetHeadersRequest {
 	return ApiV1MessageAttemptGetHeadersRequest{
 		ApiService: a,
-		ctx: ctx,
-		appId: appId,
-		msgId: msgId,
-		attemptId: attemptId,
+		ctx:        ctx,
+		appId:      appId,
+		msgId:      msgId,
+		attemptId:  attemptId,
 	}
 }
 
 // Execute executes the request
-//  @return MessageAttemptHeadersOut
+//
+//	@return MessageAttemptHeadersOut
 func (a *MessageAttemptAPIService) V1MessageAttemptGetHeadersExecute(r ApiV1MessageAttemptGetHeadersRequest) (*MessageAttemptHeadersOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *MessageAttemptHeadersOut
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *MessageAttemptHeadersOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MessageAttemptAPIService.V1MessageAttemptGetHeaders")
@@ -803,8 +805,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptGetHeadersExecute(r ApiV1Mess
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -814,8 +816,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptGetHeadersExecute(r ApiV1Mess
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -825,8 +827,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptGetHeadersExecute(r ApiV1Mess
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -836,8 +838,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptGetHeadersExecute(r ApiV1Mess
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -847,8 +849,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptGetHeadersExecute(r ApiV1Mess
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -858,8 +860,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptGetHeadersExecute(r ApiV1Mess
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -869,8 +871,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptGetHeadersExecute(r ApiV1Mess
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -888,12 +890,12 @@ func (a *MessageAttemptAPIService) V1MessageAttemptGetHeadersExecute(r ApiV1Mess
 }
 
 type ApiV1MessageAttemptListAttemptedDestinationsRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *MessageAttemptAPIService
-	appId string
-	msgId string
-	limit *int32
-	iterator *string
+	appId      string
+	msgId      string
+	limit      *int32
+	iterator   *string
 }
 
 // Limit the number of returned items
@@ -920,28 +922,29 @@ List endpoints attempted by a given message.
 Additionally includes metadata about the latest message attempt.
 By default, endpoints are listed in ascending order by ID.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param appId The app's ID or UID
- @param msgId The msg's ID or UID
- @return ApiV1MessageAttemptListAttemptedDestinationsRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param appId The app's ID or UID
+	@param msgId The msg's ID or UID
+	@return ApiV1MessageAttemptListAttemptedDestinationsRequest
 */
 func (a *MessageAttemptAPIService) V1MessageAttemptListAttemptedDestinations(ctx context.Context, appId string, msgId string) ApiV1MessageAttemptListAttemptedDestinationsRequest {
 	return ApiV1MessageAttemptListAttemptedDestinationsRequest{
 		ApiService: a,
-		ctx: ctx,
-		appId: appId,
-		msgId: msgId,
+		ctx:        ctx,
+		appId:      appId,
+		msgId:      msgId,
 	}
 }
 
 // Execute executes the request
-//  @return ListResponseMessageEndpointOut
+//
+//	@return ListResponseMessageEndpointOut
 func (a *MessageAttemptAPIService) V1MessageAttemptListAttemptedDestinationsExecute(r ApiV1MessageAttemptListAttemptedDestinationsRequest) (*ListResponseMessageEndpointOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *ListResponseMessageEndpointOut
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *ListResponseMessageEndpointOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MessageAttemptAPIService.V1MessageAttemptListAttemptedDestinations")
@@ -1021,8 +1024,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptListAttemptedDestinationsExec
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -1032,8 +1035,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptListAttemptedDestinationsExec
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -1043,8 +1046,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptListAttemptedDestinationsExec
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -1054,8 +1057,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptListAttemptedDestinationsExec
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -1065,8 +1068,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptListAttemptedDestinationsExec
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -1076,8 +1079,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptListAttemptedDestinationsExec
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -1087,8 +1090,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptListAttemptedDestinationsExec
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -1106,19 +1109,19 @@ func (a *MessageAttemptAPIService) V1MessageAttemptListAttemptedDestinationsExec
 }
 
 type ApiV1MessageAttemptListAttemptedMessagesRequest struct {
-	ctx context.Context
-	ApiService *MessageAttemptAPIService
-	appId string
-	endpointId string
-	limit *int32
-	iterator *string
-	channel *string
-	tag *string
-	status *MessageStatus
-	before *time.Time
-	after *time.Time
+	ctx         context.Context
+	ApiService  *MessageAttemptAPIService
+	appId       string
+	endpointId  string
+	limit       *int32
+	iterator    *string
+	channel     *string
+	tag         *string
+	status      *MessageStatus
+	before      *time.Time
+	after       *time.Time
 	withContent *bool
-	eventTypes *[]string
+	eventTypes  *[]string
 }
 
 // Limit the number of returned items
@@ -1191,29 +1194,29 @@ relative to now or, if an iterator is provided, 90 days before/after the time in
 by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
 set the `before` or `after` parameter as appropriate.
 
-
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param appId The app's ID or UID
- @param endpointId The ep's ID or UID
- @return ApiV1MessageAttemptListAttemptedMessagesRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param appId The app's ID or UID
+	@param endpointId The ep's ID or UID
+	@return ApiV1MessageAttemptListAttemptedMessagesRequest
 */
 func (a *MessageAttemptAPIService) V1MessageAttemptListAttemptedMessages(ctx context.Context, appId string, endpointId string) ApiV1MessageAttemptListAttemptedMessagesRequest {
 	return ApiV1MessageAttemptListAttemptedMessagesRequest{
 		ApiService: a,
-		ctx: ctx,
-		appId: appId,
+		ctx:        ctx,
+		appId:      appId,
 		endpointId: endpointId,
 	}
 }
 
 // Execute executes the request
-//  @return ListResponseEndpointMessageOut
+//
+//	@return ListResponseEndpointMessageOut
 func (a *MessageAttemptAPIService) V1MessageAttemptListAttemptedMessagesExecute(r ApiV1MessageAttemptListAttemptedMessagesRequest) (*ListResponseEndpointMessageOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *ListResponseEndpointMessageOut
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *ListResponseEndpointMessageOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MessageAttemptAPIService.V1MessageAttemptListAttemptedMessages")
@@ -1325,8 +1328,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptListAttemptedMessagesExecute(
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -1336,8 +1339,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptListAttemptedMessagesExecute(
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -1347,8 +1350,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptListAttemptedMessagesExecute(
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -1358,8 +1361,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptListAttemptedMessagesExecute(
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -1369,8 +1372,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptListAttemptedMessagesExecute(
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -1380,8 +1383,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptListAttemptedMessagesExecute(
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -1391,8 +1394,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptListAttemptedMessagesExecute(
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -1410,21 +1413,21 @@ func (a *MessageAttemptAPIService) V1MessageAttemptListAttemptedMessagesExecute(
 }
 
 type ApiV1MessageAttemptListByEndpointRequest struct {
-	ctx context.Context
-	ApiService *MessageAttemptAPIService
-	appId string
-	endpointId string
-	limit *int32
-	iterator *string
-	status *MessageStatus
+	ctx             context.Context
+	ApiService      *MessageAttemptAPIService
+	appId           string
+	endpointId      string
+	limit           *int32
+	iterator        *string
+	status          *MessageStatus
 	statusCodeClass *StatusCodeClass
-	channel *string
-	tag *string
-	before *time.Time
-	after *time.Time
-	withContent *bool
-	withMsg *bool
-	eventTypes *[]string
+	channel         *string
+	tag             *string
+	before          *time.Time
+	after           *time.Time
+	withContent     *bool
+	withMsg         *bool
+	eventTypes      *[]string
 }
 
 // Limit the number of returned items
@@ -1500,36 +1503,36 @@ func (r ApiV1MessageAttemptListByEndpointRequest) Execute() (*ListResponseMessag
 /*
 V1MessageAttemptListByEndpoint List Attempts By Endpoint
 
-List attempts by endpoint id
+# List attempts by endpoint id
 
 Note that by default this endpoint is limited to retrieving 90 days' worth of data
 relative to now or, if an iterator is provided, 90 days before/after the time indicated
 by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
 set the `before` or `after` parameter as appropriate.
 
-
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param appId The app's ID or UID
- @param endpointId The ep's ID or UID
- @return ApiV1MessageAttemptListByEndpointRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param appId The app's ID or UID
+	@param endpointId The ep's ID or UID
+	@return ApiV1MessageAttemptListByEndpointRequest
 */
 func (a *MessageAttemptAPIService) V1MessageAttemptListByEndpoint(ctx context.Context, appId string, endpointId string) ApiV1MessageAttemptListByEndpointRequest {
 	return ApiV1MessageAttemptListByEndpointRequest{
 		ApiService: a,
-		ctx: ctx,
-		appId: appId,
+		ctx:        ctx,
+		appId:      appId,
 		endpointId: endpointId,
 	}
 }
 
 // Execute executes the request
-//  @return ListResponseMessageAttemptOut
+//
+//	@return ListResponseMessageAttemptOut
 func (a *MessageAttemptAPIService) V1MessageAttemptListByEndpointExecute(r ApiV1MessageAttemptListByEndpointRequest) (*ListResponseMessageAttemptOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *ListResponseMessageAttemptOut
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *ListResponseMessageAttemptOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MessageAttemptAPIService.V1MessageAttemptListByEndpoint")
@@ -1650,8 +1653,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptListByEndpointExecute(r ApiV1
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -1661,8 +1664,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptListByEndpointExecute(r ApiV1
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -1672,8 +1675,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptListByEndpointExecute(r ApiV1
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -1683,8 +1686,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptListByEndpointExecute(r ApiV1
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -1694,8 +1697,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptListByEndpointExecute(r ApiV1
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -1705,8 +1708,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptListByEndpointExecute(r ApiV1
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -1716,8 +1719,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptListByEndpointExecute(r ApiV1
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -1735,21 +1738,21 @@ func (a *MessageAttemptAPIService) V1MessageAttemptListByEndpointExecute(r ApiV1
 }
 
 type ApiV1MessageAttemptListByMsgRequest struct {
-	ctx context.Context
-	ApiService *MessageAttemptAPIService
-	appId string
-	msgId string
-	limit *int32
-	iterator *string
-	status *MessageStatus
+	ctx             context.Context
+	ApiService      *MessageAttemptAPIService
+	appId           string
+	msgId           string
+	limit           *int32
+	iterator        *string
+	status          *MessageStatus
 	statusCodeClass *StatusCodeClass
-	channel *string
-	tag *string
-	endpointId *string
-	before *time.Time
-	after *time.Time
-	withContent *bool
-	eventTypes *[]string
+	channel         *string
+	tag             *string
+	endpointId      *string
+	before          *time.Time
+	after           *time.Time
+	withContent     *bool
+	eventTypes      *[]string
 }
 
 // Limit the number of returned items
@@ -1832,28 +1835,29 @@ relative to now or, if an iterator is provided, 90 days before/after the time in
 by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
 set the `before` or `after` parameter as appropriate.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param appId The app's ID or UID
- @param msgId The msg's ID or UID
- @return ApiV1MessageAttemptListByMsgRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param appId The app's ID or UID
+	@param msgId The msg's ID or UID
+	@return ApiV1MessageAttemptListByMsgRequest
 */
 func (a *MessageAttemptAPIService) V1MessageAttemptListByMsg(ctx context.Context, appId string, msgId string) ApiV1MessageAttemptListByMsgRequest {
 	return ApiV1MessageAttemptListByMsgRequest{
 		ApiService: a,
-		ctx: ctx,
-		appId: appId,
-		msgId: msgId,
+		ctx:        ctx,
+		appId:      appId,
+		msgId:      msgId,
 	}
 }
 
 // Execute executes the request
-//  @return ListResponseMessageAttemptOut
+//
+//	@return ListResponseMessageAttemptOut
 func (a *MessageAttemptAPIService) V1MessageAttemptListByMsgExecute(r ApiV1MessageAttemptListByMsgRequest) (*ListResponseMessageAttemptOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *ListResponseMessageAttemptOut
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *ListResponseMessageAttemptOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MessageAttemptAPIService.V1MessageAttemptListByMsg")
@@ -1971,8 +1975,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptListByMsgExecute(r ApiV1Messa
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -1982,8 +1986,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptListByMsgExecute(r ApiV1Messa
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -1993,8 +1997,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptListByMsgExecute(r ApiV1Messa
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -2004,8 +2008,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptListByMsgExecute(r ApiV1Messa
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -2015,8 +2019,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptListByMsgExecute(r ApiV1Messa
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -2026,8 +2030,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptListByMsgExecute(r ApiV1Messa
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -2037,8 +2041,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptListByMsgExecute(r ApiV1Messa
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -2056,11 +2060,11 @@ func (a *MessageAttemptAPIService) V1MessageAttemptListByMsgExecute(r ApiV1Messa
 }
 
 type ApiV1MessageAttemptResendRequest struct {
-	ctx context.Context
-	ApiService *MessageAttemptAPIService
-	appId string
-	msgId string
-	endpointId string
+	ctx            context.Context
+	ApiService     *MessageAttemptAPIService
+	appId          string
+	msgId          string
+	endpointId     string
 	idempotencyKey *string
 }
 
@@ -2079,18 +2083,18 @@ V1MessageAttemptResend Resend Webhook
 
 Resend a message to the specified endpoint.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param appId The app's ID or UID
- @param msgId The msg's ID or UID
- @param endpointId The ep's ID or UID
- @return ApiV1MessageAttemptResendRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param appId The app's ID or UID
+	@param msgId The msg's ID or UID
+	@param endpointId The ep's ID or UID
+	@return ApiV1MessageAttemptResendRequest
 */
 func (a *MessageAttemptAPIService) V1MessageAttemptResend(ctx context.Context, appId string, msgId string, endpointId string) ApiV1MessageAttemptResendRequest {
 	return ApiV1MessageAttemptResendRequest{
 		ApiService: a,
-		ctx: ctx,
-		appId: appId,
-		msgId: msgId,
+		ctx:        ctx,
+		appId:      appId,
+		msgId:      msgId,
 		endpointId: endpointId,
 	}
 }
@@ -2098,9 +2102,9 @@ func (a *MessageAttemptAPIService) V1MessageAttemptResend(ctx context.Context, a
 // Execute executes the request
 func (a *MessageAttemptAPIService) V1MessageAttemptResendExecute(r ApiV1MessageAttemptResendRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
+		localVarHTTPMethod = http.MethodPost
+		localVarPostBody   interface{}
+		formFiles          []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MessageAttemptAPIService.V1MessageAttemptResend")
@@ -2184,8 +2188,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptResendExecute(r ApiV1MessageA
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -2195,8 +2199,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptResendExecute(r ApiV1MessageA
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -2206,8 +2210,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptResendExecute(r ApiV1MessageA
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -2217,8 +2221,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptResendExecute(r ApiV1MessageA
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -2228,8 +2232,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptResendExecute(r ApiV1MessageA
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -2239,8 +2243,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptResendExecute(r ApiV1MessageA
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -2250,8 +2254,8 @@ func (a *MessageAttemptAPIService) V1MessageAttemptResendExecute(r ApiV1MessageA
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarHTTPResponse, newErr
 	}

@@ -20,11 +20,11 @@ type BackgroundTaskType string
 
 // List of BackgroundTaskType
 const (
-	BACKGROUNDTASKTYPE_ENDPOINT_REPLAY BackgroundTaskType = "endpoint.replay"
-	BACKGROUNDTASKTYPE_ENDPOINT_RECOVER BackgroundTaskType = "endpoint.recover"
-	BACKGROUNDTASKTYPE_APPLICATION_STATS BackgroundTaskType = "application.stats"
-	BACKGROUNDTASKTYPE_MESSAGE_BROADCAST BackgroundTaskType = "message.broadcast"
-	BACKGROUNDTASKTYPE_SDK_GENERATE BackgroundTaskType = "sdk.generate"
+	BACKGROUNDTASKTYPE_ENDPOINT_REPLAY      BackgroundTaskType = "endpoint.replay"
+	BACKGROUNDTASKTYPE_ENDPOINT_RECOVER     BackgroundTaskType = "endpoint.recover"
+	BACKGROUNDTASKTYPE_APPLICATION_STATS    BackgroundTaskType = "application.stats"
+	BACKGROUNDTASKTYPE_MESSAGE_BROADCAST    BackgroundTaskType = "message.broadcast"
+	BACKGROUNDTASKTYPE_SDK_GENERATE         BackgroundTaskType = "sdk.generate"
 	BACKGROUNDTASKTYPE_EVENT_TYPE_AGGREGATE BackgroundTaskType = "event-type.aggregate"
 )
 
@@ -116,4 +116,3 @@ func (v *NullableBackgroundTaskType) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-

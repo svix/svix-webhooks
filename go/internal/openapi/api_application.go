@@ -20,17 +20,16 @@ import (
 	"time"
 )
 
-
 // ApplicationAPIService ApplicationAPI service
 type ApplicationAPIService service
 
 type ApiGetAppUsageStatsApiV1AppStatsUsageGetRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *ApplicationAPIService
-	since *time.Time
-	until *time.Time
-	limit *int32
-	iterator *string
+	since      *time.Time
+	until      *time.Time
+	limit      *int32
+	iterator   *string
 }
 
 // Filter the range to data after this date.
@@ -66,24 +65,25 @@ GetAppUsageStatsApiV1AppStatsUsageGet Get App Usage Stats
 
 Get basic statistics for all applications.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiGetAppUsageStatsApiV1AppStatsUsageGetRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiGetAppUsageStatsApiV1AppStatsUsageGetRequest
 */
 func (a *ApplicationAPIService) GetAppUsageStatsApiV1AppStatsUsageGet(ctx context.Context) ApiGetAppUsageStatsApiV1AppStatsUsageGetRequest {
 	return ApiGetAppUsageStatsApiV1AppStatsUsageGetRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return ListResponseApplicationStats
+//
+//	@return ListResponseApplicationStats
 func (a *ApplicationAPIService) GetAppUsageStatsApiV1AppStatsUsageGetExecute(r ApiGetAppUsageStatsApiV1AppStatsUsageGetRequest) (*ListResponseApplicationStats, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *ListResponseApplicationStats
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *ListResponseApplicationStats
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ApplicationAPIService.GetAppUsageStatsApiV1AppStatsUsageGet")
@@ -160,8 +160,8 @@ func (a *ApplicationAPIService) GetAppUsageStatsApiV1AppStatsUsageGetExecute(r A
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -171,8 +171,8 @@ func (a *ApplicationAPIService) GetAppUsageStatsApiV1AppStatsUsageGetExecute(r A
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -182,8 +182,8 @@ func (a *ApplicationAPIService) GetAppUsageStatsApiV1AppStatsUsageGetExecute(r A
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -193,8 +193,8 @@ func (a *ApplicationAPIService) GetAppUsageStatsApiV1AppStatsUsageGetExecute(r A
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -204,8 +204,8 @@ func (a *ApplicationAPIService) GetAppUsageStatsApiV1AppStatsUsageGetExecute(r A
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -215,8 +215,8 @@ func (a *ApplicationAPIService) GetAppUsageStatsApiV1AppStatsUsageGetExecute(r A
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -226,8 +226,8 @@ func (a *ApplicationAPIService) GetAppUsageStatsApiV1AppStatsUsageGetExecute(r A
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -245,10 +245,10 @@ func (a *ApplicationAPIService) GetAppUsageStatsApiV1AppStatsUsageGetExecute(r A
 }
 
 type ApiV1ApplicationCreateRequest struct {
-	ctx context.Context
-	ApiService *ApplicationAPIService
-	applicationIn *ApplicationIn
-	getIfExists *bool
+	ctx            context.Context
+	ApiService     *ApplicationAPIService
+	applicationIn  *ApplicationIn
+	getIfExists    *bool
 	idempotencyKey *string
 }
 
@@ -278,24 +278,25 @@ V1ApplicationCreate Create Application
 
 Create a new application.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiV1ApplicationCreateRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiV1ApplicationCreateRequest
 */
 func (a *ApplicationAPIService) V1ApplicationCreate(ctx context.Context) ApiV1ApplicationCreateRequest {
 	return ApiV1ApplicationCreateRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return ApplicationOut
+//
+//	@return ApplicationOut
 func (a *ApplicationAPIService) V1ApplicationCreateExecute(r ApiV1ApplicationCreateRequest) (*ApplicationOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *ApplicationOut
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *ApplicationOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ApplicationAPIService.V1ApplicationCreate")
@@ -369,8 +370,8 @@ func (a *ApplicationAPIService) V1ApplicationCreateExecute(r ApiV1ApplicationCre
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -380,8 +381,8 @@ func (a *ApplicationAPIService) V1ApplicationCreateExecute(r ApiV1ApplicationCre
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -391,8 +392,8 @@ func (a *ApplicationAPIService) V1ApplicationCreateExecute(r ApiV1ApplicationCre
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -402,8 +403,8 @@ func (a *ApplicationAPIService) V1ApplicationCreateExecute(r ApiV1ApplicationCre
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -413,8 +414,8 @@ func (a *ApplicationAPIService) V1ApplicationCreateExecute(r ApiV1ApplicationCre
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -424,8 +425,8 @@ func (a *ApplicationAPIService) V1ApplicationCreateExecute(r ApiV1ApplicationCre
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -435,8 +436,8 @@ func (a *ApplicationAPIService) V1ApplicationCreateExecute(r ApiV1ApplicationCre
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -454,9 +455,9 @@ func (a *ApplicationAPIService) V1ApplicationCreateExecute(r ApiV1ApplicationCre
 }
 
 type ApiV1ApplicationDeleteRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *ApplicationAPIService
-	appId string
+	appId      string
 }
 
 func (r ApiV1ApplicationDeleteRequest) Execute() (*http.Response, error) {
@@ -468,24 +469,24 @@ V1ApplicationDelete Delete Application
 
 Delete an application.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param appId The app's ID or UID
- @return ApiV1ApplicationDeleteRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param appId The app's ID or UID
+	@return ApiV1ApplicationDeleteRequest
 */
 func (a *ApplicationAPIService) V1ApplicationDelete(ctx context.Context, appId string) ApiV1ApplicationDeleteRequest {
 	return ApiV1ApplicationDeleteRequest{
 		ApiService: a,
-		ctx: ctx,
-		appId: appId,
+		ctx:        ctx,
+		appId:      appId,
 	}
 }
 
 // Execute executes the request
 func (a *ApplicationAPIService) V1ApplicationDeleteExecute(r ApiV1ApplicationDeleteRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodDelete
-		localVarPostBody     interface{}
-		formFiles            []formFile
+		localVarHTTPMethod = http.MethodDelete
+		localVarPostBody   interface{}
+		formFiles          []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ApplicationAPIService.V1ApplicationDelete")
@@ -552,8 +553,8 @@ func (a *ApplicationAPIService) V1ApplicationDeleteExecute(r ApiV1ApplicationDel
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -563,8 +564,8 @@ func (a *ApplicationAPIService) V1ApplicationDeleteExecute(r ApiV1ApplicationDel
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -574,8 +575,8 @@ func (a *ApplicationAPIService) V1ApplicationDeleteExecute(r ApiV1ApplicationDel
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -585,8 +586,8 @@ func (a *ApplicationAPIService) V1ApplicationDeleteExecute(r ApiV1ApplicationDel
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -596,8 +597,8 @@ func (a *ApplicationAPIService) V1ApplicationDeleteExecute(r ApiV1ApplicationDel
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -607,8 +608,8 @@ func (a *ApplicationAPIService) V1ApplicationDeleteExecute(r ApiV1ApplicationDel
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -618,8 +619,8 @@ func (a *ApplicationAPIService) V1ApplicationDeleteExecute(r ApiV1ApplicationDel
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarHTTPResponse, newErr
 	}
@@ -628,9 +629,9 @@ func (a *ApplicationAPIService) V1ApplicationDeleteExecute(r ApiV1ApplicationDel
 }
 
 type ApiV1ApplicationGetRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *ApplicationAPIService
-	appId string
+	appId      string
 }
 
 func (r ApiV1ApplicationGetRequest) Execute() (*ApplicationOut, *http.Response, error) {
@@ -642,26 +643,27 @@ V1ApplicationGet Get Application
 
 Get an application.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param appId The app's ID or UID
- @return ApiV1ApplicationGetRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param appId The app's ID or UID
+	@return ApiV1ApplicationGetRequest
 */
 func (a *ApplicationAPIService) V1ApplicationGet(ctx context.Context, appId string) ApiV1ApplicationGetRequest {
 	return ApiV1ApplicationGetRequest{
 		ApiService: a,
-		ctx: ctx,
-		appId: appId,
+		ctx:        ctx,
+		appId:      appId,
 	}
 }
 
 // Execute executes the request
-//  @return ApplicationOut
+//
+//	@return ApplicationOut
 func (a *ApplicationAPIService) V1ApplicationGetExecute(r ApiV1ApplicationGetRequest) (*ApplicationOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *ApplicationOut
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *ApplicationOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ApplicationAPIService.V1ApplicationGet")
@@ -728,8 +730,8 @@ func (a *ApplicationAPIService) V1ApplicationGetExecute(r ApiV1ApplicationGetReq
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -739,8 +741,8 @@ func (a *ApplicationAPIService) V1ApplicationGetExecute(r ApiV1ApplicationGetReq
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -750,8 +752,8 @@ func (a *ApplicationAPIService) V1ApplicationGetExecute(r ApiV1ApplicationGetReq
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -761,8 +763,8 @@ func (a *ApplicationAPIService) V1ApplicationGetExecute(r ApiV1ApplicationGetReq
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -772,8 +774,8 @@ func (a *ApplicationAPIService) V1ApplicationGetExecute(r ApiV1ApplicationGetReq
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -783,8 +785,8 @@ func (a *ApplicationAPIService) V1ApplicationGetExecute(r ApiV1ApplicationGetReq
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -794,8 +796,8 @@ func (a *ApplicationAPIService) V1ApplicationGetExecute(r ApiV1ApplicationGetReq
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -813,11 +815,11 @@ func (a *ApplicationAPIService) V1ApplicationGetExecute(r ApiV1ApplicationGetReq
 }
 
 type ApiV1ApplicationGetStatsRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *ApplicationAPIService
-	since *time.Time
-	until *time.Time
-	appId string
+	since      *time.Time
+	until      *time.Time
+	appId      string
 }
 
 // Filter the range to data starting from this date.
@@ -841,26 +843,27 @@ V1ApplicationGetStats Get App Stats
 
 Get basic statistics for the application.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param appId The app's ID or UID
- @return ApiV1ApplicationGetStatsRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param appId The app's ID or UID
+	@return ApiV1ApplicationGetStatsRequest
 */
 func (a *ApplicationAPIService) V1ApplicationGetStats(ctx context.Context, appId string) ApiV1ApplicationGetStatsRequest {
 	return ApiV1ApplicationGetStatsRequest{
 		ApiService: a,
-		ctx: ctx,
-		appId: appId,
+		ctx:        ctx,
+		appId:      appId,
 	}
 }
 
 // Execute executes the request
-//  @return ApplicationStats
+//
+//	@return ApplicationStats
 func (a *ApplicationAPIService) V1ApplicationGetStatsExecute(r ApiV1ApplicationGetStatsRequest) (*ApplicationStats, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *ApplicationStats
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *ApplicationStats
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ApplicationAPIService.V1ApplicationGetStats")
@@ -935,8 +938,8 @@ func (a *ApplicationAPIService) V1ApplicationGetStatsExecute(r ApiV1ApplicationG
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -946,8 +949,8 @@ func (a *ApplicationAPIService) V1ApplicationGetStatsExecute(r ApiV1ApplicationG
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -957,8 +960,8 @@ func (a *ApplicationAPIService) V1ApplicationGetStatsExecute(r ApiV1ApplicationG
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -968,8 +971,8 @@ func (a *ApplicationAPIService) V1ApplicationGetStatsExecute(r ApiV1ApplicationG
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -979,8 +982,8 @@ func (a *ApplicationAPIService) V1ApplicationGetStatsExecute(r ApiV1ApplicationG
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -990,8 +993,8 @@ func (a *ApplicationAPIService) V1ApplicationGetStatsExecute(r ApiV1ApplicationG
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -1001,8 +1004,8 @@ func (a *ApplicationAPIService) V1ApplicationGetStatsExecute(r ApiV1ApplicationG
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -1020,11 +1023,11 @@ func (a *ApplicationAPIService) V1ApplicationGetStatsExecute(r ApiV1ApplicationG
 }
 
 type ApiV1ApplicationListRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *ApplicationAPIService
-	limit *int32
-	iterator *string
-	order *Ordering
+	limit      *int32
+	iterator   *string
+	order      *Ordering
 }
 
 // Limit the number of returned items
@@ -1054,24 +1057,25 @@ V1ApplicationList List Applications
 
 List of all the organization's applications.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiV1ApplicationListRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiV1ApplicationListRequest
 */
 func (a *ApplicationAPIService) V1ApplicationList(ctx context.Context) ApiV1ApplicationListRequest {
 	return ApiV1ApplicationListRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return ListResponseApplicationOut
+//
+//	@return ListResponseApplicationOut
 func (a *ApplicationAPIService) V1ApplicationListExecute(r ApiV1ApplicationListRequest) (*ListResponseApplicationOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *ListResponseApplicationOut
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *ListResponseApplicationOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ApplicationAPIService.V1ApplicationList")
@@ -1140,8 +1144,8 @@ func (a *ApplicationAPIService) V1ApplicationListExecute(r ApiV1ApplicationListR
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -1151,8 +1155,8 @@ func (a *ApplicationAPIService) V1ApplicationListExecute(r ApiV1ApplicationListR
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -1162,8 +1166,8 @@ func (a *ApplicationAPIService) V1ApplicationListExecute(r ApiV1ApplicationListR
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -1173,8 +1177,8 @@ func (a *ApplicationAPIService) V1ApplicationListExecute(r ApiV1ApplicationListR
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -1184,8 +1188,8 @@ func (a *ApplicationAPIService) V1ApplicationListExecute(r ApiV1ApplicationListR
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -1195,8 +1199,8 @@ func (a *ApplicationAPIService) V1ApplicationListExecute(r ApiV1ApplicationListR
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -1206,8 +1210,8 @@ func (a *ApplicationAPIService) V1ApplicationListExecute(r ApiV1ApplicationListR
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -1225,9 +1229,9 @@ func (a *ApplicationAPIService) V1ApplicationListExecute(r ApiV1ApplicationListR
 }
 
 type ApiV1ApplicationPatchRequest struct {
-	ctx context.Context
-	ApiService *ApplicationAPIService
-	appId string
+	ctx              context.Context
+	ApiService       *ApplicationAPIService
+	appId            string
 	applicationPatch *ApplicationPatch
 }
 
@@ -1245,26 +1249,27 @@ V1ApplicationPatch Patch Application
 
 Partially update an application.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param appId The app's ID or UID
- @return ApiV1ApplicationPatchRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param appId The app's ID or UID
+	@return ApiV1ApplicationPatchRequest
 */
 func (a *ApplicationAPIService) V1ApplicationPatch(ctx context.Context, appId string) ApiV1ApplicationPatchRequest {
 	return ApiV1ApplicationPatchRequest{
 		ApiService: a,
-		ctx: ctx,
-		appId: appId,
+		ctx:        ctx,
+		appId:      appId,
 	}
 }
 
 // Execute executes the request
-//  @return ApplicationOut
+//
+//	@return ApplicationOut
 func (a *ApplicationAPIService) V1ApplicationPatchExecute(r ApiV1ApplicationPatchRequest) (*ApplicationOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPatch
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *ApplicationOut
+		localVarHTTPMethod  = http.MethodPatch
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *ApplicationOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ApplicationAPIService.V1ApplicationPatch")
@@ -1336,8 +1341,8 @@ func (a *ApplicationAPIService) V1ApplicationPatchExecute(r ApiV1ApplicationPatc
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -1347,8 +1352,8 @@ func (a *ApplicationAPIService) V1ApplicationPatchExecute(r ApiV1ApplicationPatc
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -1358,8 +1363,8 @@ func (a *ApplicationAPIService) V1ApplicationPatchExecute(r ApiV1ApplicationPatc
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -1369,8 +1374,8 @@ func (a *ApplicationAPIService) V1ApplicationPatchExecute(r ApiV1ApplicationPatc
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -1380,8 +1385,8 @@ func (a *ApplicationAPIService) V1ApplicationPatchExecute(r ApiV1ApplicationPatc
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -1391,8 +1396,8 @@ func (a *ApplicationAPIService) V1ApplicationPatchExecute(r ApiV1ApplicationPatc
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -1402,8 +1407,8 @@ func (a *ApplicationAPIService) V1ApplicationPatchExecute(r ApiV1ApplicationPatc
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -1421,9 +1426,9 @@ func (a *ApplicationAPIService) V1ApplicationPatchExecute(r ApiV1ApplicationPatc
 }
 
 type ApiV1ApplicationUpdateRequest struct {
-	ctx context.Context
-	ApiService *ApplicationAPIService
-	appId string
+	ctx           context.Context
+	ApiService    *ApplicationAPIService
+	appId         string
 	applicationIn *ApplicationIn
 }
 
@@ -1441,26 +1446,27 @@ V1ApplicationUpdate Update Application
 
 Update an application.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param appId The app's ID or UID
- @return ApiV1ApplicationUpdateRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param appId The app's ID or UID
+	@return ApiV1ApplicationUpdateRequest
 */
 func (a *ApplicationAPIService) V1ApplicationUpdate(ctx context.Context, appId string) ApiV1ApplicationUpdateRequest {
 	return ApiV1ApplicationUpdateRequest{
 		ApiService: a,
-		ctx: ctx,
-		appId: appId,
+		ctx:        ctx,
+		appId:      appId,
 	}
 }
 
 // Execute executes the request
-//  @return ApplicationOut
+//
+//	@return ApplicationOut
 func (a *ApplicationAPIService) V1ApplicationUpdateExecute(r ApiV1ApplicationUpdateRequest) (*ApplicationOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPut
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *ApplicationOut
+		localVarHTTPMethod  = http.MethodPut
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *ApplicationOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ApplicationAPIService.V1ApplicationUpdate")
@@ -1532,8 +1538,8 @@ func (a *ApplicationAPIService) V1ApplicationUpdateExecute(r ApiV1ApplicationUpd
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -1543,8 +1549,8 @@ func (a *ApplicationAPIService) V1ApplicationUpdateExecute(r ApiV1ApplicationUpd
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -1554,8 +1560,8 @@ func (a *ApplicationAPIService) V1ApplicationUpdateExecute(r ApiV1ApplicationUpd
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -1565,8 +1571,8 @@ func (a *ApplicationAPIService) V1ApplicationUpdateExecute(r ApiV1ApplicationUpd
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -1576,8 +1582,8 @@ func (a *ApplicationAPIService) V1ApplicationUpdateExecute(r ApiV1ApplicationUpd
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -1587,8 +1593,8 @@ func (a *ApplicationAPIService) V1ApplicationUpdateExecute(r ApiV1ApplicationUpd
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -1598,8 +1604,8 @@ func (a *ApplicationAPIService) V1ApplicationUpdateExecute(r ApiV1ApplicationUpd
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}

@@ -19,15 +19,14 @@ import (
 	"strings"
 )
 
-
 // TransformationTemplateAPIService TransformationTemplateAPI service
 type TransformationTemplateAPIService service
 
 type ApiV1EndpointUpdateHubspotOauthConfigRequest struct {
-	ctx context.Context
-	ApiService *TransformationTemplateAPIService
-	appId string
-	endpointId string
+	ctx                  context.Context
+	ApiService           *TransformationTemplateAPIService
+	appId                string
+	endpointId           string
 	hubspotOauthConfigIn *HubspotOauthConfigIn
 }
 
@@ -47,16 +46,16 @@ Create / update endpoint Hubspot OAuth configuration.
 
 Specific private endpoint just for us, to avoid exposing the Hubspot secret to the client.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param appId The app's ID or UID
- @param endpointId The ep's ID or UID
- @return ApiV1EndpointUpdateHubspotOauthConfigRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param appId The app's ID or UID
+	@param endpointId The ep's ID or UID
+	@return ApiV1EndpointUpdateHubspotOauthConfigRequest
 */
 func (a *TransformationTemplateAPIService) V1EndpointUpdateHubspotOauthConfig(ctx context.Context, appId string, endpointId string) ApiV1EndpointUpdateHubspotOauthConfigRequest {
 	return ApiV1EndpointUpdateHubspotOauthConfigRequest{
 		ApiService: a,
-		ctx: ctx,
-		appId: appId,
+		ctx:        ctx,
+		appId:      appId,
 		endpointId: endpointId,
 	}
 }
@@ -64,9 +63,9 @@ func (a *TransformationTemplateAPIService) V1EndpointUpdateHubspotOauthConfig(ct
 // Execute executes the request
 func (a *TransformationTemplateAPIService) V1EndpointUpdateHubspotOauthConfigExecute(r ApiV1EndpointUpdateHubspotOauthConfigRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPut
-		localVarPostBody     interface{}
-		formFiles            []formFile
+		localVarHTTPMethod = http.MethodPut
+		localVarPostBody   interface{}
+		formFiles          []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TransformationTemplateAPIService.V1EndpointUpdateHubspotOauthConfig")
@@ -145,8 +144,8 @@ func (a *TransformationTemplateAPIService) V1EndpointUpdateHubspotOauthConfigExe
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -156,8 +155,8 @@ func (a *TransformationTemplateAPIService) V1EndpointUpdateHubspotOauthConfigExe
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -167,8 +166,8 @@ func (a *TransformationTemplateAPIService) V1EndpointUpdateHubspotOauthConfigExe
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -178,8 +177,8 @@ func (a *TransformationTemplateAPIService) V1EndpointUpdateHubspotOauthConfigExe
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -189,8 +188,8 @@ func (a *TransformationTemplateAPIService) V1EndpointUpdateHubspotOauthConfigExe
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -200,8 +199,8 @@ func (a *TransformationTemplateAPIService) V1EndpointUpdateHubspotOauthConfigExe
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -211,8 +210,8 @@ func (a *TransformationTemplateAPIService) V1EndpointUpdateHubspotOauthConfigExe
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarHTTPResponse, newErr
 	}
@@ -221,9 +220,9 @@ func (a *TransformationTemplateAPIService) V1EndpointUpdateHubspotOauthConfigExe
 }
 
 type ApiV1TransformationTemplateCreateRequest struct {
-	ctx context.Context
-	ApiService *TransformationTemplateAPIService
-	connectorIn *ConnectorIn
+	ctx            context.Context
+	ApiService     *TransformationTemplateAPIService
+	connectorIn    *ConnectorIn
 	idempotencyKey *string
 }
 
@@ -247,24 +246,25 @@ V1TransformationTemplateCreate Create Transformation Template
 
 Create a new transformation template.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiV1TransformationTemplateCreateRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiV1TransformationTemplateCreateRequest
 */
 func (a *TransformationTemplateAPIService) V1TransformationTemplateCreate(ctx context.Context) ApiV1TransformationTemplateCreateRequest {
 	return ApiV1TransformationTemplateCreateRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return TemplateOut
+//
+//	@return TemplateOut
 func (a *TransformationTemplateAPIService) V1TransformationTemplateCreateExecute(r ApiV1TransformationTemplateCreateRequest) (*TemplateOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *TemplateOut
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *TemplateOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TransformationTemplateAPIService.V1TransformationTemplateCreate")
@@ -332,8 +332,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateCreateExecute
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -343,8 +343,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateCreateExecute
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -354,8 +354,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateCreateExecute
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -365,8 +365,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateCreateExecute
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -376,8 +376,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateCreateExecute
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -387,8 +387,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateCreateExecute
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -398,8 +398,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateCreateExecute
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -417,8 +417,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateCreateExecute
 }
 
 type ApiV1TransformationTemplateDeleteRequest struct {
-	ctx context.Context
-	ApiService *TransformationTemplateAPIService
+	ctx                      context.Context
+	ApiService               *TransformationTemplateAPIService
 	transformationTemplateId string
 }
 
@@ -431,14 +431,14 @@ V1TransformationTemplateDelete Delete Transformation Template
 
 Delete a transformation template.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param transformationTemplateId
- @return ApiV1TransformationTemplateDeleteRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param transformationTemplateId
+	@return ApiV1TransformationTemplateDeleteRequest
 */
 func (a *TransformationTemplateAPIService) V1TransformationTemplateDelete(ctx context.Context, transformationTemplateId string) ApiV1TransformationTemplateDeleteRequest {
 	return ApiV1TransformationTemplateDeleteRequest{
-		ApiService: a,
-		ctx: ctx,
+		ApiService:               a,
+		ctx:                      ctx,
 		transformationTemplateId: transformationTemplateId,
 	}
 }
@@ -446,9 +446,9 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateDelete(ctx co
 // Execute executes the request
 func (a *TransformationTemplateAPIService) V1TransformationTemplateDeleteExecute(r ApiV1TransformationTemplateDeleteRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodDelete
-		localVarPostBody     interface{}
-		formFiles            []formFile
+		localVarHTTPMethod = http.MethodDelete
+		localVarPostBody   interface{}
+		formFiles          []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TransformationTemplateAPIService.V1TransformationTemplateDelete")
@@ -509,8 +509,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateDeleteExecute
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -520,8 +520,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateDeleteExecute
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -531,8 +531,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateDeleteExecute
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -542,8 +542,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateDeleteExecute
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -553,8 +553,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateDeleteExecute
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -564,8 +564,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateDeleteExecute
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -575,8 +575,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateDeleteExecute
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarHTTPResponse, newErr
 	}
@@ -585,9 +585,9 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateDeleteExecute
 }
 
 type ApiV1TransformationTemplateGenerateRequest struct {
-	ctx context.Context
-	ApiService *TransformationTemplateAPIService
-	generateIn *GenerateIn
+	ctx            context.Context
+	ApiService     *TransformationTemplateAPIService
+	generateIn     *GenerateIn
 	idempotencyKey *string
 }
 
@@ -611,24 +611,25 @@ V1TransformationTemplateGenerate Generate
 
 Use OpenAI's Completion API to generate code for a transformation template.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiV1TransformationTemplateGenerateRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiV1TransformationTemplateGenerateRequest
 */
 func (a *TransformationTemplateAPIService) V1TransformationTemplateGenerate(ctx context.Context) ApiV1TransformationTemplateGenerateRequest {
 	return ApiV1TransformationTemplateGenerateRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return GenerateOut
+//
+//	@return GenerateOut
 func (a *TransformationTemplateAPIService) V1TransformationTemplateGenerateExecute(r ApiV1TransformationTemplateGenerateRequest) (*GenerateOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *GenerateOut
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *GenerateOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TransformationTemplateAPIService.V1TransformationTemplateGenerate")
@@ -696,8 +697,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateGenerateExecu
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -707,8 +708,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateGenerateExecu
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -718,8 +719,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateGenerateExecu
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -729,8 +730,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateGenerateExecu
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -740,8 +741,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateGenerateExecu
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -751,8 +752,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateGenerateExecu
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -762,8 +763,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateGenerateExecu
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -781,8 +782,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateGenerateExecu
 }
 
 type ApiV1TransformationTemplateGetRequest struct {
-	ctx context.Context
-	ApiService *TransformationTemplateAPIService
+	ctx                      context.Context
+	ApiService               *TransformationTemplateAPIService
 	transformationTemplateId string
 }
 
@@ -795,26 +796,27 @@ V1TransformationTemplateGet Get Transformation Template
 
 Get a transformation template.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param transformationTemplateId
- @return ApiV1TransformationTemplateGetRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param transformationTemplateId
+	@return ApiV1TransformationTemplateGetRequest
 */
 func (a *TransformationTemplateAPIService) V1TransformationTemplateGet(ctx context.Context, transformationTemplateId string) ApiV1TransformationTemplateGetRequest {
 	return ApiV1TransformationTemplateGetRequest{
-		ApiService: a,
-		ctx: ctx,
+		ApiService:               a,
+		ctx:                      ctx,
 		transformationTemplateId: transformationTemplateId,
 	}
 }
 
 // Execute executes the request
-//  @return TemplateOut
+//
+//	@return TemplateOut
 func (a *TransformationTemplateAPIService) V1TransformationTemplateGetExecute(r ApiV1TransformationTemplateGetRequest) (*TemplateOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *TemplateOut
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *TemplateOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TransformationTemplateAPIService.V1TransformationTemplateGet")
@@ -875,8 +877,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateGetExecute(r 
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -886,8 +888,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateGetExecute(r 
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -897,8 +899,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateGetExecute(r 
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -908,8 +910,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateGetExecute(r 
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -919,8 +921,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateGetExecute(r 
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -930,8 +932,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateGetExecute(r 
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -941,8 +943,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateGetExecute(r 
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -960,11 +962,11 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateGetExecute(r 
 }
 
 type ApiV1TransformationTemplateListRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *TransformationTemplateAPIService
-	limit *int32
-	iterator *string
-	order *Ordering
+	limit      *int32
+	iterator   *string
+	order      *Ordering
 }
 
 // Limit the number of returned items
@@ -994,24 +996,25 @@ V1TransformationTemplateList List Transformation Templates
 
 List all transformation templates for an application.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiV1TransformationTemplateListRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiV1TransformationTemplateListRequest
 */
 func (a *TransformationTemplateAPIService) V1TransformationTemplateList(ctx context.Context) ApiV1TransformationTemplateListRequest {
 	return ApiV1TransformationTemplateListRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return ListResponseTemplateOut
+//
+//	@return ListResponseTemplateOut
 func (a *TransformationTemplateAPIService) V1TransformationTemplateListExecute(r ApiV1TransformationTemplateListRequest) (*ListResponseTemplateOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *ListResponseTemplateOut
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *ListResponseTemplateOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TransformationTemplateAPIService.V1TransformationTemplateList")
@@ -1080,8 +1083,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateListExecute(r
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -1091,8 +1094,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateListExecute(r
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -1102,8 +1105,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateListExecute(r
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -1113,8 +1116,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateListExecute(r
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -1124,8 +1127,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateListExecute(r
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -1135,8 +1138,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateListExecute(r
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -1146,8 +1149,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateListExecute(r
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -1165,8 +1168,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateListExecute(r
 }
 
 type ApiV1TransformationTemplateOauthDiscordRequest struct {
-	ctx context.Context
-	ApiService *TransformationTemplateAPIService
+	ctx            context.Context
+	ApiService     *TransformationTemplateAPIService
 	oAuthPayloadIn *OAuthPayloadIn
 	idempotencyKey *string
 }
@@ -1191,24 +1194,25 @@ V1TransformationTemplateOauthDiscord Authorize Discord
 
 Get Discord Incoming webhook URL.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiV1TransformationTemplateOauthDiscordRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiV1TransformationTemplateOauthDiscordRequest
 */
 func (a *TransformationTemplateAPIService) V1TransformationTemplateOauthDiscord(ctx context.Context) ApiV1TransformationTemplateOauthDiscordRequest {
 	return ApiV1TransformationTemplateOauthDiscordRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return IncomingWebhookPayloadOut
+//
+//	@return IncomingWebhookPayloadOut
 func (a *TransformationTemplateAPIService) V1TransformationTemplateOauthDiscordExecute(r ApiV1TransformationTemplateOauthDiscordRequest) (*IncomingWebhookPayloadOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *IncomingWebhookPayloadOut
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *IncomingWebhookPayloadOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TransformationTemplateAPIService.V1TransformationTemplateOauthDiscord")
@@ -1276,8 +1280,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateOauthDiscordE
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -1287,8 +1291,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateOauthDiscordE
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -1298,8 +1302,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateOauthDiscordE
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -1309,8 +1313,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateOauthDiscordE
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -1320,8 +1324,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateOauthDiscordE
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -1331,8 +1335,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateOauthDiscordE
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -1342,8 +1346,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateOauthDiscordE
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -1361,8 +1365,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateOauthDiscordE
 }
 
 type ApiV1TransformationTemplateOauthHubspotRequest struct {
-	ctx context.Context
-	ApiService *TransformationTemplateAPIService
+	ctx            context.Context
+	ApiService     *TransformationTemplateAPIService
 	oAuthPayloadIn *OAuthPayloadIn
 	idempotencyKey *string
 }
@@ -1387,24 +1391,25 @@ V1TransformationTemplateOauthHubspot Authorize Hubspot
 
 Get Hubspot access token using authorization code.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiV1TransformationTemplateOauthHubspotRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiV1TransformationTemplateOauthHubspotRequest
 */
 func (a *TransformationTemplateAPIService) V1TransformationTemplateOauthHubspot(ctx context.Context) ApiV1TransformationTemplateOauthHubspotRequest {
 	return ApiV1TransformationTemplateOauthHubspotRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return OAuthPayloadOut
+//
+//	@return OAuthPayloadOut
 func (a *TransformationTemplateAPIService) V1TransformationTemplateOauthHubspotExecute(r ApiV1TransformationTemplateOauthHubspotRequest) (*OAuthPayloadOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *OAuthPayloadOut
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *OAuthPayloadOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TransformationTemplateAPIService.V1TransformationTemplateOauthHubspot")
@@ -1472,8 +1477,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateOauthHubspotE
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -1483,8 +1488,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateOauthHubspotE
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -1494,8 +1499,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateOauthHubspotE
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -1505,8 +1510,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateOauthHubspotE
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -1516,8 +1521,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateOauthHubspotE
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -1527,8 +1532,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateOauthHubspotE
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -1538,8 +1543,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateOauthHubspotE
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -1557,8 +1562,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateOauthHubspotE
 }
 
 type ApiV1TransformationTemplateOauthSlackRequest struct {
-	ctx context.Context
-	ApiService *TransformationTemplateAPIService
+	ctx            context.Context
+	ApiService     *TransformationTemplateAPIService
 	oAuthPayloadIn *OAuthPayloadIn
 	idempotencyKey *string
 }
@@ -1583,24 +1588,25 @@ V1TransformationTemplateOauthSlack Authorize Slack
 
 Get Slack Incoming webhook URL.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiV1TransformationTemplateOauthSlackRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiV1TransformationTemplateOauthSlackRequest
 */
 func (a *TransformationTemplateAPIService) V1TransformationTemplateOauthSlack(ctx context.Context) ApiV1TransformationTemplateOauthSlackRequest {
 	return ApiV1TransformationTemplateOauthSlackRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return IncomingWebhookPayloadOut
+//
+//	@return IncomingWebhookPayloadOut
 func (a *TransformationTemplateAPIService) V1TransformationTemplateOauthSlackExecute(r ApiV1TransformationTemplateOauthSlackRequest) (*IncomingWebhookPayloadOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *IncomingWebhookPayloadOut
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *IncomingWebhookPayloadOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TransformationTemplateAPIService.V1TransformationTemplateOauthSlack")
@@ -1668,8 +1674,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateOauthSlackExe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -1679,8 +1685,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateOauthSlackExe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -1690,8 +1696,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateOauthSlackExe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -1701,8 +1707,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateOauthSlackExe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -1712,8 +1718,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateOauthSlackExe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -1723,8 +1729,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateOauthSlackExe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -1734,8 +1740,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateOauthSlackExe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -1753,10 +1759,10 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateOauthSlackExe
 }
 
 type ApiV1TransformationTemplatePatchRequest struct {
-	ctx context.Context
-	ApiService *TransformationTemplateAPIService
+	ctx                      context.Context
+	ApiService               *TransformationTemplateAPIService
 	transformationTemplateId string
-	templatePatch *TemplatePatch
+	templatePatch            *TemplatePatch
 }
 
 func (r ApiV1TransformationTemplatePatchRequest) TemplatePatch(templatePatch TemplatePatch) ApiV1TransformationTemplatePatchRequest {
@@ -1773,26 +1779,27 @@ V1TransformationTemplatePatch Patch Transformation Template
 
 Partially update a transformation template.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param transformationTemplateId
- @return ApiV1TransformationTemplatePatchRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param transformationTemplateId
+	@return ApiV1TransformationTemplatePatchRequest
 */
 func (a *TransformationTemplateAPIService) V1TransformationTemplatePatch(ctx context.Context, transformationTemplateId string) ApiV1TransformationTemplatePatchRequest {
 	return ApiV1TransformationTemplatePatchRequest{
-		ApiService: a,
-		ctx: ctx,
+		ApiService:               a,
+		ctx:                      ctx,
 		transformationTemplateId: transformationTemplateId,
 	}
 }
 
 // Execute executes the request
-//  @return TemplateOut
+//
+//	@return TemplateOut
 func (a *TransformationTemplateAPIService) V1TransformationTemplatePatchExecute(r ApiV1TransformationTemplatePatchRequest) (*TemplateOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPatch
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *TemplateOut
+		localVarHTTPMethod  = http.MethodPatch
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *TemplateOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TransformationTemplateAPIService.V1TransformationTemplatePatch")
@@ -1858,8 +1865,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplatePatchExecute(
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -1869,8 +1876,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplatePatchExecute(
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -1880,8 +1887,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplatePatchExecute(
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -1891,8 +1898,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplatePatchExecute(
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -1902,8 +1909,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplatePatchExecute(
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -1913,8 +1920,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplatePatchExecute(
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -1924,8 +1931,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplatePatchExecute(
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -1943,10 +1950,10 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplatePatchExecute(
 }
 
 type ApiV1TransformationTemplateSimulateRequest struct {
-	ctx context.Context
-	ApiService *TransformationTemplateAPIService
+	ctx                      context.Context
+	ApiService               *TransformationTemplateAPIService
 	transformationSimulateIn *TransformationSimulateIn
-	idempotencyKey *string
+	idempotencyKey           *string
 }
 
 func (r ApiV1TransformationTemplateSimulateRequest) TransformationSimulateIn(transformationSimulateIn TransformationSimulateIn) ApiV1TransformationTemplateSimulateRequest {
@@ -1969,24 +1976,25 @@ V1TransformationTemplateSimulate Simulate
 
 Simulate running the transformation on the payload and code.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiV1TransformationTemplateSimulateRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiV1TransformationTemplateSimulateRequest
 */
 func (a *TransformationTemplateAPIService) V1TransformationTemplateSimulate(ctx context.Context) ApiV1TransformationTemplateSimulateRequest {
 	return ApiV1TransformationTemplateSimulateRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return TransformationSimulateOut
+//
+//	@return TransformationSimulateOut
 func (a *TransformationTemplateAPIService) V1TransformationTemplateSimulateExecute(r ApiV1TransformationTemplateSimulateRequest) (*TransformationSimulateOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *TransformationSimulateOut
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *TransformationSimulateOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TransformationTemplateAPIService.V1TransformationTemplateSimulate")
@@ -2054,8 +2062,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateSimulateExecu
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -2065,8 +2073,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateSimulateExecu
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -2076,8 +2084,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateSimulateExecu
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -2087,8 +2095,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateSimulateExecu
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -2098,8 +2106,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateSimulateExecu
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -2109,8 +2117,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateSimulateExecu
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -2120,8 +2128,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateSimulateExecu
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -2139,10 +2147,10 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateSimulateExecu
 }
 
 type ApiV1TransformationTemplateUpdateRequest struct {
-	ctx context.Context
-	ApiService *TransformationTemplateAPIService
+	ctx                      context.Context
+	ApiService               *TransformationTemplateAPIService
 	transformationTemplateId string
-	templateUpdate *TemplateUpdate
+	templateUpdate           *TemplateUpdate
 }
 
 func (r ApiV1TransformationTemplateUpdateRequest) TemplateUpdate(templateUpdate TemplateUpdate) ApiV1TransformationTemplateUpdateRequest {
@@ -2159,26 +2167,27 @@ V1TransformationTemplateUpdate Update Transformation Template
 
 Update a transformation template.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param transformationTemplateId
- @return ApiV1TransformationTemplateUpdateRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param transformationTemplateId
+	@return ApiV1TransformationTemplateUpdateRequest
 */
 func (a *TransformationTemplateAPIService) V1TransformationTemplateUpdate(ctx context.Context, transformationTemplateId string) ApiV1TransformationTemplateUpdateRequest {
 	return ApiV1TransformationTemplateUpdateRequest{
-		ApiService: a,
-		ctx: ctx,
+		ApiService:               a,
+		ctx:                      ctx,
 		transformationTemplateId: transformationTemplateId,
 	}
 }
 
 // Execute executes the request
-//  @return TemplateOut
+//
+//	@return TemplateOut
 func (a *TransformationTemplateAPIService) V1TransformationTemplateUpdateExecute(r ApiV1TransformationTemplateUpdateRequest) (*TemplateOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPut
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *TemplateOut
+		localVarHTTPMethod  = http.MethodPut
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *TemplateOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TransformationTemplateAPIService.V1TransformationTemplateUpdate")
@@ -2244,8 +2253,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateUpdateExecute
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -2255,8 +2264,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateUpdateExecute
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -2266,8 +2275,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateUpdateExecute
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -2277,8 +2286,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateUpdateExecute
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -2288,8 +2297,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateUpdateExecute
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -2299,8 +2308,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateUpdateExecute
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -2310,8 +2319,8 @@ func (a *TransformationTemplateAPIService) V1TransformationTemplateUpdateExecute
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}

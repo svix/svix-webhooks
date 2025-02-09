@@ -11,8 +11,8 @@ API version: 1.1.1
 package openapi
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -22,7 +22,7 @@ var _ MappedNullable = &StreamSinkInOneOf5{}
 // StreamSinkInOneOf5 struct for StreamSinkInOneOf5
 type StreamSinkInOneOf5 struct {
 	Config GoogleCloudStorageConfig `json:"config"`
-	Type string `json:"type"`
+	Type   string                   `json:"type"`
 }
 
 type _StreamSinkInOneOf5 StreamSinkInOneOf5
@@ -95,7 +95,7 @@ func (o *StreamSinkInOneOf5) SetType(v string) {
 }
 
 func (o StreamSinkInOneOf5) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -123,10 +123,10 @@ func (o *StreamSinkInOneOf5) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -182,5 +182,3 @@ func (v *NullableStreamSinkInOneOf5) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

@@ -19,17 +19,17 @@ var _ MappedNullable = &EndpointPatch{}
 
 // EndpointPatch struct for EndpointPatch
 type EndpointPatch struct {
-	Channels []string `json:"channels,omitempty"`
-	Description *string `json:"description,omitempty"`
-	Disabled *bool `json:"disabled,omitempty"`
-	FilterTypes []string `json:"filterTypes,omitempty"`
-	Metadata *map[string]string `json:"metadata,omitempty"`
-	RateLimit NullableInt32 `json:"rateLimit,omitempty"`
+	Channels    []string           `json:"channels,omitempty"`
+	Description *string            `json:"description,omitempty"`
+	Disabled    *bool              `json:"disabled,omitempty"`
+	FilterTypes []string           `json:"filterTypes,omitempty"`
+	Metadata    *map[string]string `json:"metadata,omitempty"`
+	RateLimit   NullableInt32      `json:"rateLimit,omitempty"`
 	// The endpoint's verification secret.  Format: `base64` encoded random bytes optionally prefixed with `whsec_`. It is recommended to not set this and let the server generate the secret.
 	Secret NullableString `json:"secret,omitempty" validate:"regexp=^(whsec_)?[a-zA-Z0-9+\\/=]{32,100}$"`
 	// The ep's UID
 	Uid NullableString `json:"uid,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
-	Url *string `json:"url,omitempty"`
+	Url *string        `json:"url,omitempty"`
 	// Deprecated
 	Version *int32 `json:"version,omitempty"`
 }
@@ -245,6 +245,7 @@ func (o *EndpointPatch) HasRateLimit() bool {
 func (o *EndpointPatch) SetRateLimit(v int32) {
 	o.RateLimit.Set(&v)
 }
+
 // SetRateLimitNil sets the value for RateLimit to be an explicit nil
 func (o *EndpointPatch) SetRateLimitNil() {
 	o.RateLimit.Set(nil)
@@ -287,6 +288,7 @@ func (o *EndpointPatch) HasSecret() bool {
 func (o *EndpointPatch) SetSecret(v string) {
 	o.Secret.Set(&v)
 }
+
 // SetSecretNil sets the value for Secret to be an explicit nil
 func (o *EndpointPatch) SetSecretNil() {
 	o.Secret.Set(nil)
@@ -329,6 +331,7 @@ func (o *EndpointPatch) HasUid() bool {
 func (o *EndpointPatch) SetUid(v string) {
 	o.Uid.Set(&v)
 }
+
 // SetUidNil sets the value for Uid to be an explicit nil
 func (o *EndpointPatch) SetUidNil() {
 	o.Uid.Set(nil)
@@ -407,7 +410,7 @@ func (o *EndpointPatch) SetVersion(v int32) {
 }
 
 func (o EndpointPatch) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -484,5 +487,3 @@ func (v *NullableEndpointPatch) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

@@ -20,8 +20,8 @@ type TransformationHttpMethod string
 
 // List of TransformationHttpMethod
 const (
-	TRANSFORMATIONHTTPMETHOD_POST TransformationHttpMethod = "POST"
-	TRANSFORMATIONHTTPMETHOD_PUT TransformationHttpMethod = "PUT"
+	TRANSFORMATIONHTTPMETHOD_POST  TransformationHttpMethod = "POST"
+	TRANSFORMATIONHTTPMETHOD_PUT   TransformationHttpMethod = "PUT"
 	TRANSFORMATIONHTTPMETHOD_PATCH TransformationHttpMethod = "PATCH"
 )
 
@@ -110,4 +110,3 @@ func (v *NullableTransformationHttpMethod) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-

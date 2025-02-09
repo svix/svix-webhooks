@@ -11,8 +11,8 @@ API version: 1.1.1
 package openapi
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -21,16 +21,16 @@ var _ MappedNullable = &OperationalWebhookEndpointIn{}
 
 // OperationalWebhookEndpointIn struct for OperationalWebhookEndpointIn
 type OperationalWebhookEndpointIn struct {
-	Description *string `json:"description,omitempty"`
-	Disabled *bool `json:"disabled,omitempty"`
-	FilterTypes []string `json:"filterTypes,omitempty"`
-	Metadata *map[string]string `json:"metadata,omitempty"`
-	RateLimit *int32 `json:"rateLimit,omitempty"`
+	Description *string            `json:"description,omitempty"`
+	Disabled    *bool              `json:"disabled,omitempty"`
+	FilterTypes []string           `json:"filterTypes,omitempty"`
+	Metadata    *map[string]string `json:"metadata,omitempty"`
+	RateLimit   *int32             `json:"rateLimit,omitempty"`
 	// The endpoint's verification secret.  Format: `base64` encoded random bytes optionally prefixed with `whsec_`. It is recommended to not set this and let the server generate the secret.
 	Secret *string `json:"secret,omitempty" validate:"regexp=^(whsec_)?[a-zA-Z0-9+\\/=]{32,100}$"`
 	// Optional unique identifier for the endpoint.
 	Uid *string `json:"uid,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
-	Url string `json:"url"`
+	Url string  `json:"url"`
 }
 
 type _OperationalWebhookEndpointIn OperationalWebhookEndpointIn
@@ -310,7 +310,7 @@ func (o *OperationalWebhookEndpointIn) SetUrl(v string) {
 }
 
 func (o OperationalWebhookEndpointIn) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -357,10 +357,10 @@ func (o *OperationalWebhookEndpointIn) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -416,5 +416,3 @@ func (v *NullableOperationalWebhookEndpointIn) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

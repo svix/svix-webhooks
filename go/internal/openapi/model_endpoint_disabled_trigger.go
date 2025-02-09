@@ -20,7 +20,7 @@ type EndpointDisabledTrigger string
 
 // List of EndpointDisabledTrigger
 const (
-	ENDPOINTDISABLEDTRIGGER_MANUAL EndpointDisabledTrigger = "manual"
+	ENDPOINTDISABLEDTRIGGER_MANUAL    EndpointDisabledTrigger = "manual"
 	ENDPOINTDISABLEDTRIGGER_AUTOMATIC EndpointDisabledTrigger = "automatic"
 )
 
@@ -108,4 +108,3 @@ func (v *NullableEndpointDisabledTrigger) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-

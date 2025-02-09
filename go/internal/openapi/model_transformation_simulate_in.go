@@ -11,8 +11,8 @@ API version: 1.1.1
 package openapi
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -22,10 +22,10 @@ var _ MappedNullable = &TransformationSimulateIn{}
 // TransformationSimulateIn struct for TransformationSimulateIn
 type TransformationSimulateIn struct {
 	Channels []string `json:"channels,omitempty"`
-	Code string `json:"code"`
+	Code     string   `json:"code"`
 	// The event type's name
-	EventType string `json:"eventType" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
-	Payload map[string]interface{} `json:"payload"`
+	EventType string                 `json:"eventType" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
+	Payload   map[string]interface{} `json:"payload"`
 }
 
 type _TransformationSimulateIn TransformationSimulateIn
@@ -155,7 +155,7 @@ func (o *TransformationSimulateIn) SetPayload(v map[string]interface{}) {
 }
 
 func (o TransformationSimulateIn) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -188,10 +188,10 @@ func (o *TransformationSimulateIn) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -247,5 +247,3 @@ func (v *NullableTransformationSimulateIn) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

@@ -11,8 +11,8 @@ API version: 1.1.1
 package openapi
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -22,7 +22,7 @@ var _ MappedNullable = &AzureBlobStorageConfig{}
 // AzureBlobStorageConfig struct for AzureBlobStorageConfig
 type AzureBlobStorageConfig struct {
 	AccessKey string `json:"accessKey"`
-	Account string `json:"account"`
+	Account   string `json:"account"`
 	Container string `json:"container"`
 }
 
@@ -121,7 +121,7 @@ func (o *AzureBlobStorageConfig) SetContainer(v string) {
 }
 
 func (o AzureBlobStorageConfig) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -151,10 +151,10 @@ func (o *AzureBlobStorageConfig) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -210,5 +210,3 @@ func (v *NullableAzureBlobStorageConfig) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

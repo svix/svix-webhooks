@@ -19,15 +19,15 @@ var _ MappedNullable = &TemplatePatch{}
 
 // TemplatePatch struct for TemplatePatch
 type TemplatePatch struct {
-	Description *string `json:"description,omitempty"`
-	FeatureFlag NullableString `json:"featureFlag,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
-	FilterTypes []string `json:"filterTypes,omitempty"`
-	Instructions *string `json:"instructions,omitempty"`
+	Description      *string        `json:"description,omitempty"`
+	FeatureFlag      NullableString `json:"featureFlag,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
+	FilterTypes      []string       `json:"filterTypes,omitempty"`
+	Instructions     *string        `json:"instructions,omitempty"`
 	InstructionsLink NullableString `json:"instructionsLink,omitempty"`
-	Kind *ConnectorKind `json:"kind,omitempty"`
-	Logo *string `json:"logo,omitempty"`
-	Name *string `json:"name,omitempty"`
-	Transformation *string `json:"transformation,omitempty"`
+	Kind             *ConnectorKind `json:"kind,omitempty"`
+	Logo             *string        `json:"logo,omitempty"`
+	Name             *string        `json:"name,omitempty"`
+	Transformation   *string        `json:"transformation,omitempty"`
 }
 
 // NewTemplatePatch instantiates a new TemplatePatch object
@@ -111,6 +111,7 @@ func (o *TemplatePatch) HasFeatureFlag() bool {
 func (o *TemplatePatch) SetFeatureFlag(v string) {
 	o.FeatureFlag.Set(&v)
 }
+
 // SetFeatureFlagNil sets the value for FeatureFlag to be an explicit nil
 func (o *TemplatePatch) SetFeatureFlagNil() {
 	o.FeatureFlag.Set(nil)
@@ -218,6 +219,7 @@ func (o *TemplatePatch) HasInstructionsLink() bool {
 func (o *TemplatePatch) SetInstructionsLink(v string) {
 	o.InstructionsLink.Set(&v)
 }
+
 // SetInstructionsLinkNil sets the value for InstructionsLink to be an explicit nil
 func (o *TemplatePatch) SetInstructionsLinkNil() {
 	o.InstructionsLink.Set(nil)
@@ -357,7 +359,7 @@ func (o *TemplatePatch) SetTransformation(v string) {
 }
 
 func (o TemplatePatch) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -431,5 +433,3 @@ func (v *NullableTemplatePatch) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

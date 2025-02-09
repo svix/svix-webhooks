@@ -11,8 +11,8 @@ API version: 1.1.1
 package openapi
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -21,15 +21,15 @@ var _ MappedNullable = &TemplateUpdate{}
 
 // TemplateUpdate struct for TemplateUpdate
 type TemplateUpdate struct {
-	Description *string `json:"description,omitempty"`
-	FeatureFlag *string `json:"featureFlag,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
-	FilterTypes []string `json:"filterTypes,omitempty"`
-	Instructions *string `json:"instructions,omitempty"`
-	InstructionsLink *string `json:"instructionsLink,omitempty"`
-	Kind *ConnectorKind `json:"kind,omitempty"`
-	Logo string `json:"logo"`
-	Name *string `json:"name,omitempty"`
-	Transformation string `json:"transformation"`
+	Description      *string        `json:"description,omitempty"`
+	FeatureFlag      *string        `json:"featureFlag,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
+	FilterTypes      []string       `json:"filterTypes,omitempty"`
+	Instructions     *string        `json:"instructions,omitempty"`
+	InstructionsLink *string        `json:"instructionsLink,omitempty"`
+	Kind             *ConnectorKind `json:"kind,omitempty"`
+	Logo             string         `json:"logo"`
+	Name             *string        `json:"name,omitempty"`
+	Transformation   string         `json:"transformation"`
 }
 
 type _TemplateUpdate TemplateUpdate
@@ -338,7 +338,7 @@ func (o *TemplateUpdate) SetTransformation(v string) {
 }
 
 func (o TemplateUpdate) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -387,10 +387,10 @@ func (o *TemplateUpdate) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -446,5 +446,3 @@ func (v *NullableTemplateUpdate) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

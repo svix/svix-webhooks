@@ -11,8 +11,8 @@ API version: 1.1.1
 package openapi
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -22,9 +22,9 @@ var _ MappedNullable = &AggregatedEventTypes{}
 // AggregatedEventTypes struct for AggregatedEventTypes
 type AggregatedEventTypes struct {
 	// The app's ID
-	AppId string `json:"appId"`
+	AppId                          string   `json:"appId"`
 	ExplicitlySubscribedEventTypes []string `json:"explicitlySubscribedEventTypes"`
-	HasCatchAllEndpoint bool `json:"hasCatchAllEndpoint"`
+	HasCatchAllEndpoint            bool     `json:"hasCatchAllEndpoint"`
 }
 
 type _AggregatedEventTypes AggregatedEventTypes
@@ -122,7 +122,7 @@ func (o *AggregatedEventTypes) SetHasCatchAllEndpoint(v bool) {
 }
 
 func (o AggregatedEventTypes) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -152,10 +152,10 @@ func (o *AggregatedEventTypes) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -211,5 +211,3 @@ func (v *NullableAggregatedEventTypes) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

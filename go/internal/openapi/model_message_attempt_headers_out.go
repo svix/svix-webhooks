@@ -11,8 +11,8 @@ API version: 1.1.1
 package openapi
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -21,9 +21,9 @@ var _ MappedNullable = &MessageAttemptHeadersOut{}
 
 // MessageAttemptHeadersOut struct for MessageAttemptHeadersOut
 type MessageAttemptHeadersOut struct {
-	ResponseHeaders [][]string `json:"responseHeaders,omitempty"`
-	Sensitive []string `json:"sensitive"`
-	SentHeaders map[string]string `json:"sentHeaders"`
+	ResponseHeaders [][]string        `json:"responseHeaders,omitempty"`
+	Sensitive       []string          `json:"sensitive"`
+	SentHeaders     map[string]string `json:"sentHeaders"`
 }
 
 type _MessageAttemptHeadersOut MessageAttemptHeadersOut
@@ -128,7 +128,7 @@ func (o *MessageAttemptHeadersOut) SetSentHeaders(v map[string]string) {
 }
 
 func (o MessageAttemptHeadersOut) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -159,10 +159,10 @@ func (o *MessageAttemptHeadersOut) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -218,5 +218,3 @@ func (v *NullableMessageAttemptHeadersOut) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

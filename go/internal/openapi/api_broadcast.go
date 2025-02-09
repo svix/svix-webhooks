@@ -18,15 +18,14 @@ import (
 	"net/url"
 )
 
-
 // BroadcastAPIService BroadcastAPI service
 type BroadcastAPIService service
 
 type ApiCreateBroadcastMessageRequest struct {
-	ctx context.Context
-	ApiService *BroadcastAPIService
+	ctx                context.Context
+	ApiService         *BroadcastAPIService
 	messageBroadcastIn *MessageBroadcastIn
-	idempotencyKey *string
+	idempotencyKey     *string
 }
 
 func (r ApiCreateBroadcastMessageRequest) MessageBroadcastIn(messageBroadcastIn MessageBroadcastIn) ApiCreateBroadcastMessageRequest {
@@ -49,24 +48,25 @@ CreateBroadcastMessage Create Broadcast Message
 
 Creates a background task to send the same message to each application in your organization.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiCreateBroadcastMessageRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiCreateBroadcastMessageRequest
 */
 func (a *BroadcastAPIService) CreateBroadcastMessage(ctx context.Context) ApiCreateBroadcastMessageRequest {
 	return ApiCreateBroadcastMessageRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return MessageBroadcastOut
+//
+//	@return MessageBroadcastOut
 func (a *BroadcastAPIService) CreateBroadcastMessageExecute(r ApiCreateBroadcastMessageRequest) (*MessageBroadcastOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *MessageBroadcastOut
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *MessageBroadcastOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "BroadcastAPIService.CreateBroadcastMessage")
@@ -134,8 +134,8 @@ func (a *BroadcastAPIService) CreateBroadcastMessageExecute(r ApiCreateBroadcast
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -145,8 +145,8 @@ func (a *BroadcastAPIService) CreateBroadcastMessageExecute(r ApiCreateBroadcast
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -156,8 +156,8 @@ func (a *BroadcastAPIService) CreateBroadcastMessageExecute(r ApiCreateBroadcast
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -167,8 +167,8 @@ func (a *BroadcastAPIService) CreateBroadcastMessageExecute(r ApiCreateBroadcast
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -178,8 +178,8 @@ func (a *BroadcastAPIService) CreateBroadcastMessageExecute(r ApiCreateBroadcast
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -189,8 +189,8 @@ func (a *BroadcastAPIService) CreateBroadcastMessageExecute(r ApiCreateBroadcast
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -200,8 +200,8 @@ func (a *BroadcastAPIService) CreateBroadcastMessageExecute(r ApiCreateBroadcast
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}

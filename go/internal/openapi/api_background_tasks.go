@@ -19,14 +19,13 @@ import (
 	"strings"
 )
 
-
 // BackgroundTasksAPIService BackgroundTasksAPI service
 type BackgroundTasksAPIService service
 
 type ApiV1BackgroundTaskGetRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *BackgroundTasksAPIService
-	taskId string
+	taskId     string
 }
 
 func (r ApiV1BackgroundTaskGetRequest) Execute() (*BackgroundTaskOut, *http.Response, error) {
@@ -38,26 +37,27 @@ V1BackgroundTaskGet Get Background Task
 
 Get a background task by ID.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param taskId
- @return ApiV1BackgroundTaskGetRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param taskId
+	@return ApiV1BackgroundTaskGetRequest
 */
 func (a *BackgroundTasksAPIService) V1BackgroundTaskGet(ctx context.Context, taskId string) ApiV1BackgroundTaskGetRequest {
 	return ApiV1BackgroundTaskGetRequest{
 		ApiService: a,
-		ctx: ctx,
-		taskId: taskId,
+		ctx:        ctx,
+		taskId:     taskId,
 	}
 }
 
 // Execute executes the request
-//  @return BackgroundTaskOut
+//
+//	@return BackgroundTaskOut
 func (a *BackgroundTasksAPIService) V1BackgroundTaskGetExecute(r ApiV1BackgroundTaskGetRequest) (*BackgroundTaskOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *BackgroundTaskOut
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *BackgroundTaskOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "BackgroundTasksAPIService.V1BackgroundTaskGet")
@@ -118,8 +118,8 @@ func (a *BackgroundTasksAPIService) V1BackgroundTaskGetExecute(r ApiV1Background
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -129,8 +129,8 @@ func (a *BackgroundTasksAPIService) V1BackgroundTaskGetExecute(r ApiV1Background
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -140,8 +140,8 @@ func (a *BackgroundTasksAPIService) V1BackgroundTaskGetExecute(r ApiV1Background
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -151,8 +151,8 @@ func (a *BackgroundTasksAPIService) V1BackgroundTaskGetExecute(r ApiV1Background
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -162,8 +162,8 @@ func (a *BackgroundTasksAPIService) V1BackgroundTaskGetExecute(r ApiV1Background
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -173,8 +173,8 @@ func (a *BackgroundTasksAPIService) V1BackgroundTaskGetExecute(r ApiV1Background
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -184,8 +184,8 @@ func (a *BackgroundTasksAPIService) V1BackgroundTaskGetExecute(r ApiV1Background
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -203,13 +203,13 @@ func (a *BackgroundTasksAPIService) V1BackgroundTaskGetExecute(r ApiV1Background
 }
 
 type ApiV1BackgroundTaskListRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *BackgroundTasksAPIService
-	status *BackgroundTaskStatus
-	task *BackgroundTaskType
-	limit *int32
-	iterator *string
-	order *Ordering
+	status     *BackgroundTaskStatus
+	task       *BackgroundTaskType
+	limit      *int32
+	iterator   *string
+	order      *Ordering
 }
 
 // Filter the response based on the status.
@@ -251,24 +251,25 @@ V1BackgroundTaskList List Background Tasks
 
 List background tasks executed in the past 90 days.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiV1BackgroundTaskListRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiV1BackgroundTaskListRequest
 */
 func (a *BackgroundTasksAPIService) V1BackgroundTaskList(ctx context.Context) ApiV1BackgroundTaskListRequest {
 	return ApiV1BackgroundTaskListRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return ListResponseBackgroundTaskOut
+//
+//	@return ListResponseBackgroundTaskOut
 func (a *BackgroundTasksAPIService) V1BackgroundTaskListExecute(r ApiV1BackgroundTaskListRequest) (*ListResponseBackgroundTaskOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *ListResponseBackgroundTaskOut
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *ListResponseBackgroundTaskOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "BackgroundTasksAPIService.V1BackgroundTaskList")
@@ -343,8 +344,8 @@ func (a *BackgroundTasksAPIService) V1BackgroundTaskListExecute(r ApiV1Backgroun
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -354,8 +355,8 @@ func (a *BackgroundTasksAPIService) V1BackgroundTaskListExecute(r ApiV1Backgroun
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -365,8 +366,8 @@ func (a *BackgroundTasksAPIService) V1BackgroundTaskListExecute(r ApiV1Backgroun
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -376,8 +377,8 @@ func (a *BackgroundTasksAPIService) V1BackgroundTaskListExecute(r ApiV1Backgroun
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -387,8 +388,8 @@ func (a *BackgroundTasksAPIService) V1BackgroundTaskListExecute(r ApiV1Backgroun
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -398,8 +399,8 @@ func (a *BackgroundTasksAPIService) V1BackgroundTaskListExecute(r ApiV1Backgroun
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -409,8 +410,8 @@ func (a *BackgroundTasksAPIService) V1BackgroundTaskListExecute(r ApiV1Backgroun
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}

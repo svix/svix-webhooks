@@ -11,8 +11,8 @@ API version: 1.1.1
 package openapi
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -22,10 +22,10 @@ var _ MappedNullable = &GenerateOut{}
 // GenerateOut struct for GenerateOut
 type GenerateOut struct {
 	Choices []CompletionChoice `json:"choices"`
-	Created int64 `json:"created"`
-	Id string `json:"id"`
-	Model string `json:"model"`
-	Object string `json:"object"`
+	Created int64              `json:"created"`
+	Id      string             `json:"id"`
+	Model   string             `json:"model"`
+	Object  string             `json:"object"`
 }
 
 type _GenerateOut GenerateOut
@@ -173,7 +173,7 @@ func (o *GenerateOut) SetObject(v string) {
 }
 
 func (o GenerateOut) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -207,10 +207,10 @@ func (o *GenerateOut) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -266,5 +266,3 @@ func (v *NullableGenerateOut) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

@@ -20,18 +20,18 @@ type ConnectorKind string
 
 // List of ConnectorKind
 const (
-	CONNECTORKIND_CUSTOM ConnectorKind = "Custom"
+	CONNECTORKIND_CUSTOM      ConnectorKind = "Custom"
 	CONNECTORKIND_CUSTOMER_IO ConnectorKind = "CustomerIO"
-	CONNECTORKIND_DISCORD ConnectorKind = "Discord"
-	CONNECTORKIND_HUBSPOT ConnectorKind = "Hubspot"
-	CONNECTORKIND_INNGEST ConnectorKind = "Inngest"
-	CONNECTORKIND_SALESFORCE ConnectorKind = "Salesforce"
-	CONNECTORKIND_SEGMENT ConnectorKind = "Segment"
-	CONNECTORKIND_SLACK ConnectorKind = "Slack"
-	CONNECTORKIND_TEAMS ConnectorKind = "Teams"
+	CONNECTORKIND_DISCORD     ConnectorKind = "Discord"
+	CONNECTORKIND_HUBSPOT     ConnectorKind = "Hubspot"
+	CONNECTORKIND_INNGEST     ConnectorKind = "Inngest"
+	CONNECTORKIND_SALESFORCE  ConnectorKind = "Salesforce"
+	CONNECTORKIND_SEGMENT     ConnectorKind = "Segment"
+	CONNECTORKIND_SLACK       ConnectorKind = "Slack"
+	CONNECTORKIND_TEAMS       ConnectorKind = "Teams"
 	CONNECTORKIND_TRIGGER_DEV ConnectorKind = "TriggerDev"
-	CONNECTORKIND_WINDMILL ConnectorKind = "Windmill"
-	CONNECTORKIND_ZAPIER ConnectorKind = "Zapier"
+	CONNECTORKIND_WINDMILL    ConnectorKind = "Windmill"
+	CONNECTORKIND_ZAPIER      ConnectorKind = "Zapier"
 )
 
 // All allowed values of ConnectorKind enum
@@ -128,4 +128,3 @@ func (v *NullableConnectorKind) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-

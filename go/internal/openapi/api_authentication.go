@@ -19,16 +19,15 @@ import (
 	"strings"
 )
 
-
 // AuthenticationAPIService AuthenticationAPI service
 type AuthenticationAPIService service
 
 type ApiV1AuthenticationAppPortalAccessRequest struct {
-	ctx context.Context
-	ApiService *AuthenticationAPIService
-	appId string
+	ctx               context.Context
+	ApiService        *AuthenticationAPIService
+	appId             string
 	appPortalAccessIn *AppPortalAccessIn
-	idempotencyKey *string
+	idempotencyKey    *string
 }
 
 func (r ApiV1AuthenticationAppPortalAccessRequest) AppPortalAccessIn(appPortalAccessIn AppPortalAccessIn) ApiV1AuthenticationAppPortalAccessRequest {
@@ -51,26 +50,27 @@ V1AuthenticationAppPortalAccess Get Consumer App Portal Access
 
 Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param appId The app's ID or UID
- @return ApiV1AuthenticationAppPortalAccessRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param appId The app's ID or UID
+	@return ApiV1AuthenticationAppPortalAccessRequest
 */
 func (a *AuthenticationAPIService) V1AuthenticationAppPortalAccess(ctx context.Context, appId string) ApiV1AuthenticationAppPortalAccessRequest {
 	return ApiV1AuthenticationAppPortalAccessRequest{
 		ApiService: a,
-		ctx: ctx,
-		appId: appId,
+		ctx:        ctx,
+		appId:      appId,
 	}
 }
 
 // Execute executes the request
-//  @return AppPortalAccessOut
+//
+//	@return AppPortalAccessOut
 func (a *AuthenticationAPIService) V1AuthenticationAppPortalAccessExecute(r ApiV1AuthenticationAppPortalAccessRequest) (*AppPortalAccessOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *AppPortalAccessOut
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *AppPortalAccessOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "AuthenticationAPIService.V1AuthenticationAppPortalAccess")
@@ -145,8 +145,8 @@ func (a *AuthenticationAPIService) V1AuthenticationAppPortalAccessExecute(r ApiV
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -156,8 +156,8 @@ func (a *AuthenticationAPIService) V1AuthenticationAppPortalAccessExecute(r ApiV
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -167,8 +167,8 @@ func (a *AuthenticationAPIService) V1AuthenticationAppPortalAccessExecute(r ApiV
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -178,8 +178,8 @@ func (a *AuthenticationAPIService) V1AuthenticationAppPortalAccessExecute(r ApiV
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -189,8 +189,8 @@ func (a *AuthenticationAPIService) V1AuthenticationAppPortalAccessExecute(r ApiV
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -200,8 +200,8 @@ func (a *AuthenticationAPIService) V1AuthenticationAppPortalAccessExecute(r ApiV
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -211,8 +211,8 @@ func (a *AuthenticationAPIService) V1AuthenticationAppPortalAccessExecute(r ApiV
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -230,10 +230,10 @@ func (a *AuthenticationAPIService) V1AuthenticationAppPortalAccessExecute(r ApiV
 }
 
 type ApiV1AuthenticationCreateMessageTokenRequest struct {
-	ctx context.Context
-	ApiService *AuthenticationAPIService
-	appId string
-	createTokenIn *CreateTokenIn
+	ctx            context.Context
+	ApiService     *AuthenticationAPIService
+	appId          string
+	createTokenIn  *CreateTokenIn
 	idempotencyKey *string
 }
 
@@ -257,26 +257,27 @@ V1AuthenticationCreateMessageToken Create Cmg Token
 
 Create a new access token that only allows creating messages inside this application.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param appId The app's ID or UID
- @return ApiV1AuthenticationCreateMessageTokenRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param appId The app's ID or UID
+	@return ApiV1AuthenticationCreateMessageTokenRequest
 */
 func (a *AuthenticationAPIService) V1AuthenticationCreateMessageToken(ctx context.Context, appId string) ApiV1AuthenticationCreateMessageTokenRequest {
 	return ApiV1AuthenticationCreateMessageTokenRequest{
 		ApiService: a,
-		ctx: ctx,
-		appId: appId,
+		ctx:        ctx,
+		appId:      appId,
 	}
 }
 
 // Execute executes the request
-//  @return AuthTokenOut
+//
+//	@return AuthTokenOut
 func (a *AuthenticationAPIService) V1AuthenticationCreateMessageTokenExecute(r ApiV1AuthenticationCreateMessageTokenRequest) (*AuthTokenOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *AuthTokenOut
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *AuthTokenOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "AuthenticationAPIService.V1AuthenticationCreateMessageToken")
@@ -351,8 +352,8 @@ func (a *AuthenticationAPIService) V1AuthenticationCreateMessageTokenExecute(r A
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -362,8 +363,8 @@ func (a *AuthenticationAPIService) V1AuthenticationCreateMessageTokenExecute(r A
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -373,8 +374,8 @@ func (a *AuthenticationAPIService) V1AuthenticationCreateMessageTokenExecute(r A
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -384,8 +385,8 @@ func (a *AuthenticationAPIService) V1AuthenticationCreateMessageTokenExecute(r A
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -395,8 +396,8 @@ func (a *AuthenticationAPIService) V1AuthenticationCreateMessageTokenExecute(r A
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -406,8 +407,8 @@ func (a *AuthenticationAPIService) V1AuthenticationCreateMessageTokenExecute(r A
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -417,8 +418,8 @@ func (a *AuthenticationAPIService) V1AuthenticationCreateMessageTokenExecute(r A
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -436,9 +437,9 @@ func (a *AuthenticationAPIService) V1AuthenticationCreateMessageTokenExecute(r A
 }
 
 type ApiV1AuthenticationDashboardAccessRequest struct {
-	ctx context.Context
-	ApiService *AuthenticationAPIService
-	appId string
+	ctx            context.Context
+	ApiService     *AuthenticationAPIService
+	appId          string
 	idempotencyKey *string
 }
 
@@ -459,29 +460,31 @@ DEPRECATED: Please use `app-portal-access` instead.
 
 Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param appId The app's ID or UID
- @return ApiV1AuthenticationDashboardAccessRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param appId The app's ID or UID
+	@return ApiV1AuthenticationDashboardAccessRequest
 
 Deprecated
 */
 func (a *AuthenticationAPIService) V1AuthenticationDashboardAccess(ctx context.Context, appId string) ApiV1AuthenticationDashboardAccessRequest {
 	return ApiV1AuthenticationDashboardAccessRequest{
 		ApiService: a,
-		ctx: ctx,
-		appId: appId,
+		ctx:        ctx,
+		appId:      appId,
 	}
 }
 
 // Execute executes the request
-//  @return DashboardAccessOut
+//
+//	@return DashboardAccessOut
+//
 // Deprecated
 func (a *AuthenticationAPIService) V1AuthenticationDashboardAccessExecute(r ApiV1AuthenticationDashboardAccessRequest) (*DashboardAccessOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *DashboardAccessOut
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *DashboardAccessOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "AuthenticationAPIService.V1AuthenticationDashboardAccess")
@@ -551,8 +554,8 @@ func (a *AuthenticationAPIService) V1AuthenticationDashboardAccessExecute(r ApiV
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -562,8 +565,8 @@ func (a *AuthenticationAPIService) V1AuthenticationDashboardAccessExecute(r ApiV
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -573,8 +576,8 @@ func (a *AuthenticationAPIService) V1AuthenticationDashboardAccessExecute(r ApiV
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -584,8 +587,8 @@ func (a *AuthenticationAPIService) V1AuthenticationDashboardAccessExecute(r ApiV
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -595,8 +598,8 @@ func (a *AuthenticationAPIService) V1AuthenticationDashboardAccessExecute(r ApiV
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -606,8 +609,8 @@ func (a *AuthenticationAPIService) V1AuthenticationDashboardAccessExecute(r ApiV
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -617,8 +620,8 @@ func (a *AuthenticationAPIService) V1AuthenticationDashboardAccessExecute(r ApiV
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -636,8 +639,8 @@ func (a *AuthenticationAPIService) V1AuthenticationDashboardAccessExecute(r ApiV
 }
 
 type ApiV1AuthenticationExchangeOneTimeTokenRequest struct {
-	ctx context.Context
-	ApiService *AuthenticationAPIService
+	ctx            context.Context
+	ApiService     *AuthenticationAPIService
 	oneTimeTokenIn *OneTimeTokenIn
 	idempotencyKey *string
 }
@@ -662,24 +665,25 @@ V1AuthenticationExchangeOneTimeToken Exchange One Time Token
 
 This is a one time token.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiV1AuthenticationExchangeOneTimeTokenRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiV1AuthenticationExchangeOneTimeTokenRequest
 */
 func (a *AuthenticationAPIService) V1AuthenticationExchangeOneTimeToken(ctx context.Context) ApiV1AuthenticationExchangeOneTimeTokenRequest {
 	return ApiV1AuthenticationExchangeOneTimeTokenRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return OneTimeTokenOut
+//
+//	@return OneTimeTokenOut
 func (a *AuthenticationAPIService) V1AuthenticationExchangeOneTimeTokenExecute(r ApiV1AuthenticationExchangeOneTimeTokenRequest) (*OneTimeTokenOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *OneTimeTokenOut
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *OneTimeTokenOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "AuthenticationAPIService.V1AuthenticationExchangeOneTimeToken")
@@ -747,8 +751,8 @@ func (a *AuthenticationAPIService) V1AuthenticationExchangeOneTimeTokenExecute(r
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -758,8 +762,8 @@ func (a *AuthenticationAPIService) V1AuthenticationExchangeOneTimeTokenExecute(r
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -769,8 +773,8 @@ func (a *AuthenticationAPIService) V1AuthenticationExchangeOneTimeTokenExecute(r
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -780,8 +784,8 @@ func (a *AuthenticationAPIService) V1AuthenticationExchangeOneTimeTokenExecute(r
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -791,8 +795,8 @@ func (a *AuthenticationAPIService) V1AuthenticationExchangeOneTimeTokenExecute(r
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -802,8 +806,8 @@ func (a *AuthenticationAPIService) V1AuthenticationExchangeOneTimeTokenExecute(r
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -813,8 +817,8 @@ func (a *AuthenticationAPIService) V1AuthenticationExchangeOneTimeTokenExecute(r
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -832,11 +836,11 @@ func (a *AuthenticationAPIService) V1AuthenticationExchangeOneTimeTokenExecute(r
 }
 
 type ApiV1AuthenticationExpireAllRequest struct {
-	ctx context.Context
-	ApiService *AuthenticationAPIService
-	appId string
+	ctx                      context.Context
+	ApiService               *AuthenticationAPIService
+	appId                    string
 	applicationTokenExpireIn *ApplicationTokenExpireIn
-	idempotencyKey *string
+	idempotencyKey           *string
 }
 
 func (r ApiV1AuthenticationExpireAllRequest) ApplicationTokenExpireIn(applicationTokenExpireIn ApplicationTokenExpireIn) ApiV1AuthenticationExpireAllRequest {
@@ -859,24 +863,24 @@ V1AuthenticationExpireAll Expire All
 
 Expire all of the tokens associated with a specific application.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param appId The app's ID or UID
- @return ApiV1AuthenticationExpireAllRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param appId The app's ID or UID
+	@return ApiV1AuthenticationExpireAllRequest
 */
 func (a *AuthenticationAPIService) V1AuthenticationExpireAll(ctx context.Context, appId string) ApiV1AuthenticationExpireAllRequest {
 	return ApiV1AuthenticationExpireAllRequest{
 		ApiService: a,
-		ctx: ctx,
-		appId: appId,
+		ctx:        ctx,
+		appId:      appId,
 	}
 }
 
 // Execute executes the request
 func (a *AuthenticationAPIService) V1AuthenticationExpireAllExecute(r ApiV1AuthenticationExpireAllRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
+		localVarHTTPMethod = http.MethodPost
+		localVarPostBody   interface{}
+		formFiles          []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "AuthenticationAPIService.V1AuthenticationExpireAll")
@@ -951,8 +955,8 @@ func (a *AuthenticationAPIService) V1AuthenticationExpireAllExecute(r ApiV1Authe
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -962,8 +966,8 @@ func (a *AuthenticationAPIService) V1AuthenticationExpireAllExecute(r ApiV1Authe
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -973,8 +977,8 @@ func (a *AuthenticationAPIService) V1AuthenticationExpireAllExecute(r ApiV1Authe
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -984,8 +988,8 @@ func (a *AuthenticationAPIService) V1AuthenticationExpireAllExecute(r ApiV1Authe
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -995,8 +999,8 @@ func (a *AuthenticationAPIService) V1AuthenticationExpireAllExecute(r ApiV1Authe
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -1006,8 +1010,8 @@ func (a *AuthenticationAPIService) V1AuthenticationExpireAllExecute(r ApiV1Authe
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -1017,8 +1021,8 @@ func (a *AuthenticationAPIService) V1AuthenticationExpireAllExecute(r ApiV1Authe
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarHTTPResponse, newErr
 	}
@@ -1027,9 +1031,9 @@ func (a *AuthenticationAPIService) V1AuthenticationExpireAllExecute(r ApiV1Authe
 }
 
 type ApiV1AuthenticationGetPollerTokenRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *AuthenticationAPIService
-	appId string
+	appId      string
 	endpointId string
 }
 
@@ -1042,28 +1046,29 @@ V1AuthenticationGetPollerToken Get Poller Token
 
 Get the current auth token for the poller.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param appId The app's ID or UID
- @param endpointId The ep's ID or UID
- @return ApiV1AuthenticationGetPollerTokenRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param appId The app's ID or UID
+	@param endpointId The ep's ID or UID
+	@return ApiV1AuthenticationGetPollerTokenRequest
 */
 func (a *AuthenticationAPIService) V1AuthenticationGetPollerToken(ctx context.Context, appId string, endpointId string) ApiV1AuthenticationGetPollerTokenRequest {
 	return ApiV1AuthenticationGetPollerTokenRequest{
 		ApiService: a,
-		ctx: ctx,
-		appId: appId,
+		ctx:        ctx,
+		appId:      appId,
 		endpointId: endpointId,
 	}
 }
 
 // Execute executes the request
-//  @return AuthTokenOut
+//
+//	@return AuthTokenOut
 func (a *AuthenticationAPIService) V1AuthenticationGetPollerTokenExecute(r ApiV1AuthenticationGetPollerTokenRequest) (*AuthTokenOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *AuthTokenOut
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *AuthTokenOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "AuthenticationAPIService.V1AuthenticationGetPollerToken")
@@ -1137,8 +1142,8 @@ func (a *AuthenticationAPIService) V1AuthenticationGetPollerTokenExecute(r ApiV1
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -1148,8 +1153,8 @@ func (a *AuthenticationAPIService) V1AuthenticationGetPollerTokenExecute(r ApiV1
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -1159,8 +1164,8 @@ func (a *AuthenticationAPIService) V1AuthenticationGetPollerTokenExecute(r ApiV1
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -1170,8 +1175,8 @@ func (a *AuthenticationAPIService) V1AuthenticationGetPollerTokenExecute(r ApiV1
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -1181,8 +1186,8 @@ func (a *AuthenticationAPIService) V1AuthenticationGetPollerTokenExecute(r ApiV1
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -1192,8 +1197,8 @@ func (a *AuthenticationAPIService) V1AuthenticationGetPollerTokenExecute(r ApiV1
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -1203,8 +1208,8 @@ func (a *AuthenticationAPIService) V1AuthenticationGetPollerTokenExecute(r ApiV1
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -1222,8 +1227,8 @@ func (a *AuthenticationAPIService) V1AuthenticationGetPollerTokenExecute(r ApiV1
 }
 
 type ApiV1AuthenticationLogoutRequest struct {
-	ctx context.Context
-	ApiService *AuthenticationAPIService
+	ctx            context.Context
+	ApiService     *AuthenticationAPIService
 	idempotencyKey *string
 }
 
@@ -1244,22 +1249,22 @@ Logout an app token.
 
 Trying to log out other tokens will fail.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiV1AuthenticationLogoutRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiV1AuthenticationLogoutRequest
 */
 func (a *AuthenticationAPIService) V1AuthenticationLogout(ctx context.Context) ApiV1AuthenticationLogoutRequest {
 	return ApiV1AuthenticationLogoutRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
 func (a *AuthenticationAPIService) V1AuthenticationLogoutExecute(r ApiV1AuthenticationLogoutRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
+		localVarHTTPMethod = http.MethodPost
+		localVarPostBody   interface{}
+		formFiles          []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "AuthenticationAPIService.V1AuthenticationLogout")
@@ -1322,8 +1327,8 @@ func (a *AuthenticationAPIService) V1AuthenticationLogoutExecute(r ApiV1Authenti
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -1333,8 +1338,8 @@ func (a *AuthenticationAPIService) V1AuthenticationLogoutExecute(r ApiV1Authenti
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -1344,8 +1349,8 @@ func (a *AuthenticationAPIService) V1AuthenticationLogoutExecute(r ApiV1Authenti
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -1355,8 +1360,8 @@ func (a *AuthenticationAPIService) V1AuthenticationLogoutExecute(r ApiV1Authenti
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -1366,8 +1371,8 @@ func (a *AuthenticationAPIService) V1AuthenticationLogoutExecute(r ApiV1Authenti
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -1377,8 +1382,8 @@ func (a *AuthenticationAPIService) V1AuthenticationLogoutExecute(r ApiV1Authenti
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -1388,8 +1393,8 @@ func (a *AuthenticationAPIService) V1AuthenticationLogoutExecute(r ApiV1Authenti
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarHTTPResponse, newErr
 	}
@@ -1398,12 +1403,12 @@ func (a *AuthenticationAPIService) V1AuthenticationLogoutExecute(r ApiV1Authenti
 }
 
 type ApiV1AuthenticationRotatePollerTokenRequest struct {
-	ctx context.Context
-	ApiService *AuthenticationAPIService
-	appId string
-	endpointId string
+	ctx                 context.Context
+	ApiService          *AuthenticationAPIService
+	appId               string
+	endpointId          string
 	rotatePollerTokenIn *RotatePollerTokenIn
-	idempotencyKey *string
+	idempotencyKey      *string
 }
 
 func (r ApiV1AuthenticationRotatePollerTokenRequest) RotatePollerTokenIn(rotatePollerTokenIn RotatePollerTokenIn) ApiV1AuthenticationRotatePollerTokenRequest {
@@ -1426,28 +1431,29 @@ V1AuthenticationRotatePollerToken Rotate Poller Token
 
 Create a new auth token that can for the poller API.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param appId The app's ID or UID
- @param endpointId The ep's ID or UID
- @return ApiV1AuthenticationRotatePollerTokenRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param appId The app's ID or UID
+	@param endpointId The ep's ID or UID
+	@return ApiV1AuthenticationRotatePollerTokenRequest
 */
 func (a *AuthenticationAPIService) V1AuthenticationRotatePollerToken(ctx context.Context, appId string, endpointId string) ApiV1AuthenticationRotatePollerTokenRequest {
 	return ApiV1AuthenticationRotatePollerTokenRequest{
 		ApiService: a,
-		ctx: ctx,
-		appId: appId,
+		ctx:        ctx,
+		appId:      appId,
 		endpointId: endpointId,
 	}
 }
 
 // Execute executes the request
-//  @return AuthTokenOut
+//
+//	@return AuthTokenOut
 func (a *AuthenticationAPIService) V1AuthenticationRotatePollerTokenExecute(r ApiV1AuthenticationRotatePollerTokenRequest) (*AuthTokenOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *AuthTokenOut
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *AuthTokenOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "AuthenticationAPIService.V1AuthenticationRotatePollerToken")
@@ -1529,8 +1535,8 @@ func (a *AuthenticationAPIService) V1AuthenticationRotatePollerTokenExecute(r Ap
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -1540,8 +1546,8 @@ func (a *AuthenticationAPIService) V1AuthenticationRotatePollerTokenExecute(r Ap
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -1551,8 +1557,8 @@ func (a *AuthenticationAPIService) V1AuthenticationRotatePollerTokenExecute(r Ap
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -1562,8 +1568,8 @@ func (a *AuthenticationAPIService) V1AuthenticationRotatePollerTokenExecute(r Ap
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -1573,8 +1579,8 @@ func (a *AuthenticationAPIService) V1AuthenticationRotatePollerTokenExecute(r Ap
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -1584,8 +1590,8 @@ func (a *AuthenticationAPIService) V1AuthenticationRotatePollerTokenExecute(r Ap
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -1595,8 +1601,8 @@ func (a *AuthenticationAPIService) V1AuthenticationRotatePollerTokenExecute(r Ap
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -1614,11 +1620,11 @@ func (a *AuthenticationAPIService) V1AuthenticationRotatePollerTokenExecute(r Ap
 }
 
 type ApiV1AuthenticationStreamPortalAccessRequest struct {
-	ctx context.Context
-	ApiService *AuthenticationAPIService
-	streamId string
+	ctx                  context.Context
+	ApiService           *AuthenticationAPIService
+	streamId             string
 	streamPortalAccessIn *StreamPortalAccessIn
-	idempotencyKey *string
+	idempotencyKey       *string
 }
 
 func (r ApiV1AuthenticationStreamPortalAccessRequest) StreamPortalAccessIn(streamPortalAccessIn StreamPortalAccessIn) ApiV1AuthenticationStreamPortalAccessRequest {
@@ -1641,26 +1647,27 @@ V1AuthenticationStreamPortalAccess Get Stream Portal Access
 
 Use this function to get magic links (and authentication codes) for connecting your users to the Stream Consumer Portal.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param streamId
- @return ApiV1AuthenticationStreamPortalAccessRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param streamId
+	@return ApiV1AuthenticationStreamPortalAccessRequest
 */
 func (a *AuthenticationAPIService) V1AuthenticationStreamPortalAccess(ctx context.Context, streamId string) ApiV1AuthenticationStreamPortalAccessRequest {
 	return ApiV1AuthenticationStreamPortalAccessRequest{
 		ApiService: a,
-		ctx: ctx,
-		streamId: streamId,
+		ctx:        ctx,
+		streamId:   streamId,
 	}
 }
 
 // Execute executes the request
-//  @return AppPortalAccessOut
+//
+//	@return AppPortalAccessOut
 func (a *AuthenticationAPIService) V1AuthenticationStreamPortalAccessExecute(r ApiV1AuthenticationStreamPortalAccessRequest) (*AppPortalAccessOut, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *AppPortalAccessOut
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *AppPortalAccessOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "AuthenticationAPIService.V1AuthenticationStreamPortalAccess")
@@ -1735,8 +1742,8 @@ func (a *AuthenticationAPIService) V1AuthenticationStreamPortalAccessExecute(r A
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -1746,8 +1753,8 @@ func (a *AuthenticationAPIService) V1AuthenticationStreamPortalAccessExecute(r A
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -1757,8 +1764,8 @@ func (a *AuthenticationAPIService) V1AuthenticationStreamPortalAccessExecute(r A
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -1768,8 +1775,8 @@ func (a *AuthenticationAPIService) V1AuthenticationStreamPortalAccessExecute(r A
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
@@ -1779,8 +1786,8 @@ func (a *AuthenticationAPIService) V1AuthenticationStreamPortalAccessExecute(r A
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -1790,8 +1797,8 @@ func (a *AuthenticationAPIService) V1AuthenticationStreamPortalAccessExecute(r A
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -1801,8 +1808,8 @@ func (a *AuthenticationAPIService) V1AuthenticationStreamPortalAccessExecute(r A
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}

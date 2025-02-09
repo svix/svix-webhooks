@@ -11,8 +11,8 @@ API version: 1.1.1
 package openapi
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -22,15 +22,15 @@ var _ MappedNullable = &EndpointUpdate{}
 // EndpointUpdate struct for EndpointUpdate
 type EndpointUpdate struct {
 	// List of message channels this endpoint listens to (omit for all).
-	Channels []string `json:"channels,omitempty"`
-	Description *string `json:"description,omitempty"`
-	Disabled *bool `json:"disabled,omitempty"`
-	FilterTypes []string `json:"filterTypes,omitempty"`
-	Metadata *map[string]string `json:"metadata,omitempty"`
-	RateLimit *int32 `json:"rateLimit,omitempty"`
+	Channels    []string           `json:"channels,omitempty"`
+	Description *string            `json:"description,omitempty"`
+	Disabled    *bool              `json:"disabled,omitempty"`
+	FilterTypes []string           `json:"filterTypes,omitempty"`
+	Metadata    *map[string]string `json:"metadata,omitempty"`
+	RateLimit   *int32             `json:"rateLimit,omitempty"`
 	// Optional unique identifier for the endpoint.
 	Uid *string `json:"uid,omitempty" validate:"regexp=^[a-zA-Z0-9\\\\-_.]+$"`
-	Url string `json:"url"`
+	Url string  `json:"url"`
 	// Deprecated
 	Version *int32 `json:"version,omitempty"`
 }
@@ -351,7 +351,7 @@ func (o *EndpointUpdate) SetVersion(v int32) {
 }
 
 func (o EndpointUpdate) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -401,10 +401,10 @@ func (o *EndpointUpdate) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -460,5 +460,3 @@ func (v *NullableEndpointUpdate) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

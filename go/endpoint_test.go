@@ -2,9 +2,10 @@ package svix_test
 
 import (
 	"encoding/json"
-	svix "github.com/svix/svix-webhooks/go"
 	"strings"
 	"testing"
+
+	svix "github.com/svix/svix-webhooks/go"
 )
 
 func TestEndpoint_Serialization(t *testing.T) {
