@@ -11,7 +11,6 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
-	"os"
 	"reflect"
 	"strconv"
 	"strings"
@@ -23,6 +22,7 @@ type SvixHttpClient struct {
 	HTTPClient     *http.Client
 	RetrySchedule  []time.Duration
 	BaseURL        string
+	Debug          bool
 }
 
 func defaultSvixHttpClient() SvixHttpClient {
@@ -30,7 +30,8 @@ func defaultSvixHttpClient() SvixHttpClient {
 		DefaultHeaders: map[string]string{},
 		HTTPClient:     &http.Client{Timeout: 60 * time.Second},
 		RetrySchedule:  []time.Duration{50 * time.Microsecond, 100 * time.Microsecond, 200 * time.Microsecond},
-		BaseURL:        "https://api.eu.staging.svix.com",
+		BaseURL:        "https://api.eu.svix.com",
+		Debug:          false,
 	}
 }
 
@@ -96,7 +97,7 @@ func executeRequest[T any](
 }
 
 func executeRequestWithRetries(client *SvixHttpClient, request *http.Request) (*http.Response, error) {
-	if os.Getenv("DEBUG") == "true" {
+	if client.Debug {
 		log.Printf("URL: %s", request.URL)
 		dump, err := httputil.DumpRequestOut(request, true)
 		if err != nil {
@@ -117,7 +118,7 @@ func executeRequestWithRetries(client *SvixHttpClient, request *http.Request) (*
 		resp, err = client.HTTPClient.Do(request)
 	}
 
-	if os.Getenv("DEBUG") == "true" {
+	if client.Debug {
 		dump, err := httputil.DumpResponse(resp, true)
 		if err != nil {
 			return resp, err

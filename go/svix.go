@@ -16,6 +16,7 @@ type (
 		ServerUrl     *url.URL
 		HTTPClient    *http.Client
 		RetrySchedule *[]time.Duration
+		Debug         bool
 	}
 	Svix struct {
 		Authentication             *Authentication
@@ -146,15 +147,19 @@ func New(token string, options *SvixOptions) (*Svix, error) {
 		svixHttpClient.BaseURL = options.ServerUrl.String()
 	}
 
-	if options != nil && options.HTTPClient != nil {
-		svixHttpClient.HTTPClient = options.HTTPClient
-	}
+	if options != nil {
+		if options.RetrySchedule != nil {
+			if len(*options.RetrySchedule) > 5 {
+				return nil, fmt.Errorf("number of retries must not exceed 5")
+			}
+			svixHttpClient.RetrySchedule = *options.RetrySchedule
 
-	if options != nil && options.RetrySchedule != nil {
-		if len(*options.RetrySchedule) > 5 {
-			return nil, fmt.Errorf("number of retries must not exceed 5")
 		}
-		svixHttpClient.RetrySchedule = *options.RetrySchedule
+		if options.HTTPClient != nil {
+			svixHttpClient.HTTPClient = options.HTTPClient
+		}
+		svixHttpClient.Debug = options.Debug
+
 	}
 
 	svixHttpClient.DefaultHeaders["Authorization"] = fmt.Sprintf("Bearer %s", token)
