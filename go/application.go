@@ -1,14 +1,14 @@
-// this file is @generated
+// Package svix this file is @generated DO NOT EDIT
 package svix
 
 import (
 	"context"
-
-	"github.com/svix/svix-webhooks/go/internal/openapi"
+	"encoding/json"
+	"fmt"
 )
 
 type Application struct {
-	api *openapi.APIClient
+	_client *APIClient
 }
 
 type ApplicationListOptions struct {
@@ -20,32 +20,42 @@ type ApplicationListOptions struct {
 	Order *Ordering
 }
 
+type ApplicationCreateOptions struct {
+	IdempotencyKey *string
+}
+
 // List of all the organization's applications.
 func (application *Application) List(
 	ctx context.Context,
-	options *ApplicationListOptions,
+	o *ApplicationListOptions,
 ) (*ListResponseApplicationOut, error) {
-	req := application.api.ApplicationAPI.V1ApplicationList(
+	pathMap := map[string]string{}
+	queryMap := map[string]string{}
+	headerMap := map[string]string{}
+	var jsonBody []byte
+
+	if o != nil {
+		var err error
+		SerializeParamToMap("limit", o.Limit, queryMap, &err)
+		SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+		SerializeParamToMap("order", o.Order, queryMap, &err)
+		if err != nil {
+			return nil, err
+		}
+	}
+	ret, apiErr := executeRequest[ListResponseApplicationOut](
 		ctx,
+		application._client,
+		"GET",
+		"/api/v1/app",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
 	)
-
-	if options != nil {
-		if options.Limit != nil {
-			req = req.Limit(*options.Limit)
-		}
-		if options.Iterator != nil {
-			req = req.Iterator(*options.Iterator)
-		}
-		if options.Order != nil {
-			req = req.Order(*options.Order)
-		}
+	if apiErr != nil {
+		return nil, apiErr
 	}
-
-	ret, res, err := req.Execute()
-	if err != nil {
-		return nil, wrapError(err, res)
-	}
-
 	return ret, nil
 }
 
@@ -53,35 +63,85 @@ func (application *Application) List(
 func (application *Application) Create(
 	ctx context.Context,
 	applicationIn *ApplicationIn,
+	o *ApplicationCreateOptions,
 ) (*ApplicationOut, error) {
-	return application.CreateWithOptions(
-		ctx,
-		applicationIn,
-		nil,
-	)
-}
+	if applicationIn == nil {
+		return nil, fmt.Errorf("Application.Create(), applicationIn must not be nil")
+	}
+	pathMap := map[string]string{}
+	queryMap := map[string]string{
+		"get_if_exists": "false",
+	}
+	headerMap := map[string]string{}
+	var jsonBody []byte
 
-// Create a new application.
-func (application *Application) CreateWithOptions(
-	ctx context.Context,
-	applicationIn *ApplicationIn,
-	options *PostOptions,
-) (*ApplicationOut, error) {
-	req := application.api.ApplicationAPI.V1ApplicationCreate(
-		ctx,
-	).ApplicationIn(*applicationIn)
-
-	if options != nil {
-		if options.IdempotencyKey != nil {
-			req = req.IdempotencyKey(*options.IdempotencyKey)
+	if o != nil {
+		var err error
+		SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		if err != nil {
+			return nil, err
 		}
 	}
-
-	ret, res, err := req.Execute()
+	jsonBody, err := json.Marshal(applicationIn)
 	if err != nil {
-		return nil, wrapError(err, res)
+		return nil, err
 	}
+	ret, apiErr := executeRequest[ApplicationOut](
+		ctx,
+		application._client,
+		"POST",
+		"/api/v1/app",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
+	)
+	if apiErr != nil {
+		return nil, apiErr
+	}
+	return ret, nil
+}
 
+// Get or create a new application.
+func (application *Application) GetOrCreate(
+	ctx context.Context,
+	applicationIn *ApplicationIn,
+	o *ApplicationCreateOptions,
+) (*ApplicationOut, error) {
+	if applicationIn == nil {
+		return nil, fmt.Errorf("Application.GetOrCreate(), applicationIn must not be nil")
+	}
+	pathMap := map[string]string{}
+	queryMap := map[string]string{
+		"get_if_exists": "true",
+	}
+	headerMap := map[string]string{}
+	var jsonBody []byte
+
+	if o != nil {
+		var err error
+		SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		if err != nil {
+			return nil, err
+		}
+	}
+	jsonBody, err := json.Marshal(applicationIn)
+	if err != nil {
+		return nil, err
+	}
+	ret, apiErr := executeRequest[ApplicationOut](
+		ctx,
+		application._client,
+		"POST",
+		"/api/v1/app",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
+	)
+	if apiErr != nil {
+		return nil, apiErr
+	}
 	return ret, nil
 }
 
@@ -90,16 +150,26 @@ func (application *Application) Get(
 	ctx context.Context,
 	appId string,
 ) (*ApplicationOut, error) {
-	req := application.api.ApplicationAPI.V1ApplicationGet(
-		ctx,
-		appId,
-	)
-
-	ret, res, err := req.Execute()
-	if err != nil {
-		return nil, wrapError(err, res)
+	pathMap := map[string]string{
+		"app_id": appId,
 	}
+	queryMap := map[string]string{}
+	headerMap := map[string]string{}
+	var jsonBody []byte
 
+	ret, apiErr := executeRequest[ApplicationOut](
+		ctx,
+		application._client,
+		"GET",
+		"/api/v1/app/{app_id}",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
+	)
+	if apiErr != nil {
+		return nil, apiErr
+	}
 	return ret, nil
 }
 
@@ -109,16 +179,33 @@ func (application *Application) Update(
 	appId string,
 	applicationIn *ApplicationIn,
 ) (*ApplicationOut, error) {
-	req := application.api.ApplicationAPI.V1ApplicationUpdate(
-		ctx,
-		appId,
-	).ApplicationIn(*applicationIn)
-
-	ret, res, err := req.Execute()
-	if err != nil {
-		return nil, wrapError(err, res)
+	if applicationIn == nil {
+		return nil, fmt.Errorf("Application.Update(), applicationIn must not be nil")
 	}
+	pathMap := map[string]string{
+		"app_id": appId,
+	}
+	queryMap := map[string]string{}
+	headerMap := map[string]string{}
+	var jsonBody []byte
 
+	jsonBody, err := json.Marshal(applicationIn)
+	if err != nil {
+		return nil, err
+	}
+	ret, apiErr := executeRequest[ApplicationOut](
+		ctx,
+		application._client,
+		"PUT",
+		"/api/v1/app/{app_id}",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
+	)
+	if apiErr != nil {
+		return nil, apiErr
+	}
 	return ret, nil
 }
 
@@ -127,13 +214,27 @@ func (application *Application) Delete(
 	ctx context.Context,
 	appId string,
 ) error {
-	req := application.api.ApplicationAPI.V1ApplicationDelete(
-		ctx,
-		appId,
-	)
+	pathMap := map[string]string{
+		"app_id": appId,
+	}
+	queryMap := map[string]string{}
+	headerMap := map[string]string{}
+	var jsonBody []byte
 
-	res, err := req.Execute()
-	return wrapError(err, res)
+	_, apiErr := executeRequest[any](
+		ctx,
+		application._client,
+		"DELETE",
+		"/api/v1/app/{app_id}",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
+	)
+	if apiErr != nil {
+		return apiErr
+	}
+	return nil
 }
 
 // Partially update an application.
@@ -142,15 +243,32 @@ func (application *Application) Patch(
 	appId string,
 	applicationPatch *ApplicationPatch,
 ) (*ApplicationOut, error) {
-	req := application.api.ApplicationAPI.V1ApplicationPatch(
-		ctx,
-		appId,
-	).ApplicationPatch(*applicationPatch)
-
-	ret, res, err := req.Execute()
-	if err != nil {
-		return nil, wrapError(err, res)
+	if applicationPatch == nil {
+		return nil, fmt.Errorf("Application.Patch(), applicationPatch must not be nil")
 	}
+	pathMap := map[string]string{
+		"app_id": appId,
+	}
+	queryMap := map[string]string{}
+	headerMap := map[string]string{}
+	var jsonBody []byte
 
+	jsonBody, err := json.Marshal(applicationPatch)
+	if err != nil {
+		return nil, err
+	}
+	ret, apiErr := executeRequest[ApplicationOut](
+		ctx,
+		application._client,
+		"PATCH",
+		"/api/v1/app/{app_id}",
+		pathMap,
+		queryMap,
+		headerMap,
+		jsonBody,
+	)
+	if apiErr != nil {
+		return nil, apiErr
+	}
 	return ret, nil
 }
