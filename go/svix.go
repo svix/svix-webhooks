@@ -13,11 +13,9 @@ import (
 
 type (
 	SvixOptions struct {
-		Debug bool
-
-		// Overrides the base URL (protocol + hostname) used for all requests sent by this Svix client. (Useful for testing)
-		ServerUrl  *url.URL
-		HTTPClient *http.Client
+		ServerUrl     *url.URL
+		HTTPClient    *http.Client
+		RetrySchedule *[]time.Duration
 	}
 	Svix struct {
 		Authentication             *Authentication
@@ -95,16 +93,14 @@ type (
 	ReplayIn                                  = openapi.ReplayIn
 	ReplayOut                                 = openapi.ReplayOut
 	StatusCodeClass                           = openapi.StatusCodeClass
+	OperationalWebhookEndpointHeadersOut      = openapi.OperationalWebhookEndpointHeadersOut
+	OperationalWebhookEndpointHeadersIn       = openapi.OperationalWebhookEndpointHeadersIn
 
 	// Deprecated: Use EndpointGetStatsOptions
 	EndpointStatsOptions = EndpointGetStatsOptions
 	// Deprecated: Use ListResponseMessageAttemptOut
 	ListResponseMessageAttemptEndpointOut = openapi.ListResponseMessageAttemptOut
 )
-
-var defaultHTTPClient = &http.Client{
-	Timeout: 60 * time.Second,
-}
 
 func String(s string) *string {
 	return &s
@@ -134,72 +130,64 @@ func NullableBool(b *bool) *openapi.NullableBool {
 	return openapi.NewNullableBool(b)
 }
 
-func New(token string, options *SvixOptions) *Svix {
-	conf := openapi.NewConfiguration()
-	conf.Scheme = "https"
-	conf.Host = "api.svix.com"
-	conf.HTTPClient = defaultHTTPClient
-
-	var tokenParts = strings.Split(token, ".")
-	var region = tokenParts[len(tokenParts)-1]
-	if region == "us" {
-		conf.Host = "api.us.svix.com"
-	} else if region == "eu" {
-		conf.Host = "api.eu.svix.com"
-	} else if region == "in" {
-		conf.Host = "api.in.svix.com"
-	}
-
-	if options != nil {
-		conf.Debug = options.Debug
-		if options.ServerUrl != nil {
-			conf.Scheme = options.ServerUrl.Scheme
-			conf.Host = options.ServerUrl.Host
+func New(token string, options *SvixOptions) (*Svix, error) {
+	svixHttpClient := defaultSvixHttpClient()
+	if options != nil && options.ServerUrl == nil {
+		var tokenParts = strings.Split(token, ".")
+		var region = tokenParts[len(tokenParts)-1]
+		if region == "us" {
+			svixHttpClient.BaseURL = "https://api.us.svix.com"
+		} else if region == "eu" {
+			svixHttpClient.BaseURL = "https://api.eu.svix.com"
+		} else if region == "in" {
+			svixHttpClient.BaseURL = "https://api.in.svix.com"
 		}
-		if options.HTTPClient != nil {
-			conf.HTTPClient = options.HTTPClient
-		}
+	} else {
+		svixHttpClient.BaseURL = options.ServerUrl.String()
 	}
-	conf.AddDefaultHeader("Authorization", fmt.Sprintf("Bearer %s", token))
-	conf.AddDefaultHeader("User-Agent", fmt.Sprintf("svix-libs/%s/go", version.Version))
-	apiClient := openapi.NewAPIClient(conf)
 
-	newClient := APIClient{
-		cfg: &Configuration{
-			DefaultHeaders: conf.DefaultHeader,
-			Debug:          true,
-			HTTPClient:     http.DefaultClient,
-			RetrySchedule:  []time.Duration{time.Second},
-			BaseURL:        "https://api.eu.staging.svix.com",
-		},
+	if options != nil && options.HTTPClient != nil {
+		svixHttpClient.HTTPClient = options.HTTPClient
 	}
-	return &Svix{
+
+	if options != nil && options.RetrySchedule != nil {
+		if len(*options.RetrySchedule) > 5 {
+			return nil, fmt.Errorf("number of retries must not exceed 5")
+		}
+		svixHttpClient.RetrySchedule = *options.RetrySchedule
+	}
+
+	svixHttpClient.DefaultHeaders["Authorization"] = fmt.Sprintf("Bearer %s", token)
+	svixHttpClient.DefaultHeaders["User-Agent"] = fmt.Sprintf("svix-libs/%s/go", version.Version)
+
+	svx := Svix{
 		Authentication: &Authentication{
-			api: apiClient,
+			_client: &svixHttpClient,
 		},
 		Application: &Application{
-			_client: &newClient,
+			_client: &svixHttpClient,
 		},
 		Endpoint: &Endpoint{
-			api: apiClient,
+			_client: &svixHttpClient,
 		},
 		EventType: &EventType{
-			api: apiClient,
+			_client: &svixHttpClient,
 		},
 		Message: &Message{
-			api: apiClient,
+			_client: &svixHttpClient,
 		},
 		Integration: &Integration{
-			api: apiClient,
+			_client: &svixHttpClient,
 		},
 		MessageAttempt: &MessageAttempt{
-			api: apiClient,
+			_client: &svixHttpClient,
 		},
 		Statistics: &Statistics{
-			api: apiClient,
+			_client: &svixHttpClient,
 		},
 		OperationalWebhookEndpoint: &OperationalWebhookEndpoint{
-			api: apiClient,
+			_client: &svixHttpClient,
 		},
 	}
+	return &svx, nil
 }
