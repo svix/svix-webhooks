@@ -175,6 +175,43 @@ func TestModelSerialization(t *testing.T) {
 	assertMarshalEq(ep_patch, `{"uid":null}`, t)
 }
 
+func TestEndpointPatchNullableListSerialization(t *testing.T) {
+	// if nullable field is set, marshal should serialize that field
+	ep_patch1 := models.EndpointPatch{
+		Channels: utils.NewNullable([]string{"asd"}),
+	}
+	assertMarshalEq(ep_patch1, `{"channels":["asd"]}`, t)
+
+	// if nullable field is explicitly set null, marshal should emit a null
+	ep_patch2 := models.EndpointPatch{
+		Channels: utils.NewExplicitlySetNilNullable[[]string](),
+	}
+	assertMarshalEq(ep_patch2, `{"channels":null}`, t)
+
+	// if nullable field is omitted, marshal should omitted that field
+	ep_patch3 := models.EndpointPatch{}
+	assertMarshalEq(ep_patch3, `{}`, t)
+
+}
+func TestEndpointPatchNullableStringSerialization(t *testing.T) {
+	// if nullable field is set, marshal should serialize that field
+	ep_patch1 := models.EndpointPatch{
+		Uid: utils.NewNullable("asd"),
+	}
+	assertMarshalEq(ep_patch1, `{"uid":"asd"}`, t)
+
+	// if nullable field is explicitly set null, marshal should emit a null
+	ep_patch2 := models.EndpointPatch{
+		Uid: utils.NewExplicitlySetNilNullable[string](),
+	}
+	assertMarshalEq(ep_patch2, `{"uid":null}`, t)
+
+	// if nullable field is omitted, marshal should omitted that field
+	ep_patch3 := models.EndpointPatch{}
+	assertMarshalEq(ep_patch3, `{}`, t)
+
+}
+
 func TestModelDeserialization(t *testing.T) {
 	var ep_out models.EndpointOut
 
