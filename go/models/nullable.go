@@ -1,4 +1,4 @@
-package svix
+package models
 
 import "encoding/json"
 
