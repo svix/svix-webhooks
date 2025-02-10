@@ -11,6 +11,7 @@ import (
 
 	"github.com/jarcoal/httpmock"
 	svix "github.com/svix/svix-webhooks/go"
+	"github.com/svix/svix-webhooks/go/models"
 )
 
 func newMockClient() svix.Svix {
@@ -24,6 +25,14 @@ func newMockClient() svix.Svix {
 	}
 	return *svx
 
+}
+func assertExpectedError(t *testing.T, err error, expected string) {
+	if err == nil {
+		t.Error("Expected to get error")
+	}
+	if err.Error() != expected {
+		t.Errorf("Unexpected error, expected: `%s` got `%s`", expected, err.Error())
+	}
 }
 
 func TestReqIdHeaderIsSetCorrectly(t *testing.T) {
@@ -49,9 +58,7 @@ func TestReqIdHeaderIsSetCorrectly(t *testing.T) {
 	)
 
 	_, err := svx.Application.List(context.TODO(), nil)
-	if err == nil {
-		t.Errorf("Client did not return an error for status code 500")
-	}
+	assertExpectedError(t, err, "status code 500")
 
 	if httpmock.GetTotalCallCount() != 4 {
 		t.Errorf("Expected client to send 4 requests (1 original and 3 retries) got %v", httpmock.GetTotalCallCount())
@@ -76,9 +83,7 @@ func TestRetryCountHeadersIsSetCorrectly(t *testing.T) {
 	)
 
 	_, err := svx.Application.List(context.TODO(), nil)
-	if err == nil {
-		t.Errorf("Client did not return an error for status code 500")
-	}
+	assertExpectedError(t, err, "status code 500")
 
 	if httpmock.GetTotalCallCount() != 4 {
 		t.Errorf("Expected client to send 4 requests (1 original and 3 retries) got %v", httpmock.GetTotalCallCount())
@@ -92,4 +97,52 @@ func TestRetryCountHeadersIsSetCorrectly(t *testing.T) {
 		t.Errorf("Expected client to incorrect the svix-retry-count header by one each request, got: %v", retryCounts)
 
 	}
+}
+
+func TestOptionsSerialization(t *testing.T) {
+	svx := newMockClient()
+	httpmock.Activate()
+	defer httpmock.DeactivateAndReset()
+
+	httpmock.RegisterResponder("GET", "http://testapi.test/api/v1/app",
+		func(r *http.Request) (*http.Response, error) {
+			if !reflect.DeepEqual(r.URL.RawQuery, "iterator=asd%5E%26%2A1223&limit=12&order=ascending") {
+				t.Errorf("Unexpected ApplicationListOptions serialization, got: %v", r.URL.RawQuery)
+			}
+
+			return httpmock.NewStringResponse(200, ""), nil
+		},
+	)
+	limit := uint64(12)
+	order := models.ORDERING_ASCENDING
+	iter := "asd^&*1223"
+	listOpts := svix.ApplicationListOptions{
+		Limit:    &limit,
+		Order:    &order,
+		Iterator: &iter,
+	}
+	_, err := svx.Application.List(context.TODO(), &listOpts)
+	assertExpectedError(t, err, "unexpected end of JSON input")
+
+}
+
+func TestQueryParamListSerialization(t *testing.T) {
+	svx := newMockClient()
+	httpmock.Activate()
+	defer httpmock.DeactivateAndReset()
+
+	httpmock.RegisterResponder("GET", "http://testapi.test/api/v1/app/random_app_id/msg",
+		func(r *http.Request) (*http.Response, error) {
+			if !reflect.DeepEqual(r.URL.RawQuery, "event_types=asd13%2C123asd") {
+				t.Errorf("Unexpected MessageListOptions serialization, got: %v", r.URL.RawQuery)
+			}
+
+			return httpmock.NewStringResponse(200, ""), nil
+		},
+	)
+	listOpts := svix.MessageListOptions{
+		EventTypes: &[]string{"asd13", "123asd"},
+	}
+	_, err := svx.Message.List(context.TODO(), "random_app_id", &listOpts)
+	assertExpectedError(t, err, "unexpected end of JSON input")
 }
