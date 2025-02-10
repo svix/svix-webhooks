@@ -171,7 +171,7 @@ func TestModelSerialization(t *testing.T) {
 	assertMarshalEq(ep_patch, `{"disabled":false}`, t)
 
 	ep_patch.Disabled = nil
-	ep_patch.Uid = utils.NewUnsetNullable[string]()
+	ep_patch.Uid = utils.NewExplicitlySetNilNullable[string]()
 	assertMarshalEq(ep_patch, `{"uid":null}`, t)
 }
 
