@@ -10,6 +10,8 @@ import (
 	"testing"
 
 	svix "github.com/svix/svix-webhooks/go"
+	"github.com/svix/svix-webhooks/go/models"
+	"github.com/svix/svix-webhooks/go/utils"
 )
 
 // Builds an API client for testing against an arbitrary API server with an arbitrary token.
@@ -61,40 +63,41 @@ func TestKitchenSink(t *testing.T) {
 	ctx := context.Background()
 	client := getTestClient(t)
 
-	app, err := client.Application.Create(ctx, &svix.ApplicationIn{
+	app, err := client.Application.Create(ctx, &models.ApplicationIn{
 		Name: "test",
 	}, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	_, err = client.EventType.Create(ctx, &svix.EventTypeIn{Name: "event.started", Description: "Something started"}, nil)
+	_, err = client.EventType.Create(ctx, &models.EventTypeIn{Name: "event.started", Description: "Something started"}, nil)
 
 	if isNotConflict(err) != nil {
 		t.Fatal(err)
 	}
 
-	_, err = client.EventType.Create(ctx, &svix.EventTypeIn{Name: "event.ended", Description: "Something ended"}, nil)
+	_, err = client.EventType.Create(ctx, &models.EventTypeIn{Name: "event.ended", Description: "Something ended"}, nil)
 	if isNotConflict(err) != nil {
 		t.Fatal(err)
 	}
 
-	endp, err := client.Endpoint.Create(ctx, app.Id, &svix.EndpointIn{
+	endp, err := client.Endpoint.Create(ctx, app.Id, &models.EndpointIn{
 		Url: "https://example.svix.com/",
 	}, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	endpPatch := svix.EndpointPatch{}
-	endpPatch.SetFilterTypes([]string{"event.started", "event.ended"})
+	endpPatch := models.EndpointPatch{
+		FilterTypes: utils.NewNullable([]string{"event.started", "event.ended"}),
+	}
 
 	patched, err := client.Endpoint.Patch(ctx, app.Id, endp.Id, &endpPatch)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	for _, typ := range patched.GetFilterTypes() {
+	for _, typ := range patched.FilterTypes {
 		if !(typ == "event.started" || typ == "event.ended") {
 			t.Fatalf("unexpected filter type: `%s`", typ)
 		}
@@ -102,8 +105,8 @@ func TestKitchenSink(t *testing.T) {
 }
 
 func TestStaticNullableString(t *testing.T) {
-	app := &svix.ApplicationPatch{
-		Uid: svix.StaticNullableString("my-uid"),
+	app := &models.ApplicationPatch{
+		Uid: utils.NewNullable("my-uid"),
 	}
 
 	if !app.Uid.IsSet() {
@@ -129,12 +132,12 @@ func assertMarshalEq(v any, expected string, t *testing.T) {
 
 	s := string(bytes)
 	if s != expected {
-		t.Error("Unexpected serialization", s)
+		t.Errorf("Unexpected serialization expected: `%s`  got: `%s`", expected, s)
 	}
 }
 
 func TestModelSerialization(t *testing.T) {
-	ep_in := svix.EndpointIn{
+	ep_in := models.EndpointIn{
 		Url: "http://example.local",
 	}
 	assertMarshalEq(ep_in, `{"url":"http://example.local"}`, t)
@@ -152,28 +155,28 @@ func TestModelSerialization(t *testing.T) {
 	ep_in.Metadata = &metadata
 	assertMarshalEq(ep_in, `{"metadata":{},"url":"http://example.local"}`, t)
 
-	ep_patch := svix.EndpointPatch{}
+	ep_patch := models.EndpointPatch{}
 	assertMarshalEq(ep_patch, `{}`, t)
 
 	// FIXME: setting channels to `null` not currently possible
-	ep_patch.Channels = []string{}
+	ep_patch.Channels = utils.NewNullable([]string{})
 	assertMarshalEq(ep_patch, `{"channels":[]}`, t)
 
-	ep_patch.Channels = []string{"foo"}
+	ep_patch.Channels = utils.NewNullable([]string{"foo"})
 	assertMarshalEq(ep_patch, `{"channels":["foo"]}`, t)
 
-	ep_patch.Channels = nil
+	ep_patch.Channels = utils.NewNilUnsetNullable[[]string]()
 	disabled := false
 	ep_patch.Disabled = &disabled
 	assertMarshalEq(ep_patch, `{"disabled":false}`, t)
 
 	ep_patch.Disabled = nil
-	ep_patch.Uid = *svix.NullableString(nil)
+	ep_patch.Uid = utils.NewNilNullable[string]()
 	assertMarshalEq(ep_patch, `{"uid":null}`, t)
 }
 
 func TestModelDeserialization(t *testing.T) {
-	var ep_out svix.EndpointOut
+	var ep_out models.EndpointOut
 
 	// only required properties
 	err := json.Unmarshal(
@@ -225,6 +228,7 @@ func TestModelDeserialization(t *testing.T) {
 		t.Error("unexpected value for version", ep_out.Version)
 	}
 
+	ep_out = models.EndpointOut{}
 	// full example from API docs
 	err = json.Unmarshal(
 		[]byte(`{
@@ -304,6 +308,7 @@ func TestModelDeserialization(t *testing.T) {
 		t.Error("unexpected value for channels", ep_out.Channels)
 	}
 
+	ep_out = models.EndpointOut{}
 	// same example with optional / nullable fields set to null explicitly
 	// (and empty metadata)
 	err = json.Unmarshal(
