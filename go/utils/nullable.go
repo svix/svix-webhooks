@@ -8,12 +8,12 @@ type Nullable[T any] struct {
 }
 
 // Create a new Nullable[T] that is explicitly set as null
-func NewNilNullable[T any]() Nullable[T] {
+func NewExplicitlySetNilNullable[T any]() Nullable[T] {
 	return Nullable[T]{val: nil, isSet: true}
 }
 
 // Create a new Nullable[T] that is unset, This type will not be emitted when serializing
-func NewNilUnsetNullable[T any]() Nullable[T] {
+func NewUnsetNullable[T any]() Nullable[T] {
 	return Nullable[T]{val: nil, isSet: false}
 }
 
