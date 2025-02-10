@@ -6,8 +6,6 @@ import (
 	"net/url"
 	"strings"
 	"time"
-
-	"github.com/svix/svix-webhooks/go/internal/version"
 )
 
 type (
@@ -62,7 +60,7 @@ func New(token string, options *SvixOptions) (*Svix, error) {
 	}
 
 	svixHttpClient.DefaultHeaders["Authorization"] = fmt.Sprintf("Bearer %s", token)
-	svixHttpClient.DefaultHeaders["User-Agent"] = fmt.Sprintf("svix-libs/%s/go", version.Version)
+	svixHttpClient.DefaultHeaders["User-Agent"] = fmt.Sprintf("svix-libs/%s/go", Version)
 
 	svx := Svix{
 		Authentication: &Authentication{
