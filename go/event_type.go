@@ -5,6 +5,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+
+	"github.com/svix/svix-webhooks/go/models"
 )
 
 type EventType struct {
@@ -13,11 +15,12 @@ type EventType struct {
 
 type EventTypeListOptions struct {
 	// Limit the number of returned items
-	Limit *int32
+	Limit *uint64
 	// The iterator returned from a prior invocation
 	Iterator *string
+
 	// The sorting order of the returned items
-	Order *Ordering
+	Order *models.Ordering
 	// When `true` archived (deleted but not expunged) items are included in the response.
 	IncludeArchived *bool
 	// When `true` the full item (including the schema) is included in the response.
@@ -41,7 +44,7 @@ type EventTypeDeleteOptions struct {
 func (eventType *EventType) List(
 	ctx context.Context,
 	o *EventTypeListOptions,
-) (*ListResponseEventTypeOut, error) {
+) (*models.ListResponseEventTypeOut, error) {
 	pathMap := map[string]string{}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
@@ -58,7 +61,7 @@ func (eventType *EventType) List(
 			return nil, err
 		}
 	}
-	ret, apiErr := executeRequest[ListResponseEventTypeOut](
+	ret, apiErr := executeRequest[models.ListResponseEventTypeOut](
 		ctx,
 		eventType._client,
 		"GET",
@@ -81,9 +84,9 @@ func (eventType *EventType) List(
 // This operation does not preserve the description and schemas.
 func (eventType *EventType) Create(
 	ctx context.Context,
-	eventTypeIn *EventTypeIn,
+	eventTypeIn *models.EventTypeIn,
 	o *EventTypeCreateOptions,
-) (*EventTypeOut, error) {
+) (*models.EventTypeOut, error) {
 	if eventTypeIn == nil {
 		return nil, fmt.Errorf("EventType.Create(), eventTypeIn must not be nil")
 	}
@@ -103,7 +106,7 @@ func (eventType *EventType) Create(
 	if err != nil {
 		return nil, err
 	}
-	ret, apiErr := executeRequest[EventTypeOut](
+	ret, apiErr := executeRequest[models.EventTypeOut](
 		ctx,
 		eventType._client,
 		"POST",
@@ -126,9 +129,9 @@ func (eventType *EventType) Create(
 // top-level.
 func (eventType *EventType) ImportOpenapi(
 	ctx context.Context,
-	eventTypeImportOpenApiIn *EventTypeImportOpenApiIn,
+	eventTypeImportOpenApiIn *models.EventTypeImportOpenApiIn,
 	o *EventTypeImportOpenapiOptions,
-) (*EventTypeImportOpenApiOut, error) {
+) (*models.EventTypeImportOpenApiOut, error) {
 	if eventTypeImportOpenApiIn == nil {
 		return nil, fmt.Errorf("EventType.ImportOpenapi(), eventTypeImportOpenApiIn must not be nil")
 	}
@@ -148,7 +151,7 @@ func (eventType *EventType) ImportOpenapi(
 	if err != nil {
 		return nil, err
 	}
-	ret, apiErr := executeRequest[EventTypeImportOpenApiOut](
+	ret, apiErr := executeRequest[models.EventTypeImportOpenApiOut](
 		ctx,
 		eventType._client,
 		"POST",
@@ -168,7 +171,7 @@ func (eventType *EventType) ImportOpenapi(
 func (eventType *EventType) Get(
 	ctx context.Context,
 	eventTypeName string,
-) (*EventTypeOut, error) {
+) (*models.EventTypeOut, error) {
 	pathMap := map[string]string{
 		"event_type_name": eventTypeName,
 	}
@@ -176,7 +179,7 @@ func (eventType *EventType) Get(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
-	ret, apiErr := executeRequest[EventTypeOut](
+	ret, apiErr := executeRequest[models.EventTypeOut](
 		ctx,
 		eventType._client,
 		"GET",
@@ -196,8 +199,8 @@ func (eventType *EventType) Get(
 func (eventType *EventType) Update(
 	ctx context.Context,
 	eventTypeName string,
-	eventTypeUpdate *EventTypeUpdate,
-) (*EventTypeOut, error) {
+	eventTypeUpdate *models.EventTypeUpdate,
+) (*models.EventTypeOut, error) {
 	if eventTypeUpdate == nil {
 		return nil, fmt.Errorf("EventType.Update(), eventTypeUpdate must not be nil")
 	}
@@ -212,7 +215,7 @@ func (eventType *EventType) Update(
 	if err != nil {
 		return nil, err
 	}
-	ret, apiErr := executeRequest[EventTypeOut](
+	ret, apiErr := executeRequest[models.EventTypeOut](
 		ctx,
 		eventType._client,
 		"PUT",
@@ -273,8 +276,8 @@ func (eventType *EventType) Delete(
 func (eventType *EventType) Patch(
 	ctx context.Context,
 	eventTypeName string,
-	eventTypePatch *EventTypePatch,
-) (*EventTypeOut, error) {
+	eventTypePatch *models.EventTypePatch,
+) (*models.EventTypeOut, error) {
 	if eventTypePatch == nil {
 		return nil, fmt.Errorf("EventType.Patch(), eventTypePatch must not be nil")
 	}
@@ -289,7 +292,7 @@ func (eventType *EventType) Patch(
 	if err != nil {
 		return nil, err
 	}
-	ret, apiErr := executeRequest[EventTypeOut](
+	ret, apiErr := executeRequest[models.EventTypeOut](
 		ctx,
 		eventType._client,
 		"PATCH",

@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"time"
+
+	"github.com/svix/svix-webhooks/go/models"
 )
 
 type Endpoint struct {
@@ -14,11 +16,12 @@ type Endpoint struct {
 
 type EndpointListOptions struct {
 	// Limit the number of returned items
-	Limit *int32
+	Limit *uint64
 	// The iterator returned from a prior invocation
 	Iterator *string
+
 	// The sorting order of the returned items
-	Order *Ordering
+	Order *models.Ordering
 }
 
 type EndpointCreateOptions struct {
@@ -53,7 +56,7 @@ func (endpoint *Endpoint) List(
 	ctx context.Context,
 	appId string,
 	o *EndpointListOptions,
-) (*ListResponseEndpointOut, error) {
+) (*models.ListResponseEndpointOut, error) {
 	pathMap := map[string]string{
 		"app_id": appId,
 	}
@@ -70,7 +73,7 @@ func (endpoint *Endpoint) List(
 			return nil, err
 		}
 	}
-	ret, apiErr := executeRequest[ListResponseEndpointOut](
+	ret, apiErr := executeRequest[models.ListResponseEndpointOut](
 		ctx,
 		endpoint._client,
 		"GET",
@@ -92,9 +95,9 @@ func (endpoint *Endpoint) List(
 func (endpoint *Endpoint) Create(
 	ctx context.Context,
 	appId string,
-	endpointIn *EndpointIn,
+	endpointIn *models.EndpointIn,
 	o *EndpointCreateOptions,
-) (*EndpointOut, error) {
+) (*models.EndpointOut, error) {
 	if endpointIn == nil {
 		return nil, fmt.Errorf("Endpoint.Create(), endpointIn must not be nil")
 	}
@@ -116,7 +119,7 @@ func (endpoint *Endpoint) Create(
 	if err != nil {
 		return nil, err
 	}
-	ret, apiErr := executeRequest[EndpointOut](
+	ret, apiErr := executeRequest[models.EndpointOut](
 		ctx,
 		endpoint._client,
 		"POST",
@@ -137,7 +140,7 @@ func (endpoint *Endpoint) Get(
 	ctx context.Context,
 	appId string,
 	endpointId string,
-) (*EndpointOut, error) {
+) (*models.EndpointOut, error) {
 	pathMap := map[string]string{
 		"app_id":      appId,
 		"endpoint_id": endpointId,
@@ -146,7 +149,7 @@ func (endpoint *Endpoint) Get(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
-	ret, apiErr := executeRequest[EndpointOut](
+	ret, apiErr := executeRequest[models.EndpointOut](
 		ctx,
 		endpoint._client,
 		"GET",
@@ -167,8 +170,8 @@ func (endpoint *Endpoint) Update(
 	ctx context.Context,
 	appId string,
 	endpointId string,
-	endpointUpdate *EndpointUpdate,
-) (*EndpointOut, error) {
+	endpointUpdate *models.EndpointUpdate,
+) (*models.EndpointOut, error) {
 	if endpointUpdate == nil {
 		return nil, fmt.Errorf("Endpoint.Update(), endpointUpdate must not be nil")
 	}
@@ -184,7 +187,7 @@ func (endpoint *Endpoint) Update(
 	if err != nil {
 		return nil, err
 	}
-	ret, apiErr := executeRequest[EndpointOut](
+	ret, apiErr := executeRequest[models.EndpointOut](
 		ctx,
 		endpoint._client,
 		"PUT",
@@ -235,8 +238,8 @@ func (endpoint *Endpoint) Patch(
 	ctx context.Context,
 	appId string,
 	endpointId string,
-	endpointPatch *EndpointPatch,
-) (*EndpointOut, error) {
+	endpointPatch *models.EndpointPatch,
+) (*models.EndpointOut, error) {
 	if endpointPatch == nil {
 		return nil, fmt.Errorf("Endpoint.Patch(), endpointPatch must not be nil")
 	}
@@ -252,7 +255,7 @@ func (endpoint *Endpoint) Patch(
 	if err != nil {
 		return nil, err
 	}
-	ret, apiErr := executeRequest[EndpointOut](
+	ret, apiErr := executeRequest[models.EndpointOut](
 		ctx,
 		endpoint._client,
 		"PATCH",
@@ -273,7 +276,7 @@ func (endpoint *Endpoint) GetHeaders(
 	ctx context.Context,
 	appId string,
 	endpointId string,
-) (*EndpointHeadersOut, error) {
+) (*models.EndpointHeadersOut, error) {
 	pathMap := map[string]string{
 		"app_id":      appId,
 		"endpoint_id": endpointId,
@@ -282,7 +285,7 @@ func (endpoint *Endpoint) GetHeaders(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
-	ret, apiErr := executeRequest[EndpointHeadersOut](
+	ret, apiErr := executeRequest[models.EndpointHeadersOut](
 		ctx,
 		endpoint._client,
 		"GET",
@@ -303,7 +306,7 @@ func (endpoint *Endpoint) UpdateHeaders(
 	ctx context.Context,
 	appId string,
 	endpointId string,
-	endpointHeadersIn *EndpointHeadersIn,
+	endpointHeadersIn *models.EndpointHeadersIn,
 ) error {
 	if endpointHeadersIn == nil {
 		return fmt.Errorf("Endpoint.UpdateHeaders(), endpointHeadersIn must not be nil")
@@ -341,7 +344,7 @@ func (endpoint *Endpoint) PatchHeaders(
 	ctx context.Context,
 	appId string,
 	endpointId string,
-	endpointHeadersPatchIn *EndpointHeadersPatchIn,
+	endpointHeadersPatchIn *models.EndpointHeadersPatchIn,
 ) error {
 	if endpointHeadersPatchIn == nil {
 		return fmt.Errorf("Endpoint.PatchHeaders(), endpointHeadersPatchIn must not be nil")
@@ -381,9 +384,9 @@ func (endpoint *Endpoint) Recover(
 	ctx context.Context,
 	appId string,
 	endpointId string,
-	recoverIn *RecoverIn,
+	recoverIn *models.RecoverIn,
 	o *EndpointRecoverOptions,
-) (*RecoverOut, error) {
+) (*models.RecoverOut, error) {
 	if recoverIn == nil {
 		return nil, fmt.Errorf("Endpoint.Recover(), recoverIn must not be nil")
 	}
@@ -406,7 +409,7 @@ func (endpoint *Endpoint) Recover(
 	if err != nil {
 		return nil, err
 	}
-	ret, apiErr := executeRequest[RecoverOut](
+	ret, apiErr := executeRequest[models.RecoverOut](
 		ctx,
 		endpoint._client,
 		"POST",
@@ -430,9 +433,9 @@ func (endpoint *Endpoint) ReplayMissing(
 	ctx context.Context,
 	appId string,
 	endpointId string,
-	replayIn *ReplayIn,
+	replayIn *models.ReplayIn,
 	o *EndpointReplayMissingOptions,
-) (*ReplayOut, error) {
+) (*models.ReplayOut, error) {
 	if replayIn == nil {
 		return nil, fmt.Errorf("Endpoint.ReplayMissing(), replayIn must not be nil")
 	}
@@ -455,7 +458,7 @@ func (endpoint *Endpoint) ReplayMissing(
 	if err != nil {
 		return nil, err
 	}
-	ret, apiErr := executeRequest[ReplayOut](
+	ret, apiErr := executeRequest[models.ReplayOut](
 		ctx,
 		endpoint._client,
 		"POST",
@@ -479,7 +482,7 @@ func (endpoint *Endpoint) GetSecret(
 	ctx context.Context,
 	appId string,
 	endpointId string,
-) (*EndpointSecretOut, error) {
+) (*models.EndpointSecretOut, error) {
 	pathMap := map[string]string{
 		"app_id":      appId,
 		"endpoint_id": endpointId,
@@ -488,7 +491,7 @@ func (endpoint *Endpoint) GetSecret(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
-	ret, apiErr := executeRequest[EndpointSecretOut](
+	ret, apiErr := executeRequest[models.EndpointSecretOut](
 		ctx,
 		endpoint._client,
 		"GET",
@@ -511,7 +514,7 @@ func (endpoint *Endpoint) RotateSecret(
 	ctx context.Context,
 	appId string,
 	endpointId string,
-	endpointSecretRotateIn *EndpointSecretRotateIn,
+	endpointSecretRotateIn *models.EndpointSecretRotateIn,
 	o *EndpointRotateSecretOptions,
 ) error {
 	if endpointSecretRotateIn == nil {
@@ -557,9 +560,9 @@ func (endpoint *Endpoint) SendExample(
 	ctx context.Context,
 	appId string,
 	endpointId string,
-	eventExampleIn *EventExampleIn,
+	eventExampleIn *models.EventExampleIn,
 	o *EndpointSendExampleOptions,
-) (*MessageOut, error) {
+) (*models.MessageOut, error) {
 	if eventExampleIn == nil {
 		return nil, fmt.Errorf("Endpoint.SendExample(), eventExampleIn must not be nil")
 	}
@@ -582,7 +585,7 @@ func (endpoint *Endpoint) SendExample(
 	if err != nil {
 		return nil, err
 	}
-	ret, apiErr := executeRequest[MessageOut](
+	ret, apiErr := executeRequest[models.MessageOut](
 		ctx,
 		endpoint._client,
 		"POST",
@@ -604,7 +607,7 @@ func (endpoint *Endpoint) GetStats(
 	appId string,
 	endpointId string,
 	o *EndpointGetStatsOptions,
-) (*EndpointStats, error) {
+) (*models.EndpointStats, error) {
 	pathMap := map[string]string{
 		"app_id":      appId,
 		"endpoint_id": endpointId,
@@ -621,7 +624,7 @@ func (endpoint *Endpoint) GetStats(
 			return nil, err
 		}
 	}
-	ret, apiErr := executeRequest[EndpointStats](
+	ret, apiErr := executeRequest[models.EndpointStats](
 		ctx,
 		endpoint._client,
 		"GET",
@@ -642,7 +645,7 @@ func (endpoint *Endpoint) TransformationGet(
 	ctx context.Context,
 	appId string,
 	endpointId string,
-) (*EndpointTransformationOut, error) {
+) (*models.EndpointTransformationOut, error) {
 	pathMap := map[string]string{
 		"app_id":      appId,
 		"endpoint_id": endpointId,
@@ -651,7 +654,7 @@ func (endpoint *Endpoint) TransformationGet(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
-	ret, apiErr := executeRequest[EndpointTransformationOut](
+	ret, apiErr := executeRequest[models.EndpointTransformationOut](
 		ctx,
 		endpoint._client,
 		"GET",
@@ -672,7 +675,7 @@ func (endpoint *Endpoint) TransformationPartialUpdate(
 	ctx context.Context,
 	appId string,
 	endpointId string,
-	endpointTransformationIn *EndpointTransformationIn,
+	endpointTransformationIn *models.EndpointTransformationIn,
 ) error {
 	if endpointTransformationIn == nil {
 		return fmt.Errorf("Endpoint.TransformationPartialUpdate(), endpointTransformationIn must not be nil")

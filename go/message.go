@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"time"
+
+	"github.com/svix/svix-webhooks/go/models"
 )
 
 type Message struct {
@@ -14,7 +16,7 @@ type Message struct {
 
 type MessageListOptions struct {
 	// Limit the number of returned items
-	Limit *int32
+	Limit *uint64
 	// The iterator returned from a prior invocation
 	Iterator *string
 	// Filter response based on the channel.
@@ -55,7 +57,7 @@ func (message *Message) List(
 	ctx context.Context,
 	appId string,
 	o *MessageListOptions,
-) (*ListResponseMessageOut, error) {
+) (*models.ListResponseMessageOut, error) {
 	pathMap := map[string]string{
 		"app_id": appId,
 	}
@@ -77,7 +79,7 @@ func (message *Message) List(
 			return nil, err
 		}
 	}
-	ret, apiErr := executeRequest[ListResponseMessageOut](
+	ret, apiErr := executeRequest[models.ListResponseMessageOut](
 		ctx,
 		message._client,
 		"GET",
@@ -105,9 +107,9 @@ func (message *Message) List(
 func (message *Message) Create(
 	ctx context.Context,
 	appId string,
-	messageIn *MessageIn,
+	messageIn *models.MessageIn,
 	o *MessageCreateOptions,
-) (*MessageOut, error) {
+) (*models.MessageOut, error) {
 	if messageIn == nil {
 		return nil, fmt.Errorf("Message.Create(), messageIn must not be nil")
 	}
@@ -130,7 +132,7 @@ func (message *Message) Create(
 	if err != nil {
 		return nil, err
 	}
-	ret, apiErr := executeRequest[MessageOut](
+	ret, apiErr := executeRequest[models.MessageOut](
 		ctx,
 		message._client,
 		"POST",
@@ -152,7 +154,7 @@ func (message *Message) Get(
 	appId string,
 	msgId string,
 	o *MessageGetOptions,
-) (*MessageOut, error) {
+) (*models.MessageOut, error) {
 	pathMap := map[string]string{
 		"app_id": appId,
 		"msg_id": msgId,
@@ -168,7 +170,7 @@ func (message *Message) Get(
 			return nil, err
 		}
 	}
-	ret, apiErr := executeRequest[MessageOut](
+	ret, apiErr := executeRequest[models.MessageOut](
 		ctx,
 		message._client,
 		"GET",

@@ -5,6 +5,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+
+	"github.com/svix/svix-webhooks/go/models"
 )
 
 type Statistics struct {
@@ -21,9 +23,9 @@ type StatisticsAggregateAppStatsOptions struct {
 // retrieve the results of the operation.
 func (statistics *Statistics) AggregateAppStats(
 	ctx context.Context,
-	appUsageStatsIn *AppUsageStatsIn,
+	appUsageStatsIn *models.AppUsageStatsIn,
 	o *StatisticsAggregateAppStatsOptions,
-) (*AppUsageStatsOut, error) {
+) (*models.AppUsageStatsOut, error) {
 	if appUsageStatsIn == nil {
 		return nil, fmt.Errorf("Statistics.AggregateAppStats(), appUsageStatsIn must not be nil")
 	}
@@ -43,7 +45,7 @@ func (statistics *Statistics) AggregateAppStats(
 	if err != nil {
 		return nil, err
 	}
-	ret, apiErr := executeRequest[AppUsageStatsOut](
+	ret, apiErr := executeRequest[models.AppUsageStatsOut](
 		ctx,
 		statistics._client,
 		"POST",
@@ -65,13 +67,13 @@ func (statistics *Statistics) AggregateAppStats(
 // retrieve the results of the operation.
 func (statistics *Statistics) AggregateEventTypes(
 	ctx context.Context,
-) (*AggregateEventTypesOut, error) {
+) (*models.AggregateEventTypesOut, error) {
 	pathMap := map[string]string{}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
-	ret, apiErr := executeRequest[AggregateEventTypesOut](
+	ret, apiErr := executeRequest[models.AggregateEventTypesOut](
 		ctx,
 		statistics._client,
 		"PUT",

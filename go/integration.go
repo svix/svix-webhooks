@@ -5,6 +5,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+
+	"github.com/svix/svix-webhooks/go/models"
 )
 
 type Integration struct {
@@ -13,11 +15,12 @@ type Integration struct {
 
 type IntegrationListOptions struct {
 	// Limit the number of returned items
-	Limit *int32
+	Limit *uint64
 	// The iterator returned from a prior invocation
 	Iterator *string
+
 	// The sorting order of the returned items
-	Order *Ordering
+	Order *models.Ordering
 }
 
 type IntegrationCreateOptions struct {
@@ -33,7 +36,7 @@ func (integration *Integration) List(
 	ctx context.Context,
 	appId string,
 	o *IntegrationListOptions,
-) (*ListResponseIntegrationOut, error) {
+) (*models.ListResponseIntegrationOut, error) {
 	pathMap := map[string]string{
 		"app_id": appId,
 	}
@@ -50,7 +53,7 @@ func (integration *Integration) List(
 			return nil, err
 		}
 	}
-	ret, apiErr := executeRequest[ListResponseIntegrationOut](
+	ret, apiErr := executeRequest[models.ListResponseIntegrationOut](
 		ctx,
 		integration._client,
 		"GET",
@@ -70,9 +73,9 @@ func (integration *Integration) List(
 func (integration *Integration) Create(
 	ctx context.Context,
 	appId string,
-	integrationIn *IntegrationIn,
+	integrationIn *models.IntegrationIn,
 	o *IntegrationCreateOptions,
-) (*IntegrationOut, error) {
+) (*models.IntegrationOut, error) {
 	if integrationIn == nil {
 		return nil, fmt.Errorf("Integration.Create(), integrationIn must not be nil")
 	}
@@ -94,7 +97,7 @@ func (integration *Integration) Create(
 	if err != nil {
 		return nil, err
 	}
-	ret, apiErr := executeRequest[IntegrationOut](
+	ret, apiErr := executeRequest[models.IntegrationOut](
 		ctx,
 		integration._client,
 		"POST",
@@ -115,7 +118,7 @@ func (integration *Integration) Get(
 	ctx context.Context,
 	appId string,
 	integId string,
-) (*IntegrationOut, error) {
+) (*models.IntegrationOut, error) {
 	pathMap := map[string]string{
 		"app_id":   appId,
 		"integ_id": integId,
@@ -124,7 +127,7 @@ func (integration *Integration) Get(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
-	ret, apiErr := executeRequest[IntegrationOut](
+	ret, apiErr := executeRequest[models.IntegrationOut](
 		ctx,
 		integration._client,
 		"GET",
@@ -145,8 +148,8 @@ func (integration *Integration) Update(
 	ctx context.Context,
 	appId string,
 	integId string,
-	integrationUpdate *IntegrationUpdate,
-) (*IntegrationOut, error) {
+	integrationUpdate *models.IntegrationUpdate,
+) (*models.IntegrationOut, error) {
 	if integrationUpdate == nil {
 		return nil, fmt.Errorf("Integration.Update(), integrationUpdate must not be nil")
 	}
@@ -162,7 +165,7 @@ func (integration *Integration) Update(
 	if err != nil {
 		return nil, err
 	}
-	ret, apiErr := executeRequest[IntegrationOut](
+	ret, apiErr := executeRequest[models.IntegrationOut](
 		ctx,
 		integration._client,
 		"PUT",
@@ -215,7 +218,7 @@ func (integration *Integration) GetKey(
 	ctx context.Context,
 	appId string,
 	integId string,
-) (*IntegrationKeyOut, error) {
+) (*models.IntegrationKeyOut, error) {
 	pathMap := map[string]string{
 		"app_id":   appId,
 		"integ_id": integId,
@@ -224,7 +227,7 @@ func (integration *Integration) GetKey(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
-	ret, apiErr := executeRequest[IntegrationKeyOut](
+	ret, apiErr := executeRequest[models.IntegrationKeyOut](
 		ctx,
 		integration._client,
 		"GET",
@@ -246,7 +249,7 @@ func (integration *Integration) RotateKey(
 	appId string,
 	integId string,
 	o *IntegrationRotateKeyOptions,
-) (*IntegrationKeyOut, error) {
+) (*models.IntegrationKeyOut, error) {
 	pathMap := map[string]string{
 		"app_id":   appId,
 		"integ_id": integId,
@@ -262,7 +265,7 @@ func (integration *Integration) RotateKey(
 			return nil, err
 		}
 	}
-	ret, apiErr := executeRequest[IntegrationKeyOut](
+	ret, apiErr := executeRequest[models.IntegrationKeyOut](
 		ctx,
 		integration._client,
 		"POST",

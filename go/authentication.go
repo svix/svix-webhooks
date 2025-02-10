@@ -5,6 +5,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+
+	"github.com/svix/svix-webhooks/go/models"
 )
 
 type Authentication struct {
@@ -31,9 +33,9 @@ type AuthenticationLogoutOptions struct {
 func (authentication *Authentication) AppPortalAccess(
 	ctx context.Context,
 	appId string,
-	appPortalAccessIn *AppPortalAccessIn,
+	appPortalAccessIn *models.AppPortalAccessIn,
 	o *AuthenticationAppPortalAccessOptions,
-) (*AppPortalAccessOut, error) {
+) (*models.AppPortalAccessOut, error) {
 	if appPortalAccessIn == nil {
 		return nil, fmt.Errorf("Authentication.AppPortalAccess(), appPortalAccessIn must not be nil")
 	}
@@ -55,7 +57,7 @@ func (authentication *Authentication) AppPortalAccess(
 	if err != nil {
 		return nil, err
 	}
-	ret, apiErr := executeRequest[AppPortalAccessOut](
+	ret, apiErr := executeRequest[models.AppPortalAccessOut](
 		ctx,
 		authentication._client,
 		"POST",
@@ -75,7 +77,7 @@ func (authentication *Authentication) AppPortalAccess(
 func (authentication *Authentication) ExpireAll(
 	ctx context.Context,
 	appId string,
-	applicationTokenExpireIn *ApplicationTokenExpireIn,
+	applicationTokenExpireIn *models.ApplicationTokenExpireIn,
 	o *AuthenticationExpireAllOptions,
 ) error {
 	if applicationTokenExpireIn == nil {
@@ -122,7 +124,7 @@ func (authentication *Authentication) DashboardAccess(
 	ctx context.Context,
 	appId string,
 	o *AuthenticationDashboardAccessOptions,
-) (*DashboardAccessOut, error) {
+) (*models.DashboardAccessOut, error) {
 	pathMap := map[string]string{
 		"app_id": appId,
 	}
@@ -137,7 +139,7 @@ func (authentication *Authentication) DashboardAccess(
 			return nil, err
 		}
 	}
-	ret, apiErr := executeRequest[DashboardAccessOut](
+	ret, apiErr := executeRequest[models.DashboardAccessOut](
 		ctx,
 		authentication._client,
 		"POST",

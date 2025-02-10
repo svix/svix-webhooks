@@ -4,6 +4,8 @@ package svix
 import (
 	"context"
 	"time"
+
+	"github.com/svix/svix-webhooks/go/models"
 )
 
 type MessageAttempt struct {
@@ -12,13 +14,15 @@ type MessageAttempt struct {
 
 type MessageAttemptListByEndpointOptions struct {
 	// Limit the number of returned items
-	Limit *int32
+	Limit *uint64
 	// The iterator returned from a prior invocation
 	Iterator *string
+
 	// Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)
-	Status *MessageStatus
+	Status *models.MessageStatus
+
 	// Filter response based on the HTTP status code
-	StatusCodeClass *StatusCodeClass
+	StatusCodeClass *models.StatusCodeClass
 	// Filter response based on the channel
 	Channel *string
 	// Filter response based on the tag
@@ -37,13 +41,15 @@ type MessageAttemptListByEndpointOptions struct {
 
 type MessageAttemptListByMsgOptions struct {
 	// Limit the number of returned items
-	Limit *int32
+	Limit *uint64
 	// The iterator returned from a prior invocation
 	Iterator *string
+
 	// Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)
-	Status *MessageStatus
+	Status *models.MessageStatus
+
 	// Filter response based on the HTTP status code
-	StatusCodeClass *StatusCodeClass
+	StatusCodeClass *models.StatusCodeClass
 	// Filter response based on the channel
 	Channel *string
 	// Filter response based on the tag
@@ -62,15 +68,16 @@ type MessageAttemptListByMsgOptions struct {
 
 type MessageAttemptListAttemptedMessagesOptions struct {
 	// Limit the number of returned items
-	Limit *int32
+	Limit *uint64
 	// The iterator returned from a prior invocation
 	Iterator *string
 	// Filter response based on the channel
 	Channel *string
 	// Filter response based on the message tags
 	Tag *string
+
 	// Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)
-	Status *MessageStatus
+	Status *models.MessageStatus
 	// Only include items created before a certain date
 	Before *time.Time
 	// Only include items created after a certain date
@@ -83,7 +90,7 @@ type MessageAttemptListAttemptedMessagesOptions struct {
 
 type MessageAttemptListAttemptedDestinationsOptions struct {
 	// Limit the number of returned items
-	Limit *int32
+	Limit *uint64
 	// The iterator returned from a prior invocation
 	Iterator *string
 }
@@ -103,7 +110,7 @@ func (messageAttempt *MessageAttempt) ListByEndpoint(
 	appId string,
 	endpointId string,
 	o *MessageAttemptListByEndpointOptions,
-) (*ListResponseMessageAttemptOut, error) {
+) (*models.ListResponseMessageAttemptOut, error) {
 	pathMap := map[string]string{
 		"app_id":      appId,
 		"endpoint_id": endpointId,
@@ -129,7 +136,7 @@ func (messageAttempt *MessageAttempt) ListByEndpoint(
 			return nil, err
 		}
 	}
-	ret, apiErr := executeRequest[ListResponseMessageAttemptOut](
+	ret, apiErr := executeRequest[models.ListResponseMessageAttemptOut](
 		ctx,
 		messageAttempt._client,
 		"GET",
@@ -156,7 +163,7 @@ func (messageAttempt *MessageAttempt) ListByMsg(
 	appId string,
 	msgId string,
 	o *MessageAttemptListByMsgOptions,
-) (*ListResponseMessageAttemptOut, error) {
+) (*models.ListResponseMessageAttemptOut, error) {
 	pathMap := map[string]string{
 		"app_id": appId,
 		"msg_id": msgId,
@@ -182,7 +189,7 @@ func (messageAttempt *MessageAttempt) ListByMsg(
 			return nil, err
 		}
 	}
-	ret, apiErr := executeRequest[ListResponseMessageAttemptOut](
+	ret, apiErr := executeRequest[models.ListResponseMessageAttemptOut](
 		ctx,
 		messageAttempt._client,
 		"GET",
@@ -211,7 +218,7 @@ func (messageAttempt *MessageAttempt) ListAttemptedMessages(
 	appId string,
 	endpointId string,
 	o *MessageAttemptListAttemptedMessagesOptions,
-) (*ListResponseEndpointMessageOut, error) {
+) (*models.ListResponseEndpointMessageOut, error) {
 	pathMap := map[string]string{
 		"app_id":      appId,
 		"endpoint_id": endpointId,
@@ -235,7 +242,7 @@ func (messageAttempt *MessageAttempt) ListAttemptedMessages(
 			return nil, err
 		}
 	}
-	ret, apiErr := executeRequest[ListResponseEndpointMessageOut](
+	ret, apiErr := executeRequest[models.ListResponseEndpointMessageOut](
 		ctx,
 		messageAttempt._client,
 		"GET",
@@ -257,7 +264,7 @@ func (messageAttempt *MessageAttempt) Get(
 	appId string,
 	msgId string,
 	attemptId string,
-) (*MessageAttemptOut, error) {
+) (*models.MessageAttemptOut, error) {
 	pathMap := map[string]string{
 		"app_id":     appId,
 		"msg_id":     msgId,
@@ -267,7 +274,7 @@ func (messageAttempt *MessageAttempt) Get(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
-	ret, apiErr := executeRequest[MessageAttemptOut](
+	ret, apiErr := executeRequest[models.MessageAttemptOut](
 		ctx,
 		messageAttempt._client,
 		"GET",
@@ -327,7 +334,7 @@ func (messageAttempt *MessageAttempt) ListAttemptedDestinations(
 	appId string,
 	msgId string,
 	o *MessageAttemptListAttemptedDestinationsOptions,
-) (*ListResponseMessageEndpointOut, error) {
+) (*models.ListResponseMessageEndpointOut, error) {
 	pathMap := map[string]string{
 		"app_id": appId,
 		"msg_id": msgId,
@@ -344,7 +351,7 @@ func (messageAttempt *MessageAttempt) ListAttemptedDestinations(
 			return nil, err
 		}
 	}
-	ret, apiErr := executeRequest[ListResponseMessageEndpointOut](
+	ret, apiErr := executeRequest[models.ListResponseMessageEndpointOut](
 		ctx,
 		messageAttempt._client,
 		"GET",

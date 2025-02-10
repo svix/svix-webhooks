@@ -5,6 +5,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+
+	"github.com/svix/svix-webhooks/go/models"
 )
 
 type Application struct {
@@ -13,11 +15,12 @@ type Application struct {
 
 type ApplicationListOptions struct {
 	// Limit the number of returned items
-	Limit *int32
+	Limit *uint64
 	// The iterator returned from a prior invocation
 	Iterator *string
+
 	// The sorting order of the returned items
-	Order *Ordering
+	Order *models.Ordering
 }
 
 type ApplicationCreateOptions struct {
@@ -28,7 +31,7 @@ type ApplicationCreateOptions struct {
 func (application *Application) List(
 	ctx context.Context,
 	o *ApplicationListOptions,
-) (*ListResponseApplicationOut, error) {
+) (*models.ListResponseApplicationOut, error) {
 	pathMap := map[string]string{}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
@@ -43,7 +46,7 @@ func (application *Application) List(
 			return nil, err
 		}
 	}
-	ret, apiErr := executeRequest[ListResponseApplicationOut](
+	ret, apiErr := executeRequest[models.ListResponseApplicationOut](
 		ctx,
 		application._client,
 		"GET",
@@ -62,9 +65,9 @@ func (application *Application) List(
 // Create a new application.
 func (application *Application) Create(
 	ctx context.Context,
-	applicationIn *ApplicationIn,
+	applicationIn *models.ApplicationIn,
 	o *ApplicationCreateOptions,
-) (*ApplicationOut, error) {
+) (*models.ApplicationOut, error) {
 	if applicationIn == nil {
 		return nil, fmt.Errorf("Application.Create(), applicationIn must not be nil")
 	}
@@ -86,7 +89,7 @@ func (application *Application) Create(
 	if err != nil {
 		return nil, err
 	}
-	ret, apiErr := executeRequest[ApplicationOut](
+	ret, apiErr := executeRequest[models.ApplicationOut](
 		ctx,
 		application._client,
 		"POST",
@@ -105,9 +108,9 @@ func (application *Application) Create(
 // Get or create a new application.
 func (application *Application) GetOrCreate(
 	ctx context.Context,
-	applicationIn *ApplicationIn,
+	applicationIn *models.ApplicationIn,
 	o *ApplicationCreateOptions,
-) (*ApplicationOut, error) {
+) (*models.ApplicationOut, error) {
 	if applicationIn == nil {
 		return nil, fmt.Errorf("Application.GetOrCreate(), applicationIn must not be nil")
 	}
@@ -129,7 +132,7 @@ func (application *Application) GetOrCreate(
 	if err != nil {
 		return nil, err
 	}
-	ret, apiErr := executeRequest[ApplicationOut](
+	ret, apiErr := executeRequest[models.ApplicationOut](
 		ctx,
 		application._client,
 		"POST",
@@ -149,7 +152,7 @@ func (application *Application) GetOrCreate(
 func (application *Application) Get(
 	ctx context.Context,
 	appId string,
-) (*ApplicationOut, error) {
+) (*models.ApplicationOut, error) {
 	pathMap := map[string]string{
 		"app_id": appId,
 	}
@@ -157,7 +160,7 @@ func (application *Application) Get(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
-	ret, apiErr := executeRequest[ApplicationOut](
+	ret, apiErr := executeRequest[models.ApplicationOut](
 		ctx,
 		application._client,
 		"GET",
@@ -177,8 +180,8 @@ func (application *Application) Get(
 func (application *Application) Update(
 	ctx context.Context,
 	appId string,
-	applicationIn *ApplicationIn,
-) (*ApplicationOut, error) {
+	applicationIn *models.ApplicationIn,
+) (*models.ApplicationOut, error) {
 	if applicationIn == nil {
 		return nil, fmt.Errorf("Application.Update(), applicationIn must not be nil")
 	}
@@ -193,7 +196,7 @@ func (application *Application) Update(
 	if err != nil {
 		return nil, err
 	}
-	ret, apiErr := executeRequest[ApplicationOut](
+	ret, apiErr := executeRequest[models.ApplicationOut](
 		ctx,
 		application._client,
 		"PUT",
@@ -241,8 +244,8 @@ func (application *Application) Delete(
 func (application *Application) Patch(
 	ctx context.Context,
 	appId string,
-	applicationPatch *ApplicationPatch,
-) (*ApplicationOut, error) {
+	applicationPatch *models.ApplicationPatch,
+) (*models.ApplicationOut, error) {
 	if applicationPatch == nil {
 		return nil, fmt.Errorf("Application.Patch(), applicationPatch must not be nil")
 	}
@@ -257,7 +260,7 @@ func (application *Application) Patch(
 	if err != nil {
 		return nil, err
 	}
-	ret, apiErr := executeRequest[ApplicationOut](
+	ret, apiErr := executeRequest[models.ApplicationOut](
 		ctx,
 		application._client,
 		"PATCH",

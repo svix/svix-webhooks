@@ -3,6 +3,8 @@ package svix
 
 import (
 	"context"
+
+	"github.com/svix/svix-webhooks/go/models"
 )
 
 type BackgroundTask struct {
@@ -10,23 +12,26 @@ type BackgroundTask struct {
 }
 
 type BackgroundTaskListOptions struct {
+
 	// Filter the response based on the status.
-	Status *BackgroundTaskStatus
+	Status *models.BackgroundTaskStatus
+
 	// Filter the response based on the type.
-	Task *BackgroundTaskType
+	Task *models.BackgroundTaskType
 	// Limit the number of returned items
-	Limit *int32
+	Limit *uint64
 	// The iterator returned from a prior invocation
 	Iterator *string
+
 	// The sorting order of the returned items
-	Order *Ordering
+	Order *models.Ordering
 }
 
 // List background tasks executed in the past 90 days.
 func (backgroundTask *BackgroundTask) List(
 	ctx context.Context,
 	o *BackgroundTaskListOptions,
-) (*ListResponseBackgroundTaskOut, error) {
+) (*models.ListResponseBackgroundTaskOut, error) {
 	pathMap := map[string]string{}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
@@ -43,7 +48,7 @@ func (backgroundTask *BackgroundTask) List(
 			return nil, err
 		}
 	}
-	ret, apiErr := executeRequest[ListResponseBackgroundTaskOut](
+	ret, apiErr := executeRequest[models.ListResponseBackgroundTaskOut](
 		ctx,
 		backgroundTask._client,
 		"GET",
@@ -63,7 +68,7 @@ func (backgroundTask *BackgroundTask) List(
 func (backgroundTask *BackgroundTask) Get(
 	ctx context.Context,
 	taskId string,
-) (*BackgroundTaskOut, error) {
+) (*models.BackgroundTaskOut, error) {
 	pathMap := map[string]string{
 		"task_id": taskId,
 	}
@@ -71,7 +76,7 @@ func (backgroundTask *BackgroundTask) Get(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
-	ret, apiErr := executeRequest[BackgroundTaskOut](
+	ret, apiErr := executeRequest[models.BackgroundTaskOut](
 		ctx,
 		backgroundTask._client,
 		"GET",
