@@ -104,7 +104,6 @@ func executeRequestWithRetries(client *SvixHttpClient, request *http.Request) (*
 			return nil, err
 		}
 		log.Printf("\n%s\n", string(dump))
-		// panic("Not running request")
 	}
 
 	resp, err := client.HTTPClient.Do(request)
