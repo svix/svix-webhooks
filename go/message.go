@@ -60,8 +60,6 @@ func (message *Message) List(
 		"app_id": appId,
 	}
 	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	var err error
 	if o != nil {
 		serializeParamToMap("limit", o.Limit, queryMap, &err)
@@ -83,7 +81,7 @@ func (message *Message) List(
 		"/api/v1/app/{app_id}/msg",
 		pathMap,
 		queryMap,
-		headerMap,
+		nil,
 		nil,
 	)
 	if err != nil {
@@ -112,7 +110,6 @@ func (message *Message) Create(
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-
 	var err error
 	if o != nil {
 		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
@@ -149,8 +146,6 @@ func (message *Message) Get(
 		"msg_id": msgId,
 	}
 	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	var err error
 	if o != nil {
 		serializeParamToMap("with_content", o.WithContent, queryMap, &err)
@@ -165,7 +160,7 @@ func (message *Message) Get(
 		"/api/v1/app/{app_id}/msg/{msg_id}",
 		pathMap,
 		queryMap,
-		headerMap,
+		nil,
 		nil,
 	)
 	if err != nil {
@@ -187,17 +182,14 @@ func (message *Message) ExpungeContent(
 		"app_id": appId,
 		"msg_id": msgId,
 	}
-	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	_, err := executeRequest[any, any](
 		ctx,
 		message.client,
 		"DELETE",
 		"/api/v1/app/{app_id}/msg/{msg_id}/content",
 		pathMap,
-		queryMap,
-		headerMap,
+		nil,
+		nil,
 		nil,
 	)
 	if err != nil {

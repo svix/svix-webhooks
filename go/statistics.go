@@ -24,10 +24,7 @@ func (statistics *Statistics) AggregateAppStats(
 	appUsageStatsIn models.AppUsageStatsIn,
 	o *StatisticsAggregateAppStatsOptions,
 ) (*models.AppUsageStatsOut, error) {
-	pathMap := map[string]string{}
-	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-
 	var err error
 	if o != nil {
 		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
@@ -40,8 +37,8 @@ func (statistics *Statistics) AggregateAppStats(
 		statistics.client,
 		"POST",
 		"/api/v1/stats/usage/app",
-		pathMap,
-		queryMap,
+		nil,
+		nil,
 		headerMap,
 		&appUsageStatsIn,
 	)
@@ -58,18 +55,14 @@ func (statistics *Statistics) AggregateAppStats(
 func (statistics *Statistics) AggregateEventTypes(
 	ctx context.Context,
 ) (*models.AggregateEventTypesOut, error) {
-	pathMap := map[string]string{}
-	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	ret, err := executeRequest[any, models.AggregateEventTypesOut](
 		ctx,
 		statistics.client,
 		"PUT",
 		"/api/v1/stats/usage/event-types",
-		pathMap,
-		queryMap,
-		headerMap,
+		nil,
+		nil,
+		nil,
 		nil,
 	)
 	if err != nil {

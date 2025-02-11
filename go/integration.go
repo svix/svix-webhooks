@@ -39,8 +39,6 @@ func (integration *Integration) List(
 		"app_id": appId,
 	}
 	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	var err error
 	if o != nil {
 		serializeParamToMap("limit", o.Limit, queryMap, &err)
@@ -57,7 +55,7 @@ func (integration *Integration) List(
 		"/api/v1/app/{app_id}/integration",
 		pathMap,
 		queryMap,
-		headerMap,
+		nil,
 		nil,
 	)
 	if err != nil {
@@ -76,9 +74,7 @@ func (integration *Integration) Create(
 	pathMap := map[string]string{
 		"app_id": appId,
 	}
-	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-
 	var err error
 	if o != nil {
 		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
@@ -92,7 +88,7 @@ func (integration *Integration) Create(
 		"POST",
 		"/api/v1/app/{app_id}/integration",
 		pathMap,
-		queryMap,
+		nil,
 		headerMap,
 		&integrationIn,
 	)
@@ -112,17 +108,14 @@ func (integration *Integration) Get(
 		"app_id":   appId,
 		"integ_id": integId,
 	}
-	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	ret, err := executeRequest[any, models.IntegrationOut](
 		ctx,
 		integration.client,
 		"GET",
 		"/api/v1/app/{app_id}/integration/{integ_id}",
 		pathMap,
-		queryMap,
-		headerMap,
+		nil,
+		nil,
 		nil,
 	)
 	if err != nil {
@@ -142,17 +135,14 @@ func (integration *Integration) Update(
 		"app_id":   appId,
 		"integ_id": integId,
 	}
-	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	ret, err := executeRequest[models.IntegrationUpdate, models.IntegrationOut](
 		ctx,
 		integration.client,
 		"PUT",
 		"/api/v1/app/{app_id}/integration/{integ_id}",
 		pathMap,
-		queryMap,
-		headerMap,
+		nil,
+		nil,
 		&integrationUpdate,
 	)
 	if err != nil {
@@ -171,17 +161,14 @@ func (integration *Integration) Delete(
 		"app_id":   appId,
 		"integ_id": integId,
 	}
-	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	_, err := executeRequest[any, any](
 		ctx,
 		integration.client,
 		"DELETE",
 		"/api/v1/app/{app_id}/integration/{integ_id}",
 		pathMap,
-		queryMap,
-		headerMap,
+		nil,
+		nil,
 		nil,
 	)
 	if err != nil {
@@ -202,17 +189,14 @@ func (integration *Integration) GetKey(
 		"app_id":   appId,
 		"integ_id": integId,
 	}
-	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	ret, err := executeRequest[any, models.IntegrationKeyOut](
 		ctx,
 		integration.client,
 		"GET",
 		"/api/v1/app/{app_id}/integration/{integ_id}/key",
 		pathMap,
-		queryMap,
-		headerMap,
+		nil,
+		nil,
 		nil,
 	)
 	if err != nil {
@@ -232,9 +216,7 @@ func (integration *Integration) RotateKey(
 		"app_id":   appId,
 		"integ_id": integId,
 	}
-	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-
 	var err error
 	if o != nil {
 		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
@@ -248,7 +230,7 @@ func (integration *Integration) RotateKey(
 		"POST",
 		"/api/v1/app/{app_id}/integration/{integ_id}/key/rotate",
 		pathMap,
-		queryMap,
+		nil,
 		headerMap,
 		nil,
 	)

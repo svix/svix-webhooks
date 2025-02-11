@@ -59,8 +59,6 @@ func (endpoint *Endpoint) List(
 		"app_id": appId,
 	}
 	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	var err error
 	if o != nil {
 		serializeParamToMap("limit", o.Limit, queryMap, &err)
@@ -77,7 +75,7 @@ func (endpoint *Endpoint) List(
 		"/api/v1/app/{app_id}/endpoint",
 		pathMap,
 		queryMap,
-		headerMap,
+		nil,
 		nil,
 	)
 	if err != nil {
@@ -98,9 +96,7 @@ func (endpoint *Endpoint) Create(
 	pathMap := map[string]string{
 		"app_id": appId,
 	}
-	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-
 	var err error
 	if o != nil {
 		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
@@ -114,7 +110,7 @@ func (endpoint *Endpoint) Create(
 		"POST",
 		"/api/v1/app/{app_id}/endpoint",
 		pathMap,
-		queryMap,
+		nil,
 		headerMap,
 		&endpointIn,
 	)
@@ -134,17 +130,14 @@ func (endpoint *Endpoint) Get(
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
-	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	ret, err := executeRequest[any, models.EndpointOut](
 		ctx,
 		endpoint.client,
 		"GET",
 		"/api/v1/app/{app_id}/endpoint/{endpoint_id}",
 		pathMap,
-		queryMap,
-		headerMap,
+		nil,
+		nil,
 		nil,
 	)
 	if err != nil {
@@ -164,17 +157,14 @@ func (endpoint *Endpoint) Update(
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
-	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	ret, err := executeRequest[models.EndpointUpdate, models.EndpointOut](
 		ctx,
 		endpoint.client,
 		"PUT",
 		"/api/v1/app/{app_id}/endpoint/{endpoint_id}",
 		pathMap,
-		queryMap,
-		headerMap,
+		nil,
+		nil,
 		&endpointUpdate,
 	)
 	if err != nil {
@@ -193,17 +183,14 @@ func (endpoint *Endpoint) Delete(
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
-	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	_, err := executeRequest[any, any](
 		ctx,
 		endpoint.client,
 		"DELETE",
 		"/api/v1/app/{app_id}/endpoint/{endpoint_id}",
 		pathMap,
-		queryMap,
-		headerMap,
+		nil,
+		nil,
 		nil,
 	)
 	if err != nil {
@@ -223,17 +210,14 @@ func (endpoint *Endpoint) Patch(
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
-	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	ret, err := executeRequest[models.EndpointPatch, models.EndpointOut](
 		ctx,
 		endpoint.client,
 		"PATCH",
 		"/api/v1/app/{app_id}/endpoint/{endpoint_id}",
 		pathMap,
-		queryMap,
-		headerMap,
+		nil,
+		nil,
 		&endpointPatch,
 	)
 	if err != nil {
@@ -252,17 +236,14 @@ func (endpoint *Endpoint) GetHeaders(
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
-	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	ret, err := executeRequest[any, models.EndpointHeadersOut](
 		ctx,
 		endpoint.client,
 		"GET",
 		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers",
 		pathMap,
-		queryMap,
-		headerMap,
+		nil,
+		nil,
 		nil,
 	)
 	if err != nil {
@@ -282,17 +263,14 @@ func (endpoint *Endpoint) UpdateHeaders(
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
-	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	_, err := executeRequest[models.EndpointHeadersIn, any](
 		ctx,
 		endpoint.client,
 		"PUT",
 		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers",
 		pathMap,
-		queryMap,
-		headerMap,
+		nil,
+		nil,
 		&endpointHeadersIn,
 	)
 	if err != nil {
@@ -312,17 +290,14 @@ func (endpoint *Endpoint) PatchHeaders(
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
-	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	_, err := executeRequest[models.EndpointHeadersPatchIn, any](
 		ctx,
 		endpoint.client,
 		"PATCH",
 		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers",
 		pathMap,
-		queryMap,
-		headerMap,
+		nil,
+		nil,
 		&endpointHeadersPatchIn,
 	)
 	if err != nil {
@@ -345,9 +320,7 @@ func (endpoint *Endpoint) Recover(
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
-	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-
 	var err error
 	if o != nil {
 		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
@@ -361,7 +334,7 @@ func (endpoint *Endpoint) Recover(
 		"POST",
 		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/recover",
 		pathMap,
-		queryMap,
+		nil,
 		headerMap,
 		&recoverIn,
 	)
@@ -386,9 +359,7 @@ func (endpoint *Endpoint) ReplayMissing(
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
-	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-
 	var err error
 	if o != nil {
 		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
@@ -402,7 +373,7 @@ func (endpoint *Endpoint) ReplayMissing(
 		"POST",
 		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/replay-missing",
 		pathMap,
-		queryMap,
+		nil,
 		headerMap,
 		&replayIn,
 	)
@@ -425,17 +396,14 @@ func (endpoint *Endpoint) GetSecret(
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
-	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	ret, err := executeRequest[any, models.EndpointSecretOut](
 		ctx,
 		endpoint.client,
 		"GET",
 		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret",
 		pathMap,
-		queryMap,
-		headerMap,
+		nil,
+		nil,
 		nil,
 	)
 	if err != nil {
@@ -458,9 +426,7 @@ func (endpoint *Endpoint) RotateSecret(
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
-	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-
 	var err error
 	if o != nil {
 		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
@@ -474,7 +440,7 @@ func (endpoint *Endpoint) RotateSecret(
 		"POST",
 		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate",
 		pathMap,
-		queryMap,
+		nil,
 		headerMap,
 		&endpointSecretRotateIn,
 	)
@@ -496,9 +462,7 @@ func (endpoint *Endpoint) SendExample(
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
-	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-
 	var err error
 	if o != nil {
 		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
@@ -512,7 +476,7 @@ func (endpoint *Endpoint) SendExample(
 		"POST",
 		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/send-example",
 		pathMap,
-		queryMap,
+		nil,
 		headerMap,
 		&eventExampleIn,
 	)
@@ -534,8 +498,6 @@ func (endpoint *Endpoint) GetStats(
 		"endpoint_id": endpointId,
 	}
 	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	var err error
 	if o != nil {
 		serializeParamToMap("since", o.Since, queryMap, &err)
@@ -551,7 +513,7 @@ func (endpoint *Endpoint) GetStats(
 		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/stats",
 		pathMap,
 		queryMap,
-		headerMap,
+		nil,
 		nil,
 	)
 	if err != nil {
@@ -570,17 +532,14 @@ func (endpoint *Endpoint) TransformationGet(
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
-	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	ret, err := executeRequest[any, models.EndpointTransformationOut](
 		ctx,
 		endpoint.client,
 		"GET",
 		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
 		pathMap,
-		queryMap,
-		headerMap,
+		nil,
+		nil,
 		nil,
 	)
 	if err != nil {
@@ -600,17 +559,14 @@ func (endpoint *Endpoint) TransformationPartialUpdate(
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
-	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	_, err := executeRequest[models.EndpointTransformationIn, any](
 		ctx,
 		endpoint.client,
 		"PATCH",
 		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
 		pathMap,
-		queryMap,
-		headerMap,
+		nil,
+		nil,
 		&endpointTransformationIn,
 	)
 	if err != nil {

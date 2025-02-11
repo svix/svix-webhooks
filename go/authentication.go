@@ -37,9 +37,7 @@ func (authentication *Authentication) AppPortalAccess(
 	pathMap := map[string]string{
 		"app_id": appId,
 	}
-	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-
 	var err error
 	if o != nil {
 		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
@@ -53,7 +51,7 @@ func (authentication *Authentication) AppPortalAccess(
 		"POST",
 		"/api/v1/auth/app-portal-access/{app_id}",
 		pathMap,
-		queryMap,
+		nil,
 		headerMap,
 		&appPortalAccessIn,
 	)
@@ -73,9 +71,7 @@ func (authentication *Authentication) ExpireAll(
 	pathMap := map[string]string{
 		"app_id": appId,
 	}
-	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-
 	var err error
 	if o != nil {
 		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
@@ -89,7 +85,7 @@ func (authentication *Authentication) ExpireAll(
 		"POST",
 		"/api/v1/auth/app/{app_id}/expire-all",
 		pathMap,
-		queryMap,
+		nil,
 		headerMap,
 		&applicationTokenExpireIn,
 	)
@@ -110,9 +106,7 @@ func (authentication *Authentication) DashboardAccess(
 	pathMap := map[string]string{
 		"app_id": appId,
 	}
-	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-
 	var err error
 	if o != nil {
 		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
@@ -126,7 +120,7 @@ func (authentication *Authentication) DashboardAccess(
 		"POST",
 		"/api/v1/auth/dashboard-access/{app_id}",
 		pathMap,
-		queryMap,
+		nil,
 		headerMap,
 		nil,
 	)
@@ -143,10 +137,7 @@ func (authentication *Authentication) Logout(
 	ctx context.Context,
 	o *AuthenticationLogoutOptions,
 ) error {
-	pathMap := map[string]string{}
-	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-
 	var err error
 	if o != nil {
 		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
@@ -159,8 +150,8 @@ func (authentication *Authentication) Logout(
 		authentication.client,
 		"POST",
 		"/api/v1/auth/logout",
-		pathMap,
-		queryMap,
+		nil,
+		nil,
 		headerMap,
 		nil,
 	)

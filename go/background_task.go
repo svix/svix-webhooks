@@ -32,10 +32,7 @@ func (backgroundTask *BackgroundTask) List(
 	ctx context.Context,
 	o *BackgroundTaskListOptions,
 ) (*models.ListResponseBackgroundTaskOut, error) {
-	pathMap := map[string]string{}
 	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	var err error
 	if o != nil {
 		serializeParamToMap("status", o.Status, queryMap, &err)
@@ -52,9 +49,9 @@ func (backgroundTask *BackgroundTask) List(
 		backgroundTask.client,
 		"GET",
 		"/api/v1/background-task",
-		pathMap,
+		nil,
 		queryMap,
-		headerMap,
+		nil,
 		nil,
 	)
 	if err != nil {
@@ -71,17 +68,14 @@ func (backgroundTask *BackgroundTask) Get(
 	pathMap := map[string]string{
 		"task_id": taskId,
 	}
-	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	ret, err := executeRequest[any, models.BackgroundTaskOut](
 		ctx,
 		backgroundTask.client,
 		"GET",
 		"/api/v1/background-task/{task_id}",
 		pathMap,
-		queryMap,
-		headerMap,
+		nil,
+		nil,
 		nil,
 	)
 	if err != nil {

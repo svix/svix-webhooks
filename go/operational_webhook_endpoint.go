@@ -34,10 +34,7 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) List(
 	ctx context.Context,
 	o *OperationalWebhookEndpointListOptions,
 ) (*models.ListResponseOperationalWebhookEndpointOut, error) {
-	pathMap := map[string]string{}
 	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	var err error
 	if o != nil {
 		serializeParamToMap("limit", o.Limit, queryMap, &err)
@@ -52,9 +49,9 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) List(
 		operationalWebhookEndpoint.client,
 		"GET",
 		"/api/v1/operational-webhook/endpoint",
-		pathMap,
+		nil,
 		queryMap,
-		headerMap,
+		nil,
 		nil,
 	)
 	if err != nil {
@@ -69,10 +66,7 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Create(
 	operationalWebhookEndpointIn models.OperationalWebhookEndpointIn,
 	o *OperationalWebhookEndpointCreateOptions,
 ) (*models.OperationalWebhookEndpointOut, error) {
-	pathMap := map[string]string{}
-	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-
 	var err error
 	if o != nil {
 		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
@@ -85,8 +79,8 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Create(
 		operationalWebhookEndpoint.client,
 		"POST",
 		"/api/v1/operational-webhook/endpoint",
-		pathMap,
-		queryMap,
+		nil,
+		nil,
 		headerMap,
 		&operationalWebhookEndpointIn,
 	)
@@ -104,17 +98,14 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Get(
 	pathMap := map[string]string{
 		"endpoint_id": endpointId,
 	}
-	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	ret, err := executeRequest[any, models.OperationalWebhookEndpointOut](
 		ctx,
 		operationalWebhookEndpoint.client,
 		"GET",
 		"/api/v1/operational-webhook/endpoint/{endpoint_id}",
 		pathMap,
-		queryMap,
-		headerMap,
+		nil,
+		nil,
 		nil,
 	)
 	if err != nil {
@@ -132,17 +123,14 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Update(
 	pathMap := map[string]string{
 		"endpoint_id": endpointId,
 	}
-	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	ret, err := executeRequest[models.OperationalWebhookEndpointUpdate, models.OperationalWebhookEndpointOut](
 		ctx,
 		operationalWebhookEndpoint.client,
 		"PUT",
 		"/api/v1/operational-webhook/endpoint/{endpoint_id}",
 		pathMap,
-		queryMap,
-		headerMap,
+		nil,
+		nil,
 		&operationalWebhookEndpointUpdate,
 	)
 	if err != nil {
@@ -159,17 +147,14 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Delete(
 	pathMap := map[string]string{
 		"endpoint_id": endpointId,
 	}
-	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	_, err := executeRequest[any, any](
 		ctx,
 		operationalWebhookEndpoint.client,
 		"DELETE",
 		"/api/v1/operational-webhook/endpoint/{endpoint_id}",
 		pathMap,
-		queryMap,
-		headerMap,
+		nil,
+		nil,
 		nil,
 	)
 	if err != nil {
@@ -186,17 +171,14 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) GetHeaders(
 	pathMap := map[string]string{
 		"endpoint_id": endpointId,
 	}
-	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	ret, err := executeRequest[any, models.OperationalWebhookEndpointHeadersOut](
 		ctx,
 		operationalWebhookEndpoint.client,
 		"GET",
 		"/api/v1/operational-webhook/endpoint/{endpoint_id}/headers",
 		pathMap,
-		queryMap,
-		headerMap,
+		nil,
+		nil,
 		nil,
 	)
 	if err != nil {
@@ -214,17 +196,14 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) UpdateHeaders(
 	pathMap := map[string]string{
 		"endpoint_id": endpointId,
 	}
-	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	_, err := executeRequest[models.OperationalWebhookEndpointHeadersIn, any](
 		ctx,
 		operationalWebhookEndpoint.client,
 		"PUT",
 		"/api/v1/operational-webhook/endpoint/{endpoint_id}/headers",
 		pathMap,
-		queryMap,
-		headerMap,
+		nil,
+		nil,
 		&operationalWebhookEndpointHeadersIn,
 	)
 	if err != nil {
@@ -244,17 +223,14 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) GetSecret(
 	pathMap := map[string]string{
 		"endpoint_id": endpointId,
 	}
-	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	ret, err := executeRequest[any, models.OperationalWebhookEndpointSecretOut](
 		ctx,
 		operationalWebhookEndpoint.client,
 		"GET",
 		"/api/v1/operational-webhook/endpoint/{endpoint_id}/secret",
 		pathMap,
-		queryMap,
-		headerMap,
+		nil,
+		nil,
 		nil,
 	)
 	if err != nil {
@@ -275,9 +251,7 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) RotateSecret(
 	pathMap := map[string]string{
 		"endpoint_id": endpointId,
 	}
-	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-
 	var err error
 	if o != nil {
 		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
@@ -291,7 +265,7 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) RotateSecret(
 		"POST",
 		"/api/v1/operational-webhook/endpoint/{endpoint_id}/secret/rotate",
 		pathMap,
-		queryMap,
+		nil,
 		headerMap,
 		&operationalWebhookEndpointSecretIn,
 	)

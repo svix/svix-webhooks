@@ -30,10 +30,7 @@ func (application *Application) List(
 	ctx context.Context,
 	o *ApplicationListOptions,
 ) (*models.ListResponseApplicationOut, error) {
-	pathMap := map[string]string{}
 	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	var err error
 	if o != nil {
 		serializeParamToMap("limit", o.Limit, queryMap, &err)
@@ -48,9 +45,9 @@ func (application *Application) List(
 		application.client,
 		"GET",
 		"/api/v1/app",
-		pathMap,
+		nil,
 		queryMap,
-		headerMap,
+		nil,
 		nil,
 	)
 	if err != nil {
@@ -65,12 +62,10 @@ func (application *Application) Create(
 	applicationIn models.ApplicationIn,
 	o *ApplicationCreateOptions,
 ) (*models.ApplicationOut, error) {
-	pathMap := map[string]string{}
 	queryMap := map[string]string{
 		"get_if_exists": "false",
 	}
 	headerMap := map[string]string{}
-
 	var err error
 	if o != nil {
 		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
@@ -83,7 +78,7 @@ func (application *Application) Create(
 		application.client,
 		"POST",
 		"/api/v1/app",
-		pathMap,
+		nil,
 		queryMap,
 		headerMap,
 		&applicationIn,
@@ -100,7 +95,6 @@ func (application *Application) GetOrCreate(
 	applicationIn models.ApplicationIn,
 	o *ApplicationCreateOptions,
 ) (*models.ApplicationOut, error) {
-	pathMap := map[string]string{}
 	queryMap := map[string]string{
 		"get_if_exists": "true",
 	}
@@ -119,7 +113,7 @@ func (application *Application) GetOrCreate(
 		application.client,
 		"POST",
 		"/api/v1/app",
-		pathMap,
+		nil,
 		queryMap,
 		headerMap,
 		&applicationIn,
@@ -138,17 +132,14 @@ func (application *Application) Get(
 	pathMap := map[string]string{
 		"app_id": appId,
 	}
-	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	ret, err := executeRequest[any, models.ApplicationOut](
 		ctx,
 		application.client,
 		"GET",
 		"/api/v1/app/{app_id}",
 		pathMap,
-		queryMap,
-		headerMap,
+		nil,
+		nil,
 		nil,
 	)
 	if err != nil {
@@ -166,17 +157,14 @@ func (application *Application) Update(
 	pathMap := map[string]string{
 		"app_id": appId,
 	}
-	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	ret, err := executeRequest[models.ApplicationIn, models.ApplicationOut](
 		ctx,
 		application.client,
 		"PUT",
 		"/api/v1/app/{app_id}",
 		pathMap,
-		queryMap,
-		headerMap,
+		nil,
+		nil,
 		&applicationIn,
 	)
 	if err != nil {
@@ -193,17 +181,14 @@ func (application *Application) Delete(
 	pathMap := map[string]string{
 		"app_id": appId,
 	}
-	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	_, err := executeRequest[any, any](
 		ctx,
 		application.client,
 		"DELETE",
 		"/api/v1/app/{app_id}",
 		pathMap,
-		queryMap,
-		headerMap,
+		nil,
+		nil,
 		nil,
 	)
 	if err != nil {
@@ -221,17 +206,14 @@ func (application *Application) Patch(
 	pathMap := map[string]string{
 		"app_id": appId,
 	}
-	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	ret, err := executeRequest[models.ApplicationPatch, models.ApplicationOut](
 		ctx,
 		application.client,
 		"PATCH",
 		"/api/v1/app/{app_id}",
 		pathMap,
-		queryMap,
-		headerMap,
+		nil,
+		nil,
 		&applicationPatch,
 	)
 	if err != nil {

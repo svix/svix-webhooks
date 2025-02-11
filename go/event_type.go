@@ -43,10 +43,7 @@ func (eventType *EventType) List(
 	ctx context.Context,
 	o *EventTypeListOptions,
 ) (*models.ListResponseEventTypeOut, error) {
-	pathMap := map[string]string{}
 	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	var err error
 	if o != nil {
 		serializeParamToMap("limit", o.Limit, queryMap, &err)
@@ -63,9 +60,9 @@ func (eventType *EventType) List(
 		eventType.client,
 		"GET",
 		"/api/v1/event-type",
-		pathMap,
+		nil,
 		queryMap,
-		headerMap,
+		nil,
 		nil,
 	)
 	if err != nil {
@@ -84,10 +81,7 @@ func (eventType *EventType) Create(
 	eventTypeIn models.EventTypeIn,
 	o *EventTypeCreateOptions,
 ) (*models.EventTypeOut, error) {
-	pathMap := map[string]string{}
-	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-
 	var err error
 	if o != nil {
 		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
@@ -100,8 +94,8 @@ func (eventType *EventType) Create(
 		eventType.client,
 		"POST",
 		"/api/v1/event-type",
-		pathMap,
-		queryMap,
+		nil,
+		nil,
 		headerMap,
 		&eventTypeIn,
 	)
@@ -121,10 +115,7 @@ func (eventType *EventType) ImportOpenapi(
 	eventTypeImportOpenApiIn models.EventTypeImportOpenApiIn,
 	o *EventTypeImportOpenapiOptions,
 ) (*models.EventTypeImportOpenApiOut, error) {
-	pathMap := map[string]string{}
-	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-
 	var err error
 	if o != nil {
 		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
@@ -137,8 +128,8 @@ func (eventType *EventType) ImportOpenapi(
 		eventType.client,
 		"POST",
 		"/api/v1/event-type/import/openapi",
-		pathMap,
-		queryMap,
+		nil,
+		nil,
 		headerMap,
 		&eventTypeImportOpenApiIn,
 	)
@@ -156,17 +147,14 @@ func (eventType *EventType) Get(
 	pathMap := map[string]string{
 		"event_type_name": eventTypeName,
 	}
-	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	ret, err := executeRequest[any, models.EventTypeOut](
 		ctx,
 		eventType.client,
 		"GET",
 		"/api/v1/event-type/{event_type_name}",
 		pathMap,
-		queryMap,
-		headerMap,
+		nil,
+		nil,
 		nil,
 	)
 	if err != nil {
@@ -184,17 +172,14 @@ func (eventType *EventType) Update(
 	pathMap := map[string]string{
 		"event_type_name": eventTypeName,
 	}
-	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	ret, err := executeRequest[models.EventTypeUpdate, models.EventTypeOut](
 		ctx,
 		eventType.client,
 		"PUT",
 		"/api/v1/event-type/{event_type_name}",
 		pathMap,
-		queryMap,
-		headerMap,
+		nil,
+		nil,
 		&eventTypeUpdate,
 	)
 	if err != nil {
@@ -218,8 +203,6 @@ func (eventType *EventType) Delete(
 		"event_type_name": eventTypeName,
 	}
 	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	var err error
 	if o != nil {
 		serializeParamToMap("expunge", o.Expunge, queryMap, &err)
@@ -234,7 +217,7 @@ func (eventType *EventType) Delete(
 		"/api/v1/event-type/{event_type_name}",
 		pathMap,
 		queryMap,
-		headerMap,
+		nil,
 		nil,
 	)
 	if err != nil {
@@ -252,17 +235,14 @@ func (eventType *EventType) Patch(
 	pathMap := map[string]string{
 		"event_type_name": eventTypeName,
 	}
-	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	ret, err := executeRequest[models.EventTypePatch, models.EventTypeOut](
 		ctx,
 		eventType.client,
 		"PATCH",
 		"/api/v1/event-type/{event_type_name}",
 		pathMap,
-		queryMap,
-		headerMap,
+		nil,
+		nil,
 		&eventTypePatch,
 	)
 	if err != nil {

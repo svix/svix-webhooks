@@ -116,8 +116,6 @@ func (messageAttempt *MessageAttempt) ListByEndpoint(
 		"endpoint_id": endpointId,
 	}
 	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	var err error
 	if o != nil {
 		serializeParamToMap("limit", o.Limit, queryMap, &err)
@@ -142,7 +140,7 @@ func (messageAttempt *MessageAttempt) ListByEndpoint(
 		"/api/v1/app/{app_id}/attempt/endpoint/{endpoint_id}",
 		pathMap,
 		queryMap,
-		headerMap,
+		nil,
 		nil,
 	)
 	if err != nil {
@@ -168,8 +166,6 @@ func (messageAttempt *MessageAttempt) ListByMsg(
 		"msg_id": msgId,
 	}
 	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	var err error
 	if o != nil {
 		serializeParamToMap("limit", o.Limit, queryMap, &err)
@@ -194,7 +190,7 @@ func (messageAttempt *MessageAttempt) ListByMsg(
 		"/api/v1/app/{app_id}/attempt/msg/{msg_id}",
 		pathMap,
 		queryMap,
-		headerMap,
+		nil,
 		nil,
 	)
 	if err != nil {
@@ -222,8 +218,6 @@ func (messageAttempt *MessageAttempt) ListAttemptedMessages(
 		"endpoint_id": endpointId,
 	}
 	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	var err error
 	if o != nil {
 		serializeParamToMap("limit", o.Limit, queryMap, &err)
@@ -246,7 +240,7 @@ func (messageAttempt *MessageAttempt) ListAttemptedMessages(
 		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/msg",
 		pathMap,
 		queryMap,
-		headerMap,
+		nil,
 		nil,
 	)
 	if err != nil {
@@ -267,17 +261,14 @@ func (messageAttempt *MessageAttempt) Get(
 		"msg_id":     msgId,
 		"attempt_id": attemptId,
 	}
-	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	ret, err := executeRequest[any, models.MessageAttemptOut](
 		ctx,
 		messageAttempt.client,
 		"GET",
 		"/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}",
 		pathMap,
-		queryMap,
-		headerMap,
+		nil,
+		nil,
 		nil,
 	)
 	if err != nil {
@@ -301,17 +292,14 @@ func (messageAttempt *MessageAttempt) ExpungeContent(
 		"msg_id":     msgId,
 		"attempt_id": attemptId,
 	}
-	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	_, err := executeRequest[any, any](
 		ctx,
 		messageAttempt.client,
 		"DELETE",
 		"/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/content",
 		pathMap,
-		queryMap,
-		headerMap,
+		nil,
+		nil,
 		nil,
 	)
 	if err != nil {
@@ -335,8 +323,6 @@ func (messageAttempt *MessageAttempt) ListAttemptedDestinations(
 		"msg_id": msgId,
 	}
 	queryMap := map[string]string{}
-	headerMap := map[string]string{}
-
 	var err error
 	if o != nil {
 		serializeParamToMap("limit", o.Limit, queryMap, &err)
@@ -352,7 +338,7 @@ func (messageAttempt *MessageAttempt) ListAttemptedDestinations(
 		"/api/v1/app/{app_id}/msg/{msg_id}/endpoint",
 		pathMap,
 		queryMap,
-		headerMap,
+		nil,
 		nil,
 	)
 	if err != nil {
@@ -374,9 +360,7 @@ func (messageAttempt *MessageAttempt) Resend(
 		"msg_id":      msgId,
 		"endpoint_id": endpointId,
 	}
-	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-
 	var err error
 	if o != nil {
 		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
@@ -390,7 +374,7 @@ func (messageAttempt *MessageAttempt) Resend(
 		"POST",
 		"/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/resend",
 		pathMap,
-		queryMap,
+		nil,
 		headerMap,
 		nil,
 	)
