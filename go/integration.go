@@ -3,8 +3,6 @@ package svix
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 
 	"github.com/svix/svix-webhooks/go/models"
 )
@@ -42,7 +40,6 @@ func (integration *Integration) List(
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
 	var err error
 	if o != nil {
@@ -53,7 +50,7 @@ func (integration *Integration) List(
 			return nil, err
 		}
 	}
-	ret, err := executeRequest[models.ListResponseIntegrationOut](
+	ret, err := executeRequest[any, models.ListResponseIntegrationOut](
 		ctx,
 		integration.client,
 		"GET",
@@ -61,7 +58,7 @@ func (integration *Integration) List(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		nil,
 	)
 	if err != nil {
 		return nil, err
@@ -73,18 +70,14 @@ func (integration *Integration) List(
 func (integration *Integration) Create(
 	ctx context.Context,
 	appId string,
-	integrationIn *models.IntegrationIn,
+	integrationIn models.IntegrationIn,
 	o *IntegrationCreateOptions,
 ) (*models.IntegrationOut, error) {
-	if integrationIn == nil {
-		return nil, fmt.Errorf("Integration.Create(), integrationIn must not be nil")
-	}
 	pathMap := map[string]string{
 		"app_id": appId,
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
 	var err error
 	if o != nil {
@@ -93,11 +86,7 @@ func (integration *Integration) Create(
 			return nil, err
 		}
 	}
-	jsonBody, err = json.Marshal(integrationIn)
-	if err != nil {
-		return nil, err
-	}
-	ret, err := executeRequest[models.IntegrationOut](
+	ret, err := executeRequest[models.IntegrationIn, models.IntegrationOut](
 		ctx,
 		integration.client,
 		"POST",
@@ -105,7 +94,7 @@ func (integration *Integration) Create(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		&integrationIn,
 	)
 	if err != nil {
 		return nil, err
@@ -125,9 +114,8 @@ func (integration *Integration) Get(
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
-	ret, err := executeRequest[models.IntegrationOut](
+	ret, err := executeRequest[any, models.IntegrationOut](
 		ctx,
 		integration.client,
 		"GET",
@@ -135,7 +123,7 @@ func (integration *Integration) Get(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		nil,
 	)
 	if err != nil {
 		return nil, err
@@ -148,24 +136,16 @@ func (integration *Integration) Update(
 	ctx context.Context,
 	appId string,
 	integId string,
-	integrationUpdate *models.IntegrationUpdate,
+	integrationUpdate models.IntegrationUpdate,
 ) (*models.IntegrationOut, error) {
-	if integrationUpdate == nil {
-		return nil, fmt.Errorf("Integration.Update(), integrationUpdate must not be nil")
-	}
 	pathMap := map[string]string{
 		"app_id":   appId,
 		"integ_id": integId,
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
-	jsonBody, err := json.Marshal(integrationUpdate)
-	if err != nil {
-		return nil, err
-	}
-	ret, err := executeRequest[models.IntegrationOut](
+	ret, err := executeRequest[models.IntegrationUpdate, models.IntegrationOut](
 		ctx,
 		integration.client,
 		"PUT",
@@ -173,7 +153,7 @@ func (integration *Integration) Update(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		&integrationUpdate,
 	)
 	if err != nil {
 		return nil, err
@@ -193,9 +173,8 @@ func (integration *Integration) Delete(
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
-	_, err := executeRequest[any](
+	_, err := executeRequest[any, any](
 		ctx,
 		integration.client,
 		"DELETE",
@@ -203,7 +182,7 @@ func (integration *Integration) Delete(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		nil,
 	)
 	if err != nil {
 		return err
@@ -225,9 +204,8 @@ func (integration *Integration) GetKey(
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
-	ret, err := executeRequest[models.IntegrationKeyOut](
+	ret, err := executeRequest[any, models.IntegrationKeyOut](
 		ctx,
 		integration.client,
 		"GET",
@@ -235,7 +213,7 @@ func (integration *Integration) GetKey(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		nil,
 	)
 	if err != nil {
 		return nil, err
@@ -256,7 +234,6 @@ func (integration *Integration) RotateKey(
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
 	var err error
 	if o != nil {
@@ -265,7 +242,7 @@ func (integration *Integration) RotateKey(
 			return nil, err
 		}
 	}
-	ret, err := executeRequest[models.IntegrationKeyOut](
+	ret, err := executeRequest[any, models.IntegrationKeyOut](
 		ctx,
 		integration.client,
 		"POST",
@@ -273,7 +250,7 @@ func (integration *Integration) RotateKey(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		nil,
 	)
 	if err != nil {
 		return nil, err

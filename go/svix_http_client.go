@@ -35,7 +35,7 @@ func defaultSvixHttpClient() SvixHttpClient {
 	}
 }
 
-func executeRequest[T any](
+func executeRequest[ReqBody any, ResBody any](
 	ctx context.Context,
 	client *SvixHttpClient,
 	method string,
@@ -43,16 +43,20 @@ func executeRequest[T any](
 	pathParams map[string]string,
 	queryParams map[string]string,
 	headerParams map[string]string,
-	jsonBody []byte,
+	jsonBody *ReqBody,
 
-) (*T, error) {
+) (*ResBody, error) {
 
 	urlWithPath := client.BaseURL + replacePathKeys(path, pathParams)
 	urlStr, err := addQueryParams(urlWithPath, queryParams)
 	if err != nil {
 		return nil, err
 	}
-	req, err := http.NewRequestWithContext(ctx, method, urlStr, bytes.NewBuffer(jsonBody))
+	encodedBody, err := json.Marshal(jsonBody)
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequestWithContext(ctx, method, urlStr, bytes.NewBuffer(encodedBody))
 	if err != nil {
 		return nil, err
 	}
@@ -80,7 +84,7 @@ func executeRequest[T any](
 		return nil, err
 	}
 	if res.StatusCode >= 200 && res.StatusCode <= 299 {
-		var ret T
+		var ret ResBody
 		err = json.Unmarshal(body, &ret)
 		if err != nil {
 			return nil, err

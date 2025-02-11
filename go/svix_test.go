@@ -63,25 +63,25 @@ func TestKitchenSink(t *testing.T) {
 	ctx := context.Background()
 	client := getTestClient(t)
 
-	app, err := client.Application.Create(ctx, &models.ApplicationIn{
+	app, err := client.Application.Create(ctx, models.ApplicationIn{
 		Name: "test",
 	}, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	_, err = client.EventType.Create(ctx, &models.EventTypeIn{Name: "event.started", Description: "Something started"}, nil)
+	_, err = client.EventType.Create(ctx, models.EventTypeIn{Name: "event.started", Description: "Something started"}, nil)
 
 	if isNotConflict(err) != nil {
 		t.Fatal(err)
 	}
 
-	_, err = client.EventType.Create(ctx, &models.EventTypeIn{Name: "event.ended", Description: "Something ended"}, nil)
+	_, err = client.EventType.Create(ctx, models.EventTypeIn{Name: "event.ended", Description: "Something ended"}, nil)
 	if isNotConflict(err) != nil {
 		t.Fatal(err)
 	}
 
-	endp, err := client.Endpoint.Create(ctx, app.Id, &models.EndpointIn{
+	endp, err := client.Endpoint.Create(ctx, app.Id, models.EndpointIn{
 		Url: "https://example.svix.com/",
 	}, nil)
 	if err != nil {
@@ -92,7 +92,7 @@ func TestKitchenSink(t *testing.T) {
 		FilterTypes: utils.NewNullable([]string{"event.started", "event.ended"}),
 	}
 
-	patched, err := client.Endpoint.Patch(ctx, app.Id, endp.Id, &endpPatch)
+	patched, err := client.Endpoint.Patch(ctx, app.Id, endp.Id, endpPatch)
 	if err != nil {
 		t.Fatal(err)
 	}

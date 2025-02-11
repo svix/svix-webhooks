@@ -3,8 +3,6 @@ package svix
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 	"time"
 
 	"github.com/svix/svix-webhooks/go/models"
@@ -62,7 +60,6 @@ func (endpoint *Endpoint) List(
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
 	var err error
 	if o != nil {
@@ -73,7 +70,7 @@ func (endpoint *Endpoint) List(
 			return nil, err
 		}
 	}
-	ret, err := executeRequest[models.ListResponseEndpointOut](
+	ret, err := executeRequest[any, models.ListResponseEndpointOut](
 		ctx,
 		endpoint.client,
 		"GET",
@@ -81,7 +78,7 @@ func (endpoint *Endpoint) List(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		nil,
 	)
 	if err != nil {
 		return nil, err
@@ -95,18 +92,14 @@ func (endpoint *Endpoint) List(
 func (endpoint *Endpoint) Create(
 	ctx context.Context,
 	appId string,
-	endpointIn *models.EndpointIn,
+	endpointIn models.EndpointIn,
 	o *EndpointCreateOptions,
 ) (*models.EndpointOut, error) {
-	if endpointIn == nil {
-		return nil, fmt.Errorf("Endpoint.Create(), endpointIn must not be nil")
-	}
 	pathMap := map[string]string{
 		"app_id": appId,
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
 	var err error
 	if o != nil {
@@ -115,11 +108,7 @@ func (endpoint *Endpoint) Create(
 			return nil, err
 		}
 	}
-	jsonBody, err = json.Marshal(endpointIn)
-	if err != nil {
-		return nil, err
-	}
-	ret, err := executeRequest[models.EndpointOut](
+	ret, err := executeRequest[models.EndpointIn, models.EndpointOut](
 		ctx,
 		endpoint.client,
 		"POST",
@@ -127,7 +116,7 @@ func (endpoint *Endpoint) Create(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		&endpointIn,
 	)
 	if err != nil {
 		return nil, err
@@ -147,9 +136,8 @@ func (endpoint *Endpoint) Get(
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
-	ret, err := executeRequest[models.EndpointOut](
+	ret, err := executeRequest[any, models.EndpointOut](
 		ctx,
 		endpoint.client,
 		"GET",
@@ -157,7 +145,7 @@ func (endpoint *Endpoint) Get(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		nil,
 	)
 	if err != nil {
 		return nil, err
@@ -170,24 +158,16 @@ func (endpoint *Endpoint) Update(
 	ctx context.Context,
 	appId string,
 	endpointId string,
-	endpointUpdate *models.EndpointUpdate,
+	endpointUpdate models.EndpointUpdate,
 ) (*models.EndpointOut, error) {
-	if endpointUpdate == nil {
-		return nil, fmt.Errorf("Endpoint.Update(), endpointUpdate must not be nil")
-	}
 	pathMap := map[string]string{
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
-	jsonBody, err := json.Marshal(endpointUpdate)
-	if err != nil {
-		return nil, err
-	}
-	ret, err := executeRequest[models.EndpointOut](
+	ret, err := executeRequest[models.EndpointUpdate, models.EndpointOut](
 		ctx,
 		endpoint.client,
 		"PUT",
@@ -195,7 +175,7 @@ func (endpoint *Endpoint) Update(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		&endpointUpdate,
 	)
 	if err != nil {
 		return nil, err
@@ -215,9 +195,8 @@ func (endpoint *Endpoint) Delete(
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
-	_, err := executeRequest[any](
+	_, err := executeRequest[any, any](
 		ctx,
 		endpoint.client,
 		"DELETE",
@@ -225,7 +204,7 @@ func (endpoint *Endpoint) Delete(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		nil,
 	)
 	if err != nil {
 		return err
@@ -238,24 +217,16 @@ func (endpoint *Endpoint) Patch(
 	ctx context.Context,
 	appId string,
 	endpointId string,
-	endpointPatch *models.EndpointPatch,
+	endpointPatch models.EndpointPatch,
 ) (*models.EndpointOut, error) {
-	if endpointPatch == nil {
-		return nil, fmt.Errorf("Endpoint.Patch(), endpointPatch must not be nil")
-	}
 	pathMap := map[string]string{
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
-	jsonBody, err := json.Marshal(endpointPatch)
-	if err != nil {
-		return nil, err
-	}
-	ret, err := executeRequest[models.EndpointOut](
+	ret, err := executeRequest[models.EndpointPatch, models.EndpointOut](
 		ctx,
 		endpoint.client,
 		"PATCH",
@@ -263,7 +234,7 @@ func (endpoint *Endpoint) Patch(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		&endpointPatch,
 	)
 	if err != nil {
 		return nil, err
@@ -283,9 +254,8 @@ func (endpoint *Endpoint) GetHeaders(
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
-	ret, err := executeRequest[models.EndpointHeadersOut](
+	ret, err := executeRequest[any, models.EndpointHeadersOut](
 		ctx,
 		endpoint.client,
 		"GET",
@@ -293,7 +263,7 @@ func (endpoint *Endpoint) GetHeaders(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		nil,
 	)
 	if err != nil {
 		return nil, err
@@ -306,24 +276,16 @@ func (endpoint *Endpoint) UpdateHeaders(
 	ctx context.Context,
 	appId string,
 	endpointId string,
-	endpointHeadersIn *models.EndpointHeadersIn,
+	endpointHeadersIn models.EndpointHeadersIn,
 ) error {
-	if endpointHeadersIn == nil {
-		return fmt.Errorf("Endpoint.UpdateHeaders(), endpointHeadersIn must not be nil")
-	}
 	pathMap := map[string]string{
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
-	jsonBody, err := json.Marshal(endpointHeadersIn)
-	if err != nil {
-		return err
-	}
-	_, err = executeRequest[any](
+	_, err := executeRequest[models.EndpointHeadersIn, any](
 		ctx,
 		endpoint.client,
 		"PUT",
@@ -331,7 +293,7 @@ func (endpoint *Endpoint) UpdateHeaders(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		&endpointHeadersIn,
 	)
 	if err != nil {
 		return err
@@ -344,24 +306,16 @@ func (endpoint *Endpoint) PatchHeaders(
 	ctx context.Context,
 	appId string,
 	endpointId string,
-	endpointHeadersPatchIn *models.EndpointHeadersPatchIn,
+	endpointHeadersPatchIn models.EndpointHeadersPatchIn,
 ) error {
-	if endpointHeadersPatchIn == nil {
-		return fmt.Errorf("Endpoint.PatchHeaders(), endpointHeadersPatchIn must not be nil")
-	}
 	pathMap := map[string]string{
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
-	jsonBody, err := json.Marshal(endpointHeadersPatchIn)
-	if err != nil {
-		return err
-	}
-	_, err = executeRequest[any](
+	_, err := executeRequest[models.EndpointHeadersPatchIn, any](
 		ctx,
 		endpoint.client,
 		"PATCH",
@@ -369,7 +323,7 @@ func (endpoint *Endpoint) PatchHeaders(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		&endpointHeadersPatchIn,
 	)
 	if err != nil {
 		return err
@@ -384,19 +338,15 @@ func (endpoint *Endpoint) Recover(
 	ctx context.Context,
 	appId string,
 	endpointId string,
-	recoverIn *models.RecoverIn,
+	recoverIn models.RecoverIn,
 	o *EndpointRecoverOptions,
 ) (*models.RecoverOut, error) {
-	if recoverIn == nil {
-		return nil, fmt.Errorf("Endpoint.Recover(), recoverIn must not be nil")
-	}
 	pathMap := map[string]string{
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
 	var err error
 	if o != nil {
@@ -405,11 +355,7 @@ func (endpoint *Endpoint) Recover(
 			return nil, err
 		}
 	}
-	jsonBody, err = json.Marshal(recoverIn)
-	if err != nil {
-		return nil, err
-	}
-	ret, err := executeRequest[models.RecoverOut](
+	ret, err := executeRequest[models.RecoverIn, models.RecoverOut](
 		ctx,
 		endpoint.client,
 		"POST",
@@ -417,7 +363,7 @@ func (endpoint *Endpoint) Recover(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		&recoverIn,
 	)
 	if err != nil {
 		return nil, err
@@ -433,19 +379,15 @@ func (endpoint *Endpoint) ReplayMissing(
 	ctx context.Context,
 	appId string,
 	endpointId string,
-	replayIn *models.ReplayIn,
+	replayIn models.ReplayIn,
 	o *EndpointReplayMissingOptions,
 ) (*models.ReplayOut, error) {
-	if replayIn == nil {
-		return nil, fmt.Errorf("Endpoint.ReplayMissing(), replayIn must not be nil")
-	}
 	pathMap := map[string]string{
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
 	var err error
 	if o != nil {
@@ -454,11 +396,7 @@ func (endpoint *Endpoint) ReplayMissing(
 			return nil, err
 		}
 	}
-	jsonBody, err = json.Marshal(replayIn)
-	if err != nil {
-		return nil, err
-	}
-	ret, err := executeRequest[models.ReplayOut](
+	ret, err := executeRequest[models.ReplayIn, models.ReplayOut](
 		ctx,
 		endpoint.client,
 		"POST",
@@ -466,7 +404,7 @@ func (endpoint *Endpoint) ReplayMissing(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		&replayIn,
 	)
 	if err != nil {
 		return nil, err
@@ -489,9 +427,8 @@ func (endpoint *Endpoint) GetSecret(
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
-	ret, err := executeRequest[models.EndpointSecretOut](
+	ret, err := executeRequest[any, models.EndpointSecretOut](
 		ctx,
 		endpoint.client,
 		"GET",
@@ -499,7 +436,7 @@ func (endpoint *Endpoint) GetSecret(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		nil,
 	)
 	if err != nil {
 		return nil, err
@@ -514,19 +451,15 @@ func (endpoint *Endpoint) RotateSecret(
 	ctx context.Context,
 	appId string,
 	endpointId string,
-	endpointSecretRotateIn *models.EndpointSecretRotateIn,
+	endpointSecretRotateIn models.EndpointSecretRotateIn,
 	o *EndpointRotateSecretOptions,
 ) error {
-	if endpointSecretRotateIn == nil {
-		return fmt.Errorf("Endpoint.RotateSecret(), endpointSecretRotateIn must not be nil")
-	}
 	pathMap := map[string]string{
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
 	var err error
 	if o != nil {
@@ -535,11 +468,7 @@ func (endpoint *Endpoint) RotateSecret(
 			return err
 		}
 	}
-	jsonBody, err = json.Marshal(endpointSecretRotateIn)
-	if err != nil {
-		return err
-	}
-	_, err = executeRequest[any](
+	_, err = executeRequest[models.EndpointSecretRotateIn, any](
 		ctx,
 		endpoint.client,
 		"POST",
@@ -547,7 +476,7 @@ func (endpoint *Endpoint) RotateSecret(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		&endpointSecretRotateIn,
 	)
 	if err != nil {
 		return err
@@ -560,19 +489,15 @@ func (endpoint *Endpoint) SendExample(
 	ctx context.Context,
 	appId string,
 	endpointId string,
-	eventExampleIn *models.EventExampleIn,
+	eventExampleIn models.EventExampleIn,
 	o *EndpointSendExampleOptions,
 ) (*models.MessageOut, error) {
-	if eventExampleIn == nil {
-		return nil, fmt.Errorf("Endpoint.SendExample(), eventExampleIn must not be nil")
-	}
 	pathMap := map[string]string{
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
 	var err error
 	if o != nil {
@@ -581,11 +506,7 @@ func (endpoint *Endpoint) SendExample(
 			return nil, err
 		}
 	}
-	jsonBody, err = json.Marshal(eventExampleIn)
-	if err != nil {
-		return nil, err
-	}
-	ret, err := executeRequest[models.MessageOut](
+	ret, err := executeRequest[models.EventExampleIn, models.MessageOut](
 		ctx,
 		endpoint.client,
 		"POST",
@@ -593,7 +514,7 @@ func (endpoint *Endpoint) SendExample(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		&eventExampleIn,
 	)
 	if err != nil {
 		return nil, err
@@ -614,7 +535,6 @@ func (endpoint *Endpoint) GetStats(
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
 	var err error
 	if o != nil {
@@ -624,7 +544,7 @@ func (endpoint *Endpoint) GetStats(
 			return nil, err
 		}
 	}
-	ret, err := executeRequest[models.EndpointStats](
+	ret, err := executeRequest[any, models.EndpointStats](
 		ctx,
 		endpoint.client,
 		"GET",
@@ -632,7 +552,7 @@ func (endpoint *Endpoint) GetStats(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		nil,
 	)
 	if err != nil {
 		return nil, err
@@ -652,9 +572,8 @@ func (endpoint *Endpoint) TransformationGet(
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
-	ret, err := executeRequest[models.EndpointTransformationOut](
+	ret, err := executeRequest[any, models.EndpointTransformationOut](
 		ctx,
 		endpoint.client,
 		"GET",
@@ -662,7 +581,7 @@ func (endpoint *Endpoint) TransformationGet(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		nil,
 	)
 	if err != nil {
 		return nil, err
@@ -675,24 +594,16 @@ func (endpoint *Endpoint) TransformationPartialUpdate(
 	ctx context.Context,
 	appId string,
 	endpointId string,
-	endpointTransformationIn *models.EndpointTransformationIn,
+	endpointTransformationIn models.EndpointTransformationIn,
 ) error {
-	if endpointTransformationIn == nil {
-		return fmt.Errorf("Endpoint.TransformationPartialUpdate(), endpointTransformationIn must not be nil")
-	}
 	pathMap := map[string]string{
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
-	jsonBody, err := json.Marshal(endpointTransformationIn)
-	if err != nil {
-		return err
-	}
-	_, err = executeRequest[any](
+	_, err := executeRequest[models.EndpointTransformationIn, any](
 		ctx,
 		endpoint.client,
 		"PATCH",
@@ -700,7 +611,7 @@ func (endpoint *Endpoint) TransformationPartialUpdate(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		&endpointTransformationIn,
 	)
 	if err != nil {
 		return err

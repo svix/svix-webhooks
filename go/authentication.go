@@ -3,8 +3,6 @@ package svix
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 
 	"github.com/svix/svix-webhooks/go/models"
 )
@@ -33,18 +31,14 @@ type AuthenticationLogoutOptions struct {
 func (authentication *Authentication) AppPortalAccess(
 	ctx context.Context,
 	appId string,
-	appPortalAccessIn *models.AppPortalAccessIn,
+	appPortalAccessIn models.AppPortalAccessIn,
 	o *AuthenticationAppPortalAccessOptions,
 ) (*models.AppPortalAccessOut, error) {
-	if appPortalAccessIn == nil {
-		return nil, fmt.Errorf("Authentication.AppPortalAccess(), appPortalAccessIn must not be nil")
-	}
 	pathMap := map[string]string{
 		"app_id": appId,
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
 	var err error
 	if o != nil {
@@ -53,11 +47,7 @@ func (authentication *Authentication) AppPortalAccess(
 			return nil, err
 		}
 	}
-	jsonBody, err = json.Marshal(appPortalAccessIn)
-	if err != nil {
-		return nil, err
-	}
-	ret, err := executeRequest[models.AppPortalAccessOut](
+	ret, err := executeRequest[models.AppPortalAccessIn, models.AppPortalAccessOut](
 		ctx,
 		authentication.client,
 		"POST",
@@ -65,7 +55,7 @@ func (authentication *Authentication) AppPortalAccess(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		&appPortalAccessIn,
 	)
 	if err != nil {
 		return nil, err
@@ -77,18 +67,14 @@ func (authentication *Authentication) AppPortalAccess(
 func (authentication *Authentication) ExpireAll(
 	ctx context.Context,
 	appId string,
-	applicationTokenExpireIn *models.ApplicationTokenExpireIn,
+	applicationTokenExpireIn models.ApplicationTokenExpireIn,
 	o *AuthenticationExpireAllOptions,
 ) error {
-	if applicationTokenExpireIn == nil {
-		return fmt.Errorf("Authentication.ExpireAll(), applicationTokenExpireIn must not be nil")
-	}
 	pathMap := map[string]string{
 		"app_id": appId,
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
 	var err error
 	if o != nil {
@@ -97,11 +83,7 @@ func (authentication *Authentication) ExpireAll(
 			return err
 		}
 	}
-	jsonBody, err = json.Marshal(applicationTokenExpireIn)
-	if err != nil {
-		return err
-	}
-	_, err = executeRequest[any](
+	_, err = executeRequest[models.ApplicationTokenExpireIn, any](
 		ctx,
 		authentication.client,
 		"POST",
@@ -109,7 +91,7 @@ func (authentication *Authentication) ExpireAll(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		&applicationTokenExpireIn,
 	)
 	if err != nil {
 		return err
@@ -130,7 +112,6 @@ func (authentication *Authentication) DashboardAccess(
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
 	var err error
 	if o != nil {
@@ -139,7 +120,7 @@ func (authentication *Authentication) DashboardAccess(
 			return nil, err
 		}
 	}
-	ret, err := executeRequest[models.DashboardAccessOut](
+	ret, err := executeRequest[any, models.DashboardAccessOut](
 		ctx,
 		authentication.client,
 		"POST",
@@ -147,7 +128,7 @@ func (authentication *Authentication) DashboardAccess(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		nil,
 	)
 	if err != nil {
 		return nil, err
@@ -165,7 +146,6 @@ func (authentication *Authentication) Logout(
 	pathMap := map[string]string{}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
 	var err error
 	if o != nil {
@@ -174,7 +154,7 @@ func (authentication *Authentication) Logout(
 			return err
 		}
 	}
-	_, err = executeRequest[any](
+	_, err = executeRequest[any, any](
 		ctx,
 		authentication.client,
 		"POST",
@@ -182,7 +162,7 @@ func (authentication *Authentication) Logout(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		nil,
 	)
 	if err != nil {
 		return err

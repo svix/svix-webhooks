@@ -3,8 +3,6 @@ package svix
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 
 	"github.com/svix/svix-webhooks/go/models"
 )
@@ -39,7 +37,6 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) List(
 	pathMap := map[string]string{}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
 	var err error
 	if o != nil {
@@ -50,7 +47,7 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) List(
 			return nil, err
 		}
 	}
-	ret, err := executeRequest[models.ListResponseOperationalWebhookEndpointOut](
+	ret, err := executeRequest[any, models.ListResponseOperationalWebhookEndpointOut](
 		ctx,
 		operationalWebhookEndpoint.client,
 		"GET",
@@ -58,7 +55,7 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) List(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		nil,
 	)
 	if err != nil {
 		return nil, err
@@ -69,16 +66,12 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) List(
 // Create an operational webhook endpoint.
 func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Create(
 	ctx context.Context,
-	operationalWebhookEndpointIn *models.OperationalWebhookEndpointIn,
+	operationalWebhookEndpointIn models.OperationalWebhookEndpointIn,
 	o *OperationalWebhookEndpointCreateOptions,
 ) (*models.OperationalWebhookEndpointOut, error) {
-	if operationalWebhookEndpointIn == nil {
-		return nil, fmt.Errorf("OperationalWebhookEndpoint.Create(), operationalWebhookEndpointIn must not be nil")
-	}
 	pathMap := map[string]string{}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
 	var err error
 	if o != nil {
@@ -87,11 +80,7 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Create(
 			return nil, err
 		}
 	}
-	jsonBody, err = json.Marshal(operationalWebhookEndpointIn)
-	if err != nil {
-		return nil, err
-	}
-	ret, err := executeRequest[models.OperationalWebhookEndpointOut](
+	ret, err := executeRequest[models.OperationalWebhookEndpointIn, models.OperationalWebhookEndpointOut](
 		ctx,
 		operationalWebhookEndpoint.client,
 		"POST",
@@ -99,7 +88,7 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Create(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		&operationalWebhookEndpointIn,
 	)
 	if err != nil {
 		return nil, err
@@ -117,9 +106,8 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Get(
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
-	ret, err := executeRequest[models.OperationalWebhookEndpointOut](
+	ret, err := executeRequest[any, models.OperationalWebhookEndpointOut](
 		ctx,
 		operationalWebhookEndpoint.client,
 		"GET",
@@ -127,7 +115,7 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Get(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		nil,
 	)
 	if err != nil {
 		return nil, err
@@ -139,23 +127,15 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Get(
 func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Update(
 	ctx context.Context,
 	endpointId string,
-	operationalWebhookEndpointUpdate *models.OperationalWebhookEndpointUpdate,
+	operationalWebhookEndpointUpdate models.OperationalWebhookEndpointUpdate,
 ) (*models.OperationalWebhookEndpointOut, error) {
-	if operationalWebhookEndpointUpdate == nil {
-		return nil, fmt.Errorf("OperationalWebhookEndpoint.Update(), operationalWebhookEndpointUpdate must not be nil")
-	}
 	pathMap := map[string]string{
 		"endpoint_id": endpointId,
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
-	jsonBody, err := json.Marshal(operationalWebhookEndpointUpdate)
-	if err != nil {
-		return nil, err
-	}
-	ret, err := executeRequest[models.OperationalWebhookEndpointOut](
+	ret, err := executeRequest[models.OperationalWebhookEndpointUpdate, models.OperationalWebhookEndpointOut](
 		ctx,
 		operationalWebhookEndpoint.client,
 		"PUT",
@@ -163,7 +143,7 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Update(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		&operationalWebhookEndpointUpdate,
 	)
 	if err != nil {
 		return nil, err
@@ -181,9 +161,8 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Delete(
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
-	_, err := executeRequest[any](
+	_, err := executeRequest[any, any](
 		ctx,
 		operationalWebhookEndpoint.client,
 		"DELETE",
@@ -191,7 +170,7 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Delete(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		nil,
 	)
 	if err != nil {
 		return err
@@ -209,9 +188,8 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) GetHeaders(
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
-	ret, err := executeRequest[models.OperationalWebhookEndpointHeadersOut](
+	ret, err := executeRequest[any, models.OperationalWebhookEndpointHeadersOut](
 		ctx,
 		operationalWebhookEndpoint.client,
 		"GET",
@@ -219,7 +197,7 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) GetHeaders(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		nil,
 	)
 	if err != nil {
 		return nil, err
@@ -231,23 +209,15 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) GetHeaders(
 func (operationalWebhookEndpoint *OperationalWebhookEndpoint) UpdateHeaders(
 	ctx context.Context,
 	endpointId string,
-	operationalWebhookEndpointHeadersIn *models.OperationalWebhookEndpointHeadersIn,
+	operationalWebhookEndpointHeadersIn models.OperationalWebhookEndpointHeadersIn,
 ) error {
-	if operationalWebhookEndpointHeadersIn == nil {
-		return fmt.Errorf("OperationalWebhookEndpoint.UpdateHeaders(), operationalWebhookEndpointHeadersIn must not be nil")
-	}
 	pathMap := map[string]string{
 		"endpoint_id": endpointId,
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
-	jsonBody, err := json.Marshal(operationalWebhookEndpointHeadersIn)
-	if err != nil {
-		return err
-	}
-	_, err = executeRequest[any](
+	_, err := executeRequest[models.OperationalWebhookEndpointHeadersIn, any](
 		ctx,
 		operationalWebhookEndpoint.client,
 		"PUT",
@@ -255,7 +225,7 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) UpdateHeaders(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		&operationalWebhookEndpointHeadersIn,
 	)
 	if err != nil {
 		return err
@@ -276,9 +246,8 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) GetSecret(
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
-	ret, err := executeRequest[models.OperationalWebhookEndpointSecretOut](
+	ret, err := executeRequest[any, models.OperationalWebhookEndpointSecretOut](
 		ctx,
 		operationalWebhookEndpoint.client,
 		"GET",
@@ -286,7 +255,7 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) GetSecret(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		nil,
 	)
 	if err != nil {
 		return nil, err
@@ -300,18 +269,14 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) GetSecret(
 func (operationalWebhookEndpoint *OperationalWebhookEndpoint) RotateSecret(
 	ctx context.Context,
 	endpointId string,
-	operationalWebhookEndpointSecretIn *models.OperationalWebhookEndpointSecretIn,
+	operationalWebhookEndpointSecretIn models.OperationalWebhookEndpointSecretIn,
 	o *OperationalWebhookEndpointRotateSecretOptions,
 ) error {
-	if operationalWebhookEndpointSecretIn == nil {
-		return fmt.Errorf("OperationalWebhookEndpoint.RotateSecret(), operationalWebhookEndpointSecretIn must not be nil")
-	}
 	pathMap := map[string]string{
 		"endpoint_id": endpointId,
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
 	var err error
 	if o != nil {
@@ -320,11 +285,7 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) RotateSecret(
 			return err
 		}
 	}
-	jsonBody, err = json.Marshal(operationalWebhookEndpointSecretIn)
-	if err != nil {
-		return err
-	}
-	_, err = executeRequest[any](
+	_, err = executeRequest[models.OperationalWebhookEndpointSecretIn, any](
 		ctx,
 		operationalWebhookEndpoint.client,
 		"POST",
@@ -332,7 +293,7 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) RotateSecret(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		&operationalWebhookEndpointSecretIn,
 	)
 	if err != nil {
 		return err

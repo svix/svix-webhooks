@@ -117,7 +117,6 @@ func (messageAttempt *MessageAttempt) ListByEndpoint(
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
 	var err error
 	if o != nil {
@@ -136,7 +135,7 @@ func (messageAttempt *MessageAttempt) ListByEndpoint(
 			return nil, err
 		}
 	}
-	ret, err := executeRequest[models.ListResponseMessageAttemptOut](
+	ret, err := executeRequest[any, models.ListResponseMessageAttemptOut](
 		ctx,
 		messageAttempt.client,
 		"GET",
@@ -144,7 +143,7 @@ func (messageAttempt *MessageAttempt) ListByEndpoint(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		nil,
 	)
 	if err != nil {
 		return nil, err
@@ -170,7 +169,6 @@ func (messageAttempt *MessageAttempt) ListByMsg(
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
 	var err error
 	if o != nil {
@@ -189,7 +187,7 @@ func (messageAttempt *MessageAttempt) ListByMsg(
 			return nil, err
 		}
 	}
-	ret, err := executeRequest[models.ListResponseMessageAttemptOut](
+	ret, err := executeRequest[any, models.ListResponseMessageAttemptOut](
 		ctx,
 		messageAttempt.client,
 		"GET",
@@ -197,7 +195,7 @@ func (messageAttempt *MessageAttempt) ListByMsg(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		nil,
 	)
 	if err != nil {
 		return nil, err
@@ -225,7 +223,6 @@ func (messageAttempt *MessageAttempt) ListAttemptedMessages(
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
 	var err error
 	if o != nil {
@@ -242,7 +239,7 @@ func (messageAttempt *MessageAttempt) ListAttemptedMessages(
 			return nil, err
 		}
 	}
-	ret, err := executeRequest[models.ListResponseEndpointMessageOut](
+	ret, err := executeRequest[any, models.ListResponseEndpointMessageOut](
 		ctx,
 		messageAttempt.client,
 		"GET",
@@ -250,7 +247,7 @@ func (messageAttempt *MessageAttempt) ListAttemptedMessages(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		nil,
 	)
 	if err != nil {
 		return nil, err
@@ -272,9 +269,8 @@ func (messageAttempt *MessageAttempt) Get(
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
-	ret, err := executeRequest[models.MessageAttemptOut](
+	ret, err := executeRequest[any, models.MessageAttemptOut](
 		ctx,
 		messageAttempt.client,
 		"GET",
@@ -282,7 +278,7 @@ func (messageAttempt *MessageAttempt) Get(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		nil,
 	)
 	if err != nil {
 		return nil, err
@@ -307,9 +303,8 @@ func (messageAttempt *MessageAttempt) ExpungeContent(
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
-	_, err := executeRequest[any](
+	_, err := executeRequest[any, any](
 		ctx,
 		messageAttempt.client,
 		"DELETE",
@@ -317,7 +312,7 @@ func (messageAttempt *MessageAttempt) ExpungeContent(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		nil,
 	)
 	if err != nil {
 		return err
@@ -341,7 +336,6 @@ func (messageAttempt *MessageAttempt) ListAttemptedDestinations(
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
 	var err error
 	if o != nil {
@@ -351,7 +345,7 @@ func (messageAttempt *MessageAttempt) ListAttemptedDestinations(
 			return nil, err
 		}
 	}
-	ret, err := executeRequest[models.ListResponseMessageEndpointOut](
+	ret, err := executeRequest[any, models.ListResponseMessageEndpointOut](
 		ctx,
 		messageAttempt.client,
 		"GET",
@@ -359,7 +353,7 @@ func (messageAttempt *MessageAttempt) ListAttemptedDestinations(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		nil,
 	)
 	if err != nil {
 		return nil, err
@@ -382,7 +376,6 @@ func (messageAttempt *MessageAttempt) Resend(
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
 	var err error
 	if o != nil {
@@ -391,7 +384,7 @@ func (messageAttempt *MessageAttempt) Resend(
 			return err
 		}
 	}
-	_, err = executeRequest[any](
+	_, err = executeRequest[any, any](
 		ctx,
 		messageAttempt.client,
 		"POST",
@@ -399,7 +392,7 @@ func (messageAttempt *MessageAttempt) Resend(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		nil,
 	)
 	if err != nil {
 		return err

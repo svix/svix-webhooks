@@ -35,7 +35,6 @@ func (backgroundTask *BackgroundTask) List(
 	pathMap := map[string]string{}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
 	var err error
 	if o != nil {
@@ -48,7 +47,7 @@ func (backgroundTask *BackgroundTask) List(
 			return nil, err
 		}
 	}
-	ret, err := executeRequest[models.ListResponseBackgroundTaskOut](
+	ret, err := executeRequest[any, models.ListResponseBackgroundTaskOut](
 		ctx,
 		backgroundTask.client,
 		"GET",
@@ -56,7 +55,7 @@ func (backgroundTask *BackgroundTask) List(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		nil,
 	)
 	if err != nil {
 		return nil, err
@@ -74,9 +73,8 @@ func (backgroundTask *BackgroundTask) Get(
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
-	ret, err := executeRequest[models.BackgroundTaskOut](
+	ret, err := executeRequest[any, models.BackgroundTaskOut](
 		ctx,
 		backgroundTask.client,
 		"GET",
@@ -84,7 +82,7 @@ func (backgroundTask *BackgroundTask) Get(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		nil,
 	)
 	if err != nil {
 		return nil, err

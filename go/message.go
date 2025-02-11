@@ -3,8 +3,6 @@ package svix
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 	"time"
 
 	"github.com/svix/svix-webhooks/go/models"
@@ -63,7 +61,6 @@ func (message *Message) List(
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
 	var err error
 	if o != nil {
@@ -79,7 +76,7 @@ func (message *Message) List(
 			return nil, err
 		}
 	}
-	ret, err := executeRequest[models.ListResponseMessageOut](
+	ret, err := executeRequest[any, models.ListResponseMessageOut](
 		ctx,
 		message.client,
 		"GET",
@@ -87,7 +84,7 @@ func (message *Message) List(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		nil,
 	)
 	if err != nil {
 		return nil, err
@@ -107,18 +104,14 @@ func (message *Message) List(
 func (message *Message) Create(
 	ctx context.Context,
 	appId string,
-	messageIn *models.MessageIn,
+	messageIn models.MessageIn,
 	o *MessageCreateOptions,
 ) (*models.MessageOut, error) {
-	if messageIn == nil {
-		return nil, fmt.Errorf("Message.Create(), messageIn must not be nil")
-	}
 	pathMap := map[string]string{
 		"app_id": appId,
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
 	var err error
 	if o != nil {
@@ -128,11 +121,7 @@ func (message *Message) Create(
 			return nil, err
 		}
 	}
-	jsonBody, err = json.Marshal(messageIn)
-	if err != nil {
-		return nil, err
-	}
-	ret, err := executeRequest[models.MessageOut](
+	ret, err := executeRequest[models.MessageIn, models.MessageOut](
 		ctx,
 		message.client,
 		"POST",
@@ -140,7 +129,7 @@ func (message *Message) Create(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		&messageIn,
 	)
 	if err != nil {
 		return nil, err
@@ -161,7 +150,6 @@ func (message *Message) Get(
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
 	var err error
 	if o != nil {
@@ -170,7 +158,7 @@ func (message *Message) Get(
 			return nil, err
 		}
 	}
-	ret, err := executeRequest[models.MessageOut](
+	ret, err := executeRequest[any, models.MessageOut](
 		ctx,
 		message.client,
 		"GET",
@@ -178,7 +166,7 @@ func (message *Message) Get(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		nil,
 	)
 	if err != nil {
 		return nil, err
@@ -201,9 +189,8 @@ func (message *Message) ExpungeContent(
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var jsonBody []byte
 
-	_, err := executeRequest[any](
+	_, err := executeRequest[any, any](
 		ctx,
 		message.client,
 		"DELETE",
@@ -211,7 +198,7 @@ func (message *Message) ExpungeContent(
 		pathMap,
 		queryMap,
 		headerMap,
-		jsonBody,
+		nil,
 	)
 	if err != nil {
 		return err
