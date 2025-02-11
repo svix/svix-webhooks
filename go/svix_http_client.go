@@ -164,7 +164,7 @@ func serializeParamToMap(key string, val interface{}, d map[string]string, err *
 		return
 	}
 
-	v, localErr := serializeQueryParam(val, key)
+	v, localErr := serializeQueryOrHeaderParam(val, key)
 	if localErr != nil {
 		*err = localErr
 	} else {
@@ -172,7 +172,7 @@ func serializeParamToMap(key string, val interface{}, d map[string]string, err *
 	}
 }
 
-func serializeQueryParam(val interface{}, key string) (string, error) {
+func serializeQueryOrHeaderParam(val interface{}, key string) (string, error) {
 	v := reflect.ValueOf(val)
 	var value string
 	if val == nil || (reflect.ValueOf(val).Kind() == reflect.Ptr && reflect.ValueOf(val).IsNil()) {
@@ -181,7 +181,7 @@ func serializeQueryParam(val interface{}, key string) (string, error) {
 
 	switch v.Kind() {
 	case reflect.Pointer:
-		innerVal, err := serializeQueryParam(v.Elem().Interface(), key)
+		innerVal, err := serializeQueryOrHeaderParam(v.Elem().Interface(), key)
 		if err != nil {
 			return "", err
 		}
@@ -205,7 +205,7 @@ func serializeQueryParam(val interface{}, key string) (string, error) {
 		// we are assuming that the inner type is a simple type (no nested lists)
 		serializedValues := make([]string, v.Len())
 		for i := 0; i < v.Len(); i++ {
-			serializedVal, err := serializeQueryParam(v.Index(i).Interface(), key)
+			serializedVal, err := serializeQueryOrHeaderParam(v.Index(i).Interface(), key)
 			if err != nil {
 				return "", err
 			}
