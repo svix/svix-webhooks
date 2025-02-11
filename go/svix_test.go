@@ -172,7 +172,7 @@ func TestModelSerialization(t *testing.T) {
 	assertMarshalEq(ep_patch, `{"disabled":false}`, t)
 
 	ep_patch.Disabled = nil
-	ep_patch.Uid = utils.NewExplicitlySetNilNullable[string]()
+	ep_patch.Uid = utils.NewNullableFromPtr[string](nil)
 	assertMarshalEq(ep_patch, `{"uid":null}`, t)
 }
 
@@ -185,7 +185,7 @@ func TestEndpointPatchNullableListSerialization(t *testing.T) {
 
 	// if nullable field is explicitly set null, marshal should emit a null
 	ep_patch2 := models.EndpointPatch{
-		Channels: utils.NewExplicitlySetNilNullable[[]string](),
+		Channels: utils.NewNullableFromPtr[[]string](nil),
 	}
 	assertMarshalEq(ep_patch2, `{"channels":null}`, t)
 
@@ -203,7 +203,7 @@ func TestEndpointPatchNullableStringSerialization(t *testing.T) {
 
 	// if nullable field is explicitly set null, marshal should emit a null
 	ep_patch2 := models.EndpointPatch{
-		Uid: utils.NewExplicitlySetNilNullable[string](),
+		Uid: utils.NewNullableFromPtr[string](nil),
 	}
 	assertMarshalEq(ep_patch2, `{"uid":null}`, t)
 

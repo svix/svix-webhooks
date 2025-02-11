@@ -7,16 +7,19 @@ type Nullable[T any] struct {
 	isSet bool
 }
 
-// Create a new Nullable[T] that is explicitly set as null
-func NewExplicitlySetNilNullable[T any]() Nullable[T] {
-	return Nullable[T]{val: nil, isSet: true}
-}
-
 // Create a new Nullable[T] that is unset, This type will not be emitted when serializing
 func NewUnsetNullable[T any]() Nullable[T] {
 	return Nullable[T]{val: nil, isSet: false}
 }
 
+// Create a new Nullable[T] from a pointer to a value
+//
+// If you need to create an Nullable[string] that is explicitly set to nil, use this method
+func NewNullableFromPtr[T any](value *T) Nullable[T] {
+	return Nullable[T]{val: value, isSet: true}
+}
+
+// Create a new Nullable[T] from a value
 func NewNullable[T any](value T) Nullable[T] {
 	return Nullable[T]{val: &value, isSet: true}
 }
@@ -37,12 +40,6 @@ func (v Nullable[T]) IsSet() bool {
 func (v *Nullable[T]) Unset() {
 	v.val = nil
 	v.isSet = false
-}
-
-// Set the nullable value to nil, the when json serializing a null will be emitted
-func (v *Nullable[T]) SetNil() {
-	v.val = nil
-	v.isSet = true
 }
 
 func (n *Nullable[T]) UnmarshalJSON(data []byte) error {
