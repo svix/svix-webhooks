@@ -12,9 +12,9 @@ type MessageIn struct {
 	// JSON payload to send as the request body of the webhook.
 	//
 	// We also support sending non-JSON payloads. Please contact us for more information.
-	Payload                map[string]interface{}  `json:"payload"`
-	PayloadRetentionHours  *int64                  `json:"payloadRetentionHours,omitempty"`  // Optional number of hours to retain the message payload. Note that this is mutually exclusive with `payloadRetentionPeriod`.
-	PayloadRetentionPeriod *int64                  `json:"payloadRetentionPeriod,omitempty"` // Optional number of days to retain the message payload. Defaults to 90. Note that this is mutually exclusive with `payloadRetentionHours`.
-	Tags                   []string                `json:"tags,omitempty"`                   // List of free-form tags that can be filtered by when listing messages
-	TransformationsParams  *map[string]interface{} `json:"transformationsParams,omitempty"`  // Extra parameters to pass to Transformations (for future use)
+	Payload                map[string]any  `json:"payload"`
+	PayloadRetentionHours  *int64          `json:"payloadRetentionHours,omitempty"`  // Optional number of hours to retain the message payload. Note that this is mutually exclusive with `payloadRetentionPeriod`.
+	PayloadRetentionPeriod *int64          `json:"payloadRetentionPeriod,omitempty"` // Optional number of days to retain the message payload. Defaults to 90. Note that this is mutually exclusive with `payloadRetentionHours`.
+	Tags                   []string        `json:"tags,omitempty"`                   // List of free-form tags that can be filtered by when listing messages
+	TransformationsParams  *map[string]any `json:"transformationsParams,omitempty"`  // Extra parameters to pass to Transformations (for future use)
 }

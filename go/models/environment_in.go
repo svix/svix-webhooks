@@ -2,7 +2,7 @@
 package models
 
 type EnvironmentIn struct {
-	EventTypes              []EventTypeIn           `json:"eventTypes,omitempty"`
-	Settings                *map[string]interface{} `json:"settings,omitempty"`
-	TransformationTemplates []TemplateIn            `json:"transformationTemplates,omitempty"`
+	EventTypes              []EventTypeIn   `json:"eventTypes,omitempty"`
+	Settings                *map[string]any `json:"settings,omitempty"`
+	TransformationTemplates []TemplateIn    `json:"transformationTemplates,omitempty"`
 }

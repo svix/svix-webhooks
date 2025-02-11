@@ -8,12 +8,12 @@ import (
 )
 
 type EventTypePatch struct {
-	Archived    *bool                                  `json:"archived,omitempty"`
-	Deprecated  *bool                                  `json:"deprecated,omitempty"`
-	Description *string                                `json:"description,omitempty"`
-	FeatureFlag utils.Nullable[string]                 `json:"featureFlag"`
-	GroupName   utils.Nullable[string]                 `json:"groupName"` // The event type group's name
-	Schemas     utils.Nullable[map[string]interface{}] `json:"schemas"`
+	Archived    *bool                          `json:"archived,omitempty"`
+	Deprecated  *bool                          `json:"deprecated,omitempty"`
+	Description *string                        `json:"description,omitempty"`
+	FeatureFlag utils.Nullable[string]         `json:"featureFlag"`
+	GroupName   utils.Nullable[string]         `json:"groupName"` // The event type group's name
+	Schemas     utils.Nullable[map[string]any] `json:"schemas"`
 }
 
 func (o EventTypePatch) MarshalJSON() ([]byte, error) {
