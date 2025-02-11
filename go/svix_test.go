@@ -4,9 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"math/rand/v2"
 	"net/http"
 	"net/url"
 	"os"
+	"strconv"
 	"testing"
 	"time"
 
@@ -429,6 +431,60 @@ func TestUTCTimeDeserialization(t *testing.T) {
 	if appUsage.Until != timeUntil {
 		t.Error("unexpected value for until", appUsage.Until)
 	}
+}
 
-	// assertMarshalEq(appUsage, , t)
+func TestNullableAgainstServer(t *testing.T) {
+	ctx := context.Background()
+	client := getTestClient(t)
+	origUid := strconv.FormatUint(rand.Uint64(), 10)
+	app, err := client.Application.Create(ctx, models.ApplicationIn{Name: "test app", Metadata: &map[string]string{"key1": "old val1", "key3": "untouched"}, Uid: &origUid}, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// uid is unset
+	appPatch1 := models.ApplicationPatch{
+		Metadata: &map[string]string{
+			"key1": "val1",
+			"key2": "val2",
+		},
+	}
+	patchRes1, err := client.Application.Patch(ctx, app.Id, appPatch1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if patchRes1.Uid == nil {
+		t.Errorf("Unexpected Uid %v", patchRes1)
+	}
+	if *patchRes1.Uid != origUid {
+		t.Errorf("Unexpected Uid %v", patchRes1)
+	}
+
+	// uid is explicitly set to null
+	appPatch2 := models.ApplicationPatch{
+		Uid: utils.NewNullableFromPtr[string](nil),
+	}
+	patchRes2, err := client.Application.Patch(ctx, app.Id, appPatch2)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if patchRes2.Uid != nil {
+		t.Errorf("Unexpected, Uid should be null %v", patchRes2)
+	}
+
+	// new uid to override server uid
+	newUid := strconv.FormatUint(rand.Uint64(), 10)
+	appPatch3 := models.ApplicationPatch{
+		Uid: utils.NewNullable(newUid),
+	}
+	patchRes3, err := client.Application.Patch(ctx, app.Id, appPatch3)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if patchRes3.Uid == nil {
+		t.Errorf("Unexpected Uid %v", patchRes3)
+	}
+	if *patchRes3.Uid != newUid {
+		t.Errorf("Unexpected Uid %v", patchRes3)
+	}
 }
