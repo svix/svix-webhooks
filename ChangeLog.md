@@ -4,11 +4,9 @@
 * Libs/Go **(Breaking)**: Excluding specific fields on the *Patch models (`ApplicationPatch` for example), all `Nullable{Type}` removed from the models
 * Libs/Go **(Breaking)**: All `Nullable{Type}` (for example `NullableString`) are replaced with a new generic `Nullable[T]` type, the new type can be imported from `github.com/svix/svix-webhooks/go/utils`
 * Libs/Go **(Breaking)**: All custom model types are now imported from `github.com/svix/svix-webhooks/go/models` instead of `github.com/svix/svix-webhooks/go`
-* Libs/Go **(Breaking)**: Some all methods that previously had a `{Method}WithOptions` counterpart, Now take in an extra argument. These new arguments can be set to `nil` if unneeded
+* Libs/Go **(Breaking)**: All methods that previously had a `{Method}WithOptions` counterpart, Now take in an extra argument. These new arguments can be set to `nil` if unneeded
 * Libs/Go **(Breaking)**: All `*WithOptions` functions are now removed in replaced with their regular counterparts. For example in `Endpoint.RecoverWithOptions` is now `Endpoint.Recover`
-* Libs/Go **(Breaking)**: All uses of `PostOptions` are removed, and renamed to `{Resource}{Operation}Options`. For example in `Endpoint.RecoverWithOptions` you would now use `Endpoint.Recover` and pass in the `EndpointListOptions`
-
-* Libs/C# **(Breaking)**: All uses of `ListOptions` are removed, and renamed to `{Resource}{Operation}Options`. For example in `Endpoint.List` you would now use `EndpointListOptions`
+* Libs/C# and Libs/Go **(Breaking)**: All uses of `ListOptions`/`PostOptions` are removed, and renamed to `{Resource}{Operation}Options`. For example in `Endpoint.List` you would now use `EndpointListOptions`
 * Libs/C# **(Breaking)**: All `IdempotencyKey` method parameters are removed, and are now part of `{Resource}{Operation}Options`. For example in `Message.Create`; to the use `IdempotencyKey`, simply pass it in the `MessageCreateOptions`
 * Libs/C# **(Breaking)**: The `Throw` parameter is removed from `SvixOptions`
 * Libs/C# **(Breaking)**: All redundant interfaces along with the `Svix.Abstractions` namespace are removed
