@@ -48,7 +48,7 @@ func (authentication *Authentication) AppPortalAccess(
 
 	var err error
 	if o != nil {
-		SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
 		}
@@ -92,7 +92,7 @@ func (authentication *Authentication) ExpireAll(
 
 	var err error
 	if o != nil {
-		SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return err
 		}
@@ -134,7 +134,7 @@ func (authentication *Authentication) DashboardAccess(
 
 	var err error
 	if o != nil {
-		SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
 		}
@@ -169,7 +169,7 @@ func (authentication *Authentication) Logout(
 
 	var err error
 	if o != nil {
-		SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return err
 		}

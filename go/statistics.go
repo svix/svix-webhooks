@@ -36,7 +36,7 @@ func (statistics *Statistics) AggregateAppStats(
 
 	var err error
 	if o != nil {
-		SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
 		}

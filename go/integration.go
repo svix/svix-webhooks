@@ -46,9 +46,9 @@ func (integration *Integration) List(
 
 	var err error
 	if o != nil {
-		SerializeParamToMap("limit", o.Limit, queryMap, &err)
-		SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		SerializeParamToMap("order", o.Order, queryMap, &err)
+		serializeParamToMap("limit", o.Limit, queryMap, &err)
+		serializeParamToMap("iterator", o.Iterator, queryMap, &err)
+		serializeParamToMap("order", o.Order, queryMap, &err)
 		if err != nil {
 			return nil, err
 		}
@@ -88,7 +88,7 @@ func (integration *Integration) Create(
 
 	var err error
 	if o != nil {
-		SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
 		}
@@ -260,7 +260,7 @@ func (integration *Integration) RotateKey(
 
 	var err error
 	if o != nil {
-		SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
 		}

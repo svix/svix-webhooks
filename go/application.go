@@ -39,9 +39,9 @@ func (application *Application) List(
 
 	var err error
 	if o != nil {
-		SerializeParamToMap("limit", o.Limit, queryMap, &err)
-		SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		SerializeParamToMap("order", o.Order, queryMap, &err)
+		serializeParamToMap("limit", o.Limit, queryMap, &err)
+		serializeParamToMap("iterator", o.Iterator, queryMap, &err)
+		serializeParamToMap("order", o.Order, queryMap, &err)
 		if err != nil {
 			return nil, err
 		}
@@ -80,7 +80,7 @@ func (application *Application) Create(
 
 	var err error
 	if o != nil {
-		SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
 		}
@@ -121,14 +121,14 @@ func (application *Application) GetOrCreate(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
+	var err error
 	if o != nil {
-		var err error
-		SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	jsonBody, err := json.Marshal(applicationIn)
+	jsonBody, err = json.Marshal(applicationIn)
 	if err != nil {
 		return nil, err
 	}

@@ -121,17 +121,17 @@ func (messageAttempt *MessageAttempt) ListByEndpoint(
 
 	var err error
 	if o != nil {
-		SerializeParamToMap("limit", o.Limit, queryMap, &err)
-		SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		SerializeParamToMap("status", o.Status, queryMap, &err)
-		SerializeParamToMap("status_code_class", o.StatusCodeClass, queryMap, &err)
-		SerializeParamToMap("channel", o.Channel, queryMap, &err)
-		SerializeParamToMap("tag", o.Tag, queryMap, &err)
-		SerializeParamToMap("before", o.Before, queryMap, &err)
-		SerializeParamToMap("after", o.After, queryMap, &err)
-		SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
-		SerializeParamToMap("with_msg", o.WithMsg, queryMap, &err)
-		SerializeParamToMap("event_types", o.EventTypes, queryMap, &err)
+		serializeParamToMap("limit", o.Limit, queryMap, &err)
+		serializeParamToMap("iterator", o.Iterator, queryMap, &err)
+		serializeParamToMap("status", o.Status, queryMap, &err)
+		serializeParamToMap("status_code_class", o.StatusCodeClass, queryMap, &err)
+		serializeParamToMap("channel", o.Channel, queryMap, &err)
+		serializeParamToMap("tag", o.Tag, queryMap, &err)
+		serializeParamToMap("before", o.Before, queryMap, &err)
+		serializeParamToMap("after", o.After, queryMap, &err)
+		serializeParamToMap("with_content", o.WithContent, queryMap, &err)
+		serializeParamToMap("with_msg", o.WithMsg, queryMap, &err)
+		serializeParamToMap("event_types", o.EventTypes, queryMap, &err)
 		if err != nil {
 			return nil, err
 		}
@@ -174,17 +174,17 @@ func (messageAttempt *MessageAttempt) ListByMsg(
 
 	var err error
 	if o != nil {
-		SerializeParamToMap("limit", o.Limit, queryMap, &err)
-		SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		SerializeParamToMap("status", o.Status, queryMap, &err)
-		SerializeParamToMap("status_code_class", o.StatusCodeClass, queryMap, &err)
-		SerializeParamToMap("channel", o.Channel, queryMap, &err)
-		SerializeParamToMap("tag", o.Tag, queryMap, &err)
-		SerializeParamToMap("endpoint_id", o.EndpointId, queryMap, &err)
-		SerializeParamToMap("before", o.Before, queryMap, &err)
-		SerializeParamToMap("after", o.After, queryMap, &err)
-		SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
-		SerializeParamToMap("event_types", o.EventTypes, queryMap, &err)
+		serializeParamToMap("limit", o.Limit, queryMap, &err)
+		serializeParamToMap("iterator", o.Iterator, queryMap, &err)
+		serializeParamToMap("status", o.Status, queryMap, &err)
+		serializeParamToMap("status_code_class", o.StatusCodeClass, queryMap, &err)
+		serializeParamToMap("channel", o.Channel, queryMap, &err)
+		serializeParamToMap("tag", o.Tag, queryMap, &err)
+		serializeParamToMap("endpoint_id", o.EndpointId, queryMap, &err)
+		serializeParamToMap("before", o.Before, queryMap, &err)
+		serializeParamToMap("after", o.After, queryMap, &err)
+		serializeParamToMap("with_content", o.WithContent, queryMap, &err)
+		serializeParamToMap("event_types", o.EventTypes, queryMap, &err)
 		if err != nil {
 			return nil, err
 		}
@@ -229,15 +229,15 @@ func (messageAttempt *MessageAttempt) ListAttemptedMessages(
 
 	var err error
 	if o != nil {
-		SerializeParamToMap("limit", o.Limit, queryMap, &err)
-		SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		SerializeParamToMap("channel", o.Channel, queryMap, &err)
-		SerializeParamToMap("tag", o.Tag, queryMap, &err)
-		SerializeParamToMap("status", o.Status, queryMap, &err)
-		SerializeParamToMap("before", o.Before, queryMap, &err)
-		SerializeParamToMap("after", o.After, queryMap, &err)
-		SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
-		SerializeParamToMap("event_types", o.EventTypes, queryMap, &err)
+		serializeParamToMap("limit", o.Limit, queryMap, &err)
+		serializeParamToMap("iterator", o.Iterator, queryMap, &err)
+		serializeParamToMap("channel", o.Channel, queryMap, &err)
+		serializeParamToMap("tag", o.Tag, queryMap, &err)
+		serializeParamToMap("status", o.Status, queryMap, &err)
+		serializeParamToMap("before", o.Before, queryMap, &err)
+		serializeParamToMap("after", o.After, queryMap, &err)
+		serializeParamToMap("with_content", o.WithContent, queryMap, &err)
+		serializeParamToMap("event_types", o.EventTypes, queryMap, &err)
 		if err != nil {
 			return nil, err
 		}
@@ -345,8 +345,8 @@ func (messageAttempt *MessageAttempt) ListAttemptedDestinations(
 
 	var err error
 	if o != nil {
-		SerializeParamToMap("limit", o.Limit, queryMap, &err)
-		SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+		serializeParamToMap("limit", o.Limit, queryMap, &err)
+		serializeParamToMap("iterator", o.Iterator, queryMap, &err)
 		if err != nil {
 			return nil, err
 		}
@@ -386,7 +386,7 @@ func (messageAttempt *MessageAttempt) Resend(
 
 	var err error
 	if o != nil {
-		SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return err
 		}

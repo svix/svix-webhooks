@@ -150,7 +150,7 @@ func addQueryParams(baseURL string, params map[string]string) (string, error) {
 	return parsedURL.String(), nil
 }
 
-func SerializeParamToMap(key string, val interface{}, d map[string]string, err *error) {
+func serializeParamToMap(key string, val interface{}, d map[string]string, err *error) {
 	// I pass the error in here so I don't have to "if err != nil" for every query param
 	if *err != nil {
 		return

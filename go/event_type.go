@@ -52,11 +52,11 @@ func (eventType *EventType) List(
 
 	var err error
 	if o != nil {
-		SerializeParamToMap("limit", o.Limit, queryMap, &err)
-		SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		SerializeParamToMap("order", o.Order, queryMap, &err)
-		SerializeParamToMap("include_archived", o.IncludeArchived, queryMap, &err)
-		SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
+		serializeParamToMap("limit", o.Limit, queryMap, &err)
+		serializeParamToMap("iterator", o.Iterator, queryMap, &err)
+		serializeParamToMap("order", o.Order, queryMap, &err)
+		serializeParamToMap("include_archived", o.IncludeArchived, queryMap, &err)
+		serializeParamToMap("with_content", o.WithContent, queryMap, &err)
 		if err != nil {
 			return nil, err
 		}
@@ -97,7 +97,7 @@ func (eventType *EventType) Create(
 
 	var err error
 	if o != nil {
-		SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
 		}
@@ -142,7 +142,7 @@ func (eventType *EventType) ImportOpenapi(
 
 	var err error
 	if o != nil {
-		SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
 		}
@@ -251,7 +251,7 @@ func (eventType *EventType) Delete(
 
 	var err error
 	if o != nil {
-		SerializeParamToMap("expunge", o.Expunge, queryMap, &err)
+		serializeParamToMap("expunge", o.Expunge, queryMap, &err)
 		if err != nil {
 			return err
 		}

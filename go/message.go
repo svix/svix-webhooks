@@ -67,14 +67,14 @@ func (message *Message) List(
 
 	var err error
 	if o != nil {
-		SerializeParamToMap("limit", o.Limit, queryMap, &err)
-		SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		SerializeParamToMap("channel", o.Channel, queryMap, &err)
-		SerializeParamToMap("before", o.Before, queryMap, &err)
-		SerializeParamToMap("after", o.After, queryMap, &err)
-		SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
-		SerializeParamToMap("tag", o.Tag, queryMap, &err)
-		SerializeParamToMap("event_types", o.EventTypes, queryMap, &err)
+		serializeParamToMap("limit", o.Limit, queryMap, &err)
+		serializeParamToMap("iterator", o.Iterator, queryMap, &err)
+		serializeParamToMap("channel", o.Channel, queryMap, &err)
+		serializeParamToMap("before", o.Before, queryMap, &err)
+		serializeParamToMap("after", o.After, queryMap, &err)
+		serializeParamToMap("with_content", o.WithContent, queryMap, &err)
+		serializeParamToMap("tag", o.Tag, queryMap, &err)
+		serializeParamToMap("event_types", o.EventTypes, queryMap, &err)
 		if err != nil {
 			return nil, err
 		}
@@ -122,8 +122,8 @@ func (message *Message) Create(
 
 	var err error
 	if o != nil {
-		SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
+		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		serializeParamToMap("with_content", o.WithContent, queryMap, &err)
 		if err != nil {
 			return nil, err
 		}
@@ -165,7 +165,7 @@ func (message *Message) Get(
 
 	var err error
 	if o != nil {
-		SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
+		serializeParamToMap("with_content", o.WithContent, queryMap, &err)
 		if err != nil {
 			return nil, err
 		}

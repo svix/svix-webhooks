@@ -66,9 +66,9 @@ func (endpoint *Endpoint) List(
 
 	var err error
 	if o != nil {
-		SerializeParamToMap("limit", o.Limit, queryMap, &err)
-		SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		SerializeParamToMap("order", o.Order, queryMap, &err)
+		serializeParamToMap("limit", o.Limit, queryMap, &err)
+		serializeParamToMap("iterator", o.Iterator, queryMap, &err)
+		serializeParamToMap("order", o.Order, queryMap, &err)
 		if err != nil {
 			return nil, err
 		}
@@ -110,7 +110,7 @@ func (endpoint *Endpoint) Create(
 
 	var err error
 	if o != nil {
-		SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
 		}
@@ -400,7 +400,7 @@ func (endpoint *Endpoint) Recover(
 
 	var err error
 	if o != nil {
-		SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
 		}
@@ -449,7 +449,7 @@ func (endpoint *Endpoint) ReplayMissing(
 
 	var err error
 	if o != nil {
-		SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
 		}
@@ -530,7 +530,7 @@ func (endpoint *Endpoint) RotateSecret(
 
 	var err error
 	if o != nil {
-		SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return err
 		}
@@ -576,7 +576,7 @@ func (endpoint *Endpoint) SendExample(
 
 	var err error
 	if o != nil {
-		SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
 		}
@@ -618,8 +618,8 @@ func (endpoint *Endpoint) GetStats(
 
 	var err error
 	if o != nil {
-		SerializeParamToMap("since", o.Since, queryMap, &err)
-		SerializeParamToMap("until", o.Until, queryMap, &err)
+		serializeParamToMap("since", o.Since, queryMap, &err)
+		serializeParamToMap("until", o.Until, queryMap, &err)
 		if err != nil {
 			return nil, err
 		}

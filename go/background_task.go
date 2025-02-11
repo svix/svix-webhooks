@@ -39,11 +39,11 @@ func (backgroundTask *BackgroundTask) List(
 
 	var err error
 	if o != nil {
-		SerializeParamToMap("status", o.Status, queryMap, &err)
-		SerializeParamToMap("task", o.Task, queryMap, &err)
-		SerializeParamToMap("limit", o.Limit, queryMap, &err)
-		SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		SerializeParamToMap("order", o.Order, queryMap, &err)
+		serializeParamToMap("status", o.Status, queryMap, &err)
+		serializeParamToMap("task", o.Task, queryMap, &err)
+		serializeParamToMap("limit", o.Limit, queryMap, &err)
+		serializeParamToMap("iterator", o.Iterator, queryMap, &err)
+		serializeParamToMap("order", o.Order, queryMap, &err)
 		if err != nil {
 			return nil, err
 		}
