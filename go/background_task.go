@@ -44,7 +44,8 @@ func (backgroundTask *BackgroundTask) List(
 			return nil, err
 		}
 	}
-	ret, err := executeRequest[any, models.ListResponseBackgroundTaskOut](
+
+	return executeRequest[any, models.ListResponseBackgroundTaskOut](
 		ctx,
 		backgroundTask.client,
 		"GET",
@@ -54,10 +55,7 @@ func (backgroundTask *BackgroundTask) List(
 		nil,
 		nil,
 	)
-	if err != nil {
-		return nil, err
-	}
-	return ret, nil
+
 }
 
 // Get a background task by ID.
@@ -68,7 +66,8 @@ func (backgroundTask *BackgroundTask) Get(
 	pathMap := map[string]string{
 		"task_id": taskId,
 	}
-	ret, err := executeRequest[any, models.BackgroundTaskOut](
+
+	return executeRequest[any, models.BackgroundTaskOut](
 		ctx,
 		backgroundTask.client,
 		"GET",
@@ -78,8 +77,5 @@ func (backgroundTask *BackgroundTask) Get(
 		nil,
 		nil,
 	)
-	if err != nil {
-		return nil, err
-	}
-	return ret, nil
+
 }

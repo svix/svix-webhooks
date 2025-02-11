@@ -32,7 +32,8 @@ func (statistics *Statistics) AggregateAppStats(
 			return nil, err
 		}
 	}
-	ret, err := executeRequest[models.AppUsageStatsIn, models.AppUsageStatsOut](
+
+	return executeRequest[models.AppUsageStatsIn, models.AppUsageStatsOut](
 		ctx,
 		statistics.client,
 		"POST",
@@ -42,10 +43,7 @@ func (statistics *Statistics) AggregateAppStats(
 		headerMap,
 		&appUsageStatsIn,
 	)
-	if err != nil {
-		return nil, err
-	}
-	return ret, nil
+
 }
 
 // Creates a background task to calculate the listed event types for all apps in the organization.
@@ -55,7 +53,8 @@ func (statistics *Statistics) AggregateAppStats(
 func (statistics *Statistics) AggregateEventTypes(
 	ctx context.Context,
 ) (*models.AggregateEventTypesOut, error) {
-	ret, err := executeRequest[any, models.AggregateEventTypesOut](
+
+	return executeRequest[any, models.AggregateEventTypesOut](
 		ctx,
 		statistics.client,
 		"PUT",
@@ -65,8 +64,5 @@ func (statistics *Statistics) AggregateEventTypes(
 		nil,
 		nil,
 	)
-	if err != nil {
-		return nil, err
-	}
-	return ret, nil
+
 }

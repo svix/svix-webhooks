@@ -133,7 +133,8 @@ func (messageAttempt *MessageAttempt) ListByEndpoint(
 			return nil, err
 		}
 	}
-	ret, err := executeRequest[any, models.ListResponseMessageAttemptOut](
+
+	return executeRequest[any, models.ListResponseMessageAttemptOut](
 		ctx,
 		messageAttempt.client,
 		"GET",
@@ -143,10 +144,7 @@ func (messageAttempt *MessageAttempt) ListByEndpoint(
 		nil,
 		nil,
 	)
-	if err != nil {
-		return nil, err
-	}
-	return ret, nil
+
 }
 
 // List attempts by message ID.
@@ -183,7 +181,8 @@ func (messageAttempt *MessageAttempt) ListByMsg(
 			return nil, err
 		}
 	}
-	ret, err := executeRequest[any, models.ListResponseMessageAttemptOut](
+
+	return executeRequest[any, models.ListResponseMessageAttemptOut](
 		ctx,
 		messageAttempt.client,
 		"GET",
@@ -193,10 +192,7 @@ func (messageAttempt *MessageAttempt) ListByMsg(
 		nil,
 		nil,
 	)
-	if err != nil {
-		return nil, err
-	}
-	return ret, nil
+
 }
 
 // List messages for a particular endpoint. Additionally includes metadata about the latest message attempt.
@@ -233,7 +229,8 @@ func (messageAttempt *MessageAttempt) ListAttemptedMessages(
 			return nil, err
 		}
 	}
-	ret, err := executeRequest[any, models.ListResponseEndpointMessageOut](
+
+	return executeRequest[any, models.ListResponseEndpointMessageOut](
 		ctx,
 		messageAttempt.client,
 		"GET",
@@ -243,10 +240,7 @@ func (messageAttempt *MessageAttempt) ListAttemptedMessages(
 		nil,
 		nil,
 	)
-	if err != nil {
-		return nil, err
-	}
-	return ret, nil
+
 }
 
 // `msg_id`: Use a message id or a message `eventId`
@@ -261,7 +255,8 @@ func (messageAttempt *MessageAttempt) Get(
 		"msg_id":     msgId,
 		"attempt_id": attemptId,
 	}
-	ret, err := executeRequest[any, models.MessageAttemptOut](
+
+	return executeRequest[any, models.MessageAttemptOut](
 		ctx,
 		messageAttempt.client,
 		"GET",
@@ -271,10 +266,7 @@ func (messageAttempt *MessageAttempt) Get(
 		nil,
 		nil,
 	)
-	if err != nil {
-		return nil, err
-	}
-	return ret, nil
+
 }
 
 // Deletes the given attempt's response body.
@@ -292,6 +284,7 @@ func (messageAttempt *MessageAttempt) ExpungeContent(
 		"msg_id":     msgId,
 		"attempt_id": attemptId,
 	}
+
 	_, err := executeRequest[any, any](
 		ctx,
 		messageAttempt.client,
@@ -302,10 +295,8 @@ func (messageAttempt *MessageAttempt) ExpungeContent(
 		nil,
 		nil,
 	)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
+
 }
 
 // List endpoints attempted by a given message.
@@ -331,7 +322,8 @@ func (messageAttempt *MessageAttempt) ListAttemptedDestinations(
 			return nil, err
 		}
 	}
-	ret, err := executeRequest[any, models.ListResponseMessageEndpointOut](
+
+	return executeRequest[any, models.ListResponseMessageEndpointOut](
 		ctx,
 		messageAttempt.client,
 		"GET",
@@ -341,10 +333,7 @@ func (messageAttempt *MessageAttempt) ListAttemptedDestinations(
 		nil,
 		nil,
 	)
-	if err != nil {
-		return nil, err
-	}
-	return ret, nil
+
 }
 
 // Resend a message to the specified endpoint.
@@ -368,6 +357,7 @@ func (messageAttempt *MessageAttempt) Resend(
 			return err
 		}
 	}
+
 	_, err = executeRequest[any, any](
 		ctx,
 		messageAttempt.client,
@@ -378,8 +368,6 @@ func (messageAttempt *MessageAttempt) Resend(
 		headerMap,
 		nil,
 	)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
+
 }

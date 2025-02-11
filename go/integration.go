@@ -48,7 +48,8 @@ func (integration *Integration) List(
 			return nil, err
 		}
 	}
-	ret, err := executeRequest[any, models.ListResponseIntegrationOut](
+
+	return executeRequest[any, models.ListResponseIntegrationOut](
 		ctx,
 		integration.client,
 		"GET",
@@ -58,10 +59,7 @@ func (integration *Integration) List(
 		nil,
 		nil,
 	)
-	if err != nil {
-		return nil, err
-	}
-	return ret, nil
+
 }
 
 // Create an integration.
@@ -82,7 +80,8 @@ func (integration *Integration) Create(
 			return nil, err
 		}
 	}
-	ret, err := executeRequest[models.IntegrationIn, models.IntegrationOut](
+
+	return executeRequest[models.IntegrationIn, models.IntegrationOut](
 		ctx,
 		integration.client,
 		"POST",
@@ -92,10 +91,7 @@ func (integration *Integration) Create(
 		headerMap,
 		&integrationIn,
 	)
-	if err != nil {
-		return nil, err
-	}
-	return ret, nil
+
 }
 
 // Get an integration.
@@ -108,7 +104,8 @@ func (integration *Integration) Get(
 		"app_id":   appId,
 		"integ_id": integId,
 	}
-	ret, err := executeRequest[any, models.IntegrationOut](
+
+	return executeRequest[any, models.IntegrationOut](
 		ctx,
 		integration.client,
 		"GET",
@@ -118,10 +115,7 @@ func (integration *Integration) Get(
 		nil,
 		nil,
 	)
-	if err != nil {
-		return nil, err
-	}
-	return ret, nil
+
 }
 
 // Update an integration.
@@ -135,7 +129,8 @@ func (integration *Integration) Update(
 		"app_id":   appId,
 		"integ_id": integId,
 	}
-	ret, err := executeRequest[models.IntegrationUpdate, models.IntegrationOut](
+
+	return executeRequest[models.IntegrationUpdate, models.IntegrationOut](
 		ctx,
 		integration.client,
 		"PUT",
@@ -145,10 +140,7 @@ func (integration *Integration) Update(
 		nil,
 		&integrationUpdate,
 	)
-	if err != nil {
-		return nil, err
-	}
-	return ret, nil
+
 }
 
 // Delete an integration.
@@ -161,6 +153,7 @@ func (integration *Integration) Delete(
 		"app_id":   appId,
 		"integ_id": integId,
 	}
+
 	_, err := executeRequest[any, any](
 		ctx,
 		integration.client,
@@ -171,10 +164,8 @@ func (integration *Integration) Delete(
 		nil,
 		nil,
 	)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
+
 }
 
 // Get an integration's key.
@@ -189,7 +180,8 @@ func (integration *Integration) GetKey(
 		"app_id":   appId,
 		"integ_id": integId,
 	}
-	ret, err := executeRequest[any, models.IntegrationKeyOut](
+
+	return executeRequest[any, models.IntegrationKeyOut](
 		ctx,
 		integration.client,
 		"GET",
@@ -199,10 +191,7 @@ func (integration *Integration) GetKey(
 		nil,
 		nil,
 	)
-	if err != nil {
-		return nil, err
-	}
-	return ret, nil
+
 }
 
 // Rotate the integration's key. The previous key will be immediately revoked.
@@ -224,7 +213,8 @@ func (integration *Integration) RotateKey(
 			return nil, err
 		}
 	}
-	ret, err := executeRequest[any, models.IntegrationKeyOut](
+
+	return executeRequest[any, models.IntegrationKeyOut](
 		ctx,
 		integration.client,
 		"POST",
@@ -234,8 +224,5 @@ func (integration *Integration) RotateKey(
 		headerMap,
 		nil,
 	)
-	if err != nil {
-		return nil, err
-	}
-	return ret, nil
+
 }

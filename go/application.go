@@ -40,7 +40,8 @@ func (application *Application) List(
 			return nil, err
 		}
 	}
-	ret, err := executeRequest[any, models.ListResponseApplicationOut](
+
+	return executeRequest[any, models.ListResponseApplicationOut](
 		ctx,
 		application.client,
 		"GET",
@@ -50,10 +51,7 @@ func (application *Application) List(
 		nil,
 		nil,
 	)
-	if err != nil {
-		return nil, err
-	}
-	return ret, nil
+
 }
 
 // Create a new application.
@@ -73,7 +71,8 @@ func (application *Application) Create(
 			return nil, err
 		}
 	}
-	ret, err := executeRequest[models.ApplicationIn, models.ApplicationOut](
+
+	return executeRequest[models.ApplicationIn, models.ApplicationOut](
 		ctx,
 		application.client,
 		"POST",
@@ -83,10 +82,7 @@ func (application *Application) Create(
 		headerMap,
 		&applicationIn,
 	)
-	if err != nil {
-		return nil, err
-	}
-	return ret, nil
+
 }
 
 // Get or create a new application.
@@ -108,7 +104,7 @@ func (application *Application) GetOrCreate(
 		}
 	}
 
-	ret, err := executeRequest[models.ApplicationIn, models.ApplicationOut](
+	return executeRequest[models.ApplicationIn, models.ApplicationOut](
 		ctx,
 		application.client,
 		"POST",
@@ -118,10 +114,6 @@ func (application *Application) GetOrCreate(
 		headerMap,
 		&applicationIn,
 	)
-	if err != nil {
-		return nil, err
-	}
-	return ret, nil
 }
 
 // Get an application.
@@ -132,7 +124,8 @@ func (application *Application) Get(
 	pathMap := map[string]string{
 		"app_id": appId,
 	}
-	ret, err := executeRequest[any, models.ApplicationOut](
+
+	return executeRequest[any, models.ApplicationOut](
 		ctx,
 		application.client,
 		"GET",
@@ -142,10 +135,7 @@ func (application *Application) Get(
 		nil,
 		nil,
 	)
-	if err != nil {
-		return nil, err
-	}
-	return ret, nil
+
 }
 
 // Update an application.
@@ -157,7 +147,8 @@ func (application *Application) Update(
 	pathMap := map[string]string{
 		"app_id": appId,
 	}
-	ret, err := executeRequest[models.ApplicationIn, models.ApplicationOut](
+
+	return executeRequest[models.ApplicationIn, models.ApplicationOut](
 		ctx,
 		application.client,
 		"PUT",
@@ -167,10 +158,7 @@ func (application *Application) Update(
 		nil,
 		&applicationIn,
 	)
-	if err != nil {
-		return nil, err
-	}
-	return ret, nil
+
 }
 
 // Delete an application.
@@ -181,6 +169,7 @@ func (application *Application) Delete(
 	pathMap := map[string]string{
 		"app_id": appId,
 	}
+
 	_, err := executeRequest[any, any](
 		ctx,
 		application.client,
@@ -191,10 +180,8 @@ func (application *Application) Delete(
 		nil,
 		nil,
 	)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
+
 }
 
 // Partially update an application.
@@ -206,7 +193,8 @@ func (application *Application) Patch(
 	pathMap := map[string]string{
 		"app_id": appId,
 	}
-	ret, err := executeRequest[models.ApplicationPatch, models.ApplicationOut](
+
+	return executeRequest[models.ApplicationPatch, models.ApplicationOut](
 		ctx,
 		application.client,
 		"PATCH",
@@ -216,8 +204,5 @@ func (application *Application) Patch(
 		nil,
 		&applicationPatch,
 	)
-	if err != nil {
-		return nil, err
-	}
-	return ret, nil
+
 }

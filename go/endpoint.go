@@ -68,7 +68,8 @@ func (endpoint *Endpoint) List(
 			return nil, err
 		}
 	}
-	ret, err := executeRequest[any, models.ListResponseEndpointOut](
+
+	return executeRequest[any, models.ListResponseEndpointOut](
 		ctx,
 		endpoint.client,
 		"GET",
@@ -78,10 +79,7 @@ func (endpoint *Endpoint) List(
 		nil,
 		nil,
 	)
-	if err != nil {
-		return nil, err
-	}
-	return ret, nil
+
 }
 
 // Create a new endpoint for the application.
@@ -104,7 +102,8 @@ func (endpoint *Endpoint) Create(
 			return nil, err
 		}
 	}
-	ret, err := executeRequest[models.EndpointIn, models.EndpointOut](
+
+	return executeRequest[models.EndpointIn, models.EndpointOut](
 		ctx,
 		endpoint.client,
 		"POST",
@@ -114,10 +113,7 @@ func (endpoint *Endpoint) Create(
 		headerMap,
 		&endpointIn,
 	)
-	if err != nil {
-		return nil, err
-	}
-	return ret, nil
+
 }
 
 // Get an endpoint.
@@ -130,7 +126,8 @@ func (endpoint *Endpoint) Get(
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
-	ret, err := executeRequest[any, models.EndpointOut](
+
+	return executeRequest[any, models.EndpointOut](
 		ctx,
 		endpoint.client,
 		"GET",
@@ -140,10 +137,7 @@ func (endpoint *Endpoint) Get(
 		nil,
 		nil,
 	)
-	if err != nil {
-		return nil, err
-	}
-	return ret, nil
+
 }
 
 // Update an endpoint.
@@ -157,7 +151,8 @@ func (endpoint *Endpoint) Update(
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
-	ret, err := executeRequest[models.EndpointUpdate, models.EndpointOut](
+
+	return executeRequest[models.EndpointUpdate, models.EndpointOut](
 		ctx,
 		endpoint.client,
 		"PUT",
@@ -167,10 +162,7 @@ func (endpoint *Endpoint) Update(
 		nil,
 		&endpointUpdate,
 	)
-	if err != nil {
-		return nil, err
-	}
-	return ret, nil
+
 }
 
 // Delete an endpoint.
@@ -183,6 +175,7 @@ func (endpoint *Endpoint) Delete(
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
+
 	_, err := executeRequest[any, any](
 		ctx,
 		endpoint.client,
@@ -193,10 +186,8 @@ func (endpoint *Endpoint) Delete(
 		nil,
 		nil,
 	)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
+
 }
 
 // Partially update an endpoint.
@@ -210,7 +201,8 @@ func (endpoint *Endpoint) Patch(
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
-	ret, err := executeRequest[models.EndpointPatch, models.EndpointOut](
+
+	return executeRequest[models.EndpointPatch, models.EndpointOut](
 		ctx,
 		endpoint.client,
 		"PATCH",
@@ -220,10 +212,7 @@ func (endpoint *Endpoint) Patch(
 		nil,
 		&endpointPatch,
 	)
-	if err != nil {
-		return nil, err
-	}
-	return ret, nil
+
 }
 
 // Get the additional headers to be sent with the webhook.
@@ -236,7 +225,8 @@ func (endpoint *Endpoint) GetHeaders(
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
-	ret, err := executeRequest[any, models.EndpointHeadersOut](
+
+	return executeRequest[any, models.EndpointHeadersOut](
 		ctx,
 		endpoint.client,
 		"GET",
@@ -246,10 +236,7 @@ func (endpoint *Endpoint) GetHeaders(
 		nil,
 		nil,
 	)
-	if err != nil {
-		return nil, err
-	}
-	return ret, nil
+
 }
 
 // Set the additional headers to be sent with the webhook.
@@ -263,6 +250,7 @@ func (endpoint *Endpoint) UpdateHeaders(
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
+
 	_, err := executeRequest[models.EndpointHeadersIn, any](
 		ctx,
 		endpoint.client,
@@ -273,10 +261,8 @@ func (endpoint *Endpoint) UpdateHeaders(
 		nil,
 		&endpointHeadersIn,
 	)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
+
 }
 
 // Partially set the additional headers to be sent with the webhook.
@@ -290,6 +276,7 @@ func (endpoint *Endpoint) PatchHeaders(
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
+
 	_, err := executeRequest[models.EndpointHeadersPatchIn, any](
 		ctx,
 		endpoint.client,
@@ -300,10 +287,8 @@ func (endpoint *Endpoint) PatchHeaders(
 		nil,
 		&endpointHeadersPatchIn,
 	)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
+
 }
 
 // Resend all failed messages since a given time.
@@ -328,7 +313,8 @@ func (endpoint *Endpoint) Recover(
 			return nil, err
 		}
 	}
-	ret, err := executeRequest[models.RecoverIn, models.RecoverOut](
+
+	return executeRequest[models.RecoverIn, models.RecoverOut](
 		ctx,
 		endpoint.client,
 		"POST",
@@ -338,10 +324,7 @@ func (endpoint *Endpoint) Recover(
 		headerMap,
 		&recoverIn,
 	)
-	if err != nil {
-		return nil, err
-	}
-	return ret, nil
+
 }
 
 // Replays messages to the endpoint.
@@ -367,7 +350,8 @@ func (endpoint *Endpoint) ReplayMissing(
 			return nil, err
 		}
 	}
-	ret, err := executeRequest[models.ReplayIn, models.ReplayOut](
+
+	return executeRequest[models.ReplayIn, models.ReplayOut](
 		ctx,
 		endpoint.client,
 		"POST",
@@ -377,10 +361,7 @@ func (endpoint *Endpoint) ReplayMissing(
 		headerMap,
 		&replayIn,
 	)
-	if err != nil {
-		return nil, err
-	}
-	return ret, nil
+
 }
 
 // Get the endpoint's signing secret.
@@ -396,7 +377,8 @@ func (endpoint *Endpoint) GetSecret(
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
-	ret, err := executeRequest[any, models.EndpointSecretOut](
+
+	return executeRequest[any, models.EndpointSecretOut](
 		ctx,
 		endpoint.client,
 		"GET",
@@ -406,10 +388,7 @@ func (endpoint *Endpoint) GetSecret(
 		nil,
 		nil,
 	)
-	if err != nil {
-		return nil, err
-	}
-	return ret, nil
+
 }
 
 // Rotates the endpoint's signing secret.
@@ -434,6 +413,7 @@ func (endpoint *Endpoint) RotateSecret(
 			return err
 		}
 	}
+
 	_, err = executeRequest[models.EndpointSecretRotateIn, any](
 		ctx,
 		endpoint.client,
@@ -444,10 +424,8 @@ func (endpoint *Endpoint) RotateSecret(
 		headerMap,
 		&endpointSecretRotateIn,
 	)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
+
 }
 
 // Send an example message for an event.
@@ -470,7 +448,8 @@ func (endpoint *Endpoint) SendExample(
 			return nil, err
 		}
 	}
-	ret, err := executeRequest[models.EventExampleIn, models.MessageOut](
+
+	return executeRequest[models.EventExampleIn, models.MessageOut](
 		ctx,
 		endpoint.client,
 		"POST",
@@ -480,10 +459,7 @@ func (endpoint *Endpoint) SendExample(
 		headerMap,
 		&eventExampleIn,
 	)
-	if err != nil {
-		return nil, err
-	}
-	return ret, nil
+
 }
 
 // Get basic statistics for the endpoint.
@@ -506,7 +482,8 @@ func (endpoint *Endpoint) GetStats(
 			return nil, err
 		}
 	}
-	ret, err := executeRequest[any, models.EndpointStats](
+
+	return executeRequest[any, models.EndpointStats](
 		ctx,
 		endpoint.client,
 		"GET",
@@ -516,10 +493,7 @@ func (endpoint *Endpoint) GetStats(
 		nil,
 		nil,
 	)
-	if err != nil {
-		return nil, err
-	}
-	return ret, nil
+
 }
 
 // Get the transformation code associated with this endpoint.
@@ -532,7 +506,8 @@ func (endpoint *Endpoint) TransformationGet(
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
-	ret, err := executeRequest[any, models.EndpointTransformationOut](
+
+	return executeRequest[any, models.EndpointTransformationOut](
 		ctx,
 		endpoint.client,
 		"GET",
@@ -542,10 +517,7 @@ func (endpoint *Endpoint) TransformationGet(
 		nil,
 		nil,
 	)
-	if err != nil {
-		return nil, err
-	}
-	return ret, nil
+
 }
 
 // Set or unset the transformation code associated with this endpoint.
@@ -559,6 +531,7 @@ func (endpoint *Endpoint) TransformationPartialUpdate(
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
+
 	_, err := executeRequest[models.EndpointTransformationIn, any](
 		ctx,
 		endpoint.client,
@@ -569,8 +542,6 @@ func (endpoint *Endpoint) TransformationPartialUpdate(
 		nil,
 		&endpointTransformationIn,
 	)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
+
 }
