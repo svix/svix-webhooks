@@ -2,8 +2,7 @@
 package models
 
 type EndpointIn struct {
-	// List of message channels this endpoint listens to (omit for all).
-	Channels    []string           `json:"channels,omitempty"`
+	Channels    []string           `json:"channels,omitempty"` // List of message channels this endpoint listens to (omit for all).
 	Description *string            `json:"description,omitempty"`
 	Disabled    *bool              `json:"disabled,omitempty"`
 	FilterTypes []string           `json:"filterTypes,omitempty"`
@@ -13,9 +12,8 @@ type EndpointIn struct {
 	//
 	// Format: `base64` encoded random bytes optionally prefixed with `whsec_`.
 	// It is recommended to not set this and let the server generate the secret.
-	Secret *string `json:"secret,omitempty"`
-	// Optional unique identifier for the endpoint.
-	Uid     *string `json:"uid,omitempty"`
+	Secret  *string `json:"secret,omitempty"`
+	Uid     *string `json:"uid,omitempty"` // Optional unique identifier for the endpoint.
 	Url     string  `json:"url"`
 	Version *uint16 `json:"version,omitempty"`
 }

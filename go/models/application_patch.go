@@ -11,8 +11,7 @@ type ApplicationPatch struct {
 	Metadata  *map[string]string     `json:"metadata,omitempty"`
 	Name      *string                `json:"name,omitempty"`
 	RateLimit utils.Nullable[uint16] `json:"rateLimit"`
-	// The app's UID
-	Uid utils.Nullable[string] `json:"uid"`
+	Uid       utils.Nullable[string] `json:"uid"` // The app's UID
 }
 
 func (o ApplicationPatch) MarshalJSON() ([]byte, error) {

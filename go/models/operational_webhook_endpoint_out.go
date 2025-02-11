@@ -4,17 +4,14 @@ package models
 import "time"
 
 type OperationalWebhookEndpointOut struct {
-	CreatedAt time.Time `json:"createdAt"`
-	// An example endpoint name.
-	Description string   `json:"description"`
-	Disabled    *bool    `json:"disabled,omitempty"`
-	FilterTypes []string `json:"filterTypes,omitempty"`
-	// The ep's ID
-	Id        string            `json:"id"`
-	Metadata  map[string]string `json:"metadata"`
-	RateLimit *uint16           `json:"rateLimit,omitempty"`
-	// Optional unique identifier for the endpoint.
-	Uid       *string   `json:"uid,omitempty"`
-	UpdatedAt time.Time `json:"updatedAt"`
-	Url       string    `json:"url"`
+	CreatedAt   time.Time         `json:"createdAt"`
+	Description string            `json:"description"` // An example endpoint name.
+	Disabled    *bool             `json:"disabled,omitempty"`
+	FilterTypes []string          `json:"filterTypes,omitempty"`
+	Id          string            `json:"id"` // The ep's ID
+	Metadata    map[string]string `json:"metadata"`
+	RateLimit   *uint16           `json:"rateLimit,omitempty"`
+	Uid         *string           `json:"uid,omitempty"` // Optional unique identifier for the endpoint.
+	UpdatedAt   time.Time         `json:"updatedAt"`
+	Url         string            `json:"url"`
 }

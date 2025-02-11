@@ -9,9 +9,7 @@ type AppPortalAccessIn struct {
 	// How long the token will be valid for, in seconds.
 	//
 	// Valid values are between 1 hour and 7 days. The default is 7 days.
-	Expiry *uint64 `json:"expiry,omitempty"`
-	// The set of feature flags the created token will have access to.
-	FeatureFlags []string `json:"featureFlags,omitempty"`
-	// Whether the app portal should be in read-only mode.
-	ReadOnly *bool `json:"readOnly,omitempty"`
+	Expiry       *uint64  `json:"expiry,omitempty"`
+	FeatureFlags []string `json:"featureFlags,omitempty"` // The set of feature flags the created token will have access to.
+	ReadOnly     *bool    `json:"readOnly,omitempty"`     // Whether the app portal should be in read-only mode.
 }

@@ -7,7 +7,6 @@ type OperationalWebhookEndpointUpdate struct {
 	FilterTypes []string           `json:"filterTypes,omitempty"`
 	Metadata    *map[string]string `json:"metadata,omitempty"`
 	RateLimit   *uint16            `json:"rateLimit,omitempty"`
-	// Optional unique identifier for the endpoint.
-	Uid *string `json:"uid,omitempty"`
-	Url string  `json:"url"`
+	Uid         *string            `json:"uid,omitempty"` // Optional unique identifier for the endpoint.
+	Url         string             `json:"url"`
 }

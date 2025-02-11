@@ -2,8 +2,7 @@
 package models
 
 type EventExampleIn struct {
-	// The event type's name
-	EventType string `json:"eventType"`
+	EventType string `json:"eventType"` // The event type's name
 	// If the event type schema contains an array of examples, chooses which one to send.
 	//
 	// Defaults to the first example. Ignored if the schema doesn't contain an array of examples.

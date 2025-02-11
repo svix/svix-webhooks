@@ -4,16 +4,12 @@ package models
 import "time"
 
 type MessageAttemptOut struct {
-	// The ep's ID
-	EndpointId string `json:"endpointId"`
-	// The attempt's ID
-	Id  string      `json:"id"`
-	Msg *MessageOut `json:"msg,omitempty"`
-	// The msg's ID
-	MsgId    string `json:"msgId"`
-	Response string `json:"response"`
-	// Response duration in milliseconds.
-	ResponseDurationMs int64                     `json:"responseDurationMs"`
+	EndpointId         string                    `json:"endpointId"` // The ep's ID
+	Id                 string                    `json:"id"`         // The attempt's ID
+	Msg                *MessageOut               `json:"msg,omitempty"`
+	MsgId              string                    `json:"msgId"` // The msg's ID
+	Response           string                    `json:"response"`
+	ResponseDurationMs int64                     `json:"responseDurationMs"` // Response duration in milliseconds.
 	ResponseStatusCode int16                     `json:"responseStatusCode"`
 	Status             MessageStatus             `json:"status"`
 	Timestamp          time.Time                 `json:"timestamp"`

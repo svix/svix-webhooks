@@ -2,6 +2,5 @@
 package models
 
 type ApplicationTokenExpireIn struct {
-	// How many seconds until the old key is expired.
-	Expiry *int64 `json:"expiry,omitempty"`
+	Expiry *int64 `json:"expiry,omitempty"` // How many seconds until the old key is expired.
 }

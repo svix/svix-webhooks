@@ -5,8 +5,7 @@ import "time"
 
 type IntegrationOut struct {
 	CreatedAt time.Time `json:"createdAt"`
-	// The integ's ID
-	Id        string    `json:"id"`
+	Id        string    `json:"id"` // The integ's ID
 	Name      string    `json:"name"`
 	UpdatedAt time.Time `json:"updatedAt"`
 }

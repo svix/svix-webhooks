@@ -12,7 +12,6 @@ type OperationalWebhookEndpointIn struct {
 	// Format: `base64` encoded random bytes optionally prefixed with `whsec_`.
 	// It is recommended to not set this and let the server generate the secret.
 	Secret *string `json:"secret,omitempty"`
-	// Optional unique identifier for the endpoint.
-	Uid *string `json:"uid,omitempty"`
-	Url string  `json:"url"`
+	Uid    *string `json:"uid,omitempty"` // Optional unique identifier for the endpoint.
+	Url    string  `json:"url"`
 }
