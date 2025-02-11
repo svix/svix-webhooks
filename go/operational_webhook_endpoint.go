@@ -10,7 +10,7 @@ import (
 )
 
 type OperationalWebhookEndpoint struct {
-	_client *SvixHttpClient
+	client *SvixHttpClient
 }
 
 type OperationalWebhookEndpointListOptions struct {
@@ -41,8 +41,8 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) List(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
+	var err error
 	if o != nil {
-		var err error
 		SerializeParamToMap("limit", o.Limit, queryMap, &err)
 		SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
 		SerializeParamToMap("order", o.Order, queryMap, &err)
@@ -50,9 +50,9 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) List(
 			return nil, err
 		}
 	}
-	ret, apiErr := executeRequest[models.ListResponseOperationalWebhookEndpointOut](
+	ret, err := executeRequest[models.ListResponseOperationalWebhookEndpointOut](
 		ctx,
-		operationalWebhookEndpoint._client,
+		operationalWebhookEndpoint.client,
 		"GET",
 		"/api/v1/operational-webhook/endpoint",
 		pathMap,
@@ -60,8 +60,8 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) List(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return nil, apiErr
+	if err != nil {
+		return nil, err
 	}
 	return ret, nil
 }
@@ -80,20 +80,20 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Create(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
+	var err error
 	if o != nil {
-		var err error
 		SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	jsonBody, err := json.Marshal(operationalWebhookEndpointIn)
+	jsonBody, err = json.Marshal(operationalWebhookEndpointIn)
 	if err != nil {
 		return nil, err
 	}
-	ret, apiErr := executeRequest[models.OperationalWebhookEndpointOut](
+	ret, err := executeRequest[models.OperationalWebhookEndpointOut](
 		ctx,
-		operationalWebhookEndpoint._client,
+		operationalWebhookEndpoint.client,
 		"POST",
 		"/api/v1/operational-webhook/endpoint",
 		pathMap,
@@ -101,8 +101,8 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Create(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return nil, apiErr
+	if err != nil {
+		return nil, err
 	}
 	return ret, nil
 }
@@ -119,9 +119,9 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Get(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
-	ret, apiErr := executeRequest[models.OperationalWebhookEndpointOut](
+	ret, err := executeRequest[models.OperationalWebhookEndpointOut](
 		ctx,
-		operationalWebhookEndpoint._client,
+		operationalWebhookEndpoint.client,
 		"GET",
 		"/api/v1/operational-webhook/endpoint/{endpoint_id}",
 		pathMap,
@@ -129,8 +129,8 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Get(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return nil, apiErr
+	if err != nil {
+		return nil, err
 	}
 	return ret, nil
 }
@@ -155,9 +155,9 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Update(
 	if err != nil {
 		return nil, err
 	}
-	ret, apiErr := executeRequest[models.OperationalWebhookEndpointOut](
+	ret, err := executeRequest[models.OperationalWebhookEndpointOut](
 		ctx,
-		operationalWebhookEndpoint._client,
+		operationalWebhookEndpoint.client,
 		"PUT",
 		"/api/v1/operational-webhook/endpoint/{endpoint_id}",
 		pathMap,
@@ -165,8 +165,8 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Update(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return nil, apiErr
+	if err != nil {
+		return nil, err
 	}
 	return ret, nil
 }
@@ -183,9 +183,9 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Delete(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
-	_, apiErr := executeRequest[any](
+	_, err := executeRequest[any](
 		ctx,
-		operationalWebhookEndpoint._client,
+		operationalWebhookEndpoint.client,
 		"DELETE",
 		"/api/v1/operational-webhook/endpoint/{endpoint_id}",
 		pathMap,
@@ -193,8 +193,8 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Delete(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return apiErr
+	if err != nil {
+		return err
 	}
 	return nil
 }
@@ -211,9 +211,9 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) GetHeaders(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
-	ret, apiErr := executeRequest[models.OperationalWebhookEndpointHeadersOut](
+	ret, err := executeRequest[models.OperationalWebhookEndpointHeadersOut](
 		ctx,
-		operationalWebhookEndpoint._client,
+		operationalWebhookEndpoint.client,
 		"GET",
 		"/api/v1/operational-webhook/endpoint/{endpoint_id}/headers",
 		pathMap,
@@ -221,8 +221,8 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) GetHeaders(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return nil, apiErr
+	if err != nil {
+		return nil, err
 	}
 	return ret, nil
 }
@@ -247,9 +247,9 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) UpdateHeaders(
 	if err != nil {
 		return err
 	}
-	_, apiErr := executeRequest[any](
+	_, err = executeRequest[any](
 		ctx,
-		operationalWebhookEndpoint._client,
+		operationalWebhookEndpoint.client,
 		"PUT",
 		"/api/v1/operational-webhook/endpoint/{endpoint_id}/headers",
 		pathMap,
@@ -257,8 +257,8 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) UpdateHeaders(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return apiErr
+	if err != nil {
+		return err
 	}
 	return nil
 }
@@ -278,9 +278,9 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) GetSecret(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
-	ret, apiErr := executeRequest[models.OperationalWebhookEndpointSecretOut](
+	ret, err := executeRequest[models.OperationalWebhookEndpointSecretOut](
 		ctx,
-		operationalWebhookEndpoint._client,
+		operationalWebhookEndpoint.client,
 		"GET",
 		"/api/v1/operational-webhook/endpoint/{endpoint_id}/secret",
 		pathMap,
@@ -288,8 +288,8 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) GetSecret(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return nil, apiErr
+	if err != nil {
+		return nil, err
 	}
 	return ret, nil
 }
@@ -313,20 +313,20 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) RotateSecret(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
+	var err error
 	if o != nil {
-		var err error
 		SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return err
 		}
 	}
-	jsonBody, err := json.Marshal(operationalWebhookEndpointSecretIn)
+	jsonBody, err = json.Marshal(operationalWebhookEndpointSecretIn)
 	if err != nil {
 		return err
 	}
-	_, apiErr := executeRequest[any](
+	_, err = executeRequest[any](
 		ctx,
-		operationalWebhookEndpoint._client,
+		operationalWebhookEndpoint.client,
 		"POST",
 		"/api/v1/operational-webhook/endpoint/{endpoint_id}/secret/rotate",
 		pathMap,
@@ -334,8 +334,8 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) RotateSecret(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return apiErr
+	if err != nil {
+		return err
 	}
 	return nil
 }

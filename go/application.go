@@ -10,7 +10,7 @@ import (
 )
 
 type Application struct {
-	_client *SvixHttpClient
+	client *SvixHttpClient
 }
 
 type ApplicationListOptions struct {
@@ -37,8 +37,8 @@ func (application *Application) List(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
+	var err error
 	if o != nil {
-		var err error
 		SerializeParamToMap("limit", o.Limit, queryMap, &err)
 		SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
 		SerializeParamToMap("order", o.Order, queryMap, &err)
@@ -46,9 +46,9 @@ func (application *Application) List(
 			return nil, err
 		}
 	}
-	ret, apiErr := executeRequest[models.ListResponseApplicationOut](
+	ret, err := executeRequest[models.ListResponseApplicationOut](
 		ctx,
-		application._client,
+		application.client,
 		"GET",
 		"/api/v1/app",
 		pathMap,
@@ -56,8 +56,8 @@ func (application *Application) List(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return nil, apiErr
+	if err != nil {
+		return nil, err
 	}
 	return ret, nil
 }
@@ -78,20 +78,20 @@ func (application *Application) Create(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
+	var err error
 	if o != nil {
-		var err error
 		SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	jsonBody, err := json.Marshal(applicationIn)
+	jsonBody, err = json.Marshal(applicationIn)
 	if err != nil {
 		return nil, err
 	}
-	ret, apiErr := executeRequest[models.ApplicationOut](
+	ret, err := executeRequest[models.ApplicationOut](
 		ctx,
-		application._client,
+		application.client,
 		"POST",
 		"/api/v1/app",
 		pathMap,
@@ -99,8 +99,8 @@ func (application *Application) Create(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return nil, apiErr
+	if err != nil {
+		return nil, err
 	}
 	return ret, nil
 }
@@ -132,9 +132,9 @@ func (application *Application) GetOrCreate(
 	if err != nil {
 		return nil, err
 	}
-	ret, apiErr := executeRequest[models.ApplicationOut](
+	ret, err := executeRequest[models.ApplicationOut](
 		ctx,
-		application._client,
+		application.client,
 		"POST",
 		"/api/v1/app",
 		pathMap,
@@ -142,8 +142,8 @@ func (application *Application) GetOrCreate(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return nil, apiErr
+	if err != nil {
+		return nil, err
 	}
 	return ret, nil
 }
@@ -160,9 +160,9 @@ func (application *Application) Get(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
-	ret, apiErr := executeRequest[models.ApplicationOut](
+	ret, err := executeRequest[models.ApplicationOut](
 		ctx,
-		application._client,
+		application.client,
 		"GET",
 		"/api/v1/app/{app_id}",
 		pathMap,
@@ -170,8 +170,8 @@ func (application *Application) Get(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return nil, apiErr
+	if err != nil {
+		return nil, err
 	}
 	return ret, nil
 }
@@ -196,9 +196,9 @@ func (application *Application) Update(
 	if err != nil {
 		return nil, err
 	}
-	ret, apiErr := executeRequest[models.ApplicationOut](
+	ret, err := executeRequest[models.ApplicationOut](
 		ctx,
-		application._client,
+		application.client,
 		"PUT",
 		"/api/v1/app/{app_id}",
 		pathMap,
@@ -206,8 +206,8 @@ func (application *Application) Update(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return nil, apiErr
+	if err != nil {
+		return nil, err
 	}
 	return ret, nil
 }
@@ -224,9 +224,9 @@ func (application *Application) Delete(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
-	_, apiErr := executeRequest[any](
+	_, err := executeRequest[any](
 		ctx,
-		application._client,
+		application.client,
 		"DELETE",
 		"/api/v1/app/{app_id}",
 		pathMap,
@@ -234,8 +234,8 @@ func (application *Application) Delete(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return apiErr
+	if err != nil {
+		return err
 	}
 	return nil
 }
@@ -260,9 +260,9 @@ func (application *Application) Patch(
 	if err != nil {
 		return nil, err
 	}
-	ret, apiErr := executeRequest[models.ApplicationOut](
+	ret, err := executeRequest[models.ApplicationOut](
 		ctx,
-		application._client,
+		application.client,
 		"PATCH",
 		"/api/v1/app/{app_id}",
 		pathMap,
@@ -270,8 +270,8 @@ func (application *Application) Patch(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return nil, apiErr
+	if err != nil {
+		return nil, err
 	}
 	return ret, nil
 }

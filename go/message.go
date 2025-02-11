@@ -11,7 +11,7 @@ import (
 )
 
 type Message struct {
-	_client *SvixHttpClient
+	client *SvixHttpClient
 }
 
 type MessageListOptions struct {
@@ -65,8 +65,8 @@ func (message *Message) List(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
+	var err error
 	if o != nil {
-		var err error
 		SerializeParamToMap("limit", o.Limit, queryMap, &err)
 		SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
 		SerializeParamToMap("channel", o.Channel, queryMap, &err)
@@ -79,9 +79,9 @@ func (message *Message) List(
 			return nil, err
 		}
 	}
-	ret, apiErr := executeRequest[models.ListResponseMessageOut](
+	ret, err := executeRequest[models.ListResponseMessageOut](
 		ctx,
-		message._client,
+		message.client,
 		"GET",
 		"/api/v1/app/{app_id}/msg",
 		pathMap,
@@ -89,8 +89,8 @@ func (message *Message) List(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return nil, apiErr
+	if err != nil {
+		return nil, err
 	}
 	return ret, nil
 }
@@ -120,21 +120,21 @@ func (message *Message) Create(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
+	var err error
 	if o != nil {
-		var err error
 		SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	jsonBody, err := json.Marshal(messageIn)
+	jsonBody, err = json.Marshal(messageIn)
 	if err != nil {
 		return nil, err
 	}
-	ret, apiErr := executeRequest[models.MessageOut](
+	ret, err := executeRequest[models.MessageOut](
 		ctx,
-		message._client,
+		message.client,
 		"POST",
 		"/api/v1/app/{app_id}/msg",
 		pathMap,
@@ -142,8 +142,8 @@ func (message *Message) Create(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return nil, apiErr
+	if err != nil {
+		return nil, err
 	}
 	return ret, nil
 }
@@ -163,16 +163,16 @@ func (message *Message) Get(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
+	var err error
 	if o != nil {
-		var err error
 		SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	ret, apiErr := executeRequest[models.MessageOut](
+	ret, err := executeRequest[models.MessageOut](
 		ctx,
-		message._client,
+		message.client,
 		"GET",
 		"/api/v1/app/{app_id}/msg/{msg_id}",
 		pathMap,
@@ -180,8 +180,8 @@ func (message *Message) Get(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return nil, apiErr
+	if err != nil {
+		return nil, err
 	}
 	return ret, nil
 }
@@ -203,9 +203,9 @@ func (message *Message) ExpungeContent(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
-	_, apiErr := executeRequest[any](
+	_, err := executeRequest[any](
 		ctx,
-		message._client,
+		message.client,
 		"DELETE",
 		"/api/v1/app/{app_id}/msg/{msg_id}/content",
 		pathMap,
@@ -213,8 +213,8 @@ func (message *Message) ExpungeContent(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return apiErr
+	if err != nil {
+		return err
 	}
 	return nil
 }

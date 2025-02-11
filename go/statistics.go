@@ -10,7 +10,7 @@ import (
 )
 
 type Statistics struct {
-	_client *SvixHttpClient
+	client *SvixHttpClient
 }
 
 type StatisticsAggregateAppStatsOptions struct {
@@ -34,20 +34,20 @@ func (statistics *Statistics) AggregateAppStats(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
+	var err error
 	if o != nil {
-		var err error
 		SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	jsonBody, err := json.Marshal(appUsageStatsIn)
+	jsonBody, err = json.Marshal(appUsageStatsIn)
 	if err != nil {
 		return nil, err
 	}
-	ret, apiErr := executeRequest[models.AppUsageStatsOut](
+	ret, err := executeRequest[models.AppUsageStatsOut](
 		ctx,
-		statistics._client,
+		statistics.client,
 		"POST",
 		"/api/v1/stats/usage/app",
 		pathMap,
@@ -55,8 +55,8 @@ func (statistics *Statistics) AggregateAppStats(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return nil, apiErr
+	if err != nil {
+		return nil, err
 	}
 	return ret, nil
 }
@@ -73,9 +73,9 @@ func (statistics *Statistics) AggregateEventTypes(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
-	ret, apiErr := executeRequest[models.AggregateEventTypesOut](
+	ret, err := executeRequest[models.AggregateEventTypesOut](
 		ctx,
-		statistics._client,
+		statistics.client,
 		"PUT",
 		"/api/v1/stats/usage/event-types",
 		pathMap,
@@ -83,8 +83,8 @@ func (statistics *Statistics) AggregateEventTypes(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return nil, apiErr
+	if err != nil {
+		return nil, err
 	}
 	return ret, nil
 }

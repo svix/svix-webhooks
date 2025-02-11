@@ -64,31 +64,31 @@ func New(token string, options *SvixOptions) (*Svix, error) {
 
 	svx := Svix{
 		Authentication: &Authentication{
-			_client: &svixHttpClient,
+			client: &svixHttpClient,
 		},
 		Application: &Application{
-			_client: &svixHttpClient,
+			client: &svixHttpClient,
 		},
 		Endpoint: &Endpoint{
-			_client: &svixHttpClient,
+			client: &svixHttpClient,
 		},
 		EventType: &EventType{
-			_client: &svixHttpClient,
+			client: &svixHttpClient,
 		},
 		Message: &Message{
-			_client: &svixHttpClient,
+			client: &svixHttpClient,
 		},
 		Integration: &Integration{
-			_client: &svixHttpClient,
+			client: &svixHttpClient,
 		},
 		MessageAttempt: &MessageAttempt{
-			_client: &svixHttpClient,
+			client: &svixHttpClient,
 		},
 		Statistics: &Statistics{
-			_client: &svixHttpClient,
+			client: &svixHttpClient,
 		},
 		OperationalWebhookEndpoint: &OperationalWebhookEndpoint{
-			_client: &svixHttpClient,
+			client: &svixHttpClient,
 		},
 	}
 	return &svx, nil

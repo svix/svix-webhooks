@@ -8,7 +8,7 @@ import (
 )
 
 type BackgroundTask struct {
-	_client *SvixHttpClient
+	client *SvixHttpClient
 }
 
 type BackgroundTaskListOptions struct {
@@ -37,8 +37,8 @@ func (backgroundTask *BackgroundTask) List(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
+	var err error
 	if o != nil {
-		var err error
 		SerializeParamToMap("status", o.Status, queryMap, &err)
 		SerializeParamToMap("task", o.Task, queryMap, &err)
 		SerializeParamToMap("limit", o.Limit, queryMap, &err)
@@ -48,9 +48,9 @@ func (backgroundTask *BackgroundTask) List(
 			return nil, err
 		}
 	}
-	ret, apiErr := executeRequest[models.ListResponseBackgroundTaskOut](
+	ret, err := executeRequest[models.ListResponseBackgroundTaskOut](
 		ctx,
-		backgroundTask._client,
+		backgroundTask.client,
 		"GET",
 		"/api/v1/background-task",
 		pathMap,
@@ -58,8 +58,8 @@ func (backgroundTask *BackgroundTask) List(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return nil, apiErr
+	if err != nil {
+		return nil, err
 	}
 	return ret, nil
 }
@@ -76,9 +76,9 @@ func (backgroundTask *BackgroundTask) Get(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
-	ret, apiErr := executeRequest[models.BackgroundTaskOut](
+	ret, err := executeRequest[models.BackgroundTaskOut](
 		ctx,
-		backgroundTask._client,
+		backgroundTask.client,
 		"GET",
 		"/api/v1/background-task/{task_id}",
 		pathMap,
@@ -86,8 +86,8 @@ func (backgroundTask *BackgroundTask) Get(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return nil, apiErr
+	if err != nil {
+		return nil, err
 	}
 	return ret, nil
 }

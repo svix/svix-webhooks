@@ -9,7 +9,7 @@ import (
 )
 
 type MessageAttempt struct {
-	_client *SvixHttpClient
+	client *SvixHttpClient
 }
 
 type MessageAttemptListByEndpointOptions struct {
@@ -119,8 +119,8 @@ func (messageAttempt *MessageAttempt) ListByEndpoint(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
+	var err error
 	if o != nil {
-		var err error
 		SerializeParamToMap("limit", o.Limit, queryMap, &err)
 		SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
 		SerializeParamToMap("status", o.Status, queryMap, &err)
@@ -136,9 +136,9 @@ func (messageAttempt *MessageAttempt) ListByEndpoint(
 			return nil, err
 		}
 	}
-	ret, apiErr := executeRequest[models.ListResponseMessageAttemptOut](
+	ret, err := executeRequest[models.ListResponseMessageAttemptOut](
 		ctx,
-		messageAttempt._client,
+		messageAttempt.client,
 		"GET",
 		"/api/v1/app/{app_id}/attempt/endpoint/{endpoint_id}",
 		pathMap,
@@ -146,8 +146,8 @@ func (messageAttempt *MessageAttempt) ListByEndpoint(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return nil, apiErr
+	if err != nil {
+		return nil, err
 	}
 	return ret, nil
 }
@@ -172,8 +172,8 @@ func (messageAttempt *MessageAttempt) ListByMsg(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
+	var err error
 	if o != nil {
-		var err error
 		SerializeParamToMap("limit", o.Limit, queryMap, &err)
 		SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
 		SerializeParamToMap("status", o.Status, queryMap, &err)
@@ -189,9 +189,9 @@ func (messageAttempt *MessageAttempt) ListByMsg(
 			return nil, err
 		}
 	}
-	ret, apiErr := executeRequest[models.ListResponseMessageAttemptOut](
+	ret, err := executeRequest[models.ListResponseMessageAttemptOut](
 		ctx,
-		messageAttempt._client,
+		messageAttempt.client,
 		"GET",
 		"/api/v1/app/{app_id}/attempt/msg/{msg_id}",
 		pathMap,
@@ -199,8 +199,8 @@ func (messageAttempt *MessageAttempt) ListByMsg(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return nil, apiErr
+	if err != nil {
+		return nil, err
 	}
 	return ret, nil
 }
@@ -227,8 +227,8 @@ func (messageAttempt *MessageAttempt) ListAttemptedMessages(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
+	var err error
 	if o != nil {
-		var err error
 		SerializeParamToMap("limit", o.Limit, queryMap, &err)
 		SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
 		SerializeParamToMap("channel", o.Channel, queryMap, &err)
@@ -242,9 +242,9 @@ func (messageAttempt *MessageAttempt) ListAttemptedMessages(
 			return nil, err
 		}
 	}
-	ret, apiErr := executeRequest[models.ListResponseEndpointMessageOut](
+	ret, err := executeRequest[models.ListResponseEndpointMessageOut](
 		ctx,
-		messageAttempt._client,
+		messageAttempt.client,
 		"GET",
 		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/msg",
 		pathMap,
@@ -252,8 +252,8 @@ func (messageAttempt *MessageAttempt) ListAttemptedMessages(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return nil, apiErr
+	if err != nil {
+		return nil, err
 	}
 	return ret, nil
 }
@@ -274,9 +274,9 @@ func (messageAttempt *MessageAttempt) Get(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
-	ret, apiErr := executeRequest[models.MessageAttemptOut](
+	ret, err := executeRequest[models.MessageAttemptOut](
 		ctx,
-		messageAttempt._client,
+		messageAttempt.client,
 		"GET",
 		"/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}",
 		pathMap,
@@ -284,8 +284,8 @@ func (messageAttempt *MessageAttempt) Get(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return nil, apiErr
+	if err != nil {
+		return nil, err
 	}
 	return ret, nil
 }
@@ -309,9 +309,9 @@ func (messageAttempt *MessageAttempt) ExpungeContent(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
-	_, apiErr := executeRequest[any](
+	_, err := executeRequest[any](
 		ctx,
-		messageAttempt._client,
+		messageAttempt.client,
 		"DELETE",
 		"/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/content",
 		pathMap,
@@ -319,8 +319,8 @@ func (messageAttempt *MessageAttempt) ExpungeContent(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return apiErr
+	if err != nil {
+		return err
 	}
 	return nil
 }
@@ -343,17 +343,17 @@ func (messageAttempt *MessageAttempt) ListAttemptedDestinations(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
+	var err error
 	if o != nil {
-		var err error
 		SerializeParamToMap("limit", o.Limit, queryMap, &err)
 		SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	ret, apiErr := executeRequest[models.ListResponseMessageEndpointOut](
+	ret, err := executeRequest[models.ListResponseMessageEndpointOut](
 		ctx,
-		messageAttempt._client,
+		messageAttempt.client,
 		"GET",
 		"/api/v1/app/{app_id}/msg/{msg_id}/endpoint",
 		pathMap,
@@ -361,8 +361,8 @@ func (messageAttempt *MessageAttempt) ListAttemptedDestinations(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return nil, apiErr
+	if err != nil {
+		return nil, err
 	}
 	return ret, nil
 }
@@ -384,16 +384,16 @@ func (messageAttempt *MessageAttempt) Resend(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
+	var err error
 	if o != nil {
-		var err error
 		SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return err
 		}
 	}
-	_, apiErr := executeRequest[any](
+	_, err = executeRequest[any](
 		ctx,
-		messageAttempt._client,
+		messageAttempt.client,
 		"POST",
 		"/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/resend",
 		pathMap,
@@ -401,8 +401,8 @@ func (messageAttempt *MessageAttempt) Resend(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return apiErr
+	if err != nil {
+		return err
 	}
 	return nil
 }

@@ -10,7 +10,7 @@ import (
 )
 
 type Integration struct {
-	_client *SvixHttpClient
+	client *SvixHttpClient
 }
 
 type IntegrationListOptions struct {
@@ -44,8 +44,8 @@ func (integration *Integration) List(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
+	var err error
 	if o != nil {
-		var err error
 		SerializeParamToMap("limit", o.Limit, queryMap, &err)
 		SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
 		SerializeParamToMap("order", o.Order, queryMap, &err)
@@ -53,9 +53,9 @@ func (integration *Integration) List(
 			return nil, err
 		}
 	}
-	ret, apiErr := executeRequest[models.ListResponseIntegrationOut](
+	ret, err := executeRequest[models.ListResponseIntegrationOut](
 		ctx,
-		integration._client,
+		integration.client,
 		"GET",
 		"/api/v1/app/{app_id}/integration",
 		pathMap,
@@ -63,8 +63,8 @@ func (integration *Integration) List(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return nil, apiErr
+	if err != nil {
+		return nil, err
 	}
 	return ret, nil
 }
@@ -86,20 +86,20 @@ func (integration *Integration) Create(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
+	var err error
 	if o != nil {
-		var err error
 		SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	jsonBody, err := json.Marshal(integrationIn)
+	jsonBody, err = json.Marshal(integrationIn)
 	if err != nil {
 		return nil, err
 	}
-	ret, apiErr := executeRequest[models.IntegrationOut](
+	ret, err := executeRequest[models.IntegrationOut](
 		ctx,
-		integration._client,
+		integration.client,
 		"POST",
 		"/api/v1/app/{app_id}/integration",
 		pathMap,
@@ -107,8 +107,8 @@ func (integration *Integration) Create(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return nil, apiErr
+	if err != nil {
+		return nil, err
 	}
 	return ret, nil
 }
@@ -127,9 +127,9 @@ func (integration *Integration) Get(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
-	ret, apiErr := executeRequest[models.IntegrationOut](
+	ret, err := executeRequest[models.IntegrationOut](
 		ctx,
-		integration._client,
+		integration.client,
 		"GET",
 		"/api/v1/app/{app_id}/integration/{integ_id}",
 		pathMap,
@@ -137,8 +137,8 @@ func (integration *Integration) Get(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return nil, apiErr
+	if err != nil {
+		return nil, err
 	}
 	return ret, nil
 }
@@ -165,9 +165,9 @@ func (integration *Integration) Update(
 	if err != nil {
 		return nil, err
 	}
-	ret, apiErr := executeRequest[models.IntegrationOut](
+	ret, err := executeRequest[models.IntegrationOut](
 		ctx,
-		integration._client,
+		integration.client,
 		"PUT",
 		"/api/v1/app/{app_id}/integration/{integ_id}",
 		pathMap,
@@ -175,8 +175,8 @@ func (integration *Integration) Update(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return nil, apiErr
+	if err != nil {
+		return nil, err
 	}
 	return ret, nil
 }
@@ -195,9 +195,9 @@ func (integration *Integration) Delete(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
-	_, apiErr := executeRequest[any](
+	_, err := executeRequest[any](
 		ctx,
-		integration._client,
+		integration.client,
 		"DELETE",
 		"/api/v1/app/{app_id}/integration/{integ_id}",
 		pathMap,
@@ -205,8 +205,8 @@ func (integration *Integration) Delete(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return apiErr
+	if err != nil {
+		return err
 	}
 	return nil
 }
@@ -227,9 +227,9 @@ func (integration *Integration) GetKey(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
-	ret, apiErr := executeRequest[models.IntegrationKeyOut](
+	ret, err := executeRequest[models.IntegrationKeyOut](
 		ctx,
-		integration._client,
+		integration.client,
 		"GET",
 		"/api/v1/app/{app_id}/integration/{integ_id}/key",
 		pathMap,
@@ -237,8 +237,8 @@ func (integration *Integration) GetKey(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return nil, apiErr
+	if err != nil {
+		return nil, err
 	}
 	return ret, nil
 }
@@ -258,16 +258,16 @@ func (integration *Integration) RotateKey(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
+	var err error
 	if o != nil {
-		var err error
 		SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	ret, apiErr := executeRequest[models.IntegrationKeyOut](
+	ret, err := executeRequest[models.IntegrationKeyOut](
 		ctx,
-		integration._client,
+		integration.client,
 		"POST",
 		"/api/v1/app/{app_id}/integration/{integ_id}/key/rotate",
 		pathMap,
@@ -275,8 +275,8 @@ func (integration *Integration) RotateKey(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return nil, apiErr
+	if err != nil {
+		return nil, err
 	}
 	return ret, nil
 }

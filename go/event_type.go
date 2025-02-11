@@ -10,7 +10,7 @@ import (
 )
 
 type EventType struct {
-	_client *SvixHttpClient
+	client *SvixHttpClient
 }
 
 type EventTypeListOptions struct {
@@ -50,8 +50,8 @@ func (eventType *EventType) List(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
+	var err error
 	if o != nil {
-		var err error
 		SerializeParamToMap("limit", o.Limit, queryMap, &err)
 		SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
 		SerializeParamToMap("order", o.Order, queryMap, &err)
@@ -61,9 +61,9 @@ func (eventType *EventType) List(
 			return nil, err
 		}
 	}
-	ret, apiErr := executeRequest[models.ListResponseEventTypeOut](
+	ret, err := executeRequest[models.ListResponseEventTypeOut](
 		ctx,
-		eventType._client,
+		eventType.client,
 		"GET",
 		"/api/v1/event-type",
 		pathMap,
@@ -71,8 +71,8 @@ func (eventType *EventType) List(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return nil, apiErr
+	if err != nil {
+		return nil, err
 	}
 	return ret, nil
 }
@@ -95,20 +95,20 @@ func (eventType *EventType) Create(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
+	var err error
 	if o != nil {
-		var err error
 		SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	jsonBody, err := json.Marshal(eventTypeIn)
+	jsonBody, err = json.Marshal(eventTypeIn)
 	if err != nil {
 		return nil, err
 	}
-	ret, apiErr := executeRequest[models.EventTypeOut](
+	ret, err := executeRequest[models.EventTypeOut](
 		ctx,
-		eventType._client,
+		eventType.client,
 		"POST",
 		"/api/v1/event-type",
 		pathMap,
@@ -116,8 +116,8 @@ func (eventType *EventType) Create(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return nil, apiErr
+	if err != nil {
+		return nil, err
 	}
 	return ret, nil
 }
@@ -140,20 +140,20 @@ func (eventType *EventType) ImportOpenapi(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
+	var err error
 	if o != nil {
-		var err error
 		SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	jsonBody, err := json.Marshal(eventTypeImportOpenApiIn)
+	jsonBody, err = json.Marshal(eventTypeImportOpenApiIn)
 	if err != nil {
 		return nil, err
 	}
-	ret, apiErr := executeRequest[models.EventTypeImportOpenApiOut](
+	ret, err := executeRequest[models.EventTypeImportOpenApiOut](
 		ctx,
-		eventType._client,
+		eventType.client,
 		"POST",
 		"/api/v1/event-type/import/openapi",
 		pathMap,
@@ -161,8 +161,8 @@ func (eventType *EventType) ImportOpenapi(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return nil, apiErr
+	if err != nil {
+		return nil, err
 	}
 	return ret, nil
 }
@@ -179,9 +179,9 @@ func (eventType *EventType) Get(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
-	ret, apiErr := executeRequest[models.EventTypeOut](
+	ret, err := executeRequest[models.EventTypeOut](
 		ctx,
-		eventType._client,
+		eventType.client,
 		"GET",
 		"/api/v1/event-type/{event_type_name}",
 		pathMap,
@@ -189,8 +189,8 @@ func (eventType *EventType) Get(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return nil, apiErr
+	if err != nil {
+		return nil, err
 	}
 	return ret, nil
 }
@@ -215,9 +215,9 @@ func (eventType *EventType) Update(
 	if err != nil {
 		return nil, err
 	}
-	ret, apiErr := executeRequest[models.EventTypeOut](
+	ret, err := executeRequest[models.EventTypeOut](
 		ctx,
-		eventType._client,
+		eventType.client,
 		"PUT",
 		"/api/v1/event-type/{event_type_name}",
 		pathMap,
@@ -225,8 +225,8 @@ func (eventType *EventType) Update(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return nil, apiErr
+	if err != nil {
+		return nil, err
 	}
 	return ret, nil
 }
@@ -249,16 +249,16 @@ func (eventType *EventType) Delete(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
+	var err error
 	if o != nil {
-		var err error
 		SerializeParamToMap("expunge", o.Expunge, queryMap, &err)
 		if err != nil {
 			return err
 		}
 	}
-	_, apiErr := executeRequest[any](
+	_, err = executeRequest[any](
 		ctx,
-		eventType._client,
+		eventType.client,
 		"DELETE",
 		"/api/v1/event-type/{event_type_name}",
 		pathMap,
@@ -266,8 +266,8 @@ func (eventType *EventType) Delete(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return apiErr
+	if err != nil {
+		return err
 	}
 	return nil
 }
@@ -292,9 +292,9 @@ func (eventType *EventType) Patch(
 	if err != nil {
 		return nil, err
 	}
-	ret, apiErr := executeRequest[models.EventTypeOut](
+	ret, err := executeRequest[models.EventTypeOut](
 		ctx,
-		eventType._client,
+		eventType.client,
 		"PATCH",
 		"/api/v1/event-type/{event_type_name}",
 		pathMap,
@@ -302,8 +302,8 @@ func (eventType *EventType) Patch(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return nil, apiErr
+	if err != nil {
+		return nil, err
 	}
 	return ret, nil
 }

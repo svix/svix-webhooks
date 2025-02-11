@@ -10,7 +10,7 @@ import (
 )
 
 type Authentication struct {
-	_client *SvixHttpClient
+	client *SvixHttpClient
 }
 
 type AuthenticationAppPortalAccessOptions struct {
@@ -46,20 +46,20 @@ func (authentication *Authentication) AppPortalAccess(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
+	var err error
 	if o != nil {
-		var err error
 		SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	jsonBody, err := json.Marshal(appPortalAccessIn)
+	jsonBody, err = json.Marshal(appPortalAccessIn)
 	if err != nil {
 		return nil, err
 	}
-	ret, apiErr := executeRequest[models.AppPortalAccessOut](
+	ret, err := executeRequest[models.AppPortalAccessOut](
 		ctx,
-		authentication._client,
+		authentication.client,
 		"POST",
 		"/api/v1/auth/app-portal-access/{app_id}",
 		pathMap,
@@ -67,8 +67,8 @@ func (authentication *Authentication) AppPortalAccess(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return nil, apiErr
+	if err != nil {
+		return nil, err
 	}
 	return ret, nil
 }
@@ -90,20 +90,20 @@ func (authentication *Authentication) ExpireAll(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
+	var err error
 	if o != nil {
-		var err error
 		SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return err
 		}
 	}
-	jsonBody, err := json.Marshal(applicationTokenExpireIn)
+	jsonBody, err = json.Marshal(applicationTokenExpireIn)
 	if err != nil {
 		return err
 	}
-	_, apiErr := executeRequest[any](
+	_, err = executeRequest[any](
 		ctx,
-		authentication._client,
+		authentication.client,
 		"POST",
 		"/api/v1/auth/app/{app_id}/expire-all",
 		pathMap,
@@ -111,8 +111,8 @@ func (authentication *Authentication) ExpireAll(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return apiErr
+	if err != nil {
+		return err
 	}
 	return nil
 }
@@ -132,16 +132,16 @@ func (authentication *Authentication) DashboardAccess(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
+	var err error
 	if o != nil {
-		var err error
 		SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	ret, apiErr := executeRequest[models.DashboardAccessOut](
+	ret, err := executeRequest[models.DashboardAccessOut](
 		ctx,
-		authentication._client,
+		authentication.client,
 		"POST",
 		"/api/v1/auth/dashboard-access/{app_id}",
 		pathMap,
@@ -149,8 +149,8 @@ func (authentication *Authentication) DashboardAccess(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return nil, apiErr
+	if err != nil {
+		return nil, err
 	}
 	return ret, nil
 }
@@ -167,16 +167,16 @@ func (authentication *Authentication) Logout(
 	headerMap := map[string]string{}
 	var jsonBody []byte
 
+	var err error
 	if o != nil {
-		var err error
 		SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return err
 		}
 	}
-	_, apiErr := executeRequest[any](
+	_, err = executeRequest[any](
 		ctx,
-		authentication._client,
+		authentication.client,
 		"POST",
 		"/api/v1/auth/logout",
 		pathMap,
@@ -184,8 +184,8 @@ func (authentication *Authentication) Logout(
 		headerMap,
 		jsonBody,
 	)
-	if apiErr != nil {
-		return apiErr
+	if err != nil {
+		return err
 	}
 	return nil
 }
