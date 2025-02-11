@@ -4,14 +4,19 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"math/rand/v2"
 	"net/http"
 	"net/url"
 	"os"
+	"reflect"
+	"sort"
 	"strconv"
+	"strings"
 	"testing"
 	"time"
 
+	"github.com/jarcoal/httpmock"
 	svix "github.com/svix/svix-webhooks/go"
 	"github.com/svix/svix-webhooks/go/models"
 	"github.com/svix/svix-webhooks/go/utils"
@@ -433,7 +438,7 @@ func TestUTCTimeDeserialization(t *testing.T) {
 	}
 }
 
-func TestNullableAgainstServer(t *testing.T) {
+func TestApplicationPatchNullableAgainstServer(t *testing.T) {
 	ctx := context.Background()
 	client := getTestClient(t)
 	origUid := strconv.FormatUint(rand.Uint64(), 10)
@@ -487,4 +492,107 @@ func TestNullableAgainstServer(t *testing.T) {
 	if *patchRes3.Uid != newUid {
 		t.Errorf("Unexpected Uid %v", patchRes3)
 	}
+}
+
+func TestEndpointPatchNullableAgainstServer(t *testing.T) {
+	ctx := context.Background()
+	client := getTestClient(t)
+	app, err := client.Application.Create(ctx, models.ApplicationIn{Name: "test app", Metadata: &map[string]string{"key1": "old val1", "key3": "untouched"}}, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	endp, err := client.Endpoint.Create(ctx, app.Id, models.EndpointIn{
+		Url: "https://play.svix.com",
+	}, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if endp.Channels != nil {
+		t.Errorf("Unexpected Channels %v", endp.Channels)
+	}
+
+	// Patching channels should send the list to the server
+	patch1 := models.EndpointPatch{
+		Channels: utils.NewNullable([]string{"non-sorted-text", "ch2", "ch7"}),
+	}
+	endp2, err := client.Endpoint.Patch(ctx, app.Id, endp.Id, patch1)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	sort.Slice(endp2.Channels, func(i, j int) bool { return strings.ToLower(endp2.Channels[i]) < strings.ToLower(endp2.Channels[j]) })
+	if !reflect.DeepEqual(endp2.Channels, []string{"ch2", "ch7", "non-sorted-text"}) {
+		t.Errorf("Unexpected  Channels %v", endp2.Channels)
+	}
+
+	// Patching channels with nil should send a null to the server
+	patch2 := models.EndpointPatch{
+		Channels: utils.NewNullable[[]string](nil),
+	}
+	endp3, err := client.Endpoint.Patch(ctx, app.Id, endp.Id, patch2)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// an empty slice becomes nil
+	if endp3.Channels != nil {
+		t.Errorf("Unexpected Channels %v", endp3.Channels)
+	}
+}
+
+func TestEndpointPatchSerialization(t *testing.T) {
+	ctx := context.Background()
+	svx := newMockClient()
+	httpmock.Activate()
+	defer httpmock.DeactivateAndReset()
+
+	httpmock.RegisterResponder("PATCH", "http://testapi.test/api/v1/app/app1/endpoint/endp1",
+		func(r *http.Request) (*http.Response, error) {
+			defer r.Body.Close()
+			body, err := io.ReadAll(r.Body)
+			if err != nil {
+				t.Error(err)
+			}
+			bodyStr := string(body)
+			if bodyStr != `{"channels":null}` {
+				t.Errorf("Unexpected body %s", bodyStr)
+			}
+			return httpmock.NewStringResponse(200, ""), nil
+		},
+	)
+	patch := models.EndpointPatch{
+		Channels: utils.NewNullable[[]string](nil),
+	}
+
+	_, err := svx.Endpoint.Patch(ctx, "app1", "endp1", patch)
+	assertExpectedError(t, err, "unexpected end of JSON input")
+}
+
+func TestEndpointPatchUnsetNotSentToServer(t *testing.T) {
+	ctx := context.Background()
+	svx := newMockClient()
+	httpmock.Activate()
+	defer httpmock.DeactivateAndReset()
+
+	httpmock.RegisterResponder("PATCH", "http://testapi.test/api/v1/app/app1/endpoint/endp1",
+		func(r *http.Request) (*http.Response, error) {
+			defer r.Body.Close()
+			body, err := io.ReadAll(r.Body)
+			if err != nil {
+				t.Error(err)
+			}
+			bodyStr := string(body)
+			if bodyStr != `{"uid":"here so a body is sent"}` {
+				t.Errorf("Unexpected body %s", bodyStr)
+			}
+			return httpmock.NewStringResponse(200, ""), nil
+		},
+	)
+	patch := models.EndpointPatch{
+		Uid: utils.NewNullable("here so a body is sent"),
+		// this will not be sent to server
+		Channels: utils.NewUnsetNullable[[]string](),
+	}
+
+	_, err := svx.Endpoint.Patch(ctx, "app1", "endp1", patch)
+	assertExpectedError(t, err, "unexpected end of JSON input")
 }
