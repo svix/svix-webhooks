@@ -24,7 +24,7 @@ const (
 	TRANSFORMATIONTEMPLATEKIND_ZAPIER      TransformationTemplateKind = "Zapier"
 )
 
-var AllowedTransformationTemplateKind = []TransformationTemplateKind{
+var allowedTransformationTemplateKind = []TransformationTemplateKind{
 	"Custom",
 	"CustomerIO",
 	"Discord",
@@ -46,7 +46,7 @@ func (v *TransformationTemplateKind) UnmarshalJSON(src []byte) error {
 		return err
 	}
 	enumVal := TransformationTemplateKind(value)
-	if slices.Contains(AllowedTransformationTemplateKind, enumVal) {
+	if slices.Contains(allowedTransformationTemplateKind, enumVal) {
 		*v = enumVal
 		return nil
 	}

@@ -15,7 +15,7 @@ const (
 	BACKGROUNDTASKSTATUS_FAILED   BackgroundTaskStatus = "failed"
 )
 
-var AllowedBackgroundTaskStatus = []BackgroundTaskStatus{
+var allowedBackgroundTaskStatus = []BackgroundTaskStatus{
 	"running",
 	"finished",
 	"failed",
@@ -28,7 +28,7 @@ func (v *BackgroundTaskStatus) UnmarshalJSON(src []byte) error {
 		return err
 	}
 	enumVal := BackgroundTaskStatus(value)
-	if slices.Contains(AllowedBackgroundTaskStatus, enumVal) {
+	if slices.Contains(allowedBackgroundTaskStatus, enumVal) {
 		*v = enumVal
 		return nil
 	}

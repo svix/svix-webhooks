@@ -21,7 +21,7 @@ const (
 	MESSAGESTATUS_SENDING MessageStatus = 3
 )
 
-var AllowedMessageStatus = []MessageStatus{
+var allowedMessageStatus = []MessageStatus{
 	0,
 	1,
 	2,
@@ -35,7 +35,7 @@ func (v *MessageStatus) UnmarshalJSON(src []byte) error {
 		return err
 	}
 	enumVal := MessageStatus(value)
-	if slices.Contains(AllowedMessageStatus, enumVal) {
+	if slices.Contains(allowedMessageStatus, enumVal) {
 		*v = enumVal
 		return nil
 	}

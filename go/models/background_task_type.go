@@ -18,7 +18,7 @@ const (
 	BACKGROUNDTASKTYPE_EVENT_TYPE_AGGREGATE BackgroundTaskType = "event-type.aggregate"
 )
 
-var AllowedBackgroundTaskType = []BackgroundTaskType{
+var allowedBackgroundTaskType = []BackgroundTaskType{
 	"endpoint.replay",
 	"endpoint.recover",
 	"application.stats",
@@ -34,7 +34,7 @@ func (v *BackgroundTaskType) UnmarshalJSON(src []byte) error {
 		return err
 	}
 	enumVal := BackgroundTaskType(value)
-	if slices.Contains(AllowedBackgroundTaskType, enumVal) {
+	if slices.Contains(allowedBackgroundTaskType, enumVal) {
 		*v = enumVal
 		return nil
 	}

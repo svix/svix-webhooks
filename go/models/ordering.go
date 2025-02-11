@@ -15,7 +15,7 @@ const (
 	ORDERING_DESCENDING Ordering = "descending"
 )
 
-var AllowedOrdering = []Ordering{
+var allowedOrdering = []Ordering{
 	"ascending",
 	"descending",
 }
@@ -27,7 +27,7 @@ func (v *Ordering) UnmarshalJSON(src []byte) error {
 		return err
 	}
 	enumVal := Ordering(value)
-	if slices.Contains(AllowedOrdering, enumVal) {
+	if slices.Contains(allowedOrdering, enumVal) {
 		*v = enumVal
 		return nil
 	}

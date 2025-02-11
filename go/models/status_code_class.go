@@ -25,7 +25,7 @@ const (
 	STATUSCODECLASS_CODE5XX   StatusCodeClass = 500
 )
 
-var AllowedStatusCodeClass = []StatusCodeClass{
+var allowedStatusCodeClass = []StatusCodeClass{
 	0,
 	100,
 	200,
@@ -41,7 +41,7 @@ func (v *StatusCodeClass) UnmarshalJSON(src []byte) error {
 		return err
 	}
 	enumVal := StatusCodeClass(value)
-	if slices.Contains(AllowedStatusCodeClass, enumVal) {
+	if slices.Contains(allowedStatusCodeClass, enumVal) {
 		*v = enumVal
 		return nil
 	}

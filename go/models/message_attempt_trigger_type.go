@@ -17,7 +17,7 @@ const (
 	MESSAGEATTEMPTTRIGGERTYPE_MANUAL    MessageAttemptTriggerType = 1
 )
 
-var AllowedMessageAttemptTriggerType = []MessageAttemptTriggerType{
+var allowedMessageAttemptTriggerType = []MessageAttemptTriggerType{
 	0,
 	1,
 }
@@ -29,7 +29,7 @@ func (v *MessageAttemptTriggerType) UnmarshalJSON(src []byte) error {
 		return err
 	}
 	enumVal := MessageAttemptTriggerType(value)
-	if slices.Contains(AllowedMessageAttemptTriggerType, enumVal) {
+	if slices.Contains(allowedMessageAttemptTriggerType, enumVal) {
 		*v = enumVal
 		return nil
 	}
