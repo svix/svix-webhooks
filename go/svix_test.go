@@ -22,6 +22,31 @@ import (
 	"github.com/svix/svix-webhooks/go/utils"
 )
 
+var endpointOurStr = `
+{
+  "id": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+  "metadata": {
+    "property1": "string",
+    "property2": "string"
+  },
+  "description": "string",
+  "rateLimit": 0,
+  "uid": "unique-identifier",
+  "url": "https://example.com/webhook/",
+  "version": 1,
+  "disabled": false,
+  "filterTypes": [
+    "user.signup",
+    "user.deleted"
+  ],
+  "channels": [
+    "project_123",
+    "group_2"
+  ],
+  "createdAt": "2019-08-24T14:15:22Z",
+  "updatedAt": "2019-08-24T14:15:22Z"
+}`
+
 // Builds an API client for testing against an arbitrary API server with an arbitrary token.
 //
 // The connection details are pulled from the environment, e.g. `SVIX_TOKEN` and `SVIX_SERVER_URL`.
@@ -556,7 +581,7 @@ func TestEndpointPatchSerialization(t *testing.T) {
 			if bodyStr != `{"channels":null}` {
 				t.Errorf("Unexpected body %s", bodyStr)
 			}
-			return httpmock.NewStringResponse(200, ""), nil
+			return httpmock.NewStringResponse(200, endpointOurStr), nil
 		},
 	)
 	patch := models.EndpointPatch{
@@ -564,7 +589,9 @@ func TestEndpointPatchSerialization(t *testing.T) {
 	}
 
 	_, err := svx.Endpoint.Patch(ctx, "app1", "endp1", patch)
-	assertExpectedError(t, err, "unexpected end of JSON input")
+	if err != nil {
+		t.Error(err)
+	}
 }
 
 func TestEndpointPatchUnsetNotSentToServer(t *testing.T) {
@@ -584,7 +611,7 @@ func TestEndpointPatchUnsetNotSentToServer(t *testing.T) {
 			if bodyStr != `{"uid":"here so a body is sent"}` {
 				t.Errorf("Unexpected body %s", bodyStr)
 			}
-			return httpmock.NewStringResponse(200, ""), nil
+			return httpmock.NewStringResponse(200, endpointOurStr), nil
 		},
 	)
 	patch := models.EndpointPatch{
@@ -594,5 +621,7 @@ func TestEndpointPatchUnsetNotSentToServer(t *testing.T) {
 	}
 
 	_, err := svx.Endpoint.Patch(ctx, "app1", "endp1", patch)
-	assertExpectedError(t, err, "unexpected end of JSON input")
+	if err != nil {
+		t.Error(err)
+	}
 }

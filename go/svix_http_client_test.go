@@ -14,6 +14,52 @@ import (
 	"github.com/svix/svix-webhooks/go/models"
 )
 
+var msgListOut = `{
+  "data": [
+    {
+      "eventId": "unique-identifier",
+      "eventType": "user.signup",
+      "payload": {
+        "email": "test@example.com",
+        "type": "user.created",
+        "username": "test_user"
+      },
+      "channels": [
+        "project_123",
+        "group_2"
+      ],
+      "id": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+      "timestamp": "2019-08-24T14:15:22Z",
+      "tags": [
+        "project_1337"
+      ]
+    }
+  ],
+  "iterator": "iterator",
+  "prevIterator": "-iterator",
+  "done": true
+}`
+
+var appListOut = `{
+  "data": [
+    {
+      "uid": "unique-identifier",
+      "name": "My first application",
+      "rateLimit": 0,
+      "id": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+      "createdAt": "2019-08-24T14:15:22Z",
+      "updatedAt": "2019-08-24T14:15:22Z",
+      "metadata": {
+        "property1": "string",
+        "property2": "string"
+      }
+    }
+  ],
+  "iterator": "iterator",
+  "prevIterator": "-iterator",
+  "done": true
+}`
+
 func newMockClient() svix.Svix {
 	url, err := url.Parse("http://testapi.test")
 	if err != nil {
@@ -57,7 +103,7 @@ func TestReqIdHeaderIsSetCorrectly(t *testing.T) {
 		},
 	)
 
-	_, err := svx.Application.List(context.TODO(), nil)
+	_, err := svx.Application.List(context.Background(), nil)
 	assertExpectedError(t, err, "status code 500")
 
 	if httpmock.GetTotalCallCount() != 4 {
@@ -82,7 +128,7 @@ func TestRetryCountHeadersIsSetCorrectly(t *testing.T) {
 		},
 	)
 
-	_, err := svx.Application.List(context.TODO(), nil)
+	_, err := svx.Application.List(context.Background(), nil)
 	assertExpectedError(t, err, "status code 500")
 
 	if httpmock.GetTotalCallCount() != 4 {
@@ -110,7 +156,7 @@ func TestOptionsSerialization(t *testing.T) {
 				t.Errorf("Unexpected ApplicationListOptions serialization, got: %v", r.URL.RawQuery)
 			}
 
-			return httpmock.NewStringResponse(200, ""), nil
+			return httpmock.NewStringResponse(200, appListOut), nil
 		},
 	)
 	limit := uint64(12)
@@ -121,9 +167,10 @@ func TestOptionsSerialization(t *testing.T) {
 		Order:    &order,
 		Iterator: &iter,
 	}
-	_, err := svx.Application.List(context.TODO(), &listOpts)
-	assertExpectedError(t, err, "unexpected end of JSON input")
-
+	_, err := svx.Application.List(context.Background(), &listOpts)
+	if err != nil {
+		t.Error(err)
+	}
 }
 
 func TestQueryParamListSerialization(t *testing.T) {
@@ -137,12 +184,14 @@ func TestQueryParamListSerialization(t *testing.T) {
 				t.Errorf("Unexpected MessageListOptions serialization, got: %v", r.URL.RawQuery)
 			}
 
-			return httpmock.NewStringResponse(200, ""), nil
+			return httpmock.NewStringResponse(200, msgListOut), nil
 		},
 	)
 	listOpts := svix.MessageListOptions{
 		EventTypes: &[]string{"asd13", "123asd"},
 	}
-	_, err := svx.Message.List(context.TODO(), "random_app_id", &listOpts)
-	assertExpectedError(t, err, "unexpected end of JSON input")
+	_, err := svx.Message.List(context.Background(), "random_app_id", &listOpts)
+	if err != nil {
+		t.Error(err)
+	}
 }
