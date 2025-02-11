@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"os"
 	"testing"
+	"time"
 
 	svix "github.com/svix/svix-webhooks/go"
 	"github.com/svix/svix-webhooks/go/models"
@@ -398,4 +399,36 @@ func TestModelDeserialization(t *testing.T) {
 	if len(ep_out.Channels) != 0 {
 		t.Error("unexpected value for channels", ep_out.Channels)
 	}
+}
+
+func TestUTCTimeSerialization(t *testing.T) {
+	timeSince := time.Date(2025, 2, 11, 9, 12, 42, 514420438, time.UTC)
+	timeUntil := time.Date(1980, 12, 30, 18, 12, 42, 438420514, time.UTC)
+
+	appUsage := models.AppUsageStatsIn{
+		Since: timeSince,
+		Until: timeUntil,
+	}
+	assertMarshalEq(appUsage, `{"since":"2025-02-11T09:12:42.514420438Z","until":"1980-12-30T18:12:42.438420514Z"}`, t)
+}
+
+func TestUTCTimeDeserialization(t *testing.T) {
+	timeSince := time.Date(2025, 2, 11, 9, 12, 42, 514420438, time.UTC)
+	timeUntil := time.Date(1980, 12, 30, 18, 12, 42, 438420514, time.UTC)
+
+	appUsageJson := `{"since":"2025-02-11T09:12:42.514420438Z","until":"1980-12-30T18:12:42.438420514Z"}`
+	var appUsage models.AppUsageStatsIn
+	err := json.Unmarshal([]byte(appUsageJson), &appUsage)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if appUsage.Since != timeSince {
+		t.Error("unexpected value for since", appUsage.Since)
+	}
+	if appUsage.Until != timeUntil {
+		t.Error("unexpected value for until", appUsage.Until)
+	}
+
+	// assertMarshalEq(appUsage, , t)
 }
