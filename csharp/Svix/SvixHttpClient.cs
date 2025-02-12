@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace Svix
 {
-    public class SvixHttpClient(string token, SvixOptions options)
+    public class SvixHttpClient(string token, SvixOptions options, string userAgent)
     {
         readonly SvixOptions _options = options;
         readonly HttpClient _httpClient = new();
@@ -174,9 +174,8 @@ namespace Svix
             request.Headers.Add("Authorization", $"Bearer {_token}");
             request.Headers.Add("svix-req-id", req_id.ToString());
 
-
             // For some reason our user-agent does not pass validation
-            request.Headers.TryAddWithoutValidation("User-Agent", GetUserAgent());
+            request.Headers.TryAddWithoutValidation("User-Agent", userAgent);
             if (content != null)
             {
                 string json_body;
@@ -196,35 +195,6 @@ namespace Svix
                 request.Content = encoded_content;
             }
             return request;
-        }
-
-        public string GetUserAgent()
-        {
-            var versionQuad = GetType().Assembly.GetName().Version;
-
-            if (versionQuad != null)
-            {
-                string versionQuadStr = versionQuad.ToString();
-                string version;
-                // C# adds an extra trailing zero so the version looks like this "1.56.0.0"
-                // remove trailing zero for consistency with other libs
-                if (versionQuadStr.EndsWith(".0") && versionQuadStr.Split('.').Length == 4)
-                {
-                    // Remove the last ".0"
-                    version = versionQuadStr[..^2];
-                }
-                else
-                {
-                    version = versionQuadStr;
-                }
-
-                return $"svix-libs/{version}/csharp";
-            }
-            else
-            {
-                // If for some reason we are unable to access the version, don't panic with a nullptr deref
-                return "svix-libs/missing-version/csharp";
-            }
         }
     }
 
