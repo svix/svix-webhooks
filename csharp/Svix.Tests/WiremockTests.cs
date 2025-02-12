@@ -149,6 +149,22 @@ namespace Svix.Tests
         }
 
         [Fact]
+        public void UserAgentIsSent()
+        {
+            stub.Given(Request.Create().WithPath("/api/v1/app/*"))
+                .RespondWith(Response.Create().WithStatusCode(200).WithBody(applicationOutJsonStr));
+
+            client.Application.Patch("app1", new ApplicationPatch { Name = "app" });
+
+            Assert.Equal(1, stub.LogEntries.Count);
+            Assert.True(stub.LogEntries[0].RequestMessage.Headers.ContainsKey("User-Agent"));
+            Assert.StartsWith(
+                "svix-libs/",
+                stub.LogEntries[0].RequestMessage.Headers["User-Agent"][0]
+            );
+        }
+
+        [Fact]
         public void PatchRequestBodySerializesExplicitlyNullFields()
         {
             stub.Given(Request.Create().WithPath("/api/v1/app/*"))
