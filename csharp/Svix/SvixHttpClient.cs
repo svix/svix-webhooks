@@ -173,7 +173,9 @@ namespace Svix
 
             request.Headers.Add("Authorization", $"Bearer {_token}");
             request.Headers.Add("svix-req-id", req_id.ToString());
-            // For some reason "svix-libs/1.56.0/csharp" is not a valid user-agent :|
+
+
+            // For some reason our user-agent does not pass validation
             request.Headers.TryAddWithoutValidation("User-Agent", GetUserAgent());
             if (content != null)
             {
