@@ -33,14 +33,13 @@ namespace Svix
             string token,
             SvixOptions options,
             ILogger<SvixClient>? logger = null,
-            SvixHttpClient? svixHttpClient = null,
-            Application? application = null
+            SvixHttpClient? svixHttpClient = null
         )
         {
             Options = options;
             Logger = logger;
             SvixHttpClient = svixHttpClient ?? new SvixHttpClient(token, options, GetUserAgent());
-            Application = application ?? new Application(this);
+            Application = new Application(this);
             Authentication = new Authentication(this);
             Endpoint = new Endpoint(this);
             EventType = new EventType(this);
