@@ -1,6 +1,93 @@
 {
     "components": {
         "schemas": {
+            "ActiveApplicationOut": {
+                "properties": {
+                    "createdAt": {
+                        "format": "date-time",
+                        "type": "string"
+                    },
+                    "endpoints": {
+                        "items": {
+                            "$ref": "#/components/schemas/ActiveEndpointOut"
+                        },
+                        "type": "array"
+                    },
+                    "id": {
+                        "description": "The Application's ID.",
+                        "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "maxLength": 31,
+                        "minLength": 31,
+                        "pattern": "^app_[A-Za-z0-9]{27}$",
+                        "type": "string"
+                    },
+                    "name": {
+                        "example": "My first application",
+                        "type": "string"
+                    },
+                    "uid": {
+                        "description": "The Application's UID.",
+                        "example": "unique-identifier",
+                        "maxLength": 256,
+                        "minLength": 1,
+                        "nullable": true,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                        "type": "string"
+                    },
+                    "updatedAt": {
+                        "format": "date-time",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "createdAt",
+                    "endpoints",
+                    "id",
+                    "name",
+                    "updatedAt"
+                ],
+                "type": "object"
+            },
+            "ActiveEndpointOut": {
+                "properties": {
+                    "createdAt": {
+                        "format": "date-time",
+                        "type": "string"
+                    },
+                    "id": {
+                        "description": "The Endpoint's ID.",
+                        "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "maxLength": 30,
+                        "minLength": 30,
+                        "pattern": "^ep_[A-Za-z0-9]{27}$",
+                        "type": "string"
+                    },
+                    "uid": {
+                        "description": "The Endpoint's UID.",
+                        "example": "unique-identifier",
+                        "maxLength": 256,
+                        "minLength": 1,
+                        "nullable": true,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                        "type": "string"
+                    },
+                    "updatedAt": {
+                        "format": "date-time",
+                        "type": "string"
+                    },
+                    "url": {
+                        "format": "uri",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "createdAt",
+                    "id",
+                    "updatedAt",
+                    "url"
+                ],
+                "type": "object"
+            },
             "AggregateEventTypesOut": {
                 "properties": {
                     "id": {
@@ -2332,6 +2419,10 @@
                         "default": false,
                         "type": "boolean"
                     },
+                    "enableEndpointMtlsConfig": {
+                        "default": false,
+                        "type": "boolean"
+                    },
                     "enableEndpointOauthConfig": {
                         "default": false,
                         "type": "boolean"
@@ -2961,6 +3052,30 @@
                 ],
                 "type": "object"
             },
+            "ExpungAllContentsOut": {
+                "properties": {
+                    "id": {
+                        "description": "The QueueBackgroundTask's ID.",
+                        "example": "qtask_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "maxLength": 33,
+                        "minLength": 33,
+                        "pattern": "^qtask_[A-Za-z0-9]{27}$",
+                        "type": "string"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/BackgroundTaskStatus"
+                    },
+                    "task": {
+                        "$ref": "#/components/schemas/BackgroundTaskType"
+                    }
+                },
+                "required": [
+                    "id",
+                    "status",
+                    "task"
+                ],
+                "type": "object"
+            },
             "FontSizeConfig": {
                 "properties": {
                     "base": {
@@ -3227,6 +3342,35 @@
                     "sasl-ssl"
                 ],
                 "type": "string"
+            },
+            "ListResponse_ActiveApplicationOut_": {
+                "properties": {
+                    "data": {
+                        "items": {
+                            "$ref": "#/components/schemas/ActiveApplicationOut"
+                        },
+                        "type": "array"
+                    },
+                    "done": {
+                        "type": "boolean"
+                    },
+                    "iterator": {
+                        "example": "iterator",
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "prevIterator": {
+                        "example": "-iterator",
+                        "nullable": true,
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "data",
+                    "done",
+                    "iterator"
+                ],
+                "type": "object"
             },
             "ListResponse_ApplicationOut_": {
                 "properties": {
@@ -5146,30 +5290,6 @@
                     "data",
                     "done",
                     "iterator"
-                ],
-                "type": "object"
-            },
-            "PurgeContentOut": {
-                "properties": {
-                    "id": {
-                        "description": "The QueueBackgroundTask's ID.",
-                        "example": "qtask_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                        "maxLength": 33,
-                        "minLength": 33,
-                        "pattern": "^qtask_[A-Za-z0-9]{27}$",
-                        "type": "string"
-                    },
-                    "status": {
-                        "$ref": "#/components/schemas/BackgroundTaskStatus"
-                    },
-                    "task": {
-                        "$ref": "#/components/schemas/BackgroundTaskType"
-                    }
-                },
-                "required": [
-                    "id",
-                    "status",
-                    "task"
                 ],
                 "type": "object"
             },
@@ -17635,6 +17755,191 @@
                 ]
             }
         },
+        "/api/v1/app/{app_id}/msg/expunge-all-contents": {
+            "post": {
+                "description": "Purge all message content for the application.\n\nDelete all message payloads for the application.",
+                "operationId": "v1.message.expunge-all-contents",
+                "parameters": [
+                    {
+                        "description": "The Application's ID or UID.",
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The Application's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "responses": {
+                    "202": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExpungAllContentsOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Expunge all message contents",
+                "tags": [
+                    "Application"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const expungAllContentsOut = await svix.message.expungeAllContents(\"app_id\");"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const expungAllContentsOut = await svix.message.expungeAllContents(\"app_id\");"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "expung_all_contents_out = svix.message.expunge_all_contents(\"app_id\", options=...)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "expung_all_contents_out = await svix.message.expunge_all_contents(\"app_id\", options=...)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "expungAllContentsOut, err := svixClient.Message.ExpungeAllContents(ctx, \"app_id\")"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val expungAllContentsOut = svix.message.expungeAllContents(\"app_id\")"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "ExpungAllContentsOut expungAllContentsOut = svix.getMessage().expungeAllContents(\"app_id\");"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "expung_all_contents_out = svix.message.expunge_all_contents(\"app_id\")"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let expung_all_contents_out = svix.message().expunge_all_contents(\"app_id\", None).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var expungAllContentsOut = await svix.Message.ExpungeAllContentsAsync(\"app_id\");"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix message expunge-all-contents \"app_id\""
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg/expunge-all-contents' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                    }
+                ]
+            }
+        },
         "/api/v1/app/{app_id}/msg/precheck/active": {
             "post": {
                 "description": "A pre-check call for `create.message` that checks whether endpoints are actively listening to\nthis message.",
@@ -19645,136 +19950,6 @@
                     }
                 ],
                 "x-hidden": true
-            }
-        },
-        "/api/v1/app/{app_id}/purge-content": {
-            "post": {
-                "description": "Purge all message content for the application.\n\nDelete all message payloads for the application.",
-                "operationId": "v1.endpoint.purge_content",
-                "parameters": [
-                    {
-                        "description": "The Application's ID or UID.",
-                        "in": "path",
-                        "name": "app_id",
-                        "required": true,
-                        "schema": {
-                            "description": "The Application's ID or UID.",
-                            "example": "unique-identifier",
-                            "maxLength": 256,
-                            "minLength": 1,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                            "type": "string"
-                        },
-                        "style": "simple"
-                    },
-                    {
-                        "description": "The request's idempotency key",
-                        "in": "header",
-                        "name": "idempotency-key",
-                        "schema": {
-                            "type": "string"
-                        },
-                        "style": "simple"
-                    }
-                ],
-                "responses": {
-                    "202": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/PurgeContentOut"
-                                }
-                            }
-                        },
-                        "description": ""
-                    },
-                    "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Bad request"
-                    },
-                    "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Forbidden"
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Not Found"
-                    },
-                    "409": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Conflict"
-                    },
-                    "422": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        },
-                        "description": "Validation Error"
-                    },
-                    "429": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Too Many Requests"
-                    }
-                },
-                "security": [
-                    {
-                        "HTTPBearer": []
-                    }
-                ],
-                "summary": "Purge Content",
-                "tags": [
-                    "Application"
-                ],
-                "x-codeSamples": [
-                    {
-                        "label": "cURL",
-                        "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/purge-content' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
-                    }
-                ]
             }
         },
         "/api/v1/app/{app_id}/sink": {
