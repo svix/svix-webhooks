@@ -1,4 +1,4 @@
-using System.Net;
+﻿using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 using Newtonsoft.Json;
@@ -173,6 +173,8 @@ namespace Svix
 
             request.Headers.Add("Authorization", $"Bearer {_token}");
             request.Headers.Add("svix-req-id", req_id.ToString());
+            // For some reason "svix-libs/1.56.0/csharp" is not a valid user-agent :|
+            request.Headers.TryAddWithoutValidation("User-Agent", GetUserAgent());
             if (content != null)
             {
                 string json_body;
@@ -192,6 +194,35 @@ namespace Svix
                 request.Content = encoded_content;
             }
             return request;
+        }
+
+        public string GetUserAgent()
+        {
+            var versionQuad = GetType().Assembly.GetName().Version;
+
+            if (versionQuad != null)
+            {
+                string versionQuadStr = versionQuad.ToString();
+                string version;
+                // C# adds an extra trailing zero so the version looks like this "1.56.0.0"
+                // remove trailing zero for consistency with other libs
+                if (versionQuadStr.EndsWith(".0") && versionQuadStr.Split('.').Length == 4)
+                {
+                    // Remove the last ".0"
+                    version = versionQuadStr[..^2];
+                }
+                else
+                {
+                    version = versionQuadStr;
+                }
+
+                return $"svix-libs/{version}/csharp";
+            }
+            else
+            {
+                // If for some reason we are unable to access the version, don't panic with a nullptr deref
+                return "svix-libs/missing-version/csharp";
+            }
         }
     }
 
