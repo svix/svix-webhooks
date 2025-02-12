@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 using Newtonsoft.Json;
@@ -48,7 +48,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
-            uint req_id = (uint)new Random().NextInt64(0, (long)uint.MaxValue + 1);
+            byte[] randomBytes = new byte[8];
+            new Random().NextBytes(randomBytes);
+            ulong req_id = BitConverter.ToUInt64(randomBytes, 0);
+
             // In C# they don't let you send the same request twice :(
             var request = BuildRequest(
                 method,
@@ -121,7 +124,7 @@ namespace Svix
         HttpRequestMessage BuildRequest(
             HttpMethod method,
             string path,
-            uint req_id,
+            ulong req_id,
             IDictionary<string, string>? pathParams = null,
             IDictionary<string, string>? queryParams = null,
             IDictionary<string, string>? headerParams = null,
