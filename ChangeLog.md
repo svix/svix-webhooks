@@ -1,22 +1,27 @@
 # Changelog
 
-## Unreleased
+## Version 1.57.0
+This version contains a big overhaul of the client libraries, with improved typing.
+
 * Libs/Go: Add `Authentication.ExpireAll` (and `ExpireAllWithOptions`)
 * Libs/Go **(Breaking)**: Excluding specific fields on the *Patch models (`ApplicationPatch` for example), all `Nullable{Type}` removed from the models
 * Libs/Go **(Breaking)**: All `Nullable{Type}` (for example `NullableString`) are replaced with a new generic `Nullable[T]` type, the new type can be imported from `github.com/svix/svix-webhooks/go/utils`
 * Libs/Go **(Breaking)**: All custom model types are now imported from `github.com/svix/svix-webhooks/go/models` instead of `github.com/svix/svix-webhooks/go`
 * Libs/Go **(Breaking)**: All `-WithOptions` methods are now removed. Their regular counterparts now take a pointer to an Options type which can be nil when not needed. For example in `Endpoint.RecoverWithOptions` is now `Endpoint.Recover`
+
 * Libs/C# and Libs/Go **(Breaking)**: All uses of `ListOptions`/`PostOptions` are removed, and renamed to `{Resource}{Operation}Options`. For example in `Endpoint.List` you would now use `EndpointListOptions`
 * Libs/C# **(Breaking)**: All `IdempotencyKey` method parameters are removed, and are now part of `{Resource}{Operation}Options`. For example in `Message.Create`; to the use `IdempotencyKey`, simply pass it in the `MessageCreateOptions`
 * Libs/C# **(Breaking)**: The `Throw` parameter is removed from `SvixOptions`
 * Libs/C# **(Breaking)**: All redundant interfaces along with the `Svix.Abstractions` namespace are removed
 * Libs/C# **(Breaking)**: The `Svix.Model` and `Svix.Models` namespaces are now merged into a single `Svix.Models` namespace
 * Libs/C# **(Breaking)**: The `Svix.Client` namespace is removed, The `SvixClient` class can now be found in the `Svix` namespace
+
 * Libs/Python **(Breaking)**: `PostOptions` and `ListOptions` are no longer used in methods for `Authentication`,`Endpoint`,`EventType`,`Integration`,`MessageAttempt`,`Message`, `Statistics` and `OperationalWebhookEndpoint` resources. Instead each API call now has its own `{Resource}{Operation}Options`. (Both sync and async)
 * Libs/Python: In `Application` the `dashboard_access` method is deprecated in favor of `app_portal_access`. (Both sync and async)
 * Libs/Python **(Breaking)**: `EndpointStatsOptions` is renamed to `EndpointGetStatsOptions`
 * Libs/Python **(Breaking)**: `MessageAttemptListOptions` is removed in favor of call specific `{Resource}{Operation}Options`
 * Libs/Python **(Breaking)**: For `Statistics` in the `aggregate_event_types` method the `task_id` parameter is removed, Please note that previously this parameter was ignored and had no affect (Both sync and async)
+
 * Libs/Kotlin **(Breaking)**: Mark `api` field of all API resource classes as `private` (previously
   only some were private, accidentally)
 * Libs/Kotlin **(Breaking)**: Update `recover` to return `RecoverOut` (instead of nothing)
@@ -27,6 +32,7 @@
   parameters that could be set before would just get ignored
 * Libs/Kotlin: Fix the parameter names of `Endpoint.get` - `appId` and `endpointId` were swapped
 * Libs/Kotlin: Fix a bug in `EventType.list` where `options.order` was not getting honored
+
 * Libs/Rust **(Breaking)**: Add optional `EventTypeDeleteOptions` parameter to `EventType::delete`
 * Libs/Rust **(Breaking)**: Add optional `options` parameters to `Endpoint::recover`,
   `Endpoint::rotate_secret`, `Integration::rotate_key` and `MessageAttempt::resend`
@@ -37,8 +43,7 @@
 * Libs/Rust **(Breaking)**: Change `rate_limit` from `i32` to `u16` in several places
 * Libs/Rust **(Breaking)**: Remove `settings` parameter from `EnvironmentIn::new`
 * Libs/Rust **(Breaking)**: Replace `PostOptions` with operation-specific options structs
-* Libs/Rust **(Breaking)**: Remove `Period` from `BackgroundTaskType` variant names; this was
-  introduced by accident a few releases ago
+* Libs/Rust **(Breaking)**: Remove `Period` from `BackgroundTaskType` variant names; this was introduced by accident a few releases ago
 
 ## Version 1.56.0
 * Skipping versions: we had an issue with our CI that created duplicated Go
