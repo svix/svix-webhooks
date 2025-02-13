@@ -38,7 +38,9 @@ namespace Svix
         {
             Options = options;
             Logger = logger;
-            SvixHttpClient = svixHttpClient ?? new SvixHttpClient(token, options, GetUserAgent());
+            SvixHttpClient =
+                svixHttpClient
+                ?? new SvixHttpClient(token, options, $"svix-libs/{Version.version}/csharp");
             Application = new Application(this);
             Authentication = new Authentication(this);
             Endpoint = new Endpoint(this);
@@ -49,35 +51,6 @@ namespace Svix
             MessageAttempt = new MessageAttempt(this);
             Statistics = new Statistics(this);
             OperationalWebhookEndpoint = new OperationalWebhookEndpoint(this);
-        }
-
-        public string GetUserAgent()
-        {
-            var versionQuad = GetType().Assembly.GetName().Version;
-
-            if (versionQuad != null)
-            {
-                string versionQuadStr = versionQuad.ToString();
-                string version;
-                // C# adds an extra trailing zero so the version looks like this "1.56.0.0"
-                // remove trailing zero for consistency with other libs
-                if (versionQuadStr.EndsWith(".0") && versionQuadStr.Split('.').Length == 4)
-                {
-                    // Remove the last ".0"
-                    version = versionQuadStr[..^2];
-                }
-                else
-                {
-                    version = versionQuadStr;
-                }
-
-                return $"svix-libs/{version}/csharp";
-            }
-            else
-            {
-                // If for some reason we are unable to access the version, don't panic with a nullptr deref
-                return "svix-libs/missing-version/csharp";
-            }
         }
     }
 }

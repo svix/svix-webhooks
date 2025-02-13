@@ -17,6 +17,7 @@ const filesPaths = [
     "rust/Cargo.toml",
     // CSharp
     "csharp/Svix/Svix.csproj",
+    "csharp/Svix/Version.cs",
     // Go
     "go/version.go",
     // Java
