@@ -18,7 +18,7 @@ const filesPaths = [
     // CSharp
     "csharp/Svix/Svix.csproj",
     // Go
-    "go/internal/version/version.go",
+    "go/version.go",
     // Java
     "java/gradle.properties",
     "java/README.md",
