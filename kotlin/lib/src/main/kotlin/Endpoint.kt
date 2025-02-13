@@ -91,7 +91,7 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
     }
 
     /** Get an endpoint. */
-    suspend fun get(endpointId: String, appId: String): EndpointOut {
+    suspend fun get(appId: String, endpointId: String): EndpointOut {
         try {
             return api.v1EndpointGet(appId, endpointId)
         } catch (e: Exception) {

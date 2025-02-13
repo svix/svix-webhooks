@@ -25,7 +25,6 @@
 * Libs/Kotlin **(Breaking)**: Update `MessageAttempt` list methods to each have its own type for
   list options, since they don't all support the exact same set of parameters and some of the
   parameters that could be set before would just get ignored
-* Libs/Kotlin: Fix the parameter names of `Endpoint.get` - `appId` and `endpointId` were swapped
 * Libs/Kotlin: Fix a bug in `EventType.list` where `options.order` was not getting honored
 * Libs/Rust **(Breaking)**: Add optional `EventTypeDeleteOptions` parameter to `EventType::delete`
 * Libs/Rust **(Breaking)**: Add optional `options` parameters to `Endpoint::recover`,
