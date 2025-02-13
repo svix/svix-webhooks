@@ -67,7 +67,8 @@ jobs:
       - name: Derive Version Numbers
         run: |
           export REPO="${{ secrets.DOCKERHUB_USERNAME }}/svix-bridge"
-          echo DOCKER_TAGS="$(echo "${{ github.event.release.tag_name }}" | sed -E "s#v([0-9]+)\.([0-9]+)\.([0-9]+)#${REPO}:latest,${REPO}:v\1.\2.\3,${REPO}:v\1.\2,${REPO}:v\1#")" >> "$GITHUB_ENV"
+          export GIT_TAG="$(git describe --tags --abbrev=0)"
+          echo DOCKER_TAGS="$(echo "${GIT_TAG}" | sed -E "s#v([0-9]+)\.([0-9]+)\.([0-9]+)#${REPO}:latest,${REPO}:v\1.\2.\3,${REPO}:v\1.\2,${REPO}:v\1#")" >> "$GITHUB_ENV"
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
