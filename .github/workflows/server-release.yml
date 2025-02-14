@@ -39,6 +39,9 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          filter: tree:0
 
       - name: Setup QEMU
         uses: docker/setup-qemu-action@v3
@@ -56,7 +59,9 @@ jobs:
         run: |
           export REPO="${{ secrets.DOCKERHUB_USERNAME }}/svix-server"
           export GIT_TAG="$(git describe --tags --abbrev=0)"
-          echo DOCKER_TAGS="$(echo "${GIT_TAG}" | sed -E "s#v([0-9]+)\.([0-9]+)\.([0-9]+)#${REPO}:latest,${REPO}:v\1.\2.\3,${REPO}:v\1.\2,${REPO}:v\1#")" >> "$GITHUB_ENV"
+          export DOCKER_TAGS=$(echo "${GIT_TAG}" | sed -E "s#v([0-9]+)\.([0-9]+)\.([0-9]+)#${REPO}:latest,${REPO}:v\1.\2.\3,${REPO}:v\1.\2,${REPO}:v\1#")
+          echo "DOCKER_TAGS=${DOCKER_TAGS}" >> "$GITHUB_ENV"
+          echo "Generated Tags: ${DOCKER_TAGS}"
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
