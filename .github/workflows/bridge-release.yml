@@ -39,7 +39,7 @@ jobs:
         run: cargo build --release --manifest-path bridge/svix-bridge/Cargo.toml
 
       - name: Release
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: svix-bridge-x86_64-unknown-linux-gnu
           path: bridge/target/release/svix-bridge
