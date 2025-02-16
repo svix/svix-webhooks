@@ -5,7 +5,7 @@ async fn test_list_response_xxx_out() {
     // first test with iterator and prevIterator
     let json_str =
         r#"{"data":[],"done":true,"iterator":"iterator-str","prevIterator":"prevIterator-str"}"#;
-    let loaded_json: ListResponseApplicationOut = serde_json::from_str(&json_str).unwrap();
+    let loaded_json: ListResponseApplicationOut = serde_json::from_str(json_str).unwrap();
 
     let expected_model = ListResponseApplicationOut {
         data: vec![],
@@ -18,7 +18,7 @@ async fn test_list_response_xxx_out() {
 
     // without iterator and prevIterator
     let json_str = r#"{"data":[],"done":true}"#;
-    let loaded_json: ListResponseApplicationOut = serde_json::from_str(&json_str).unwrap();
+    let loaded_json: ListResponseApplicationOut = serde_json::from_str(json_str).unwrap();
 
     let expected_model = ListResponseApplicationOut {
         data: vec![],
