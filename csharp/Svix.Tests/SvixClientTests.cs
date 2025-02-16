@@ -112,5 +112,8 @@ public class SvixClientTests
             new ApplicationIn { Name = "same app", Uid = "test-app-get-or-create-csharp-tests" }
         );
         Assert.Equal(app3.Id, app4.Id);
+        client.Application.Delete(app.Id);
+        client.Application.Delete(app2.Id);
+        client.Application.Delete(app3.Id);
     }
 }
