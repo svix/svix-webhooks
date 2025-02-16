@@ -9,6 +9,7 @@ use super::{
 pub struct BackgroundTaskOut {
     pub data: serde_json::Value,
 
+    /// The QueueBackgroundTask's ID.
     pub id: String,
 
     pub status: BackgroundTaskStatus,

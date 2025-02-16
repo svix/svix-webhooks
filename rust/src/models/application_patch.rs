@@ -14,7 +14,7 @@ pub struct ApplicationPatch {
     #[serde(default, skip_serializing_if = "JsOption::is_undefined")]
     pub rate_limit: JsOption<u16>,
 
-    /// The app's UID
+    /// The Application's UID.
     #[serde(default, skip_serializing_if = "JsOption::is_undefined")]
     pub uid: JsOption<String>,
 }

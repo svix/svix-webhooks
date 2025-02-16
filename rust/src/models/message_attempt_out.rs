@@ -8,17 +8,17 @@ use super::{
 
 #[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
 pub struct MessageAttemptOut {
-    /// The ep's ID
+    /// The Endpoint's ID.
     #[serde(rename = "endpointId")]
     pub endpoint_id: String,
 
-    /// The attempt's ID
+    /// The MessageAttempt's ID.
     pub id: String,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub msg: Option<MessageOut>,
 
-    /// The msg's ID
+    /// The Message's ID.
     #[serde(rename = "msgId")]
     pub msg_id: String,
 

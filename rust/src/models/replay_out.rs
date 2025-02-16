@@ -7,6 +7,7 @@ use super::{
 
 #[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
 pub struct ReplayOut {
+    /// The QueueBackgroundTask's ID.
     pub id: String,
 
     pub status: BackgroundTaskStatus,

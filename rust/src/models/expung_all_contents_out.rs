@@ -6,7 +6,7 @@ use super::{
 };
 
 #[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
-pub struct RecoverOut {
+pub struct ExpungAllContentsOut {
     /// The QueueBackgroundTask's ID.
     pub id: String,
 
@@ -15,7 +15,7 @@ pub struct RecoverOut {
     pub task: BackgroundTaskType,
 }
 
-impl RecoverOut {
+impl ExpungAllContentsOut {
     pub fn new(id: String, status: BackgroundTaskStatus, task: BackgroundTaskType) -> Self {
         Self { id, status, task }
     }

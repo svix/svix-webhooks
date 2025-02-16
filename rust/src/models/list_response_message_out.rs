@@ -9,7 +9,8 @@ pub struct ListResponseMessageOut {
 
     pub done: bool,
 
-    pub iterator: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub iterator: Option<String>,
 
     #[serde(rename = "prevIterator")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -17,11 +18,11 @@ pub struct ListResponseMessageOut {
 }
 
 impl ListResponseMessageOut {
-    pub fn new(data: Vec<MessageOut>, done: bool, iterator: String) -> Self {
+    pub fn new(data: Vec<MessageOut>, done: bool) -> Self {
         Self {
             data,
             done,
-            iterator,
+            iterator: None,
             prev_iterator: None,
         }
     }

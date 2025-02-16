@@ -18,6 +18,7 @@ pub struct TemplateOut {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub filter_types: Option<Vec<String>>,
 
+    /// The TransformationTemplate's ID.
     pub id: String,
 
     pub instructions: String,
@@ -32,6 +33,7 @@ pub struct TemplateOut {
 
     pub name: String,
 
+    /// The Organization's ID.
     #[serde(rename = "orgId")]
     pub org_id: String,
 

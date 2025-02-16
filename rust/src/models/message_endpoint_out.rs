@@ -22,7 +22,7 @@ pub struct MessageEndpointOut {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub filter_types: Option<Vec<String>>,
 
-    /// The ep's ID
+    /// The Endpoint's ID.
     pub id: String,
 
     #[serde(rename = "nextAttempt")]

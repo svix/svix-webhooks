@@ -6,7 +6,7 @@ pub struct ApplicationOut {
     #[serde(rename = "createdAt")]
     pub created_at: String,
 
-    /// The app's ID
+    /// The Application's ID.
     pub id: String,
 
     pub metadata: std::collections::HashMap<String, String>,
@@ -17,7 +17,7 @@ pub struct ApplicationOut {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub rate_limit: Option<u16>,
 
-    /// The app's UID
+    /// The Application's UID.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub uid: Option<String>,
 

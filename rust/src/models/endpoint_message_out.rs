@@ -20,7 +20,7 @@ pub struct EndpointMessageOut {
     #[serde(rename = "eventType")]
     pub event_type: String,
 
-    /// The msg's ID
+    /// The Message's ID.
     pub id: String,
 
     #[serde(rename = "nextAttempt")]

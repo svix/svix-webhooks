@@ -11,7 +11,8 @@ pub struct EnvironmentOut {
     #[serde(rename = "eventTypes")]
     pub event_types: Vec<EventTypeOut>,
 
-    pub settings: serde_json::Value,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub settings: Option<serde_json::Value>,
 
     #[serde(rename = "transformationTemplates")]
     pub transformation_templates: Vec<TemplateOut>,
@@ -24,13 +25,12 @@ impl EnvironmentOut {
     pub fn new(
         created_at: String,
         event_types: Vec<EventTypeOut>,
-        settings: serde_json::Value,
         transformation_templates: Vec<TemplateOut>,
     ) -> Self {
         Self {
             created_at,
             event_types,
-            settings,
+            settings: None,
             transformation_templates,
             version: None,
         }

@@ -11,7 +11,7 @@ pub struct IntegrationOut {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub feature_flags: Option<Vec<String>>,
 
-    /// The integ's ID
+    /// The Integration's ID.
     pub id: String,
 
     pub name: String,
