@@ -32,7 +32,7 @@ pub struct EndpointPatch {
     #[serde(default, skip_serializing_if = "JsOption::is_undefined")]
     pub secret: JsOption<String>,
 
-    /// The ep's UID
+    /// The Endpoint's UID.
     #[serde(default, skip_serializing_if = "JsOption::is_undefined")]
     pub uid: JsOption<String>,
 
