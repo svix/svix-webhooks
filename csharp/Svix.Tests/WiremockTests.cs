@@ -6,6 +6,7 @@ using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
 using WireMock.Server;
 using WireMock.Settings;
+using Wmhelp.XPath2.AST;
 using Xunit;
 
 namespace Svix.Tests
@@ -229,6 +230,19 @@ namespace Svix.Tests
             await Assert.ThrowsAsync<ArgumentNullException>(
                 () => client.Application.CreateAsync(null, null, default)
             );
+        }
+
+        [Fact]
+        public void ListResponseApplicationOutWorksCorrectly()
+        {
+            stub.Given(Request.Create().WithPath("/api/v1/app"))
+                .RespondWith(
+                    Response
+                        .Create()
+                        .WithStatusCode(200)
+                        .WithBody("""{"data":[],"iterator":null,"prevIterator":null,"done":true}""")
+                );
+            client.Application.List();
         }
     }
 }
