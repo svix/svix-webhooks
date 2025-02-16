@@ -123,7 +123,13 @@ async fn test_endpoint_crud() {
 
     // Should complete without error if the deserialization handles empty bodies
     // correctly.
-    client.endpoint().delete(app.id, ep.id).await.unwrap();
+    client
+        .endpoint()
+        .delete(app.id.clone(), ep.id)
+        .await
+        .unwrap();
+
+    client.application().delete(app.id).await.unwrap()
 }
 
 #[tokio::test]
