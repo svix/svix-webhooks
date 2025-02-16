@@ -20,6 +20,8 @@ pub enum BackgroundTaskType {
     SdkGenerate,
     #[serde(rename = "event-type.aggregate")]
     EventTypeAggregate,
+    #[serde(rename = "application.purge_content")]
+    ApplicationPurgeContent,
 }
 
 impl fmt::Display for BackgroundTaskType {
@@ -31,6 +33,7 @@ impl fmt::Display for BackgroundTaskType {
             Self::MessageBroadcast => "message.broadcast",
             Self::SdkGenerate => "sdk.generate",
             Self::EventTypeAggregate => "event-type.aggregate",
+            Self::ApplicationPurgeContent => "application.purge_content",
         };
         f.write_str(value)
     }
