@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 1.58.0
+* Libs/Rust: Fix regression in previous version. Nullable fields are now `Option<T>` instead of `T`, this affects `ListResponseXXXOut.iterator` and `EnvironmentOut.settings`
+
 ## Version 1.57.0
 This version contains a big overhaul of the client libraries, with improved typing.
 
