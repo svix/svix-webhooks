@@ -3,7 +3,7 @@ import { ApiException } from "./util";
 import { HttpErrorOut, HTTPValidationError } from "./openapi";
 import { ObjectSerializer } from "./openapi/models/ObjectSerializer";
 
-export const LIB_VERSION = "1.58.0";
+export const LIB_VERSION = "1.58.1";
 const USER_AGENT = `svix-libs/${LIB_VERSION}/javascript`;
 
 export enum HttpMethod {
