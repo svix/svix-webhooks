@@ -11,9 +11,9 @@
 //!
 //! This implementation uses the following data structures:
 //! - A "tasks to be processed" stream - which is what the consumer listens to for tasks.
-//!     AKA: Main
+//!   AKA: Main
 //! - A ZSET for delayed tasks with the sort order being the time-to-be-delivered
-//!     AKA: Delayed
+//!   AKA: Delayed
 //!
 //! - Tasks in the delayed queue are prefixed with a ksuid so that we can know the timestamp of when
 //!   they should be executed.
