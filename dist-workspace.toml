@@ -24,3 +24,6 @@ tap = "svix/homebrew-svix"
 # Publish jobs to run in CI
 publish-jobs = ["homebrew"]
 
+# FIXME: for now override the runner in ci
+# remove when cargo-dist updates the runner to newer version
+allow-dirty = ["ci"]
