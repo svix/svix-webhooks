@@ -25,12 +25,12 @@ type SvixHttpClient struct {
 	Debug          bool
 }
 
-func defaultSvixHttpClient() SvixHttpClient {
+func defaultSvixHttpClient(defaultBaseUrl string) SvixHttpClient {
 	return SvixHttpClient{
 		DefaultHeaders: map[string]string{},
 		HTTPClient:     &http.Client{Timeout: 60 * time.Second},
 		RetrySchedule:  []time.Duration{50 * time.Microsecond, 100 * time.Microsecond, 200 * time.Microsecond},
-		BaseURL:        "https://api.eu.svix.com",
+		BaseURL:        defaultBaseUrl,
 		Debug:          false,
 	}
 }
