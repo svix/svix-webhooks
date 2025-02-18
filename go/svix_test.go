@@ -625,3 +625,11 @@ func TestEndpointPatchUnsetNotSentToServer(t *testing.T) {
 		t.Error(err)
 	}
 }
+
+func TestAbleToPassNilAsSvixOptions(t *testing.T) {
+	_, err := svix.New("token.eu", nil)
+	if err != nil {
+		t.Error(err)
+	}
+
+}
