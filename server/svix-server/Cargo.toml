@@ -1,6 +1,6 @@
 [package]
 name = "svix-server"
-version = "1.57.0"
+version = "1.57.1"
 description = "Svix webhooks server"
 publish = false
 edition.workspace = true
