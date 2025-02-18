@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 1.58.1
+* Libs/Go: Fix a null-pointer deference regression introduced in previous version.
+
 ## Version 1.58.0
 * Libs/Rust: Fix regression in previous version. Nullable fields are now `Option<T>` instead of `T`, this affects `ListResponseXXXOut.iterator` and `EnvironmentOut.settings`
 
