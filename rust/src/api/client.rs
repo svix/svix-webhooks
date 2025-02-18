@@ -72,7 +72,7 @@ impl Svix {
     /// the cost of TLS initialization.
     pub fn with_token(&self, token: String) -> Self {
         let base_path = self.server_url.clone().unwrap_or_else(|| {
-            match token.split('.').last() {
+            match token.split('.').next_back() {
                 Some("us") => "https://api.us.svix.com",
                 Some("eu") => "https://api.eu.svix.com",
                 Some("in") => "https://api.in.svix.com",
