@@ -41,8 +41,8 @@ jobs:
       - name: Publish (pre-release)
         if: github.ref_type == 'branch'
         run: |
-          git config user.name "${{ github.event.pusher.name }}"
-          git config user.email "${{ github.event.pusher.email }}"
+          git config user.name "${{ github.event.pusher.name || 'svix-bot' }}"
+          git config user.email "${{ github.event.pusher.email || 'svix-bot@svix.com' }}"
           cd javascript
           yarn version --prerelease --preid next-${{ github.sha }}
           yarn publish --tag next
