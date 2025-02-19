@@ -12,6 +12,7 @@ import { SvixRequestContext } from "./request";
 
 export { PostOptions } from "./util";
 export * from "./webhook";
+export * from "./models/index";
 
 export { ApplicationListOptions } from "./api/application";
 export { BackgroundTaskListOptions } from "./api/backgroundTask";
