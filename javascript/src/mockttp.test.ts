@@ -1,4 +1,4 @@
-import { Svix } from ".";
+import { BackgroundTaskType, MessageAttemptTriggerType, Svix } from ".";
 import { expect, test } from "@jest/globals";
 import * as mockttp from "mockttp";
 import { ApiException } from "./util";
@@ -9,9 +9,12 @@ const ApplicationOut = `{"uid":"unique-identifier","name":"My first application"
 const ListResponseMessageOut = `{"data":[{"eventId":"unique-identifier","eventType":"user.signup","payload":{"email":"test@example.com","type":"user.created","username":"test_user"},"channels":["project_123","group_2"],"id":"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2","timestamp":"2019-08-24T14:15:22Z","tags":["project_1337"]}],"iterator":"iterator","prevIterator":"-iterator","done":true}`;
 const ListResponseApplicationOut = `{"data":[{"uid":"unique-identifier","name":"My first application","rateLimit":0,"id":"app_1srOrx2ZWZBpBUvZwXKQmoEYga2","createdAt":"2019-08-24T14:15:22Z","updatedAt":"2019-08-24T14:15:22Z","metadata":{"property1":"string","property2":"string"}}],"iterator":"iterator","prevIterator":"-iterator","done":true}`;
 const ListResponseMessageAttemptOut = `{"data":[{"url":"https://example.com/webhook/","response":"{}","responseStatusCode":200,"responseDurationMs":0,"status":0,"triggerType":0,"msgId":"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2","endpointId":"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2","id":"atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2","timestamp":"2025-02-16T21:38:21.977Z","msg":{"eventId":"unique-identifier","eventType":"user.signup","payload":{"email":"test@example.com","type":"user.created","username":"test_user"},"channels":["project_123","group_2"],"id":"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2","timestamp":"2025-02-16T21:38:21.977Z","tags":["project_1337"]}}],"iterator":"iterator","prevIterator":"-iterator","done":true}`;
+const ListResponseOperationalWebhookEndpointOut = `{"data":[{"id":"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2","description":"string","rateLimit":0,"uid":"unique-identifier","url":"https://example.com/webhook/","disabled":false,"filterTypes":["message.attempt.failing"],"createdAt":"2019-08-24T14:15:22Z","updatedAt":"2019-08-24T14:15:22Z","metadata":{"property1":"string","property2":"string"}}],"iterator":"iterator","prevIterator":"-iterator","done":true}`;
+const ListResponseBackgroundTaskOut = `{"data":[{"data":{},"id":"qtask_1srOrx2ZWZBpBUvZwXKQmoEYga2","status":"running","task":"endpoint.replay"}],"iterator":"iterator","prevIterator":"-iterator","done":true}`;
+const EventTypeImportOpenApiOut = `{"data":{"modified":["user.signup"],"to_modify":[{"name":"user.signup","description":"string","schemas":{},"deprecated":true,"featureFlag":"cool-new-feature","groupName":"user"}]}}`;
 const ReplayOut = `{"id":"qtask_1srOrx2ZWZBpBUvZwXKQmoEYga2","status":"running","task":"endpoint.replay"}`;
+const EndpointOut = `{"description":"string","rateLimit":0,"uid":"unique-identifier","url":"http://example.com","version":1,"disabled":true,"filterTypes":["user.signup"],"channels":["project_1337"],"secret":"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD","metadata":{"property1":"string","property2":"string"}}`;
 const ValidationErrorOut = `{"detail":[{"loc":["string"],"msg":"string","type":"string"}]}`;
-
 const mockServer = mockttp.getLocal();
 
 describe("mockttp tests", () => {
@@ -181,5 +184,109 @@ describe("mockttp tests", () => {
 
     const requests = await endpointMock.getSeenRequests();
     expect(requests.length).toBe(2);
+  });
+
+  test("sub-resource works", async () => {
+    const endpointMock = await mockServer
+      .forGet("/api/v1/operational-webhook/endpoint")
+      .thenReply(200, ListResponseOperationalWebhookEndpointOut);
+    const svx = new Svix("token", { serverUrl: mockServer.url });
+
+    await svx.operationalWebhookEndpoint.list();
+
+    const requests = await endpointMock.getSeenRequests();
+    expect(requests.length).toBe(1);
+  });
+
+  test("integer enum serialization", async () => {
+    const endpointMock = await mockServer
+      .forGet("/api/v1/app/app1/attempt/endpoint/endp1")
+      .thenReply(200, ListResponseMessageAttemptOut);
+    const svx = new Svix("token", { serverUrl: mockServer.url });
+
+    const res = await svx.messageAttempt.listByEndpoint("app1", "endp1");
+    expect(res.data[0].triggerType).toBe(MessageAttemptTriggerType.Scheduled);
+
+    const requests = await endpointMock.getSeenRequests();
+    expect(requests.length).toBe(1);
+  });
+
+  test("string enum de/serialization", async () => {
+    const endpointMock = await mockServer
+      .forGet("/api/v1/background-task")
+      .thenReply(200, ListResponseBackgroundTaskOut);
+    const svx = new Svix("token", { serverUrl: mockServer.url });
+
+    const res = await svx.backgroundTask.list({
+      task: BackgroundTaskType.EndpointReplay,
+    });
+    expect(res.data[0].task).toBe(BackgroundTaskType.EndpointReplay);
+
+    const requests = await endpointMock.getSeenRequests();
+    expect(requests.length).toBe(1);
+    expect(requests[0].url.endsWith("api/v1/background-task?task=endpoint.replay")).toBe(
+      true
+    );
+  });
+
+  test("non-camelCase field name", async () => {
+    const endpointMock = await mockServer
+      .forPost("/api/v1/event-type/import/openapi")
+      .thenReply(200, EventTypeImportOpenApiOut);
+    const svx = new Svix("token", { serverUrl: mockServer.url });
+
+    const res = await svx.eventType.importOpenapi({ dryRun: true });
+    expect(res.data.toModify).toStrictEqual([
+      {
+        name: "user.signup",
+        description: "string",
+        schemas: {},
+        deprecated: true,
+        featureFlag: "cool-new-feature",
+        groupName: "user",
+      },
+    ]);
+
+    const requests = await endpointMock.getSeenRequests();
+    expect(requests.length).toBe(1);
+  });
+
+  test("patch request body", async () => {
+    const endpointMock = await mockServer
+      .forPatch("/api/v1/app/app1/endpoint/endp1")
+      .thenReply(200, EndpointOut);
+    const svx = new Svix("token", { serverUrl: mockServer.url });
+
+    await svx.endpoint.patch("app1", "endp1", { filterTypes: ["ty1"] });
+    await svx.endpoint.patch("app1", "endp1", { filterTypes: null });
+    await svx.endpoint.patch("app1", "endp1", { description: "text" });
+
+    const requests = await endpointMock.getSeenRequests();
+    expect(requests.length).toBe(3);
+
+    // nullable field is sent
+    expect(await requests[0].body.getText()).toBe(`{"filterTypes":["ty1"]}`);
+    // nullable field is null
+    expect(await requests[1].body.getText()).toBe(`{"filterTypes":null}`);
+    // undefined field is omitted
+    expect(await requests[2].body.getText()).toBe(`{"description":"text"}`);
+  });
+
+  test("arbitrary json object body", async () => {
+    const endpointMock = await mockServer
+      .forPost("/api/v1/app/app1/msg")
+      .thenReply(200, EndpointOut);
+    const svx = new Svix("token", { serverUrl: mockServer.url });
+
+    await svx.message.create("app1", {
+      eventType: "asd",
+      payload: { key1: "val", list: ["val1"], obj: { key: "val2" } },
+    });
+
+    const requests = await endpointMock.getSeenRequests();
+    expect(requests.length).toBe(1);
+    expect(await requests[0].body.getText()).toBe(
+      `{"eventType":"asd","payload":{"key1":"val","list":["val1"],"obj":{"key":"val2"}}}`
+    );
   });
 });
