@@ -1,4 +1,14 @@
 # Changelog
+## Unreleased
+
+* Libs/Kotlin **(VERY IMPORTANT)**: The parameter order `appId` and `msgId` were swapped on `Message.get` and `Message.expungeContent`
+* Libs/Kotlin **(Breaking)**: All uses of `ListOptions`/`PostOptions` are removed, and renamed to `{Resource}{Operation}Options`. For example in `Endpoint.List` you would now use `EndpointListOptions`
+* Libs/Kotlin **(Breaking)**: In the 4 `*Patch` patch models, nullable fields are of type `MaybeUnset<T>` instead of `T`. call `MaybeUnset.Present(val)` to initialize this value
+* Libs/Kotlin **(Breaking)**: `SvixOptions` no longer has `initialRetryDelayMillis` or `numRetries` instead use `retrySchedule`
+* Libs/Kotlin **(Breaking)**: All `{Resource}{Operation}Options` and model classes (`ApplicationIn`/`MessageOut`) are now data classes
+* Libs/Kotlin **(Breaking)**: Deprecated functions `MessageAttempt.list` and `MessageAttempt.listAttemptsForEndpoint` are removed
+* Libs/Kotlin **(Breaking)**: All uses of `java.time.OffsetDateTime` replaced with `kotlinx.datetime.Instant`
+* Libs/Kotlin **(Breaking)**: All uses of `java.net.URL` in request/response models are replaced with `String`
 
 ## Version 1.58.2
 * Libs/Go: New `Message.ExpungeContent` is now available
@@ -33,8 +43,6 @@ This version contains a big overhaul of the client libraries, with improved typi
 * Libs/Python **(Breaking)**: `MessageAttemptListOptions` is removed in favor of call specific `{Resource}{Operation}Options`
 * Libs/Python **(Breaking)**: For `Statistics` in the `aggregate_event_types` method the `task_id` parameter is removed, Please note that previously this parameter was ignored and had no affect (Both sync and async)
 
-* Libs/Kotlin **(Breaking)**: Mark `api` field of all API resource classes as `private` (previously
-  only some were private, accidentally)
 * Libs/Kotlin **(Breaking)**: Update `recover` to return `RecoverOut` (instead of nothing)
 * Libs/Kotlin **(Breaking)**: Update `replayMissing` to return `ReplayOut` (instead of nothing)
 * Libs/Kotlin **(Breaking)**: Update `sendExample` to return `MessageOut` (instead of nothing)
