@@ -277,6 +277,7 @@ jobs:
           gh release edit "${{ needs.plan.outputs.tag }}" --target "$RELEASE_COMMIT" $PRERELEASE_FLAG --draft=false
 
   publish-homebrew-formula:
+    environment: "release"
     needs:
       - plan
       - host
