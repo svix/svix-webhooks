@@ -4,8 +4,9 @@ package models
 import "time"
 
 type IntegrationOut struct {
-	CreatedAt time.Time `json:"createdAt"`
-	Id        string    `json:"id"` // The integ's ID
-	Name      string    `json:"name"`
-	UpdatedAt time.Time `json:"updatedAt"`
+	CreatedAt    time.Time `json:"createdAt"`
+	FeatureFlags []string  `json:"featureFlags,omitempty"` // The set of feature flags the integration has access to.
+	Id           string    `json:"id"`                     // The Integration's ID.
+	Name         string    `json:"name"`
+	UpdatedAt    time.Time `json:"updatedAt"`
 }
