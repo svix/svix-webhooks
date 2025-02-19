@@ -4,6 +4,7 @@ import * as mockttp from "mockttp";
 import { ApiException } from "./util";
 import { Ordering } from "./models/ordering";
 import { ValidationError, HttpErrorOut } from "./HttpErrors";
+import { LIB_VERSION } from "./request";
 
 const ApplicationOut = `{"uid":"unique-identifier","name":"My first application","rateLimit":0,"id":"app_1srOrx2ZWZBpBUvZwXKQmoEYga2","createdAt":"2019-08-24T14:15:22Z","updatedAt":"2019-08-24T14:15:22Z","metadata":{"property1":"string","property2":"string"}}`;
 const ListResponseMessageOut = `{"data":[{"eventId":"unique-identifier","eventType":"user.signup","payload":{"email":"test@example.com","type":"user.created","username":"test_user"},"channels":["project_123","group_2"],"id":"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2","timestamp":"2019-08-24T14:15:22Z","tags":["project_1337"]}],"iterator":"iterator","prevIterator":"-iterator","done":true}`;
@@ -288,5 +289,19 @@ describe("mockttp tests", () => {
     expect(await requests[0].body.getText()).toBe(
       `{"eventType":"asd","payload":{"key1":"val","list":["val1"],"obj":{"key":"val2"}}}`
     );
+  });
+
+  test("token/user-agent is sent", async () => {
+    const endpointMock = await mockServer
+      .forDelete("/api/v1/app/app1")
+      .thenReply(200, EndpointOut);
+    const svx = new Svix("token.eu", { serverUrl: mockServer.url });
+
+    await svx.application.delete("app1");
+
+    const requests = await endpointMock.getSeenRequests();
+    expect(requests.length).toBe(1);
+    expect(requests[0].headers["authorization"]).toBe("Bearer token.eu");
+    expect(requests[0].headers["user-agent"]).toBe(`svix-libs/${LIB_VERSION}/javascript`);
   });
 });
