@@ -3,12 +3,15 @@ import { expect, test } from "@jest/globals";
 import * as mockttp from "mockttp";
 import { ApiException } from "./util";
 import { Ordering } from "./models/ordering";
+import { ValidationError, HttpErrorOut } from "./HttpErrors";
 
 const ApplicationOut = `{"uid":"unique-identifier","name":"My first application","rateLimit":0,"id":"app_1srOrx2ZWZBpBUvZwXKQmoEYga2","createdAt":"2019-08-24T14:15:22Z","updatedAt":"2019-08-24T14:15:22Z","metadata":{"property1":"string","property2":"string"}}`;
 const ListResponseMessageOut = `{"data":[{"eventId":"unique-identifier","eventType":"user.signup","payload":{"email":"test@example.com","type":"user.created","username":"test_user"},"channels":["project_123","group_2"],"id":"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2","timestamp":"2019-08-24T14:15:22Z","tags":["project_1337"]}],"iterator":"iterator","prevIterator":"-iterator","done":true}`;
 const ListResponseApplicationOut = `{"data":[{"uid":"unique-identifier","name":"My first application","rateLimit":0,"id":"app_1srOrx2ZWZBpBUvZwXKQmoEYga2","createdAt":"2019-08-24T14:15:22Z","updatedAt":"2019-08-24T14:15:22Z","metadata":{"property1":"string","property2":"string"}}],"iterator":"iterator","prevIterator":"-iterator","done":true}`;
 const ListResponseMessageAttemptOut = `{"data":[{"url":"https://example.com/webhook/","response":"{}","responseStatusCode":200,"responseDurationMs":0,"status":0,"triggerType":0,"msgId":"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2","endpointId":"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2","id":"atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2","timestamp":"2025-02-16T21:38:21.977Z","msg":{"eventId":"unique-identifier","eventType":"user.signup","payload":{"email":"test@example.com","type":"user.created","username":"test_user"},"channels":["project_123","group_2"],"id":"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2","timestamp":"2025-02-16T21:38:21.977Z","tags":["project_1337"]}}],"iterator":"iterator","prevIterator":"-iterator","done":true}`;
 const ReplayOut = `{"id":"qtask_1srOrx2ZWZBpBUvZwXKQmoEYga2","status":"running","task":"endpoint.replay"}`;
+const ValidationErrorOut = `{"detail":[{"loc":["string"],"msg":"string","type":"string"}]}`;
+
 const mockServer = mockttp.getLocal();
 
 describe("mockttp tests", () => {
@@ -109,9 +112,8 @@ describe("mockttp tests", () => {
       .forGet("/api/v1/app")
       .thenReply(500, `{"code":"500","detail":"asd"}`);
     const svx = new Svix("token", { serverUrl: mockServer.url });
-    await svx.application
-      .list()
-      .catch((error) => expect(error).toBeInstanceOf(ApiException));
+
+    await expect(svx.application.list()).rejects.toThrow(ApiException);
 
     const requests = await endpointMock.getSeenRequests();
     expect(requests.length).toBe(3);
@@ -129,5 +131,55 @@ describe("mockttp tests", () => {
         expect(requests[i].headers["svix-retry-count"]).toBe(i.toString());
       }
     }
+  });
+
+  test("no body in response does not return anything", async () => {
+    const endpointMock = await mockServer
+      .forDelete("/api/v1/app/app1")
+      .thenReply(204, "");
+    const svx = new Svix("token", { serverUrl: mockServer.url });
+
+    await svx.application.delete("app1");
+
+    const requests = await endpointMock.getSeenRequests();
+    expect(requests.length).toBe(1);
+  });
+
+  test("422 returns validation error", async () => {
+    const endpointMock = await mockServer
+      .forGet("/api/v1/app")
+      .thenReply(422, ValidationErrorOut);
+    const svx = new Svix("token", { serverUrl: mockServer.url });
+
+    await expect(svx.application.list()).rejects.toThrow(ApiException<ValidationError>);
+    try {
+      await svx.application.list();
+    } catch (e) {
+      expect(e).toHaveProperty("code", 422);
+      expect(e).toHaveProperty("body", {
+        detail: [{ loc: ["string"], msg: "string", type: "string" }],
+      });
+    }
+
+    const requests = await endpointMock.getSeenRequests();
+    expect(requests.length).toBe(2);
+  });
+
+  test("400 returns ApiException", async () => {
+    const endpointMock = await mockServer
+      .forGet("/api/v1/app")
+      .thenReply(400, `{"code":"400","detail":"text"}`);
+    const svx = new Svix("token", { serverUrl: mockServer.url });
+
+    await expect(svx.application.list()).rejects.toThrow(ApiException<HttpErrorOut>);
+    try {
+      await svx.application.list();
+    } catch (e) {
+      expect(e).toHaveProperty("code", 400);
+      expect(e).toHaveProperty("body", { code: "400", detail: "text" });
+    }
+
+    const requests = await endpointMock.getSeenRequests();
+    expect(requests.length).toBe(2);
   });
 });

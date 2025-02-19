@@ -94,7 +94,11 @@ export class SvixRequest {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     parseResponseBody: (jsonObject: any) => R
   ): Promise<R> {
-    const responseBody = await this.sendInner(ctx);
+    const response = await this.sendInner(ctx);
+    if (response.status == 204) {
+      return <R>null;
+    }
+    const responseBody = await response.text();
     return parseResponseBody(JSON.parse(responseBody));
   }
 
@@ -103,7 +107,7 @@ export class SvixRequest {
     await this.sendInner(ctx);
   }
 
-  private async sendInner(ctx: SvixRequestContext): Promise<string> {
+  private async sendInner(ctx: SvixRequestContext): Promise<Response> {
     const url = new URL(ctx.baseUrl + this.path);
     for (const [name, value] of Object.entries(this.queryParams)) {
       url.searchParams.set(name, value);
@@ -129,30 +133,33 @@ export class SvixRequest {
       credentials: isCredentialsSupported ? "same-origin" : undefined,
       signal: ctx.timeout !== undefined ? AbortSignal.timeout(ctx.timeout) : undefined,
     });
-
-    const responseBody = await response.text();
-
-    if (response.status < 300) {
-      // success case
-      return responseBody;
-    } else if (response.status === 422) {
-      const body = JSON.parse(responseBody);
-      throw new ApiException<HTTPValidationError>(
-        response.status,
-        body as HTTPValidationError,
-        response.headers
-      );
-    } else if (response.status >= 400 && response.status <= 499) {
-      const body = JSON.parse(responseBody);
-      throw new ApiException<HttpErrorOut>(
-        response.status,
-        body as HttpErrorOut,
-        response.headers
-      );
-    } else {
-      throw new ApiException(response.status, responseBody, response.headers);
-    }
+    return filterResponseForErrors(response);
   }
+}
+
+async function filterResponseForErrors(response: Response): Promise<Response> {
+  if (response.status < 300) {
+    return response;
+  }
+
+  const responseBody = await response.text();
+
+  if (response.status === 422) {
+    throw new ApiException<HTTPValidationError>(
+      response.status,
+      JSON.parse(responseBody) as HTTPValidationError,
+      response.headers
+    );
+  }
+
+  if (response.status >= 400 && response.status <= 499) {
+    throw new ApiException<HttpErrorOut>(
+      response.status,
+      JSON.parse(responseBody) as HttpErrorOut,
+      response.headers
+    );
+  }
+  throw new ApiException(response.status, responseBody, response.headers);
 }
 
 type SvixRequestInit = RequestInit & {
