@@ -37,6 +37,10 @@ type MessageCreateOptions struct {
 	IdempotencyKey *string
 }
 
+type MessageExpungeAllContentsOptions struct {
+	IdempotencyKey *string
+}
+
 type MessageGetOptions struct {
 	// When `true` message payloads are included in the response.
 	WithContent *bool
@@ -126,6 +130,39 @@ func (message *Message) Create(
 		queryMap,
 		headerMap,
 		&messageIn,
+	)
+
+}
+
+// Purge all message content for the application.
+//
+// Delete all message payloads for the application.
+func (message *Message) ExpungeAllContents(
+	ctx context.Context,
+	appId string,
+	o *MessageExpungeAllContentsOptions,
+) (*models.ExpungAllContentsOut, error) {
+	pathMap := map[string]string{
+		"app_id": appId,
+	}
+	headerMap := map[string]string{}
+	var err error
+	if o != nil {
+		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return executeRequest[any, models.ExpungAllContentsOut](
+		ctx,
+		message.client,
+		"POST",
+		"/api/v1/app/{app_id}/msg/expunge-all-contents",
+		pathMap,
+		nil,
+		headerMap,
+		nil,
 	)
 
 }
