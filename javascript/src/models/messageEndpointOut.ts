@@ -5,19 +5,19 @@ import { MessageStatus, MessageStatusSerializer } from "./messageStatus";
 export interface MessageEndpointOut {
   /** List of message channels this endpoint listens to (omit for all). */
   channels?: string[] | null;
-  createdAt: Date | null;
+  createdAt: Date;
   /** An example endpoint name. */
   description: string;
   disabled?: boolean;
   filterTypes?: string[] | null;
   /** The Endpoint's ID. */
   id: string;
-  nextAttempt?: Date | null | null;
+  nextAttempt?: Date | null;
   rateLimit?: number | null;
   status: MessageStatus;
   /** Optional unique identifier for the endpoint. */
   uid?: string | null;
-  updatedAt: Date | null;
+  updatedAt: Date;
   url: string;
   version: number;
 }

@@ -3,7 +3,7 @@
 import { ConnectorKind, ConnectorKindSerializer } from "./connectorKind";
 
 export interface TemplateOut {
-  createdAt: Date | null;
+  createdAt: Date;
   description: string;
   featureFlag?: string | null;
   filterTypes?: string[] | null;
@@ -17,7 +17,7 @@ export interface TemplateOut {
   /** The Organization's ID. */
   orgId: string;
   transformation: string;
-  updatedAt: Date | null;
+  updatedAt: Date;
 }
 
 export const TemplateOutSerializer = {

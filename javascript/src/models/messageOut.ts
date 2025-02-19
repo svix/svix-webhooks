@@ -12,7 +12,7 @@ export interface MessageOut {
   id: string;
   payload: any;
   tags?: string[] | null;
-  timestamp: Date | null;
+  timestamp: Date;
 }
 
 export const MessageOutSerializer = {

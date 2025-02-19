@@ -2,7 +2,7 @@
 /* eslint @typescript-eslint/no-explicit-any: 0 */
 
 export interface ApplicationOut {
-  createdAt: Date | null;
+  createdAt: Date;
   /** The Application's ID. */
   id: string;
   metadata: { [key: string]: string };
@@ -10,7 +10,7 @@ export interface ApplicationOut {
   rateLimit?: number | null;
   /** The Application's UID. */
   uid?: string | null;
-  updatedAt: Date | null;
+  updatedAt: Date;
 }
 
 export const ApplicationOutSerializer = {

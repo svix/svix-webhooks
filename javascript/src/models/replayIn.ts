@@ -2,8 +2,8 @@
 /* eslint @typescript-eslint/no-explicit-any: 0 */
 
 export interface ReplayIn {
-  since: Date | null;
-  until?: Date | null | null;
+  since: Date;
+  until?: Date | null;
 }
 
 export const ReplayInSerializer = {

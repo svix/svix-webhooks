@@ -2,13 +2,13 @@
 /* eslint @typescript-eslint/no-explicit-any: 0 */
 
 export interface IntegrationOut {
-  createdAt: Date | null;
+  createdAt: Date;
   /** The set of feature flags the integration has access to. */
   featureFlags?: string[];
   /** The Integration's ID. */
   id: string;
   name: string;
-  updatedAt: Date | null;
+  updatedAt: Date;
 }
 
 export const IntegrationOutSerializer = {

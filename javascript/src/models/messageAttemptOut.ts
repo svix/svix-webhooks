@@ -20,7 +20,7 @@ export interface MessageAttemptOut {
   responseDurationMs: number;
   responseStatusCode: number;
   status: MessageStatus;
-  timestamp: Date | null;
+  timestamp: Date;
   triggerType: MessageAttemptTriggerType;
   url: string;
 }

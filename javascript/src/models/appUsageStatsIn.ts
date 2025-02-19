@@ -8,8 +8,8 @@ export interface AppUsageStatsIn {
    * Note that if none of the given IDs or UIDs are resolved, a 422 response will be given.
    */
   appIds?: string[] | null;
-  since: Date | null;
-  until: Date | null;
+  since: Date;
+  until: Date;
 }
 
 export const AppUsageStatsInSerializer = {
