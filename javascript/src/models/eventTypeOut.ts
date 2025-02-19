@@ -3,7 +3,7 @@
 
 export interface EventTypeOut {
   archived?: boolean;
-  createdAt: Date | null;
+  createdAt: Date;
   deprecated: boolean;
   description: string;
   featureFlag?: string | null;
@@ -13,7 +13,7 @@ export interface EventTypeOut {
   name: string;
   /** The schema for the event type for a specific version as a JSON schema. */
   schemas?: any | null;
-  updatedAt: Date | null;
+  updatedAt: Date;
 }
 
 export const EventTypeOutSerializer = {

@@ -2,7 +2,7 @@
 /* eslint @typescript-eslint/no-explicit-any: 0 */
 
 export interface OperationalWebhookEndpointOut {
-  createdAt: Date | null;
+  createdAt: Date;
   /** An example endpoint name. */
   description: string;
   disabled?: boolean;
@@ -13,7 +13,7 @@ export interface OperationalWebhookEndpointOut {
   rateLimit?: number | null;
   /** Optional unique identifier for the endpoint. */
   uid?: string | null;
-  updatedAt: Date | null;
+  updatedAt: Date;
   url: string;
 }
 

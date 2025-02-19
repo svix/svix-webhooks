@@ -4,7 +4,7 @@ import { EventTypeOut, EventTypeOutSerializer } from "./eventTypeOut";
 import { TemplateOut, TemplateOutSerializer } from "./templateOut";
 
 export interface EnvironmentOut {
-  createdAt: Date | null;
+  createdAt: Date;
   eventTypes: EventTypeOut[];
   settings: any | null;
   transformationTemplates: TemplateOut[];

@@ -11,11 +11,11 @@ export interface EndpointMessageOut {
   eventType: string;
   /** The Message's ID. */
   id: string;
-  nextAttempt?: Date | null | null;
+  nextAttempt?: Date | null;
   payload: any;
   status: MessageStatus;
   tags?: string[] | null;
-  timestamp: Date | null;
+  timestamp: Date;
 }
 
 export const EndpointMessageOutSerializer = {
