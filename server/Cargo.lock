@@ -4751,7 +4751,7 @@ dependencies = [
 
 [[package]]
 name = "svix-server"
-version = "1.58.2"
+version = "1.59.0"
 dependencies = [
  "aide",
  "anyhow",
