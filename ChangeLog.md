@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 1.58.2
+* Libs/Go: New `Message.ExpungeContent` is now available
+* Libs/Go: Fix regression introduced in version `1.58.0`. All models are now exported from the `svix` package.
+* Libs/Go: Fix regression introduced in version `1.58.0`. Nullable fields are now `*T` instead of `T`, this affects `ListResponseXXXOut.Iterator`
+
 ## Version 1.58.1
 * Libs/Go: Fix a null-pointer deference regression introduced in previous version.
 
