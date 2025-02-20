@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 1.59.1
+* Libs/JavaScript: Fixed regression introduced in version 1.59.0, types are now correctly exported
+
 ## Version 1.59.0
 * Libs/Kotlin **(VERY IMPORTANT)**: The parameter order `appId` and `msgId` were swapped on `Message.get` and `Message.expungeContent`
 * Libs/Kotlin **(Breaking)**: All uses of `ListOptions`/`PostOptions` are removed, and renamed to `{Resource}{Operation}Options`. For example in `Endpoint.List` you would now use `EndpointListOptions`
