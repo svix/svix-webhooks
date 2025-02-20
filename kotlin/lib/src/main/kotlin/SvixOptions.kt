@@ -1,23 +1,10 @@
-package com.svix.kotlin
-
 data class SvixOptions(
-    internal var wantedServerUrl: String? = null,
-    val initialRetryDelayMillis: Long? = null,
-    val numRetries: Int? = null,
+    var baseUrl: String? = null,
+    val retrySchedule: List<Long> = listOf(50, 100, 200),
 ) {
-    private val version = "1.21.0"
-
-    var serverUrl: String
-        get() = this.wantedServerUrl ?: DEFAULT_URL
-        set(value) {
-            this.wantedServerUrl = value
+    init {
+        if (retrySchedule.count() > 5) {
+            throw IllegalArgumentException("number of retries must not exceed 5")
         }
-
-    companion object {
-        const val DEFAULT_URL = "https://api.svix.com"
-    }
-
-    internal fun getUA(): String {
-        return "svix-libs/$version/kotlin"
     }
 }
