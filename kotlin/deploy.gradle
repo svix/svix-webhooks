@@ -47,10 +47,12 @@ nexusPublishing {
 }
 
 task sourcesJar(type: Jar) {
+    archiveClassifier = "sources"
     from sourceSets.main.allSource
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
+    archiveClassifier = "javadoc"
     from javadoc.destinationDir
 }
 
