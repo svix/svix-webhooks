@@ -25,6 +25,7 @@
     "node_modules",
     "jest.config.js",
     "src/**/*.test.ts",
+    "eslint.config.mjs"
   ],
   "filesGlob": ["./src/**/*.ts"]
 }
