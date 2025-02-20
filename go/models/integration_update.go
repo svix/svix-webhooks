@@ -2,5 +2,6 @@
 package models
 
 type IntegrationUpdate struct {
-	Name string `json:"name"`
+	FeatureFlags []string `json:"featureFlags,omitempty"` // The set of feature flags the integration will have access to.
+	Name         string   `json:"name"`
 }
