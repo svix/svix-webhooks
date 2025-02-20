@@ -1,6 +1,6 @@
 # Changelog
-## Unreleased
 
+## Version 1.59.0
 * Libs/Kotlin **(VERY IMPORTANT)**: The parameter order `appId` and `msgId` were swapped on `Message.get` and `Message.expungeContent`
 * Libs/Kotlin **(Breaking)**: All uses of `ListOptions`/`PostOptions` are removed, and renamed to `{Resource}{Operation}Options`. For example in `Endpoint.List` you would now use `EndpointListOptions`
 * Libs/Kotlin **(Breaking)**: In the 4 `*Patch` patch models, nullable fields are of type `MaybeUnset<T>` instead of `T`. call `MaybeUnset.Present(val)` to initialize this value
@@ -9,6 +9,9 @@
 * Libs/Kotlin **(Breaking)**: Deprecated functions `MessageAttempt.list` and `MessageAttempt.listAttemptsForEndpoint` are removed
 * Libs/Kotlin **(Breaking)**: All uses of `java.time.OffsetDateTime` replaced with `kotlinx.datetime.Instant`
 * Libs/Kotlin **(Breaking)**: All uses of `java.net.URL` in request/response models are replaced with `String`
+* Libs/JavaScript **(Breaking)**: Removed non-public `endpoint.oauthUpdate` and `endpoint.oauthDelete` operations.
+* Libs/JavaScript **(Breaking)**: Removed deprecated operation `MessageAttempt.list`
+* Libs/JavaScript **(Breaking)**: Exceptions and models are no longer exported from `webhook.ts`, import them from `index.ts` instead
 
 ## Version 1.58.2
 * Libs/Go: New `Message.ExpungeContent` is now available
