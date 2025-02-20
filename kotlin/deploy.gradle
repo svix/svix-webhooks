@@ -40,7 +40,6 @@ nexusPublishing {
         sonatype {
             nexusUrl.set(uri(getReleaseRepositoryUrl()))
             snapshotRepositoryUrl.set(uri(getSnapshotRepositoryUrl()))
-            
             username = getRepositoryUsername()
             password = getRepositoryPassword()
         }
@@ -58,6 +57,11 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 artifacts {
     archives sourcesJar
     archives javadocJar
+}
+
+afterEvaluate {
+    generateMetadataFileForMavenPublication.dependsOn sourcesJar
+    generateMetadataFileForMavenPublication.dependsOn javadocJar
 }
 
 publishing {
