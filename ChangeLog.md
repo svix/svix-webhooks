@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 1.59.2
+* Libs/Go: Fixed regression where go >= 1.23 was needed, now Go >= 1.21 is supported
+
 ## Version 1.59.1
 * Libs/JavaScript: Fixed regression introduced in version 1.59.0, types are now correctly exported
 
