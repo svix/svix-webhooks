@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+* Libs/Java **(Breaking)**: All uses of `ListOptions`/`PostOptions` are removed, and renamed to `{Resource}{Operation}Options`. For example in `Endpoint.List` you would now use `EndpointListOptions`
+* Libs/Java **(Breaking)**: Deprecated methods `MessageAttempt.list` and `MessageAttempt.listAttemptsForEndpoint` are removed
+
 ## Version 1.59.2
 * Libs/Go: Fixed regression where go >= 1.23 was needed, now Go >= 1.21 is supported
 
