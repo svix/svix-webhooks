@@ -1,0 +1,57 @@
+name: Codegen
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+# When pushing to a PR, cancel any jobs still running for the previous head commit of the PR
+concurrency:
+  # head_ref is only defined for pull requests, run_id is always unique and defined so if this
+  # workflow was not triggered by a pull request, nothing gets cancelled.
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  test-versions:
+    name: Check for uncommitted changes
+    runs-on: ubuntu-24.04
+    steps:
+    - uses: actions/checkout@v4
+
+    # the codegen uses `rustfmt +nightly`
+    - uses: dtolnay/rust-toolchain@nightly
+      with:
+        components: rustfmt
+
+    # cache the openapi-codegen binary installed by regen_openapi.sh
+    - uses: Swatinem/rust-cache@v2
+      with:
+        workspaces: "rust -> target"
+        # only save the cache on the main branch
+        # cf https://github.com/Swatinem/rust-cache/issues/95
+        save-if: ${{ github.ref == 'refs/heads/main' }}
+        # include relevant information in the cache name
+        prefix-key: "codegen-${{ matrix.rust }}"
+
+    - name: Regen openapi libs
+      run: |
+        yarn
+        ./regen_openapi.sh
+
+    - name: Check for uncommitted changes
+      run: |
+        gs=$(git status -s)
+        if [[ -n "$gs" ]]; then
+          echo 'there are uncommitted changes!'
+          git status
+          exit 1
+        else
+          echo 'all good.'
+        fi
