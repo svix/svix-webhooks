@@ -1,0 +1,35 @@
+{
+    "data": {
+      "modified": [
+        "user.signup"
+      ],
+      "to_modify": [
+        {
+          "name": "user.signup",
+          "description": "string",
+          "schemas": {
+            "description": "An invoice was paid by a user",
+            "properties": {
+              "invoiceId": {
+                "description": "The invoice id",
+                "type": "string"
+              },
+              "userId": {
+                "description": "The user id",
+                "type": "string"
+              }
+            },
+            "required": [
+              "invoiceId",
+              "userId"
+            ],
+            "title": "Invoice Paid Event",
+            "type": "object"
+          },
+          "deprecated": true,
+          "featureFlag": "cool-new-feature",
+          "groupName": "user"
+        }
+      ]
+    }
+  }

@@ -1,94 +1,72 @@
 package com.svix;
 
-import com.svix.internal.ApiClient;
-import com.svix.internal.Configuration;
-import com.svix.internal.auth.HttpBearerAuth;
+import com.svix.api.*;
 
-public final class Svix {
-	public static final String VERSION = "1.59.2";
-	private final Application application;
-	private final Authentication authentication;
-	private final Endpoint endpoint;
-	private final EventType eventType;
-	private final Integration integration;
-	private final Message message;
-	private final MessageAttempt messageAttempt;
-	private final Statistics statistics;
-	private final OperationalWebhookEndpoint operationalWebhookEndpoint;
+import lombok.Getter;
 
-	public Svix(final String token) {
-		this(token, new SvixOptions());
-	}
+import okhttp3.HttpUrl;
 
-	public Svix(final String token, final SvixOptions options) {
-		ApiClient apiClient = new ApiClient();
+import java.util.Map;
 
-		if (options.hasServerUrl()) {
-			apiClient.setBasePath(options.getServerUrl());
-		} else {
-			String[] tokenParts = token.split("\\.");
-			String region = tokenParts[tokenParts.length - 1];
-			if (region.equals("us")) {
-				apiClient.setBasePath("https://api.us.svix.com");
-			} else if (region.equals("eu")) {
-				apiClient.setBasePath("https://api.eu.svix.com");
-			} else if (region.equals("in")) {
-				apiClient.setBasePath("https://api.in.svix.com");
-			} else {
-				// Fallback when all else fails.
-				apiClient.setBasePath("https://api.svix.com");
-			}
-		}
+@Getter
+public class Svix {
+    private final Application application;
+    private final Authentication authentication;
+    private final BackgroundTask backgroundTask;
+    private final Endpoint endpoint;
+    private final EventType eventType;
+    private final Integration integration;
+    private final Message message;
+    private final MessageAttempt messageAttempt;
+    private final Statistics statistics;
+    private final OperationalWebhookEndpoint operationalWebhookEndpoint;
 
-		apiClient.setUserAgent(String.format("svix-libs/%s/java", Svix.VERSION));
+    public Svix(String token) {
+        this(token, new SvixOptions());
+    }
 
-		HttpBearerAuth httpBearer = (HttpBearerAuth) apiClient.getAuthentication("HTTPBearer");
-		httpBearer.setBearerToken(token);
+    public Svix(String token, SvixOptions options) {
+        String[] tokenParts = token.split("\\.");
 
-		application = new Application(apiClient);
-		authentication = new Authentication(apiClient);
-		endpoint = new Endpoint(apiClient);
-		eventType = new EventType(apiClient);
-		integration = new Integration(apiClient);
-		message = new Message(apiClient);
-		messageAttempt = new MessageAttempt(apiClient);
-		statistics = new Statistics(apiClient);
-		operationalWebhookEndpoint = new OperationalWebhookEndpoint(apiClient);
-	}
+        if (options.getServerUrl() == null) {
+            String region = tokenParts[tokenParts.length - 1];
+            switch (region) {
+                case "us":
+                    options.setServerUrl("https://api.us.svix.com");
+                    break;
+                case "eu":
+                    options.setServerUrl("https://api.eu.svix.com");
+                    break;
+                case "in":
+                    options.setServerUrl("https://api.in.svix.com");
+                    break;
+                default:
+                    options.setServerUrl(SvixOptions.DEFAULT_URL);
+            }
+        }
 
-	public Application getApplication() {
-		return application;
-	}
+        HttpUrl parsedUrl = HttpUrl.parse(options.getServerUrl());
+        if (parsedUrl == null) {
+            throw new IllegalArgumentException("Invalid base url");
+        }
 
-	public Authentication getAuthentication() {
-		return authentication;
-	}
+        Map<String, String> defaultHeaders =
+                Map.of(
+                        "User-Agent", "svix-libs/" + Version.VERSION + "/java",
+                        "Authorization", "Bearer " + token);
 
-	public Endpoint getEndpoint() {
-		return endpoint;
-	}
+        SvixHttpClient httpClient =
+                new SvixHttpClient(parsedUrl, defaultHeaders, options.getRetrySchedule());
 
-	public EventType getEventType() {
-		return eventType;
-	}
-
-	public Integration getIntegration() {
-		return integration;
-	}
-
-	public Message getMessage() {
-		return message;
-	}
-
-	public MessageAttempt getMessageAttempt() {
-		return messageAttempt;
-	}
-
-	public Statistics getStatistics() {
-		return statistics;
-	}
-
-	public OperationalWebhookEndpoint getOperationalWebhookEndpoint() {
-		return operationalWebhookEndpoint;
-	}
+        this.application = new Application(httpClient);
+        this.authentication = new Authentication(httpClient);
+        this.backgroundTask = new BackgroundTask(httpClient);
+        this.endpoint = new Endpoint(httpClient);
+        this.eventType = new EventType(httpClient);
+        this.integration = new Integration(httpClient);
+        this.message = new Message(httpClient);
+        this.messageAttempt = new MessageAttempt(httpClient);
+        this.statistics = new Statistics(httpClient);
+        this.operationalWebhookEndpoint = new OperationalWebhookEndpoint(httpClient);
+    }
 }

@@ -91,8 +91,6 @@ jq --indent 4 '.components.schemas |= with_entries(
 # Print commands we run
 set -x
 
-yarn openapi-generator-cli generate -i .codegen-tmp/openapi.json -g java -o java/lib/generated/openapi -c java/openapi-generator-config.json -t java/templates
-
 yarn openapi-generator-cli generate -i .codegen-tmp/openapi.json -g ruby -o ruby -c ruby/openapi-generator-config.json -t ruby/templates
 
 rm -rf .codegen-tmp

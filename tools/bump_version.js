@@ -23,7 +23,7 @@ const filesPaths = [
     // Java
     "java/gradle.properties",
     "java/README.md",
-    "java/lib/src/main/java/com/svix/Svix.java",
+    "java/lib/src/main/java/com/svix/Version.java",
     // Javascript
     "javascript/package.json",
     "javascript/src/request.ts",

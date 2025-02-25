@@ -1,45 +1,17 @@
 package com.svix;
 
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.Arrays;
+import java.util.List;
+
+@Setter
+@Getter
 public final class SvixOptions {
-	private static final String DEFAULT_URL = "https://api.svix.com";
+    public static final String DEFAULT_URL = "https://api.svix.com";
 
-	private boolean debug = false;
-	private String serverUrl;
-
-	public SvixOptions() {
-	}
-
-	public SvixOptions debug(final boolean debug) {
-		this.debug = debug;
-		return this;
-	}
-
-	public SvixOptions serverUrl(final String serverUrl) {
-		this.serverUrl = serverUrl;
-		return this;
-	}
-
-	public void setDebug(final boolean debug) {
-		this.debug = debug;
-	}
-
-	public void setServerUrl(final String serverUrl) {
-		this.serverUrl = serverUrl;
-	}
-
-    public boolean getDebug() {
-        return debug;
-    }
-
-    public String getServerUrl() {
-        if (serverUrl != null) {
-            return serverUrl;
-        } else {
-            return DEFAULT_URL;
-        }
-    }
-
-    public boolean hasServerUrl() {
-        return this.serverUrl != null;
-    }
+    private String serverUrl;
+    private final List<Long> retrySchedule = Arrays.asList(50L, 100L, 200L);
+    private boolean debug = false;
 }
