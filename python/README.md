@@ -80,7 +80,6 @@ First checkout the [core README](../README.md#development) for details on how to
 ```sh
 python -m venv .venv
 pip install -r requirements.txt && pip install -r requirements-dev.txt
-./scripts/generate_openapi.sh
 ```
 
 ## Contributing

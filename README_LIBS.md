@@ -103,18 +103,5 @@ Looking for general information? Checkout the [README](./README.md).
 
 ## Usage Instructions
 
-For examples on how to get started using our client libraries checkout our [General Documentation](https://docs.svix.com). For code examples checkout our [API Documentation]()
-
-## Building the Client Libraries
-
-We use [openapi-generator](https://github.com/OpenAPITools/openapi-generator) to autogenerate bindings in each language. We then use these bindings as the building blocks for our exposed API.  To generate these bindings from the root directory of the project run:
-
-```sh
-# Install deps
-yarn
-
-# Generate bindings for every language
-./regen_openapi.sh
-```
-
-Once you have completed this step you can checkout the README of the language of your choice (found in the language's subdirectory) for detailed steps on building that particular library. You can find links to these guides in the chart [above](#official-svix-client-libraries).
+For examples on how to get started using our client libraries checkout our [General Documentation](https://docs.svix.com).
+For code examples, check out our [API Documentation](https://api.svix.com/docs).
