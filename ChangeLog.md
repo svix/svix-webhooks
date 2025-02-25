@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## Version 1.60.0
 * Libs/Java **(Breaking)**: All uses of `ListOptions`/`PostOptions` are removed, and renamed to `{Resource}{Operation}Options`. For example in `Endpoint.List` you would now use `EndpointListOptions`
 * Libs/Java **(Breaking)**: Deprecated methods `MessageAttempt.list` and `MessageAttempt.listAttemptsForEndpoint` are removed
 

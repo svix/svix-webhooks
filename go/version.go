@@ -1,3 +1,3 @@
 package svix
 
-const Version = "1.59.2"
+const Version = "1.60.0"
