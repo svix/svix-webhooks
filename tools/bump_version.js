@@ -36,8 +36,6 @@ const filesPaths = [
     // Ruby
     "ruby/Gemfile.lock",
     "ruby/lib/svix/version.rb",
-    // OpenAPI spec
-    "server/openapi.json",
     // Cloud OpenAPI spec - not necessary but any other time of updating seems weirder
     "lib-openapi.json",
 ];
@@ -63,6 +61,10 @@ filesPaths.forEach((relativePath) => {
     const filePath = join(rootDir, relativePath);
     const content = readFileSync(filePath, 'utf8');
     const updated_content = content.replace(replaceRegExp, newVersion);
+    if (content === updated_content) {
+        console.error("New version was not written to " + filePath)
+        process.exit(1);
+    }
     writeFileSync(filePath, updated_content);
 })
 
