@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class KitcheSinkTest {
+public class KitchenSinkTest {
     static final int HTTP_CONFLICT = 409;
 
     /**
