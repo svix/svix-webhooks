@@ -2,7 +2,7 @@
 
 set -eo pipefail
 
-OPENAPI_GIT_REV='98dbc5b090a5c8d72fe50962ee04b46fb9d7db20'
+OPENAPI_GIT_REV='272125558d6ac4718bdc87b1652e5d4122b69f19'
 
 if [ -n "$1" ]; then
     curl "$1" | python -m json.tool > lib-openapi.json
@@ -34,11 +34,6 @@ fi
 
     # Remove APIs we may not (yet) want to expose
     rm rust/src/api/{environment,health}.rs
-
-    # Remove .codegen.json files, its purpose is fulfilled already:
-    # - The expected git rev of the tool is encoded at the top of this file.
-    # - The lib-openapi.json used as input is also committed to this repo.
-    rm rust/src/{api,models}/.codegen.json
 )
 
 cd $(dirname "$0")

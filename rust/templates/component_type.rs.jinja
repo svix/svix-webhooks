@@ -9,6 +9,8 @@
     {% include "types/string_enum.rs.jinja" -%}
 {% elif type.kind == "integer_enum" -%}
     {% include "types/integer_enum.rs.jinja" -%}
+{% elif type.kind == "struct_enum" -%}
+    {% include "types/struct_enum.rs.jinja" -%}
 {% else -%}
     compile_error!("{{ type.kind }} types are not supported by this codegen template");
 {% endif %}
