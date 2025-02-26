@@ -1,0 +1,38 @@
+use serde::{Deserialize, Serialize};
+
+use super::{
+    {% for c in referenced_components -%}
+        {{ c | to_snake_case }}::{{ c | to_upper_camel_case }},
+    {% endfor -%}
+};
+
+{% set type_name = type.name | to_upper_camel_case -%}
+{% if type.fields | length > 0 -%}
+    {% set enum_type_name %}{{ type_name }}{{ type.content_field | to_upper_camel_case }}{% endset -%}
+
+    {{ doc_comment }}
+    #[derive(Clone, Debug, Deserialize, Serialize)]
+    pub struct {{ type_name }} {
+        {% include "types/struct_fields.rs.jinja" %}
+
+        #[serde(flatten)]
+        {% set enum_field_name = type.content_field | to_snake_case %}
+        {% if type.content_field != enum_field_name -%}
+            #[serde(rename = "{{ type.content_field }}")]
+        {% endif -%}
+        pub {{ enum_field_name }}: {{ enum_type_name }},
+    }
+{% else -%}
+    {% set enum_type_name = type_name %}
+{% endif %}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(tag = "{{ type.discriminator_field }}", content = "{{ type.content_field }}")]
+pub enum {{ enum_type_name }} {
+    {% for variant in type.variants -%}
+        {{ variant.name | to_upper_camel_case -}}
+        {% if variant.schema_ref is defined -%}
+            ({{ variant.schema_ref | to_upper_camel_case }})
+        {%- endif %},
+    {% endfor -%}
+}
