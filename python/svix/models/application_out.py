@@ -9,7 +9,7 @@ class ApplicationOut(BaseModel):
     created_at: datetime
 
     id: str
-    """The app's ID"""
+    """The Application's ID."""
 
     metadata: t.Dict[str, str]
 
@@ -18,6 +18,6 @@ class ApplicationOut(BaseModel):
     rate_limit: t.Optional[int] = None
 
     uid: t.Optional[str] = None
-    """The app's UID"""
+    """The Application's UID."""
 
     updated_at: datetime

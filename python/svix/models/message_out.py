@@ -16,7 +16,7 @@ class MessageOut(BaseModel):
     """The event type's name"""
 
     id: str
-    """The msg's ID"""
+    """The Message's ID."""
 
     payload: t.Dict[str, t.Any]
 

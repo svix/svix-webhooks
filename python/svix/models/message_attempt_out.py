@@ -10,15 +10,15 @@ from .message_status import MessageStatus
 
 class MessageAttemptOut(BaseModel):
     endpoint_id: str
-    """The ep's ID"""
+    """The Endpoint's ID."""
 
     id: str
-    """The attempt's ID"""
+    """The MessageAttempt's ID."""
 
     msg: t.Optional[MessageOut] = None
 
     msg_id: str
-    """The msg's ID"""
+    """The Message's ID."""
 
     response: str
 

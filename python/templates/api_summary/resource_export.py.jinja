@@ -1,0 +1,9 @@
+{%- set resource_type_name = resource.name | to_upper_camel_case %}
+{%- for async_postfix in ["", "Async"] %}
+"{{ resource.name | to_upper_camel_case }}{{ async_postfix }}",
+{%- endfor %}
+{%- for op in resource.operations -%}
+    {%- if op | has_query_or_header_params %}
+"{{ resource_type_name }}{{ op.name | to_upper_camel_case }}Options",
+    {%- endif -%}
+{%- endfor -%}

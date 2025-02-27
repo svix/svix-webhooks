@@ -16,6 +16,8 @@ from ..models import (
     BackgroundTaskOut,
     BackgroundTaskStatus,
     BackgroundTaskType,
+    ConnectorIn,
+    ConnectorKind,
     DashboardAccessOut,
     EndpointHeadersIn,
     EndpointHeadersOut,
@@ -74,9 +76,7 @@ from ..models import (
     ReplayIn,
     ReplayOut,
     StatusCodeClass,
-    TemplateIn,
     TemplateOut,
-    TransformationTemplateKind,
 )
 from .application import (
     Application,
@@ -128,6 +128,7 @@ from .message import (
     Message,
     MessageAsync,
     MessageCreateOptions,
+    MessageExpungeAllContentsOptions,
     MessageGetOptions,
     MessageListOptions,
 )
@@ -323,6 +324,7 @@ __all__ = [
     "MessageAsync",
     "MessageListOptions",
     "MessageCreateOptions",
+    "MessageExpungeAllContentsOptions",
     "MessageGetOptions",
     "MessageAttempt",
     "MessageAttemptAsync",
@@ -353,6 +355,8 @@ __all__ = [
     "BackgroundTaskOut",
     "BackgroundTaskStatus",
     "BackgroundTaskType",
+    "ConnectorIn",
+    "ConnectorKind",
     "DashboardAccessOut",
     "EndpointHeadersIn",
     "EndpointHeadersOut",
@@ -411,7 +415,5 @@ __all__ = [
     "ReplayIn",
     "ReplayOut",
     "StatusCodeClass",
-    "TemplateIn",
     "TemplateOut",
-    "TransformationTemplateKind",
 ]

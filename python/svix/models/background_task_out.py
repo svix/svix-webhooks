@@ -10,6 +10,7 @@ class BackgroundTaskOut(BaseModel):
     data: t.Dict[str, t.Any]
 
     id: str
+    """The QueueBackgroundTask's ID."""
 
     status: BackgroundTaskStatus
 

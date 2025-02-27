@@ -7,6 +7,7 @@ from .common import BaseModel
 
 class ReplayOut(BaseModel):
     id: str
+    """The QueueBackgroundTask's ID."""
 
     status: BackgroundTaskStatus
 

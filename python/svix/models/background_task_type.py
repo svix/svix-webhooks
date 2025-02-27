@@ -9,6 +9,7 @@ class BackgroundTaskType(str, Enum):
     MESSAGE_BROADCAST = "message.broadcast"
     SDK_GENERATE = "sdk.generate"
     EVENT_TYPE_AGGREGATE = "event-type.aggregate"
+    APPLICATION_PURGE_CONTENT = "application.purge_content"
 
     def __str__(self) -> str:
         return str(self.value)

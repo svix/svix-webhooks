@@ -3,9 +3,7 @@ from typing import Any, Dict, List, Type, TypeVar
 
 import attr
 
-
 from .validation_error import ValidationError
-
 
 T = TypeVar("T", bound="HTTPValidationError")
 

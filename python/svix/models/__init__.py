@@ -12,6 +12,8 @@ from .background_task_data import BackgroundTaskData
 from .background_task_out import BackgroundTaskOut
 from .background_task_status import BackgroundTaskStatus
 from .background_task_type import BackgroundTaskType
+from .connector_in import ConnectorIn
+from .connector_kind import ConnectorKind
 from .dashboard_access_out import DashboardAccessOut
 from .endpoint_headers_in import EndpointHeadersIn
 from .endpoint_headers_out import EndpointHeadersOut
@@ -37,6 +39,7 @@ from .event_type_in import EventTypeIn
 from .event_type_out import EventTypeOut
 from .event_type_patch import EventTypePatch
 from .event_type_update import EventTypeUpdate
+from .expung_all_contents_out import ExpungAllContentsOut
 from .integration_in import IntegrationIn
 from .integration_key_out import IntegrationKeyOut
 from .integration_out import IntegrationOut
@@ -74,9 +77,7 @@ from .recover_out import RecoverOut
 from .replay_in import ReplayIn
 from .replay_out import ReplayOut
 from .status_code_class import StatusCodeClass
-from .template_in import TemplateIn
 from .template_out import TemplateOut
-from .transformation_template_kind import TransformationTemplateKind
 
 __all__ = [
     "BackgroundTaskData",
@@ -92,6 +93,8 @@ __all__ = [
     "BackgroundTaskOut",
     "BackgroundTaskStatus",
     "BackgroundTaskType",
+    "ConnectorIn",
+    "ConnectorKind",
     "DashboardAccessOut",
     "EndpointHeadersIn",
     "EndpointHeadersOut",
@@ -117,6 +120,7 @@ __all__ = [
     "EventTypeOut",
     "EventTypePatch",
     "EventTypeUpdate",
+    "ExpungAllContentsOut",
     "IntegrationIn",
     "IntegrationKeyOut",
     "IntegrationOut",
@@ -150,7 +154,5 @@ __all__ = [
     "ReplayIn",
     "ReplayOut",
     "StatusCodeClass",
-    "TemplateIn",
     "TemplateOut",
-    "TransformationTemplateKind",
 ]

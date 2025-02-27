@@ -19,16 +19,19 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  test-versions:
+  check-git-consistency:
     name: Check for uncommitted changes
     runs-on: ubuntu-24.04
     steps:
     - uses: actions/checkout@v4
 
-    # the codegen uses `rustfmt +nightly`
+    # Rust codegen uses `rustfmt +nightly`
     - uses: dtolnay/rust-toolchain@nightly
       with:
         components: rustfmt
+
+    # Python codegen uses `ruff` for formatting and cleaning up unused imports
+    - run: pipx install ruff
 
     # cache the openapi-codegen binary installed by regen_openapi.sh
     - uses: Swatinem/rust-cache@v2

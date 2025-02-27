@@ -20,7 +20,7 @@ class MessageEndpointOut(BaseModel):
     filter_types: t.Optional[t.List[str]] = None
 
     id: str
-    """The ep's ID"""
+    """The Endpoint's ID."""
 
     next_attempt: t.Optional[datetime] = None
 
