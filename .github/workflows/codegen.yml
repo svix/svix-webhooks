@@ -19,7 +19,7 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  test-versions:
+  check-git-consistency:
     name: Check for uncommitted changes
     runs-on: ubuntu-24.04
     steps:
