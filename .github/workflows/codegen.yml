@@ -39,6 +39,58 @@ jobs:
     # Python codegen uses `ruff` for formatting and cleaning up unused imports
     - run: pipx install ruff
 
+    - run: |
+        mkdir -p $HOME/.local/bin
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+    # Java codegen uses `google-java-format` for formatting
+    - name: Install google-java-format
+      run: |
+        # download
+        echo "28a77d7b13571928d08a45d468497bd82efdb121e507d86430d48abbd68e042f google-java-format" > google-java-format.sha256
+        curl -fsSL --output google-java-format "https://github.com/google/google-java-format/releases/download/v1.25.2/google-java-format_linux-x86-64"
+        sha256sum google-java-format.sha256 -c
+        rm google-java-format.sha256
+
+        # install
+        chmod +x google-java-format
+        mv google-java-format $HOME/.local/bin
+
+    # Kotlin codegen uses `ktfmt` for formatting
+    - name: Install ktfmt
+      run: |
+        # download
+        echo "5e7eb28a0b2006d1cefbc9213bfc73a8191ec2f85d639ec4fc4ec0cd04212e82 ktfmt-0.54-jar-with-dependencies.jar" > ktfmt-0.54-jar-with-dependencies.jar.sha256
+        curl -fsSL --output ktfmt-0.54-jar-with-dependencies.jar "https://github.com/facebook/ktfmt/releases/download/v0.54/ktfmt-0.54-jar-with-dependencies.jar"
+        sha256sum ktfmt-0.54-jar-with-dependencies.jar.sha256  -c
+        rm ktfmt-0.54-jar-with-dependencies.jar.sha256
+
+        # install
+        mv ktfmt-0.54-jar-with-dependencies.jar $HOME/.local/bin
+        echo '#!/usr/bin/bash
+        java -jar $HOME/.local/bin/ktfmt-0.54-jar-with-dependencies.jar $@' > $HOME/.local/bin/ktfmt
+        chmod +x $HOME/.local/bin/ktfmt
+
+    # Ruby codegen uses `rubyfmt` for formatting
+    - name: Install rubyfmt
+      run: |
+        # download
+        echo "946ed10c449d957b01bba16504d8b816f9b8dfa442d9681674fc5b592aed3666 rubyfmt-v0.10.19-0-Linux-x86_64.tar.gz" > rubyfmt-v0.10.19-0-Linux-x86_64.tar.gz.sha256
+        curl -fsSL --output rubyfmt-v0.10.19-0-Linux-x86_64.tar.gz https://github.com/fables-tales/rubyfmt/releases/download/v0.10.19-0/rubyfmt-v0.10.19-0-Linux-x86_64.tar.gz
+        sha256sum rubyfmt-v0.10.19-0-Linux-x86_64.tar.gz.sha256  -c
+        rm rubyfmt-v0.10.19-0-Linux-x86_64.tar.gz.sha256
+
+        # install
+        mkdir /tmp/rubyfmt
+        tar -xf rubyfmt-v0.10.19-0-Linux-x86_64.tar.gz -C /tmp/rubyfmt
+        mv /tmp/rubyfmt/tmp/releases/v0.10.19-0-Linux/rubyfmt $HOME/.local/bin
+        rm rubyfmt-v0.10.19-0-Linux-x86_64.tar.gz
+
+    # Go uses `goimports` to remove unused imports
+    - name: Install goimports
+      run: |
+        GOBIN="$HOME/.local/bin" go install golang.org/x/tools/cmd/goimports@latest
+
     # cache the openapi-codegen binary installed by regen_openapi.sh
     - uses: Swatinem/rust-cache@v2
       with:
