@@ -8,7 +8,7 @@ module Svix
 
     # <b>DEPRECATED:</b> Please use <tt>list_by_msg</tt> instead.
     def list(app_id, msg_id, options = {})
-      warn "[DEPRECATION] `list` is deprecated.  Please use `list_by_msg` instead."
+      warn("[DEPRECATION] `list` is deprecated.  Please use `list_by_msg` instead.")
       return self.list_by_msg(app_id, msg_id, options)
     end
 
@@ -38,9 +38,11 @@ module Svix
 
     # <b>DEPRECATED:</b> Please use <tt>list_by_msg</tt> instead.
     def list_attempts_for_endpoint(app_id, endpoint_id, msg_id, options = {})
-      warn "[DEPRECATION] `list` is deprecated.  Please use `list_by_msg` instead, passing the endpoint ID through options."
+      warn(
+        "[DEPRECATION] `list` is deprecated.  Please use `list_by_msg` instead, passing the endpoint ID through options."
+      )
 
-      options[:'endpoint_id'] = endpoint_id
+      options[:"endpoint_id"] = endpoint_id
       return self.list_by_msg(app_id, msg_id, options)
     end
 
