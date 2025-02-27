@@ -8,10 +8,11 @@ module Svix
 
     def initialize(attributes = {})
       if (!attributes.is_a?(Hash))
-        fail ArgumentError, "The input argument (attributes) must be a hash in `Svix::HttpErrorOut` initialize method"
+        fail(ArgumentError, "The input argument (attributes) must be a hash in `Svix::HttpErrorOut` initialize method")
       end
-      @detail = attributes[:'detail']
-      @code = attributes[:'code']
+
+      @detail = attributes[:"detail"]
+      @code = attributes[:"code"]
     end
   end
 end

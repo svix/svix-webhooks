@@ -14,11 +14,15 @@ module Svix
 
     def initialize(attributes = {})
       if (!attributes.is_a?(Hash))
-        fail ArgumentError, "The input argument (attributes) must be a hash in `Svix::ValidationError` initialize method"
+        fail(
+          ArgumentError,
+          "The input argument (attributes) must be a hash in `Svix::ValidationError` initialize method"
+        )
       end
-      @loc = attributes[:'loc']
-      @msg = attributes[:'msg']
-      @type = attributes[:'type']
+
+      @loc = attributes[:"loc"]
+      @msg = attributes[:"msg"]
+      @type = attributes[:"type"]
     end
   end
 end

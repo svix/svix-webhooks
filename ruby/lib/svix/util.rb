@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 require "date"
+
 # Constant time string comparison, for fixed length strings.
 # Code borrowed from ActiveSupport
 # https://github.com/rails/rails/blob/75ac626c4e21129d8296d4206a1960563cc3d4aa/activesupport/lib/active_support/security_utils.rb#L33
@@ -15,7 +16,7 @@ module Svix
     def fixed_length_secure_compare(a, b)
       raise ArgumentError, "string length mismatch." unless a.bytesize == b.bytesize
 
-      l = a.unpack "C#{a.bytesize}"
+      l = a.unpack("C#{a.bytesize}")
 
       res = 0
       b.each_byte { |byte| res |= byte ^ l.shift }
