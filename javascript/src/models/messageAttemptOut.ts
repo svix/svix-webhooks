@@ -30,7 +30,9 @@ export const MessageAttemptOutSerializer = {
     return {
       endpointId: object["endpointId"],
       id: object["id"],
-      msg: MessageOutSerializer._fromJsonObject(object["msg"]),
+      msg: object["msg"]
+        ? MessageOutSerializer._fromJsonObject(object["msg"])
+        : undefined,
       msgId: object["msgId"],
       response: object["response"],
       responseDurationMs: object["responseDurationMs"],

@@ -24,7 +24,9 @@ export interface AppPortalAccessIn {
 export const AppPortalAccessInSerializer = {
   _fromJsonObject(object: any): AppPortalAccessIn {
     return {
-      application: ApplicationInSerializer._fromJsonObject(object["application"]),
+      application: object["application"]
+        ? ApplicationInSerializer._fromJsonObject(object["application"])
+        : undefined,
       expiry: object["expiry"],
       featureFlags: object["featureFlags"],
       readOnly: object["readOnly"],
