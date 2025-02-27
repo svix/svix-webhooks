@@ -46,7 +46,7 @@ module Svix
     content_type = attributes.delete(:content_type)
     if content_type != nil
       attributes[:transformations_params][:headers] ||= {}
-      attributes[:transformations_params][:headers][:'content-type'] = content_type
+      attributes[:transformations_params][:headers][:"content-type"] = content_type
     end
 
     return MessageIn.new(attributes)
