@@ -336,4 +336,17 @@ describe("mockttp tests", () => {
     const requests = await endpointMock.getSeenRequests();
     expect(requests.length).toBe(1);
   });
+
+  test("octothorpe in url query", async () => {
+    const endpointMock = await mockServer
+      .forGet("/api/v1/app/app1/msg")
+      .thenReply(200, ListResponseMessageOut);
+    const svx = new Svix("token.eu", { serverUrl: mockServer.url });
+
+    await svx.message.list("app1", { tag: "test#test" });
+
+    const requests = await endpointMock.getSeenRequests();
+    expect(requests.length).toBe(1);
+    expect(requests[0].url.endsWith("api/v1/app/app1/msg?tag=test%23test")).toBe(true);
+  });
 });

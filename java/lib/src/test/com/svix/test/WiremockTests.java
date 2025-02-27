@@ -435,4 +435,21 @@ public class WiremockTests {
                 postRequestedFor(urlEqualTo("/api/v1/app/app1/msg"))
                         .withRequestBody(equalTo(expectedBody)));
     }
+
+    @Test
+    public void octothorpeInUrlQuery() throws Exception {
+        Svix svx = testClient();
+        wireMockRule.stubFor(
+                WireMock.get(urlEqualTo("/api/v1/app/app1/msg?tag=test%23test"))
+                        .willReturn(WireMock.ok().withBodyFile("ListResponseMessageOut.json")));
+
+        MessageListOptions opts = new MessageListOptions();
+        opts.setTag("test#test");
+        svx.getMessage().list("app1", opts);
+
+        wireMockRule.verify(
+                1,
+                getRequestedFor(urlEqualTo("/api/v1/app/app1/msg?tag=test%23test")));
+    }
+
 }

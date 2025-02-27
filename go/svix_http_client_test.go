@@ -195,3 +195,27 @@ func TestQueryParamListSerialization(t *testing.T) {
 		t.Error(err)
 	}
 }
+
+func TestOctothorpeUrlParam(t *testing.T) {
+	svx := newMockClient()
+	httpmock.Activate()
+	defer httpmock.DeactivateAndReset()
+
+	httpmock.RegisterResponder("GET", "http://testapi.test/api/v1/app/random_app_id/msg",
+		func(r *http.Request) (*http.Response, error) {
+			if !reflect.DeepEqual(r.URL.RawQuery, "tag=test%23test") {
+				t.Errorf("Unexpected MessageListOptions serialization, got: %v", r.URL.RawQuery)
+			}
+
+			return httpmock.NewStringResponse(200, msgListOut), nil
+		},
+	)
+	tag := "test#test"
+	listOpts := svix.MessageListOptions{
+		Tag: &tag,
+	}
+	_, err := svx.Message.List(context.Background(), "random_app_id", &listOpts)
+	if err != nil {
+		t.Error(err)
+	}
+}
