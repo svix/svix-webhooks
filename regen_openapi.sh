@@ -8,7 +8,6 @@ if [ -n "$1" ]; then
     curl "$1" | python -m json.tool > lib-openapi.json
 fi
 
-# Rust - using the new openapi-codegen
 if ! command -v openapi-codegen >/dev/null; then
     if [[ -z "$GITHUB_WORKFLOW" ]]; then
         echo openapi-codegen is not installed. install using
@@ -19,6 +18,7 @@ if ! command -v openapi-codegen >/dev/null; then
     fi
 fi
 
+# Rust
 (
     # Print commands we run
     set -x
@@ -35,6 +35,34 @@ fi
     # Remove APIs we may not (yet) want to expose
     rm rust/src/api/{environment,health}.rs
 )
+
+# Python
+(
+    # Print commands we run
+    set -x
+
+    #openapi-codegen generate \
+    #    --template python/templates/api_summary.py.jinja \
+    #    --input-file lib-openapi.json \
+    #    --output-dir python/svix/api
+    openapi-codegen generate \
+        --template python/templates/api_resource.py.jinja \
+        --input-file lib-openapi.json \
+        --output-dir python/svix/api
+    openapi-codegen generate \
+        --template python/templates/component_type_summary.py.jinja \
+        --input-file lib-openapi.json \
+        --output-dir python/svix/models
+    openapi-codegen generate \
+        --template python/templates/component_type.py.jinja \
+        --input-file lib-openapi.json \
+        --output-dir python/svix/models
+
+    # Remove APIs we may not (yet) want to expose
+    rm python/svix/api/{environment,health}.py
+)
+
+exit 0
 
 cd $(dirname "$0")
 mkdir -p .codegen-tmp
