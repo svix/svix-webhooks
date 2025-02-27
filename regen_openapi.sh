@@ -18,6 +18,25 @@ if ! command -v openapi-codegen >/dev/null; then
     fi
 fi
 
+# JavaScript
+(
+    # Print commands we run
+    set -x
+
+    openapi-codegen generate \
+        --template javascript/templates/api_resource.ts.jinja \
+        --input-file lib-openapi.json \
+        --output-dir javascript/src/api
+    openapi-codegen generate \
+        --template javascript/templates/component_type_summary.ts.jinja \
+        --input-file lib-openapi.json \
+        --output-dir javascript/src/models
+    openapi-codegen generate \
+        --template javascript/templates/component_type.ts.jinja \
+        --input-file lib-openapi.json \
+        --output-dir javascript/src/models
+)
+
 # Rust
 (
     # Print commands we run
