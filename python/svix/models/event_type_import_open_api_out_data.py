@@ -1,3 +1,4 @@
+# this file is @generated
 import typing as t
 
 from pydantic import Field

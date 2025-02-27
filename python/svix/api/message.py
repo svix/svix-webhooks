@@ -3,7 +3,7 @@ import typing as t
 from dataclasses import dataclass
 from datetime import datetime
 
-from ..models import ListResponseMessageOut, MessageIn, MessageOut
+from ..models import ExpungAllContentsOut, ListResponseMessageOut, MessageIn, MessageOut
 from .common import ApiBase, BaseOptions, serialize_params
 
 
@@ -53,6 +53,18 @@ class MessageCreateOptions(BaseOptions):
                 "with_content": self.with_content,
             }
         )
+
+    def _header_params(self) -> t.Dict[str, str]:
+        return serialize_params(
+            {
+                "idempotency-key": self.idempotency_key,
+            }
+        )
+
+
+@dataclass
+class MessageExpungeAllContentsOptions(BaseOptions):
+    idempotency_key: t.Optional[str] = None
 
     def _header_params(self) -> t.Dict[str, str]:
         return serialize_params(
@@ -119,8 +131,7 @@ class MessageAsync(ApiBase):
         Note that by default this endpoint is limited to retrieving 90 days' worth of data
         relative to now or, if an iterator is provided, 90 days before/after the time indicated
         by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
-        set the `before` or `after` parameter as appropriate.
-        """
+        set the `before` or `after` parameter as appropriate."""
         response = await self._request_asyncio(
             method="get",
             path="/api/v1/app/{app_id}/msg",
@@ -157,9 +168,26 @@ class MessageAsync(ApiBase):
             header_params=options._header_params(),
             json_body=message_in.model_dump_json(exclude_unset=True, by_alias=True),
         )
-        ret = response.json()
-        ret["payload"] = message_in.payload
-        return MessageOut.model_validate(ret)
+        return MessageOut.model_validate(response.json())
+
+    async def expunge_all_contents(
+        self,
+        app_id: str,
+        options: MessageExpungeAllContentsOptions = MessageExpungeAllContentsOptions(),
+    ) -> ExpungAllContentsOut:
+        """Purge all message content for the application.
+
+        Delete all message payloads for the application."""
+        response = await self._request_asyncio(
+            method="post",
+            path="/api/v1/app/{app_id}/msg/expunge-all-contents",
+            path_params={
+                "app_id": app_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
+        )
+        return ExpungAllContentsOut.model_validate(response.json())
 
     async def get(
         self, app_id: str, msg_id: str, options: MessageGetOptions = MessageGetOptions()
@@ -204,8 +232,7 @@ class Message(ApiBase):
         Note that by default this endpoint is limited to retrieving 90 days' worth of data
         relative to now or, if an iterator is provided, 90 days before/after the time indicated
         by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
-        set the `before` or `after` parameter as appropriate.
-        """
+        set the `before` or `after` parameter as appropriate."""
         response = self._request_sync(
             method="get",
             path="/api/v1/app/{app_id}/msg",
@@ -242,9 +269,26 @@ class Message(ApiBase):
             header_params=options._header_params(),
             json_body=message_in.model_dump_json(exclude_unset=True, by_alias=True),
         )
-        ret = response.json()
-        ret["payload"] = message_in.payload
-        return MessageOut.model_validate(ret)
+        return MessageOut.model_validate(response.json())
+
+    def expunge_all_contents(
+        self,
+        app_id: str,
+        options: MessageExpungeAllContentsOptions = MessageExpungeAllContentsOptions(),
+    ) -> ExpungAllContentsOut:
+        """Purge all message content for the application.
+
+        Delete all message payloads for the application."""
+        response = self._request_sync(
+            method="post",
+            path="/api/v1/app/{app_id}/msg/expunge-all-contents",
+            path_params={
+                "app_id": app_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
+        )
+        return ExpungAllContentsOut.model_validate(response.json())
 
     def get(
         self, app_id: str, msg_id: str, options: MessageGetOptions = MessageGetOptions()

@@ -24,7 +24,7 @@ class EndpointPatch(BaseModel):
     It is recommended to not set this and let the server generate the secret."""
 
     uid: t.Optional[str] = None
-    """The ep's UID"""
+    """The Endpoint's UID."""
 
     url: t.Optional[str] = None
 

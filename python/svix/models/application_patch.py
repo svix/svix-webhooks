@@ -12,4 +12,4 @@ class ApplicationPatch(BaseModel):
     rate_limit: t.Optional[int] = None
 
     uid: t.Optional[str] = None
-    """The app's UID"""
+    """The Application's UID."""

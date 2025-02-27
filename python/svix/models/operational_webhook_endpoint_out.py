@@ -16,7 +16,7 @@ class OperationalWebhookEndpointOut(BaseModel):
     filter_types: t.Optional[t.List[str]] = None
 
     id: str
-    """The ep's ID"""
+    """The Endpoint's ID."""
 
     metadata: t.Dict[str, str]
 

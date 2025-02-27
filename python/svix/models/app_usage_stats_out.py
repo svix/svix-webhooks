@@ -8,6 +8,7 @@ from .common import BaseModel
 
 class AppUsageStatsOut(BaseModel):
     id: str
+    """The QueueBackgroundTask's ID."""
 
     status: BackgroundTaskStatus
 

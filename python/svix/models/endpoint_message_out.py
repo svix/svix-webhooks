@@ -19,7 +19,7 @@ class EndpointMessageOut(BaseModel):
     """The event type's name"""
 
     id: str
-    """The msg's ID"""
+    """The Message's ID."""
 
     next_attempt: t.Optional[datetime] = None
 

@@ -8,7 +8,6 @@ from datetime import datetime, timezone
 import httpx
 
 from .client import AuthenticatedClient
-
 from .errors.http_error import HttpError
 from .errors.http_validation_error import HTTPValidationError
 
