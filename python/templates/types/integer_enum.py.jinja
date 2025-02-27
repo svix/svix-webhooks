@@ -1,0 +1,14 @@
+from enum import IntEnum
+
+
+class {{ type.name | to_upper_camel_case }}(IntEnum):
+    {%- if type.description is defined %}
+    {{ type.description | to_doc_comment(style="python") | indent(4) }}
+    {%- endif %}
+
+    {% for varname, value in type.variants -%}
+    {{ varname | to_upper_snake_case }} = {{ value }}
+    {% endfor -%}
+
+    def __str__(self) -> str:
+        return str(self.value)
