@@ -1,0 +1,16 @@
+{{ doc_comment }}
+export enum {{ type.name | to_upper_camel_case }} {
+    {% for name, value in type.variants -%}
+    {{ name | to_upper_camel_case }} = {{ value }},
+    {% endfor -%}
+}
+
+export const {{ type.name | to_upper_camel_case }}Serializer = {
+    _fromJsonObject(object: any): {{ type.name | to_upper_camel_case }} {
+        return object;
+    },
+
+    _toJsonObject(self: {{ type.name | to_upper_camel_case }}): any {
+        return self;
+    }
+}

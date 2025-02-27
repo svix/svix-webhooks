@@ -23,6 +23,7 @@
   "exclude": [
     "dist",
     "node_modules",
+    "templates",
     "jest.config.js",
     "src/**/*.test.ts",
     "eslint.config.mjs"

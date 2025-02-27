@@ -25,6 +25,12 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    # JS codegen uses biome
+    - name: Setup Biome
+      uses: biomejs/setup-biome@v2
+      with:
+        version: "1.9.4"
+
     # Rust codegen uses `rustfmt +nightly`
     - uses: dtolnay/rust-toolchain@nightly
       with:
