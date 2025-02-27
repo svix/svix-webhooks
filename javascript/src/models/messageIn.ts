@@ -34,7 +34,9 @@ export interface MessageIn {
 export const MessageInSerializer = {
   _fromJsonObject(object: any): MessageIn {
     return {
-      application: ApplicationInSerializer._fromJsonObject(object["application"]),
+      application: object["application"]
+        ? ApplicationInSerializer._fromJsonObject(object["application"])
+        : undefined,
       channels: object["channels"],
       eventId: object["eventId"],
       eventType: object["eventType"],

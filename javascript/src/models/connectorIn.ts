@@ -22,7 +22,9 @@ export const ConnectorInSerializer = {
       filterTypes: object["filterTypes"],
       instructions: object["instructions"],
       instructionsLink: object["instructionsLink"],
-      kind: ConnectorKindSerializer._fromJsonObject(object["kind"]),
+      kind: object["kind"]
+        ? ConnectorKindSerializer._fromJsonObject(object["kind"])
+        : undefined,
       logo: object["logo"],
       name: object["name"],
       transformation: object["transformation"],

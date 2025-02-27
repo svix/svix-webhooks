@@ -304,4 +304,36 @@ describe("mockttp tests", () => {
     expect(requests[0].headers["authorization"]).toBe("Bearer token.eu");
     expect(requests[0].headers["user-agent"]).toBe(`svix-libs/${LIB_VERSION}/javascript`);
   });
+
+  test("MessageAttemptOut without msg", async () => {
+    const RES = `{
+      "data": [
+        {
+          "url": "https://example.com/webhook/",
+          "response": "{}",
+          "responseStatusCode": 200,
+          "responseDurationMs": 0,
+          "status": 0,
+          "triggerType": 0,
+          "msgId": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+          "endpointId": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+          "id": "atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+          "timestamp": "2019-08-24T14:15:22Z"
+        }
+      ],
+      "iterator": "iterator",
+      "prevIterator": "-iterator",
+      "done": true
+    }`;
+    const endpointMock = await mockServer
+      .forGet("/api/v1/app/app/attempt/endpoint/edp")
+      .thenReply(200, RES);
+
+    const svx = new Svix("token.eu", { serverUrl: mockServer.url });
+
+    await svx.messageAttempt.listByEndpoint("app", "edp");
+
+    const requests = await endpointMock.getSeenRequests();
+    expect(requests.length).toBe(1);
+  });
 });
