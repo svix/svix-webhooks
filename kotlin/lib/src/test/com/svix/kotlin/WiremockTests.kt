@@ -16,6 +16,7 @@ import kotlin.test.assertEquals
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Instant
 import org.junit.jupiter.api.*
+import kotlin.test.assertEquals
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class WiremockTests {
@@ -381,4 +382,21 @@ class WiremockTests {
         )
         runBlocking { svx.application.list() }
     }
+
+    @Test
+    fun octothorpeInUrlQuery() {
+        val svx = testClient()
+        wireMockServer.stubFor(
+            get(urlEqualTo("/api/v1/app/app1/msg?tag=test%23test"))
+                .willReturn(ok().withBodyFile("ListResponseMessageOut.json"))
+        )
+
+        runBlocking { svx.message.list("app1", MessageListOptions(tag = "test#test")) }
+
+        wireMockServer.verify(
+            1,
+            getRequestedFor(urlEqualTo("/api/v1/app/app1/msg?tag=test%23test"))
+        )
+    }
+
 }
