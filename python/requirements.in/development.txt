@@ -8,3 +8,4 @@ pytest-docker
 pytest-httpserver
 requests
 types-requests
+httpretty
