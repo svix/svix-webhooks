@@ -1,0 +1,39 @@
+import typing as t
+from typing_extensions import Annotated
+
+from pydantic import Field
+from datetime import datetime
+
+from .common import BaseModel
+
+{% for c in referenced_components %}
+from . {{ c | to_snake_case }} import {{ c | to_upper_camel_case }}
+{%- endfor %}
+
+{%- set type_name = type.name | to_upper_camel_case %}
+
+
+{% for variant in type.variants %}
+class {{ type_name }}{{ variant.name | to_upper_camel_case }}(BaseModel):
+    {{ type.discriminator_field | to_snake_case }}: t.Literal["{{ variant.name }}"]
+
+    {% include "types/struct_fields.py.jinja" %}
+    {% if variant.schema_ref is defined -%}
+    {{ type.content_field | to_snake_case }}: {{ variant.schema_ref | to_upper_camel_case -}}
+        {% if type.content_field | to_lower_camel_case != type.content_field %}= Field(alias="{{ type.content_field }}"){% endif %}
+    {% endif %}
+{%- endfor %}
+
+
+{{ type_name }} = Annotated[
+    t.Union[
+         {%- for variant in type.variants -%}
+            {{ type_name }}{{ variant.name | to_upper_camel_case }}
+            {%- if not loop.last %}, {% endif %}
+        {%- endfor -%}
+    ],
+    Field(discriminator="{{ type.discriminator_field }}")
+]
+{%- if type.description is defined %}
+{{ type.description | to_doc_comment(style="python") }}
+{% endif %}

@@ -1,0 +1,24 @@
+{% for field in type.fields %}
+    {%- if field.required and not field.nullable %}
+        {%- if field.name | to_lower_camel_case != field.name %}
+    {{ field.name | to_snake_case }}: {{ field.type.to_python() }} = Field(alias="{{ field.name }}")
+        {%- else %}
+    {{ field.name | to_snake_case }}: {{ field.type.to_python() }}
+        {%- endif %}
+    {%- elif field.required and field.nullable %}
+        {%- if field.name | to_lower_camel_case != field.name %}
+    {{ field.name | to_snake_case }}: t.Optional[{{ field.type.to_python() }}] = Field(alias="{{ field.name }}")
+        {%- else %}
+    {{ field.name | to_snake_case }}: t.Optional[{{ field.type.to_python() }}]
+        {%- endif %}
+    {%- else %}
+        {%- if field.name | to_lower_camel_case != field.name %}
+    {{ field.name | to_snake_case }}: t.Optional[{{ field.type.to_python() }}] = Field(default=None, alias="{{ field.name }}")
+        {%- else %}
+    {{ field.name | to_snake_case }}: t.Optional[{{ field.type.to_python() }}] = None
+        {%- endif %}
+    {%- endif %}
+    {%- if field.description is defined %}
+    {{ field.description | to_doc_comment(style="python") | indent(4) }}
+    {%- endif %}
+{% endfor %}
