@@ -1,13 +1,9 @@
 // this file is @generated
 /* eslint @typescript-eslint/no-explicit-any: 0 */
 
-export interface EndpointIn {
-  /** List of message channels this endpoint listens to (omit for all). */
-  channels?: string[] | null;
+export interface IngestEndpointIn {
   description?: string;
   disabled?: boolean;
-  filterTypes?: string[] | null;
-  headers?: { [key: string]: string } | null;
   metadata?: { [key: string]: string };
   rateLimit?: number | null;
   /**
@@ -20,39 +16,30 @@ export interface EndpointIn {
   /** Optional unique identifier for the endpoint. */
   uid?: string | null;
   url: string;
-  version?: number | null;
 }
 
-export const EndpointInSerializer = {
-  _fromJsonObject(object: any): EndpointIn {
+export const IngestEndpointInSerializer = {
+  _fromJsonObject(object: any): IngestEndpointIn {
     return {
-      channels: object["channels"],
       description: object["description"],
       disabled: object["disabled"],
-      filterTypes: object["filterTypes"],
-      headers: object["headers"],
       metadata: object["metadata"],
       rateLimit: object["rateLimit"],
       secret: object["secret"],
       uid: object["uid"],
       url: object["url"],
-      version: object["version"],
     };
   },
 
-  _toJsonObject(self: EndpointIn): any {
+  _toJsonObject(self: IngestEndpointIn): any {
     return {
-      channels: self.channels,
       description: self.description,
       disabled: self.disabled,
-      filterTypes: self.filterTypes,
-      headers: self.headers,
       metadata: self.metadata,
       rateLimit: self.rateLimit,
       secret: self.secret,
       uid: self.uid,
       url: self.url,
-      version: self.version,
     };
   },
 };

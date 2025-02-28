@@ -146,7 +146,7 @@ impl<'a> Message<'a> {
         &self,
         app_id: String,
         options: Option<MessageExpungeAllContentsOptions>,
-    ) -> Result<ExpungAllContentsOut> {
+    ) -> Result<ExpungeAllContentsOut> {
         let MessageExpungeAllContentsOptions { idempotency_key } = options.unwrap_or_default();
 
         crate::request::Request::new(

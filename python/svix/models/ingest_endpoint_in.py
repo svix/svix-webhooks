@@ -4,17 +4,10 @@ import typing as t
 from .common import BaseModel
 
 
-class EndpointIn(BaseModel):
-    channels: t.Optional[t.List[str]] = None
-    """List of message channels this endpoint listens to (omit for all)."""
-
+class IngestEndpointIn(BaseModel):
     description: t.Optional[str] = None
 
     disabled: t.Optional[bool] = None
-
-    filter_types: t.Optional[t.List[str]] = None
-
-    headers: t.Optional[t.Dict[str, str]] = None
 
     metadata: t.Optional[t.Dict[str, str]] = None
 
@@ -30,5 +23,3 @@ class EndpointIn(BaseModel):
     """Optional unique identifier for the endpoint."""
 
     url: str
-
-    version: t.Optional[int] = None

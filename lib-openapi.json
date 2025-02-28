@@ -88,6 +88,28 @@
                 ],
                 "type": "object"
             },
+            "AdobeSignConfig": {
+                "properties": {
+                    "clientId": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "clientId"
+                ],
+                "type": "object"
+            },
+            "AdobeSignResponse": {
+                "properties": {
+                    "xAdobeSignClientId": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "xAdobeSignClientId"
+                ],
+                "type": "object"
+            },
             "AggregateEventTypesOut": {
                 "properties": {
                     "id": {
@@ -968,6 +990,26 @@
                 ],
                 "type": "object"
             },
+            "CronConfig": {
+                "properties": {
+                    "contentType": {
+                        "description": "Override the default content-type.\n\nRecommended if the payload is not JSON.",
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "payload": {
+                        "type": "string"
+                    },
+                    "schedule": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "payload",
+                    "schedule"
+                ],
+                "type": "object"
+            },
             "CustomColorPalette": {
                 "properties": {
                     "backgroundHover": {
@@ -1160,6 +1202,15 @@
                     }
                 ],
                 "description": "A copy of [`backgroundtask::Data`], but serialized with camelCase fields for customers."
+            },
+            "DocusignConfig": {
+                "properties": {
+                    "secret": {
+                        "nullable": true,
+                        "type": "string"
+                    }
+                },
+                "type": "object"
             },
             "Duration": {
                 "properties": {
@@ -1569,6 +1620,17 @@
                         "type": "array",
                         "uniqueItems": true
                     },
+                    "headers": {
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "example": {
+                            "X-Example": "123",
+                            "X-Foobar": "Bar"
+                        },
+                        "nullable": true,
+                        "type": "object"
+                    },
                     "metadata": {
                         "additionalProperties": {
                             "type": "string"
@@ -1686,7 +1748,7 @@
                         "items": {
                             "example": "project_1337",
                             "maxLength": 128,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_./\\\\#]+$",
                             "type": "string"
                         },
                         "nullable": true,
@@ -3052,7 +3114,7 @@
                 ],
                 "type": "object"
             },
-            "ExpungAllContentsOut": {
+            "ExpungeAllContentsOut": {
                 "properties": {
                     "id": {
                         "description": "The QueueBackgroundTask's ID.",
@@ -3129,6 +3191,15 @@
                 ],
                 "type": "object"
             },
+            "GithubConfig": {
+                "properties": {
+                    "secret": {
+                        "nullable": true,
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
             "GoogleCloudStorageConfig": {
                 "description": "Configuration for a Google Cloud Storage sink.\n\nWrite stream events into the named bucket using the supplied Google Cloud credentials.",
                 "properties": {
@@ -3174,6 +3245,15 @@
                     "detail"
                 ],
                 "title": "HttpError",
+                "type": "object"
+            },
+            "HubspotConfig": {
+                "properties": {
+                    "secret": {
+                        "nullable": true,
+                        "type": "string"
+                    }
+                },
                 "type": "object"
             },
             "HubspotOauthConfigIn": {
@@ -3223,6 +3303,1345 @@
                         "type": "string"
                     }
                 },
+                "type": "object"
+            },
+            "IngestEndpointHeadersIn": {
+                "properties": {
+                    "headers": {
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "example": {
+                            "X-Example": "123",
+                            "X-Foobar": "Bar"
+                        },
+                        "type": "object"
+                    }
+                },
+                "required": [
+                    "headers"
+                ],
+                "type": "object"
+            },
+            "IngestEndpointHeadersOut": {
+                "properties": {
+                    "headers": {
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "example": {
+                            "X-Example": "123",
+                            "X-Foobar": "Bar"
+                        },
+                        "type": "object"
+                    },
+                    "sensitive": {
+                        "example": [
+                            "Authorization"
+                        ],
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "uniqueItems": true
+                    }
+                },
+                "required": [
+                    "headers",
+                    "sensitive"
+                ],
+                "type": "object"
+            },
+            "IngestEndpointIn": {
+                "properties": {
+                    "description": {
+                        "default": "",
+                        "example": "An example endpoint name",
+                        "type": "string"
+                    },
+                    "disabled": {
+                        "default": false,
+                        "example": false,
+                        "type": "boolean"
+                    },
+                    "metadata": {
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "default": {},
+                        "type": "object"
+                    },
+                    "rateLimit": {
+                        "format": "uint16",
+                        "minimum": 1,
+                        "nullable": true,
+                        "type": "integer"
+                    },
+                    "secret": {
+                        "description": "The endpoint's verification secret.\n\nFormat: `base64` encoded random bytes optionally prefixed with `whsec_`.\nIt is recommended to not set this and let the server generate the secret.",
+                        "example": "whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD",
+                        "nullable": true,
+                        "pattern": "^(whsec_)?[a-zA-Z0-9+/=]{32,100}$",
+                        "type": "string"
+                    },
+                    "uid": {
+                        "description": "Optional unique identifier for the endpoint.",
+                        "example": "unique-identifier",
+                        "maxLength": 256,
+                        "minLength": 1,
+                        "nullable": true,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                        "type": "string"
+                    },
+                    "url": {
+                        "example": "https://example.com/webhook/",
+                        "format": "uri",
+                        "maxLength": 65536,
+                        "minLength": 1,
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "url"
+                ],
+                "type": "object"
+            },
+            "IngestEndpointOut": {
+                "properties": {
+                    "createdAt": {
+                        "format": "date-time",
+                        "type": "string"
+                    },
+                    "description": {
+                        "description": "An example endpoint name.",
+                        "type": "string"
+                    },
+                    "disabled": {
+                        "default": false,
+                        "example": false,
+                        "type": "boolean"
+                    },
+                    "id": {
+                        "description": "The Endpoint's ID.",
+                        "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "maxLength": 30,
+                        "minLength": 30,
+                        "pattern": "^ep_[A-Za-z0-9]{27}$",
+                        "type": "string"
+                    },
+                    "metadata": {
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "type": "object"
+                    },
+                    "rateLimit": {
+                        "format": "uint16",
+                        "minimum": 0,
+                        "nullable": true,
+                        "type": "integer"
+                    },
+                    "uid": {
+                        "description": "Optional unique identifier for the endpoint.",
+                        "example": "unique-identifier",
+                        "maxLength": 256,
+                        "minLength": 1,
+                        "nullable": true,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                        "type": "string"
+                    },
+                    "updatedAt": {
+                        "format": "date-time",
+                        "type": "string"
+                    },
+                    "url": {
+                        "example": "https://example.com/webhook/",
+                        "format": "uri",
+                        "maxLength": 65536,
+                        "minLength": 1,
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "createdAt",
+                    "description",
+                    "id",
+                    "metadata",
+                    "updatedAt",
+                    "url"
+                ],
+                "type": "object"
+            },
+            "IngestEndpointSecretIn": {
+                "properties": {
+                    "key": {
+                        "default": null,
+                        "description": "The endpoint's verification secret.\n\nFormat: `base64` encoded random bytes optionally prefixed with `whsec_`.\nIt is recommended to not set this and let the server generate the secret.",
+                        "example": "whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD",
+                        "nullable": true,
+                        "pattern": "^(whsec_)?[a-zA-Z0-9+/=]{32,100}$",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "IngestEndpointSecretOut": {
+                "properties": {
+                    "key": {
+                        "description": "The endpoint's verification secret.\n\nFormat: `base64` encoded random bytes optionally prefixed with `whsec_`.\nIt is recommended to not set this and let the server generate the secret.",
+                        "example": "whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD",
+                        "pattern": "^(whsec_)?[a-zA-Z0-9+/=]{32,100}$",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "key"
+                ],
+                "type": "object"
+            },
+            "IngestEndpointUpdate": {
+                "properties": {
+                    "description": {
+                        "default": "",
+                        "example": "An example endpoint name",
+                        "type": "string"
+                    },
+                    "disabled": {
+                        "default": false,
+                        "example": false,
+                        "type": "boolean"
+                    },
+                    "metadata": {
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "default": {},
+                        "type": "object"
+                    },
+                    "rateLimit": {
+                        "format": "uint16",
+                        "minimum": 1,
+                        "nullable": true,
+                        "type": "integer"
+                    },
+                    "uid": {
+                        "description": "Optional unique identifier for the endpoint.",
+                        "example": "unique-identifier",
+                        "maxLength": 256,
+                        "minLength": 1,
+                        "nullable": true,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                        "type": "string"
+                    },
+                    "url": {
+                        "example": "https://example.com/webhook/",
+                        "format": "uri",
+                        "maxLength": 65536,
+                        "minLength": 1,
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "url"
+                ],
+                "type": "object"
+            },
+            "IngestHeaders": {
+                "additionalProperties": {
+                    "type": "string"
+                },
+                "type": "object"
+            },
+            "IngestLogOut": {
+                "properties": {
+                    "created_at": {
+                        "format": "date-time",
+                        "type": "string"
+                    },
+                    "error_text": {
+                        "type": "string"
+                    },
+                    "headers": {
+                        "$ref": "#/components/schemas/IngestHeaders"
+                    },
+                    "id": {
+                        "description": "The ErrorLog's ID.",
+                        "example": "log2yZwUhtgs5Ai8T9yRQJXA",
+                        "maxLength": 25,
+                        "minLength": 25,
+                        "pattern": "^log[A-Za-z0-9]{22}$",
+                        "type": "string"
+                    },
+                    "payload": {
+                        "type": "string"
+                    },
+                    "source_id": {
+                        "description": "The Source's ID.",
+                        "example": "src_2yZwUhtgs5Ai8T9yRQJXA",
+                        "maxLength": 26,
+                        "minLength": 26,
+                        "pattern": "^src_[A-Za-z0-9]{22}$",
+                        "type": "string"
+                    },
+                    "status_code": {
+                        "format": "int16",
+                        "type": "integer"
+                    },
+                    "updated_at": {
+                        "format": "date-time",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "created_at",
+                    "error_text",
+                    "headers",
+                    "id",
+                    "payload",
+                    "source_id",
+                    "status_code",
+                    "updated_at"
+                ],
+                "type": "object"
+            },
+            "IngestPathWithToken": {
+                "properties": {
+                    "source_id": {
+                        "description": "The Source's ID.",
+                        "example": "src_2yZwUhtgs5Ai8T9yRQJXA",
+                        "maxLength": 26,
+                        "minLength": 26,
+                        "pattern": "^src_[A-Za-z0-9]{22}$",
+                        "type": "string"
+                    },
+                    "token": {
+                        "maxLength": 16,
+                        "minLength": 16,
+                        "pattern": "^[A-Za-z0-9]+$",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "source_id",
+                    "token"
+                ],
+                "type": "object"
+            },
+            "IngestResponse": {
+                "anyOf": [
+                    {
+                        "items": [
+                            {
+                                "description": "The IngestMessageUid's ID.",
+                                "example": "whk_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                                "maxLength": 31,
+                                "minLength": 31,
+                                "pattern": "^whk_[A-Za-z0-9]{27}$",
+                                "type": "string"
+                            },
+                            {
+                                "description": "The Application's UID.",
+                                "example": "unique-identifier",
+                                "maxLength": 256,
+                                "minLength": 1,
+                                "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                                "type": "string"
+                            }
+                        ],
+                        "maxItems": 2,
+                        "minItems": 2,
+                        "type": "array"
+                    },
+                    {
+                        "$ref": "#/components/schemas/ZoomCrcResponse"
+                    },
+                    {
+                        "$ref": "#/components/schemas/SlackChallengeResponse"
+                    },
+                    {
+                        "$ref": "#/components/schemas/AdobeSignResponse"
+                    }
+                ],
+                "description": "Some providers need to generate responses to incoming ingest requests."
+            },
+            "IngestSourceIn": {
+                "oneOf": [
+                    {
+                        "description": "Webhooks with no verification scheme or special handling.",
+                        "properties": {
+                            "type": {
+                                "enum": [
+                                    "genericWebhook"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/CronConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "cron"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/AdobeSignConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "adobeSign"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/SvixConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "beehiiv"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/SvixConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "brex"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/SvixConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "clerk"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/DocusignConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "docusign"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/GithubConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "github"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/SvixConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "guesty"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/HubspotConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "hubspot"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/SvixConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "incidentIo"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/SvixConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "lithic"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/SvixConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "nash"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/SvixConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "pleo"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/SvixConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "replicate"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/SvixConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "resend"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/SvixConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "safebase"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/SvixConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "sardine"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/SegmentConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "segment"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/ShopifyConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "shopify"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/SlackConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "slack"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/StripeConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "stripe"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/SvixConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "stych"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/SvixConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "svix"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/ZoomConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "zoom"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    }
+                ],
+                "properties": {
+                    "name": {
+                        "maxLength": 256,
+                        "minLength": 2,
+                        "type": "string"
+                    },
+                    "transformation": {
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "transformationEnabled": {
+                        "default": false,
+                        "type": "boolean"
+                    },
+                    "uid": {
+                        "description": "The Source's UID.",
+                        "example": "unique-identifier",
+                        "maxLength": 60,
+                        "minLength": 1,
+                        "nullable": true,
+                        "pattern": "^(?!src_)[a-zA-Z0-9_-]+$",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "name"
+                ],
+                "type": "object"
+            },
+            "IngestSourceOut": {
+                "oneOf": [
+                    {
+                        "description": "Webhooks with no verification scheme or special handling.",
+                        "properties": {
+                            "type": {
+                                "enum": [
+                                    "genericWebhook"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/CronConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "cron"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/AdobeSignConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "adobeSign"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/SvixConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "beehiiv"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/SvixConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "brex"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/SvixConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "clerk"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/DocusignConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "docusign"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/GithubConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "github"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/SvixConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "guesty"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/HubspotConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "hubspot"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/SvixConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "incidentIo"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/SvixConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "lithic"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/SvixConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "nash"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/SvixConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "pleo"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/SvixConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "replicate"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/SvixConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "resend"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/SvixConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "safebase"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/SvixConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "sardine"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/SegmentConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "segment"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/ShopifyConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "shopify"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/SlackConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "slack"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/StripeConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "stripe"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/SvixConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "stych"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/SvixConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "svix"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/ZoomConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "zoom"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    }
+                ],
+                "properties": {
+                    "createdAt": {
+                        "format": "date-time",
+                        "type": "string"
+                    },
+                    "id": {
+                        "description": "The Source's ID.",
+                        "example": "src_2yZwUhtgs5Ai8T9yRQJXA",
+                        "maxLength": 26,
+                        "minLength": 26,
+                        "pattern": "^src_[A-Za-z0-9]{22}$",
+                        "type": "string"
+                    },
+                    "ingestUrl": {
+                        "format": "uri",
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "transformation": {
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "transformationEnabled": {
+                        "type": "boolean"
+                    },
+                    "uid": {
+                        "description": "The Source's UID.",
+                        "example": "unique-identifier",
+                        "maxLength": 60,
+                        "minLength": 1,
+                        "nullable": true,
+                        "pattern": "^(?!src_)[a-zA-Z0-9_-]+$",
+                        "type": "string"
+                    },
+                    "updatedAt": {
+                        "format": "date-time",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "createdAt",
+                    "id",
+                    "name",
+                    "transformationEnabled",
+                    "updatedAt"
+                ],
                 "type": "object"
             },
             "IntegrationIn": {
@@ -3522,6 +4941,93 @@
                     "data": {
                         "items": {
                             "$ref": "#/components/schemas/EventTypeOut"
+                        },
+                        "type": "array"
+                    },
+                    "done": {
+                        "type": "boolean"
+                    },
+                    "iterator": {
+                        "example": "iterator",
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "prevIterator": {
+                        "example": "-iterator",
+                        "nullable": true,
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "data",
+                    "done",
+                    "iterator"
+                ],
+                "type": "object"
+            },
+            "ListResponse_IngestEndpointOut_": {
+                "properties": {
+                    "data": {
+                        "items": {
+                            "$ref": "#/components/schemas/IngestEndpointOut"
+                        },
+                        "type": "array"
+                    },
+                    "done": {
+                        "type": "boolean"
+                    },
+                    "iterator": {
+                        "example": "iterator",
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "prevIterator": {
+                        "example": "-iterator",
+                        "nullable": true,
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "data",
+                    "done",
+                    "iterator"
+                ],
+                "type": "object"
+            },
+            "ListResponse_IngestLogOut_": {
+                "properties": {
+                    "data": {
+                        "items": {
+                            "$ref": "#/components/schemas/IngestLogOut"
+                        },
+                        "type": "array"
+                    },
+                    "done": {
+                        "type": "boolean"
+                    },
+                    "iterator": {
+                        "example": "iterator",
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "prevIterator": {
+                        "example": "-iterator",
+                        "nullable": true,
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "data",
+                    "done",
+                    "iterator"
+                ],
+                "type": "object"
+            },
+            "ListResponse_IngestSourceOut_": {
+                "properties": {
+                    "data": {
+                        "items": {
+                            "$ref": "#/components/schemas/IngestSourceOut"
                         },
                         "type": "array"
                     },
@@ -4628,7 +6134,7 @@
                         "items": {
                             "example": "project_1337",
                             "maxLength": 128,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_./\\\\#]+$",
                             "type": "string"
                         },
                         "maxItems": 5,
@@ -4706,7 +6212,7 @@
                         "items": {
                             "example": "project_1337",
                             "maxLength": 128,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_./\\\\#]+$",
                             "type": "string"
                         },
                         "nullable": true,
@@ -5251,7 +6757,7 @@
                         "items": {
                             "example": "project_1337",
                             "maxLength": 128,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_./\\\\#]+$",
                             "type": "string"
                         },
                         "nullable": true,
@@ -5290,6 +6796,22 @@
                     "data",
                     "done",
                     "iterator"
+                ],
+                "type": "object"
+            },
+            "RabbitMqConfig": {
+                "description": "Configuration for a RabbitMq sink.",
+                "properties": {
+                    "routingKey": {
+                        "type": "string"
+                    },
+                    "uri": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "routingKey",
+                    "uri"
                 ],
                 "type": "object"
             },
@@ -5452,6 +6974,17 @@
                 },
                 "type": "object"
             },
+            "RotateTokenOut": {
+                "properties": {
+                    "ingestUrl": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "ingestUrl"
+                ],
+                "type": "object"
+            },
             "RotatedUrlOut": {
                 "properties": {
                     "url": {
@@ -5483,6 +7016,26 @@
                     "bucket",
                     "region",
                     "secretAccessKey"
+                ],
+                "type": "object"
+            },
+            "SegmentConfig": {
+                "properties": {
+                    "secret": {
+                        "nullable": true,
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "ShopifyConfig": {
+                "properties": {
+                    "secret": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "secret"
                 ],
                 "type": "object"
             },
@@ -5964,14 +7517,15 @@
                 "enum": [
                     "enabled",
                     "paused",
-                    "disabled"
+                    "disabled",
+                    "retrying"
                 ],
                 "type": "string"
             },
             "SinkStatusIn": {
                 "enum": [
                     "enabled",
-                    "paused"
+                    "disabled"
                 ],
                 "type": "string"
             },
@@ -6000,6 +7554,28 @@
                         "type": "boolean"
                     }
                 },
+                "type": "object"
+            },
+            "SlackChallengeResponse": {
+                "properties": {
+                    "challenge": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "challenge"
+                ],
+                "type": "object"
+            },
+            "SlackConfig": {
+                "properties": {
+                    "secret": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "secret"
+                ],
                 "type": "object"
             },
             "SnowflakeConfig": {
@@ -6392,6 +7968,24 @@
                             "type"
                         ],
                         "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/RabbitMqConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "rabbitMq"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
                     }
                 ],
                 "properties": {
@@ -6592,6 +8186,24 @@
                             "type"
                         ],
                         "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/RabbitMqConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "rabbitMq"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
                     }
                 ],
                 "properties": {
@@ -6607,10 +8219,6 @@
                         "nullable": true,
                         "type": "string"
                     },
-                    "disabledReason": {
-                        "nullable": true,
-                        "type": "string"
-                    },
                     "eventTypes": {
                         "default": [],
                         "items": {
@@ -6621,6 +8229,10 @@
                             "type": "string"
                         },
                         "type": "array"
+                    },
+                    "failureReason": {
+                        "nullable": true,
+                        "type": "string"
                     },
                     "format": {
                         "$ref": "#/components/schemas/SinkPayloadFormat"
@@ -6810,6 +8422,24 @@
                             "type"
                         ],
                         "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/RabbitMqConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "rabbitMq"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
                     }
                 ],
                 "properties": {
@@ -6859,6 +8489,28 @@
                         "type": "string"
                     }
                 },
+                "type": "object"
+            },
+            "StripeConfig": {
+                "properties": {
+                    "secret": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "secret"
+                ],
+                "type": "object"
+            },
+            "SvixConfig": {
+                "properties": {
+                    "secret": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "secret"
+                ],
                 "type": "object"
             },
             "TemplateOut": {
@@ -7160,6 +8812,32 @@
                     "type"
                 ],
                 "type": "object"
+            },
+            "ZoomConfig": {
+                "properties": {
+                    "secret": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "secret"
+                ],
+                "type": "object"
+            },
+            "ZoomCrcResponse": {
+                "properties": {
+                    "encryptedToken": {
+                        "type": "string"
+                    },
+                    "plainToken": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "encryptedToken",
+                    "plainToken"
+                ],
+                "type": "object"
             }
         },
         "securitySchemes": {
@@ -7173,7 +8851,7 @@
     "info": {
         "description": "Welcome to the Svix API documentation!\n\nUseful links: [Homepage](https://www.svix.com) | [Support email](mailto:support+docs@svix.com) | [Blog](https://www.svix.com/blog/) | [Slack Community](https://www.svix.com/slack/)\n\n# Introduction\n\nThis is the reference documentation and schemas for the [Svix webhook service](https://www.svix.com) API. For tutorials and other documentation please refer to [the documentation](https://docs.svix.com).\n\n## Main concepts\n\nIn Svix you have four important entities you will be interacting with:\n\n- `messages`: these are the webhooks being sent. They can have contents and a few other properties.\n- `application`: this is where `messages` are sent to. Usually you want to create one application for each user on your platform.\n- `endpoint`: endpoints are the URLs messages will be sent to. Each application can have multiple `endpoints` and each message sent to that application will be sent to all of them (unless they are not subscribed to the sent event type).\n- `event-type`: event types are identifiers denoting the type of the message being sent. Event types are primarily used to decide which events are sent to which endpoint.\n\n\n## Authentication\n\nGet your authentication token (`AUTH_TOKEN`) from the [Svix dashboard](https://dashboard.svix.com) and use it as part of the `Authorization` header as such: `Authorization: Bearer ${AUTH_TOKEN}`. For more information on authentication, please refer to the [authentication token docs](https://docs.svix.com/api-keys).\n\n<SecurityDefinitions />\n\n\n## Code samples\n\nThe code samples assume you already have the respective libraries installed and you know how to use them. For the latest information on how to do that, please refer to [the documentation](https://docs.svix.com/).\n\n\n## Idempotency\n\nSvix supports [idempotency](https://en.wikipedia.org/wiki/Idempotence) for safely retrying requests without accidentally performing the same operation twice. This is useful when an API call is disrupted in transit and you do not receive a response.\n\nTo perform an idempotent request, pass the idempotency key in the `Idempotency-Key` header to the request. The idempotency key should be a unique value generated by the client. You can create the key in however way you like, though we suggest using UUID v4, or any other string with enough entropy to avoid collisions.\n\nSvix's idempotency works by saving the resulting status code and body of the first request made for any given idempotency key for any successful request. Subsequent requests with the same key return the same result for a period of up to 12 hours.\n\nPlease note that idempotency is only supported for `POST` requests.\n\n\n## Cross-Origin Resource Sharing\n\nThis API features Cross-Origin Resource Sharing (CORS) implemented in compliance with [W3C spec](https://www.w3.org/TR/cors/). And that allows cross-domain communication from the browser. All responses have a wildcard same-origin which makes them completely public and accessible to everyone, including any code on any site.\n",
         "title": "Svix API",
-        "version": "1.60.1",
+        "version": "1.59.2",
         "x-logo": {
             "altText": "Svix Logo",
             "url": "https://www.svix.com/static/img/brand-padded.svg"
@@ -8541,7 +10219,7 @@
                             "example": "project_1337",
                             "maxLength": 128,
                             "nullable": true,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_./\\\\#]+$",
                             "type": "string"
                         },
                         "style": "form"
@@ -8849,7 +10527,7 @@
                             "example": "project_1337",
                             "maxLength": 128,
                             "nullable": true,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_./\\\\#]+$",
                             "type": "string"
                         },
                         "style": "form"
@@ -9164,7 +10842,7 @@
                             "example": "project_1337",
                             "maxLength": 128,
                             "nullable": true,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_./\\\\#]+$",
                             "type": "string"
                         },
                         "style": "form"
@@ -9772,62 +11450,62 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const endpointOut = await svix.endpoint.create(\"app_id\", {\n    description: \"An example endpoint name\",\n    rateLimit: null,\n    uid: \"unique-identifier\",\n    url: \"https://example.com/webhook/\",\n    version: 1,\n    disabled: false,\n    filterTypes: [\"user.signup\", \"user.deleted\"],\n    channels: [\"project_123\", \"group_2\"],\n    secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n});"
+                        "source": "const endpointOut = await svix.endpoint.create(\"app_id\", {\n    description: \"An example endpoint name\",\n    rateLimit: null,\n    uid: \"unique-identifier\",\n    url: \"https://example.com/webhook/\",\n    version: 1,\n    disabled: false,\n    filterTypes: [\"user.signup\", \"user.deleted\"],\n    channels: [\"project_123\", \"group_2\"],\n    secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    headers: {\"X-Example\":\"123\",\"X-Foobar\":\"Bar\"}\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const endpointOut = await svix.endpoint.create(\"app_id\", {\n    description: \"An example endpoint name\",\n    rateLimit: null,\n    uid: \"unique-identifier\",\n    url: \"https://example.com/webhook/\",\n    version: 1,\n    disabled: false,\n    filterTypes: [\"user.signup\", \"user.deleted\"],\n    channels: [\"project_123\", \"group_2\"],\n    secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n});"
+                        "source": "const endpointOut = await svix.endpoint.create(\"app_id\", {\n    description: \"An example endpoint name\",\n    rateLimit: null,\n    uid: \"unique-identifier\",\n    url: \"https://example.com/webhook/\",\n    version: 1,\n    disabled: false,\n    filterTypes: [\"user.signup\", \"user.deleted\"],\n    channels: [\"project_123\", \"group_2\"],\n    secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    headers: {\"X-Example\":\"123\",\"X-Foobar\":\"Bar\"}\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "endpoint_out = svix.endpoint.create(\"app_id\", EndpointIn(\n    description=\"An example endpoint name\",\n    rate_limit=None,\n    uid=\"unique-identifier\",\n    url=\"https://example.com/webhook/\",\n    version=1,\n    disabled=False,\n    filter_types=[\"user.signup\", \"user.deleted\"],\n    channels=[\"project_123\", \"group_2\"],\n    secret=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n), options=...)"
+                        "source": "endpoint_out = svix.endpoint.create(\"app_id\", EndpointIn(\n    description=\"An example endpoint name\",\n    rate_limit=None,\n    uid=\"unique-identifier\",\n    url=\"https://example.com/webhook/\",\n    version=1,\n    disabled=False,\n    filter_types=[\"user.signup\", \"user.deleted\"],\n    channels=[\"project_123\", \"group_2\"],\n    secret=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    headers={\"X-Example\": \"123\", \"X-Foobar\": \"Bar\"}\n), options=...)"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "endpoint_out = await svix.endpoint.create(\"app_id\", EndpointIn(\n    description=\"An example endpoint name\",\n    rate_limit=None,\n    uid=\"unique-identifier\",\n    url=\"https://example.com/webhook/\",\n    version=1,\n    disabled=False,\n    filter_types=[\"user.signup\", \"user.deleted\"],\n    channels=[\"project_123\", \"group_2\"],\n    secret=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n), options=...)"
+                        "source": "endpoint_out = await svix.endpoint.create(\"app_id\", EndpointIn(\n    description=\"An example endpoint name\",\n    rate_limit=None,\n    uid=\"unique-identifier\",\n    url=\"https://example.com/webhook/\",\n    version=1,\n    disabled=False,\n    filter_types=[\"user.signup\", \"user.deleted\"],\n    channels=[\"project_123\", \"group_2\"],\n    secret=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    headers={\"X-Example\": \"123\", \"X-Foobar\": \"Bar\"}\n), options=...)"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "endpointOut, err := svixClient.Endpoint.Create(ctx, \"app_id\", &EndpointIn{\n    Description: \"An example endpoint name\",\n    RateLimit: nil,\n    Uid: \"unique-identifier\",\n    Url: \"https://example.com/webhook/\",\n    Version: 1,\n    Disabled: false,\n    FilterTypes: []string{\"user.signup\", \"user.deleted\"},\n    Channels: []string{\"project_123\", \"group_2\"},\n    Secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n})"
+                        "source": "endpointOut, err := svixClient.Endpoint.Create(ctx, \"app_id\", &EndpointIn{\n    Description: \"An example endpoint name\",\n    RateLimit: nil,\n    Uid: \"unique-identifier\",\n    Url: \"https://example.com/webhook/\",\n    Version: 1,\n    Disabled: false,\n    FilterTypes: []string{\"user.signup\", \"user.deleted\"},\n    Channels: []string{\"project_123\", \"group_2\"},\n    Secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    Headers: map[string]interface{}{\"X-Example\": \"123\", \"X-Foobar\": \"Bar\"},\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val endpointOut = svix.endpoint.create(\"app_id\", EndpointIn()\n    .description(\"An example endpoint name\")\n    .rateLimit(null)\n    .uid(\"unique-identifier\")\n    .url(\"https://example.com/webhook/\")\n    .version(1)\n    .disabled(false)\n    .filterTypes(arrayOf(\"user.signup\", \"user.deleted\"))\n    .channels(arrayOf(\"project_123\", \"group_2\"))\n    .secret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n)"
+                        "source": "val endpointOut = svix.endpoint.create(\"app_id\", EndpointIn()\n    .description(\"An example endpoint name\")\n    .rateLimit(null)\n    .uid(\"unique-identifier\")\n    .url(\"https://example.com/webhook/\")\n    .version(1)\n    .disabled(false)\n    .filterTypes(arrayOf(\"user.signup\", \"user.deleted\"))\n    .channels(arrayOf(\"project_123\", \"group_2\"))\n    .secret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n    .headers(/* ... */)\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "EndpointOut endpointOut = svix.getEndpoint().create(\"app_id\", new EndpointIn()\n    .description(\"An example endpoint name\")\n    .rateLimit(null)\n    .uid(\"unique-identifier\")\n    .url(\"https://example.com/webhook/\")\n    .version(1)\n    .disabled(false)\n    .filterTypes(new String[]{\"user.signup\", \"user.deleted\"})\n    .channels(new String[]{\"project_123\", \"group_2\"})\n    .secret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n);"
+                        "source": "EndpointOut endpointOut = svix.getEndpoint().create(\"app_id\", new EndpointIn()\n    .description(\"An example endpoint name\")\n    .rateLimit(null)\n    .uid(\"unique-identifier\")\n    .url(\"https://example.com/webhook/\")\n    .version(1)\n    .disabled(false)\n    .filterTypes(new String[]{\"user.signup\", \"user.deleted\"})\n    .channels(new String[]{\"project_123\", \"group_2\"})\n    .secret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n    .headers(/* ... */)\n);"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "endpoint_out = svix.endpoint.create(\"app_id\", Svix::EndpointIn.new({\n    \"description\": \"An example endpoint name\",\n    \"rate_limit\": nil,\n    \"uid\": \"unique-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"disabled\": false,\n    \"filter_types\": [\"user.signup\", \"user.deleted\"],\n    \"channels\": [\"project_123\", \"group_2\"],\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n}))"
+                        "source": "endpoint_out = svix.endpoint.create(\"app_id\", Svix::EndpointIn.new({\n    \"description\": \"An example endpoint name\",\n    \"rate_limit\": nil,\n    \"uid\": \"unique-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"disabled\": false,\n    \"filter_types\": [\"user.signup\", \"user.deleted\"],\n    \"channels\": [\"project_123\", \"group_2\"],\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    \"headers\": {\"X-Example\":\"123\",\"X-Foobar\":\"Bar\"}\n}))"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let endpoint_out = svix.endpoint().create(\"app_id\", EndpointIn {\n    description: Some(\"An example endpoint name\".to_string()),\n    rate_limit: None,\n    uid: Some(\"unique-identifier\".to_string()),\n    url: \"https://example.com/webhook/\".to_string(),\n    version: Some(1),\n    disabled: Some(false),\n    filter_types: Some(vec![\"user.signup\".to_string(), \"user.deleted\".to_string()]),\n    channels: Some(vec![\"project_123\".to_string(), \"group_2\".to_string()]),\n    secret: Some(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\".to_string()),\n}, None).await?;"
+                        "source": "let endpoint_out = svix.endpoint().create(\"app_id\", EndpointIn {\n    description: Some(\"An example endpoint name\".to_string()),\n    rate_limit: None,\n    uid: Some(\"unique-identifier\".to_string()),\n    url: \"https://example.com/webhook/\".to_string(),\n    version: Some(1),\n    disabled: Some(false),\n    filter_types: Some(vec![\"user.signup\".to_string(), \"user.deleted\".to_string()]),\n    channels: Some(vec![\"project_123\".to_string(), \"group_2\".to_string()]),\n    secret: Some(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\".to_string()),\n    headers: Some(json!({\"X-Example\":\"123\",\"X-Foobar\":\"Bar\"})),\n}, None).await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var endpointOut = await svix.Endpoint.CreateAsync(\"app_id\", new EndpointIn{\n    description: \"An example endpoint name\",\n    rateLimit: null,\n    uid: \"unique-identifier\",\n    url: \"https://example.com/webhook/\",\n    version: 1,\n    disabled: false,\n    filterTypes: new string[] {\"user.signup\", \"user.deleted\"},\n    channels: new string[] {\"project_123\", \"group_2\"},\n    secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n});"
+                        "source": "var endpointOut = await svix.Endpoint.CreateAsync(\"app_id\", new EndpointIn{\n    description: \"An example endpoint name\",\n    rateLimit: null,\n    uid: \"unique-identifier\",\n    url: \"https://example.com/webhook/\",\n    version: 1,\n    disabled: false,\n    filterTypes: new string[] {\"user.signup\", \"user.deleted\"},\n    channels: new string[] {\"project_123\", \"group_2\"},\n    secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    headers: /* ... */\n});"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix endpoint create \"app_id\" '{\n    \"description\": \"An example endpoint name\",\n    \"rateLimit\": null,\n    \"uid\": \"unique-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"disabled\": false,\n    \"filterTypes\": [\"user.signup\", \"user.deleted\"],\n    \"channels\": [\"project_123\", \"group_2\"],\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n}'"
+                        "source": "svix endpoint create \"app_id\" '{\n    \"description\": \"An example endpoint name\",\n    \"rateLimit\": null,\n    \"uid\": \"unique-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"disabled\": false,\n    \"filterTypes\": [\"user.signup\", \"user.deleted\"],\n    \"channels\": [\"project_123\", \"group_2\"],\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    \"headers\": {\"X-Example\":\"123\",\"X-Foobar\":\"Bar\"}\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"description\": \"An example endpoint name\",\n        \"rateLimit\": null,\n        \"uid\": \"unique-identifier\",\n        \"url\": \"https://example.com/webhook/\",\n        \"version\": 1,\n        \"disabled\": false,\n        \"filterTypes\": [\"user.signup\", \"user.deleted\"],\n        \"channels\": [\"project_123\", \"group_2\"],\n        \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"description\": \"An example endpoint name\",\n        \"rateLimit\": null,\n        \"uid\": \"unique-identifier\",\n        \"url\": \"https://example.com/webhook/\",\n        \"version\": 1,\n        \"disabled\": false,\n        \"filterTypes\": [\"user.signup\", \"user.deleted\"],\n        \"channels\": [\"project_123\", \"group_2\"],\n        \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n        \"headers\": {\"X-Example\":\"123\",\"X-Foobar\":\"Bar\"}\n    }'"
                     }
                 ]
             }
@@ -11244,7 +12922,7 @@
                             "example": "project_1337",
                             "maxLength": 128,
                             "nullable": true,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_./\\\\#]+$",
                             "type": "string"
                         },
                         "style": "form"
@@ -17361,7 +19039,7 @@
                             "example": "project_1337",
                             "maxLength": 128,
                             "nullable": true,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_./\\\\#]+$",
                             "type": "string"
                         },
                         "style": "form"
@@ -17790,7 +19468,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ExpungAllContentsOut"
+                                    "$ref": "#/components/schemas/ExpungeAllContentsOut"
                                 }
                             }
                         },
@@ -17874,58 +19552,58 @@
                 ],
                 "summary": "Expunge all message contents",
                 "tags": [
-                    "Application"
+                    "Message"
                 ],
                 "x-codeSamples": [
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const expungAllContentsOut = await svix.message.expungeAllContents(\"app_id\");"
+                        "source": "const expungeAllContentsOut = await svix.message.expungeAllContents(\"app_id\");"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const expungAllContentsOut = await svix.message.expungeAllContents(\"app_id\");"
+                        "source": "const expungeAllContentsOut = await svix.message.expungeAllContents(\"app_id\");"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "expung_all_contents_out = svix.message.expunge_all_contents(\"app_id\", options=...)"
+                        "source": "expunge_all_contents_out = svix.message.expunge_all_contents(\"app_id\", options=...)"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "expung_all_contents_out = await svix.message.expunge_all_contents(\"app_id\", options=...)"
+                        "source": "expunge_all_contents_out = await svix.message.expunge_all_contents(\"app_id\", options=...)"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "expungAllContentsOut, err := svixClient.Message.ExpungeAllContents(ctx, \"app_id\")"
+                        "source": "expungeAllContentsOut, err := svixClient.Message.ExpungeAllContents(ctx, \"app_id\")"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val expungAllContentsOut = svix.message.expungeAllContents(\"app_id\")"
+                        "source": "val expungeAllContentsOut = svix.message.expungeAllContents(\"app_id\")"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "ExpungAllContentsOut expungAllContentsOut = svix.getMessage().expungeAllContents(\"app_id\");"
+                        "source": "ExpungeAllContentsOut expungeAllContentsOut = svix.getMessage().expungeAllContents(\"app_id\");"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "expung_all_contents_out = svix.message.expunge_all_contents(\"app_id\")"
+                        "source": "expunge_all_contents_out = svix.message.expunge_all_contents(\"app_id\")"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let expung_all_contents_out = svix.message().expunge_all_contents(\"app_id\", None).await?;"
+                        "source": "let expunge_all_contents_out = svix.message().expunge_all_contents(\"app_id\", None).await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var expungAllContentsOut = await svix.Message.ExpungeAllContentsAsync(\"app_id\");"
+                        "source": "var expungeAllContentsOut = await svix.Message.ExpungeAllContentsAsync(\"app_id\");"
                     },
                     {
                         "label": "CLI",
@@ -22618,7 +24296,7 @@
                 ],
                 "summary": "List Background Tasks",
                 "tags": [
-                    "Background Tasks"
+                    "Background Task"
                 ],
                 "x-codeSamples": [
                     {
@@ -22794,7 +24472,7 @@
                 ],
                 "summary": "Get Background Task",
                 "tags": [
-                    "Background Tasks"
+                    "Background Task"
                 ],
                 "x-codeSamples": [
                     {
@@ -29499,7 +31177,7 @@
         "/api/v1/transformation-template": {
             "get": {
                 "description": "List all transformation templates for an application.",
-                "operationId": "v1.transformation-template.list",
+                "operationId": "v1.beta.connector.list",
                 "parameters": [
                     {
                         "description": "Limit the number of returned items",
@@ -29634,61 +31312,6 @@
                 ],
                 "x-codeSamples": [
                     {
-                        "label": "JavaScript",
-                        "lang": "JavaScript",
-                        "source": "const listResponseTemplateOut = await svix.transformationTemplate.list();"
-                    },
-                    {
-                        "label": "TypeScript",
-                        "lang": "JavaScript",
-                        "source": "const listResponseTemplateOut = await svix.transformationTemplate.list();"
-                    },
-                    {
-                        "label": "Python",
-                        "lang": "Python",
-                        "source": "list_response_template_out = svix.transformation_template.list(options=...)"
-                    },
-                    {
-                        "label": "Python (Async)",
-                        "lang": "Python",
-                        "source": "list_response_template_out = await svix.transformation_template.list(options=...)"
-                    },
-                    {
-                        "label": "Go",
-                        "lang": "Go",
-                        "source": "listResponseTemplateOut, err := svixClient.TransformationTemplate.List(ctx, nil)"
-                    },
-                    {
-                        "label": "Kotlin",
-                        "lang": "Kotlin",
-                        "source": "val listResponseTemplateOut = svix.transformationTemplate.list()"
-                    },
-                    {
-                        "label": "Java",
-                        "lang": "Java",
-                        "source": "ListResponseTemplateOut listResponseTemplateOut = svix.getTransformationTemplate().list();"
-                    },
-                    {
-                        "label": "Ruby",
-                        "lang": "Ruby",
-                        "source": "list_response_template_out = svix.transformation_template.list()"
-                    },
-                    {
-                        "label": "Rust",
-                        "lang": "Rust",
-                        "source": "let list_response_template_out = svix.transformation_template().list(None).await?;"
-                    },
-                    {
-                        "label": "C#",
-                        "lang": "C#",
-                        "source": "var listResponseTemplateOut = await svix.TransformationTemplate.ListAsync();"
-                    },
-                    {
-                        "label": "CLI",
-                        "lang": "Shell",
-                        "source": "svix transformation-template list "
-                    },
-                    {
                         "label": "cURL",
                         "lang": "Shell",
                         "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/transformation-template' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
@@ -29697,8 +31320,8 @@
                 "x-hidden": true
             },
             "post": {
-                "description": "Create a new transformation template.",
-                "operationId": "v1.transformation-template.create",
+                "description": "Create a new connector.",
+                "operationId": "v1.beta.connector.create",
                 "parameters": [
                     {
                         "description": "The request's idempotency key",
@@ -29813,61 +31436,6 @@
                 ],
                 "x-codeSamples": [
                     {
-                        "label": "JavaScript",
-                        "lang": "JavaScript",
-                        "source": "const templateOut = await svix.transformationTemplate.create({\n    instructionsLink: null,\n    filterTypes: [\"user.signup\", \"user.deleted\"],\n    featureFlag: \"cool-new-feature\"\n});"
-                    },
-                    {
-                        "label": "TypeScript",
-                        "lang": "JavaScript",
-                        "source": "const templateOut = await svix.transformationTemplate.create({\n    instructionsLink: null,\n    filterTypes: [\"user.signup\", \"user.deleted\"],\n    featureFlag: \"cool-new-feature\"\n});"
-                    },
-                    {
-                        "label": "Python",
-                        "lang": "Python",
-                        "source": "template_out = svix.transformation_template.create(ConnectorIn(\n    instructions_link=None,\n    filter_types=[\"user.signup\", \"user.deleted\"],\n    feature_flag=\"cool-new-feature\"\n), options=...)"
-                    },
-                    {
-                        "label": "Python (Async)",
-                        "lang": "Python",
-                        "source": "template_out = await svix.transformation_template.create(ConnectorIn(\n    instructions_link=None,\n    filter_types=[\"user.signup\", \"user.deleted\"],\n    feature_flag=\"cool-new-feature\"\n), options=...)"
-                    },
-                    {
-                        "label": "Go",
-                        "lang": "Go",
-                        "source": "templateOut, err := svixClient.TransformationTemplate.Create(ctx, &ConnectorIn{\n    InstructionsLink: nil,\n    FilterTypes: []string{\"user.signup\", \"user.deleted\"},\n    FeatureFlag: \"cool-new-feature\",\n})"
-                    },
-                    {
-                        "label": "Kotlin",
-                        "lang": "Kotlin",
-                        "source": "val templateOut = svix.transformationTemplate.create(ConnectorIn()\n    .instructionsLink(null)\n    .filterTypes(arrayOf(\"user.signup\", \"user.deleted\"))\n    .featureFlag(\"cool-new-feature\")\n)"
-                    },
-                    {
-                        "label": "Java",
-                        "lang": "Java",
-                        "source": "TemplateOut templateOut = svix.getTransformationTemplate().create(new ConnectorIn()\n    .instructionsLink(null)\n    .filterTypes(new String[]{\"user.signup\", \"user.deleted\"})\n    .featureFlag(\"cool-new-feature\")\n);"
-                    },
-                    {
-                        "label": "Ruby",
-                        "lang": "Ruby",
-                        "source": "template_out = svix.transformation_template.create(Svix::ConnectorIn.new({\n    \"instructions_link\": nil,\n    \"filter_types\": [\"user.signup\", \"user.deleted\"],\n    \"feature_flag\": \"cool-new-feature\"\n}))"
-                    },
-                    {
-                        "label": "Rust",
-                        "lang": "Rust",
-                        "source": "let template_out = svix.transformation_template().create(ConnectorIn {\n    instructions_link: None,\n    filter_types: Some(vec![\"user.signup\".to_string(), \"user.deleted\".to_string()]),\n    feature_flag: Some(\"cool-new-feature\".to_string()),\n}, None).await?;"
-                    },
-                    {
-                        "label": "C#",
-                        "lang": "C#",
-                        "source": "var templateOut = await svix.TransformationTemplate.CreateAsync(new ConnectorIn{\n    instructionsLink: null,\n    filterTypes: new string[] {\"user.signup\", \"user.deleted\"},\n    featureFlag: \"cool-new-feature\"\n});"
-                    },
-                    {
-                        "label": "CLI",
-                        "lang": "Shell",
-                        "source": "svix transformation-template create '{\n    \"instructionsLink\": null,\n    \"filterTypes\": [\"user.signup\", \"user.deleted\"],\n    \"featureFlag\": \"cool-new-feature\"\n}'"
-                    },
-                    {
                         "label": "cURL",
                         "lang": "Shell",
                         "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/transformation-template' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"instructionsLink\": null,\n        \"filterTypes\": [\"user.signup\", \"user.deleted\"],\n        \"featureFlag\": \"cool-new-feature\"\n    }'"
@@ -29878,8 +31446,8 @@
         },
         "/api/v1/transformation-template/generate": {
             "post": {
-                "description": "Use OpenAI's Completion API to generate code for a transformation template.",
-                "operationId": "v1.transformation-template.generate",
+                "description": "Use OpenAI's Completion API to generate code for a connector.",
+                "operationId": "v1.beta.connector.generate",
                 "parameters": [
                     {
                         "description": "The request's idempotency key",
@@ -29994,61 +31562,6 @@
                 ],
                 "x-codeSamples": [
                     {
-                        "label": "JavaScript",
-                        "lang": "JavaScript",
-                        "source": "const generateOut = await svix.transformationTemplate.generate(\n});"
-                    },
-                    {
-                        "label": "TypeScript",
-                        "lang": "JavaScript",
-                        "source": "const generateOut = await svix.transformationTemplate.generate(\n});"
-                    },
-                    {
-                        "label": "Python",
-                        "lang": "Python",
-                        "source": "generate_out = svix.transformation_template.generate(GenerateIn\n), options=...)"
-                    },
-                    {
-                        "label": "Python (Async)",
-                        "lang": "Python",
-                        "source": "generate_out = await svix.transformation_template.generate(GenerateIn\n), options=...)"
-                    },
-                    {
-                        "label": "Go",
-                        "lang": "Go",
-                        "source": "generateOut, err := svixClient.TransformationTemplate.Generate(ctx, &GenerateIn{\n})"
-                    },
-                    {
-                        "label": "Kotlin",
-                        "lang": "Kotlin",
-                        "source": "val generateOut = svix.transformationTemplate.generate(GenerateIn()\n)"
-                    },
-                    {
-                        "label": "Java",
-                        "lang": "Java",
-                        "source": "GenerateOut generateOut = svix.getTransformationTemplate().generate(new GenerateIn()\n);"
-                    },
-                    {
-                        "label": "Ruby",
-                        "lang": "Ruby",
-                        "source": "generate_out = svix.transformation_template.generate(Svix::GenerateIn.new(\n}))"
-                    },
-                    {
-                        "label": "Rust",
-                        "lang": "Rust",
-                        "source": "let generate_out = svix.transformation_template().generate(GenerateIn {\n}, None).await?;"
-                    },
-                    {
-                        "label": "C#",
-                        "lang": "C#",
-                        "source": "var generateOut = await svix.TransformationTemplate.GenerateAsync(new GenerateIn\n});"
-                    },
-                    {
-                        "label": "CLI",
-                        "lang": "Shell",
-                        "source": "svix transformation-template generate '\n}'"
-                    },
-                    {
                         "label": "cURL",
                         "lang": "Shell",
                         "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/generate' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '\n    }'"
@@ -30060,7 +31573,7 @@
         "/api/v1/transformation-template/oauth/discord": {
             "post": {
                 "description": "Get Discord Incoming webhook URL.",
-                "operationId": "v1.transformation-template.oauth.discord",
+                "operationId": "v1.beta.connector.oauth.discord",
                 "parameters": [
                     {
                         "description": "The request's idempotency key",
@@ -30186,7 +31699,7 @@
         "/api/v1/transformation-template/oauth/hubspot": {
             "post": {
                 "description": "Get Hubspot access token using authorization code.",
-                "operationId": "v1.transformation-template.oauth.hubspot",
+                "operationId": "v1.beta.connector.oauth.hubspot",
                 "parameters": [
                     {
                         "description": "The request's idempotency key",
@@ -30312,7 +31825,7 @@
         "/api/v1/transformation-template/oauth/slack": {
             "post": {
                 "description": "Get Slack Incoming webhook URL.",
-                "operationId": "v1.transformation-template.oauth.slack",
+                "operationId": "v1.beta.connector.oauth.slack",
                 "parameters": [
                     {
                         "description": "The request's idempotency key",
@@ -30438,7 +31951,7 @@
         "/api/v1/transformation-template/simulate": {
             "post": {
                 "description": "Simulate running the transformation on the payload and code.",
-                "operationId": "v1.transformation-template.simulate",
+                "operationId": "v1.beta.connector.simulate",
                 "parameters": [
                     {
                         "description": "The request's idempotency key",
@@ -30553,61 +32066,6 @@
                 ],
                 "x-codeSamples": [
                     {
-                        "label": "JavaScript",
-                        "lang": "JavaScript",
-                        "source": "const transformationSimulateOut = await svix.transformationTemplate.simulate({\n    eventType: \"user.signup\",\n    channels: null\n});"
-                    },
-                    {
-                        "label": "TypeScript",
-                        "lang": "JavaScript",
-                        "source": "const transformationSimulateOut = await svix.transformationTemplate.simulate({\n    eventType: \"user.signup\",\n    channels: null\n});"
-                    },
-                    {
-                        "label": "Python",
-                        "lang": "Python",
-                        "source": "transformation_simulate_out = svix.transformation_template.simulate(TransformationSimulateIn(\n    event_type=\"user.signup\",\n    channels=None\n), options=...)"
-                    },
-                    {
-                        "label": "Python (Async)",
-                        "lang": "Python",
-                        "source": "transformation_simulate_out = await svix.transformation_template.simulate(TransformationSimulateIn(\n    event_type=\"user.signup\",\n    channels=None\n), options=...)"
-                    },
-                    {
-                        "label": "Go",
-                        "lang": "Go",
-                        "source": "transformationSimulateOut, err := svixClient.TransformationTemplate.Simulate(ctx, &TransformationSimulateIn{\n    EventType: \"user.signup\",\n    Channels: nil,\n})"
-                    },
-                    {
-                        "label": "Kotlin",
-                        "lang": "Kotlin",
-                        "source": "val transformationSimulateOut = svix.transformationTemplate.simulate(TransformationSimulateIn()\n    .eventType(\"user.signup\")\n    .channels(null)\n)"
-                    },
-                    {
-                        "label": "Java",
-                        "lang": "Java",
-                        "source": "TransformationSimulateOut transformationSimulateOut = svix.getTransformationTemplate().simulate(new TransformationSimulateIn()\n    .eventType(\"user.signup\")\n    .channels(null)\n);"
-                    },
-                    {
-                        "label": "Ruby",
-                        "lang": "Ruby",
-                        "source": "transformation_simulate_out = svix.transformation_template.simulate(Svix::TransformationSimulateIn.new({\n    \"event_type\": \"user.signup\",\n    \"channels\": nil\n}))"
-                    },
-                    {
-                        "label": "Rust",
-                        "lang": "Rust",
-                        "source": "let transformation_simulate_out = svix.transformation_template().simulate(TransformationSimulateIn {\n    event_type: \"user.signup\".to_string(),\n    channels: None,\n}, None).await?;"
-                    },
-                    {
-                        "label": "C#",
-                        "lang": "C#",
-                        "source": "var transformationSimulateOut = await svix.TransformationTemplate.SimulateAsync(new TransformationSimulateIn{\n    eventType: \"user.signup\",\n    channels: null\n});"
-                    },
-                    {
-                        "label": "CLI",
-                        "lang": "Shell",
-                        "source": "svix transformation-template simulate '{\n    \"eventType\": \"user.signup\",\n    \"channels\": null\n}'"
-                    },
-                    {
                         "label": "cURL",
                         "lang": "Shell",
                         "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/simulate' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"eventType\": \"user.signup\",\n        \"channels\": null\n    }'"
@@ -30618,8 +32076,8 @@
         },
         "/api/v1/transformation-template/{transformation_template_id}": {
             "delete": {
-                "description": "Delete a transformation template.",
-                "operationId": "v1.transformation-template.delete",
+                "description": "Delete a connector.",
+                "operationId": "v1.beta.connector.delete",
                 "parameters": [
                     {
                         "description": "The TransformationTemplate's ID.",
@@ -30723,61 +32181,6 @@
                 ],
                 "x-codeSamples": [
                     {
-                        "label": "JavaScript",
-                        "lang": "JavaScript",
-                        "source": "await svix.transformationTemplate.delete(\"transformation_template_id\");"
-                    },
-                    {
-                        "label": "TypeScript",
-                        "lang": "JavaScript",
-                        "source": "await svix.transformationTemplate.delete(\"transformation_template_id\");"
-                    },
-                    {
-                        "label": "Python",
-                        "lang": "Python",
-                        "source": "svix.transformation_template.delete(\"transformation_template_id\")"
-                    },
-                    {
-                        "label": "Python (Async)",
-                        "lang": "Python",
-                        "source": "await svix.transformation_template.delete(\"transformation_template_id\")"
-                    },
-                    {
-                        "label": "Go",
-                        "lang": "Go",
-                        "source": "err := svixClient.TransformationTemplate.Delete(ctx, \"transformation_template_id\")"
-                    },
-                    {
-                        "label": "Kotlin",
-                        "lang": "Kotlin",
-                        "source": "svix.transformationTemplate.delete(\"transformation_template_id\")"
-                    },
-                    {
-                        "label": "Java",
-                        "lang": "Java",
-                        "source": "svix.getTransformationTemplate().delete(\"transformation_template_id\");"
-                    },
-                    {
-                        "label": "Ruby",
-                        "lang": "Ruby",
-                        "source": "svix.transformation_template.delete(\"transformation_template_id\")"
-                    },
-                    {
-                        "label": "Rust",
-                        "lang": "Rust",
-                        "source": "svix.transformation_template().delete(\"transformation_template_id\").await?;"
-                    },
-                    {
-                        "label": "C#",
-                        "lang": "C#",
-                        "source": "await svix.TransformationTemplate.DeleteAsync(\"transformation_template_id\");"
-                    },
-                    {
-                        "label": "CLI",
-                        "lang": "Shell",
-                        "source": "svix transformation-template delete \"transformation_template_id\""
-                    },
-                    {
                         "label": "cURL",
                         "lang": "Shell",
                         "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/{transformation_template_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
@@ -30786,8 +32189,8 @@
                 "x-hidden": true
             },
             "get": {
-                "description": "Get a transformation template.",
-                "operationId": "v1.transformation-template.get",
+                "description": "Get a connector.",
+                "operationId": "v1.beta.connector.get",
                 "parameters": [
                     {
                         "description": "The TransformationTemplate's ID.",
@@ -30898,61 +32301,6 @@
                 ],
                 "x-codeSamples": [
                     {
-                        "label": "JavaScript",
-                        "lang": "JavaScript",
-                        "source": "const templateOut = await svix.transformationTemplate.get(\"transformation_template_id\");"
-                    },
-                    {
-                        "label": "TypeScript",
-                        "lang": "JavaScript",
-                        "source": "const templateOut = await svix.transformationTemplate.get(\"transformation_template_id\");"
-                    },
-                    {
-                        "label": "Python",
-                        "lang": "Python",
-                        "source": "template_out = svix.transformation_template.get(\"transformation_template_id\")"
-                    },
-                    {
-                        "label": "Python (Async)",
-                        "lang": "Python",
-                        "source": "template_out = await svix.transformation_template.get(\"transformation_template_id\")"
-                    },
-                    {
-                        "label": "Go",
-                        "lang": "Go",
-                        "source": "templateOut, err := svixClient.TransformationTemplate.Get(ctx, \"transformation_template_id\")"
-                    },
-                    {
-                        "label": "Kotlin",
-                        "lang": "Kotlin",
-                        "source": "val templateOut = svix.transformationTemplate.get(\"transformation_template_id\")"
-                    },
-                    {
-                        "label": "Java",
-                        "lang": "Java",
-                        "source": "TemplateOut templateOut = svix.getTransformationTemplate().get(\"transformation_template_id\");"
-                    },
-                    {
-                        "label": "Ruby",
-                        "lang": "Ruby",
-                        "source": "template_out = svix.transformation_template.get(\"transformation_template_id\")"
-                    },
-                    {
-                        "label": "Rust",
-                        "lang": "Rust",
-                        "source": "let template_out = svix.transformation_template().get(\"transformation_template_id\").await?;"
-                    },
-                    {
-                        "label": "C#",
-                        "lang": "C#",
-                        "source": "var templateOut = await svix.TransformationTemplate.GetAsync(\"transformation_template_id\");"
-                    },
-                    {
-                        "label": "CLI",
-                        "lang": "Shell",
-                        "source": "svix transformation-template get \"transformation_template_id\""
-                    },
-                    {
                         "label": "cURL",
                         "lang": "Shell",
                         "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/{transformation_template_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
@@ -30961,8 +32309,8 @@
                 "x-hidden": true
             },
             "patch": {
-                "description": "Partially update a transformation template.",
-                "operationId": "v1.transformation-template.patch",
+                "description": "Partially update a connector.",
+                "operationId": "v1.beta.connector.patch",
                 "parameters": [
                     {
                         "description": "The TransformationTemplate's ID.",
@@ -31083,61 +32431,6 @@
                 ],
                 "x-codeSamples": [
                     {
-                        "label": "JavaScript",
-                        "lang": "JavaScript",
-                        "source": "const templateOut = await svix.transformationTemplate.patch(\"transformation_template_id\", {\n    instructionsLink: null,\n    filterTypes: [\"user.signup\", \"user.deleted\"],\n    featureFlag: \"cool-new-feature\"\n});"
-                    },
-                    {
-                        "label": "TypeScript",
-                        "lang": "JavaScript",
-                        "source": "const templateOut = await svix.transformationTemplate.patch(\"transformation_template_id\", {\n    instructionsLink: null,\n    filterTypes: [\"user.signup\", \"user.deleted\"],\n    featureFlag: \"cool-new-feature\"\n});"
-                    },
-                    {
-                        "label": "Python",
-                        "lang": "Python",
-                        "source": "template_out = svix.transformation_template.patch(\"transformation_template_id\", TemplatePatch(\n    instructions_link=None,\n    filter_types=[\"user.signup\", \"user.deleted\"],\n    feature_flag=\"cool-new-feature\"\n))"
-                    },
-                    {
-                        "label": "Python (Async)",
-                        "lang": "Python",
-                        "source": "template_out = await svix.transformation_template.patch(\"transformation_template_id\", TemplatePatch(\n    instructions_link=None,\n    filter_types=[\"user.signup\", \"user.deleted\"],\n    feature_flag=\"cool-new-feature\"\n))"
-                    },
-                    {
-                        "label": "Go",
-                        "lang": "Go",
-                        "source": "templateOut, err := svixClient.TransformationTemplate.Patch(ctx, \"transformation_template_id\", &TemplatePatch{\n    InstructionsLink: nil,\n    FilterTypes: []string{\"user.signup\", \"user.deleted\"},\n    FeatureFlag: \"cool-new-feature\",\n})"
-                    },
-                    {
-                        "label": "Kotlin",
-                        "lang": "Kotlin",
-                        "source": "val templateOut = svix.transformationTemplate.patch(\"transformation_template_id\", TemplatePatch()\n    .instructionsLink(null)\n    .filterTypes(arrayOf(\"user.signup\", \"user.deleted\"))\n    .featureFlag(\"cool-new-feature\")\n)"
-                    },
-                    {
-                        "label": "Java",
-                        "lang": "Java",
-                        "source": "TemplateOut templateOut = svix.getTransformationTemplate().patch(\"transformation_template_id\", new TemplatePatch()\n    .instructionsLink(null)\n    .filterTypes(new String[]{\"user.signup\", \"user.deleted\"})\n    .featureFlag(\"cool-new-feature\")\n);"
-                    },
-                    {
-                        "label": "Ruby",
-                        "lang": "Ruby",
-                        "source": "template_out = svix.transformation_template.patch(\"transformation_template_id\", Svix::TemplatePatch.new({\n    \"instructions_link\": nil,\n    \"filter_types\": [\"user.signup\", \"user.deleted\"],\n    \"feature_flag\": \"cool-new-feature\"\n}))"
-                    },
-                    {
-                        "label": "Rust",
-                        "lang": "Rust",
-                        "source": "let template_out = svix.transformation_template().patch(\"transformation_template_id\", TemplatePatch {\n    instructions_link: None,\n    filter_types: Some(vec![\"user.signup\".to_string(), \"user.deleted\".to_string()]),\n    feature_flag: Some(\"cool-new-feature\".to_string()),\n}).await?;"
-                    },
-                    {
-                        "label": "C#",
-                        "lang": "C#",
-                        "source": "var templateOut = await svix.TransformationTemplate.PatchAsync(\"transformation_template_id\", new TemplatePatch{\n    instructionsLink: null,\n    filterTypes: new string[] {\"user.signup\", \"user.deleted\"},\n    featureFlag: \"cool-new-feature\"\n});"
-                    },
-                    {
-                        "label": "CLI",
-                        "lang": "Shell",
-                        "source": "svix transformation-template patch \"transformation_template_id\" '{\n    \"instructionsLink\": null,\n    \"filterTypes\": [\"user.signup\", \"user.deleted\"],\n    \"featureFlag\": \"cool-new-feature\"\n}'"
-                    },
-                    {
                         "label": "cURL",
                         "lang": "Shell",
                         "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/{transformation_template_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"instructionsLink\": null,\n        \"filterTypes\": [\"user.signup\", \"user.deleted\"],\n        \"featureFlag\": \"cool-new-feature\"\n    }'"
@@ -31146,8 +32439,8 @@
                 "x-hidden": true
             },
             "put": {
-                "description": "Update a transformation template.",
-                "operationId": "v1.transformation-template.update",
+                "description": "Update a connector.",
+                "operationId": "v1.beta.connector.update",
                 "parameters": [
                     {
                         "description": "The TransformationTemplate's ID.",
@@ -31278,67 +32571,1139 @@
                 ],
                 "x-codeSamples": [
                     {
-                        "label": "JavaScript",
-                        "lang": "JavaScript",
-                        "source": "const templateOut = await svix.transformationTemplate.update(\"transformation_template_id\", {\n    instructionsLink: null,\n    filterTypes: [\"user.signup\", \"user.deleted\"],\n    featureFlag: \"cool-new-feature\"\n});"
-                    },
-                    {
-                        "label": "TypeScript",
-                        "lang": "JavaScript",
-                        "source": "const templateOut = await svix.transformationTemplate.update(\"transformation_template_id\", {\n    instructionsLink: null,\n    filterTypes: [\"user.signup\", \"user.deleted\"],\n    featureFlag: \"cool-new-feature\"\n});"
-                    },
-                    {
-                        "label": "Python",
-                        "lang": "Python",
-                        "source": "template_out = svix.transformation_template.update(\"transformation_template_id\", TemplateUpdate(\n    instructions_link=None,\n    filter_types=[\"user.signup\", \"user.deleted\"],\n    feature_flag=\"cool-new-feature\"\n))"
-                    },
-                    {
-                        "label": "Python (Async)",
-                        "lang": "Python",
-                        "source": "template_out = await svix.transformation_template.update(\"transformation_template_id\", TemplateUpdate(\n    instructions_link=None,\n    filter_types=[\"user.signup\", \"user.deleted\"],\n    feature_flag=\"cool-new-feature\"\n))"
-                    },
-                    {
-                        "label": "Go",
-                        "lang": "Go",
-                        "source": "templateOut, err := svixClient.TransformationTemplate.Update(ctx, \"transformation_template_id\", &TemplateUpdate{\n    InstructionsLink: nil,\n    FilterTypes: []string{\"user.signup\", \"user.deleted\"},\n    FeatureFlag: \"cool-new-feature\",\n})"
-                    },
-                    {
-                        "label": "Kotlin",
-                        "lang": "Kotlin",
-                        "source": "val templateOut = svix.transformationTemplate.update(\"transformation_template_id\", TemplateUpdate()\n    .instructionsLink(null)\n    .filterTypes(arrayOf(\"user.signup\", \"user.deleted\"))\n    .featureFlag(\"cool-new-feature\")\n)"
-                    },
-                    {
-                        "label": "Java",
-                        "lang": "Java",
-                        "source": "TemplateOut templateOut = svix.getTransformationTemplate().update(\"transformation_template_id\", new TemplateUpdate()\n    .instructionsLink(null)\n    .filterTypes(new String[]{\"user.signup\", \"user.deleted\"})\n    .featureFlag(\"cool-new-feature\")\n);"
-                    },
-                    {
-                        "label": "Ruby",
-                        "lang": "Ruby",
-                        "source": "template_out = svix.transformation_template.update(\"transformation_template_id\", Svix::TemplateUpdate.new({\n    \"instructions_link\": nil,\n    \"filter_types\": [\"user.signup\", \"user.deleted\"],\n    \"feature_flag\": \"cool-new-feature\"\n}))"
-                    },
-                    {
-                        "label": "Rust",
-                        "lang": "Rust",
-                        "source": "let template_out = svix.transformation_template().update(\"transformation_template_id\", TemplateUpdate {\n    instructions_link: None,\n    filter_types: Some(vec![\"user.signup\".to_string(), \"user.deleted\".to_string()]),\n    feature_flag: Some(\"cool-new-feature\".to_string()),\n}).await?;"
-                    },
-                    {
-                        "label": "C#",
-                        "lang": "C#",
-                        "source": "var templateOut = await svix.TransformationTemplate.UpdateAsync(\"transformation_template_id\", new TemplateUpdate{\n    instructionsLink: null,\n    filterTypes: new string[] {\"user.signup\", \"user.deleted\"},\n    featureFlag: \"cool-new-feature\"\n});"
-                    },
-                    {
-                        "label": "CLI",
-                        "lang": "Shell",
-                        "source": "svix transformation-template update \"transformation_template_id\" '{\n    \"instructionsLink\": null,\n    \"filterTypes\": [\"user.signup\", \"user.deleted\"],\n    \"featureFlag\": \"cool-new-feature\"\n}'"
-                    },
-                    {
                         "label": "cURL",
                         "lang": "Shell",
                         "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/{transformation_template_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"instructionsLink\": null,\n        \"filterTypes\": [\"user.signup\", \"user.deleted\"],\n        \"featureFlag\": \"cool-new-feature\"\n    }'"
                     }
                 ],
                 "x-hidden": true
+            }
+        },
+        "/ingest/api/v1/source/{source_id}/endpoint": {
+            "get": {
+                "description": "List ingest endpoints.",
+                "operationId": "v1.ingest.endpoint.list",
+                "parameters": [
+                    {
+                        "description": "Limit the number of returned items",
+                        "in": "query",
+                        "name": "limit",
+                        "schema": {
+                            "description": "Limit the number of returned items",
+                            "format": "uint64",
+                            "maximum": 250,
+                            "minimum": 1,
+                            "type": "integer"
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "description": "The iterator returned from a prior invocation",
+                        "in": "query",
+                        "name": "iterator",
+                        "schema": {
+                            "description": "The iterator returned from a prior invocation",
+                            "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 30,
+                            "minLength": 30,
+                            "nullable": true,
+                            "pattern": "^ep_[A-Za-z0-9]{27}$",
+                            "type": "string"
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "description": "The sorting order of the returned items",
+                        "in": "query",
+                        "name": "order",
+                        "schema": {
+                            "$ref": "#/components/schemas/Ordering",
+                            "description": "The sorting order of the returned items",
+                            "nullable": true
+                        },
+                        "style": "form"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ListResponse_IngestEndpointOut_"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "List Ingest Endpoints",
+                "tags": [
+                    "Ingest Endpoint"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/ingest/api/v1/source/{source_id}/endpoint' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                    }
+                ]
+            },
+            "post": {
+                "description": "Create an ingest endpoint.",
+                "operationId": "v1.ingest.endpoint.create",
+                "parameters": [
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/IngestEndpointIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/IngestEndpointOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Create Ingest Endpoint",
+                "tags": [
+                    "Ingest Endpoint"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/ingest/api/v1/source/{source_id}/endpoint' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"description\": \"An example endpoint name\",\n        \"rateLimit\": null,\n        \"uid\": \"unique-identifier\",\n        \"url\": \"https://example.com/webhook/\",\n        \"disabled\": false,\n        \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n    }'"
+                    }
+                ]
+            }
+        },
+        "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}": {
+            "delete": {
+                "description": "Delete an ingest endpoint.",
+                "operationId": "v1.ingest.endpoint.delete",
+                "parameters": [
+                    {
+                        "description": "The Endpoint's ID or UID.",
+                        "in": "path",
+                        "name": "endpoint_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The Endpoint's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "no content"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Delete Ingest Endpoint",
+                "tags": [
+                    "Ingest Endpoint"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                    }
+                ]
+            },
+            "get": {
+                "description": "Get an ingest endpoint.",
+                "operationId": "v1.ingest.endpoint.get",
+                "parameters": [
+                    {
+                        "description": "The Endpoint's ID or UID.",
+                        "in": "path",
+                        "name": "endpoint_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The Endpoint's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/IngestEndpointOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Get Ingest Endpoint",
+                "tags": [
+                    "Ingest Endpoint"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                    }
+                ]
+            },
+            "put": {
+                "description": "Update an ingest endpoint.",
+                "operationId": "v1.ingest.endpoint.update",
+                "parameters": [
+                    {
+                        "description": "The Endpoint's ID or UID.",
+                        "in": "path",
+                        "name": "endpoint_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The Endpoint's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/IngestEndpointUpdate"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/IngestEndpointOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Update Ingest Endpoint",
+                "tags": [
+                    "Ingest Endpoint"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"description\": \"An example endpoint name\",\n        \"rateLimit\": null,\n        \"uid\": \"unique-identifier\",\n        \"url\": \"https://example.com/webhook/\",\n        \"disabled\": false\n    }'"
+                    }
+                ]
+            }
+        },
+        "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/headers": {
+            "get": {
+                "description": "Get the additional headers to be sent with the ingest.",
+                "operationId": "v1.ingest.endpoint.get-headers",
+                "parameters": [
+                    {
+                        "description": "The Endpoint's ID or UID.",
+                        "in": "path",
+                        "name": "endpoint_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The Endpoint's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/IngestEndpointHeadersOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Get Ingest Endpoint Headers",
+                "tags": [
+                    "Ingest Endpoint"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/headers' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                    }
+                ]
+            },
+            "put": {
+                "description": "Set the additional headers to be sent to the endpoint.",
+                "operationId": "v1.ingest.endpoint.update-headers",
+                "parameters": [
+                    {
+                        "description": "The Endpoint's ID or UID.",
+                        "in": "path",
+                        "name": "endpoint_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The Endpoint's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/IngestEndpointHeadersIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "204": {
+                        "description": "no content"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Update Ingest Endpoint Headers",
+                "tags": [
+                    "Ingest Endpoint"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/headers' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"headers\": {\"X-Example\":\"123\",\"X-Foobar\":\"Bar\"}\n    }'"
+                    }
+                ]
+            }
+        },
+        "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/secret": {
+            "get": {
+                "description": "Get an ingest endpoint's signing secret.\n\nThis is used to verify the authenticity of the webhook.\nFor more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).",
+                "operationId": "v1.ingest.endpoint.get-secret",
+                "parameters": [
+                    {
+                        "description": "The Endpoint's ID or UID.",
+                        "in": "path",
+                        "name": "endpoint_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The Endpoint's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/IngestEndpointSecretOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Get Ingest Endpoint Secret",
+                "tags": [
+                    "Ingest Endpoint"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/secret' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                    }
+                ]
+            }
+        },
+        "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/secret/rotate": {
+            "post": {
+                "description": "Rotates an ingest endpoint's signing secret.\n\nThe previous secret will remain valid for the next 24 hours.",
+                "operationId": "v1.ingest.endpoint.rotate-secret",
+                "parameters": [
+                    {
+                        "description": "The Endpoint's ID or UID.",
+                        "in": "path",
+                        "name": "endpoint_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The Endpoint's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/IngestEndpointSecretIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "204": {
+                        "description": "no content"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Rotate Ingest Endpoint Secret",
+                "tags": [
+                    "Ingest Endpoint"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/secret/rotate' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n    }'"
+                    }
+                ]
             }
         }
     },
@@ -31391,7 +33756,7 @@
         },
         {
             "description": "The background tasks that have been executed for your environment.",
-            "name": "Background Tasks"
+            "name": "Background Task"
         },
         {
             "description": "Generate statistics about your Svix utilization",
@@ -31404,6 +33769,10 @@
         {
             "description": "Manage your environments like development, staging and production.",
             "name": "Environment"
+        },
+        {
+            "description": "Configure where Svix Ingest sends messages.",
+            "name": "Ingest Endpoint"
         }
     ],
     "x-tagGroups": [
@@ -31412,7 +33781,7 @@
             "tags": [
                 "Application",
                 "Event Type",
-                "Background Tasks",
+                "Background Task",
                 "Environment"
             ]
         },
@@ -31424,6 +33793,12 @@
                 "Message",
                 "Message Attempt",
                 "Integration"
+            ]
+        },
+        {
+            "name": "Ingest",
+            "tags": [
+                "Ingest Endpoint"
             ]
         },
         {

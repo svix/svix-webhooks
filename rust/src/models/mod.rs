@@ -39,9 +39,16 @@ pub mod event_type_in;
 pub mod event_type_out;
 pub mod event_type_patch;
 pub mod event_type_update;
-pub mod expung_all_contents_out;
+pub mod expunge_all_contents_out;
 pub mod http_error_out;
 pub mod http_validation_error;
+pub mod ingest_endpoint_headers_in;
+pub mod ingest_endpoint_headers_out;
+pub mod ingest_endpoint_in;
+pub mod ingest_endpoint_out;
+pub mod ingest_endpoint_secret_in;
+pub mod ingest_endpoint_secret_out;
+pub mod ingest_endpoint_update;
 pub mod integration_in;
 pub mod integration_key_out;
 pub mod integration_out;
@@ -51,6 +58,7 @@ pub mod list_response_background_task_out;
 pub mod list_response_endpoint_message_out;
 pub mod list_response_endpoint_out;
 pub mod list_response_event_type_out;
+pub mod list_response_ingest_endpoint_out;
 pub mod list_response_integration_out;
 pub mod list_response_message_attempt_endpoint_out;
 pub mod list_response_message_attempt_out;
@@ -122,9 +130,16 @@ pub use self::{
     event_type_out::EventTypeOut,
     event_type_patch::EventTypePatch,
     event_type_update::EventTypeUpdate,
-    expung_all_contents_out::ExpungAllContentsOut,
+    expunge_all_contents_out::ExpungeAllContentsOut,
     http_error_out::HttpErrorOut,
     http_validation_error::HttpValidationError,
+    ingest_endpoint_headers_in::IngestEndpointHeadersIn,
+    ingest_endpoint_headers_out::IngestEndpointHeadersOut,
+    ingest_endpoint_in::IngestEndpointIn,
+    ingest_endpoint_out::IngestEndpointOut,
+    ingest_endpoint_secret_in::IngestEndpointSecretIn,
+    ingest_endpoint_secret_out::IngestEndpointSecretOut,
+    ingest_endpoint_update::IngestEndpointUpdate,
     integration_in::IntegrationIn,
     integration_key_out::IntegrationKeyOut,
     integration_out::IntegrationOut,
@@ -134,6 +149,7 @@ pub use self::{
     list_response_endpoint_message_out::ListResponseEndpointMessageOut,
     list_response_endpoint_out::ListResponseEndpointOut,
     list_response_event_type_out::ListResponseEventTypeOut,
+    list_response_ingest_endpoint_out::ListResponseIngestEndpointOut,
     list_response_integration_out::ListResponseIntegrationOut,
     list_response_message_attempt_endpoint_out::ListResponseMessageAttemptEndpointOut,
     list_response_message_attempt_out::ListResponseMessageAttemptOut,

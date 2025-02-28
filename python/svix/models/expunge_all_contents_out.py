@@ -5,7 +5,7 @@ from .background_task_type import BackgroundTaskType
 from .common import BaseModel
 
 
-class ExpungAllContentsOut(BaseModel):
+class ExpungeAllContentsOut(BaseModel):
     id: str
     """The QueueBackgroundTask's ID."""
 
