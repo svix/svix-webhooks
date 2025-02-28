@@ -1,8 +1,8 @@
 // this file is @generated
 import {
-  ExpungAllContentsOut,
-  ExpungAllContentsOutSerializer,
-} from "../models/expungAllContentsOut";
+  ExpungeAllContentsOut,
+  ExpungeAllContentsOutSerializer,
+} from "../models/expungeAllContentsOut";
 import {
   ListResponseMessageOut,
   ListResponseMessageOutSerializer,
@@ -115,7 +115,7 @@ export class Message {
   public expungeAllContents(
     appId: string,
     options?: MessageExpungeAllContentsOptions
-  ): Promise<ExpungAllContentsOut> {
+  ): Promise<ExpungeAllContentsOut> {
     const request = new SvixRequest(
       HttpMethod.POST,
       "/api/v1/app/{app_id}/msg/expunge-all-contents"
@@ -124,7 +124,7 @@ export class Message {
     request.setPathParam("app_id", appId);
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
 
-    return request.send(this.requestCtx, ExpungAllContentsOutSerializer._fromJsonObject);
+    return request.send(this.requestCtx, ExpungeAllContentsOutSerializer._fromJsonObject);
   }
 
   /** Get a message by its ID or eventID. */

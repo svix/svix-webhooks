@@ -2,23 +2,12 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
-pub struct EndpointIn {
-    /// List of message channels this endpoint listens to (omit for all).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub channels: Option<Vec<String>>,
-
+pub struct IngestEndpointIn {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub disabled: Option<bool>,
-
-    #[serde(rename = "filterTypes")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub filter_types: Option<Vec<String>>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub headers: Option<std::collections::HashMap<String, String>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub metadata: Option<std::collections::HashMap<String, String>>,
@@ -40,27 +29,18 @@ pub struct EndpointIn {
     pub uid: Option<String>,
 
     pub url: String,
-
-    #[deprecated]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub version: Option<u16>,
 }
 
-impl EndpointIn {
+impl IngestEndpointIn {
     pub fn new(url: String) -> Self {
-        #[allow(deprecated)]
         Self {
-            channels: None,
             description: None,
             disabled: None,
-            filter_types: None,
-            headers: None,
             metadata: None,
             rate_limit: None,
             secret: None,
             uid: None,
             url,
-            version: None,
         }
     }
 }

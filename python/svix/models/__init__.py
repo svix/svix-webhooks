@@ -39,7 +39,14 @@ from .event_type_in import EventTypeIn
 from .event_type_out import EventTypeOut
 from .event_type_patch import EventTypePatch
 from .event_type_update import EventTypeUpdate
-from .expung_all_contents_out import ExpungAllContentsOut
+from .expunge_all_contents_out import ExpungeAllContentsOut
+from .ingest_endpoint_headers_in import IngestEndpointHeadersIn
+from .ingest_endpoint_headers_out import IngestEndpointHeadersOut
+from .ingest_endpoint_in import IngestEndpointIn
+from .ingest_endpoint_out import IngestEndpointOut
+from .ingest_endpoint_secret_in import IngestEndpointSecretIn
+from .ingest_endpoint_secret_out import IngestEndpointSecretOut
+from .ingest_endpoint_update import IngestEndpointUpdate
 from .integration_in import IntegrationIn
 from .integration_key_out import IntegrationKeyOut
 from .integration_out import IntegrationOut
@@ -49,6 +56,7 @@ from .list_response_background_task_out import ListResponseBackgroundTaskOut
 from .list_response_endpoint_message_out import ListResponseEndpointMessageOut
 from .list_response_endpoint_out import ListResponseEndpointOut
 from .list_response_event_type_out import ListResponseEventTypeOut
+from .list_response_ingest_endpoint_out import ListResponseIngestEndpointOut
 from .list_response_integration_out import ListResponseIntegrationOut
 from .list_response_message_attempt_out import ListResponseMessageAttemptOut
 from .list_response_message_endpoint_out import ListResponseMessageEndpointOut
@@ -120,7 +128,14 @@ __all__ = [
     "EventTypeOut",
     "EventTypePatch",
     "EventTypeUpdate",
-    "ExpungAllContentsOut",
+    "ExpungeAllContentsOut",
+    "IngestEndpointHeadersIn",
+    "IngestEndpointHeadersOut",
+    "IngestEndpointIn",
+    "IngestEndpointOut",
+    "IngestEndpointSecretIn",
+    "IngestEndpointSecretOut",
+    "IngestEndpointUpdate",
     "IntegrationIn",
     "IntegrationKeyOut",
     "IntegrationOut",
@@ -130,6 +145,7 @@ __all__ = [
     "ListResponseEndpointMessageOut",
     "ListResponseEndpointOut",
     "ListResponseEventTypeOut",
+    "ListResponseIngestEndpointOut",
     "ListResponseIntegrationOut",
     "ListResponseMessageAttemptOut",
     "ListResponseMessageEndpointOut",

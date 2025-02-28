@@ -3,7 +3,12 @@ import typing as t
 from dataclasses import dataclass
 from datetime import datetime
 
-from ..models import ExpungAllContentsOut, ListResponseMessageOut, MessageIn, MessageOut
+from ..models import (
+    ExpungeAllContentsOut,
+    ListResponseMessageOut,
+    MessageIn,
+    MessageOut,
+)
 from .common import ApiBase, BaseOptions, serialize_params
 
 
@@ -174,7 +179,7 @@ class MessageAsync(ApiBase):
         self,
         app_id: str,
         options: MessageExpungeAllContentsOptions = MessageExpungeAllContentsOptions(),
-    ) -> ExpungAllContentsOut:
+    ) -> ExpungeAllContentsOut:
         """Purge all message content for the application.
 
         Delete all message payloads for the application."""
@@ -187,7 +192,7 @@ class MessageAsync(ApiBase):
             query_params=options._query_params(),
             header_params=options._header_params(),
         )
-        return ExpungAllContentsOut.model_validate(response.json())
+        return ExpungeAllContentsOut.model_validate(response.json())
 
     async def get(
         self, app_id: str, msg_id: str, options: MessageGetOptions = MessageGetOptions()
@@ -275,7 +280,7 @@ class Message(ApiBase):
         self,
         app_id: str,
         options: MessageExpungeAllContentsOptions = MessageExpungeAllContentsOptions(),
-    ) -> ExpungAllContentsOut:
+    ) -> ExpungeAllContentsOut:
         """Purge all message content for the application.
 
         Delete all message payloads for the application."""
@@ -288,7 +293,7 @@ class Message(ApiBase):
             query_params=options._query_params(),
             header_params=options._header_params(),
         )
-        return ExpungAllContentsOut.model_validate(response.json())
+        return ExpungeAllContentsOut.model_validate(response.json())
 
     def get(
         self, app_id: str, msg_id: str, options: MessageGetOptions = MessageGetOptions()

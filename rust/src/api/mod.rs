@@ -10,6 +10,8 @@ mod authentication;
 mod background_task;
 mod endpoint;
 mod event_type;
+mod ingest;
+mod ingest_endpoint;
 mod integration;
 mod message;
 mod message_attempt;
@@ -33,6 +35,11 @@ pub use self::{
     event_type::{
         EventType, EventTypeCreateOptions, EventTypeDeleteOptions, EventTypeImportOpenapiOptions,
         EventTypeListOptions,
+    },
+    ingest::Ingest,
+    ingest_endpoint::{
+        IngestEndpoint, IngestEndpointCreateOptions, IngestEndpointListOptions,
+        IngestEndpointRotateSecretOptions,
     },
     integration::{
         Integration, IntegrationCreateOptions, IntegrationListOptions, IntegrationRotateKeyOptions,
@@ -77,6 +84,10 @@ impl Svix {
 
     pub fn endpoint(&self) -> Endpoint<'_> {
         Endpoint::new(&self.cfg)
+    }
+
+    pub fn ingest(&self) -> Ingest<'_> {
+        Ingest::new(&self.cfg)
     }
 
     pub fn integration(&self) -> Integration<'_> {
