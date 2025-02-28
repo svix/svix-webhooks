@@ -18,6 +18,27 @@ if ! command -v openapi-codegen >/dev/null; then
     fi
 fi
 
+# Rust
+(
+    # Print commands we run
+    set -x
+
+    openapi-codegen generate \
+        --template rust/templates/api_resource.rs.jinja \
+        --input-file lib-openapi.json \
+        --output-dir rust/src/api
+    openapi-codegen generate \
+        --template rust/templates/component_type.rs.jinja \
+        --input-file lib-openapi.json \
+        --output-dir rust/src/models
+
+    # Remove APIs we may not (yet) want to expose
+    rm rust/src/api/{environment,health}.rs
+)
+
+# skip everything else for now
+exit
+
 # JavaScript
 (
     # Print commands we run
@@ -37,23 +58,6 @@ fi
         --output-dir javascript/src/models
 )
 
-# Rust
-(
-    # Print commands we run
-    set -x
-
-    openapi-codegen generate \
-        --template rust/templates/api_resource.rs.jinja \
-        --input-file lib-openapi.json \
-        --output-dir rust/src/api
-    openapi-codegen generate \
-        --template rust/templates/component_type.rs.jinja \
-        --input-file lib-openapi.json \
-        --output-dir rust/src/models
-
-    # Remove APIs we may not (yet) want to expose
-    rm rust/src/api/{environment,health}.rs
-)
 
 # CLI
 (
