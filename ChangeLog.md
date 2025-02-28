@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## Version 1.61.0
 * Libs/Ruby **(Breaking)**: Ruby version changed from `2.7` to `3.4.2`
 * Libs/Ruby **(Breaking)**: Deprecated methods `MessageAttempt.list` and `MessageAttempt.list_attempts_for_endpoint` are removed
 
