@@ -17,13 +17,12 @@ pub struct IntegrationListOptions {
 }
 
 impl From<IntegrationListOptions> for svix::api::IntegrationListOptions {
-    fn from(
-        IntegrationListOptions {
+    fn from(value: IntegrationListOptions) -> Self {
+        let IntegrationListOptions {
             limit,
             iterator,
             order,
-        }: IntegrationListOptions,
-    ) -> Self {
+        } = value;
         Self {
             limit,
             iterator,
@@ -39,7 +38,8 @@ pub struct IntegrationCreateOptions {
 }
 
 impl From<IntegrationCreateOptions> for svix::api::IntegrationCreateOptions {
-    fn from(IntegrationCreateOptions { idempotency_key }: IntegrationCreateOptions) -> Self {
+    fn from(value: IntegrationCreateOptions) -> Self {
+        let IntegrationCreateOptions { idempotency_key } = value;
         Self { idempotency_key }
     }
 }
@@ -51,7 +51,8 @@ pub struct IntegrationRotateKeyOptions {
 }
 
 impl From<IntegrationRotateKeyOptions> for svix::api::IntegrationRotateKeyOptions {
-    fn from(IntegrationRotateKeyOptions { idempotency_key }: IntegrationRotateKeyOptions) -> Self {
+    fn from(value: IntegrationRotateKeyOptions) -> Self {
+        let IntegrationRotateKeyOptions { idempotency_key } = value;
         Self { idempotency_key }
     }
 }
