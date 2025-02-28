@@ -19,11 +19,6 @@ Gem::Specification.new do |spec|
 
     Thank you for installing svix!
 
-    If you are using svix to send outgoing webhhooks, you should also install the `typhoeus` gem.
-    If you are only using svix to consume incoming webhooks, you do not need it.
-
-      gem 'typhoeus`
-
   MESSAGE
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
@@ -41,13 +36,9 @@ Gem::Specification.new do |spec|
 
   # Specify which files should be added to the gem when it is released.
   ignored = Regexp.union(
-    /\A\.openapi-generator/,
     /\Aspec/,
     /\Apkg/,
-    /\Atemplates/,
     /\A.gitignore/,
-    /\A.openapi-generator-ignore/,
-    /\Aopenapi-generator-config.json/,
     /.gem\z/
   )
   spec.files = Dir['**/*'].reject {|f| !File.file?(f) || ignored.match(f) }
@@ -58,5 +49,5 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "rake", "~> 13.0"
   spec.add_development_dependency "rspec", "~> 3.2"
-  spec.add_development_dependency 'typhoeus', '~> 1.0', '>= 1.0.1'
+  spec.add_development_dependency 'webmock', '~> 3.25'
 end
