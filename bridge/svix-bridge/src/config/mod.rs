@@ -255,7 +255,7 @@ impl WebhookReceiverConfig {
 pub struct MessageStreamBridgeConfig {
     pub token: String,
     pub app_id: String,
-    pub subscription_id: String,
+    pub sink_id: String,
 }
 
 fn deserialize_message_stream_bridge_config<'de, D>(
@@ -266,19 +266,22 @@ where
 {
     let buf = String::deserialize(deserializer)?;
     let decoded = base64::decode(buf)
-        .map_err(|e| de::Error::custom(format!("failed to decode subscription config: {e:?}")))?;
+        .map_err(|e| de::Error::custom(format!("failed to decode poller config: {e:?}")))?;
     serde_json::from_slice(&decoded)
-        .map_err(|e| de::Error::custom(format!("failed to decode subscription config: {e:?}")))
+        .map_err(|e| de::Error::custom(format!("failed to decode poller config: {e:?}")))
 }
 
 #[derive(Clone, Deserialize)]
 #[serde(tag = "type", rename_all = "kebab-case")]
 pub enum PollerInputOpts {
-    SvixEvents {
+    SvixPollerEndpoint {
+        /// Identifies this client, allowing the server to track progress during iteration.
+        /// Processes should not share a consumer id.
+        consumer_id: String,
         /// This is the base64 encoded JSON given as `bridgeConfig` in the response from
         /// `v1.message.events-subscription.create-token`.
         #[serde(deserialize_with = "deserialize_message_stream_bridge_config")]
-        subscription_token: MessageStreamBridgeConfig,
+        config_token: MessageStreamBridgeConfig,
         #[serde(default)]
         svix_options: Option<SvixOptions>,
     },
@@ -287,12 +290,12 @@ pub enum PollerInputOpts {
 impl PollerInputOpts {
     pub fn svix_client(&self) -> Option<Svix> {
         match self {
-            PollerInputOpts::SvixEvents {
-                subscription_token,
+            PollerInputOpts::SvixPollerEndpoint {
+                config_token,
                 svix_options,
                 ..
             } => Some(Svix::new(
-                subscription_token.token.clone(),
+                config_token.token.clone(),
                 svix_options.clone().map(Into::into),
             )),
         }

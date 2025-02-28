@@ -8,7 +8,7 @@ use axum::{
 };
 use svix_bridge_types::{
     async_trait,
-    svix::api::{Svix, V1MessageEventsSubscriptionParams},
+    svix::api::{EventsPublicConsumerOptions, Svix},
     ForwardRequest, PollerInput, ReceiverOutput, TransformationConfig, TransformerInput,
     TransformerInputFormat, TransformerJob, TransformerOutput, TransformerTx,
 };
@@ -257,33 +257,36 @@ async fn run_inner(poller: &SvixEventsPoller) -> ! {
     const NO_SLEEP: Duration = Duration::ZERO;
     let mut sleep_time = NO_SLEEP;
 
-    let PollerInputOpts::SvixEvents {
-        subscription_token:
+    let PollerInputOpts::SvixPollerEndpoint {
+        consumer_id,
+        config_token:
             MessageStreamBridgeConfig {
+                token: _,
                 app_id,
-                subscription_id,
-                ..
+                sink_id,
             },
-        ..
+        svix_options: _,
     } = &poller.input_opts;
 
     let mut iterator = None;
 
     loop {
-        tracing::trace!(app_id, subscription_id, "polling `/events`");
+        tracing::trace!(app_id, sink_id, "polling `/events`");
         match poller
             .svix_client
-            .message()
-            .events_subscription(V1MessageEventsSubscriptionParams {
-                // FIXME: expose more params as poller input cfg
-                app_id: app_id.clone(),
-                subscription_id: subscription_id.clone(),
-                limit: None,
-                iterator: iterator.clone(),
-                event_types: None,
-                channels: None,
-                after: None,
-            })
+            .events_public()
+            .consumer(
+                app_id.clone(),
+                sink_id.clone(),
+                consumer_id.clone(),
+                Some(EventsPublicConsumerOptions {
+                    limit: None,
+                    iterator: iterator.clone(),
+                    event_type: None,
+                    channel: None,
+                    after: None,
+                }),
+            )
             .await
         {
             Ok(resp) => {
