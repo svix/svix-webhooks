@@ -618,8 +618,11 @@ fn test_pollers_parse_ok() {
     receivers:
       - name: "poller-to-rabbitmq-example"
         input:
-          type: "svix-events"
-          subscription_token: "eyJ0b2tlbiI6InRlc3Rza19hcHBfNTN0ZTBWNnJIdUs4R205VUNhYkxJOE5ieExTOGJ5MzEuZXUiLCJhcHBJZCI6ImFwcF8yajFvOGs1NFo4dXVscEVPb3k5VmZ6WUR0aE4iLCJzdWJzY3JpcHRpb25JZCI6Im15LWNvbnN1bWVyIn0="
+          type: "svix-polling-endpoint"
+          consumer_id: "my-consumer"
+          app_id: "app_AbCd"
+          sink_id: "poll_aBcD"
+          token: "xxxx"
         output:
           type: "rabbitmq"
           uri: "amqp://guest:guest@localhost:5672/%2f"

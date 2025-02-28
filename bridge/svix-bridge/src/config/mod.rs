@@ -9,7 +9,7 @@ use std::{
 };
 
 use anyhow::anyhow;
-use serde::{de, Deserialize, Deserializer};
+use serde::Deserialize;
 use shellexpand::LookupError;
 #[cfg(feature = "kafka")]
 use svix_bridge_plugin_kafka::{KafkaInputOpts, KafkaOutputOpts};
@@ -251,34 +251,18 @@ impl WebhookReceiverConfig {
 }
 
 #[derive(Clone, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct MessageStreamBridgeConfig {
-    pub token: String,
-    pub app_id: String,
-    pub subscription_id: String,
-}
-
-fn deserialize_message_stream_bridge_config<'de, D>(
-    deserializer: D,
-) -> Result<MessageStreamBridgeConfig, D::Error>
-where
-    D: Deserializer<'de>,
-{
-    let buf = String::deserialize(deserializer)?;
-    let decoded = base64::decode(buf)
-        .map_err(|e| de::Error::custom(format!("failed to decode subscription config: {e:?}")))?;
-    serde_json::from_slice(&decoded)
-        .map_err(|e| de::Error::custom(format!("failed to decode subscription config: {e:?}")))
-}
-
-#[derive(Clone, Deserialize)]
 #[serde(tag = "type", rename_all = "kebab-case")]
 pub enum PollerInputOpts {
-    SvixEvents {
-        /// This is the base64 encoded JSON given as `bridgeConfig` in the response from
-        /// `v1.message.events-subscription.create-token`.
-        #[serde(deserialize_with = "deserialize_message_stream_bridge_config")]
-        subscription_token: MessageStreamBridgeConfig,
+    SvixPollingEndpoint {
+        /// Identifies this client, allowing the server to track progress during iteration.
+        /// Processes should not share a consumer id. Only exclusive access is permitted.
+        consumer_id: String,
+        /// The app portion of the polling endpoint, e.g. `app_XXXX`
+        app_id: String,
+        /// The poller portion of the polling endpoint, e.g. `poll_XXXX`
+        sink_id: String,
+        /// The auth token for the polling endpoint
+        token: String,
         #[serde(default)]
         svix_options: Option<SvixOptions>,
     },
@@ -287,12 +271,12 @@ pub enum PollerInputOpts {
 impl PollerInputOpts {
     pub fn svix_client(&self) -> Option<Svix> {
         match self {
-            PollerInputOpts::SvixEvents {
-                subscription_token,
+            PollerInputOpts::SvixPollingEndpoint {
+                token,
                 svix_options,
                 ..
             } => Some(Svix::new(
-                subscription_token.token.clone(),
+                token.clone(),
                 svix_options.clone().map(Into::into),
             )),
         }
