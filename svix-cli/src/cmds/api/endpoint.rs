@@ -18,13 +18,12 @@ pub struct EndpointListOptions {
 }
 
 impl From<EndpointListOptions> for svix::api::EndpointListOptions {
-    fn from(
-        EndpointListOptions {
+    fn from(value: EndpointListOptions) -> Self {
+        let EndpointListOptions {
             limit,
             iterator,
             order,
-        }: EndpointListOptions,
-    ) -> Self {
+        } = value;
         Self {
             limit,
             iterator,
@@ -40,7 +39,8 @@ pub struct EndpointCreateOptions {
 }
 
 impl From<EndpointCreateOptions> for svix::api::EndpointCreateOptions {
-    fn from(EndpointCreateOptions { idempotency_key }: EndpointCreateOptions) -> Self {
+    fn from(value: EndpointCreateOptions) -> Self {
+        let EndpointCreateOptions { idempotency_key } = value;
         Self { idempotency_key }
     }
 }
@@ -52,7 +52,8 @@ pub struct EndpointRecoverOptions {
 }
 
 impl From<EndpointRecoverOptions> for svix::api::EndpointRecoverOptions {
-    fn from(EndpointRecoverOptions { idempotency_key }: EndpointRecoverOptions) -> Self {
+    fn from(value: EndpointRecoverOptions) -> Self {
+        let EndpointRecoverOptions { idempotency_key } = value;
         Self { idempotency_key }
     }
 }
@@ -64,9 +65,8 @@ pub struct EndpointReplayMissingOptions {
 }
 
 impl From<EndpointReplayMissingOptions> for svix::api::EndpointReplayMissingOptions {
-    fn from(
-        EndpointReplayMissingOptions { idempotency_key }: EndpointReplayMissingOptions,
-    ) -> Self {
+    fn from(value: EndpointReplayMissingOptions) -> Self {
+        let EndpointReplayMissingOptions { idempotency_key } = value;
         Self { idempotency_key }
     }
 }
@@ -78,7 +78,8 @@ pub struct EndpointRotateSecretOptions {
 }
 
 impl From<EndpointRotateSecretOptions> for svix::api::EndpointRotateSecretOptions {
-    fn from(EndpointRotateSecretOptions { idempotency_key }: EndpointRotateSecretOptions) -> Self {
+    fn from(value: EndpointRotateSecretOptions) -> Self {
+        let EndpointRotateSecretOptions { idempotency_key } = value;
         Self { idempotency_key }
     }
 }
@@ -90,7 +91,8 @@ pub struct EndpointSendExampleOptions {
 }
 
 impl From<EndpointSendExampleOptions> for svix::api::EndpointSendExampleOptions {
-    fn from(EndpointSendExampleOptions { idempotency_key }: EndpointSendExampleOptions) -> Self {
+    fn from(value: EndpointSendExampleOptions) -> Self {
+        let EndpointSendExampleOptions { idempotency_key } = value;
         Self { idempotency_key }
     }
 }
@@ -106,7 +108,8 @@ pub struct EndpointGetStatsOptions {
 }
 
 impl From<EndpointGetStatsOptions> for svix::api::EndpointGetStatsOptions {
-    fn from(EndpointGetStatsOptions { since, until }: EndpointGetStatsOptions) -> Self {
+    fn from(value: EndpointGetStatsOptions) -> Self {
+        let EndpointGetStatsOptions { since, until } = value;
         Self {
             since: since.map(|dt| dt.to_rfc3339()),
             until: until.map(|dt| dt.to_rfc3339()),

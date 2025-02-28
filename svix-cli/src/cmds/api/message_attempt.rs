@@ -40,8 +40,8 @@ pub struct MessageAttemptListByEndpointOptions {
 }
 
 impl From<MessageAttemptListByEndpointOptions> for svix::api::MessageAttemptListByEndpointOptions {
-    fn from(
-        MessageAttemptListByEndpointOptions {
+    fn from(value: MessageAttemptListByEndpointOptions) -> Self {
+        let MessageAttemptListByEndpointOptions {
             limit,
             iterator,
             status,
@@ -53,8 +53,7 @@ impl From<MessageAttemptListByEndpointOptions> for svix::api::MessageAttemptList
             with_content,
             with_msg,
             event_types,
-        }: MessageAttemptListByEndpointOptions,
-    ) -> Self {
+        } = value;
         Self {
             limit,
             iterator,
@@ -109,8 +108,8 @@ pub struct MessageAttemptListByMsgOptions {
 }
 
 impl From<MessageAttemptListByMsgOptions> for svix::api::MessageAttemptListByMsgOptions {
-    fn from(
-        MessageAttemptListByMsgOptions {
+    fn from(value: MessageAttemptListByMsgOptions) -> Self {
+        let MessageAttemptListByMsgOptions {
             limit,
             iterator,
             status,
@@ -122,8 +121,7 @@ impl From<MessageAttemptListByMsgOptions> for svix::api::MessageAttemptListByMsg
             after,
             with_content,
             event_types,
-        }: MessageAttemptListByMsgOptions,
-    ) -> Self {
+        } = value;
         Self {
             limit,
             iterator,
@@ -174,8 +172,8 @@ pub struct MessageAttemptListAttemptedMessagesOptions {
 impl From<MessageAttemptListAttemptedMessagesOptions>
     for svix::api::MessageAttemptListAttemptedMessagesOptions
 {
-    fn from(
-        MessageAttemptListAttemptedMessagesOptions {
+    fn from(value: MessageAttemptListAttemptedMessagesOptions) -> Self {
+        let MessageAttemptListAttemptedMessagesOptions {
             limit,
             iterator,
             channel,
@@ -185,8 +183,7 @@ impl From<MessageAttemptListAttemptedMessagesOptions>
             after,
             with_content,
             event_types,
-        }: MessageAttemptListAttemptedMessagesOptions,
-    ) -> Self {
+        } = value;
         Self {
             limit,
             iterator,
@@ -214,12 +211,8 @@ pub struct MessageAttemptListAttemptedDestinationsOptions {
 impl From<MessageAttemptListAttemptedDestinationsOptions>
     for svix::api::MessageAttemptListAttemptedDestinationsOptions
 {
-    fn from(
-        MessageAttemptListAttemptedDestinationsOptions {
-            limit,
-            iterator,
-        }: MessageAttemptListAttemptedDestinationsOptions,
-    ) -> Self {
+    fn from(value: MessageAttemptListAttemptedDestinationsOptions) -> Self {
+        let MessageAttemptListAttemptedDestinationsOptions { limit, iterator } = value;
         Self { limit, iterator }
     }
 }
@@ -231,7 +224,8 @@ pub struct MessageAttemptResendOptions {
 }
 
 impl From<MessageAttemptResendOptions> for svix::api::MessageAttemptResendOptions {
-    fn from(MessageAttemptResendOptions { idempotency_key }: MessageAttemptResendOptions) -> Self {
+    fn from(value: MessageAttemptResendOptions) -> Self {
+        let MessageAttemptResendOptions { idempotency_key } = value;
         Self { idempotency_key }
     }
 }

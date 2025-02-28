@@ -55,6 +55,25 @@ fi
     rm rust/src/api/{environment,health}.rs
 )
 
+# CLI
+(
+    # Print commands we run
+    set -x
+
+    openapi-codegen generate \
+        --template svix-cli/templates/api_resource.rs.jinja \
+        --input-file lib-openapi.json \
+        --output-dir svix-cli/src/cmds/api
+
+    # Our CLI templates currently output some unused imports. Get rid of them.
+    cargo fix --manifest-path svix-cli/Cargo.toml --allow-dirty
+    # `cargo fix` can leave the source in an inconsistently-formatted state.
+    cargo fmt --manifest-path svix-cli/Cargo.toml
+
+    # Remove APIs we may not (yet) want to expose
+    rm svix-cli/src/cmds/api/{background_task,environment,health,operational_webhook_endpoint,statistics}.rs
+)
+
 # Python
 (
     # Print commands we run

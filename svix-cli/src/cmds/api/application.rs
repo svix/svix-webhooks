@@ -17,13 +17,12 @@ pub struct ApplicationListOptions {
 }
 
 impl From<ApplicationListOptions> for svix::api::ApplicationListOptions {
-    fn from(
-        ApplicationListOptions {
+    fn from(value: ApplicationListOptions) -> Self {
+        let ApplicationListOptions {
             limit,
             iterator,
             order,
-        }: ApplicationListOptions,
-    ) -> Self {
+        } = value;
         Self {
             limit,
             iterator,
@@ -39,7 +38,8 @@ pub struct ApplicationCreateOptions {
 }
 
 impl From<ApplicationCreateOptions> for svix::api::ApplicationCreateOptions {
-    fn from(ApplicationCreateOptions { idempotency_key }: ApplicationCreateOptions) -> Self {
+    fn from(value: ApplicationCreateOptions) -> Self {
+        let ApplicationCreateOptions { idempotency_key } = value;
         Self { idempotency_key }
     }
 }

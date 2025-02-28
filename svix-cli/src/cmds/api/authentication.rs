@@ -12,11 +12,8 @@ pub struct AuthenticationAppPortalAccessOptions {
 impl From<AuthenticationAppPortalAccessOptions>
     for svix::api::AuthenticationAppPortalAccessOptions
 {
-    fn from(
-        AuthenticationAppPortalAccessOptions {
-            idempotency_key,
-        }: AuthenticationAppPortalAccessOptions,
-    ) -> Self {
+    fn from(value: AuthenticationAppPortalAccessOptions) -> Self {
+        let AuthenticationAppPortalAccessOptions { idempotency_key } = value;
         Self { idempotency_key }
     }
 }
@@ -28,9 +25,8 @@ pub struct AuthenticationExpireAllOptions {
 }
 
 impl From<AuthenticationExpireAllOptions> for svix::api::AuthenticationExpireAllOptions {
-    fn from(
-        AuthenticationExpireAllOptions { idempotency_key }: AuthenticationExpireAllOptions,
-    ) -> Self {
+    fn from(value: AuthenticationExpireAllOptions) -> Self {
+        let AuthenticationExpireAllOptions { idempotency_key } = value;
         Self { idempotency_key }
     }
 }
@@ -44,11 +40,8 @@ pub struct AuthenticationDashboardAccessOptions {
 impl From<AuthenticationDashboardAccessOptions>
     for svix::api::AuthenticationDashboardAccessOptions
 {
-    fn from(
-        AuthenticationDashboardAccessOptions {
-            idempotency_key,
-        }: AuthenticationDashboardAccessOptions,
-    ) -> Self {
+    fn from(value: AuthenticationDashboardAccessOptions) -> Self {
+        let AuthenticationDashboardAccessOptions { idempotency_key } = value;
         Self { idempotency_key }
     }
 }
@@ -60,7 +53,8 @@ pub struct AuthenticationLogoutOptions {
 }
 
 impl From<AuthenticationLogoutOptions> for svix::api::AuthenticationLogoutOptions {
-    fn from(AuthenticationLogoutOptions { idempotency_key }: AuthenticationLogoutOptions) -> Self {
+    fn from(value: AuthenticationLogoutOptions) -> Self {
+        let AuthenticationLogoutOptions { idempotency_key } = value;
         Self { idempotency_key }
     }
 }

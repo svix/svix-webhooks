@@ -23,15 +23,14 @@ pub struct EventTypeListOptions {
 }
 
 impl From<EventTypeListOptions> for svix::api::EventTypeListOptions {
-    fn from(
-        EventTypeListOptions {
+    fn from(value: EventTypeListOptions) -> Self {
+        let EventTypeListOptions {
             limit,
             iterator,
             order,
             include_archived,
             with_content,
-        }: EventTypeListOptions,
-    ) -> Self {
+        } = value;
         Self {
             limit,
             iterator,
@@ -49,7 +48,8 @@ pub struct EventTypeCreateOptions {
 }
 
 impl From<EventTypeCreateOptions> for svix::api::EventTypeCreateOptions {
-    fn from(EventTypeCreateOptions { idempotency_key }: EventTypeCreateOptions) -> Self {
+    fn from(value: EventTypeCreateOptions) -> Self {
+        let EventTypeCreateOptions { idempotency_key } = value;
         Self { idempotency_key }
     }
 }
@@ -61,9 +61,8 @@ pub struct EventTypeImportOpenapiOptions {
 }
 
 impl From<EventTypeImportOpenapiOptions> for svix::api::EventTypeImportOpenapiOptions {
-    fn from(
-        EventTypeImportOpenapiOptions { idempotency_key }: EventTypeImportOpenapiOptions,
-    ) -> Self {
+    fn from(value: EventTypeImportOpenapiOptions) -> Self {
+        let EventTypeImportOpenapiOptions { idempotency_key } = value;
         Self { idempotency_key }
     }
 }
@@ -76,7 +75,8 @@ pub struct EventTypeDeleteOptions {
 }
 
 impl From<EventTypeDeleteOptions> for svix::api::EventTypeDeleteOptions {
-    fn from(EventTypeDeleteOptions { expunge }: EventTypeDeleteOptions) -> Self {
+    fn from(value: EventTypeDeleteOptions) -> Self {
+        let EventTypeDeleteOptions { expunge } = value;
         Self { expunge }
     }
 }

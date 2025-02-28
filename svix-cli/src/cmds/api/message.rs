@@ -33,8 +33,8 @@ pub struct MessageListOptions {
 }
 
 impl From<MessageListOptions> for svix::api::MessageListOptions {
-    fn from(
-        MessageListOptions {
+    fn from(value: MessageListOptions) -> Self {
+        let MessageListOptions {
             limit,
             iterator,
             channel,
@@ -43,8 +43,7 @@ impl From<MessageListOptions> for svix::api::MessageListOptions {
             with_content,
             tag,
             event_types,
-        }: MessageListOptions,
-    ) -> Self {
+        } = value;
         Self {
             limit,
             iterator,
@@ -69,16 +68,28 @@ pub struct MessageCreateOptions {
 }
 
 impl From<MessageCreateOptions> for svix::api::MessageCreateOptions {
-    fn from(
-        MessageCreateOptions {
+    fn from(value: MessageCreateOptions) -> Self {
+        let MessageCreateOptions {
             with_content,
             idempotency_key,
-        }: MessageCreateOptions,
-    ) -> Self {
+        } = value;
         Self {
             with_content,
             idempotency_key,
         }
+    }
+}
+
+#[derive(Args, Clone)]
+pub struct MessageExpungeAllContentsOptions {
+    #[arg(long)]
+    pub idempotency_key: Option<String>,
+}
+
+impl From<MessageExpungeAllContentsOptions> for svix::api::MessageExpungeAllContentsOptions {
+    fn from(value: MessageExpungeAllContentsOptions) -> Self {
+        let MessageExpungeAllContentsOptions { idempotency_key } = value;
+        Self { idempotency_key }
     }
 }
 
@@ -90,7 +101,8 @@ pub struct MessageGetOptions {
 }
 
 impl From<MessageGetOptions> for svix::api::MessageGetOptions {
-    fn from(MessageGetOptions { with_content }: MessageGetOptions) -> Self {
+    fn from(value: MessageGetOptions) -> Self {
+        let MessageGetOptions { with_content } = value;
         Self { with_content }
     }
 }
@@ -133,6 +145,14 @@ pub enum MessageCommands {
         #[clap(flatten)]
         options: MessageCreateOptions,
     },
+    /// Purge all message content for the application.
+    ///
+    /// Delete all message payloads for the application.
+    ExpungeAllContents {
+        app_id: String,
+        #[clap(flatten)]
+        options: MessageExpungeAllContentsOptions,
+    },
     /// Get a message by its ID or eventID.
     Get {
         app_id: String,
@@ -166,6 +186,13 @@ impl MessageCommands {
                 let resp = client
                     .message()
                     .create(app_id, message_in.into_inner(), Some(options.into()))
+                    .await?;
+                crate::json::print_json_output(&resp, color_mode)?;
+            }
+            Self::ExpungeAllContents { app_id, options } => {
+                let resp = client
+                    .message()
+                    .expunge_all_contents(app_id, Some(options.into()))
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
