@@ -81,6 +81,8 @@ pub mod operational_webhook_endpoint_secret_in;
 pub mod operational_webhook_endpoint_secret_out;
 pub mod operational_webhook_endpoint_update;
 pub mod ordering;
+pub mod polling_endpoint_message_out;
+pub mod polling_endpoint_out;
 pub mod recover_in;
 pub mod recover_out;
 pub mod replay_in;
@@ -179,4 +181,6 @@ pub use self::{
     status_code_class::StatusCodeClass,
     template_out::TemplateOut,
     validation_error::ValidationError,
+    polling_endpoint_message_out::PollingEndpointMessageOut,
+    polling_endpoint_out::PollingEndpointOut,
 };

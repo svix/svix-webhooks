@@ -10,6 +10,7 @@ mod authentication;
 mod background_task;
 mod endpoint;
 mod event_type;
+mod events_public;
 mod ingest;
 mod ingest_endpoint;
 mod integration;
@@ -19,7 +20,11 @@ mod operational_webhook_endpoint;
 mod statistics;
 
 #[cfg(feature = "svix_beta")]
-pub use self::message::{V1MessageEventsParams, V1MessageEventsSubscriptionParams};
+pub use self::{
+    events_public::{EventsPublic, EventsPublicConsumerOptions},
+    message::{V1MessageEventsParams, V1MessageEventsSubscriptionParams},
+};
+
 pub use self::{
     application::{Application, ApplicationCreateOptions, ApplicationListOptions},
     authentication::{
@@ -112,5 +117,10 @@ impl Svix {
 
     pub fn statistics(&self) -> Statistics<'_> {
         Statistics::new(&self.cfg)
+    }
+
+    #[cfg(feature = "svix_beta")]
+    pub fn events_public(&self) -> EventsPublic<'_> {
+        EventsPublic::new(&self.cfg)
     }
 }
