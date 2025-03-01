@@ -21,6 +21,23 @@ fi
 # Print commands we run from here on
 set -x
 
+# === Go ===
+if [[ -z "$CI" ]]; then
+openapi-codegen generate \
+    --template openapi-templates/go/api_resource.go.jinja \
+    --input-file lib-openapi.json \
+    --output-dir go
+openapi-codegen generate \
+    --template openapi-templates/go/component_type_summary.go.jinja \
+    --input-file lib-openapi.json \
+    --output-dir go
+openapi-codegen generate \
+    --template openapi-templates/go/component_type.go.jinja \
+    --input-file lib-openapi.json \
+    --output-dir go/models
+rm go/{environment,health,ingest_endpoint}.go
+fi
+
 
 # === Ruby ===
 if [[ -z "$CI" ]]; then

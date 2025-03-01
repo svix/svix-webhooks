@@ -1,0 +1,196 @@
+{% set resource_type_name = resource.name | to_upper_camel_case -%}
+{% set resource_self_name = resource.name | to_lower_camel_case -%}
+// Package svix this file is @generated DO NOT EDIT
+package svix
+
+import (
+	"fmt"
+	"time"
+	"context"
+	"encoding/json"
+
+	"github.com/svix/svix-webhooks/go/models"
+)
+
+
+type {{ resource_type_name }} struct {
+	client *SvixHttpClient
+}
+
+
+{% for op in resource.operations -%}
+    {% if op | has_query_or_header_params -%}
+	{% set opt_struct_name %}{{ resource_type_name }}{{ op.name | to_upper_camel_case }}Options{% endset %}
+type {{ opt_struct_name }} struct{
+        {% for p in op.query_params -%}
+			{% set p_ty = p.type.to_go() -%}
+			{% if p.type.is_schema_ref() -%}
+				{% set p_ty %}models.{{ p.type.to_go() }}{% endset %}
+			{% endif -%}
+            {% if p.description is defined -%}
+    {{ p.description | to_doc_comment(style="go") }}
+            {% endif -%}
+	{# all types in *Options structs are optional -#}
+    {{ p.name | to_upper_camel_case }} *{{ p_ty }}
+        {% endfor -%}
+		{% for p in op.header_params -%}
+	{{ p.name | to_upper_camel_case }} *string
+		{% endfor -%}
+
+}
+	{% endif -%}
+{% endfor -%}
+
+{% for op in resource.operations %}
+	{% if op.request_body_schema_name is defined -%}
+		{% set request_body_param = op.request_body_schema_name | to_lower_camel_case -%}
+	{% endif -%}
+
+	{# return type -#}
+	{% set has_return = false -%}
+	{% if op.response_body_schema_name is defined -%}
+		{% set has_return = true -%}
+		{% set ret_type %}models.{{ op.response_body_schema_name | to_upper_camel_case }}{% endset -%}
+		{% set func_ret_type %}(*{{ ret_type }}, error){% endset -%}
+	{% else -%}
+		{% set ret_type = "any" -%}
+		{% set func_ret_type %}error{% endset -%}
+	{% endif -%}
+
+	{% if op.description is defined -%}
+	{{ op.description | to_doc_comment(style="go") }}
+	{% endif -%}
+	{% if op.deprecated and "deprecated" not in op.description | lower -%}
+	{% if op.description is defined -%}
+//
+	{% endif -%}
+// Deprecated: {{ op.name | to_upper_camel_case }} is deprecated.
+	{% endif -%}
+func ({{ resource_self_name }} *{{ resource_type_name }}) {{ op.name | to_upper_camel_case }}(
+	ctx context.Context,
+
+	{#- path parameters #}
+	{% for p in op.path_params -%}
+		{{ p | to_lower_camel_case }} string,
+	{% endfor -%}
+
+	{# body parameter interface -#}
+	{% if op.request_body_schema_name is defined -%}
+		{{ request_body_param }} models.{{ op.request_body_schema_name }},
+	{% endif -%}
+
+	{% if op | has_query_or_header_params -%}
+		o *{{ resource_type_name }}{{ op.name | to_upper_camel_case }}Options,
+	{% endif -%}
+
+) {{ func_ret_type }} {
+	{% set used_err = false -%}
+
+	{# path params -#}
+	{% if op.path_params | length > 0 -%}
+	pathMap := map[string]string{
+		{% for p in op.path_params -%}
+		"{{ p }}" : {{ p | to_lower_camel_case }},
+		{% endfor -%}
+	}
+	{% endif -%}
+
+	{% if op.id == "v1.application.create" -%}
+	queryMap := map[string]string{
+		"get_if_exists": "false",
+	}
+	{% elif op.query_params | length > 0 -%}
+	queryMap := map[string]string{}
+	{% endif -%}
+
+	{% if op.header_params | length >0 -%}
+	headerMap := map[string]string{}
+	{% endif -%}
+
+	{% if op | has_query_or_header_params -%}
+	{% set used_err = true -%}
+	var err error
+	if o != nil {
+		{# header params -#}
+		{% if op.header_params | length > 0 -%}
+			{% for p in op.header_params -%}
+		serializeParamToMap("{{ p.name }}", o.{{ p.name | to_upper_camel_case }}, headerMap, &err)
+			{% endfor -%}
+		{% endif -%}
+
+		{# query params -#}
+		{% if op.query_params | length >0 -%}
+			{% for p in op.query_params -%}
+		serializeParamToMap("{{ p.name }}", o.{{ p.name | to_upper_camel_case }}, queryMap, &err)
+			{% endfor -%}
+		{% endif -%}
+
+		if err != nil {
+			return {% if has_return %}nil,{% endif %} err
+		}
+	}
+	{% endif -%}
+
+	{# make template ugly, but generated code nice -#}
+	{% set generic_ret_type = ret_type -%}
+	{% if op.request_body_schema_name is defined -%}
+		{% set generic_ret_type -%}models.{{ op.request_body_schema_name }},{{ ret_type }}{% endset -%}
+	{% else -%}
+		{% set generic_ret_type -%}any,{{ ret_type }}{% endset -%}
+	{% endif -%}
+	{# 	{% if has_return %}ret{% else %}_{% endif %}, err {% if not used_err or has_return %}:={% else %}={% endif %} #}
+	{% if has_return %}return {% else %} _,err {% if not used_err%}:{% endif%}= {% endif %}executeRequest[{{ generic_ret_type }}](
+		ctx,
+		{{ resource_self_name }}.client,
+		"{{ op.method | upper }}",
+		"{{ op.path }}",
+		{# path params -#}
+		{% if op.path_params | length > 0 -%}
+		pathMap,
+		{% else -%}
+		nil,
+		{% endif -%}
+
+		{#- query params -#}
+		{% if op.query_params | length > 0 or op.id == "v1.application.create"  -%}
+		queryMap,
+		{% else -%}
+		nil,
+		{% endif -%}
+
+		{#- header params -#}
+		{% if op.header_params | length >0 -%}
+		headerMap,
+		{% else -%}
+		nil,
+		{% endif -%}
+
+		{% if op.request_body_schema_name is defined -%}
+		&{{ request_body_param }},
+		{% else -%}
+		nil,
+		{% endif -%}
+	)
+	{% if not has_return -%}
+	return err
+	{% endif -%}
+	{# if err != nil {
+		return {% if has_return %}nil,{% endif %} err
+	}
+	{% if has_return -%}
+		return ret, nil
+	{% else -%}
+		return nil
+	{% endif -%} #}
+
+
+
+}
+	{% set extra_path -%}
+		api_extra/{{ resource.name | to_snake_case }}_{{ op.name | to_snake_case }}.go
+	{%- endset -%}
+	{% include extra_path ignore missing %}
+
+
+{% endfor %}
+
