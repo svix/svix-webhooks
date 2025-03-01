@@ -9,6 +9,9 @@ namespace Svix.Models
         [JsonProperty("createdAt", Required = Required.Always)]
         public required DateTime CreatedAt { get; set; }
 
+        [JsonProperty("featureFlags")]
+        public List<string>? FeatureFlags { get; set; } = null;
+
         [JsonProperty("id", Required = Required.Always)]
         public required string Id { get; set; }
 
@@ -24,6 +27,7 @@ namespace Svix.Models
 
             sb.Append("class IntegrationOut {\n");
             sb.Append("  CreatedAt: ").Append(CreatedAt).Append('\n');
+            sb.Append("  FeatureFlags: ").Append(FeatureFlags).Append('\n');
             sb.Append("  Id: ").Append(Id).Append('\n');
             sb.Append("  Name: ").Append(Name).Append('\n');
             sb.Append("  UpdatedAt: ").Append(UpdatedAt).Append('\n');

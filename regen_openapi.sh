@@ -18,6 +18,26 @@ if ! command -v openapi-codegen >/dev/null; then
     fi
 fi
 
+# Csharp (C#)
+(
+    # Print commands we run
+    if [[ -z "$CI" ]]; then
+    set -x
+
+    openapi-codegen generate \
+        --template csharp/templates/api_resource.cs.jinja \
+        --input-file lib-openapi.json \
+        --output-dir csharp/Svix
+    openapi-codegen generate \
+        --template csharp/templates/component_type.cs.jinja \
+        --input-file lib-openapi.json \
+        --output-dir csharp/Svix/Models
+
+    # Remove APIs we may not (yet) want to expose
+    rm csharp/Svix/IngestEndpoint.cs
+    fi
+)
+
 # JavaScript
 (
     # Print commands we run

@@ -25,5 +25,8 @@ namespace Svix.Models
 
         [EnumMember(Value = "event-type.aggregate")]
         EventTypeAggregate = 6,
+
+        [EnumMember(Value = "application.purge_content")]
+        ApplicationPurgeContent = 7,
     }
 }

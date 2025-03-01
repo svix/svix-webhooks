@@ -1,0 +1,15 @@
+// this file is @generated
+
+namespace Svix.Models {
+    {%- if type.description is defined %}
+    /// <summary>
+    {{ type.description | to_doc_comment(style="csharp") }}
+    /// </summary>
+    {%- endif %}
+    public enum {{ type.name | to_upper_camel_case }}
+    {
+        {% for varname, value in type.variants -%}
+        {{ varname | to_upper_camel_case }} = {{ value }},
+        {% endfor -%}
+    }
+}
