@@ -21,6 +21,19 @@ fi
 # Print commands we run from here on
 set -x
 
+# === Kotlin ====
+if [[ -z "$CI" ]]; then
+    openapi-codegen generate \
+        --template kotlin/templates/api_resource.kt.jinja \
+        --input-file lib-openapi.json \
+        --output-dir kotlin/lib/src/main/kotlin
+    openapi-codegen generate \
+        --template kotlin/templates/component_type.kt.jinja \
+        --input-file lib-openapi.json \
+        --output-dir kotlin/lib/src/main/kotlin/models
+fi
+
+
 # === Go ===
 if [[ -z "$CI" ]]; then
     openapi-codegen generate \
