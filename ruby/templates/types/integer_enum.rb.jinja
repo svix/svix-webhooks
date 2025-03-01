@@ -1,0 +1,37 @@
+# frozen_string_literal: true
+# This file is @generated
+{% set class_ty = type.name | to_upper_camel_case  -%}
+
+module Svix
+  {% if type.description is defined -%}
+  {{ type.description | to_doc_comment(style="ruby") | indent(4) }}
+  {% endif -%}
+  class {{ class_ty }}
+    {% for name, value in type.variants -%}
+    {{ name | to_upper_snake_case }} = {{ value }}.freeze
+    {% endfor %}
+    def self.all_vars
+      @all_vars ||= [
+        {%- for name, value in type.variants -%}
+        {{ name | to_upper_snake_case }},
+        {%- endfor -%}
+      ].freeze
+    end
+
+    def initialize(value)
+      unless {{ class_ty }}.all_vars.include?(value)
+        raise "Invalid ENUM value '#{value}' for class #{{ class_ty }}"
+      end
+      @value = value
+    end
+
+    def self.deserialize(value)
+      return value if {{ class_ty }}.all_vars.include?(value)
+      raise "Invalid ENUM value '#{value}' for class #{{ class_ty }}"
+    end
+
+    def serialize
+      @value
+    end
+  end
+end

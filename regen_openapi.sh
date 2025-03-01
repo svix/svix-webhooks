@@ -18,6 +18,27 @@ if ! command -v openapi-codegen >/dev/null; then
     fi
 fi
 
+# Ruby
+(
+    # Print commands we run
+    if [[ -z "$CI" ]]; then
+    set -x
+
+    openapi-codegen generate \
+        --template ruby/templates/api_resource.rb.jinja \
+        --input-file lib-openapi.json \
+        --output-dir ruby/lib/svix/api
+    openapi-codegen generate \
+        --template ruby/templates/summary.rb.jinja \
+        --input-file lib-openapi.json \
+        --output-dir ruby/lib
+    openapi-codegen generate \
+        --template ruby/templates/component_type.rb.jinja \
+        --input-file lib-openapi.json \
+        --output-dir ruby/lib/svix/models
+    fi
+)
+
 # JavaScript
 (
     # Print commands we run

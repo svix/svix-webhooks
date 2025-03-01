@@ -1,0 +1,7 @@
+{% if type.kind == "struct" -%}
+    {% include "types/struct.rb.jinja" -%}
+{%- elif type.kind == "string_enum"-%}
+    {% include "types/string_enum.rb.jinja" -%}
+{%- elif type.kind == "integer_enum" %}
+{%- include "types/integer_enum.rb.jinja" -%}
+{%- endif %}
