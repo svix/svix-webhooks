@@ -1,0 +1,28 @@
+// This file is @generated
+{% set ty_name = type.name | to_upper_camel_case -%}
+package com.svix.models;
+
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.svix.Utils.ToQueryParam;
+
+public enum {{ ty_name }} implements ToQueryParam {
+    {% for varname, value in type.variants -%}
+    {{ varname | to_upper_snake_case }}({{ value }}) {% if loop.last %};{% else %},{% endif %}
+    {% endfor -%}
+
+    private final long value;
+
+    {{ ty_name }}(long value) {
+        this.value = value;
+    }
+    @JsonValue
+    public long getValue() {
+        return this.value;
+    }
+
+    @Override
+    public String toQueryParam() {
+        return Long.toString(this.value);
+    }
+
+}

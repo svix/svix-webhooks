@@ -18,6 +18,28 @@ if ! command -v openapi-codegen >/dev/null; then
     fi
 fi
 
+# Java
+(
+    # Print commands we run
+    if [[ -z "$CI" ]]; then
+    set -x
+
+    openapi-codegen generate \
+        --template java/templates/api_resource.java.jinja \
+        --input-file lib-openapi.json \
+        --output-dir java/lib/src/main/java/com/svix/api
+    openapi-codegen generate \
+        --template java/templates/operation_options.java.jinja \
+        --input-file lib-openapi.json \
+        --output-dir java/lib/src/main/java/com/svix/api
+    openapi-codegen generate \
+        --template java/templates/component_type.java.jinja \
+        --input-file lib-openapi.json \
+        --output-dir java/lib/src/main/java/com/svix/models
+
+    fi
+)
+
 # JavaScript
 (
     # Print commands we run
