@@ -1,0 +1,164 @@
+{% set resource_type_name = resource.name | to_upper_camel_case -%}
+// this file is @generated
+package com.svix.api;
+
+import com.svix.SvixHttpClient;
+import com.svix.Utils;
+import com.svix.exceptions.ApiException;
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Map;
+import java.util.HashMap;
+
+import okhttp3.Headers;
+import okhttp3.HttpUrl;
+{% for c in referenced_components -%}
+import com.svix.models.{{ c | to_upper_camel_case }};
+{% endfor -%}
+
+
+
+public class {{ resource_type_name }} {
+    private final SvixHttpClient client;
+
+    public {{ resource_type_name }}(SvixHttpClient client) {
+        this.client = client;
+    }
+
+    {% set api_resource_extra -%}
+        api_extra/{{ resource.name | to_snake_case }}.java
+    {%- endset %}
+    {% include api_resource_extra ignore missing %}
+
+
+{% for op in resource.operations -%}
+    {% set throws = "throws IOException, ApiException" -%}
+    {% set res_type = "void" -%}
+    {% if op.response_body_schema_name is defined -%}
+        {% set res_type = op.response_body_schema_name | replace("_", "") -%}
+    {% endif -%}
+    {% set has_query_params = op.query_params | length > 0 -%}
+    {% set has_required_query_params =
+        op.query_params | selectattr("required") | length > 0 -%}
+    {% set op_name = op.name | to_lower_camel_case -%}
+    {% if op_name == "import" -%}
+        {% set op_name = "import_" -%}
+    {% endif -%}
+    {% if op | has_query_or_header_params -%}
+
+        {{ op.description | with_javadoc_deprecation(op.deprecated) | to_doc_comment(style="java") }}
+        {% if op.deprecated %}@Deprecated{% endif %}
+    public {{ res_type }} {{ op_name }} (
+        {% set func_args -%}
+            {# path parameters -#}
+            {% for p in op.path_params -%}
+                final String {{ p | to_lower_camel_case }},
+            {% endfor -%}
+
+            {# body parameter interface -#}
+            {% if op.request_body_schema_name is defined -%}
+                {% set req_body_field_name = op.request_body_schema_name | to_lower_camel_case -%}
+                final {{ op.request_body_schema_name }} {{ req_body_field_name }},
+            {% endif -%}
+        {% endset -%}
+        {{ func_args | strip_trailing_comma }}
+        ) {{ throws }}  {
+            {% if res_type != "void" %}return{% endif %} this.{{ op_name }}(
+            {# path parameters -#}
+            {% for p in op.path_params -%}
+                {{ p | to_lower_camel_case }},
+            {% endfor -%}
+
+            {# body parameter interface -#}
+            {% if op.request_body_schema_name is defined -%}
+                {{ req_body_field_name }},
+            {% endif -%}
+            new {{ resource_type_name }}{{ op.name | to_upper_camel_case }}Options()
+            );
+        }
+    {% endif -%}
+
+    {{ op.description | with_javadoc_deprecation(op.deprecated) | to_doc_comment(style="java") }}
+    {% if op.deprecated %}@Deprecated{% endif %}
+    public {{ res_type }} {{ op_name }}(
+    {% set func_args -%}
+        {# path parameters -#}
+        {% for p in op.path_params -%}
+            final String {{ p | to_lower_camel_case }},
+        {% endfor -%}
+
+        {# body parameter interface -#}
+        {% if op.request_body_schema_name is defined -%}
+            {% set req_body_field_name = op.request_body_schema_name | to_lower_camel_case -%}
+            final {{ op.request_body_schema_name }} {{ req_body_field_name }},
+        {% endif -%}
+
+        {# query/header parameters -#}
+        {% if op | has_query_or_header_params -%}
+            final {{ resource_type_name }}{{ op.name | to_upper_camel_case }}Options options,
+        {% endif -%}
+    {% endset -%}
+    {{ func_args | strip_trailing_comma }}
+    ) {{ throws }}  {
+        {# path params -#}
+        {% if op.path_params | length > 0 -%}
+        HttpUrl.Builder url =  this.client.newUrlBuilder().encodedPath(String.format("{{ op.path | generate_java_path_str(op.path_params) }}"
+            {%- for p in op.path_params -%}
+            ,{{ p | to_lower_camel_case }}
+            {%- endfor -%}
+        ));
+        {% else -%}
+        HttpUrl.Builder url = this.client.newUrlBuilder().encodedPath("{{ op.path }}");
+        {% endif -%}
+
+        {# query params -#}
+        {% for p in op.query_params -%}
+        if (options.{{ p.name | to_lower_camel_case }} != null) {
+            url.addQueryParameter("{{ p.name }}",
+            {% if p.type.is_string() -%}
+            options.{{ p.name | to_lower_camel_case }}
+            {% else -%}
+            Utils.serializeQueryParam(options.{{ p.name | to_lower_camel_case }})
+            {% endif -%}
+            );
+        }
+        {% endfor -%}
+        {# header params -#}
+        {% if op.header_params | length  >0 -%}
+        Map<String, String> headers = new HashMap<>();
+            {% for p in op.header_params -%}
+            if (options.{{ p.name | to_lower_camel_case }} != null){
+                headers.put("{{ p.name }}", options.{{ p.name | to_lower_camel_case }});
+            }
+            {% endfor -%}
+        {% endif -%}
+
+        {% if res_type != "void" %}return{% endif %}  this.client.executeRequest(
+            "{{ op.method | upper }}",
+            url.build(),
+            {# headers -#}
+            {% if op.header_params | length > 0 -%}
+            Headers.of(headers),
+            {% else -%}
+            null,
+            {% endif -%}
+            {# request body -#}
+            {% if op.request_body_schema_name is defined -%}
+            {{ req_body_field_name }},
+            {% else -%}
+            null,
+            {% endif -%}
+            {# response body class -#}
+            {% if op.response_body_schema_name is defined -%}
+            {{ res_type }}.class
+            {% else -%}
+            null
+            {% endif -%}
+        );
+
+    }
+    {% set api_operation_extra -%}api_extra/{{ resource.name | to_snake_case }}_{{ op.name | to_snake_case }}.java{% endset %}
+    {% include api_operation_extra ignore missing %}
+{% endfor %}
+}

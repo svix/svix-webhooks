@@ -49,6 +49,21 @@ if [[ -z "$CI" ]]; then
         --input-file lib-openapi.json \
         --output-dir go/models
     rm go/{environment,health,ingest_endpoint}.go
+
+# === Java ===
+if [[ -z "$CI" ]]; then
+    openapi-codegen generate \
+        --template java/templates/api_resource.java.jinja \
+        --input-file lib-openapi.json \
+        --output-dir java/lib/src/main/java/com/svix/api
+    openapi-codegen generate \
+        --template java/templates/operation_options.java.jinja \
+        --input-file lib-openapi.json \
+        --output-dir java/lib/src/main/java/com/svix/api
+    openapi-codegen generate \
+        --template java/templates/component_type.java.jinja \
+        --input-file lib-openapi.json \
+        --output-dir java/lib/src/main/java/com/svix/models
 fi
 
 # === C# ===
