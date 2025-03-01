@@ -42,8 +42,8 @@ def docker_container_rm(prefix, container_id):
 
 def docker_container_logs(prefix, container_id):
     cmd = [get_docker_binary(), "container", "logs", container_id]
-    result = run_cmd(prefix, cmd)
-    return result.stdout.decode("utf-8")
+    result = run_cmd(prefix, cmd, dont_dbg=True)
+    return f"{result.stdout.decode('utf-8')}\n{result.stderr.decode('utf-8')}".strip()
 
 
 def docker_container_wait(prefix, container_id) -> int:
@@ -106,15 +106,19 @@ def docker_container_create(prefix, task) -> str:
     return container_name
 
 
-def run_cmd(prefix, cmd) -> subprocess.CompletedProcess[bytes]:
-    dbg(prefix, f"{BLUE}Running command{ENDC} {' '.join(cmd)}")
+def run_cmd(prefix, cmd, dont_dbg=False) -> subprocess.CompletedProcess[bytes]:
+    dbg_cmd = [cmd[0], *[f'"{i}"' for i in cmd[1:]]]
+    dbg(prefix, f"{BLUE}Running command{ENDC} {' '.join(dbg_cmd)}")
     result = subprocess.run(
         cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=REPO_ROOT
     )
-    if result.returncode != 0 or DEBUG:
-        print_cmd_result(result, prefix)
     if result.returncode != 0:
+        print_cmd_result(result, prefix)
         exit(result.returncode)
+
+    if DEBUG and not dont_dbg:
+        print_cmd_result(result, prefix)
+
     return result
 
 
@@ -159,18 +163,23 @@ def execute_codegen_task(task):
     exit_code = docker_container_wait(prefix, container_name)
 
     logs = docker_container_logs(prefix, container_name)
+
     nice_logs = "{}{}".format(
         f"{CYAN}container logs{ENDC} ",
         logs.strip().replace("\n", f"\n{CYAN}container logs{ENDC} "),
     )
-    prefix_print(prefix, nice_logs)
 
     if exit_code != 0:
-        exit(exit_code)
+        prefix_print(prefix, nice_logs)
+        raise RuntimeError(f"Container exited with {exit_code}")
+
+    dbg(prefix, nice_logs)
 
     docker_container_cp(prefix, container_name, task)
 
     docker_container_rm(prefix, container_name)
+
+    prefix_print(prefix, "Codegen task completed")
 
 
 def run_codegen_for_language(language, language_config):
