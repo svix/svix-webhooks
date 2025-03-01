@@ -4,7 +4,7 @@ package com.svix.api;
 import com.svix.SvixHttpClient;
 import com.svix.Utils;
 import com.svix.exceptions.ApiException;
-import com.svix.models.ExpungAllContentsOut;
+import com.svix.models.ExpungeAllContentsOut;
 import com.svix.models.ListResponseMessageOut;
 import com.svix.models.MessageIn;
 import com.svix.models.MessageOut;
@@ -179,7 +179,7 @@ public class Message {
      *
      * <p>Delete all message payloads for the application.
      */
-    public ExpungAllContentsOut expungeAllContents(final String appId)
+    public ExpungeAllContentsOut expungeAllContents(final String appId)
             throws IOException, ApiException {
         return this.expungeAllContents(appId, new MessageExpungeAllContentsOptions());
     }
@@ -189,7 +189,7 @@ public class Message {
      *
      * <p>Delete all message payloads for the application.
      */
-    public ExpungAllContentsOut expungeAllContents(
+    public ExpungeAllContentsOut expungeAllContents(
             final String appId, final MessageExpungeAllContentsOptions options)
             throws IOException, ApiException {
         HttpUrl.Builder url =
@@ -202,7 +202,7 @@ public class Message {
             headers.put("idempotency-key", options.idempotencyKey);
         }
         return this.client.executeRequest(
-                "POST", url.build(), Headers.of(headers), null, ExpungAllContentsOut.class);
+                "POST", url.build(), Headers.of(headers), null, ExpungeAllContentsOut.class);
     }
 
     /** Get a message by its ID or eventID. */

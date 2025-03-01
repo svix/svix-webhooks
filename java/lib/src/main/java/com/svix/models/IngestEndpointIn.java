@@ -13,58 +13,24 @@ import lombok.ToString;
 
 import java.net.URI;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Set;
 
 @ToString
 @EqualsAndHashCode
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
-public class EndpointIn {
-    @JsonProperty private Set<String> channels;
+public class IngestEndpointIn {
     @JsonProperty private String description;
     @JsonProperty private Boolean disabled;
-    @JsonProperty private Set<String> filterTypes;
-    @JsonProperty private Map<String, String> headers;
     @JsonProperty private Map<String, String> metadata;
     @JsonProperty private Long rateLimit;
     @JsonProperty private String secret;
     @JsonProperty private String uid;
     @JsonProperty private URI url;
-    @JsonProperty private Long version;
 
-    public EndpointIn() {}
+    public IngestEndpointIn() {}
 
-    public EndpointIn channels(Set<String> channels) {
-        this.channels = channels;
-        return this;
-    }
-
-    public EndpointIn addChannelsItem(String channelsItem) {
-        if (this.channels == null) {
-            this.channels = new LinkedHashSet<>();
-        }
-        this.channels.add(channelsItem);
-
-        return this;
-    }
-
-    /**
-     * List of message channels this endpoint listens to (omit for all).
-     *
-     * @return channels
-     */
-    @javax.annotation.Nullable
-    public Set<String> getChannels() {
-        return channels;
-    }
-
-    public void setChannels(Set<String> channels) {
-        this.channels = channels;
-    }
-
-    public EndpointIn description(String description) {
+    public IngestEndpointIn description(String description) {
         this.description = description;
         return this;
     }
@@ -83,7 +49,7 @@ public class EndpointIn {
         this.description = description;
     }
 
-    public EndpointIn disabled(Boolean disabled) {
+    public IngestEndpointIn disabled(Boolean disabled) {
         this.disabled = disabled;
         return this;
     }
@@ -102,68 +68,12 @@ public class EndpointIn {
         this.disabled = disabled;
     }
 
-    public EndpointIn filterTypes(Set<String> filterTypes) {
-        this.filterTypes = filterTypes;
-        return this;
-    }
-
-    public EndpointIn addFilterTypesItem(String filterTypesItem) {
-        if (this.filterTypes == null) {
-            this.filterTypes = new LinkedHashSet<>();
-        }
-        this.filterTypes.add(filterTypesItem);
-
-        return this;
-    }
-
-    /**
-     * Get filterTypes
-     *
-     * @return filterTypes
-     */
-    @javax.annotation.Nullable
-    public Set<String> getFilterTypes() {
-        return filterTypes;
-    }
-
-    public void setFilterTypes(Set<String> filterTypes) {
-        this.filterTypes = filterTypes;
-    }
-
-    public EndpointIn headers(Map<String, String> headers) {
-        this.headers = headers;
-        return this;
-    }
-
-    public EndpointIn putHeadersItem(String key, String headersItem) {
-        if (this.headers == null) {
-            this.headers = new HashMap<>();
-        }
-        this.headers.put(key, headersItem);
-
-        return this;
-    }
-
-    /**
-     * Get headers
-     *
-     * @return headers
-     */
-    @javax.annotation.Nullable
-    public Map<String, String> getHeaders() {
-        return headers;
-    }
-
-    public void setHeaders(Map<String, String> headers) {
-        this.headers = headers;
-    }
-
-    public EndpointIn metadata(Map<String, String> metadata) {
+    public IngestEndpointIn metadata(Map<String, String> metadata) {
         this.metadata = metadata;
         return this;
     }
 
-    public EndpointIn putMetadataItem(String key, String metadataItem) {
+    public IngestEndpointIn putMetadataItem(String key, String metadataItem) {
         if (this.metadata == null) {
             this.metadata = new HashMap<>();
         }
@@ -186,7 +96,7 @@ public class EndpointIn {
         this.metadata = metadata;
     }
 
-    public EndpointIn rateLimit(Long rateLimit) {
+    public IngestEndpointIn rateLimit(Long rateLimit) {
         this.rateLimit = rateLimit;
         return this;
     }
@@ -205,7 +115,7 @@ public class EndpointIn {
         this.rateLimit = rateLimit;
     }
 
-    public EndpointIn secret(String secret) {
+    public IngestEndpointIn secret(String secret) {
         this.secret = secret;
         return this;
     }
@@ -227,7 +137,7 @@ public class EndpointIn {
         this.secret = secret;
     }
 
-    public EndpointIn uid(String uid) {
+    public IngestEndpointIn uid(String uid) {
         this.uid = uid;
         return this;
     }
@@ -246,7 +156,7 @@ public class EndpointIn {
         this.uid = uid;
     }
 
-    public EndpointIn url(URI url) {
+    public IngestEndpointIn url(URI url) {
         this.url = url;
         return this;
     }
@@ -265,41 +175,20 @@ public class EndpointIn {
         this.url = url;
     }
 
-    @Deprecated
-    public EndpointIn version(Long version) {
-        this.version = version;
-        return this;
-    }
-
     /**
-     * Get version
-     *
-     * @return version
-     */
-    @javax.annotation.Nullable
-    @Deprecated
-    public Long getVersion() {
-        return version;
-    }
-
-    @Deprecated
-    public void setVersion(Long version) {
-        this.version = version;
-    }
-
-    /**
-     * Create an instance of EndpointIn given an JSON string
+     * Create an instance of IngestEndpointIn given an JSON string
      *
      * @param jsonString JSON string
-     * @return An instance of EndpointIn
-     * @throws JsonProcessingException if the JSON string is invalid with respect to EndpointIn
+     * @return An instance of IngestEndpointIn
+     * @throws JsonProcessingException if the JSON string is invalid with respect to
+     *     IngestEndpointIn
      */
-    public static EndpointIn fromJson(String jsonString) throws JsonProcessingException {
-        return Utils.getObjectMapper().readValue(jsonString, EndpointIn.class);
+    public static IngestEndpointIn fromJson(String jsonString) throws JsonProcessingException {
+        return Utils.getObjectMapper().readValue(jsonString, IngestEndpointIn.class);
     }
 
     /**
-     * Convert an instance of EndpointIn to an JSON string
+     * Convert an instance of IngestEndpointIn to an JSON string
      *
      * @return JSON string
      */
