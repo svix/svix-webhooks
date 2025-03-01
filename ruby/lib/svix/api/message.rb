@@ -84,7 +84,7 @@ module Svix
           "idempotency-key" => options["idempotency-key"]
         }
       )
-      ExpungAllContentsOut.deserialize(res)
+      ExpungeAllContentsOut.deserialize(res)
     end
 
     def get(app_id, msg_id, options = {})
