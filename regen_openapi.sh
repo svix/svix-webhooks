@@ -18,85 +18,69 @@ if ! command -v openapi-codegen >/dev/null; then
     fi
 fi
 
-# JavaScript
-(
-    # Print commands we run
-    set -x
+# Print commands we run from here on
+set -x
 
-    openapi-codegen generate \
-        --template javascript/templates/api_resource.ts.jinja \
-        --input-file lib-openapi.json \
-        --output-dir javascript/src/api
-    openapi-codegen generate \
-        --template javascript/templates/component_type_summary.ts.jinja \
-        --input-file lib-openapi.json \
-        --output-dir javascript/src/models
-    openapi-codegen generate \
-        --template javascript/templates/component_type.ts.jinja \
-        --input-file lib-openapi.json \
-        --output-dir javascript/src/models
-)
+# === JavaScript ===
+openapi-codegen generate \
+    --template javascript/templates/api_resource.ts.jinja \
+    --input-file lib-openapi.json \
+    --output-dir javascript/src/api
+openapi-codegen generate \
+    --template javascript/templates/component_type_summary.ts.jinja \
+    --input-file lib-openapi.json \
+    --output-dir javascript/src/models
+openapi-codegen generate \
+    --template javascript/templates/component_type.ts.jinja \
+    --input-file lib-openapi.json \
+    --output-dir javascript/src/models
 
-# Rust
-(
-    # Print commands we run
-    set -x
 
-    openapi-codegen generate \
-        --template rust/templates/api_resource.rs.jinja \
-        --input-file lib-openapi.json \
-        --output-dir rust/src/api
-    openapi-codegen generate \
-        --template rust/templates/component_type.rs.jinja \
-        --input-file lib-openapi.json \
-        --output-dir rust/src/models
+# === Rust ===
+openapi-codegen generate \
+    --template rust/templates/api_resource.rs.jinja \
+    --input-file lib-openapi.json \
+    --output-dir rust/src/api
+openapi-codegen generate \
+    --template rust/templates/component_type.rs.jinja \
+    --input-file lib-openapi.json \
+    --output-dir rust/src/models
 
-    # Remove APIs we may not (yet) want to expose
-    rm rust/src/api/{environment,health}.rs
-)
+# Remove APIs we may not (yet) want to expose
+rm rust/src/api/{environment,health}.rs
 
-# CLI
-(
-    # Print commands we run
-    set -x
+# === CLI ===
+openapi-codegen generate \
+    --template svix-cli/templates/api_resource.rs.jinja \
+    --input-file lib-openapi.json \
+    --output-dir svix-cli/src/cmds/api
 
-    openapi-codegen generate \
-        --template svix-cli/templates/api_resource.rs.jinja \
-        --input-file lib-openapi.json \
-        --output-dir svix-cli/src/cmds/api
+# Our CLI templates currently output some unused imports. Get rid of them.
+cargo fix --manifest-path svix-cli/Cargo.toml --allow-dirty
+# `cargo fix` can leave the source in an inconsistently-formatted state.
+cargo fmt --manifest-path svix-cli/Cargo.toml
 
-    # Our CLI templates currently output some unused imports. Get rid of them.
-    cargo fix --manifest-path svix-cli/Cargo.toml --allow-dirty
-    # `cargo fix` can leave the source in an inconsistently-formatted state.
-    cargo fmt --manifest-path svix-cli/Cargo.toml
+# Remove APIs we may not (yet) want to expose
+rm svix-cli/src/cmds/api/{background_task,environment,health,operational_webhook_endpoint,statistics}.rs
 
-    # Remove APIs we may not (yet) want to expose
-    rm svix-cli/src/cmds/api/{background_task,environment,health,operational_webhook_endpoint,statistics}.rs
-)
+# === Python ===
 
-# Python
-(
-    # Print commands we run
-    set -x
+#openapi-codegen generate \
+#    --template python/templates/api_summary.py.jinja \
+#    --input-file lib-openapi.json \
+#    --output-dir python/svix/api
+openapi-codegen generate \
+    --template python/templates/api_resource.py.jinja \
+    --input-file lib-openapi.json \
+    --output-dir python/svix/api
+openapi-codegen generate \
+    --template python/templates/component_type_summary.py.jinja \
+    --input-file lib-openapi.json \
+    --output-dir python/svix/models
+openapi-codegen generate \
+    --template python/templates/component_type.py.jinja \
+    --input-file lib-openapi.json \
+    --output-dir python/svix/models
 
-    #openapi-codegen generate \
-    #    --template python/templates/api_summary.py.jinja \
-    #    --input-file lib-openapi.json \
-    #    --output-dir python/svix/api
-    openapi-codegen generate \
-        --template python/templates/api_resource.py.jinja \
-        --input-file lib-openapi.json \
-        --output-dir python/svix/api
-    openapi-codegen generate \
-        --template python/templates/component_type_summary.py.jinja \
-        --input-file lib-openapi.json \
-        --output-dir python/svix/models
-    openapi-codegen generate \
-        --template python/templates/component_type.py.jinja \
-        --input-file lib-openapi.json \
-        --output-dir python/svix/models
-
-    # Remove APIs we may not (yet) want to expose
-    rm python/svix/api/{environment,health}.py
-)
-
+# Remove APIs we may not (yet) want to expose
+rm python/svix/api/{environment,health}.py
