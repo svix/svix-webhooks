@@ -1,0 +1,72 @@
+{% set resource_type_name = resource.name | to_upper_camel_case -%}
+# frozen_string_literal: true
+# This file is @generated
+
+require 'net/http'
+
+
+module Svix
+  {% if resource.name == "message" -%}
+  module_function
+    {% include "api_extra/message.rb" %}
+  {% endif -%}
+  class {{ resource_type_name }}
+    def initialize(client)
+      @client = client
+    end
+{% for op in resource.operations %}
+    {% set func_args -%}
+      {# path params -#}
+      {%- for p in op.path_params -%}
+      {{ p | to_snake_case }},
+      {%- endfor -%}
+      {# request body -#}
+      {%- if op.request_body_schema_name is defined -%}
+      {{ op.request_body_schema_name | to_snake_case }},
+      {%- endif -%}
+      {# header/query params -#}
+      {%- if op | has_query_or_header_params -%}
+      options = {}
+      {%- endif -%}
+    {% endset -%}
+
+    def {{ op.name | to_snake_case }}({{ func_args | strip_trailing_comma }})
+      {% if op | has_query_or_header_params -%}
+      options = options.transform_keys(&:to_s)
+      {% endif -%}
+      path = "{{ op.path | generate_ruby_path_str(op.path_params) }}"
+      {% if op.response_body_schema_name is defined -%}res = {% endif -%}
+      @client.execute_request(
+        "{{ op.method | upper }}",
+        path,
+        {% if op.query_params | length >0 -%}
+        query_params:{
+          {% for p in op.query_params -%}
+            "{{ p.name }}" => options["{{ p.name }}"],
+          {% endfor -%}
+        },
+        {% endif -%}
+        {% if op.header_params | length >0 -%}
+        headers:{
+          {% for p in op.header_params -%}
+            "{{ p.name }}" => options["{{ p.name }}"],
+          {% endfor -%}
+        },
+        {% endif -%}
+        {% if op.request_body_schema_name is defined -%}
+        body: {{ op.request_body_schema_name | to_snake_case }},
+        {% endif -%}
+        )
+      {% if op.response_body_schema_name is defined -%}
+      {{ op.response_body_schema_name | to_upper_camel_case }}.deserialize res
+      {% endif %}
+    end
+
+    {% set extra_path -%}
+        api_extra/{{ resource.name | to_snake_case }}_{{ op.name | to_snake_case }}.rb
+    {%- endset -%}
+    {% include extra_path ignore missing %}
+
+{% endfor -%}
+  end
+end
