@@ -43,7 +43,14 @@ type (
 	EventTypeOut                              = models.EventTypeOut
 	EventTypePatch                            = models.EventTypePatch
 	EventTypeUpdate                           = models.EventTypeUpdate
-	ExpungAllContentsOut                      = models.ExpungAllContentsOut
+	ExpungeAllContentsOut                     = models.ExpungeAllContentsOut
+	IngestEndpointHeadersIn                   = models.IngestEndpointHeadersIn
+	IngestEndpointHeadersOut                  = models.IngestEndpointHeadersOut
+	IngestEndpointIn                          = models.IngestEndpointIn
+	IngestEndpointOut                         = models.IngestEndpointOut
+	IngestEndpointSecretIn                    = models.IngestEndpointSecretIn
+	IngestEndpointSecretOut                   = models.IngestEndpointSecretOut
+	IngestEndpointUpdate                      = models.IngestEndpointUpdate
 	IntegrationIn                             = models.IntegrationIn
 	IntegrationKeyOut                         = models.IntegrationKeyOut
 	IntegrationOut                            = models.IntegrationOut
@@ -53,6 +60,7 @@ type (
 	ListResponseEndpointMessageOut            = models.ListResponseEndpointMessageOut
 	ListResponseEndpointOut                   = models.ListResponseEndpointOut
 	ListResponseEventTypeOut                  = models.ListResponseEventTypeOut
+	ListResponseIngestEndpointOut             = models.ListResponseIngestEndpointOut
 	ListResponseIntegrationOut                = models.ListResponseIntegrationOut
 	ListResponseMessageAttemptOut             = models.ListResponseMessageAttemptOut
 	ListResponseMessageEndpointOut            = models.ListResponseMessageEndpointOut
