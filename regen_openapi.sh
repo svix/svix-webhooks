@@ -21,6 +21,13 @@ else
     DOCKER_BIN="podman"
 fi
 
+# pull image
+# This will be removed once https://github.com/svix/openapi-codegen/pull/82 is merge
+if [ -z "$(docker image inspect --format="ignore me" 2> /dev/null)" ]; then
+  echo "The codegen image is not on your system, building now (this will only happen once)"
+  $DOCKER_BIN image build -t $OPENAPI_CODEGEN_IMAGE https://github.com/svix/openapi-codegen.git#mendy/add-docker-builds
+fi
+
 run_generate() {
     # Pass in the `docker container run ...` command
     # MAKE SURE  `--output-dir ...` IS THE LAST ARGUMENT
