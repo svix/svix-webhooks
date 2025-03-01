@@ -2,36 +2,78 @@
 
 set -eo pipefail
 
+if [[ $DEBUG != "" ]]; then
+    set -x
+fi
+
 OPENAPI_GIT_REV='272125558d6ac4718bdc87b1652e5d4122b69f19'
+OPENAPI_CODEGEN_IMAGE='ghcr.io/svix/openapi-codegen:latest'
+REPO_ROOT=$(git rev-parse --show-toplevel)
 
 if [ -n "$1" ]; then
-    curl "$1" | python -m json.tool > lib-openapi.json
+    curl "$1" | python -m json.tool >lib-openapi.json
 fi
 
-if ! command -v openapi-codegen >/dev/null; then
-    if [[ -z "$GITHUB_WORKFLOW" ]]; then
-        echo openapi-codegen is not installed. install using
-        echo "cargo install --git https://github.com/svix/openapi-codegen --rev $OPENAPI_GIT_REV --locked"
+if ! command -v podman >/dev/null; then
+    if ! command -v docker >/dev/null; then
+        echo Please install docker or podman to run the codegen
         exit 1
     else
-        cargo install --git https://github.com/svix/openapi-codegen --rev $OPENAPI_GIT_REV --locked
+        DOCKER_BIN="docker"
     fi
+else
+    DOCKER_BIN="podman"
 fi
+
+# pull image
+# This will be removed once https://github.com/svix/openapi-codegen/pull/82 is merge
+if [ -z "$($DOCKER_BIN image inspect --format="ignore me" $OPENAPI_CODEGEN_IMAGE 2> /dev/null)" ]; then
+  echo "The codegen image is not on your system, building now (this will only happen once)"
+  $DOCKER_BIN image build -t $OPENAPI_CODEGEN_IMAGE https://github.com/svix/openapi-codegen.git#mendy/add-docker-builds
+fi
+
+run_generate() {
+    # Pass in the `docker container run ...` command
+    # MAKE SURE  `--output-dir ...` IS THE LAST ARGUMENT
+    #       This function assumes the last argument is the output dir
+    #       The output dir is used to copy the generated file from the container
+    # $1 is the docker binary
+    # steps
+    # 1. run the container
+    # 2. wait for it to exit
+    # 3. copy the generated files
+    # 4. remove the container
+    CONTAINER_ID=$(${@:1})
+    EXIT_STATUS=$($1 container wait $CONTAINER_ID)
+    $1 container logs $CONTAINER_ID
+    if [[ $EXIT_STATUS != 0 ]]; then
+        exit $EXIT_STATUS
+    fi
+    $1 cp $CONTAINER_ID:/app/${@: -1}/. ${@: -1} >/dev/null
+    $1 container rm $CONTAINER_ID >/dev/null
+}
 
 # JavaScript
 (
-    # Print commands we run
-    set -x
+    echo Generating JavaScript lib
 
-    openapi-codegen generate \
+    GENERATE="$DOCKER_BIN container run -dit --workdir /app \
+        --mount type=bind,src=$REPO_ROOT/lib-openapi.json,dst=/app/lib-openapi.json,ro \
+        --mount type=bind,src=$REPO_ROOT/javascript/templates,dst=/app/javascript/templates,ro \
+        $OPENAPI_CODEGEN_IMAGE \
+        openapi-codegen generate --create-file-parents"
+
+    run_generate $GENERATE \
         --template javascript/templates/api_resource.ts.jinja \
         --input-file lib-openapi.json \
         --output-dir javascript/src/api
-    openapi-codegen generate \
+
+    run_generate $GENERATE \
         --template javascript/templates/component_type_summary.ts.jinja \
         --input-file lib-openapi.json \
         --output-dir javascript/src/models
-    openapi-codegen generate \
+
+    run_generate $GENERATE \
         --template javascript/templates/component_type.ts.jinja \
         --input-file lib-openapi.json \
         --output-dir javascript/src/models
@@ -39,14 +81,21 @@ fi
 
 # Rust
 (
-    # Print commands we run
-    set -x
+    echo Generating Rust lib
 
-    openapi-codegen generate \
+    GENERATE="$DOCKER_BIN container run -dit --workdir /app \
+        --mount type=bind,src=$REPO_ROOT/lib-openapi.json,dst=/app/lib-openapi.json,ro \
+        --mount type=bind,src=$REPO_ROOT/rust/templates,dst=/app/rust/templates,ro \
+        --mount type=bind,src=$REPO_ROOT/rust/.rustfmt.toml,dst=/app/.rustfmt.toml,ro \
+        $OPENAPI_CODEGEN_IMAGE \
+        openapi-codegen generate --create-file-parents"
+
+    run_generate $GENERATE \
         --template rust/templates/api_resource.rs.jinja \
         --input-file lib-openapi.json \
         --output-dir rust/src/api
-    openapi-codegen generate \
+
+    run_generate $GENERATE \
         --template rust/templates/component_type.rs.jinja \
         --input-file lib-openapi.json \
         --output-dir rust/src/models
@@ -56,11 +105,18 @@ fi
 )
 
 # CLI
-(
-    # Print commands we run
-    set -x
 
-    openapi-codegen generate \
+(
+    echo Generating svix-cli
+
+    GENERATE="$DOCKER_BIN container run -dit --workdir /app \
+        --mount type=bind,src=$REPO_ROOT/lib-openapi.json,dst=/app/lib-openapi.json,ro \
+        --mount type=bind,src=$REPO_ROOT/svix-cli/templates,dst=/app/svix-cli/templates,ro \
+        --mount type=bind,src=$REPO_ROOT/svix-cli/.rustfmt.toml,dst=/app/.rustfmt.toml,ro \
+        $OPENAPI_CODEGEN_IMAGE \
+        openapi-codegen generate --create-file-parents"
+
+    run_generate $GENERATE \
         --template svix-cli/templates/api_resource.rs.jinja \
         --input-file lib-openapi.json \
         --output-dir svix-cli/src/cmds/api
@@ -76,22 +132,28 @@ fi
 
 # Python
 (
-    # Print commands we run
-    set -x
+    echo Generating Python lib
+
+    GENERATE="$DOCKER_BIN container run -dit --workdir /app \
+        --mount type=bind,src=$REPO_ROOT/lib-openapi.json,dst=/app/lib-openapi.json,ro \
+        --mount type=bind,src=$REPO_ROOT/python/templates,dst=/app/python/templates,ro \
+        $OPENAPI_CODEGEN_IMAGE \
+        openapi-codegen generate --create-file-parents"
 
     #openapi-codegen generate \
     #    --template python/templates/api_summary.py.jinja \
     #    --input-file lib-openapi.json \
     #    --output-dir python/svix/api
-    openapi-codegen generate \
+
+    run_generate $GENERATE \
         --template python/templates/api_resource.py.jinja \
         --input-file lib-openapi.json \
         --output-dir python/svix/api
-    openapi-codegen generate \
+    run_generate $GENERATE \
         --template python/templates/component_type_summary.py.jinja \
         --input-file lib-openapi.json \
         --output-dir python/svix/models
-    openapi-codegen generate \
+    run_generate $GENERATE \
         --template python/templates/component_type.py.jinja \
         --input-file lib-openapi.json \
         --output-dir python/svix/models
@@ -99,4 +161,3 @@ fi
     # Remove APIs we may not (yet) want to expose
     rm python/svix/api/{environment,health}.py
 )
-
