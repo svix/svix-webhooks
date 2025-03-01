@@ -18,6 +18,24 @@ if ! command -v openapi-codegen >/dev/null; then
     fi
 fi
 
+# Kotlin
+(
+    # Print commands we run
+    if [[ -z "$CI" ]]; then
+    set -x
+
+    openapi-codegen generate \
+        --template kotlin/templates/api_resource.kt.jinja \
+        --input-file lib-openapi.json \
+        --output-dir kotlin/lib/src/main/kotlin
+    openapi-codegen generate \
+        --template kotlin/templates/component_type.kt.jinja \
+        --input-file lib-openapi.json \
+        --output-dir kotlin/lib/src/main/kotlin/models
+
+    fi
+)
+
 # JavaScript
 (
     # Print commands we run
