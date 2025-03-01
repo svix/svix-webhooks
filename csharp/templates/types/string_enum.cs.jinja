@@ -1,0 +1,20 @@
+// this file is @generated
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using System.Runtime.Serialization;
+
+namespace Svix.Models {
+    {%- if type.description is defined %}
+    /// <summary>
+    {{ type.description | to_doc_comment(style="csharp") }}
+    /// </summary>
+    {%- endif %}
+    [JsonConverter(typeof(StringEnumConverter))]
+    public enum {{ type.name | to_upper_camel_case }}
+    {
+        {% for value in type.values -%}
+        [EnumMember(Value = "{{ value }}")]
+        {{ value | to_upper_camel_case }} = {{ loop.index }},
+        {% endfor -%}
+    }
+}
