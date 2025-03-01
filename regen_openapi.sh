@@ -2,6 +2,10 @@
 
 set -eo pipefail
 
+if [[ $DEBUG != "" ]]; then
+    set -x
+fi
+
 OPENAPI_GIT_REV='272125558d6ac4718bdc87b1652e5d4122b69f19'
 OPENAPI_CODEGEN_IMAGE='ghcr.io/svix/openapi-codegen:latest'
 REPO_ROOT=$(git rev-parse --show-toplevel)
@@ -23,7 +27,7 @@ fi
 
 # pull image
 # This will be removed once https://github.com/svix/openapi-codegen/pull/82 is merge
-if [ -z "$(docker image inspect --format="ignore me" 2> /dev/null)" ]; then
+if [ -z "$($DOCKER_BIN image inspect --format="ignore me" $OPENAPI_CODEGEN_IMAGE 2> /dev/null)" ]; then
   echo "The codegen image is not on your system, building now (this will only happen once)"
   $DOCKER_BIN image build -t $OPENAPI_CODEGEN_IMAGE https://github.com/svix/openapi-codegen.git#mendy/add-docker-builds
 fi
@@ -48,10 +52,6 @@ run_generate() {
     $1 cp $CONTAINER_ID:/app/${@: -1}/. ${@: -1} >/dev/null
     $1 container rm $CONTAINER_ID >/dev/null
 }
-
-if [[ $DEBUG != "" ]]; then
-    set -x
-fi
 
 # JavaScript
 (
