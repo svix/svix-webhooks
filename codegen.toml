@@ -1,12 +1,16 @@
+[global]
+openapi = "lib-openapi.json"
+
 [rust]
 template_dir = "rust/templates"
 extra_mounts = [["rust/.rustfmt.toml", "/app/.rustfmt.toml"]]
 extra_shell_commands = ["rm rust/src/api/{environment,health}.rs"]
-openapi = "lib-openapi.json"
 
 [[rust.task]]
 template = "rust/templates/api_resource.rs.jinja"
 output_dir = "rust/src/api"
+# you can override the openapi.json per task
+openapi = "lib-openapi.json"
 [[rust.task]]
 template = "rust/templates/component_type.rs.jinja"
 output_dir = "rust/src/models"
@@ -14,7 +18,6 @@ output_dir = "rust/src/models"
 
 [javascript]
 template_dir = "javascript/templates"
-openapi = "lib-openapi.json"
 
 [[javascript.task]]
 template = "javascript/templates/api_resource.ts.jinja"
@@ -35,7 +38,6 @@ extra_shell_commands = [
     "cargo fmt --manifest-path svix-cli/Cargo.toml",
     "rm svix-cli/src/cmds/api/{background_task,environment,health,operational_webhook_endpoint,statistics}.rs",
 ]
-openapi = "lib-openapi.json"
 
 [[cli.task]]
 template = "svix-cli/templates/api_resource.rs.jinja"
@@ -44,7 +46,6 @@ output_dir = "svix-cli/src/cmds/api"
 
 [python]
 template_dir = "python/templates"
-openapi = "lib-openapi.json"
 extra_shell_commands = ["rm python/svix/api/{environment,health}.py"]
 
 [[python.task]]

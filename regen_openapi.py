@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
-import pathlib
-from pathlib import Path
-import shutil
-import subprocess
 import os
-from concurrent.futures import ThreadPoolExecutor
+import pathlib
+import random
+import shutil
+import string
+import subprocess
+from pathlib import Path
+from threading import Thread
 
 try:
     import tomllib
@@ -15,6 +17,10 @@ except ImportError:
 OPENAPI_CODEGEN_IMAGE = "ghcr.io/svix/openapi-codegen:latest"
 REPO_ROOT = pathlib.Path(__file__).parent.resolve()
 DEBUG = os.getenv("DEBUG") is not None
+GREEN = "\033[92m"
+BLUE = "\033[94m"
+CYAN = "\033[96m"
+ENDC = "\033[0m"
 
 
 def get_docker_binary() -> str:
@@ -58,11 +64,18 @@ def docker_container_cp(prefix, container_id, task):
 
 
 def docker_container_create(prefix, task) -> str:
+    container_name = "codegen-{}-{}-{}".format(
+        task["language"],
+        task["language_task_index"] + 1,
+        "".join(random.choice(string.ascii_lowercase) for _ in range(10)),
+    )
     cmd = [
         get_docker_binary(),
         "container",
         "run",
         "-d",
+        "--name",
+        container_name,
         "--workdir",
         "/app",
         "--mount",
@@ -89,24 +102,32 @@ def docker_container_create(prefix, task) -> str:
             task["output_dir"],
         ]
     )
-    result = run_cmd(prefix, cmd)
-    return result.stdout.decode("utf-8")
+    run_cmd(prefix, cmd)
+    return container_name
 
 
 def run_cmd(prefix, cmd) -> subprocess.CompletedProcess[bytes]:
-    dbg(prefix, " ".join(cmd))
-    result = subprocess.run(cmd, stdout=subprocess.PIPE, cwd=REPO_ROOT)
-    if result.returncode != 0:
+    dbg(prefix, f"{BLUE}Running command{ENDC} {' '.join(cmd)}")
+    result = subprocess.run(
+        cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=REPO_ROOT
+    )
+    if result.returncode != 0 or DEBUG:
         print_cmd_result(result, prefix)
+    if result.returncode != 0:
         exit(result.returncode)
     return result
 
 
 def print_cmd_result(result: subprocess.CompletedProcess[bytes], prefix: str):
-    for i in [result.stdout, result.stderr]:
-        if i is None:
-            continue
-        prefix_print(prefix, i.decode("utf-8"))
+    for i, stream in enumerate([result.stdout, result.stderr]):
+        output = stream.decode("utf-8")
+        if output != "":
+            cli_prefix = f"{CYAN}{'stdout' if i == 0 else 'stderr'}{ENDC} "
+            nice_logs = "{}{}".format(
+                cli_prefix,
+                output.strip().replace("\n", f"\n{cli_prefix}"),
+            )
+            prefix_print(prefix, nice_logs)
 
 
 def dbg(prefix, msg):
@@ -116,63 +137,100 @@ def dbg(prefix, msg):
 
 
 def prefix_print(prefix, msg):
-    prefix = f"{prefix.strip()} | "
-    print("{}{}".format(prefix, msg.strip().replace("\n", f"\n{prefix} ")))
+    print(
+        "{}{}".format(f"{prefix.strip()} ", msg.replace("\n", f"\n{prefix.strip()} "))
+    )
 
 
 def execute_codegen_task(task):
-    prefix = f"{task['language']}[{task['language_index']+1}/{task['language_total']}]"
+    prefix = "{}{} ({}/{}){} | ".format(
+        GREEN,
+        task["language"],
+        task["language_task_index"] + 1,
+        task["language_total"],
+        ENDC,
+    )
+
     prefix_print(prefix, "Starting codegen task")
 
-    container_id = docker_container_create(prefix, task).strip()
-    dbg(prefix, f"Container id {container_id}")
+    container_name = docker_container_create(prefix, task).strip()
+    dbg(prefix, f"Container id {container_name}")
 
-    exit_code = docker_container_wait(prefix, container_id)
+    exit_code = docker_container_wait(prefix, container_name)
 
-    logs = docker_container_logs(prefix, container_id)
-    prefix_print(prefix, logs)
+    logs = docker_container_logs(prefix, container_name)
+    nice_logs = "{}{}".format(
+        f"{CYAN}container logs{ENDC} ",
+        logs.strip().replace("\n", f"\n{CYAN}container logs{ENDC} "),
+    )
+    prefix_print(prefix, nice_logs)
 
     if exit_code != 0:
         exit(exit_code)
 
-    docker_container_cp(prefix, container_id, task)
+    docker_container_cp(prefix, container_name, task)
 
-    docker_container_rm(prefix, container_id)
+    docker_container_rm(prefix, container_name)
 
 
 def run_codegen_for_language(language, language_config):
-    tasks = []
-    for index, task in enumerate(language_config.get("task", [])):
-        tasks.append(
-            {
-                "language": language,
-                "language_index": index,
-                "language_total": len(language_config.get("task", [])),
-                "openapi": language_config["openapi"],
-                "template": task["template"],
-                "output_dir": task["output_dir"],
-                "extra_mounts": language_config.get("extra_mounts", []),
-                "template_dir": language_config["template_dir"],
-            }
-        )
-    with ThreadPoolExecutor() as pool:
-        pool.map(execute_codegen_task, tasks)
-    pool.shutdown(wait=True)
+    threads = []
+    for t in language_config["tasks"]:
+        th = Thread(target=execute_codegen_task, args=[t])
+        th.start()
+        threads.append(th)
 
-    for shell_command in language_config.get("extra_shell_commands"):
+    for th in threads:
+        th.join()
+
+    extra_shell_commands = language_config.get("extra_shell_commands", [])
+    for index, shell_command in enumerate(extra_shell_commands):
         cmd = ["bash", "-c", shell_command]
-        run_cmd(language, cmd)
+        run_cmd(
+            f"{GREEN}{language}[extra shell commands] ({index + 1}/{len(extra_shell_commands)}){ENDC} | ",
+            cmd,
+        )
+
+
+def parse_config():
+    with open(REPO_ROOT.joinpath("codegen.toml"), "rb") as f:
+        data = tomllib.load(f)
+    openapi = data.pop("global")["openapi"]
+    config = {}
+    for language, language_config in data.items():
+        config[language] = {"tasks": []}
+        for language_task_index, task in enumerate(language_config["task"]):
+            config[language]["extra_shell_commands"] = language_config.get(
+                "extra_shell_commands", []
+            )
+            config[language]["tasks"].append(
+                {
+                    "language": language,
+                    "language_task_index": language_task_index,
+                    "language_total": len(language_config.get("task", [])),
+                    "openapi": task.get("openapi", openapi),
+                    "template": task["template"],
+                    "output_dir": task["output_dir"],
+                    "extra_mounts": language_config.get("extra_mounts", []),
+                    "template_dir": language_config["template_dir"],
+                }
+            )
+    return config
 
 
 def main():
     # TODO: pull image before running tasks
-    with ThreadPoolExecutor() as pool:
-        with open(REPO_ROOT.joinpath("codegen.toml"), "rb") as f:
-            data = tomllib.load(f)
-        for language, language_config in data.items():
-            pool.submit(run_codegen_for_language, language, language_config)
+    config = parse_config()
+    # print(json.dumps(config))
 
-    pool.shutdown(wait=True)
+    threads = []
+    for language, language_config in config.items():
+        th = Thread(target=run_codegen_for_language, args=[language, language_config])
+        th.start()
+        threads.append(th)
+
+    for th in threads:
+        th.join()
 
 
 if __name__ == "__main__":
