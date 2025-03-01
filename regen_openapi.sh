@@ -18,6 +18,29 @@ if ! command -v openapi-codegen >/dev/null; then
     fi
 fi
 
+# Go
+(
+    # Print commands we run
+    if [[ -z "$CI" ]]; then
+    set -x
+
+    openapi-codegen generate \
+        --template openapi-templates/go/api_resource.go.jinja \
+        --input-file lib-openapi.json \
+        --output-dir go
+    openapi-codegen generate \
+        --template openapi-templates/go/component_type_summary.go.jinja \
+        --input-file lib-openapi.json \
+        --output-dir go
+    openapi-codegen generate \
+        --template openapi-templates/go/component_type.go.jinja \
+        --input-file lib-openapi.json \
+        --output-dir go/models
+    rm go/{environment,health,ingest_endpoint}.go
+
+    fi
+)
+
 # JavaScript
 (
     # Print commands we run

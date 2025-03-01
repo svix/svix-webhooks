@@ -1,0 +1,7 @@
+{% if type.kind == "struct" -%}
+    {% include "types/struct.go.jinja" ignore missing -%}
+{% elif type.kind == "string_enum" -%}
+    {% include "types/string_enum.go.jinja" ignore missing -%}
+{% elif type.kind == "integer_enum" -%}
+{% include "types/integer_enum.go.jinja" ignore missing -%}
+{% endif -%}
