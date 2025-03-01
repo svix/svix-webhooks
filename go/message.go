@@ -141,7 +141,7 @@ func (message *Message) ExpungeAllContents(
 	ctx context.Context,
 	appId string,
 	o *MessageExpungeAllContentsOptions,
-) (*models.ExpungAllContentsOut, error) {
+) (*models.ExpungeAllContentsOut, error) {
 	pathMap := map[string]string{
 		"app_id": appId,
 	}
@@ -154,7 +154,7 @@ func (message *Message) ExpungeAllContents(
 		}
 	}
 
-	return executeRequest[any, models.ExpungAllContentsOut](
+	return executeRequest[any, models.ExpungeAllContentsOut](
 		ctx,
 		message.client,
 		"POST",
