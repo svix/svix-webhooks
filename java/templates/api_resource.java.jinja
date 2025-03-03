@@ -25,13 +25,6 @@ public class {{ resource_type_name }} {
     public {{ resource_type_name }}(SvixHttpClient client) {
         this.client = client;
     }
-
-    {% set api_resource_extra -%}
-        api_extra/{{ resource.name | to_snake_case }}.java
-    {%- endset %}
-    {% include api_resource_extra ignore missing %}
-
-
 {% for op in resource.operations -%}
     {% set throws = "throws IOException, ApiException" -%}
     {% set res_type = "void" -%}
@@ -160,4 +153,9 @@ public class {{ resource_type_name }} {
     {% set api_operation_extra -%}api_extra/{{ resource.name | to_snake_case }}_{{ op.name | to_snake_case }}.java{% endset %}
     {% include api_operation_extra ignore missing %}
 {% endfor %}
+
+{% set api_resource_extra -%}
+    api_extra/{{ resource.name | to_snake_case }}.java
+{%- endset %}
+{% include api_resource_extra ignore missing %}
 }
