@@ -142,7 +142,8 @@ def dbg(prefix, msg):
 
 def prefix_print(prefix, msg):
     print(
-        "{}{}".format(f"{prefix.strip()} ", msg.replace("\n", f"\n{prefix.strip()} "))
+        "{}{}".format(f"{prefix.strip()} ", msg.replace("\n", f"\n{prefix.strip()} ")),
+        flush=True,
     )
 
 
@@ -227,12 +228,13 @@ def parse_config():
                 }
             )
     if DEBUG:
-        print(json.dumps(config, indent=4))
+        print(json.dumps(config, indent=4), flush=True)
     return config
 
 
 def main():
     config = parse_config()
+    print("Pulling docker image", flush=True)
     run_cmd("startup", [get_docker_binary(), "image", "pull", OPENAPI_CODEGEN_IMAGE])
 
     threads = []
