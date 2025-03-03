@@ -1,0 +1,129 @@
+[global]
+openapi = "lib-openapi.json"
+
+[rust]
+template_dir = "rust/templates"
+extra_mounts = [["rust/.rustfmt.toml", "/app/.rustfmt.toml"]]
+extra_shell_commands = ["rm rust/src/api/{environment,health}.rs"]
+[[rust.task]]
+template = "rust/templates/api_resource.rs.jinja"
+output_dir = "rust/src/api"
+[[rust.task]]
+template = "rust/templates/component_type.rs.jinja"
+output_dir = "rust/src/models"
+
+
+[javascript]
+template_dir = "javascript/templates"
+extra_shell_commands = ["rm javascript/src/api/{ingest,operationalWebhook}.ts"]
+[[javascript.task]]
+template = "javascript/templates/api_resource.ts.jinja"
+output_dir = "javascript/src/api"
+[[javascript.task]]
+template = "javascript/templates/component_type_summary.ts.jinja"
+output_dir = "javascript/src/models"
+[[javascript.task]]
+template = "javascript/templates/component_type.ts.jinja"
+output_dir = "javascript/src/models"
+
+
+[cli]
+template_dir = "svix-cli/templates"
+extra_mounts = [["svix-cli/.rustfmt.toml", "/app/.rustfmt.toml"]]
+extra_shell_commands = [
+    "cargo fix --manifest-path svix-cli/Cargo.toml --allow-dirty",
+    "cargo fmt --manifest-path svix-cli/Cargo.toml",
+    "rm svix-cli/src/cmds/api/{ingest,operational_webhook,background_task,environment,health,operational_webhook_endpoint,statistics}.rs",
+]
+[[cli.task]]
+template = "svix-cli/templates/api_resource.rs.jinja"
+output_dir = "svix-cli/src/cmds/api"
+
+
+[python]
+template_dir = "python/templates"
+extra_shell_commands = [
+    "rm python/svix/api/{environment,health,ingest,operational_webhook}.py",
+]
+[[python.task]]
+template = "python/templates/api_resource.py.jinja"
+output_dir = "python/svix/api"
+[[python.task]]
+template = "python/templates/component_type_summary.py.jinja"
+output_dir = "python/svix/models"
+[[python.task]]
+template = "python/templates/component_type.py.jinja"
+output_dir = "python/svix/models"
+
+
+[ruby]
+template_dir = "ruby/templates"
+extra_shell_commands = ["rm ruby/lib/svix/api/{ingest,operational_webhook}.rb"]
+[[ruby.task]]
+template = "ruby/templates/api_resource.rb.jinja"
+output_dir = "ruby/lib/svix/api"
+[[ruby.task]]
+template = "ruby/templates/summary.rb.jinja"
+output_dir = "ruby/lib"
+[[ruby.task]]
+template = "ruby/templates/component_type.rb.jinja"
+output_dir = "ruby/lib/svix/models"
+
+
+[csharp]
+template_dir = "csharp/templates"
+extra_shell_commands = [
+    "rm csharp/Svix/{IngestEndpoint,Ingest,OperationalWebhook}.cs",
+]
+[[csharp.task]]
+template = "csharp/templates/api_resource.cs.jinja"
+output_dir = "csharp/Svix"
+[[csharp.task]]
+template = "csharp/templates/component_type.cs.jinja"
+output_dir = "csharp/Svix/Models"
+
+
+[java]
+template_dir = "java/templates"
+extra_shell_commands = [
+    "rm java/lib/src/main/java/com/svix/api/{OperationalWebhook,Ingest}.java",
+]
+[[java.task]]
+template = "java/templates/api_resource.java.jinja"
+output_dir = "java/lib/src/main/java/com/svix/api"
+[[java.task]]
+template = "java/templates/operation_options.java.jinja"
+output_dir = "java/lib/src/main/java/com/svix/api"
+[[java.task]]
+template = "java/templates/component_type.java.jinja"
+output_dir = "java/lib/src/main/java/com/svix/models"
+
+
+[go]
+template_dir = "openapi-templates/go"
+extra_shell_commands = [
+    "rm go/{environment,health,ingest_endpoint,ingest,operational_webhook}.go",
+]
+[[go.task]]
+template = "openapi-templates/go/api_resource.go.jinja"
+output_dir = "go"
+[[go.task]]
+template = "openapi-templates/go/component_type_summary.go.jinja"
+output_dir = "go"
+[[go.task]]
+template = "openapi-templates/go/component_type.go.jinja"
+output_dir = "go/models"
+
+
+[kotlin]
+extra_shell_commands = [
+    "rm kotlin/lib/src/main/kotlin/{Ingest,OperationalWebhook}.kt",
+]
+template_dir = "kotlin/templates"
+[[kotlin.task]]
+template = "kotlin/templates/component_type.kt.jinja"
+output_dir = "kotlin/lib/src/main/kotlin/models"
+
+[[kotlin.task]]
+template = "kotlin/templates/api_resource.kt.jinja"
+output_dir = "kotlin/lib/src/main/kotlin"
