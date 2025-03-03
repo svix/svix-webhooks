@@ -20,7 +20,6 @@ data class ApplicationListOptions(
 data class ApplicationCreateOptions(val idempotencyKey: String? = null)
 
 class Application(private val client: SvixHttpClient) {
-
     /** List of all the organization's applications. */
     suspend fun list(
         options: ApplicationListOptions = ApplicationListOptions()

@@ -2,7 +2,7 @@
 package com.svix.kotlin
 
 import com.svix.kotlin.models.ApplicationIn
-import com.svix.kotlin.models.ExpungAllContentsOut
+import com.svix.kotlin.models.ExpungeAllContentsOut
 import com.svix.kotlin.models.ListResponseMessageOut
 import com.svix.kotlin.models.MessageIn
 import com.svix.kotlin.models.MessageOut
@@ -45,7 +45,6 @@ data class MessageGetOptions(
 )
 
 class Message(private val client: SvixHttpClient) {
-
     /**
      * List all of the application's messages.
      *
@@ -117,11 +116,11 @@ class Message(private val client: SvixHttpClient) {
     suspend fun expungeAllContents(
         appId: String,
         options: MessageExpungeAllContentsOptions = MessageExpungeAllContentsOptions(),
-    ): ExpungAllContentsOut {
+    ): ExpungeAllContentsOut {
         val url = client.newUrlBuilder().encodedPath("/api/v1/app/$appId/msg/expunge-all-contents")
         val headers = Headers.Builder()
         options.idempotencyKey?.let { headers.add("idempotency-key", it) }
-        return client.executeRequest<Any, ExpungAllContentsOut>(
+        return client.executeRequest<Any, ExpungeAllContentsOut>(
             "POST",
             url.build(),
             headers = headers.build(),

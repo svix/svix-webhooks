@@ -100,7 +100,6 @@ data class MessageAttemptListAttemptedDestinationsOptions(
 data class MessageAttemptResendOptions(val idempotencyKey: String? = null)
 
 class MessageAttempt(private val client: SvixHttpClient) {
-
     /**
      * List attempts by endpoint id
      *

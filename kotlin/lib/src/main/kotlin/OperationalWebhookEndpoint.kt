@@ -26,7 +26,6 @@ data class OperationalWebhookEndpointCreateOptions(val idempotencyKey: String? =
 data class OperationalWebhookEndpointRotateSecretOptions(val idempotencyKey: String? = null)
 
 class OperationalWebhookEndpoint(private val client: SvixHttpClient) {
-
     /** List operational webhook endpoints. */
     suspend fun list(
         options: OperationalWebhookEndpointListOptions = OperationalWebhookEndpointListOptions()

@@ -23,7 +23,6 @@ data class IntegrationCreateOptions(val idempotencyKey: String? = null)
 data class IntegrationRotateKeyOptions(val idempotencyKey: String? = null)
 
 class Integration(private val client: SvixHttpClient) {
-
     /** List the application's integrations. */
     suspend fun list(
         appId: String,

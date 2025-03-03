@@ -1,0 +1,133 @@
+{% set resource_type_name = resource.name | to_upper_camel_case -%}
+// this file is @generated
+package com.svix.kotlin
+
+import com.svix.kotlin.models.ApplicationIn
+import com.svix.kotlin.models.ListResponseMessageOut
+import com.svix.kotlin.models.MessageIn
+import com.svix.kotlin.models.MessageOut
+import kotlinx.datetime.Instant
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import okhttp3.Headers
+{% for c in referenced_components -%}
+import com.svix.kotlin.models.{{ c | to_upper_camel_case }}
+{% endfor %}
+
+{% for op in resource.operations -%}
+    {% if op | has_query_or_header_params -%}
+data class {{ resource_type_name }}{{ op.name | to_upper_camel_case }}Options(
+        {% for p in op.query_params -%}
+        {% set p_ty = p.type.to_kotlin() -%}
+        {% set p_val = "" -%}
+        {% if not p.required -%}
+            {% set p_ty %}{{ p_ty }}?{% endset -%}
+            {% set p_val = "= null" -%}
+        {% endif -%}
+        {% if p.description is defined -%}
+        {{ p.description | to_doc_comment(style="kotlin") }}
+        {% endif -%}
+        val {{ p.name | to_lower_camel_case }}: {{ p_ty }} {{ p_val }},
+        {% endfor -%}
+
+        {% for p in op.header_params -%}
+        val {{ p.name | to_lower_camel_case }}: String? = null,
+        {% endfor -%}
+)
+    {% endif -%}
+{% endfor -%}
+
+
+class {{ resource_type_name }}(private val client: SvixHttpClient) {
+{% for op in resource.operations -%}
+{% set res_type = op.response_body_schema_name | replace("_", "") -%}
+{% set has_query_params = op.query_params | length > 0 -%}
+{% set has_required_query_params =
+    op.query_params | selectattr("required") | length > 0 -%}
+{{ op.description | with_javadoc_deprecation(op.deprecated) | to_doc_comment(style="kotlin") }}
+{% if op.deprecated -%}
+    @Deprecated("")
+{% endif -%}
+suspend fun {{ op.name | to_lower_camel_case }}(
+    {# path parameters -#}
+    {% for p in op.path_params -%}
+        {{ p | to_lower_camel_case }}: String,
+    {% endfor -%}
+
+    {# body parameter interface -#}
+    {% if op.request_body_schema_name is defined -%}
+        {% set req_body_field_name = op.request_body_schema_name | to_lower_camel_case -%}
+        {{ req_body_field_name }}: {{ op.request_body_schema_name }},
+    {% endif -%}
+
+    {# query parameters -#}
+    {% if op | has_query_or_header_params -%}
+        {% set field_ty -%}
+            {{ resource_type_name }}{{ op.name | to_upper_camel_case }}Options
+        {%- endset -%}
+        options: {{ field_ty }}
+        {%- if not has_required_query_params %} = {{ field_ty }}(){% endif -%}
+        ,
+    {% endif -%}
+)
+{%- if op.response_body_schema_name is defined -%}
+    : {{ res_type }}
+{%- endif %}
+{
+    {% set path_variable = op.path -%}
+    {% if op.path_params | length > 0 -%}
+        {% set path_variable = op.path | generate_kt_path_str(op.path_params) -%}
+    {% endif -%}
+    {% if op.query_params | length > 0 -%}
+    val url = client.newUrlBuilder().encodedPath("{{ path_variable }}")
+        {%- for p in op.query_params -%}
+            {%- if p.required -%}
+        .addQueryParameter("{{ p.name }}", options.{{ p.name | to_lower_camel_case }})
+            {%- endif -%}
+        {%- endfor %}
+        {% for p in op.query_params -%}
+            {% if not p.required -%}
+        options.{{ p.name | to_lower_camel_case }}?.let {url.addQueryParameter("{{ p.name }}", {% if p.type.is_string() %}it{% else %}serializeQueryParam(it){% endif %})  }
+            {% endif -%}
+        {% endfor -%}
+    {% else -%}
+    val url = client.newUrlBuilder()
+        {# path params -#}
+        .encodedPath("{{ path_variable }}")
+    {% endif -%}
+
+    {% if op.header_params | length > 0 -%}
+    val headers = Headers.Builder()
+    {% for p in op.header_params -%}
+    options.{{ p.name | to_lower_camel_case }}?.let { headers.add("{{ p.name }}",it) }
+    {% endfor -%}
+    {% endif -%}
+
+    {% set generic_res_type = res_type -%}
+    {% if not op.response_body_schema_name is defined -%}
+        {% set generic_res_type = "Boolean" -%}
+    {% endif -%}
+    {% set generic_req_type = "Any" -%}
+    {% if op.request_body_schema_name is defined -%}
+        {% set generic_req_type = op.request_body_schema_name %}
+    {% endif -%}
+    {% if op.response_body_schema_name is defined %}return {% endif %}client.executeRequest<{{ generic_req_type }},{{ generic_res_type }}>("{{ op.method | upper}}",url.build()
+    {%- if op.header_params | length > 0 -%}
+    ,headers = headers.build()
+    {%- endif -%}
+    {%- if op.request_body_schema_name is defined -%}
+    ,reqBody = {{ req_body_field_name }}
+    {%- endif -%}
+    )
+}
+
+    {% set extra_path -%}
+    api_extra/{{ resource.name | to_snake_case }}_{{ op.name | to_snake_case }}.kt
+    {%- endset -%}
+    {% include extra_path ignore missing %}
+    {% endfor -%}
+}
+
+{% set resource_extra_path %}api_extra/{{ resource.name | to_snake_case }}.kt{%- endset -%}
+{% include resource_extra_path ignore missing %}

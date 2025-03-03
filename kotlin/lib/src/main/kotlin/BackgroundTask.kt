@@ -21,7 +21,6 @@ data class BackgroundTaskListOptions(
 )
 
 class BackgroundTask(private val client: SvixHttpClient) {
-
     /** List background tasks executed in the past 90 days. */
     suspend fun list(
         options: BackgroundTaskListOptions = BackgroundTaskListOptions()

@@ -9,7 +9,6 @@ import okhttp3.Headers
 data class StatisticsAggregateAppStatsOptions(val idempotencyKey: String? = null)
 
 class Statistics(private val client: SvixHttpClient) {
-
     /**
      * Creates a background task to calculate the message destinations for all applications in the
      * environment.

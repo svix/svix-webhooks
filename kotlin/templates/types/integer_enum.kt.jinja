@@ -1,0 +1,48 @@
+{% set ty_name = type.name | to_upper_camel_case -%}
+// This file is @generated
+package com.svix.kotlin.models
+
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.descriptors.*
+import kotlinx.serialization.encoding.*
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.encodeToJsonElement
+import kotlinx.serialization.json.jsonPrimitive
+import com.svix.kotlin.ToQueryParam
+
+
+@Serializable(with = {{ ty_name }}Serializer::class)
+enum class  {{ ty_name }} : ToQueryParam {
+    {% for varname, value in type.variants -%}
+    {{ varname | to_upper_snake_case }} {% if loop.last %};{% else %},{% endif %}
+    {% endfor -%}
+    override fun toQueryParam() = Json.encodeToJsonElement(this).jsonPrimitive.content
+}
+
+
+object {{ ty_name }}Serializer : KSerializer<{{ ty_name }}> {
+    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("com.svix.kotlin.models.{{ ty_name }}Serializer", PrimitiveKind.LONG)
+
+    override fun serialize(encoder: Encoder, value: {{ ty_name }}) {
+        val vAsLong = when (value){
+            {% for varname, value in type.variants -%}
+            {{ ty_name }}.{{ varname | to_upper_snake_case }} -> {{ value }}L
+            {% endfor -%}
+        }
+        encoder.encodeLong(vAsLong)
+    }
+
+    override fun deserialize(decoder: Decoder): {{ ty_name }} {
+        return when(val vAsLong = decoder.decodeLong()){
+            {% for varname, value in type.variants -%}
+            {{ value }}L -> {{ ty_name }}.{{ varname | to_upper_snake_case }}
+            {% endfor -%}
+            else -> {
+                throw SerializationException("$vAsLong is not a valid value for {{ ty_name }}")
+            }
+        }
+    }
+}
