@@ -94,6 +94,7 @@ def docker_container_create(prefix, task) -> str:
             OPENAPI_CODEGEN_IMAGE,
             "openapi-codegen",
             "generate",
+            *task["extra_codegen_args"],
             "--template",
             task["template"],
             "--input-file",
@@ -224,6 +225,7 @@ def parse_config():
                     "template": task["template"],
                     "output_dir": task["output_dir"],
                     "extra_mounts": language_config.get("extra_mounts", []),
+                    "extra_codegen_args": task.get("extra_codegen_args", []),
                     "template_dir": language_config["template_dir"],
                 }
             )
