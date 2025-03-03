@@ -48,7 +48,6 @@ func (integration *Integration) List(
 			return nil, err
 		}
 	}
-
 	return executeRequest[any, models.ListResponseIntegrationOut](
 		ctx,
 		integration.client,
@@ -59,7 +58,6 @@ func (integration *Integration) List(
 		nil,
 		nil,
 	)
-
 }
 
 // Create an integration.
@@ -80,7 +78,6 @@ func (integration *Integration) Create(
 			return nil, err
 		}
 	}
-
 	return executeRequest[models.IntegrationIn, models.IntegrationOut](
 		ctx,
 		integration.client,
@@ -91,7 +88,6 @@ func (integration *Integration) Create(
 		headerMap,
 		&integrationIn,
 	)
-
 }
 
 // Get an integration.
@@ -104,7 +100,6 @@ func (integration *Integration) Get(
 		"app_id":   appId,
 		"integ_id": integId,
 	}
-
 	return executeRequest[any, models.IntegrationOut](
 		ctx,
 		integration.client,
@@ -115,7 +110,6 @@ func (integration *Integration) Get(
 		nil,
 		nil,
 	)
-
 }
 
 // Update an integration.
@@ -129,7 +123,6 @@ func (integration *Integration) Update(
 		"app_id":   appId,
 		"integ_id": integId,
 	}
-
 	return executeRequest[models.IntegrationUpdate, models.IntegrationOut](
 		ctx,
 		integration.client,
@@ -140,7 +133,6 @@ func (integration *Integration) Update(
 		nil,
 		&integrationUpdate,
 	)
-
 }
 
 // Delete an integration.
@@ -153,7 +145,6 @@ func (integration *Integration) Delete(
 		"app_id":   appId,
 		"integ_id": integId,
 	}
-
 	_, err := executeRequest[any, any](
 		ctx,
 		integration.client,
@@ -165,7 +156,6 @@ func (integration *Integration) Delete(
 		nil,
 	)
 	return err
-
 }
 
 // Get an integration's key.
@@ -180,7 +170,6 @@ func (integration *Integration) GetKey(
 		"app_id":   appId,
 		"integ_id": integId,
 	}
-
 	return executeRequest[any, models.IntegrationKeyOut](
 		ctx,
 		integration.client,
@@ -191,7 +180,6 @@ func (integration *Integration) GetKey(
 		nil,
 		nil,
 	)
-
 }
 
 // Rotate the integration's key. The previous key will be immediately revoked.
@@ -213,7 +201,6 @@ func (integration *Integration) RotateKey(
 			return nil, err
 		}
 	}
-
 	return executeRequest[any, models.IntegrationKeyOut](
 		ctx,
 		integration.client,
@@ -224,5 +211,4 @@ func (integration *Integration) RotateKey(
 		headerMap,
 		nil,
 	)
-
 }

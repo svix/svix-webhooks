@@ -44,7 +44,6 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) List(
 			return nil, err
 		}
 	}
-
 	return executeRequest[any, models.ListResponseOperationalWebhookEndpointOut](
 		ctx,
 		operationalWebhookEndpoint.client,
@@ -55,7 +54,6 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) List(
 		nil,
 		nil,
 	)
-
 }
 
 // Create an operational webhook endpoint.
@@ -72,7 +70,6 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Create(
 			return nil, err
 		}
 	}
-
 	return executeRequest[models.OperationalWebhookEndpointIn, models.OperationalWebhookEndpointOut](
 		ctx,
 		operationalWebhookEndpoint.client,
@@ -83,7 +80,6 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Create(
 		headerMap,
 		&operationalWebhookEndpointIn,
 	)
-
 }
 
 // Get an operational webhook endpoint.
@@ -94,7 +90,6 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Get(
 	pathMap := map[string]string{
 		"endpoint_id": endpointId,
 	}
-
 	return executeRequest[any, models.OperationalWebhookEndpointOut](
 		ctx,
 		operationalWebhookEndpoint.client,
@@ -105,7 +100,6 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Get(
 		nil,
 		nil,
 	)
-
 }
 
 // Update an operational webhook endpoint.
@@ -117,7 +111,6 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Update(
 	pathMap := map[string]string{
 		"endpoint_id": endpointId,
 	}
-
 	return executeRequest[models.OperationalWebhookEndpointUpdate, models.OperationalWebhookEndpointOut](
 		ctx,
 		operationalWebhookEndpoint.client,
@@ -128,7 +121,6 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Update(
 		nil,
 		&operationalWebhookEndpointUpdate,
 	)
-
 }
 
 // Delete an operational webhook endpoint.
@@ -139,7 +131,6 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Delete(
 	pathMap := map[string]string{
 		"endpoint_id": endpointId,
 	}
-
 	_, err := executeRequest[any, any](
 		ctx,
 		operationalWebhookEndpoint.client,
@@ -151,7 +142,6 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Delete(
 		nil,
 	)
 	return err
-
 }
 
 // Get the additional headers to be sent with the operational webhook.
@@ -162,7 +152,6 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) GetHeaders(
 	pathMap := map[string]string{
 		"endpoint_id": endpointId,
 	}
-
 	return executeRequest[any, models.OperationalWebhookEndpointHeadersOut](
 		ctx,
 		operationalWebhookEndpoint.client,
@@ -173,7 +162,6 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) GetHeaders(
 		nil,
 		nil,
 	)
-
 }
 
 // Set the additional headers to be sent with the operational webhook.
@@ -185,7 +173,6 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) UpdateHeaders(
 	pathMap := map[string]string{
 		"endpoint_id": endpointId,
 	}
-
 	_, err := executeRequest[models.OperationalWebhookEndpointHeadersIn, any](
 		ctx,
 		operationalWebhookEndpoint.client,
@@ -197,7 +184,6 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) UpdateHeaders(
 		&operationalWebhookEndpointHeadersIn,
 	)
 	return err
-
 }
 
 // Get an operational webhook endpoint's signing secret.
@@ -211,7 +197,6 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) GetSecret(
 	pathMap := map[string]string{
 		"endpoint_id": endpointId,
 	}
-
 	return executeRequest[any, models.OperationalWebhookEndpointSecretOut](
 		ctx,
 		operationalWebhookEndpoint.client,
@@ -222,7 +207,6 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) GetSecret(
 		nil,
 		nil,
 	)
-
 }
 
 // Rotates an operational webhook endpoint's signing secret.
@@ -245,7 +229,6 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) RotateSecret(
 			return err
 		}
 	}
-
 	_, err = executeRequest[models.OperationalWebhookEndpointSecretIn, any](
 		ctx,
 		operationalWebhookEndpoint.client,
@@ -257,5 +240,4 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) RotateSecret(
 		&operationalWebhookEndpointSecretIn,
 	)
 	return err
-
 }

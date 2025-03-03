@@ -55,7 +55,6 @@ func (eventType *EventType) List(
 			return nil, err
 		}
 	}
-
 	return executeRequest[any, models.ListResponseEventTypeOut](
 		ctx,
 		eventType.client,
@@ -66,7 +65,6 @@ func (eventType *EventType) List(
 		nil,
 		nil,
 	)
-
 }
 
 // Create new or unarchive existing event type.
@@ -87,7 +85,6 @@ func (eventType *EventType) Create(
 			return nil, err
 		}
 	}
-
 	return executeRequest[models.EventTypeIn, models.EventTypeOut](
 		ctx,
 		eventType.client,
@@ -98,7 +95,6 @@ func (eventType *EventType) Create(
 		headerMap,
 		&eventTypeIn,
 	)
-
 }
 
 // Given an OpenAPI spec, create new or update existing event types.
@@ -119,7 +115,6 @@ func (eventType *EventType) ImportOpenapi(
 			return nil, err
 		}
 	}
-
 	return executeRequest[models.EventTypeImportOpenApiIn, models.EventTypeImportOpenApiOut](
 		ctx,
 		eventType.client,
@@ -130,7 +125,6 @@ func (eventType *EventType) ImportOpenapi(
 		headerMap,
 		&eventTypeImportOpenApiIn,
 	)
-
 }
 
 // Get an event type.
@@ -141,7 +135,6 @@ func (eventType *EventType) Get(
 	pathMap := map[string]string{
 		"event_type_name": eventTypeName,
 	}
-
 	return executeRequest[any, models.EventTypeOut](
 		ctx,
 		eventType.client,
@@ -152,7 +145,6 @@ func (eventType *EventType) Get(
 		nil,
 		nil,
 	)
-
 }
 
 // Update an event type.
@@ -164,7 +156,6 @@ func (eventType *EventType) Update(
 	pathMap := map[string]string{
 		"event_type_name": eventTypeName,
 	}
-
 	return executeRequest[models.EventTypeUpdate, models.EventTypeOut](
 		ctx,
 		eventType.client,
@@ -175,7 +166,6 @@ func (eventType *EventType) Update(
 		nil,
 		&eventTypeUpdate,
 	)
-
 }
 
 // Archive an event type.
@@ -200,7 +190,6 @@ func (eventType *EventType) Delete(
 			return err
 		}
 	}
-
 	_, err = executeRequest[any, any](
 		ctx,
 		eventType.client,
@@ -212,7 +201,6 @@ func (eventType *EventType) Delete(
 		nil,
 	)
 	return err
-
 }
 
 // Partially update an event type.
@@ -224,7 +212,6 @@ func (eventType *EventType) Patch(
 	pathMap := map[string]string{
 		"event_type_name": eventTypeName,
 	}
-
 	return executeRequest[models.EventTypePatch, models.EventTypeOut](
 		ctx,
 		eventType.client,
@@ -235,5 +222,4 @@ func (eventType *EventType) Patch(
 		nil,
 		&eventTypePatch,
 	)
-
 }

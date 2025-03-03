@@ -1,0 +1,42 @@
+{% set ty_name =  type.name | to_upper_camel_case -%}
+// Package svix this file is @generated DO NOT EDIT
+package models
+
+import (
+	"encoding/json"
+	"fmt"
+	"slices"
+)
+
+{% if type.description is defined -%}
+{{ type.description | to_doc_comment(style="go") }}
+{% endif -%}
+type {{ ty_name }} string
+
+const (
+{% for value in type.values -%}
+	{{ type.name |  to_upper_snake_case | replace("_", "") }}_{{ value | to_upper_snake_case }} {{ ty_name }} = "{{ value }}"
+{% endfor -%}
+)
+
+var allowed{{ ty_name }} = []{{ ty_name }}{
+	{% for v in type.values -%}
+	"{{ v }}",
+	{% endfor -%}
+}
+
+
+func (v *{{ ty_name }}) UnmarshalJSON(src []byte) error {
+	var value string
+	err := json.Unmarshal(src, &value)
+	if err != nil {
+		return err
+	}
+	enumVal := {{ ty_name }}(value)
+	if slices.Contains(allowed{{ ty_name }}, enumVal) {
+		*v = enumVal
+		return nil
+	}
+	return fmt.Errorf("`%+v` is not a valid {{ ty_name }}", value)
+
+}
