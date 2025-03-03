@@ -8,7 +8,7 @@ pub use self::{
         {{ resource.name | to_snake_case }}::{
             {{ resource_type_name }},
             {% for op in resource.operations -%}
-                {% if op.query_params | length > 0 -%}
+                {% if op | has_query_or_header_params -%}
                     {{ resource_type_name }}{{ op.name | to_upper_camel_case }}Options,
                 {% endif -%}
             {% endfor -%}

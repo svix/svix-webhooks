@@ -110,11 +110,6 @@ impl<'a> {{ resource_type_name }}<'a> {
             ;
         {% endif -%}
 
-        {% if has_header_params -%}
-            {# unpack PostOptions -#}
-            let PostOptions { idempotency_key } = options.unwrap_or_default();
-        {% endif -%}
-
         {# make the request #}
         crate::request::Request::new(http1::Method::{{ op.method | upper }}, "{{ op.path }}")
 
