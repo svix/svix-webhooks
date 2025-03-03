@@ -11,10 +11,9 @@ module Svix
 
     def app_portal_access(app_id, app_portal_access_in, options = {})
       options = options.transform_keys(&:to_s)
-      path = "/api/v1/auth/app-portal-access/#{app_id}"
       res = @client.execute_request(
         "POST",
-        path,
+        "/api/v1/auth/app-portal-access/#{app_id}",
         headers: {
           "idempotency-key" => options["idempotency-key"]
         },
@@ -25,10 +24,9 @@ module Svix
 
     def expire_all(app_id, application_token_expire_in, options = {})
       options = options.transform_keys(&:to_s)
-      path = "/api/v1/auth/app/#{app_id}/expire-all"
       @client.execute_request(
         "POST",
-        path,
+        "/api/v1/auth/app/#{app_id}/expire-all",
         headers: {
           "idempotency-key" => options["idempotency-key"]
         },
@@ -38,10 +36,9 @@ module Svix
 
     def dashboard_access(app_id, options = {})
       options = options.transform_keys(&:to_s)
-      path = "/api/v1/auth/dashboard-access/#{app_id}"
       res = @client.execute_request(
         "POST",
-        path,
+        "/api/v1/auth/dashboard-access/#{app_id}",
         headers: {
           "idempotency-key" => options["idempotency-key"]
         }
@@ -51,10 +48,9 @@ module Svix
 
     def logout(options = {})
       options = options.transform_keys(&:to_s)
-      path = "/api/v1/auth/logout"
       @client.execute_request(
         "POST",
-        path,
+        "/api/v1/auth/logout",
         headers: {
           "idempotency-key" => options["idempotency-key"]
         }

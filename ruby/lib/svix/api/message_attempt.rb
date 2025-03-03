@@ -11,10 +11,9 @@ module Svix
 
     def list_by_endpoint(app_id, endpoint_id, options = {})
       options = options.transform_keys(&:to_s)
-      path = "/api/v1/app/#{app_id}/attempt/endpoint/#{endpoint_id}"
       res = @client.execute_request(
         "GET",
-        path,
+        "/api/v1/app/#{app_id}/attempt/endpoint/#{endpoint_id}",
         query_params: {
           "limit" => options["limit"],
           "iterator" => options["iterator"],
@@ -34,10 +33,9 @@ module Svix
 
     def list_by_msg(app_id, msg_id, options = {})
       options = options.transform_keys(&:to_s)
-      path = "/api/v1/app/#{app_id}/attempt/msg/#{msg_id}"
       res = @client.execute_request(
         "GET",
-        path,
+        "/api/v1/app/#{app_id}/attempt/msg/#{msg_id}",
         query_params: {
           "limit" => options["limit"],
           "iterator" => options["iterator"],
@@ -57,10 +55,9 @@ module Svix
 
     def list_attempted_messages(app_id, endpoint_id, options = {})
       options = options.transform_keys(&:to_s)
-      path = "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/msg"
       res = @client.execute_request(
         "GET",
-        path,
+        "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/msg",
         query_params: {
           "limit" => options["limit"],
           "iterator" => options["iterator"],
@@ -77,28 +74,25 @@ module Svix
     end
 
     def get(app_id, msg_id, attempt_id)
-      path = "/api/v1/app/#{app_id}/msg/#{msg_id}/attempt/#{attempt_id}"
       res = @client.execute_request(
         "GET",
-        path
+        "/api/v1/app/#{app_id}/msg/#{msg_id}/attempt/#{attempt_id}"
       )
       MessageAttemptOut.deserialize(res)
     end
 
     def expunge_content(app_id, msg_id, attempt_id)
-      path = "/api/v1/app/#{app_id}/msg/#{msg_id}/attempt/#{attempt_id}/content"
       @client.execute_request(
         "DELETE",
-        path
+        "/api/v1/app/#{app_id}/msg/#{msg_id}/attempt/#{attempt_id}/content"
       )
     end
 
     def list_attempted_destinations(app_id, msg_id, options = {})
       options = options.transform_keys(&:to_s)
-      path = "/api/v1/app/#{app_id}/msg/#{msg_id}/endpoint"
       res = @client.execute_request(
         "GET",
-        path,
+        "/api/v1/app/#{app_id}/msg/#{msg_id}/endpoint",
         query_params: {
           "limit" => options["limit"],
           "iterator" => options["iterator"]
@@ -109,10 +103,9 @@ module Svix
 
     def resend(app_id, msg_id, endpoint_id, options = {})
       options = options.transform_keys(&:to_s)
-      path = "/api/v1/app/#{app_id}/msg/#{msg_id}/endpoint/#{endpoint_id}/resend"
       @client.execute_request(
         "POST",
-        path,
+        "/api/v1/app/#{app_id}/msg/#{msg_id}/endpoint/#{endpoint_id}/resend",
         headers: {
           "idempotency-key" => options["idempotency-key"]
         }

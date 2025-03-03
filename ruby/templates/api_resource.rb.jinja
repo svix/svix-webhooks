@@ -34,11 +34,10 @@ module Svix
       {% if op | has_query_or_header_params -%}
       options = options.transform_keys(&:to_s)
       {% endif -%}
-      path = "{{ op.path | generate_ruby_path_str(op.path_params) }}"
       {% if op.response_body_schema_name is defined -%}res = {% endif -%}
       @client.execute_request(
         "{{ op.method | upper }}",
-        path,
+        "{{ op.path | generate_ruby_path_str(op.path_params) }}",
         {% if op.query_params | length >0 -%}
         query_params:{
           {% for p in op.query_params -%}

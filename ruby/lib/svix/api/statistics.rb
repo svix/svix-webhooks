@@ -11,10 +11,9 @@ module Svix
 
     def aggregate_app_stats(app_usage_stats_in, options = {})
       options = options.transform_keys(&:to_s)
-      path = "/api/v1/stats/usage/app"
       res = @client.execute_request(
         "POST",
-        path,
+        "/api/v1/stats/usage/app",
         headers: {
           "idempotency-key" => options["idempotency-key"]
         },
@@ -24,10 +23,9 @@ module Svix
     end
 
     def aggregate_event_types
-      path = "/api/v1/stats/usage/event-types"
       res = @client.execute_request(
         "PUT",
-        path
+        "/api/v1/stats/usage/event-types"
       )
       AggregateEventTypesOut.deserialize(res)
     end

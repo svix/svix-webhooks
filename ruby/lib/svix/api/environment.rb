@@ -11,10 +11,9 @@ module Svix
 
     def export(options = {})
       options = options.transform_keys(&:to_s)
-      path = "/api/v1/environment/export"
       res = @client.execute_request(
         "POST",
-        path,
+        "/api/v1/environment/export",
         headers: {
           "idempotency-key" => options["idempotency-key"]
         }
@@ -24,10 +23,9 @@ module Svix
 
     def import(environment_in, options = {})
       options = options.transform_keys(&:to_s)
-      path = "/api/v1/environment/import"
       @client.execute_request(
         "POST",
-        path,
+        "/api/v1/environment/import",
         headers: {
           "idempotency-key" => options["idempotency-key"]
         },
