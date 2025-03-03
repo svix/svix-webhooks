@@ -3,6 +3,7 @@
 ## Version 1.61.1
 * Libs/Java **(Breaking)**: The type of `MessageIn.transformationsParams` changed from `Object` to  `Map<String,Object>`.
 * Libs/Java and Libs/Kotlin **(Breaking)**: Due to an internal change in the underlining JSON de/serialization library, some JSON objects may not be serialized correctly. To address this `MessageIn.payload` now accepts a JSON encoded string instead of an `Object` (for Java) or `Map<String, Any>` (for Kotlin)
+* Libs/Go: Fix regression in Go lib, operations now return `&svix.Error` instead of `svix.Error`
 
 ## Version 1.61.0
 * Libs/Ruby **(Breaking)**: Ruby version changed from `2.7` to `3.4.2`
