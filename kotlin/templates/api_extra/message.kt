@@ -1,4 +1,3 @@
-
 /**
  * Creates a [MessageIn] with a pre-serialized payload.
  *
