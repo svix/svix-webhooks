@@ -92,7 +92,7 @@ func executeRequest[ReqBody any, ResBody any](
 
 		return &ret, nil
 	}
-	return nil, Error{
+	return nil, &Error{
 		status: res.StatusCode,
 		body:   body,
 		error:  fmt.Sprintf("status code %s", res.Status),
