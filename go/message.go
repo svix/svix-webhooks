@@ -78,7 +78,6 @@ func (message *Message) List(
 			return nil, err
 		}
 	}
-
 	return executeRequest[any, models.ListResponseMessageOut](
 		ctx,
 		message.client,
@@ -89,7 +88,6 @@ func (message *Message) List(
 		nil,
 		nil,
 	)
-
 }
 
 // Creates a new message and dispatches it to all of the application's endpoints.
@@ -120,7 +118,6 @@ func (message *Message) Create(
 			return nil, err
 		}
 	}
-
 	return executeRequest[models.MessageIn, models.MessageOut](
 		ctx,
 		message.client,
@@ -131,7 +128,6 @@ func (message *Message) Create(
 		headerMap,
 		&messageIn,
 	)
-
 }
 
 // Purge all message content for the application.
@@ -153,7 +149,6 @@ func (message *Message) ExpungeAllContents(
 			return nil, err
 		}
 	}
-
 	return executeRequest[any, models.ExpungeAllContentsOut](
 		ctx,
 		message.client,
@@ -164,7 +159,6 @@ func (message *Message) ExpungeAllContents(
 		headerMap,
 		nil,
 	)
-
 }
 
 // Get a message by its ID or eventID.
@@ -186,7 +180,6 @@ func (message *Message) Get(
 			return nil, err
 		}
 	}
-
 	return executeRequest[any, models.MessageOut](
 		ctx,
 		message.client,
@@ -197,7 +190,6 @@ func (message *Message) Get(
 		nil,
 		nil,
 	)
-
 }
 
 // Delete the given message's payload.
@@ -213,7 +205,6 @@ func (message *Message) ExpungeContent(
 		"app_id": appId,
 		"msg_id": msgId,
 	}
-
 	_, err := executeRequest[any, any](
 		ctx,
 		message.client,
@@ -225,5 +216,4 @@ func (message *Message) ExpungeContent(
 		nil,
 	)
 	return err
-
 }

@@ -133,7 +133,6 @@ func (messageAttempt *MessageAttempt) ListByEndpoint(
 			return nil, err
 		}
 	}
-
 	return executeRequest[any, models.ListResponseMessageAttemptOut](
 		ctx,
 		messageAttempt.client,
@@ -144,7 +143,6 @@ func (messageAttempt *MessageAttempt) ListByEndpoint(
 		nil,
 		nil,
 	)
-
 }
 
 // List attempts by message ID.
@@ -181,7 +179,6 @@ func (messageAttempt *MessageAttempt) ListByMsg(
 			return nil, err
 		}
 	}
-
 	return executeRequest[any, models.ListResponseMessageAttemptOut](
 		ctx,
 		messageAttempt.client,
@@ -192,7 +189,6 @@ func (messageAttempt *MessageAttempt) ListByMsg(
 		nil,
 		nil,
 	)
-
 }
 
 // List messages for a particular endpoint. Additionally includes metadata about the latest message attempt.
@@ -229,7 +225,6 @@ func (messageAttempt *MessageAttempt) ListAttemptedMessages(
 			return nil, err
 		}
 	}
-
 	return executeRequest[any, models.ListResponseEndpointMessageOut](
 		ctx,
 		messageAttempt.client,
@@ -240,7 +235,6 @@ func (messageAttempt *MessageAttempt) ListAttemptedMessages(
 		nil,
 		nil,
 	)
-
 }
 
 // `msg_id`: Use a message id or a message `eventId`
@@ -255,7 +249,6 @@ func (messageAttempt *MessageAttempt) Get(
 		"msg_id":     msgId,
 		"attempt_id": attemptId,
 	}
-
 	return executeRequest[any, models.MessageAttemptOut](
 		ctx,
 		messageAttempt.client,
@@ -266,7 +259,6 @@ func (messageAttempt *MessageAttempt) Get(
 		nil,
 		nil,
 	)
-
 }
 
 // Deletes the given attempt's response body.
@@ -284,7 +276,6 @@ func (messageAttempt *MessageAttempt) ExpungeContent(
 		"msg_id":     msgId,
 		"attempt_id": attemptId,
 	}
-
 	_, err := executeRequest[any, any](
 		ctx,
 		messageAttempt.client,
@@ -296,7 +287,6 @@ func (messageAttempt *MessageAttempt) ExpungeContent(
 		nil,
 	)
 	return err
-
 }
 
 // List endpoints attempted by a given message.
@@ -322,7 +312,6 @@ func (messageAttempt *MessageAttempt) ListAttemptedDestinations(
 			return nil, err
 		}
 	}
-
 	return executeRequest[any, models.ListResponseMessageEndpointOut](
 		ctx,
 		messageAttempt.client,
@@ -333,7 +322,6 @@ func (messageAttempt *MessageAttempt) ListAttemptedDestinations(
 		nil,
 		nil,
 	)
-
 }
 
 // Resend a message to the specified endpoint.
@@ -357,7 +345,6 @@ func (messageAttempt *MessageAttempt) Resend(
 			return err
 		}
 	}
-
 	_, err = executeRequest[any, any](
 		ctx,
 		messageAttempt.client,
@@ -369,5 +356,4 @@ func (messageAttempt *MessageAttempt) Resend(
 		nil,
 	)
 	return err
-
 }

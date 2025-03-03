@@ -5,6 +5,6 @@ import "github.com/svix/svix-webhooks/go/models"
 
 type (
 {% for type in types -%}
-    {{ type | to_upper_camel_case }} =  models.{{ type | to_upper_camel_case }}
+	{{ type | to_upper_camel_case }} =  models.{{ type | to_upper_camel_case }}
 {% endfor %}
 )

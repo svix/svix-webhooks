@@ -6,43 +6,43 @@ import "github.com/svix/svix-webhooks/go/utils"
 {{ type.description | to_doc_comment(style="go")}}
 {% endif -%}
 type {{ type.name | to_upper_camel_case }} struct {
-    {% for field in type.fields -%}
-        {% set f_name = field.name | to_upper_camel_case -%}
-        {% set f_type = field.type.to_go() -%}
-        {% set use_nullable = type.name is endingwith "Patch" and field.nullable -%}
-        {% set json_annotation = "" -%}
-        {% if use_nullable -%}
-            {% set f_type %}utils.Nullable[{{ f_type }}]{% endset -%}
-        {% endif -%}
-        {% if (not field.required or field.nullable) and not use_nullable -%}
-            {% set json_annotation = ",omitempty" -%}
-            {% if not field.type.is_set() and not field.type.is_list() -%}
-                {% set f_type %}*{{ f_type }}{% endset -%}
-            {% endif -%}
-        {% endif -%}
-        {% if field.description is defined and "\n" in field.description -%}
-    {{ field.description | to_doc_comment(style="go") | indent(4) }}
-        {% endif -%}
-    {{ f_name }} {{ f_type }} `json:"{{ field.name }}{{ json_annotation }}"`
-        {%- if field.description is defined and "\n" not in field.description -%}
-        {{ field.description | to_doc_comment(style="go") }}
-        {%- endif %}
-    {% endfor -%}
+	{% for field in type.fields -%}
+		{% set f_name = field.name | to_upper_camel_case -%}
+		{% set f_type = field.type.to_go() -%}
+		{% set use_nullable = type.name is endingwith "Patch" and field.nullable -%}
+		{% set json_annotation = "" -%}
+		{% if use_nullable -%}
+			{% set f_type %}utils.Nullable[{{ f_type }}]{% endset -%}
+		{% endif -%}
+		{% if (not field.required or field.nullable) and not use_nullable -%}
+			{% set json_annotation = ",omitempty" -%}
+			{% if not field.type.is_set() and not field.type.is_list() -%}
+				{% set f_type %}*{{ f_type }}{% endset -%}
+			{% endif -%}
+		{% endif -%}
+		{% if field.description is defined and "\n" in field.description -%}
+	{{ field.description | to_doc_comment(style="go") | indent(4) }}
+		{% endif -%}
+	{{ f_name }} {{ f_type }} `json:"{{ field.name }}{{ json_annotation }}"`
+		{%- if field.description is defined and "\n" not in field.description -%}
+		{{ field.description | to_doc_comment(style="go") }}
+		{%- endif %}
+	{% endfor -%}
 }
 {% if type.name is endingwith "Patch" -%}
 func (o {{ type.name | to_upper_camel_case }}) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-    {% for field in type.fields -%}
-        {% if field.nullable -%}
+	{% for field in type.fields -%}
+		{% if field.nullable -%}
 	if o.{{ field.name | to_upper_camel_case }}.IsSet() {
 		toSerialize["{{ field.name }}"] = o.{{ field.name | to_upper_camel_case }}
 	}
-        {% else -%}
+		{% else -%}
 	if o.{{ field.name | to_upper_camel_case }} != nil {
 		toSerialize["{{ field.name }}"] = o.{{ field.name | to_upper_camel_case }}
 	}
-        {% endif -%}
-    {% endfor -%}
+		{% endif -%}
+	{% endfor -%}
 	return json.Marshal(toSerialize)
 }
 {% endif -%}

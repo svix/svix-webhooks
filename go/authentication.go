@@ -45,7 +45,6 @@ func (authentication *Authentication) AppPortalAccess(
 			return nil, err
 		}
 	}
-
 	return executeRequest[models.AppPortalAccessIn, models.AppPortalAccessOut](
 		ctx,
 		authentication.client,
@@ -56,7 +55,6 @@ func (authentication *Authentication) AppPortalAccess(
 		headerMap,
 		&appPortalAccessIn,
 	)
-
 }
 
 // Expire all of the tokens associated with a specific application.
@@ -77,7 +75,6 @@ func (authentication *Authentication) ExpireAll(
 			return err
 		}
 	}
-
 	_, err = executeRequest[models.ApplicationTokenExpireIn, any](
 		ctx,
 		authentication.client,
@@ -89,7 +86,6 @@ func (authentication *Authentication) ExpireAll(
 		&applicationTokenExpireIn,
 	)
 	return err
-
 }
 
 // DEPRECATED: Please use `app-portal-access` instead.
@@ -111,7 +107,6 @@ func (authentication *Authentication) DashboardAccess(
 			return nil, err
 		}
 	}
-
 	return executeRequest[any, models.DashboardAccessOut](
 		ctx,
 		authentication.client,
@@ -122,7 +117,6 @@ func (authentication *Authentication) DashboardAccess(
 		headerMap,
 		nil,
 	)
-
 }
 
 // Logout an app token.
@@ -140,7 +134,6 @@ func (authentication *Authentication) Logout(
 			return err
 		}
 	}
-
 	_, err = executeRequest[any, any](
 		ctx,
 		authentication.client,
@@ -152,5 +145,4 @@ func (authentication *Authentication) Logout(
 		nil,
 	)
 	return err
-
 }

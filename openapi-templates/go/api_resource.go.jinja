@@ -19,20 +19,20 @@ type {{ resource_type_name }} struct {
 
 
 {% for op in resource.operations -%}
-    {% if op | has_query_or_header_params -%}
+	{% if op | has_query_or_header_params -%}
 	{% set opt_struct_name %}{{ resource_type_name }}{{ op.name | to_upper_camel_case }}Options{% endset %}
 type {{ opt_struct_name }} struct{
-        {% for p in op.query_params -%}
+		{% for p in op.query_params -%}
 			{% set p_ty = p.type.to_go() -%}
 			{% if p.type.is_schema_ref() -%}
 				{% set p_ty %}models.{{ p.type.to_go() }}{% endset %}
 			{% endif -%}
-            {% if p.description is defined -%}
-    {{ p.description | to_doc_comment(style="go") }}
-            {% endif -%}
+			{% if p.description is defined -%}
+	{{ p.description | to_doc_comment(style="go") }}
+			{% endif -%}
 	{# all types in *Options structs are optional -#}
-    {{ p.name | to_upper_camel_case }} *{{ p_ty }}
-        {% endfor -%}
+	{{ p.name | to_upper_camel_case }} *{{ p_ty }}
+		{% endfor -%}
 		{% for p in op.header_params -%}
 	{{ p.name | to_upper_camel_case }} *string
 		{% endfor -%}
@@ -138,7 +138,6 @@ func ({{ resource_self_name }} *{{ resource_type_name }}) {{ op.name | to_upper_
 	{% else -%}
 		{% set generic_ret_type -%}any,{{ ret_type }}{% endset -%}
 	{% endif -%}
-	{# 	{% if has_return %}ret{% else %}_{% endif %}, err {% if not used_err or has_return %}:={% else %}={% endif %} #}
 	{% if has_return %}return {% else %} _,err {% if not used_err%}:{% endif%}= {% endif %}executeRequest[{{ generic_ret_type }}](
 		ctx,
 		{{ resource_self_name }}.client,
@@ -174,23 +173,9 @@ func ({{ resource_self_name }} *{{ resource_type_name }}) {{ op.name | to_upper_
 	{% if not has_return -%}
 	return err
 	{% endif -%}
-	{# if err != nil {
-		return {% if has_return %}nil,{% endif %} err
-	}
-	{% if has_return -%}
-		return ret, nil
-	{% else -%}
-		return nil
-	{% endif -%} #}
-
-
-
 }
 	{% set extra_path -%}
 		api_extra/{{ resource.name | to_snake_case }}_{{ op.name | to_snake_case }}.go
 	{%- endset -%}
 	{% include extra_path ignore missing %}
-
-
 {% endfor %}
-
