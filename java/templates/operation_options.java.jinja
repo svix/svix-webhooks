@@ -1,0 +1,30 @@
+{% set resource_type_name = resource.name | to_upper_camel_case -%}
+// this file is @generated
+package com.svix.api;
+
+import java.util.Map;
+import java.util.Set;
+import java.util.List;
+import java.util.Optional;
+import java.time.OffsetDateTime;
+import java.net.URI;
+import lombok.NonNull;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+{% for c in referenced_components -%}
+import com.svix.models.{{ c | to_upper_camel_case }};
+{% endfor -%}
+
+@Data
+public class {{ resource_type_name }}{{ operation.name | to_upper_camel_case }}Options{
+        {% for p in operation.query_params -%}
+        {% set p_ty = p.type.to_java() -%}
+        {% if p.description is defined -%}
+        {{ p.description | to_doc_comment(style="java") }}
+        {% endif -%}
+        {{ p_ty }} {{ p.name | to_lower_camel_case }};
+        {% endfor -%}
+        {% for p in operation.header_params -%}
+        String {{ p.name | to_lower_camel_case }};
+        {% endfor -%}
+}

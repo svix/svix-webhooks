@@ -4,7 +4,7 @@ package com.svix.api;
 import com.svix.SvixHttpClient;
 import com.svix.Utils;
 import com.svix.exceptions.ApiException;
-import com.svix.models.ExpungAllContentsOut;
+import com.svix.models.ExpungeAllContentsOut;
 import com.svix.models.ListResponseMessageOut;
 import com.svix.models.MessageIn;
 import com.svix.models.MessageOut;
@@ -22,41 +22,6 @@ public class Message {
 
     public Message(SvixHttpClient client) {
         this.client = client;
-    }
-
-    /**
-     * Creates a MessageIn with a raw string payload.
-     *
-     * <p>The payload is not normalized on the server. Normally, payloads are required to be JSON,
-     * and Svix will minify the payload before sending the webhooks (for example, by removing
-     * extraneous whitespace or unnecessarily escaped characters in strings). With this function,
-     * the payload will be sent "as is", without any minification or other processing.
-     *
-     * @param payload Serialized message payload
-     */
-    public static MessageIn messageInRaw(final String payload) {
-        MessageIn msg = new MessageIn();
-        msg.setPayload(new HashMap<>());
-        msg.setTransformationsParams(Collections.singletonMap("rawPayload", payload));
-        return msg;
-    }
-
-    /**
-     * Creates a MessageIn with a raw string payload.
-     *
-     * <p>This overload is intended for non-JSON payloads.
-     *
-     * @param payload Serialized message payload
-     * @param contentType The value to use for the Content-Type header of the webhook sent by Svix
-     */
-    public static MessageIn messageInRaw(final String payload, final String contentType) {
-        HashMap<String, Object> trParam = new HashMap<>();
-        trParam.put("rawPayload", payload);
-        trParam.put("headers", Collections.singletonMap("content-type", contentType));
-        MessageIn msg = new MessageIn();
-        msg.setPayload(new HashMap<>());
-        msg.setTransformationsParams(trParam);
-        return msg;
     }
 
     /**
@@ -179,7 +144,7 @@ public class Message {
      *
      * <p>Delete all message payloads for the application.
      */
-    public ExpungAllContentsOut expungeAllContents(final String appId)
+    public ExpungeAllContentsOut expungeAllContents(final String appId)
             throws IOException, ApiException {
         return this.expungeAllContents(appId, new MessageExpungeAllContentsOptions());
     }
@@ -189,7 +154,7 @@ public class Message {
      *
      * <p>Delete all message payloads for the application.
      */
-    public ExpungAllContentsOut expungeAllContents(
+    public ExpungeAllContentsOut expungeAllContents(
             final String appId, final MessageExpungeAllContentsOptions options)
             throws IOException, ApiException {
         HttpUrl.Builder url =
@@ -202,7 +167,7 @@ public class Message {
             headers.put("idempotency-key", options.idempotencyKey);
         }
         return this.client.executeRequest(
-                "POST", url.build(), Headers.of(headers), null, ExpungAllContentsOut.class);
+                "POST", url.build(), Headers.of(headers), null, ExpungeAllContentsOut.class);
     }
 
     /** Get a message by its ID or eventID. */
@@ -236,5 +201,40 @@ public class Message {
                         .newUrlBuilder()
                         .encodedPath(String.format("/api/v1/app/%s/msg/%s/content", appId, msgId));
         this.client.executeRequest("DELETE", url.build(), null, null, null);
+    }
+
+    /**
+     * Creates a MessageIn with a raw string payload.
+     *
+     * <p>The payload is not normalized on the server. Normally, payloads are required to be JSON,
+     * and Svix will minify the payload before sending the webhooks (for example, by removing
+     * extraneous whitespace or unnecessarily escaped characters in strings). With this function,
+     * the payload will be sent "as is", without any minification or other processing.
+     *
+     * @param payload Serialized message payload
+     */
+    public static MessageIn messageInRaw(final String payload) {
+        MessageIn msg = new MessageIn();
+        msg.setPayload(new HashMap<>());
+        msg.setTransformationsParams(Collections.singletonMap("rawPayload", payload));
+        return msg;
+    }
+
+    /**
+     * Creates a MessageIn with a raw string payload.
+     *
+     * <p>This overload is intended for non-JSON payloads.
+     *
+     * @param payload Serialized message payload
+     * @param contentType The value to use for the Content-Type header of the webhook sent by Svix
+     */
+    public static MessageIn messageInRaw(final String payload, final String contentType) {
+        HashMap<String, Object> trParam = new HashMap<>();
+        trParam.put("rawPayload", payload);
+        trParam.put("headers", Collections.singletonMap("content-type", contentType));
+        MessageIn msg = new MessageIn();
+        msg.setPayload(new HashMap<>());
+        msg.setTransformationsParams(trParam);
+        return msg;
     }
 }
