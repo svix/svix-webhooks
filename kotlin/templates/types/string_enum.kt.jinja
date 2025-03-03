@@ -16,7 +16,5 @@ enum class  {{ type.name | to_upper_camel_case }} : ToQueryParam {
     @SerialName("{{ value }}")
     {{ value | to_upper_snake_case }} {% if loop.last %};{% else %},{% endif %}
     {% endfor -%}
-
     override fun toQueryParam() = Json.encodeToJsonElement(this).jsonPrimitive.content
-
 }

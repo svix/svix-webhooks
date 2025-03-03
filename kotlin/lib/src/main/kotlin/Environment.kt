@@ -10,7 +10,6 @@ data class EnvironmentExportOptions(val idempotencyKey: String? = null)
 data class EnvironmentImportOptions(val idempotencyKey: String? = null)
 
 class Environment(private val client: SvixHttpClient) {
-
     /** Download a JSON file containing all org-settings and event types. */
     suspend fun export(
         options: EnvironmentExportOptions = EnvironmentExportOptions()

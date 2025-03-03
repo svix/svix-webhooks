@@ -51,7 +51,6 @@ data class EndpointGetStatsOptions(
 )
 
 class Endpoint(private val client: SvixHttpClient) {
-
     /** List the application's endpoints. */
     suspend fun list(
         appId: String,

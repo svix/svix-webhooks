@@ -45,7 +45,6 @@ data class MessageGetOptions(
 )
 
 class Message(private val client: SvixHttpClient) {
-
     /**
      * List all of the application's messages.
      *

@@ -16,7 +16,6 @@ data class AuthenticationDashboardAccessOptions(val idempotencyKey: String? = nu
 data class AuthenticationLogoutOptions(val idempotencyKey: String? = null)
 
 class Authentication(private val client: SvixHttpClient) {
-
     /**
      * Use this function to get magic links (and authentication codes) for connecting your users to
      * the Consumer Application Portal.

@@ -37,7 +37,6 @@ data class EventTypeDeleteOptions(
 )
 
 class EventType(private val client: SvixHttpClient) {
-
     /** Return the list of event types. */
     suspend fun list(
         options: EventTypeListOptions = EventTypeListOptions()

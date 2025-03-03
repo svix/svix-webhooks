@@ -2,6 +2,6 @@
     {% include "types/struct.kt.jinja" -%}
 {%- elif type.kind == "string_enum"-%}
     {% include "types/string_enum.kt.jinja" -%}
-{%- elif type.kind == "integer_enum" %}
-{%- include "types/integer_enum.kt.jinja" -%}
+{%- elif type.kind == "integer_enum" -%}
+    {%- include "types/integer_enum.kt.jinja" -%}
 {%- endif %}

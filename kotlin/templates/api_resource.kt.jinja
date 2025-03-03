@@ -40,8 +40,6 @@ data class {{ resource_type_name }}{{ op.name | to_upper_camel_case }}Options(
 
 
 class {{ resource_type_name }}(private val client: SvixHttpClient) {
-
-
 {% for op in resource.operations -%}
 {% set res_type = op.response_body_schema_name | replace("_", "") -%}
 {% set has_query_params = op.query_params | length > 0 -%}
@@ -124,14 +122,12 @@ suspend fun {{ op.name | to_lower_camel_case }}(
     )
 }
 
-{% set extra_path -%}
-api_extra/{{ resource.name | to_snake_case }}_{{ op.name | to_snake_case }}.kt
-{%- endset -%}
-{% include extra_path ignore missing %}
-{% endfor -%}
-
+    {% set extra_path -%}
+    api_extra/{{ resource.name | to_snake_case }}_{{ op.name | to_snake_case }}.kt
+    {%- endset -%}
+    {% include extra_path ignore missing %}
+    {% endfor -%}
 }
-
 
 {% set resource_extra_path %}api_extra/{{ resource.name | to_snake_case }}.kt{%- endset -%}
 {% include resource_extra_path ignore missing %}

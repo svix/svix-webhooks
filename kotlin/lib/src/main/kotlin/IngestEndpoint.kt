@@ -26,7 +26,6 @@ data class IngestEndpointCreateOptions(val idempotencyKey: String? = null)
 data class IngestEndpointRotateSecretOptions(val idempotencyKey: String? = null)
 
 class IngestEndpoint(private val client: SvixHttpClient) {
-
     /** List ingest endpoints. */
     suspend fun list(
         options: IngestEndpointListOptions = IngestEndpointListOptions()
