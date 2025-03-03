@@ -25,34 +25,9 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    # JS codegen uses biome
-    - name: Setup Biome
-      uses: biomejs/setup-biome@v2
-      with:
-        version: "1.9.4"
-
-    # Rust codegen uses `rustfmt +nightly`
-    - uses: dtolnay/rust-toolchain@nightly
-      with:
-        components: rustfmt
-
-    # Python codegen uses `ruff` for formatting and cleaning up unused imports
-    - run: pipx install ruff
-
-    # cache the openapi-codegen binary installed by regen_openapi.sh
-    - uses: Swatinem/rust-cache@v2
-      with:
-        workspaces: "rust -> target"
-        # only save the cache on the main branch
-        # cf https://github.com/Swatinem/rust-cache/issues/95
-        save-if: ${{ github.ref == 'refs/heads/main' }}
-        # include relevant information in the cache name
-        prefix-key: "codegen-${{ matrix.rust }}"
-
     - name: Regen openapi libs
       run: |
-        yarn
-        ./regen_openapi.sh
+        ./regen_openapi.py
 
     - name: Check for uncommitted changes
       run: |
