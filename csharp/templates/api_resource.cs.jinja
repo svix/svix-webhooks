@@ -1,0 +1,146 @@
+// this file is @generated
+#nullable enable
+using Svix.Models;
+using Microsoft.Extensions.Logging;
+
+{%- set r_name_pascal_case = resource.name | to_upper_camel_case %}
+{%- set r_name_camel_case = resource.name | to_lower_camel_case %}
+{%- set api_name %}{{ r_name_pascal_case }}Api{% endset %}
+
+
+namespace Svix
+{
+{# <Resource><Operation>Options #}
+{%- for op in resource.operations -%}
+    {%- if op | has_query_or_header_params %}
+    public class {{ r_name_pascal_case }}{{ op.name | to_upper_camel_case }}Options : SvixOptionsBase
+    {
+        {%- for p in op.query_params %}
+            {%- set field_ty = p.type.to_csharp() -%}
+            {%- if not p.required %}{% set field_ty %}{{ field_ty }}?{% endset %}{% endif %}
+        public {{ field_ty }} {{ p.name | to_upper_camel_case }} { get; set; }
+        {%- endfor %}
+
+        {%- for p in op.header_params %}
+            {%- set field_ty = "string" -%}
+            {%- if not p.required %}{% set field_ty %}{{ field_ty }}?{% endset %}{% endif %}
+        public {{ field_ty }} {{ p.name | to_upper_camel_case }} { get; set; }
+        {%- endfor %}
+        {%- if op.query_params | length > 0 %}
+    public new Dictionary<string, string> QueryParams() {
+            return SerializeParams(new Dictionary<string, object?> {
+            {%- for p in op.query_params %}
+                { "{{ p.name }}", {{ p.name | to_upper_camel_case }} },
+            {% endfor %}
+            });
+       }
+        {%- endif %}
+        {%- if op.header_params | length > 0 %}
+    public new Dictionary<string, string> HeaderParams() {
+            return SerializeParams(new Dictionary<string, object?> {
+            {%- for p in op.header_params %}
+                { "{{ p.name }}", {{ p.name | to_upper_camel_case }} },
+            {% endfor %}
+            });
+        }
+        {%- endif %}
+    }
+    {%- endif %}
+{% endfor %}
+
+    {# high-level API #}
+    public class {{ r_name_pascal_case }}(SvixClient client)
+    {
+        readonly SvixClient _client = client;
+
+    {%- set api_resource_extra -%}api_extra/{{ resource.name | to_snake_case }}.cs{% endset %}
+    {%- include api_resource_extra ignore missing %}
+{%- for op in resource.operations %}
+    {%- set req_body_varname = op.request_body_schema_name | to_lower_camel_case %}
+    {% for async in [true, false] %}
+        {%- if op.description is defined %}
+        /// <summary>
+        {{ op.description | to_doc_comment(style="csharp") }}
+        /// </summary>
+        {%- endif %}
+        {%- set ret_ty = "bool" %}
+        {%- if op.response_body_schema_name is defined %}
+            {%- set ret_ty = op.response_body_schema_name | to_upper_camel_case %}
+        {%- endif %}
+        {%- if async %}
+            {%- set ret_ty_sig  %}Task<{{ ret_ty }}>{% endset %}
+        {%- else %}
+            {%- set ret_ty_sig = ret_ty %}
+        {%- endif %}
+        {%- if op.deprecated %}
+        [Obsolete]
+        {%- endif %}
+        public {% if async %}async{% endif %} {{ ret_ty_sig }} {{ op.name | to_upper_camel_case }}{% if async %}Async{% endif %} (
+        {%- set args_str %}
+
+        {# path params #}
+        {%- for p in op.path_params -%}
+            string {{ p | to_lower_camel_case }},
+        {%- endfor %}
+
+        {# request body #}
+        {%- if op.request_body_schema_name is defined %}
+            {{ op.request_body_schema_name | to_upper_camel_case }} {{ req_body_varname }},
+        {%- endif %}
+
+        {# query params/headers class #}
+        {%- if op | has_query_or_header_params %}
+            {{ r_name_pascal_case }}{{ op.name | to_upper_camel_case }}Options? options = null,
+        {%- endif %}
+
+        {# async cancellation token, needed for some reason #}
+        {%- if async %}
+            CancellationToken cancellationToken = default
+        {%- endif %}
+        {%- endset %}
+        {{ args_str | strip_trailing_comma }} )
+        {
+
+        {%- if op.request_body_schema_name is defined %}
+            {{ req_body_varname }} = {{ req_body_varname }} ?? throw new ArgumentNullException(nameof({{ req_body_varname }}));
+        {%- endif %}
+            try {
+                var response = {% if async %}await{% endif %} _client.SvixHttpClient.SendRequest{% if async %}Async{% endif %}<{{ ret_ty }}>(
+                    method: HttpMethod.{{ op.method | to_upper_camel_case }},
+                    path: "{{ op.path }}"
+        {%- if op.path_params | length > 0 %}
+                    ,pathParams: new Dictionary<string, string>{
+            {%- for p in op.path_params %}
+                    { "{{ p }}", {{ p | to_lower_camel_case }} },
+            {%- endfor %}
+                    }
+        {%- endif %}
+        {%- if op | has_query_or_header_params %}
+                    ,queryParams: options?.QueryParams()
+                    ,headerParams: options?.HeaderParams()
+        {%- endif %}
+        {%- if op.request_body_schema_name is defined %}
+                    ,content: {{ req_body_varname }}
+        {%- endif %}
+        {%- if async %}
+                    ,cancellationToken: cancellationToken
+        {%- endif %}
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof({{ op.name | to_upper_camel_case }}{% if async %}Async{% endif %})} failed");
+
+                throw;
+            }
+
+        }
+    {%- endfor %}
+    {%- set api_operation_extra %}api_extra/{{ resource.name | to_snake_case }}_{{ op.name | to_snake_case }}.cs{% endset %}
+    {%- include api_operation_extra ignore missing %}
+{% endfor %}
+
+    }
+
+}

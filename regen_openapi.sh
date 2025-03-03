@@ -38,6 +38,23 @@ if [[ -z "$CI" ]]; then
     rm go/{environment,health,ingest_endpoint}.go
 fi
 
+# === C# ===
+if [[ -z "$CI" ]]; then
+    set -x
+
+    openapi-codegen generate \
+        --template csharp/templates/api_resource.cs.jinja \
+        --input-file lib-openapi.json \
+        --output-dir csharp/Svix
+    openapi-codegen generate \
+        --template csharp/templates/component_type.cs.jinja \
+        --input-file lib-openapi.json \
+        --output-dir csharp/Svix/Models
+
+    # Remove APIs we may not (yet) want to expose
+    rm csharp/Svix/IngestEndpoint.cs
+fi
+
 
 # === Ruby ===
 if [[ -z "$CI" ]]; then
