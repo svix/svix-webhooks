@@ -69,7 +69,6 @@ public class {{ resource_type_name }} {
             {% for p in op.path_params -%}
                 {{ p | to_lower_camel_case }},
             {% endfor -%}
-
             {# body parameter interface -#}
             {% if op.request_body_schema_name is defined -%}
                 {{ req_body_field_name }},
