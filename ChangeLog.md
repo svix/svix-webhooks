@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 1.61.1
+* Libs/Java and Libs/Kotlin **(Breaking)**: Due to an internal change in the underlining JSON de/serialization library, some JSON objects may not be serialized correctly. To address this `MessageIn.payload` now accepts a JSON encoded string instead of an `Object` (for Java) or `Map<String, Any>` (for Kotlin)
+
 ## Version 1.61.0
 * Libs/Ruby **(Breaking)**: Ruby version changed from `2.7` to `3.4.2`
 * Libs/Ruby **(Breaking)**: Deprecated methods `MessageAttempt.list` and `MessageAttempt.list_attempts_for_endpoint` are removed
