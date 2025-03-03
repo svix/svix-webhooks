@@ -1,9 +1,16 @@
 {% set resource_type_name = resource.name | to_upper_camel_case -%}
 
 use crate::{
+{%- if resource.operations | length > 0 %}
     error::Result,
     models::*,
+{%- endif %}
     Configuration,
+};
+use super::{
+    {% for _, sub in resource.subresources | items -%}
+        {{ sub.name | to_upper_camel_case }} ,
+    {%- endfor %}
 };
 
 {% for op in resource.operations -%}
@@ -50,6 +57,14 @@ impl<'a> {{ resource_type_name }}<'a> {
     pub(super) fn new(cfg: &'a Configuration) -> Self {
         Self { cfg }
     }
+
+    {% for name, sub in resource.subresources | items -%}
+    {% set sub_type_name = sub.name | to_upper_camel_case -%}
+    pub fn {{ name | to_snake_case }}(&self) -> {{ sub_type_name }}<'a> {
+        {{ sub_type_name }}::new(self.cfg)
+    }
+
+    {% endfor -%}
 
     {% for op in resource.operations %}
     {% set has_params = op | has_query_or_header_params -%}
