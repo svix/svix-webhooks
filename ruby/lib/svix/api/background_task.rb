@@ -11,10 +11,9 @@ module Svix
 
     def list(options = {})
       options = options.transform_keys(&:to_s)
-      path = "/api/v1/background-task"
       res = @client.execute_request(
         "GET",
-        path,
+        "/api/v1/background-task",
         query_params: {
           "status" => options["status"],
           "task" => options["task"],
@@ -27,10 +26,9 @@ module Svix
     end
 
     def get(task_id)
-      path = "/api/v1/background-task/#{task_id}"
       res = @client.execute_request(
         "GET",
-        path
+        "/api/v1/background-task/#{task_id}"
       )
       BackgroundTaskOut.deserialize(res)
     end

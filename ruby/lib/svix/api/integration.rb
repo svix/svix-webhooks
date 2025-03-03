@@ -11,10 +11,9 @@ module Svix
 
     def list(app_id, options = {})
       options = options.transform_keys(&:to_s)
-      path = "/api/v1/app/#{app_id}/integration"
       res = @client.execute_request(
         "GET",
-        path,
+        "/api/v1/app/#{app_id}/integration",
         query_params: {
           "limit" => options["limit"],
           "iterator" => options["iterator"],
@@ -26,10 +25,9 @@ module Svix
 
     def create(app_id, integration_in, options = {})
       options = options.transform_keys(&:to_s)
-      path = "/api/v1/app/#{app_id}/integration"
       res = @client.execute_request(
         "POST",
-        path,
+        "/api/v1/app/#{app_id}/integration",
         headers: {
           "idempotency-key" => options["idempotency-key"]
         },
@@ -39,47 +37,42 @@ module Svix
     end
 
     def get(app_id, integ_id)
-      path = "/api/v1/app/#{app_id}/integration/#{integ_id}"
       res = @client.execute_request(
         "GET",
-        path
+        "/api/v1/app/#{app_id}/integration/#{integ_id}"
       )
       IntegrationOut.deserialize(res)
     end
 
     def update(app_id, integ_id, integration_update)
-      path = "/api/v1/app/#{app_id}/integration/#{integ_id}"
       res = @client.execute_request(
         "PUT",
-        path,
+        "/api/v1/app/#{app_id}/integration/#{integ_id}",
         body: integration_update
       )
       IntegrationOut.deserialize(res)
     end
 
     def delete(app_id, integ_id)
-      path = "/api/v1/app/#{app_id}/integration/#{integ_id}"
       @client.execute_request(
         "DELETE",
-        path
+        "/api/v1/app/#{app_id}/integration/#{integ_id}"
       )
     end
 
     def get_key(app_id, integ_id)
-      path = "/api/v1/app/#{app_id}/integration/#{integ_id}/key"
       res = @client.execute_request(
         "GET",
-        path
+        "/api/v1/app/#{app_id}/integration/#{integ_id}/key"
       )
       IntegrationKeyOut.deserialize(res)
     end
 
     def rotate_key(app_id, integ_id, options = {})
       options = options.transform_keys(&:to_s)
-      path = "/api/v1/app/#{app_id}/integration/#{integ_id}/key/rotate"
       res = @client.execute_request(
         "POST",
-        path,
+        "/api/v1/app/#{app_id}/integration/#{integ_id}/key/rotate",
         headers: {
           "idempotency-key" => options["idempotency-key"]
         }

@@ -11,10 +11,9 @@ module Svix
 
     def list(options = {})
       options = options.transform_keys(&:to_s)
-      path = "/api/v1/app"
       res = @client.execute_request(
         "GET",
-        path,
+        "/api/v1/app",
         query_params: {
           "limit" => options["limit"],
           "iterator" => options["iterator"],
@@ -26,10 +25,9 @@ module Svix
 
     def create(application_in, options = {})
       options = options.transform_keys(&:to_s)
-      path = "/api/v1/app"
       res = @client.execute_request(
         "POST",
-        path,
+        "/api/v1/app",
         headers: {
           "idempotency-key" => options["idempotency-key"]
         },
@@ -56,37 +54,33 @@ module Svix
     end
 
     def get(app_id)
-      path = "/api/v1/app/#{app_id}"
       res = @client.execute_request(
         "GET",
-        path
+        "/api/v1/app/#{app_id}"
       )
       ApplicationOut.deserialize(res)
     end
 
     def update(app_id, application_in)
-      path = "/api/v1/app/#{app_id}"
       res = @client.execute_request(
         "PUT",
-        path,
+        "/api/v1/app/#{app_id}",
         body: application_in
       )
       ApplicationOut.deserialize(res)
     end
 
     def delete(app_id)
-      path = "/api/v1/app/#{app_id}"
       @client.execute_request(
         "DELETE",
-        path
+        "/api/v1/app/#{app_id}"
       )
     end
 
     def patch(app_id, application_patch)
-      path = "/api/v1/app/#{app_id}"
       res = @client.execute_request(
         "PATCH",
-        path,
+        "/api/v1/app/#{app_id}",
         body: application_patch
       )
       ApplicationOut.deserialize(res)

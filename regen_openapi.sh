@@ -21,6 +21,24 @@ fi
 # Print commands we run from here on
 set -x
 
+
+# === Ruby ===
+if [[ -z "$CI" ]]; then
+    openapi-codegen generate \
+        --template ruby/templates/api_resource.rb.jinja \
+        --input-file lib-openapi.json \
+        --output-dir ruby/lib/svix/api
+    openapi-codegen generate \
+        --template ruby/templates/summary.rb.jinja \
+        --input-file lib-openapi.json \
+        --output-dir ruby/lib
+    openapi-codegen generate \
+        --template ruby/templates/component_type.rb.jinja \
+        --input-file lib-openapi.json \
+        --output-dir ruby/lib/svix/models
+fi
+
+
 # === JavaScript ===
 openapi-codegen generate \
     --template javascript/templates/api_resource.ts.jinja \

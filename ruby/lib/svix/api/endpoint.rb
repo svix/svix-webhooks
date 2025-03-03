@@ -11,10 +11,9 @@ module Svix
 
     def list(app_id, options = {})
       options = options.transform_keys(&:to_s)
-      path = "/api/v1/app/#{app_id}/endpoint"
       res = @client.execute_request(
         "GET",
-        path,
+        "/api/v1/app/#{app_id}/endpoint",
         query_params: {
           "limit" => options["limit"],
           "iterator" => options["iterator"],
@@ -26,10 +25,9 @@ module Svix
 
     def create(app_id, endpoint_in, options = {})
       options = options.transform_keys(&:to_s)
-      path = "/api/v1/app/#{app_id}/endpoint"
       res = @client.execute_request(
         "POST",
-        path,
+        "/api/v1/app/#{app_id}/endpoint",
         headers: {
           "idempotency-key" => options["idempotency-key"]
         },
@@ -39,75 +37,67 @@ module Svix
     end
 
     def get(app_id, endpoint_id)
-      path = "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}"
       res = @client.execute_request(
         "GET",
-        path
+        "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}"
       )
       EndpointOut.deserialize(res)
     end
 
     def update(app_id, endpoint_id, endpoint_update)
-      path = "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}"
       res = @client.execute_request(
         "PUT",
-        path,
+        "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}",
         body: endpoint_update
       )
       EndpointOut.deserialize(res)
     end
 
     def delete(app_id, endpoint_id)
-      path = "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}"
       @client.execute_request(
         "DELETE",
-        path
+        "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}"
       )
     end
 
     def patch(app_id, endpoint_id, endpoint_patch)
-      path = "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}"
       res = @client.execute_request(
         "PATCH",
-        path,
+        "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}",
         body: endpoint_patch
       )
       EndpointOut.deserialize(res)
     end
 
     def get_headers(app_id, endpoint_id)
-      path = "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/headers"
       res = @client.execute_request(
         "GET",
-        path
+        "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/headers"
       )
       EndpointHeadersOut.deserialize(res)
     end
 
     def update_headers(app_id, endpoint_id, endpoint_headers_in)
-      path = "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/headers"
       @client.execute_request(
         "PUT",
-        path,
+        "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/headers",
         body: endpoint_headers_in
       )
     end
 
     def patch_headers(app_id, endpoint_id, endpoint_headers_patch_in)
-      path = "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/headers"
       @client.execute_request(
         "PATCH",
-        path,
+        "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/headers",
         body: endpoint_headers_patch_in
       )
     end
 
     def recover(app_id, endpoint_id, recover_in, options = {})
       options = options.transform_keys(&:to_s)
-      path = "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/recover"
       res = @client.execute_request(
         "POST",
-        path,
+        "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/recover",
         headers: {
           "idempotency-key" => options["idempotency-key"]
         },
@@ -118,10 +108,9 @@ module Svix
 
     def replay_missing(app_id, endpoint_id, replay_in, options = {})
       options = options.transform_keys(&:to_s)
-      path = "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/replay-missing"
       res = @client.execute_request(
         "POST",
-        path,
+        "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/replay-missing",
         headers: {
           "idempotency-key" => options["idempotency-key"]
         },
@@ -131,20 +120,18 @@ module Svix
     end
 
     def get_secret(app_id, endpoint_id)
-      path = "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/secret"
       res = @client.execute_request(
         "GET",
-        path
+        "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/secret"
       )
       EndpointSecretOut.deserialize(res)
     end
 
     def rotate_secret(app_id, endpoint_id, endpoint_secret_rotate_in, options = {})
       options = options.transform_keys(&:to_s)
-      path = "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/secret/rotate"
       @client.execute_request(
         "POST",
-        path,
+        "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/secret/rotate",
         headers: {
           "idempotency-key" => options["idempotency-key"]
         },
@@ -154,10 +141,9 @@ module Svix
 
     def send_example(app_id, endpoint_id, event_example_in, options = {})
       options = options.transform_keys(&:to_s)
-      path = "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/send-example"
       res = @client.execute_request(
         "POST",
-        path,
+        "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/send-example",
         headers: {
           "idempotency-key" => options["idempotency-key"]
         },
@@ -168,10 +154,9 @@ module Svix
 
     def get_stats(app_id, endpoint_id, options = {})
       options = options.transform_keys(&:to_s)
-      path = "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/stats"
       res = @client.execute_request(
         "GET",
-        path,
+        "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/stats",
         query_params: {
           "since" => options["since"],
           "until" => options["until"]
@@ -181,19 +166,17 @@ module Svix
     end
 
     def transformation_get(app_id, endpoint_id)
-      path = "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/transformation"
       res = @client.execute_request(
         "GET",
-        path
+        "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/transformation"
       )
       EndpointTransformationOut.deserialize(res)
     end
 
     def transformation_partial_update(app_id, endpoint_id, endpoint_transformation_in)
-      path = "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/transformation"
       @client.execute_request(
         "PATCH",
-        path,
+        "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/transformation",
         body: endpoint_transformation_in
       )
     end

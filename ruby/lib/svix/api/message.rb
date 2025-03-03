@@ -39,10 +39,9 @@ module Svix
 
     def list(app_id, options = {})
       options = options.transform_keys(&:to_s)
-      path = "/api/v1/app/#{app_id}/msg"
       res = @client.execute_request(
         "GET",
-        path,
+        "/api/v1/app/#{app_id}/msg",
         query_params: {
           "limit" => options["limit"],
           "iterator" => options["iterator"],
@@ -59,10 +58,9 @@ module Svix
 
     def create(app_id, message_in, options = {})
       options = options.transform_keys(&:to_s)
-      path = "/api/v1/app/#{app_id}/msg"
       res = @client.execute_request(
         "POST",
-        path,
+        "/api/v1/app/#{app_id}/msg",
         query_params: {
           "with_content" => options["with_content"]
         },
@@ -76,23 +74,21 @@ module Svix
 
     def expunge_all_contents(app_id, options = {})
       options = options.transform_keys(&:to_s)
-      path = "/api/v1/app/#{app_id}/msg/expunge-all-contents"
       res = @client.execute_request(
         "POST",
-        path,
+        "/api/v1/app/#{app_id}/msg/expunge-all-contents",
         headers: {
           "idempotency-key" => options["idempotency-key"]
         }
       )
-      ExpungAllContentsOut.deserialize(res)
+      ExpungeAllContentsOut.deserialize(res)
     end
 
     def get(app_id, msg_id, options = {})
       options = options.transform_keys(&:to_s)
-      path = "/api/v1/app/#{app_id}/msg/#{msg_id}"
       res = @client.execute_request(
         "GET",
-        path,
+        "/api/v1/app/#{app_id}/msg/#{msg_id}",
         query_params: {
           "with_content" => options["with_content"]
         }
@@ -101,10 +97,9 @@ module Svix
     end
 
     def expunge_content(app_id, msg_id)
-      path = "/api/v1/app/#{app_id}/msg/#{msg_id}/content"
       @client.execute_request(
         "DELETE",
-        path
+        "/api/v1/app/#{app_id}/msg/#{msg_id}/content"
       )
     end
 

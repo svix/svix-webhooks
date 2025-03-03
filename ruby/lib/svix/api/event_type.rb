@@ -11,10 +11,9 @@ module Svix
 
     def list(options = {})
       options = options.transform_keys(&:to_s)
-      path = "/api/v1/event-type"
       res = @client.execute_request(
         "GET",
-        path,
+        "/api/v1/event-type",
         query_params: {
           "limit" => options["limit"],
           "iterator" => options["iterator"],
@@ -28,10 +27,9 @@ module Svix
 
     def create(event_type_in, options = {})
       options = options.transform_keys(&:to_s)
-      path = "/api/v1/event-type"
       res = @client.execute_request(
         "POST",
-        path,
+        "/api/v1/event-type",
         headers: {
           "idempotency-key" => options["idempotency-key"]
         },
@@ -42,10 +40,9 @@ module Svix
 
     def import_openapi(event_type_import_open_api_in, options = {})
       options = options.transform_keys(&:to_s)
-      path = "/api/v1/event-type/import/openapi"
       res = @client.execute_request(
         "POST",
-        path,
+        "/api/v1/event-type/import/openapi",
         headers: {
           "idempotency-key" => options["idempotency-key"]
         },
@@ -55,19 +52,17 @@ module Svix
     end
 
     def get(event_type_name)
-      path = "/api/v1/event-type/#{event_type_name}"
       res = @client.execute_request(
         "GET",
-        path
+        "/api/v1/event-type/#{event_type_name}"
       )
       EventTypeOut.deserialize(res)
     end
 
     def update(event_type_name, event_type_update)
-      path = "/api/v1/event-type/#{event_type_name}"
       res = @client.execute_request(
         "PUT",
-        path,
+        "/api/v1/event-type/#{event_type_name}",
         body: event_type_update
       )
       EventTypeOut.deserialize(res)
@@ -75,10 +70,9 @@ module Svix
 
     def delete(event_type_name, options = {})
       options = options.transform_keys(&:to_s)
-      path = "/api/v1/event-type/#{event_type_name}"
       @client.execute_request(
         "DELETE",
-        path,
+        "/api/v1/event-type/#{event_type_name}",
         query_params: {
           "expunge" => options["expunge"]
         }
@@ -86,10 +80,9 @@ module Svix
     end
 
     def patch(event_type_name, event_type_patch)
-      path = "/api/v1/event-type/#{event_type_name}"
       res = @client.execute_request(
         "PATCH",
-        path,
+        "/api/v1/event-type/#{event_type_name}",
         body: event_type_patch
       )
       EventTypeOut.deserialize(res)
