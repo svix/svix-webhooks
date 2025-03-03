@@ -33,7 +33,7 @@ fun messageInRaw(
 
     return MessageIn(
         eventType = eventType,
-        payload = JsonObject(mapOf()),
+        payload = "",
         application = application,
         channels = channels,
         eventId = eventId,

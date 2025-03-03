@@ -6,17 +6,11 @@ import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.*
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 import com.svix.kotlin.exceptions.ApiException
-import com.svix.kotlin.models.AppUsageStatsIn
-import com.svix.kotlin.models.EndpointPatch
-import com.svix.kotlin.models.EventTypeIn
-import com.svix.kotlin.models.EventTypePatch
-import com.svix.kotlin.models.MessageIn
-import com.svix.kotlin.models.Ordering
+import com.svix.kotlin.models.*
 import kotlin.test.assertEquals
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Instant
 import org.junit.jupiter.api.*
-import kotlin.test.assertEquals
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class WiremockTests {
@@ -262,11 +256,16 @@ class WiremockTests {
                 .willReturn(WireMock.ok().withBodyFile("MessageOut.json"))
         )
         runBlocking {
-            svx.message.create(
-                "ap",
-                MessageIn(eventType = "event.test", payload = mapOf("key" to "val")),
-                MessageCreateOptions(idempotencyKey = "key123"),
-            )
+            val payload =
+                svx.message.create(
+                    "ap",
+                    MessageIn(
+                        eventType = "event.test",
+                        payload =
+                            kotlinx.serialization.json.Json.encodeToString(mapOf("key" to "val")),
+                    ),
+                    MessageCreateOptions(idempotencyKey = "key123"),
+                )
         }
         wireMockServer.verify(
             1,
@@ -395,8 +394,55 @@ class WiremockTests {
 
         wireMockServer.verify(
             1,
-            getRequestedFor(urlEqualTo("/api/v1/app/app1/msg?tag=test%23test"))
+            getRequestedFor(urlEqualTo("/api/v1/app/app1/msg?tag=test%23test")),
         )
     }
 
+    @Test
+    fun headersInTransformationParamsNotOverwritten() {
+        val svx = testClient()
+        wireMockServer.stubFor(
+            post(urlEqualTo("/api/v1/app/app1/msg"))
+                .willReturn(ok().withBodyFile("MessageOut.json"))
+        )
+
+        val jsonPayload = "{\"key\":\"val\",\"key1\":[\"list\"]}"
+        val msg =
+            MessageIn(
+                payload = jsonPayload,
+                eventType = "event.type",
+                transformationsParams = mapOf("headers" to mapOf("header-key" to "header-val")),
+            )
+        runBlocking { svx.message.create("app1", msg) }
+
+        val expectedBody =
+            """{"eventType":"event.type","payload":"","transformationsParams":{"headers":{"header-key":"header-val"},"rawPayload":"{\"key\":\"val\",\"key1\":[\"list\"]}"}}"""
+        wireMockServer.verify(
+            1,
+            postRequestedFor(urlEqualTo("/api/v1/app/app1/msg"))
+                .withRequestBody(equalTo(expectedBody)),
+        )
+    }
+
+    @Test
+    fun jsonEncodedMessageIn() {
+        val svx = testClient()
+        wireMockServer.stubFor(
+            post(urlEqualTo("/api/v1/app/app1/msg"))
+                .willReturn(ok().withBodyFile("MessageOut.json"))
+        )
+
+        val jsonPayload = "{\"key\":\"val\",\"key1\":[\"list\"]}"
+        val msg = MessageIn(payload = jsonPayload, eventType = "event.type")
+        runBlocking { svx.message.create("app1", msg) }
+
+        val expectedBody =
+            """{"eventType":"event.type","payload":"","transformationsParams":{"rawPayload":"{\"key\":\"val\",\"key1\":[\"list\"]}"}}"""
+
+        wireMockServer.verify(
+            1,
+            postRequestedFor(urlEqualTo("/api/v1/app/app1/msg"))
+                .withRequestBody(equalTo(expectedBody)),
+        )
+    }
 }

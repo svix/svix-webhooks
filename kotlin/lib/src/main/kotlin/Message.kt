@@ -99,7 +99,18 @@ class Message(private val client: SvixHttpClient) {
         options.withContent?.let { url.addQueryParameter("with_content", serializeQueryParam(it)) }
         val headers = Headers.Builder()
         options.idempotencyKey?.let { headers.add("idempotency-key", it) }
-
+        if (messageIn.transformationsParams != null) {
+            // only set rawPayload if not already set
+            if (messageIn.transformationsParams!!["rawPayload"] == null) {
+                var trParams = (messageIn.transformationsParams as Map<String, Any>).toMutableMap()
+                trParams["rawPayload"] = messageIn.payload
+                messageIn.transformationsParams = trParams.toMap()
+            }
+        } else {
+            val trParams = mapOf("rawPayload" to messageIn.payload)
+            messageIn.transformationsParams = trParams
+        }
+        messageIn.payload = ""
         return client.executeRequest<MessageIn, MessageOut>(
             "POST",
             url.build(),
@@ -185,7 +196,7 @@ fun messageInRaw(
 
     return MessageIn(
         eventType = eventType,
-        payload = JsonObject(mapOf()),
+        payload = "",
         application = application,
         channels = channels,
         eventId = eventId,
