@@ -15,6 +15,7 @@ mod ingest_endpoint;
 mod integration;
 mod message;
 mod message_attempt;
+mod operational_webhook;
 mod operational_webhook_endpoint;
 mod statistics;
 
@@ -53,6 +54,7 @@ pub use self::{
         MessageAttemptListAttemptedMessagesOptions, MessageAttemptListByEndpointOptions,
         MessageAttemptListByMsgOptions, MessageAttemptResendOptions,
     },
+    operational_webhook::OperationalWebhook,
     operational_webhook_endpoint::{
         OperationalWebhookEndpoint, OperationalWebhookEndpointCreateOptions,
         OperationalWebhookEndpointListOptions,
@@ -104,6 +106,10 @@ impl Svix {
 
     pub fn message_attempt(&self) -> MessageAttempt<'_> {
         MessageAttempt::new(&self.cfg)
+    }
+
+    pub fn operational_webhook(&self) -> OperationalWebhook<'_> {
+        OperationalWebhook::new(&self.cfg)
     }
 
     pub fn operational_webhook_endpoint(&self) -> OperationalWebhookEndpoint<'_> {
