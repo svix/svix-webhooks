@@ -6,11 +6,6 @@ using Microsoft.Extensions.Logging;
 {%- set r_name_pascal_case = resource.name | to_upper_camel_case %}
 {%- set r_name_camel_case = resource.name | to_lower_camel_case %}
 {%- set api_name %}{{ r_name_pascal_case }}Api{% endset %}
-{%- if resource.name == "background-task" %}
-    {#- FIXME: Why do I have to do this for csharp :( #}
-    {%- set api_name = "BackgroundTasksApi" %}
-{%- endif %}
-
 
 
 namespace Svix
