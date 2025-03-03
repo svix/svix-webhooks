@@ -49,6 +49,7 @@ if [[ -z "$CI" ]]; then
         --input-file lib-openapi.json \
         --output-dir go/models
     rm go/{environment,health,ingest_endpoint}.go
+fi
 
 # === Java ===
 if [[ -z "$CI" ]]; then
