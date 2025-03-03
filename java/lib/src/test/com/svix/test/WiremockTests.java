@@ -5,6 +5,7 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 
 import static org.junit.Assert.*;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.github.tomakehurst.wiremock.stubbing.ServeEvent;
@@ -24,6 +25,7 @@ import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 public class WiremockTests {
     @Rule
@@ -387,16 +389,24 @@ public class WiremockTests {
         map.put("key", "val");
         map.put("key1", "val");
         map.put("key2", "val");
-        msg.setPayload(map);
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(map);
+        msg.setPayload(json);
 
         svx.getMessage().create("app1", msg);
+
+        // file in java/lib/src/test/resources/__files/ExpectedMsgCreateBody.json
+        String expectedBody =
+                wireMockRule
+                        .getOptions()
+                        .filesRoot()
+                        .getTextFileNamed("__files/ExpectedMsgCreateBody.json")
+                        .readContentsAsString();
 
         wireMockRule.verify(
                 1,
                 postRequestedFor(urlEqualTo("/api/v1/app/app1/msg"))
-                        .withRequestBody(
-                                equalTo(
-                                        "{\"payload\":{\"key1\":\"val\",\"key2\":\"val\",\"key\":\"val\"}}")));
+                        .withRequestBody(equalTo(expectedBody)));
     }
 
     @Test
@@ -428,7 +438,7 @@ public class WiremockTests {
         svx.getMessage().create("app1", msg);
 
         String expectedBody =
-                "{\"eventType\":\"event.ended\",\"payload\":{},\"transformationsParams\":{\"rawPayload\":\"<xml>{no"
+                "{\"eventType\":\"event.ended\",\"payload\":\"\",\"transformationsParams\":{\"rawPayload\":\"<xml>{no"
                     + " json here}\"}}";
         wireMockRule.verify(
                 1,
@@ -447,9 +457,54 @@ public class WiremockTests {
         opts.setTag("test#test");
         svx.getMessage().list("app1", opts);
 
+        wireMockRule.verify(1, getRequestedFor(urlEqualTo("/api/v1/app/app1/msg?tag=test%23test")));
+    }
+
+    @Test
+    public void headersInTransformationParamsNotOverwritten() throws Exception {
+        Svix svx = testClient();
+        wireMockRule.stubFor(
+                WireMock.post(urlEqualTo("/api/v1/app/app1/msg"))
+                        .willReturn(WireMock.ok().withBodyFile("MessageOut.json")));
+
+        String jsonPayload = "{\"key\":\"val\",\"key1\":[\"list\"]}";
+        MessageIn msg = new MessageIn().payload(jsonPayload).eventType("event.type").transformationsParams(Map.of("headers",Map.of( "header-key","header-val")));
+        svx.getMessage().create("app1", msg);
+
+        // file in java/lib/src/test/resources/__files/ExpectedMsgCreateBodyWithHeaders.json
+        String expectedBody =
+                wireMockRule
+                        .getOptions()
+                        .filesRoot()
+                        .getTextFileNamed("__files/ExpectedMsgCreateBodyWithHeaders.json")
+                        .readContentsAsString();
         wireMockRule.verify(
                 1,
-                getRequestedFor(urlEqualTo("/api/v1/app/app1/msg?tag=test%23test")));
+                postRequestedFor(urlEqualTo("/api/v1/app/app1/msg"))
+                        .withRequestBody(equalTo(expectedBody)));
+    }
+    @Test
+    public void jsonEncodedMessageIn() throws Exception {
+        Svix svx = testClient();
+        wireMockRule.stubFor(
+                WireMock.post(urlEqualTo("/api/v1/app/app1/msg"))
+                        .willReturn(WireMock.ok().withBodyFile("MessageOut.json")));
+
+        String jsonPayload = "{\"key\":\"val\",\"key1\":[\"list\"]}";
+        MessageIn msg = new MessageIn().payload(jsonPayload).eventType("event.type");
+        svx.getMessage().create("app1", msg);
+
+        // file in java/lib/src/test/resources/__files/ExpectedMsgCreateBody2.json
+        String expectedBody =
+                wireMockRule
+                        .getOptions()
+                        .filesRoot()
+                        .getTextFileNamed("__files/ExpectedMsgCreateBody2.json")
+                        .readContentsAsString();
+        wireMockRule.verify(
+                1,
+                postRequestedFor(urlEqualTo("/api/v1/app/app1/msg"))
+                        .withRequestBody(equalTo(expectedBody)));
     }
 
 }

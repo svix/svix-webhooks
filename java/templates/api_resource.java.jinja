@@ -126,6 +126,10 @@ public class {{ resource_type_name }} {
             {% endfor -%}
         {% endif -%}
 
+        {% if op.id == "v1.message.create" -%}
+            {% include "api_extra/message_create_body.java" -%}
+        {% endif -%}
+
         {% if res_type != "void" %}return{% endif %}  this.client.executeRequest(
             "{{ op.method | upper }}",
             url.build(),

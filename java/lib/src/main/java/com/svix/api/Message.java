@@ -135,6 +135,20 @@ public class Message {
         if (options.idempotencyKey != null) {
             headers.put("idempotency-key", options.idempotencyKey);
         }
+        if (messageIn.getTransformationsParams() != null) {
+            if (messageIn.getTransformationsParams().get("rawPayload") == null) {
+                // transformationsParams may be immutable
+                HashMap<String, Object> trParams =
+                        new HashMap<>(messageIn.getTransformationsParams());
+                trParams.put("rawPayload", messageIn.getPayload());
+                messageIn.setTransformationsParams(trParams);
+            }
+        } else {
+            HashMap<String, Object> trParam = new HashMap<>();
+            trParam.put("rawPayload", messageIn.getPayload());
+            messageIn.setTransformationsParams(trParam);
+        }
+        messageIn.setPayload("");
         return this.client.executeRequest(
                 "POST", url.build(), Headers.of(headers), messageIn, MessageOut.class);
     }
@@ -215,7 +229,7 @@ public class Message {
      */
     public static MessageIn messageInRaw(final String payload) {
         MessageIn msg = new MessageIn();
-        msg.setPayload(new HashMap<>());
+        msg.setPayload("");
         msg.setTransformationsParams(Collections.singletonMap("rawPayload", payload));
         return msg;
     }
@@ -233,7 +247,7 @@ public class Message {
         trParam.put("rawPayload", payload);
         trParam.put("headers", Collections.singletonMap("content-type", contentType));
         MessageIn msg = new MessageIn();
-        msg.setPayload(new HashMap<>());
+        msg.setPayload("");
         msg.setTransformationsParams(trParam);
         return msg;
     }

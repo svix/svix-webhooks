@@ -47,6 +47,11 @@ public class {{ type.name | to_upper_camel_case }} {
     {% if type.name is endingwith "Patch" and field.nullable -%}
         {% set field_ty %}MaybeUnset<{{ field_ty }}>{% endset -%}
     {% endif -%}
+    {% if type.name == "MessageIn" and field.name == "payload" -%}
+        {% set field_ty = "String" -%}
+    {% elif type.name == "MessageIn" and field.name == "transformationsParams" -%}
+        {% set field_ty = "Map<String,Object>" -%}
+    {% endif -%}
     {{ field_annotation}} private {{ field_ty }} {{ field.name | to_lower_camel_case }};
 {% endfor -%}
 
@@ -55,6 +60,11 @@ public class {{ type.name | to_upper_camel_case }} {
 
 {% for field in type.fields -%}
     {% set f_ty = field.type.to_java() -%}
+    {% if type.name == "MessageIn" and field.name == "payload" -%}
+        {% set f_ty = "String" -%}
+    {% elif type.name == "MessageIn" and field.name == "transformationsParams" -%}
+        {% set f_ty = "Map<String,Object>" -%}
+    {% endif -%}
     {% set f_varname = field.name | to_lower_camel_case -%}
     {% set f_deprecated = "" -%}
     {% if field.deprecated -%}
