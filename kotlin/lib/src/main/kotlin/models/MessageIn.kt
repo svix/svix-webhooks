@@ -10,10 +10,10 @@ data class MessageIn(
     val channels: Set<String>? = null,
     val eventId: String? = null,
     val eventType: String,
-    @Serializable(with = StringAnyMapSerializer::class) val payload: Map<String, Any>,
+    var payload: String,
     val payloadRetentionHours: Long? = null,
     val payloadRetentionPeriod: Long? = null,
     val tags: Set<String>? = null,
     @Serializable(with = StringAnyMapSerializer::class)
-    val transformationsParams: Map<String, Any>? = null,
+    var transformationsParams: Map<String, Any>? = null,
 )

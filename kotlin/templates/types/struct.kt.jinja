@@ -27,14 +27,19 @@ data class {{ type.name | to_upper_camel_case }}(
         {% set f_val = "= null" -%}
     {% endif -%}
 
-    {% if field.name | to_lower_camel_case != field.name -%}
-    @SerialName("{{ field.name }}")
+    {% if type.name == "MessageIn" and field.name == "payload" -%}
+        var payload: String,
+    {% else -%}
+        {% if field.name | to_lower_camel_case != field.name -%}
+        @SerialName("{{ field.name }}")
+        {% endif -%}
+        {% if field.type.is_json_object() and not use_nullable -%}
+        @Serializable(with = StringAnyMapSerializer::class)
+        {% elif field.type.is_json_object() and use_nullable -%}
+        @Serializable(with = MaybeUnsetStringAnyMapSerializer::class)
+        {% endif -%}
+        {% if type.name == "MessageIn" and field.name == "transformationsParams" -%}var {% else %}val {% endif -%}
+        {{ field.name | to_lower_camel_case }}: {{ f_type }} {{ f_val }},
     {% endif -%}
-    {% if field.type.is_json_object() and not use_nullable -%}
-    @Serializable(with = StringAnyMapSerializer::class)
-    {% elif field.type.is_json_object() and use_nullable -%}
-    @Serializable(with = MaybeUnsetStringAnyMapSerializer::class)
-    {% endif -%}
-    val {{ field.name | to_lower_camel_case }}: {{ f_type }} {{ f_val }},
 {% endfor %}
 )

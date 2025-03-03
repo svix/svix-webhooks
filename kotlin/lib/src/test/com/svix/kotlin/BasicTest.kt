@@ -10,6 +10,7 @@ import com.svix.kotlin.models.MessageIn
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.encodeToString
 
 class BasicTest {
     companion object {
@@ -36,12 +37,13 @@ class BasicTest {
                 applicationOut.id,
                 MessageIn(
                     eventType = "invoice.paid",
-                    payload =
+                    payload = kotlinx.serialization.json.Json.encodeToString(
                         mapOf<String, Any>(
                             "id" to "invoice_WF7WtCLFFtd8ubcTgboSFNql",
                             "status" to "paid",
                             "attempt" to 2,
-                        ),
+                        )
+                    ),
                 ),
             )
             svix.application.delete(applicationOut.id)

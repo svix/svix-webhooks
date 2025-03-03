@@ -103,7 +103,9 @@ suspend fun {{ op.name | to_lower_camel_case }}(
     options.{{ p.name | to_lower_camel_case }}?.let { headers.add("{{ p.name }}",it) }
     {% endfor -%}
     {% endif -%}
-
+    {% if op.id == "v1.message.create" -%}
+        {% include "api_extra/message_create_body.kt" -%}
+    {% endif -%}
     {% set generic_res_type = res_type -%}
     {% if not op.response_body_schema_name is defined -%}
         {% set generic_res_type = "Boolean" -%}
