@@ -1,3 +1,3 @@
 mod kitchen_sink;
-mod mode_serialization;
+mod model_serialization;
 mod utils;
