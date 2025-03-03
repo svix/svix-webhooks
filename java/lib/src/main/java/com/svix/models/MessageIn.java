@@ -12,6 +12,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 @ToString
@@ -23,11 +24,11 @@ public class MessageIn {
     @JsonProperty private Set<String> channels;
     @JsonProperty private String eventId;
     @JsonProperty private String eventType;
-    @JsonProperty private Object payload;
+    @JsonProperty private String payload;
     @JsonProperty private Long payloadRetentionHours;
     @JsonProperty private Long payloadRetentionPeriod;
     @JsonProperty private Set<String> tags;
-    @JsonProperty private Object transformationsParams;
+    @JsonProperty private Map<String, Object> transformationsParams;
 
     public MessageIn() {}
 
@@ -119,7 +120,7 @@ public class MessageIn {
         this.eventType = eventType;
     }
 
-    public MessageIn payload(Object payload) {
+    public MessageIn payload(String payload) {
         this.payload = payload;
         return this;
     }
@@ -132,11 +133,11 @@ public class MessageIn {
      * @return payload
      */
     @javax.annotation.Nonnull
-    public Object getPayload() {
+    public String getPayload() {
         return payload;
     }
 
-    public void setPayload(Object payload) {
+    public void setPayload(String payload) {
         this.payload = payload;
     }
 
@@ -208,7 +209,7 @@ public class MessageIn {
         this.tags = tags;
     }
 
-    public MessageIn transformationsParams(Object transformationsParams) {
+    public MessageIn transformationsParams(Map<String, Object> transformationsParams) {
         this.transformationsParams = transformationsParams;
         return this;
     }
@@ -219,11 +220,11 @@ public class MessageIn {
      * @return transformationsParams
      */
     @javax.annotation.Nullable
-    public Object getTransformationsParams() {
+    public Map<String, Object> getTransformationsParams() {
         return transformationsParams;
     }
 
-    public void setTransformationsParams(Object transformationsParams) {
+    public void setTransformationsParams(Map<String, Object> transformationsParams) {
         this.transformationsParams = transformationsParams;
     }
 

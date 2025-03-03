@@ -10,7 +10,7 @@
  */
 public static MessageIn messageInRaw(final String payload) {
     MessageIn msg = new MessageIn();
-    msg.setPayload(new HashMap<>());
+    msg.setPayload("");
     msg.setTransformationsParams(Collections.singletonMap("rawPayload", payload));
     return msg;
 }
@@ -28,7 +28,7 @@ public static MessageIn messageInRaw(final String payload, final String contentT
     trParam.put("rawPayload", payload);
     trParam.put("headers", Collections.singletonMap("content-type", contentType));
     MessageIn msg = new MessageIn();
-    msg.setPayload(new HashMap<>());
+    msg.setPayload("");
     msg.setTransformationsParams(trParam);
     return msg;
 }

@@ -1,6 +1,7 @@
 # Changelog
 
 ## Version 1.61.1
+* Libs/Java **(Breaking)**: The type of `MessageIn.transformationsParams` changed from `Object` to  `Map<String,Object>`.
 * Libs/Java and Libs/Kotlin **(Breaking)**: Due to an internal change in the underlining JSON de/serialization library, some JSON objects may not be serialized correctly. To address this `MessageIn.payload` now accepts a JSON encoded string instead of an `Object` (for Java) or `Map<String, Any>` (for Kotlin)
 
 ## Version 1.61.0
