@@ -3,7 +3,7 @@
   "scripts": {
     "bump-version": "node tools/bump_version.js",
     "update-postman": "node tools/update_postman.js",
-    "generate": "bash ./regen_openapi.sh"
+    "generate": "python3 ./regen_openapi.py"
   },
   "devDependencies": {
     "axios": "^0.28.0",
