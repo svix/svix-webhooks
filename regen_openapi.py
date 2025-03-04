@@ -157,9 +157,6 @@ def execute_codegen_task(task):
         task["language_total"],
         ENDC,
     )
-
-    prefix_print(prefix, "Starting codegen task")
-
     container_name = docker_container_create(prefix, task).strip()
     dbg(prefix, f"Container id {container_name}")
 
@@ -182,7 +179,7 @@ def execute_codegen_task(task):
 
     docker_container_rm(prefix, container_name)
 
-    prefix_print(prefix, "Codegen task completed")
+    print(f"{GREEN}#{ENDC}", flush=True, end="")
 
 
 def run_codegen_for_language(language, language_config):
@@ -209,6 +206,7 @@ def parse_config():
         data = tomllib.load(f)
     openapi = data.pop("global")["openapi"]
     config = {}
+    task_total = 0
     for language, language_config in data.items():
         config[language] = {"tasks": []}
         for language_task_index, task in enumerate(language_config["task"]):
@@ -230,9 +228,10 @@ def parse_config():
                     "template_dir": language_config["template_dir"],
                 }
             )
+            task_total += 1
     if DEBUG:
         print(json.dumps(config, indent=4), flush=True)
-    return config
+    return config, task_total
 
 
 def pull_image():
@@ -260,8 +259,8 @@ def pull_image():
 
 def main():
     pull_image()
-    config = parse_config()
-    print("Pulling docker image", flush=True)
+    config, task_total = parse_config()
+    print(f"Running {task_total} codegen tasks")
 
     threads = []
     for language, language_config in config.items():
@@ -271,6 +270,8 @@ def main():
 
     for th in threads:
         th.join()
+    # final newline
+    print()
 
 
 if __name__ == "__main__":
