@@ -1,3 +1,4 @@
+// this file is @generated
 #![allow(clippy::too_many_arguments)]
 
 pub mod aggregate_event_types_out;
@@ -40,8 +41,6 @@ pub mod event_type_out;
 pub mod event_type_patch;
 pub mod event_type_update;
 pub mod expunge_all_contents_out;
-pub mod http_error_out;
-pub mod http_validation_error;
 pub mod ingest_endpoint_headers_in;
 pub mod ingest_endpoint_headers_out;
 pub mod ingest_endpoint_in;
@@ -60,16 +59,13 @@ pub mod list_response_endpoint_out;
 pub mod list_response_event_type_out;
 pub mod list_response_ingest_endpoint_out;
 pub mod list_response_integration_out;
-pub mod list_response_message_attempt_endpoint_out;
 pub mod list_response_message_attempt_out;
 pub mod list_response_message_endpoint_out;
 pub mod list_response_message_out;
 pub mod list_response_operational_webhook_endpoint_out;
-pub mod message_attempt_endpoint_out;
 pub mod message_attempt_out;
 pub mod message_attempt_trigger_type;
 pub mod message_endpoint_out;
-pub mod message_events_out;
 pub mod message_in;
 pub mod message_out;
 pub mod message_status;
@@ -87,6 +83,12 @@ pub mod replay_in;
 pub mod replay_out;
 pub mod status_code_class;
 pub mod template_out;
+// not currently generated
+pub mod http_error_out;
+pub mod http_validation_error;
+pub mod list_response_message_attempt_endpoint_out;
+pub mod message_attempt_endpoint_out;
+pub mod message_events_out;
 pub mod validation_error;
 
 #[rustfmt::skip]
@@ -131,8 +133,6 @@ pub use self::{
     event_type_patch::EventTypePatch,
     event_type_update::EventTypeUpdate,
     expunge_all_contents_out::ExpungeAllContentsOut,
-    http_error_out::HttpErrorOut,
-    http_validation_error::HttpValidationError,
     ingest_endpoint_headers_in::IngestEndpointHeadersIn,
     ingest_endpoint_headers_out::IngestEndpointHeadersOut,
     ingest_endpoint_in::IngestEndpointIn,
@@ -151,16 +151,13 @@ pub use self::{
     list_response_event_type_out::ListResponseEventTypeOut,
     list_response_ingest_endpoint_out::ListResponseIngestEndpointOut,
     list_response_integration_out::ListResponseIntegrationOut,
-    list_response_message_attempt_endpoint_out::ListResponseMessageAttemptEndpointOut,
     list_response_message_attempt_out::ListResponseMessageAttemptOut,
     list_response_message_endpoint_out::ListResponseMessageEndpointOut,
     list_response_message_out::ListResponseMessageOut,
     list_response_operational_webhook_endpoint_out::ListResponseOperationalWebhookEndpointOut,
-    message_attempt_endpoint_out::MessageAttemptEndpointOut,
     message_attempt_out::MessageAttemptOut,
     message_attempt_trigger_type::MessageAttemptTriggerType,
     message_endpoint_out::MessageEndpointOut,
-    message_events_out::MessageEventsOut,
     message_in::MessageIn,
     message_out::MessageOut,
     message_status::MessageStatus,
@@ -178,5 +175,11 @@ pub use self::{
     replay_out::ReplayOut,
     status_code_class::StatusCodeClass,
     template_out::TemplateOut,
+    // not currently generated
+    message_events_out::MessageEventsOut,
+    message_attempt_endpoint_out::MessageAttemptEndpointOut,
+    list_response_message_attempt_endpoint_out::ListResponseMessageAttemptEndpointOut,
+    http_error_out::HttpErrorOut,
+    http_validation_error::HttpValidationError,
     validation_error::ValidationError,
 };
