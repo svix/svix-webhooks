@@ -9,6 +9,9 @@ extra_shell_commands = ["rm rust/src/api/{environment,health}.rs"]
 template = "rust/templates/api_resource.rs.jinja"
 output_dir = "rust/src/api"
 [[rust.task]]
+template = "rust/templates/component_type_summary.rs.jinja"
+output_dir = "rust/src/models"
+[[rust.task]]
 template = "rust/templates/component_type.rs.jinja"
 output_dir = "rust/src/models"
 

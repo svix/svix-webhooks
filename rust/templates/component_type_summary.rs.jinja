@@ -1,0 +1,29 @@
+// this file is @generated
+#![allow(clippy::too_many_arguments)]
+
+{% for _, type in types | items -%}
+    pub mod {{ type.name | to_snake_case }};
+{% endfor -%}
+
+// not currently generated
+pub mod message_events_out;
+pub mod message_attempt_endpoint_out;
+pub mod list_response_message_attempt_endpoint_out;
+pub mod http_error_out;
+pub mod http_validation_error;
+pub mod validation_error;
+
+#[rustfmt::skip]
+pub use self::{
+    {% for _, type in types | items -%}
+        {{ type.name | to_snake_case }}::{{ type.name | to_upper_camel_case }},
+    {% endfor -%}
+
+    // not currently generated
+    message_events_out::MessageEventsOut,
+    message_attempt_endpoint_out::MessageAttemptEndpointOut,
+    list_response_message_attempt_endpoint_out::ListResponseMessageAttemptEndpointOut,
+    http_error_out::HttpErrorOut,
+    http_validation_error::HttpValidationError,
+    validation_error::ValidationError,
+};
