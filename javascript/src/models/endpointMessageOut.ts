@@ -1,6 +1,7 @@
 // this file is @generated
 /* eslint @typescript-eslint/no-explicit-any: 0 */
 import { MessageStatus, MessageStatusSerializer } from "./messageStatus";
+
 /** A model containing information on a given message plus additional fields on the last attempt for that message. */
 export interface EndpointMessageOut {
   /** List of free-form identifiers that endpoints can filter by */

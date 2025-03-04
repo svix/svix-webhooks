@@ -1,0 +1,10 @@
+{% for field in type.fields -%}
+    {% if field.description is defined -%}
+        {{ field.description | with_javadoc_deprecation(field.deprecated) | to_doc_comment(style="js") }}
+    {% endif -%}
+    {% set field_lhs = field.name | to_lower_camel_case -%}
+    {% if not field.required %}{% set field_lhs %}{{ field_lhs }}?{% endset %}{% endif -%}
+    {% set ty = field.type.to_js() -%}
+    {% if field.nullable %}{% set ty %}{{ ty }} | null{% endset %}{% endif -%}
+    {{ field_lhs }}: {{ ty }};
+{% endfor -%}
