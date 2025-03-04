@@ -1,13 +1,15 @@
-if (messageIn.getTransformationsParams() != null) {
-    if (messageIn.getTransformationsParams().get("rawPayload") == null) {
+MessageInInternal msgInInternal = new MessageInInternal(messageIn);
+if (msgInInternal.getTransformationsParams() != null) {
+    if (msgInInternal.getTransformationsParams().get("rawPayload") == null) {
         // transformationsParams may be immutable
-        HashMap<String, Object> trParams = new HashMap<>(messageIn.getTransformationsParams());
-        trParams.put("rawPayload",messageIn.getPayload());
-        messageIn.setTransformationsParams(trParams);
+        HashMap<String, Object> trParams =
+                new HashMap<>(msgInInternal.getTransformationsParams());
+        trParams.put("rawPayload", msgInInternal.getPayload());
+        msgInInternal.setTransformationsParams(trParams);
     }
 } else {
     HashMap<String, Object> trParam = new HashMap<>();
-    trParam.put("rawPayload", messageIn.getPayload());
-    messageIn.setTransformationsParams(trParam);
+    trParam.put("rawPayload", msgInInternal.getPayload());
+    msgInInternal.setTransformationsParams(trParam);
 }
-messageIn.setPayload("");
+msgInInternal.setPayload(new HashMap<>());

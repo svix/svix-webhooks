@@ -1,13 +1,18 @@
 // this file is @generated
 package com.svix.api;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.svix.SvixHttpClient;
 import com.svix.Utils;
 import com.svix.exceptions.ApiException;
+import com.svix.models.*;
 import com.svix.models.ExpungeAllContentsOut;
 import com.svix.models.ListResponseMessageOut;
 import com.svix.models.MessageIn;
 import com.svix.models.MessageOut;
+
+import lombok.*;
 
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
@@ -16,6 +21,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class Message {
     private final SvixHttpClient client;
@@ -135,22 +141,23 @@ public class Message {
         if (options.idempotencyKey != null) {
             headers.put("idempotency-key", options.idempotencyKey);
         }
-        if (messageIn.getTransformationsParams() != null) {
-            if (messageIn.getTransformationsParams().get("rawPayload") == null) {
+        MessageInInternal msgInInternal = new MessageInInternal(messageIn);
+        if (msgInInternal.getTransformationsParams() != null) {
+            if (msgInInternal.getTransformationsParams().get("rawPayload") == null) {
                 // transformationsParams may be immutable
                 HashMap<String, Object> trParams =
-                        new HashMap<>(messageIn.getTransformationsParams());
-                trParams.put("rawPayload", messageIn.getPayload());
-                messageIn.setTransformationsParams(trParams);
+                        new HashMap<>(msgInInternal.getTransformationsParams());
+                trParams.put("rawPayload", msgInInternal.getPayload());
+                msgInInternal.setTransformationsParams(trParams);
             }
         } else {
             HashMap<String, Object> trParam = new HashMap<>();
-            trParam.put("rawPayload", messageIn.getPayload());
-            messageIn.setTransformationsParams(trParam);
+            trParam.put("rawPayload", msgInInternal.getPayload());
+            msgInInternal.setTransformationsParams(trParam);
         }
-        messageIn.setPayload("");
+        msgInInternal.setPayload(new HashMap<>());
         return this.client.executeRequest(
-                "POST", url.build(), Headers.of(headers), messageIn, MessageOut.class);
+                "POST", url.build(), Headers.of(headers), msgInInternal, MessageOut.class);
     }
 
     /**
@@ -250,5 +257,37 @@ public class Message {
         msg.setPayload("");
         msg.setTransformationsParams(trParam);
         return msg;
+    }
+
+    @ToString
+    @EqualsAndHashCode
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @NoArgsConstructor
+    @Getter
+    @Setter
+    // we use this because we need payload to be an object while the public `MessageIn.payload` is a
+    // string
+    private class MessageInInternal {
+        @JsonProperty private ApplicationIn application;
+        @JsonProperty private Set<String> channels;
+        @JsonProperty private String eventId;
+        @JsonProperty private String eventType;
+        @JsonProperty private Object payload;
+        @JsonProperty private Long payloadRetentionHours;
+        @JsonProperty private Long payloadRetentionPeriod;
+        @JsonProperty private Set<String> tags;
+        @JsonProperty private Map<String, Object> transformationsParams;
+
+        private MessageInInternal(MessageIn messageIn) {
+            this.application = messageIn.getApplication();
+            this.channels = messageIn.getChannels();
+            this.eventId = messageIn.getEventId();
+            this.eventType = messageIn.getEventType();
+            this.payload = messageIn.getPayload();
+            this.payloadRetentionHours = messageIn.getPayloadRetentionHours();
+            this.payloadRetentionPeriod = messageIn.getPayloadRetentionPeriod();
+            this.tags = messageIn.getTags();
+            this.transformationsParams = messageIn.getTransformationsParams();
+        }
     }
 }

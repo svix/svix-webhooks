@@ -32,3 +32,36 @@ public static MessageIn messageInRaw(final String payload, final String contentT
     msg.setTransformationsParams(trParam);
     return msg;
 }
+
+
+@ToString
+@EqualsAndHashCode
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@NoArgsConstructor
+@Getter
+@Setter
+// we use this because we need payload to be an object while the public `MessageIn.payload` is a
+// string
+private class MessageInInternal {
+    @JsonProperty private ApplicationIn application;
+    @JsonProperty private Set<String> channels;
+    @JsonProperty private String eventId;
+    @JsonProperty private String eventType;
+    @JsonProperty private Object payload;
+    @JsonProperty private Long payloadRetentionHours;
+    @JsonProperty private Long payloadRetentionPeriod;
+    @JsonProperty private Set<String> tags;
+    @JsonProperty private Map<String, Object> transformationsParams;
+
+    private MessageInInternal(MessageIn messageIn) {
+        this.application = messageIn.getApplication();
+        this.channels = messageIn.getChannels();
+        this.eventId = messageIn.getEventId();
+        this.eventType = messageIn.getEventType();
+        this.payload = messageIn.getPayload();
+        this.payloadRetentionHours = messageIn.getPayloadRetentionHours();
+        this.payloadRetentionPeriod = messageIn.getPayloadRetentionPeriod();
+        this.tags = messageIn.getTags();
+        this.transformationsParams = messageIn.getTransformationsParams();
+    }
+}
