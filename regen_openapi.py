@@ -116,7 +116,7 @@ def run_cmd(prefix, cmd, dont_dbg=False) -> subprocess.CompletedProcess[bytes]:
     )
     if result.returncode != 0:
         print_cmd_result(result, prefix)
-        exit(result.returncode)
+        raise RuntimeError(f"{prefix}subprocess exited with code {result.returncode}")
 
     if DEBUG and not dont_dbg:
         print_cmd_result(result, prefix)
@@ -174,7 +174,7 @@ def execute_codegen_task(task):
 
     if exit_code != 0:
         prefix_print(prefix, nice_logs)
-        raise RuntimeError(f"Container exited with {exit_code}")
+        raise RuntimeError(f"{prefix}subprocess exited with code {exit_code}")
 
     dbg(prefix, nice_logs)
 
@@ -235,10 +235,33 @@ def parse_config():
     return config
 
 
+def pull_image():
+    # check if image exists
+    check = subprocess.run(
+        [
+            get_docker_binary(),
+            "image",
+            "inspect",
+            "--format",
+            "ignore me",
+            OPENAPI_CODEGEN_IMAGE,
+        ],
+        stderr=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+    )
+    # if it does not exist, pull image
+    if check.returncode != 0:
+        pull = subprocess.run(
+            [get_docker_binary(), "image", "pull", OPENAPI_CODEGEN_IMAGE]
+        )
+        if pull.returncode != 0:
+            exit(pull.returncode)
+
+
 def main():
+    pull_image()
     config = parse_config()
     print("Pulling docker image", flush=True)
-    run_cmd("startup", [get_docker_binary(), "image", "pull", OPENAPI_CODEGEN_IMAGE])
 
     threads = []
     for language, language_config in config.items():
