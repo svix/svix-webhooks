@@ -38,8 +38,6 @@ public static MessageIn messageInRaw(final String payload, final String contentT
 @EqualsAndHashCode
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @NoArgsConstructor
-@Getter
-@Setter
 // we use this because we need payload to be an object while the public `MessageIn.payload` is a
 // string
 private class MessageInInternal {
