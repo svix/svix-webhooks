@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 1.61.2
+* Libs/Java and Libs/Kotlin: Fix bug introduced in v1.61.1, where `message.create` would return 422 on all requests
+
 ## Version 1.61.1
 * Libs/Java **(Breaking)**: The type of `MessageIn.transformationsParams` changed from `Object` to  `Map<String,Object>`.
 * Libs/Java and Libs/Kotlin **(Breaking)**: Due to an internal change in the underlining JSON de/serialization library, some JSON objects may not be serialized correctly. To address this `MessageIn.payload` now accepts a JSON encoded string instead of an `Object` (for Java) or `Map<String, Any>` (for Kotlin)

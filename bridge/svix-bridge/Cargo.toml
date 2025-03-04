@@ -1,6 +1,6 @@
 [package]
 name = "svix-bridge"
-version = "1.61.1"
+version = "1.61.2"
 edition = "2021"
 publish = false
 
