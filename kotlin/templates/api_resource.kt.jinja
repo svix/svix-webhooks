@@ -7,6 +7,7 @@ import com.svix.kotlin.models.ListResponseMessageOut
 import com.svix.kotlin.models.MessageIn
 import com.svix.kotlin.models.MessageOut
 import kotlinx.datetime.Instant
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -113,6 +114,10 @@ suspend fun {{ op.name | to_lower_camel_case }}(
     {% set generic_req_type = "Any" -%}
     {% if op.request_body_schema_name is defined -%}
         {% set generic_req_type = op.request_body_schema_name %}
+    {% endif -%}
+    {% if op.id == "v1.message.create" -%}
+        {% set generic_req_type = "MessageInInternal" -%}
+        {% set req_body_field_name = "msgInInternal" -%}
     {% endif -%}
     {% if op.response_body_schema_name is defined %}return {% endif %}client.executeRequest<{{ generic_req_type }},{{ generic_res_type }}>("{{ op.method | upper}}",url.build()
     {%- if op.header_params | length > 0 -%}

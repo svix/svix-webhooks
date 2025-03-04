@@ -11,6 +11,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.JsonPrimitive
 
 class BasicTest {
     companion object {
@@ -38,10 +39,10 @@ class BasicTest {
                 MessageIn(
                     eventType = "invoice.paid",
                     payload = kotlinx.serialization.json.Json.encodeToString(
-                        mapOf<String, Any>(
-                            "id" to "invoice_WF7WtCLFFtd8ubcTgboSFNql",
-                            "status" to "paid",
-                            "attempt" to 2,
+                        mapOf<String, JsonPrimitive>(
+                            "id" to JsonPrimitive("invoice_WF7WtCLFFtd8ubcTgboSFNql"),
+                            "status" to JsonPrimitive("paid"),
+                            "attempt" to JsonPrimitive(2),
                         )
                     ),
                 ),

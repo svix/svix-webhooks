@@ -416,7 +416,7 @@ class WiremockTests {
         runBlocking { svx.message.create("app1", msg) }
 
         val expectedBody =
-            """{"eventType":"event.type","payload":"","transformationsParams":{"headers":{"header-key":"header-val"},"rawPayload":"{\"key\":\"val\",\"key1\":[\"list\"]}"}}"""
+            """{"eventType":"event.type","payload":{},"transformationsParams":{"headers":{"header-key":"header-val"},"rawPayload":"{\"key\":\"val\",\"key1\":[\"list\"]}"}}"""
         wireMockServer.verify(
             1,
             postRequestedFor(urlEqualTo("/api/v1/app/app1/msg"))
@@ -437,7 +437,7 @@ class WiremockTests {
         runBlocking { svx.message.create("app1", msg) }
 
         val expectedBody =
-            """{"eventType":"event.type","payload":"","transformationsParams":{"rawPayload":"{\"key\":\"val\",\"key1\":[\"list\"]}"}}"""
+            """{"eventType":"event.type","payload":{},"transformationsParams":{"rawPayload":"{\"key\":\"val\",\"key1\":[\"list\"]}"}}"""
 
         wireMockServer.verify(
             1,

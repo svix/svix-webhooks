@@ -7,6 +7,7 @@ import com.svix.kotlin.models.ListResponseMessageOut
 import com.svix.kotlin.models.MessageIn
 import com.svix.kotlin.models.MessageOut
 import kotlinx.datetime.Instant
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -99,23 +100,35 @@ class Message(private val client: SvixHttpClient) {
         options.withContent?.let { url.addQueryParameter("with_content", serializeQueryParam(it)) }
         val headers = Headers.Builder()
         options.idempotencyKey?.let { headers.add("idempotency-key", it) }
-        if (messageIn.transformationsParams != null) {
+        var msgInInternal =
+            MessageInInternal(
+                messageIn.application,
+                messageIn.channels,
+                messageIn.eventId,
+                messageIn.eventType,
+                mapOf(),
+                messageIn.payloadRetentionHours,
+                messageIn.payloadRetentionPeriod,
+                messageIn.tags,
+                messageIn.transformationsParams,
+            )
+        if (msgInInternal.transformationsParams != null) {
             // only set rawPayload if not already set
-            if (messageIn.transformationsParams!!["rawPayload"] == null) {
-                var trParams = (messageIn.transformationsParams as Map<String, Any>).toMutableMap()
+            if (msgInInternal.transformationsParams!!["rawPayload"] == null) {
+                var trParams =
+                    (msgInInternal.transformationsParams as Map<String, Any>).toMutableMap()
                 trParams["rawPayload"] = messageIn.payload
-                messageIn.transformationsParams = trParams.toMap()
+                msgInInternal.transformationsParams = trParams.toMap()
             }
         } else {
             val trParams = mapOf("rawPayload" to messageIn.payload)
-            messageIn.transformationsParams = trParams
+            msgInInternal.transformationsParams = trParams
         }
-        messageIn.payload = ""
-        return client.executeRequest<MessageIn, MessageOut>(
+        return client.executeRequest<MessageInInternal, MessageOut>(
             "POST",
             url.build(),
             headers = headers.build(),
-            reqBody = messageIn,
+            reqBody = msgInInternal,
         )
     }
 
@@ -206,3 +219,17 @@ fun messageInRaw(
         transformationsParams = JsonObject(transformationsParams),
     )
 }
+
+@Serializable
+private data class MessageInInternal(
+    val application: ApplicationIn? = null,
+    val channels: Set<String>? = null,
+    val eventId: String? = null,
+    val eventType: String,
+    @Serializable(with = StringAnyMapSerializer::class) var payload: Map<String, Any>,
+    val payloadRetentionHours: Long? = null,
+    val payloadRetentionPeriod: Long? = null,
+    val tags: Set<String>? = null,
+    @Serializable(with = StringAnyMapSerializer::class)
+    var transformationsParams: Map<String, Any>? = null,
+)

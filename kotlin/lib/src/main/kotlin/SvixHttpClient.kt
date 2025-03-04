@@ -57,7 +57,7 @@ internal constructor(
         if (res.code in 200..299) {
             return Json.decodeFromString<Res>(bodyString)
         }
-        throw ApiException("None 200 status code", res.code, bodyString)
+        throw ApiException("Non 200 status code ${res.code}", res.code, bodyString)
     }
 
     suspend fun executeRequestWithRetry(request: Request): Response {
