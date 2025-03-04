@@ -84,10 +84,11 @@ def docker_container_create(prefix, task) -> str:
         "--mount",
         f"type=bind,src={Path(task['template_dir']).absolute()},dst=/app/{task['template_dir']},ro",
     ]
-    for extra_mount in task["extra_mounts"]:
+
+    for extra_mount_src, extra_mount_dst in task["extra_mounts"].items():
         cmd.append("--mount")
         cmd.append(
-            f"type=bind,src={Path(extra_mount[0]).absolute()},dst={extra_mount[1]},ro"
+            f"type=bind,src={Path(extra_mount_src).absolute()},dst={extra_mount_dst},ro"
         )
     cmd.extend(
         [
@@ -224,7 +225,7 @@ def parse_config():
                     ),
                     "template": task["template"],
                     "output_dir": task["output_dir"],
-                    "extra_mounts": language_config.get("extra_mounts", []),
+                    "extra_mounts": language_config.get("extra_mounts", {}),
                     "extra_codegen_args": task.get("extra_codegen_args", []),
                     "template_dir": language_config["template_dir"],
                 }
