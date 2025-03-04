@@ -2,17 +2,25 @@
 // this file is @generated
 package com.svix.api;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.svix.SvixHttpClient;
 import com.svix.Utils;
 import com.svix.exceptions.ApiException;
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.Map;
-import java.util.HashMap;
-
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+{% if resource.name == "message"%}
+import lombok.*;
+import com.svix.models.*;
+{% endif -%}
 {% for c in referenced_components -%}
 import com.svix.models.{{ c | to_upper_camel_case }};
 {% endfor -%}
@@ -140,10 +148,14 @@ public class {{ resource_type_name }} {
             null,
             {% endif -%}
             {# request body -#}
-            {% if op.request_body_schema_name is defined -%}
-            {{ req_body_field_name }},
+            {% if op.id == "v1.message.create" -%}
+                msgInInternal,
             {% else -%}
-            null,
+                {% if op.request_body_schema_name is defined -%}
+                {{ req_body_field_name }},
+                {% else -%}
+                null,
+                {% endif -%}
             {% endif -%}
             {# response body class -#}
             {% if op.response_body_schema_name is defined -%}

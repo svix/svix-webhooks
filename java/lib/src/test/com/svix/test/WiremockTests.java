@@ -438,7 +438,7 @@ public class WiremockTests {
         svx.getMessage().create("app1", msg);
 
         String expectedBody =
-                "{\"eventType\":\"event.ended\",\"payload\":\"\",\"transformationsParams\":{\"rawPayload\":\"<xml>{no"
+                "{\"eventType\":\"event.ended\",\"payload\":{},\"transformationsParams\":{\"rawPayload\":\"<xml>{no"
                     + " json here}\"}}";
         wireMockRule.verify(
                 1,

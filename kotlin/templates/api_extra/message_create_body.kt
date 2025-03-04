@@ -1,12 +1,24 @@
-if (messageIn.transformationsParams != null) {
+var msgInInternal =
+    MessageInInternal(
+        messageIn.application,
+        messageIn.channels,
+        messageIn.eventId,
+        messageIn.eventType,
+        mapOf(),
+        messageIn.payloadRetentionHours,
+        messageIn.payloadRetentionPeriod,
+        messageIn.tags,
+        messageIn.transformationsParams,
+    )
+if (msgInInternal.transformationsParams != null) {
     // only set rawPayload if not already set
-    if (messageIn.transformationsParams!!["rawPayload"] == null) {
-        var trParams = (messageIn.transformationsParams as Map<String, Any>).toMutableMap();
+    if (msgInInternal.transformationsParams!!["rawPayload"] == null) {
+        var trParams =
+            (msgInInternal.transformationsParams as Map<String, Any>).toMutableMap()
         trParams["rawPayload"] = messageIn.payload
-        messageIn.transformationsParams = trParams.toMap()
+        msgInInternal.transformationsParams = trParams.toMap()
     }
 } else {
     val trParams = mapOf("rawPayload" to messageIn.payload)
-    messageIn.transformationsParams = trParams
+    msgInInternal.transformationsParams = trParams
 }
-messageIn.payload = ""

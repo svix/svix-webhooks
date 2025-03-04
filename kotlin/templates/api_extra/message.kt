@@ -43,3 +43,18 @@ fun messageInRaw(
         transformationsParams = JsonObject(transformationsParams),
     )
 }
+
+@Serializable
+private data class MessageInInternal(
+    val application: ApplicationIn? = null,
+    val channels: Set<String>? = null,
+    val eventId: String? = null,
+    val eventType: String,
+    @Serializable(with = StringAnyMapSerializer::class)
+    var payload: Map<String, Any>,
+    val payloadRetentionHours: Long? = null,
+    val payloadRetentionPeriod: Long? = null,
+    val tags: Set<String>? = null,
+    @Serializable(with = StringAnyMapSerializer::class)
+    var transformationsParams: Map<String, Any>? = null
+)
