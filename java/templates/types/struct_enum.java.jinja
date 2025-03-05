@@ -167,15 +167,23 @@ class {{ type_name }}Deserializer extends StdDeserializer<{{ type_name }}> {
 
     @Override
     public {{ type_name }} deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-        JsonNode node = p.getCodec().readTree(p);
-
-        // FIXME: we are not currently handling non-string fields
+        {{ type_name }}Surrogate surrogate = p.getCodec().readValue(p, {{ type_name }}Surrogate.class);
         {% for f in type.fields -%}
-            {{ f.type.to_java() }} {{ f.name | to_lower_camel_case }} = node.has("{{ f.name }}") ? node.get("{{ f.name }}").asText() : null;
+            {{ f.type.to_java() }} {{ f.name | to_lower_camel_case }} = surrogate.get{{ f.name | to_upper_camel_case }}();
         {% endfor -%}
-        String {{ discriminator_field_name }} = node.get("{{ type.discriminator_field }}").asText();
-        JsonNode {{ content_field_name }} = node.get("{{ type.content_field }}");
+        String {{ discriminator_field_name }} = surrogate.get{{ type.discriminator_field | to_upper_camel_case}}();
+        JsonNode {{ content_field_name }} = surrogate.get{{ type.content_field | to_upper_camel_case}}();
         {{ type_name }}.{{ enum_type_name }} sourceType = {{ type_name }}.{{ enum_type_name }}.fromTypeAndConfig({{ discriminator_field_name }}, {{ content_field_name }});
-        return new {{ type_name }}(name, uid, sourceType);
+        return new {{ type_name }}({%- for f in type.fields -%}{{ f.name | to_lower_camel_case }},{%- endfor -%}sourceType);
+    }
+
+    @Getter
+    private static class {{ type_name }}Surrogate{
+        {% for f in type.fields -%}
+        @JsonProperty("{{ f.name }}") private {{ f.type.to_java() }} {{ f.name | to_lower_camel_case }};
+        {% endfor -%}
+        @JsonProperty("{{ type.discriminator_field }}") private String {{ discriminator_field_name }};
+        @JsonProperty("{{ type.content_field }}") private JsonNode {{ content_field_name }};
+
     }
 }
