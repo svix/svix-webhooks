@@ -173,10 +173,6 @@ docker run \
   svix/svix-server
 ```
 
-### Pre-compiled binaries
-
-Pre-compiled binaries are available for released versions in the [releases section](https://github.com/svix/svix-webhooks/releases).
-
 ### Building from source
 
 The Svix server is written in Rust 🦀 and requires a Rust build environment.
