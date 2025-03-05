@@ -11,6 +11,9 @@ extend-exclude = [
     "kotlin/lib/src/main/kotlin/EventType.kt",
     "kotlin/lib/src/main/kotlin/EventTypeListOptions.kt",
 
+    # Typo `ser`(com.fasterxml.jackson.databind.ser.std.StdSerializer), this is part of a serialization lib I am using
+    "java/templates/types/struct_enum.java.jinja",
+
     # False positives in randomly-generated strings
     "server/svix-server/migrations/20230505222507_operational_webhook_event-types.up.sql",
     "server/svix-server/migrations/20230505222507_operational_webhook_event-types.down.sql",

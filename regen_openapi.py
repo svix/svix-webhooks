@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import argparse
 import json
 import os
 import pathlib
@@ -158,8 +159,6 @@ def execute_codegen_task(task):
         ENDC,
     )
 
-    prefix_print(prefix, "Starting codegen task")
-
     container_name = docker_container_create(prefix, task).strip()
     dbg(prefix, f"Container id {container_name}")
 
@@ -182,7 +181,7 @@ def execute_codegen_task(task):
 
     docker_container_rm(prefix, container_name)
 
-    prefix_print(prefix, "Codegen task completed")
+    print(f"{GREEN}#{ENDC}", flush=True, end="")
 
 
 def run_codegen_for_language(language, language_config):
@@ -204,13 +203,15 @@ def run_codegen_for_language(language, language_config):
         )
 
 
-def parse_config():
+def parse_config(args):
     with open(REPO_ROOT.joinpath("codegen.toml"), "rb") as f:
         data = tomllib.load(f)
     openapi = data.pop("global")["openapi"]
     config = {}
     for language, language_config in data.items():
-        config[language] = {"tasks": []}
+        if args.task_group is not None and args.task_group != language:
+            continue
+        config[language] = {"tasks": [], "tasks_count": len(language_config["task"])}
         for language_task_index, task in enumerate(language_config["task"]):
             config[language]["extra_shell_commands"] = language_config.get(
                 "extra_shell_commands", []
@@ -251,6 +252,7 @@ def pull_image():
     )
     # if it does not exist, pull image
     if check.returncode != 0:
+        print("Pulling docker image", flush=True)
         pull = subprocess.run(
             [get_docker_binary(), "image", "pull", OPENAPI_CODEGEN_IMAGE]
         )
@@ -260,8 +262,14 @@ def pull_image():
 
 def main():
     pull_image()
-    config = parse_config()
-    print("Pulling docker image", flush=True)
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-t", "--task-group")
+    args = parser.parse_args()
+
+    config = parse_config(args)
+    all_tasks = sum([i["tasks_count"] for i in config.values()])
+    print(f"Running {all_tasks} codegen tasks")
 
     threads = []
     for language, language_config in config.items():
@@ -271,6 +279,9 @@ def main():
 
     for th in threads:
         th.join()
+
+    # final newline
+    print()
 
 
 if __name__ == "__main__":
