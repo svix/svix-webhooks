@@ -1,0 +1,29 @@
+{% for field in type.fields -%}
+    {% set f_name = field.name | to_lower_camel_case -%}
+    {% set f_type = field.type.to_kotlin() -%}
+    {% set f_val = "" -%}
+    {% set use_nullable = type.name is endingwith "Patch" and field.nullable -%}
+    {% if use_nullable -%}
+        {% set f_type %}MaybeUnset<{{ f_type }}>{% endset -%}
+        {% set f_val = "= MaybeUnset.Unset" -%}
+    {% endif -%}
+    {% if (not field.required or field.nullable) and not use_nullable -%}
+        {% set f_type %}{{ f_type }}?{% endset -%}
+        {% set f_val = "= null" -%}
+    {% endif -%}
+
+    {% if type.name == "MessageIn" and field.name == "payload" -%}
+        var payload: String,
+    {% else -%}
+        {% if field.name | to_lower_camel_case != field.name -%}
+        @SerialName("{{ field.name }}")
+        {% endif -%}
+        {% if field.type.is_json_object() and not use_nullable -%}
+        @Serializable(with = StringAnyMapSerializer::class)
+        {% elif field.type.is_json_object() and use_nullable -%}
+        @Serializable(with = MaybeUnsetStringAnyMapSerializer::class)
+        {% endif -%}
+        {% if type.name == "MessageIn" and field.name == "transformationsParams" -%}var {% else %}val {% endif -%}
+        {{ field.name | to_lower_camel_case }}: {{ f_type }} {{ f_val }},
+    {% endif -%}
+{% endfor %}
