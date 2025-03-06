@@ -117,7 +117,6 @@ pub mod message_attempt_endpoint_out;
 pub mod message_events_out;
 pub mod validation_error;
 
-#[rustfmt::skip]
 pub use self::{
     adobe_sign_config::AdobeSignConfig,
     adobe_sign_config_out::AdobeSignConfigOut,
@@ -177,8 +176,8 @@ pub use self::{
     ingest_endpoint_secret_out::IngestEndpointSecretOut,
     ingest_endpoint_update::IngestEndpointUpdate,
     ingest_source_consumer_portal_access_in::IngestSourceConsumerPortalAccessIn,
-    ingest_source_in::IngestSourceIn,
-    ingest_source_out::IngestSourceOut,
+    ingest_source_in::{IngestSourceIn, IngestSourceInConfig},
+    ingest_source_out::{IngestSourceOut, IngestSourceOutConfig},
     integration_in::IntegrationIn,
     integration_key_out::IntegrationKeyOut,
     integration_out::IntegrationOut,
@@ -227,11 +226,12 @@ pub use self::{
     svix_config_out::SvixConfigOut,
     zoom_config::ZoomConfig,
     zoom_config_out::ZoomConfigOut,
-    // not currently generated
-    message_events_out::MessageEventsOut,
-    message_attempt_endpoint_out::MessageAttemptEndpointOut,
+};
+
+// not currently generated
+pub use self::{
+    http_error_out::HttpErrorOut, http_validation_error::HttpValidationError,
     list_response_message_attempt_endpoint_out::ListResponseMessageAttemptEndpointOut,
-    http_error_out::HttpErrorOut,
-    http_validation_error::HttpValidationError,
+    message_attempt_endpoint_out::MessageAttemptEndpointOut, message_events_out::MessageEventsOut,
     validation_error::ValidationError,
 };

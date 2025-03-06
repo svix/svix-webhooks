@@ -13,13 +13,20 @@ pub mod http_error_out;
 pub mod http_validation_error;
 pub mod validation_error;
 
-#[rustfmt::skip]
 pub use self::{
     {% for _, type in types | items -%}
-        {{ type.name | to_snake_case }}::{{ type.name | to_upper_camel_case }},
+        {% set type_name = type.name | to_upper_camel_case -%}
+        {{ type.name | to_snake_case }}::{
+            {{ type_name }},
+            {% if type.kind == "struct_enum" and type.fields | length > 0 -%}
+                {{ type_name }}{{ type.content_field | to_upper_camel_case }}
+            {% endif -%}
+        },
     {% endfor -%}
+};
 
-    // not currently generated
+// not currently generated
+pub use self::{
     message_events_out::MessageEventsOut,
     message_attempt_endpoint_out::MessageAttemptEndpointOut,
     list_response_message_attempt_endpoint_out::ListResponseMessageAttemptEndpointOut,
