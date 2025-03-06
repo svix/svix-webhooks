@@ -349,4 +349,28 @@ describe("mockttp tests", () => {
     expect(requests.length).toBe(1);
     expect(requests[0].url.endsWith("api/v1/app/app1/msg?tag=test%23test")).toBe(true);
   });
+
+  test("content-type application/json is sent on request with body", async () => {
+    const endpointMock = await mockServer
+      .forPost(/\/api\/v1\/app.*/)
+      .thenReply(200, ApplicationOut);
+    const svx = new Svix("token", { serverUrl: mockServer.url });
+
+    await svx.application.create({ name: "test" });
+    const requests = await endpointMock.getSeenRequests();
+    expect(requests.length).toBe(1);
+    expect(requests[0].headers["content-type"]).toBe("application/json");
+  });
+
+  test("content type not sent on request without body", async () => {
+    const endpointMock = await mockServer
+      .forGet("/api/v1/app")
+      .thenReply(200, ListResponseApplicationOut);
+    const svx = new Svix("token", { serverUrl: mockServer.url });
+
+    await svx.application.list();
+    const requests = await endpointMock.getSeenRequests();
+    expect(requests.length).toBe(1);
+    expect(requests[0].headers["content-type"]).toBeUndefined();
+  });
 });
