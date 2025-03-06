@@ -1,0 +1,97 @@
+{% set type_name = type.name | to_upper_camel_case -%}
+{% set enum_type_name %}{{ type_name }}Config{% endset -%}
+{% set discriminator_field_name = type.discriminator_field | to_lower_camel_case -%}
+{% set content_field_name = type.content_field | to_lower_camel_case -%}
+// This file is @generated
+package com.svix.kotlin.models
+
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.datetime.Instant
+
+
+@Serializable(with = {{ type_name }}Serializer::class)
+data class {{ type_name }}(
+    {% include "types/struct_fields.kt.jinja" %}
+    val {{ content_field_name }}: {{ enum_type_name }}
+)
+
+
+@Serializable
+sealed  class {{ enum_type_name }} {
+    val variantName: String get() = this::class.annotations.filterIsInstance<VariantName>().first().name
+    abstract fun toJsonElement(): JsonElement
+
+{% for variant in type.variants %} 
+    {% set val_name %}{{ variant.name | to_lower_camel_case }}{% endset -%}
+    @VariantName("{{ variant.name }}")
+    {% if variant.schema_ref is defined -%}
+    data class {{ variant.name | to_upper_camel_case }}(val {{ val_name }}: {{ variant.schema_ref }}) : {{ enum_type_name }}() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement({{ variant.schema_ref }}.serializer(), {{ val_name }})
+    }
+    {% else -%}
+    data object {{ variant.name | to_upper_camel_case }} : {{ enum_type_name }}(){
+        override fun toJsonElement() = buildJsonObject { }
+    }
+    {% endif -%}
+{% endfor %}
+    companion object {
+        private val typeMap = mapOf<String, (JsonElement) -> {{ enum_type_name }}>(
+            {% for variant in type.variants -%}
+                {% if variant.schema_ref is defined -%}
+                "{{ variant.name }}" to { config -> {{ variant.name | to_upper_camel_case }}(Json.decodeFromJsonElement({{ variant.schema_ref }}.serializer(), config)) },
+                {% else -%}
+                "{{ variant.name }}" to { _ -> {{ variant.name | to_upper_camel_case }}},
+
+                {% endif -%}
+            {% endfor -%}
+        )
+
+        fun fromTypeAndConfig(type: String, config: JsonElement): {{ enum_type_name }} {
+            return typeMap[type]?.invoke(config)
+                ?: throw SerializationException("Unknown type: $type")
+        }
+    }
+
+}
+
+
+class {{ type_name }}Serializer : KSerializer<{{ type_name }}> {
+    @Serializable
+    private data class {{ type_name }}Surrogate(
+        {% include "types/struct_fields.kt.jinja" %}
+        val {{ discriminator_field_name }}: String,
+        val {{ content_field_name }}: JsonElement,
+    )
+
+    override val descriptor: SerialDescriptor = {{ type_name }}Surrogate.serializer().descriptor
+
+    override fun serialize(encoder: Encoder, value: {{ type_name }}) {
+        val surrogate = {{ type_name }}Surrogate(
+            {% for f in type.fields -%}
+            {{ f.name | to_lower_camel_case }} = value.{{ f.name | to_lower_camel_case }},
+            {% endfor -%}
+            {{ discriminator_field_name}} = value.{{ content_field_name}}.variantName,
+            {{ content_field_name }} = value.{{ content_field_name }}.toJsonElement()
+        )
+        encoder.encodeSerializableValue({{ type_name }}Surrogate.serializer(), surrogate)
+    }
+
+    override fun deserialize(decoder: Decoder): {{ type_name }} {
+        val surrogate = decoder.decodeSerializableValue({{ type_name }}Surrogate.serializer())
+        return {{ type_name }}(
+            {% for f in type.fields -%}
+            {{ f.name | to_lower_camel_case }} = surrogate.{{ f.name | to_lower_camel_case }},
+            {% endfor -%}
+            {{ content_field_name }} = {{ enum_type_name }}.fromTypeAndConfig(surrogate.type, surrogate.config)
+        )
+    }
+}
