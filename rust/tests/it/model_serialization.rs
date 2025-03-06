@@ -1,7 +1,7 @@
 use svix::api::ListResponseApplicationOut;
 
-#[tokio::test]
-async fn test_list_response_xxx_out() {
+#[test]
+fn test_list_response_xxx_out() {
     // first test with iterator and prevIterator
     let json_str =
         r#"{"data":[],"done":true,"iterator":"iterator-str","prevIterator":"prevIterator-str"}"#;
