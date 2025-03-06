@@ -1,3 +1,4 @@
+{% if type.fields | length == 0 %}    pass{% endif -%}
 {% for field in type.fields %}
     {%- if field.required and not field.nullable %}
         {%- if field.name | to_lower_camel_case != field.name %}
