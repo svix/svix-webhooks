@@ -23,30 +23,55 @@ pub struct IngestSourceIn {
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 #[serde(tag = "type", content = "config")]
 pub enum IngestSourceInConfig {
+    #[serde(rename = "generic-webhook")]
     GenericWebhook,
+    #[serde(rename = "cron")]
     Cron(CronConfig),
+    #[serde(rename = "adobe-sign")]
     AdobeSign(AdobeSignConfig),
+    #[serde(rename = "beehiiv")]
     Beehiiv(SvixConfig),
+    #[serde(rename = "brex")]
     Brex(SvixConfig),
+    #[serde(rename = "clerk")]
     Clerk(SvixConfig),
+    #[serde(rename = "docusign")]
     Docusign(DocusignConfig),
+    #[serde(rename = "github")]
     Github(GithubConfig),
+    #[serde(rename = "guesty")]
     Guesty(SvixConfig),
+    #[serde(rename = "hubspot")]
     Hubspot(HubspotConfig),
+    #[serde(rename = "incident-io")]
     IncidentIo(SvixConfig),
+    #[serde(rename = "lithic")]
     Lithic(SvixConfig),
+    #[serde(rename = "nash")]
     Nash(SvixConfig),
+    #[serde(rename = "pleo")]
     Pleo(SvixConfig),
+    #[serde(rename = "replicate")]
     Replicate(SvixConfig),
+    #[serde(rename = "resend")]
     Resend(SvixConfig),
+    #[serde(rename = "safebase")]
     Safebase(SvixConfig),
+    #[serde(rename = "sardine")]
     Sardine(SvixConfig),
+    #[serde(rename = "segment")]
     Segment(SegmentConfig),
+    #[serde(rename = "shopify")]
     Shopify(ShopifyConfig),
+    #[serde(rename = "slack")]
     Slack(SlackConfig),
+    #[serde(rename = "stripe")]
     Stripe(StripeConfig),
+    #[serde(rename = "stych")]
     Stych(SvixConfig),
+    #[serde(rename = "svix")]
     Svix(SvixConfig),
+    #[serde(rename = "zoom")]
     Zoom(ZoomConfig),
 }
 
