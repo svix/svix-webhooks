@@ -115,6 +115,9 @@ export class SvixRequest {
 
     const randomId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
 
+    if (this.body != null) {
+      this.headerParams["content-type"] = "application/json";
+    }
     // Cloudflare Workers fail if the credentials option is used in a fetch call.
     // This work around that. Source:
     // https://github.com/cloudflare/workers-sdk/issues/2514#issuecomment-2178070014
