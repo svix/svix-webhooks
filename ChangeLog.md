@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 1.61.3
+* Libs/Javascript: Fix bug where a missing content-type header would cause some requests to fail
+
 ## Version 1.61.2
 * Libs/Java and Libs/Kotlin: Fix bug introduced in v1.61.1, where `message.create` would return 422 on all requests
 
