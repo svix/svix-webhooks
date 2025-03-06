@@ -1,0 +1,210 @@
+{% set type_name = type.name | to_upper_camel_case -%}
+{% set enum_type_name %}{{ type_name }}Config{% endset -%}
+{% set discriminator_field_name = type.discriminator_field | to_lower_camel_case -%}
+{% set content_field_name = type.content_field | to_lower_camel_case -%}
+// This file is @generated
+package com.svix.models;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import com.svix.Utils;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import java.io.IOException;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.net.URI;
+import java.time.OffsetDateTime;
+
+@Setter
+@Getter
+@ToString
+@NoArgsConstructor
+@EqualsAndHashCode
+@AllArgsConstructor
+@JsonSerialize(using = {{ type_name }}Serializer.class)
+@JsonDeserialize(using = {{ type_name }}Deserializer.class)
+public class {{ type_name }} {
+    {% for f in type.fields -%}
+    private {{ f.type.to_java() }} {{ f.name | to_lower_camel_case }};
+    {% endfor -%}
+    private {{ enum_type_name }} {{ content_field_name }};
+
+    {% for f in type.fields -%}
+    public {{ type_name }} {{ f.name | to_lower_camel_case  }}({{ f.type.to_java() }} {{ f.name | to_lower_camel_case }}) {
+        this.{{ f.name | to_lower_camel_case }} = {{ f.name | to_lower_camel_case }};
+        return this;
+    }
+    {% endfor -%}
+    public {{ type_name }} {{ content_field_name }}({{ enum_type_name }} {{ content_field_name }}) {
+        this.{{ content_field_name }} = {{ content_field_name }};
+        return this;
+    }
+
+    public String toJson() throws JsonProcessingException {
+        return Utils.getObjectMapper().writeValueAsString(this);
+    }
+
+    public static {{ type_name }} fromJson(String jsonString) throws JsonProcessingException {
+        return Utils.getObjectMapper().readValue(jsonString, {{ type_name }}.class);
+    }
+}
+
+@Getter
+@NoArgsConstructor
+class {{ type_name }}Surrogate{
+    {% for f in type.fields -%}
+    @JsonProperty("{{ f.name }}") {{ f.type.to_java() }} {{ f.name | to_lower_camel_case }};
+    {% endfor -%}
+    @JsonProperty("{{ type.discriminator_field }}") String {{ discriminator_field_name }};
+    @JsonProperty("{{ type.content_field }}") JsonNode {{ content_field_name }};
+
+    {{ type_name }}Surrogate({{ type_name }} o, String {{ discriminator_field_name }}, JsonNode {{ content_field_name }} ){
+        {% for f in type.fields -%}
+        this.{{ f.name | to_lower_camel_case }} = o.get{{ f.name | to_upper_camel_case }}();
+        {% endfor -%}
+        this.{{ discriminator_field_name }} = {{ discriminator_field_name }};
+        this.{{ content_field_name }} = {{ content_field_name }};
+    }
+
+}
+
+
+class {{ type_name }}Serializer extends StdSerializer<{{ type_name }}> {
+    public {{ type_name }}Serializer() {
+        this(null);
+    }
+
+    public {{ type_name }}Serializer(Class<{{ type_name }}> t) {
+        super(t);
+    }
+
+    @Override
+    public void serialize({{ type_name }} value, JsonGenerator gen, SerializerProvider provider) throws IOException {
+        {{ type_name }}Surrogate surrogate = new {{ type_name }}Surrogate(value,value.get{{ content_field_name | to_upper_camel_case }}().getVariantName(),value.get{{ content_field_name | to_upper_camel_case  }}().toJsonNode());
+        gen.writeObject(surrogate);
+    }
+}
+
+
+class {{ type_name }}Deserializer extends StdDeserializer<{{ type_name }}> {
+    public {{ type_name }}Deserializer() {
+        this(null);
+    }
+
+    public {{ type_name }}Deserializer(Class<?> vc) {
+        super(vc);
+    }
+
+    @Override
+    public {{ type_name }} deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+        {{ type_name }}Surrogate surrogate = p.getCodec().readValue(p, {{ type_name }}Surrogate.class);
+        {% for f in type.fields -%}
+            {{ f.type.to_java() }} {{ f.name | to_lower_camel_case }} = surrogate.get{{ f.name | to_upper_camel_case }}();
+        {% endfor -%}
+        String {{ discriminator_field_name }} = surrogate.get{{ type.discriminator_field | to_upper_camel_case}}();
+        JsonNode {{ content_field_name }} = surrogate.get{{ type.content_field | to_upper_camel_case}}();
+        {{ enum_type_name }} sourceType = {{ enum_type_name }}.fromTypeAndConfig({{ discriminator_field_name }}, {{ content_field_name }});
+        return new {{ type_name }}({%- for f in type.fields -%}{{ f.name | to_lower_camel_case }},{%- endfor -%}sourceType);
+    }
+
+}
+
+{# START EXTRA FILE CONTENT #}
+{% set enum_file_content -%}
+// This file is @generated
+package com.svix.models;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.svix.Utils;
+import lombok.*;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@ToString
+@EqualsAndHashCode
+public abstract class {{ enum_type_name }} {
+    @JsonIgnore
+    public String getVariantName() {
+        VariantName annotation = this.getClass().getAnnotation(VariantName.class);
+        return annotation != null ? annotation.value() : null;
+    }
+
+    public abstract JsonNode toJsonNode();
+
+    {% for variant in type.variants -%}
+        {% if variant.schema_ref is defined -%}
+        @Getter
+        @Setter
+        @AllArgsConstructor
+        {% endif -%}
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
+    @VariantName("{{ variant.name }}")
+    public static class {{ variant.name | to_upper_camel_case }} extends {{ enum_type_name }} {
+        {% if variant.schema_ref is defined -%}
+        private final {{ variant.schema_ref | to_upper_camel_case }} {{ variant.name | to_lower_camel_case }};
+        {% endif -%}
+        @Override public JsonNode toJsonNode() {
+            {% if variant.schema_ref is defined -%}
+            return Utils.getObjectMapper().valueToTree({{ variant.name | to_lower_camel_case}});
+            {% else -%}
+            return Utils.getObjectMapper().createObjectNode();
+            {% endif -%}
+        }
+    }
+    {% endfor -%}
+
+    @FunctionalInterface
+    private interface TypeFactory {
+        {{ enum_type_name }} create(JsonNode config);
+    }
+    private static final Map<String, TypeFactory> TY_M = new HashMap<>();
+    private static final ObjectMapper m = Utils.getObjectMapper();
+    static {
+        {% for variant in type.variants -%}
+            {% if variant.schema_ref is defined -%}
+        TY_M.put("{{ variant.name }}", c -> new {{ variant.name | to_upper_camel_case }}(m.convertValue(c, {{ variant.schema_ref | to_upper_camel_case }}.class)));
+            {% else -%}
+        TY_M.put("{{ variant.name }}", c -> new {{ variant.name | to_upper_camel_case }}());
+            {% endif -%}
+        {% endfor -%}
+    }
+
+    public static {{ enum_type_name }} fromTypeAndConfig(String type, JsonNode config) {
+        TypeFactory factory = TY_M.get(type);
+        if (factory == null) {
+            throw new IllegalArgumentException("Unknown type: " + type);
+        }
+        return factory.create(config);
+    }
+
+}
+{% endset -%}
+{# END EXTRA FILE CONTENT #}
+{% set enum_filename %}{{ output_dir }}/{{ enum_type_name }}.java{% endset -%}
+{% do generate_extra_file(enum_filename,enum_file_content) %}
