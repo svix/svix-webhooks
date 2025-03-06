@@ -11,7 +11,7 @@ use super::{
     {% set enum_type_name %}{{ type_name }}{{ type.content_field | to_upper_camel_case }}{% endset -%}
 
     {{ doc_comment }}
-    #[derive(Clone, Debug, Deserialize, Serialize)]
+    #[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
     pub struct {{ type_name }} {
         {% include "types/struct_fields.rs.jinja" %}
 
@@ -26,7 +26,7 @@ use super::{
     {% set enum_type_name = type_name %}
 {% endif %}
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 #[serde(tag = "{{ type.discriminator_field }}", content = "{{ type.content_field }}")]
 pub enum {{ enum_type_name }} {
     {% for variant in type.variants -%}
@@ -35,4 +35,19 @@ pub enum {{ enum_type_name }} {
             ({{ variant.schema_ref | to_upper_camel_case }})
         {%- endif %},
     {% endfor -%}
+}
+
+{#
+    unfortunately, it is not easy to disable the nonsense Default derives for new struct types,
+    and we have list responses containing struct-enums, so those also need to implement Default,
+    which then carries over to the enum type
+-#}
+{% set first_variant = type.variants[0] -%}
+impl Default for {{ enum_type_name }} {
+    fn default() -> Self {
+        Self::{{ first_variant.name | to_upper_camel_case }}
+        {%- if first_variant.schema_ref is defined -%}
+            ({{ first_variant.schema_ref | to_upper_camel_case }}::default())
+        {%- endif %}
+    }
 }

@@ -1,6 +1,8 @@
 // this file is @generated
 #![allow(clippy::too_many_arguments)]
 
+pub mod adobe_sign_config;
+pub mod adobe_sign_config_out;
 pub mod aggregate_event_types_out;
 pub mod app_portal_access_in;
 pub mod app_portal_access_out;
@@ -15,7 +17,11 @@ pub mod background_task_status;
 pub mod background_task_type;
 pub mod connector_in;
 pub mod connector_kind;
+pub mod connector_out;
+pub mod cron_config;
 pub mod dashboard_access_out;
+pub mod docusign_config;
+pub mod docusign_config_out;
 pub mod endpoint_headers_in;
 pub mod endpoint_headers_out;
 pub mod endpoint_headers_patch_in;
@@ -41,6 +47,10 @@ pub mod event_type_out;
 pub mod event_type_patch;
 pub mod event_type_update;
 pub mod expunge_all_contents_out;
+pub mod github_config;
+pub mod github_config_out;
+pub mod hubspot_config;
+pub mod hubspot_config_out;
 pub mod ingest_endpoint_headers_in;
 pub mod ingest_endpoint_headers_out;
 pub mod ingest_endpoint_in;
@@ -48,6 +58,9 @@ pub mod ingest_endpoint_out;
 pub mod ingest_endpoint_secret_in;
 pub mod ingest_endpoint_secret_out;
 pub mod ingest_endpoint_update;
+pub mod ingest_source_consumer_portal_access_in;
+pub mod ingest_source_in;
+pub mod ingest_source_out;
 pub mod integration_in;
 pub mod integration_key_out;
 pub mod integration_out;
@@ -58,6 +71,7 @@ pub mod list_response_endpoint_message_out;
 pub mod list_response_endpoint_out;
 pub mod list_response_event_type_out;
 pub mod list_response_ingest_endpoint_out;
+pub mod list_response_ingest_source_out;
 pub mod list_response_integration_out;
 pub mod list_response_message_attempt_out;
 pub mod list_response_message_endpoint_out;
@@ -81,8 +95,20 @@ pub mod recover_in;
 pub mod recover_out;
 pub mod replay_in;
 pub mod replay_out;
+pub mod rotate_token_out;
+pub mod segment_config;
+pub mod segment_config_out;
+pub mod shopify_config;
+pub mod shopify_config_out;
+pub mod slack_config;
+pub mod slack_config_out;
 pub mod status_code_class;
-pub mod template_out;
+pub mod stripe_config;
+pub mod stripe_config_out;
+pub mod svix_config;
+pub mod svix_config_out;
+pub mod zoom_config;
+pub mod zoom_config_out;
 // not currently generated
 pub mod http_error_out;
 pub mod http_validation_error;
@@ -93,6 +119,8 @@ pub mod validation_error;
 
 #[rustfmt::skip]
 pub use self::{
+    adobe_sign_config::AdobeSignConfig,
+    adobe_sign_config_out::AdobeSignConfigOut,
     aggregate_event_types_out::AggregateEventTypesOut,
     app_portal_access_in::AppPortalAccessIn,
     app_portal_access_out::AppPortalAccessOut,
@@ -107,7 +135,11 @@ pub use self::{
     background_task_type::BackgroundTaskType,
     connector_in::ConnectorIn,
     connector_kind::ConnectorKind,
+    connector_out::ConnectorOut,
+    cron_config::CronConfig,
     dashboard_access_out::DashboardAccessOut,
+    docusign_config::DocusignConfig,
+    docusign_config_out::DocusignConfigOut,
     endpoint_headers_in::EndpointHeadersIn,
     endpoint_headers_out::EndpointHeadersOut,
     endpoint_headers_patch_in::EndpointHeadersPatchIn,
@@ -133,6 +165,10 @@ pub use self::{
     event_type_patch::EventTypePatch,
     event_type_update::EventTypeUpdate,
     expunge_all_contents_out::ExpungeAllContentsOut,
+    github_config::GithubConfig,
+    github_config_out::GithubConfigOut,
+    hubspot_config::HubspotConfig,
+    hubspot_config_out::HubspotConfigOut,
     ingest_endpoint_headers_in::IngestEndpointHeadersIn,
     ingest_endpoint_headers_out::IngestEndpointHeadersOut,
     ingest_endpoint_in::IngestEndpointIn,
@@ -140,6 +176,9 @@ pub use self::{
     ingest_endpoint_secret_in::IngestEndpointSecretIn,
     ingest_endpoint_secret_out::IngestEndpointSecretOut,
     ingest_endpoint_update::IngestEndpointUpdate,
+    ingest_source_consumer_portal_access_in::IngestSourceConsumerPortalAccessIn,
+    ingest_source_in::IngestSourceIn,
+    ingest_source_out::IngestSourceOut,
     integration_in::IntegrationIn,
     integration_key_out::IntegrationKeyOut,
     integration_out::IntegrationOut,
@@ -150,6 +189,7 @@ pub use self::{
     list_response_endpoint_out::ListResponseEndpointOut,
     list_response_event_type_out::ListResponseEventTypeOut,
     list_response_ingest_endpoint_out::ListResponseIngestEndpointOut,
+    list_response_ingest_source_out::ListResponseIngestSourceOut,
     list_response_integration_out::ListResponseIntegrationOut,
     list_response_message_attempt_out::ListResponseMessageAttemptOut,
     list_response_message_endpoint_out::ListResponseMessageEndpointOut,
@@ -173,8 +213,20 @@ pub use self::{
     recover_out::RecoverOut,
     replay_in::ReplayIn,
     replay_out::ReplayOut,
+    rotate_token_out::RotateTokenOut,
+    segment_config::SegmentConfig,
+    segment_config_out::SegmentConfigOut,
+    shopify_config::ShopifyConfig,
+    shopify_config_out::ShopifyConfigOut,
+    slack_config::SlackConfig,
+    slack_config_out::SlackConfigOut,
     status_code_class::StatusCodeClass,
-    template_out::TemplateOut,
+    stripe_config::StripeConfig,
+    stripe_config_out::StripeConfigOut,
+    svix_config::SvixConfig,
+    svix_config_out::SvixConfigOut,
+    zoom_config::ZoomConfig,
+    zoom_config_out::ZoomConfigOut,
     // not currently generated
     message_events_out::MessageEventsOut,
     message_attempt_endpoint_out::MessageAttemptEndpointOut,
