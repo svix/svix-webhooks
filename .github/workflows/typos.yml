@@ -13,4 +13,4 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: crate-ci/typos@v1.28.0
+      - uses: crate-ci/typos@v1.30.1

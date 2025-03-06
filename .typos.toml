@@ -1,16 +1,8 @@
-[default]
-extend-ignore-re = [
-    # Mock token
-    ";iuani;ansd;ifgjbnai;sdjfgb",
-    "jakarta\\.ws\\.rs",
-]
+[default.extend-words]
+typ = "typ" # since type is a keyword in Rust
 
 [files]
 extend-exclude = [
-    # Typo "achived" is a breaking change to fix
-    "kotlin/lib/src/main/kotlin/EventType.kt",
-    "kotlin/lib/src/main/kotlin/EventTypeListOptions.kt",
-
     # False positives in randomly-generated strings
     "server/svix-server/migrations/20230505222507_operational_webhook_event-types.up.sql",
     "server/svix-server/migrations/20230505222507_operational_webhook_event-types.down.sql",
