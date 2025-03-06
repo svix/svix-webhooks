@@ -118,15 +118,15 @@ output_dir = "rust/src/models"
 #output_dir = "go/models"
 #
 #
-#[kotlin]
-#extra_shell_commands = [
-#    "rm kotlin/lib/src/main/kotlin/{Ingest,OperationalWebhook}.kt",
-#]
-#template_dir = "kotlin/templates"
-#[[kotlin.task]]
-#template = "kotlin/templates/component_type.kt.jinja"
-#output_dir = "kotlin/lib/src/main/kotlin/models"
-#
-#[[kotlin.task]]
-#template = "kotlin/templates/api_resource.kt.jinja"
-#output_dir = "kotlin/lib/src/main/kotlin"
+[kotlin]
+extra_shell_commands = [
+   "rm kotlin/lib/src/main/kotlin/{Ingest,OperationalWebhook}.kt",
+]
+template_dir = "kotlin/templates"
+[[kotlin.task]]
+template = "kotlin/templates/component_type.kt.jinja"
+output_dir = "kotlin/lib/src/main/kotlin/models"
+
+[[kotlin.task]]
+template = "kotlin/templates/api_resource.kt.jinja"
+output_dir = "kotlin/lib/src/main/kotlin"
