@@ -30,6 +30,7 @@ use super::{
 #[serde(tag = "{{ type.discriminator_field }}", content = "{{ type.content_field }}")]
 pub enum {{ enum_type_name }} {
     {% for variant in type.variants -%}
+        #[serde(rename = "{{ variant.name }}")]
         {{ variant.name | to_upper_camel_case -}}
         {% if variant.schema_ref is defined -%}
             ({{ variant.schema_ref | to_upper_camel_case }})

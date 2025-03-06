@@ -38,30 +38,55 @@ pub struct IngestSourceOut {
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 #[serde(tag = "type", content = "config")]
 pub enum IngestSourceOutConfig {
+    #[serde(rename = "generic-webhook")]
     GenericWebhook,
+    #[serde(rename = "cron")]
     Cron(CronConfig),
+    #[serde(rename = "adobe-sign")]
     AdobeSign(AdobeSignConfigOut),
+    #[serde(rename = "beehiiv")]
     Beehiiv(SvixConfigOut),
+    #[serde(rename = "brex")]
     Brex(SvixConfigOut),
+    #[serde(rename = "clerk")]
     Clerk(SvixConfigOut),
+    #[serde(rename = "docusign")]
     Docusign(DocusignConfigOut),
+    #[serde(rename = "github")]
     Github(GithubConfigOut),
+    #[serde(rename = "guesty")]
     Guesty(SvixConfigOut),
+    #[serde(rename = "hubspot")]
     Hubspot(HubspotConfigOut),
+    #[serde(rename = "incident-io")]
     IncidentIo(SvixConfigOut),
+    #[serde(rename = "lithic")]
     Lithic(SvixConfigOut),
+    #[serde(rename = "nash")]
     Nash(SvixConfigOut),
+    #[serde(rename = "pleo")]
     Pleo(SvixConfigOut),
+    #[serde(rename = "replicate")]
     Replicate(SvixConfigOut),
+    #[serde(rename = "resend")]
     Resend(SvixConfigOut),
+    #[serde(rename = "safebase")]
     Safebase(SvixConfigOut),
+    #[serde(rename = "sardine")]
     Sardine(SvixConfigOut),
+    #[serde(rename = "segment")]
     Segment(SegmentConfigOut),
+    #[serde(rename = "shopify")]
     Shopify(ShopifyConfigOut),
+    #[serde(rename = "slack")]
     Slack(SlackConfigOut),
+    #[serde(rename = "stripe")]
     Stripe(StripeConfigOut),
+    #[serde(rename = "stych")]
     Stych(SvixConfigOut),
+    #[serde(rename = "svix")]
     Svix(SvixConfigOut),
+    #[serde(rename = "zoom")]
     Zoom(ZoomConfigOut),
 }
 
