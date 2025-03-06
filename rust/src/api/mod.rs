@@ -12,6 +12,7 @@ mod endpoint;
 mod event_type;
 mod ingest;
 mod ingest_endpoint;
+mod ingest_source;
 mod integration;
 mod message;
 mod message_attempt;
@@ -41,6 +42,10 @@ pub use self::{
     ingest_endpoint::{
         IngestEndpoint, IngestEndpointCreateOptions, IngestEndpointListOptions,
         IngestEndpointRotateSecretOptions,
+    },
+    ingest_source::{
+        IngestSource, IngestSourceCreateOptions, IngestSourceListOptions,
+        IngestSourceRotateTokenOptions,
     },
     integration::{
         Integration, IntegrationCreateOptions, IntegrationListOptions, IntegrationRotateKeyOptions,
