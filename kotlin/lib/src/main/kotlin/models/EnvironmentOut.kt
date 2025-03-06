@@ -10,6 +10,6 @@ data class EnvironmentOut(
     val createdAt: Instant,
     val eventTypes: List<EventTypeOut>,
     @Serializable(with = StringAnyMapSerializer::class) val settings: Map<String, Any>? = null,
-    val transformationTemplates: List<TemplateOut>,
+    val transformationTemplates: List<ConnectorOut>,
     val version: Long? = null,
 )
