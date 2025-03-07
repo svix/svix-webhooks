@@ -6,7 +6,6 @@ using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
 using WireMock.Server;
 using WireMock.Settings;
-using Wmhelp.XPath2.AST;
 using Xunit;
 
 namespace Svix.Tests
@@ -261,6 +260,48 @@ namespace Svix.Tests
                 "/api/v1/app/app_id/msg?tag=test%23test",
                 stub.LogEntries[0].RequestMessage.Url
             );
+        }
+
+        [Fact]
+        public void StructEnumWithFieldsSerializesCorrectly()
+        {
+            var jsonString =
+                """{"name":"me","uid":"test","type":"cron","config":{"payload":"asd","schedule":"asd"}}""";
+            var sourceIn = new IngestSourceIn
+            {
+                Name = "me",
+                Uid = "test",
+                Config = IngestSourceInConfig.Cron(
+                    new CronConfig { Payload = "asd", Schedule = "asd" }
+                ),
+            };
+
+            var loadedFromJson = JsonConvert.DeserializeObject<IngestSourceIn>(jsonString);
+            Assert.Equal(sourceIn.Name, loadedFromJson.Name);
+            Assert.Equal(sourceIn.Uid, loadedFromJson.Uid);
+
+            var loadedFromJsonConfig = (CronConfig)loadedFromJson.Config.GetContent();
+            var sourceInConfig = (CronConfig)sourceIn.Config.GetContent();
+            Assert.Equal(loadedFromJsonConfig.ContentType, sourceInConfig.ContentType);
+            Assert.Equal(loadedFromJsonConfig.Schedule, sourceInConfig.Schedule);
+            Assert.Equal(loadedFromJsonConfig.Payload, sourceInConfig.Payload);
+        }
+
+        [Fact]
+        public void StructEnumWithoutFieldsSerializesCorrectly()
+        {
+            var jsonString = """{"name":"me","uid":"test","type":"generic-webhook","config":{}}""";
+            var sourceIn = new IngestSourceIn
+            {
+                Name = "me",
+                Uid = "test",
+                Config = IngestSourceInConfig.GenericWebhook(),
+            };
+
+            var loadedFromJson = JsonConvert.DeserializeObject<IngestSourceIn>(jsonString);
+            Assert.Equal(sourceIn.Name, loadedFromJson.Name);
+            Assert.Equal(sourceIn.Uid, loadedFromJson.Uid);
+            Assert.Equal(sourceIn.Config.GetContent(), loadedFromJson.Config.GetContent());
         }
     }
 }
