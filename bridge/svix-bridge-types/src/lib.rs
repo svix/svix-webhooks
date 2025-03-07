@@ -3,7 +3,9 @@ use std::time::Duration;
 pub use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 pub use svix;
-use svix::api::{MessageIn, PostOptions as PostOptions_, SvixOptions as _SvixOptions};
+use svix::api::{
+    MessageCreateOptions as _MessageCreateOptions, MessageIn, SvixOptions as _SvixOptions,
+};
 use tokio::sync::{mpsc, oneshot};
 
 #[derive(Deserialize, Default, Eq, PartialEq, Copy, Clone)]
@@ -201,6 +203,7 @@ pub struct SvixOptions {
     pub debug: bool,
     pub server_url: Option<String>,
     pub timeout_secs: Option<u64>,
+    pub num_retries: Option<u32>,
 }
 
 impl From<SvixOptions> for _SvixOptions {
@@ -209,12 +212,14 @@ impl From<SvixOptions> for _SvixOptions {
             debug,
             server_url,
             timeout_secs,
+            num_retries,
         }: SvixOptions,
     ) -> Self {
         _SvixOptions {
             debug,
             server_url,
             timeout: timeout_secs.map(Duration::from_secs),
+            num_retries,
         }
     }
 }
@@ -235,14 +240,15 @@ pub struct SvixSenderOutputOpts {
 }
 
 #[derive(Clone, Default, Deserialize, Serialize)]
-pub struct PostOptions {
+pub struct MessageCreateOptions {
     pub idempotency_key: Option<String>,
 }
 
-impl From<PostOptions> for PostOptions_ {
-    fn from(value: PostOptions) -> Self {
-        PostOptions_ {
+impl From<MessageCreateOptions> for _MessageCreateOptions {
+    fn from(value: MessageCreateOptions) -> Self {
+        _MessageCreateOptions {
             idempotency_key: value.idempotency_key,
+            with_content: None,
         }
     }
 }
@@ -255,7 +261,7 @@ pub struct CreateMessageRequest {
     pub app_id: String,
     pub message: MessageIn,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub post_options: Option<PostOptions>,
+    pub post_options: Option<MessageCreateOptions>,
 }
 
 /// Receivers convert HTTP bodies into messages forwarded to (currently only) message queues, etc.
