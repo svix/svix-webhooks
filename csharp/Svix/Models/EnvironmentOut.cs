@@ -16,7 +16,7 @@ namespace Svix.Models
         public Object? Settings { get; set; } = null;
 
         [JsonProperty("transformationTemplates", Required = Required.Always)]
-        public required List<TemplateOut> TransformationTemplates { get; set; }
+        public required List<ConnectorOut> TransformationTemplates { get; set; }
 
         [JsonProperty("version")]
         public long? Version { get; set; } = null;

@@ -73,17 +73,17 @@ output_dir = "rust/src/models"
 #output_dir = "ruby/lib/svix/models"
 #
 #
-#[csharp]
-#template_dir = "csharp/templates"
-#extra_shell_commands = [
-#    "rm csharp/Svix/{IngestEndpoint,Ingest,OperationalWebhook}.cs",
-#]
-#[[csharp.task]]
-#template = "csharp/templates/api_resource.cs.jinja"
-#output_dir = "csharp/Svix"
-#[[csharp.task]]
-#template = "csharp/templates/component_type.cs.jinja"
-#output_dir = "csharp/Svix/Models"
+[csharp]
+template_dir = "csharp/templates"
+extra_shell_commands = [
+   "rm csharp/Svix/{IngestEndpoint,Ingest,OperationalWebhook}.cs",
+]
+[[csharp.task]]
+template = "csharp/templates/api_resource.cs.jinja"
+output_dir = "csharp/Svix"
+[[csharp.task]]
+template = "csharp/templates/component_type.cs.jinja"
+output_dir = "csharp/Svix/Models"
 
 
 [java]
@@ -100,8 +100,8 @@ output_dir = "java/lib/src/main/java/com/svix/api"
 [[java.task]]
 template = "java/templates/component_type.java.jinja"
 output_dir = "java/lib/src/main/java/com/svix/models"
-
-
+#
+#
 #[go]
 #template_dir = "openapi-templates/go"
 #extra_shell_commands = [
