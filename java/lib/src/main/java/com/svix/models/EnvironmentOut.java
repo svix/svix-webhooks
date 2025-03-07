@@ -23,7 +23,7 @@ public class EnvironmentOut {
     @JsonProperty private OffsetDateTime createdAt;
     @JsonProperty private List<EventTypeOut> eventTypes;
     @JsonProperty private Object settings;
-    @JsonProperty private List<TemplateOut> transformationTemplates;
+    @JsonProperty private List<ConnectorOut> transformationTemplates;
     @JsonProperty private Long version;
 
     public EnvironmentOut() {}
@@ -94,12 +94,12 @@ public class EnvironmentOut {
         this.settings = settings;
     }
 
-    public EnvironmentOut transformationTemplates(List<TemplateOut> transformationTemplates) {
+    public EnvironmentOut transformationTemplates(List<ConnectorOut> transformationTemplates) {
         this.transformationTemplates = transformationTemplates;
         return this;
     }
 
-    public EnvironmentOut addTransformationTemplatesItem(TemplateOut transformationTemplatesItem) {
+    public EnvironmentOut addTransformationTemplatesItem(ConnectorOut transformationTemplatesItem) {
         if (this.transformationTemplates == null) {
             this.transformationTemplates = new ArrayList<>();
         }
@@ -114,11 +114,11 @@ public class EnvironmentOut {
      * @return transformationTemplates
      */
     @javax.annotation.Nonnull
-    public List<TemplateOut> getTransformationTemplates() {
+    public List<ConnectorOut> getTransformationTemplates() {
         return transformationTemplates;
     }
 
-    public void setTransformationTemplates(List<TemplateOut> transformationTemplates) {
+    public void setTransformationTemplates(List<ConnectorOut> transformationTemplates) {
         this.transformationTemplates = transformationTemplates;
     }
 

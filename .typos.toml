@@ -1,5 +1,6 @@
 [default.extend-words]
 typ = "typ" # since type is a keyword in Rust
+ser = "ser" # Java com.fasterxml.jackson.databind.ser.std.StdSerializer
 
 [files]
 extend-exclude = [

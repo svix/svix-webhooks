@@ -15,7 +15,7 @@ except ImportError:
     print("Python 3.11 or greater is required to run the codegen")
     exit(1)
 
-OPENAPI_CODEGEN_IMAGE = "ghcr.io/svix/openapi-codegen:20250306-272"
+OPENAPI_CODEGEN_IMAGE = "ghcr.io/svix/openapi-codegen:20250307-275"
 REPO_ROOT = pathlib.Path(__file__).parent.resolve()
 DEBUG = os.getenv("DEBUG") is not None
 GREEN = "\033[92m"
@@ -158,8 +158,6 @@ def execute_codegen_task(task):
         ENDC,
     )
 
-    prefix_print(prefix, "Starting codegen task")
-
     container_name = docker_container_create(prefix, task).strip()
     dbg(prefix, f"Container id {container_name}")
 
@@ -182,7 +180,7 @@ def execute_codegen_task(task):
 
     docker_container_rm(prefix, container_name)
 
-    prefix_print(prefix, "Codegen task completed")
+    print(f"{GREEN}#{ENDC}", flush=True, end="")
 
 
 def run_codegen_for_language(language, language_config):
@@ -210,7 +208,7 @@ def parse_config():
     openapi = data.pop("global")["openapi"]
     config = {}
     for language, language_config in data.items():
-        config[language] = {"tasks": []}
+        config[language] = {"tasks": [], "tasks_count": len(language_config["task"])}
         for language_task_index, task in enumerate(language_config["task"]):
             config[language]["extra_shell_commands"] = language_config.get(
                 "extra_shell_commands", []
@@ -251,6 +249,7 @@ def pull_image():
     )
     # if it does not exist, pull image
     if check.returncode != 0:
+        print("Pulling docker image", flush=True)
         pull = subprocess.run(
             [get_docker_binary(), "image", "pull", OPENAPI_CODEGEN_IMAGE]
         )
@@ -261,7 +260,8 @@ def pull_image():
 def main():
     pull_image()
     config = parse_config()
-    print("Pulling docker image", flush=True)
+    all_tasks = sum([i["tasks_count"] for i in config.values()])
+    print(f"Running {all_tasks} codegen tasks")
 
     threads = []
     for language, language_config in config.items():
@@ -271,6 +271,9 @@ def main():
 
     for th in threads:
         th.join()
+
+    # final newline
+    print()
 
 
 if __name__ == "__main__":

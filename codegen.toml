@@ -84,24 +84,24 @@ output_dir = "rust/src/models"
 #[[csharp.task]]
 #template = "csharp/templates/component_type.cs.jinja"
 #output_dir = "csharp/Svix/Models"
-#
-#
-#[java]
-#template_dir = "java/templates"
-#extra_shell_commands = [
-#    "rm java/lib/src/main/java/com/svix/api/{OperationalWebhook,Ingest}.java",
-#]
-#[[java.task]]
-#template = "java/templates/api_resource.java.jinja"
-#output_dir = "java/lib/src/main/java/com/svix/api"
-#[[java.task]]
-#template = "java/templates/operation_options.java.jinja"
-#output_dir = "java/lib/src/main/java/com/svix/api"
-#[[java.task]]
-#template = "java/templates/component_type.java.jinja"
-#output_dir = "java/lib/src/main/java/com/svix/models"
-#
-#
+
+
+[java]
+template_dir = "java/templates"
+extra_shell_commands = [
+   "rm java/lib/src/main/java/com/svix/api/{OperationalWebhook,Ingest}.java",
+]
+[[java.task]]
+template = "java/templates/api_resource.java.jinja"
+output_dir = "java/lib/src/main/java/com/svix/api"
+[[java.task]]
+template = "java/templates/operation_options.java.jinja"
+output_dir = "java/lib/src/main/java/com/svix/api"
+[[java.task]]
+template = "java/templates/component_type.java.jinja"
+output_dir = "java/lib/src/main/java/com/svix/models"
+
+
 #[go]
 #template_dir = "openapi-templates/go"
 #extra_shell_commands = [
