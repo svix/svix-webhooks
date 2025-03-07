@@ -303,5 +303,16 @@ namespace Svix.Tests
             Assert.Equal(sourceIn.Uid, loadedFromJson.Uid);
             Assert.Equal(sourceIn.Config.GetContent(), loadedFromJson.Config.GetContent());
         }
+
+        [Fact]
+        public void ReadStructEnumField()
+        {
+            var jsonString =
+                """{"name":"me","uid":"test","type":"cron","config":{"payload":"asd","schedule":"* * * * *"}}""";
+            var loadedFromJson = JsonConvert.DeserializeObject<IngestSourceIn>(jsonString);
+            Assert.True(loadedFromJson.Config.GetContent().GetType() == typeof(CronConfig));
+            Assert.Equal("asd", ((CronConfig)loadedFromJson.Config.GetContent()).Payload);
+            Assert.Equal("* * * * *", ((CronConfig)loadedFromJson.Config.GetContent()).Schedule);
+        }
     }
 }
