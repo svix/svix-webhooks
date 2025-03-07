@@ -15,6 +15,8 @@ ignore = [
     "RUSTSEC-2023-0071",
     # TODO: Wait for dependencies to upgrade off of proc-macro-error
     "RUSTSEC-2024-0370",
+    # TODO: Wait for dependencies to upgrade off of paste
+    "RUSTSEC-2024-0436",
 ]
 
 [licenses]
