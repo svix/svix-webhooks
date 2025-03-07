@@ -207,4 +207,4 @@ public abstract class {{ enum_type_name }} {
 {% endset -%}
 {# END EXTRA FILE CONTENT #}
 {% set enum_filename %}{{ output_dir }}/{{ enum_type_name }}.java{% endset -%}
-{% do generate_extra_file(enum_filename,enum_file_content) %}
+{% do generate_extra_file(enum_filename, enum_file_content) %}
