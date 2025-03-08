@@ -59,18 +59,20 @@ output_dir = "rust/src/models"
 #output_dir = "python/svix/models"
 #
 #
-#[ruby]
-#template_dir = "ruby/templates"
-#extra_shell_commands = ["rm ruby/lib/svix/api/{ingest,operational_webhook}.rb"]
-#[[ruby.task]]
-#template = "ruby/templates/api_resource.rb.jinja"
-#output_dir = "ruby/lib/svix/api"
-#[[ruby.task]]
-#template = "ruby/templates/summary.rb.jinja"
-#output_dir = "ruby/lib"
-#[[ruby.task]]
-#template = "ruby/templates/component_type.rb.jinja"
-#output_dir = "ruby/lib/svix/models"
+[ruby]
+template_dir = "ruby/templates"
+extra_shell_commands = [
+   "rm ruby/lib/svix/api/operational_webhook.rb"
+   ]
+[[ruby.task]]
+template = "ruby/templates/api_resource.rb.jinja"
+output_dir = "ruby/lib/svix/api"
+[[ruby.task]]
+template = "ruby/templates/summary.rb.jinja"
+output_dir = "ruby/lib"
+[[ruby.task]]
+template = "ruby/templates/component_type.rb.jinja"
+output_dir = "ruby/lib/svix/models"
 #
 #
 [csharp]
