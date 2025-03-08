@@ -332,4 +332,48 @@ describe "API Client" do
       end
     end
   end
+
+  it "struct enum with extra fields" do
+    json_source_in = '{"name":"My Stripe Source","uid":"src_123","type":"cron","config":{"contentType":"test","payload":"boom","schedule":"* * * * *"}}';
+    source_in = Svix::IngestSourceIn.new(
+      {
+        "name" => "My Stripe Source",
+        "uid" => "src_123",
+        "config" => Svix::IngestSourceInConfig::Cron.new(
+          {
+            content_type: "test",
+            payload: "boom",
+            schedule: "* * * * *"
+          }
+        )
+      }
+    )
+    loaded_from_json = Svix::IngestSourceIn.deserialize(JSON.parse(json_source_in))
+    expect(loaded_from_json).to( have_attributes(
+      name: source_in.name,
+      uid: source_in.uid,
+    ))
+    expect(loaded_from_json.config.class).to eql(Svix::IngestSourceInConfig::Cron)
+    expect(loaded_from_json.config.content_type).to eql(source_in.config.content_type)
+    expect(loaded_from_json.config.payload).to eql(source_in.config.payload)
+    expect(loaded_from_json.config.schedule).to eql(source_in.config.schedule)
+  end
+
+
+  it "struct enum without any fields" do
+    json_source_in = '{"name":"My Stripe Source","uid":"src_123","type":"generic-webhook","config":{}}';
+    source_in = Svix::IngestSourceIn.new(
+      {
+        "name" => "My Stripe Source",
+        "uid" => "src_123",
+        "config" => Svix::IngestSourceInConfig::GenericWebhook.new()
+      }
+    )
+    loaded_from_json = Svix::IngestSourceIn.deserialize(JSON.parse(json_source_in))
+    expect(loaded_from_json).to( have_attributes(
+      name: source_in.name,
+      uid: source_in.uid,
+    ))
+    expect(loaded_from_json.config.class).to eql(Svix::IngestSourceInConfig::GenericWebhook)
+  end
 end
