@@ -1,3 +1,4 @@
+{% from "types/macros.rs.jinja" import field_name -%}
 {% if type.name is endingwith "Patch" -%}
     use js_option::JsOption;
 {% endif -%}
@@ -24,7 +25,7 @@ impl {{ type.name | to_upper_camel_case }} {
                 {% set field_ty = field.type.to_rust() -%}
             {% endif -%}
             {% if field.required and not field.nullable -%}
-                {{ field.name | to_snake_case }}: {{ field_ty }},
+                {{ field_name(field.name | to_snake_case) }}: {{ field_ty }},
             {% endif -%}
         {% endfor -%}
     ) -> Self {
@@ -34,11 +35,11 @@ impl {{ type.name | to_upper_camel_case }} {
         Self {
             {% for field in type.fields -%}
                 {% if field.required and not field.nullable -%}
-                    {{ field.name | to_snake_case }},
+                    {{ field_name(field.name | to_snake_case) }},
                 {% elif type.name is endingwith "Patch" and field.nullable -%}
-                    {{ field.name | to_snake_case }}: JsOption::Undefined,
+                    {{ field_name(field.name | to_snake_case) }}: JsOption::Undefined,
                 {% else -%}
-                    {{ field.name | to_snake_case }}: None,
+                    {{ field_name(field.name | to_snake_case) }}: None,
                 {% endif -%}
             {% endfor -%}
         }
