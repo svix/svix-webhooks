@@ -40,8 +40,8 @@ module Svix
     def serialize
       out = Hash.new
       out["id"] = Svix::serialize_primitive(@id) if @id
-      out["status"] = @status.serialize if @status
-      out["task"] = @task.serialize if @task
+      out["status"] = Svix::serialize_schema_ref(@status) if @status
+      out["task"] = Svix::serialize_schema_ref(@task) if @task
       out["unresolvedAppIds"] = Svix::serialize_primitive(@unresolved_app_ids) if @unresolved_app_ids
       out
     end

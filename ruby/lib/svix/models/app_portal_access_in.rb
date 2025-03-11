@@ -39,7 +39,7 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["application"] = @application.serialize if @application
+      out["application"] = Svix::serialize_schema_ref(@application) if @application
       out["expiry"] = Svix::serialize_primitive(@expiry) if @expiry
       out["featureFlags"] = Svix::serialize_primitive(@feature_flags) if @feature_flags
       out["readOnly"] = Svix::serialize_primitive(@read_only) if @read_only

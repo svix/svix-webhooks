@@ -78,7 +78,7 @@ module Svix
       out["id"] = Svix::serialize_primitive(@id) if @id
       out["instructions"] = Svix::serialize_primitive(@instructions) if @instructions
       out["instructionsLink"] = Svix::serialize_primitive(@instructions_link) if @instructions_link
-      out["kind"] = @kind.serialize if @kind
+      out["kind"] = Svix::serialize_schema_ref(@kind) if @kind
       out["logo"] = Svix::serialize_primitive(@logo) if @logo
       out["name"] = Svix::serialize_primitive(@name) if @name
       out["orgId"] = Svix::serialize_primitive(@org_id) if @org_id

@@ -79,7 +79,7 @@ module Svix
       out["id"] = Svix::serialize_primitive(@id) if @id
       out["nextAttempt"] = Svix::serialize_primitive(@next_attempt) if @next_attempt
       out["rateLimit"] = Svix::serialize_primitive(@rate_limit) if @rate_limit
-      out["status"] = @status.serialize if @status
+      out["status"] = Svix::serialize_schema_ref(@status) if @status
       out["uid"] = Svix::serialize_primitive(@uid) if @uid
       out["updatedAt"] = Svix::serialize_primitive(@updated_at) if @updated_at
       out["url"] = Svix::serialize_primitive(@url) if @url

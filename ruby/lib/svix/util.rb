@@ -53,4 +53,17 @@ module Svix
   end
 
   module_function :deserialize_date
+
+  def serialize_schema_ref(v)
+    # Enums are a schema_ref but since we pass them around using the underlying value
+    # we need to check if they have the serialize method before calling it
+    if v.class.method_defined? :serialize
+      v.serialize
+    else
+      v
+    end
+  end
+
+  module_function :serialize_schema_ref
+
 end

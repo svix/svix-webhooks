@@ -56,7 +56,7 @@ module Svix
       out["id"] = Svix::serialize_primitive(@id) if @id
       out["nextAttempt"] = Svix::serialize_primitive(@next_attempt) if @next_attempt
       out["payload"] = Svix::serialize_primitive(@payload) if @payload
-      out["status"] = @status.serialize if @status
+      out["status"] = Svix::serialize_schema_ref(@status) if @status
       out["tags"] = Svix::serialize_primitive(@tags) if @tags
       out["timestamp"] = Svix::serialize_primitive(@timestamp) if @timestamp
       out

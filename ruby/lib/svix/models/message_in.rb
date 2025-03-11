@@ -59,7 +59,7 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["application"] = @application.serialize if @application
+      out["application"] = Svix::serialize_schema_ref(@application) if @application
       out["channels"] = Svix::serialize_primitive(@channels) if @channels
       out["eventId"] = Svix::serialize_primitive(@event_id) if @event_id
       out["eventType"] = Svix::serialize_primitive(@event_type) if @event_type

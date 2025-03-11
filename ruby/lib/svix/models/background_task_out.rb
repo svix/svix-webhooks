@@ -41,8 +41,8 @@ module Svix
       out = Hash.new
       out["data"] = Svix::serialize_primitive(@data) if @data
       out["id"] = Svix::serialize_primitive(@id) if @id
-      out["status"] = @status.serialize if @status
-      out["task"] = @task.serialize if @task
+      out["status"] = Svix::serialize_schema_ref(@status) if @status
+      out["task"] = Svix::serialize_schema_ref(@task) if @task
       out
     end
 
