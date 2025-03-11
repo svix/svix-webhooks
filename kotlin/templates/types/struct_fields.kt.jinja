@@ -18,7 +18,7 @@
         {% if field.name | to_lower_camel_case != field.name -%}
         @SerialName("{{ field.name }}")
         {% endif -%}
-        {% if field.type.is_json_object() and not use_nullable -%}
+        {% if (field.type.is_json_object() or field.type.to_kotlin() == "Map<String,Any>") and not use_nullable -%}
         @Serializable(with = StringAnyMapSerializer::class)
         {% elif field.type.is_json_object() and use_nullable -%}
         @Serializable(with = MaybeUnsetStringAnyMapSerializer::class)
