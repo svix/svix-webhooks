@@ -1,6 +1,7 @@
+{% from "types/macros.rb.jinja" import deserialize_field, serialize_field -%}
+{% set class_ty = type.name | to_upper_camel_case  -%}
 # frozen_string_literal: true
 # This file is @generated
-{% set class_ty = type.name | to_upper_camel_case  -%}
 require 'json'
 
 module Svix
@@ -35,24 +36,7 @@ module Svix
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
       {% for field in type.fields -%}
-        {% set val_expr %}attributes['{{ field.name }}']{% endset -%}
-        {% set not_nil_check = "" -%}
-        {% if not field.required -%}
-          {% set not_nil_check %}if {{ val_expr }}{% endset -%}
-        {% endif -%}
-
-        {% if (field.type.is_set() or  field.type.is_list()) and field.type.inner_type().is_schema_ref() -%}
-          {% set val_expr -%}
-              attributes['{{ field.name }}'].map { | v | Svix::{{ field.type.inner_type().to_ruby() }}.deserialize v } {{ not_nil_check }}
-          {%- endset -%}
-        {% elif field.type.is_schema_ref() -%}
-          {% set val_expr -%}
-              Svix::{{ field.type.to_ruby() }}.deserialize(attributes['{{ field.name }}']) {{ not_nil_check }}
-          {%- endset -%}
-        {% elif field.type.is_datetime() -%}
-          {% set val_expr %}DateTime.rfc3339({{ val_expr }}).to_time {{ not_nil_check }}{% endset -%}
-        {% endif -%}
-        attrs['{{ field.name | to_snake_case }}'] = {{ val_expr }}
+        {{ deserialize_field(field) -}}
       {% endfor -%}
       new attrs
     end
@@ -60,20 +44,7 @@ module Svix
     def serialize
       out = Hash.new
       {% for field in type.fields -%}
-        {% set val_expr %}@{{ field.name | to_snake_case }}{% endset -%}
-
-        {% if (field.type.is_set() or  field.type.is_list()) and field.type.inner_type().is_schema_ref() -%}
-          {% set val_expr %}{{ val_expr }}.map { | v | v.serialize }{% endset -%}
-        {% elif field.type.is_schema_ref() -%}
-          {% set val_expr %}{{ val_expr }}.serialize{% endset -%}
-        {% else -%}
-          {% set val_expr %}Svix::serialize_primitive({{ val_expr }}){% endset -%}
-        {% endif -%}
-        {% if type.name is endingwith "Patch" and field.nullable -%}
-        out['{{ field.name }}'] = {{ val_expr }} if @__{{ field.name | to_snake_case }}_is_defined
-        {% else -%}
-        out['{{ field.name }}'] = {{ val_expr }} if @{{ field.name | to_snake_case }}
-        {% endif -%}
+        {{ serialize_field(field) -}}
       {% endfor -%}
       out
     end

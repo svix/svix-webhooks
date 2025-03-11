@@ -35,7 +35,7 @@ module Svix
       attrs["event_types"] = attributes["eventTypes"].map { |v| Svix::EventTypeOut.deserialize(v) }
       attrs["settings"] = attributes["settings"]
       attrs["transformation_templates"] = attributes["transformationTemplates"].map { |v|
-        Svix::TemplateOut.deserialize(v)
+        Svix::ConnectorOut.deserialize(v)
       }
       attrs["version"] = attributes["version"]
       new(attrs)

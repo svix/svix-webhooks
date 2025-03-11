@@ -1,0 +1,116 @@
+{% from "types/macros.rb.jinja" import deserialize_field, serialize_field -%}
+{% set class_ty = type.name | to_upper_camel_case  -%}
+{% set enum_type_name %}{{ class_ty }}{{ type.content_field | to_upper_camel_case }}{% endset-%}
+# frozen_string_literal: true
+# This file is @generated
+require 'json'
+
+{% for r in referenced_components -%}
+require_relative "./{{ r | to_snake_case }}"
+{% endfor %}
+
+module Svix
+  class {{ enum_type_name }}
+    {% for v in type.variants -%}
+    class {{ v.name | to_upper_camel_case }} {%- if v.schema_ref is defined -%}< {{ v.schema_ref | to_upper_camel_case}}{%- endif %}
+      {% if not v.schema_ref is defined %}
+      def serialize
+        Hash.new
+      end
+      def self.deserialize(attributes = {})
+        new()
+      end
+      # Serializes the object to a json string
+      # @return String
+      def to_json
+        JSON.dump(serialize)
+      end
+      {% endif -%}
+    end
+    {% endfor -%}
+  end
+
+  {% if type.description is defined -%}
+  {{ type.description | to_doc_comment(style="ruby") | indent(4) }}
+  {% endif -%}
+  class {{ class_ty }}
+    {% for field in type.fields -%}
+    attr_accessor :{{ field.name | to_snake_case }}
+    {% endfor -%}
+    attr_accessor :{{ type.content_field | to_snake_case }}
+
+    ALL_FIELD ||= [
+      {%- for f in type.fields -%}
+      "{{ f.name | to_snake_case }}",
+      {%- endfor -%}
+      "{{ type.content_field | to_snake_case }}"
+    ].freeze
+    private_constant :ALL_FIELD
+    TYPE_TO_NAME = {
+    {% for v in type.variants -%}
+      {{ enum_type_name }}::{{ v.name | to_upper_camel_case }} => "{{ v.name }}",
+    {% endfor %}
+    }
+    private_constant :TYPE_TO_NAME
+    NAME_TO_TYPE = TYPE_TO_NAME.invert
+    private_constant :NAME_TO_TYPE
+
+    def initialize(attributes = {})
+      unless attributes.is_a?(Hash)
+        fail(
+          ArgumentError,
+          "The input argument (attributes) must be a hash in `Svix::{{ class_ty }}` new method"
+        )
+      end
+      attributes.each do |k, v|
+        unless ALL_FIELD.include?(k.to_s)
+          fail(ArgumentError, "The field #{k} is not part of Svix::{{ class_ty }}")
+        end
+        if k == "{{type.content_field | to_snake_case  }}"
+          unless TYPE_TO_NAME.key?(v.class)
+            fail(ArgumentError, "The field #{k} can't be a `#{v.class}` expected one of #{TYPE_TO_NAME.keys}")
+          end
+          instance_variable_set("@__enum_discriminator", TYPE_TO_NAME[v.class])
+        end
+        instance_variable_set("@#{k}", v)
+        instance_variable_set("@__#{k}_is_defined", true)
+      end
+      if @__enum_discriminator.nil?
+        fail(ArgumentError, "Required {{ type.content_field | to_snake_case }} field was not set")
+      end
+    end
+
+    def self.deserialize(attributes = {})
+      attributes = attributes.transform_keys(&:to_s)
+      attrs = Hash.new
+      {% for f in type.fields -%}
+        {{ deserialize_field(f) -}}
+      {% endfor -%}
+      unless NAME_TO_TYPE.key?(attributes["{{ type.discriminator_field }}"])
+        fail(ArgumentError, "Invalid {{ type.discriminator_field | to_snake_case }} `#{attributes["{{ type.discriminator_field }}"]}` expected on of #{NAME_TO_TYPE.keys}")
+      end
+      unless attributes.key? "{{ type.content_field }}"
+        fail(ArgumentError, "Missing required field {{ type.content_field }}")
+      end
+      attrs["{{ type.content_field  }}"] = NAME_TO_TYPE[attributes["{{ type.discriminator_field }}"]].deserialize(attributes["{{ type.content_field }}"])
+      new(attrs)
+    end
+
+    def serialize
+      out = Hash.new
+      {% for f in type.fields -%}
+        {{ serialize_field(f) -}}
+      {% endfor -%}
+      out["{{ type.discriminator_field }}"] = @__enum_discriminator
+      out["{{ type.content_field }}"] = @{{ type.content_field | to_snake_case }}.serialize
+      out
+    end
+
+    # Serializes the object to a json string
+    # @return String
+    def to_json
+      JSON.dump(serialize)
+    end
+
+  end
+end
