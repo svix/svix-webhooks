@@ -2,7 +2,7 @@ import "svix-fetch";
 import { ApiException } from "./util";
 import { HttpErrorOut, HTTPValidationError } from "./HttpErrors";
 
-export const LIB_VERSION = "1.61.3";
+export const LIB_VERSION = "1.61.4";
 const USER_AGENT = `svix-libs/${LIB_VERSION}/javascript`;
 
 export enum HttpMethod {
