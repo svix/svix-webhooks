@@ -12,6 +12,8 @@ pub mod application_in;
 pub mod application_out;
 pub mod application_patch;
 pub mod application_token_expire_in;
+pub mod background_task_finished_event;
+pub mod background_task_finished_event2;
 pub mod background_task_out;
 pub mod background_task_status;
 pub mod background_task_type;
@@ -22,6 +24,15 @@ pub mod cron_config;
 pub mod dashboard_access_out;
 pub mod docusign_config;
 pub mod docusign_config_out;
+pub mod endpoint_created_event;
+pub mod endpoint_created_event_data;
+pub mod endpoint_deleted_event;
+pub mod endpoint_deleted_event_data;
+pub mod endpoint_disabled_event;
+pub mod endpoint_disabled_event_data;
+pub mod endpoint_disabled_trigger;
+pub mod endpoint_enabled_event;
+pub mod endpoint_enabled_event_data;
 pub mod endpoint_headers_in;
 pub mod endpoint_headers_out;
 pub mod endpoint_headers_patch_in;
@@ -35,6 +46,8 @@ pub mod endpoint_stats;
 pub mod endpoint_transformation_in;
 pub mod endpoint_transformation_out;
 pub mod endpoint_update;
+pub mod endpoint_updated_event;
+pub mod endpoint_updated_event_data;
 pub mod environment_in;
 pub mod environment_out;
 pub mod event_example_in;
@@ -77,7 +90,14 @@ pub mod list_response_message_attempt_out;
 pub mod list_response_message_endpoint_out;
 pub mod list_response_message_out;
 pub mod list_response_operational_webhook_endpoint_out;
+pub mod message_attempt_exhausted_event;
+pub mod message_attempt_exhausted_event_data;
+pub mod message_attempt_failed_data;
+pub mod message_attempt_failing_event;
+pub mod message_attempt_failing_event_data;
 pub mod message_attempt_out;
+pub mod message_attempt_recovered_event;
+pub mod message_attempt_recovered_event_data;
 pub mod message_attempt_trigger_type;
 pub mod message_endpoint_out;
 pub mod message_in;
@@ -129,6 +149,8 @@ pub use self::{
     application_out::ApplicationOut,
     application_patch::ApplicationPatch,
     application_token_expire_in::ApplicationTokenExpireIn,
+    background_task_finished_event::BackgroundTaskFinishedEvent,
+    background_task_finished_event2::BackgroundTaskFinishedEvent2,
     background_task_out::BackgroundTaskOut,
     background_task_status::BackgroundTaskStatus,
     background_task_type::BackgroundTaskType,
@@ -139,6 +161,15 @@ pub use self::{
     dashboard_access_out::DashboardAccessOut,
     docusign_config::DocusignConfig,
     docusign_config_out::DocusignConfigOut,
+    endpoint_created_event::EndpointCreatedEvent,
+    endpoint_created_event_data::EndpointCreatedEventData,
+    endpoint_deleted_event::EndpointDeletedEvent,
+    endpoint_deleted_event_data::EndpointDeletedEventData,
+    endpoint_disabled_event::EndpointDisabledEvent,
+    endpoint_disabled_event_data::EndpointDisabledEventData,
+    endpoint_disabled_trigger::EndpointDisabledTrigger,
+    endpoint_enabled_event::EndpointEnabledEvent,
+    endpoint_enabled_event_data::EndpointEnabledEventData,
     endpoint_headers_in::EndpointHeadersIn,
     endpoint_headers_out::EndpointHeadersOut,
     endpoint_headers_patch_in::EndpointHeadersPatchIn,
@@ -152,6 +183,8 @@ pub use self::{
     endpoint_transformation_in::EndpointTransformationIn,
     endpoint_transformation_out::EndpointTransformationOut,
     endpoint_update::EndpointUpdate,
+    endpoint_updated_event::EndpointUpdatedEvent,
+    endpoint_updated_event_data::EndpointUpdatedEventData,
     environment_in::EnvironmentIn,
     environment_out::EnvironmentOut,
     event_example_in::EventExampleIn,
@@ -194,7 +227,14 @@ pub use self::{
     list_response_message_endpoint_out::ListResponseMessageEndpointOut,
     list_response_message_out::ListResponseMessageOut,
     list_response_operational_webhook_endpoint_out::ListResponseOperationalWebhookEndpointOut,
+    message_attempt_exhausted_event::MessageAttemptExhaustedEvent,
+    message_attempt_exhausted_event_data::MessageAttemptExhaustedEventData,
+    message_attempt_failed_data::MessageAttemptFailedData,
+    message_attempt_failing_event::MessageAttemptFailingEvent,
+    message_attempt_failing_event_data::MessageAttemptFailingEventData,
     message_attempt_out::MessageAttemptOut,
+    message_attempt_recovered_event::MessageAttemptRecoveredEvent,
+    message_attempt_recovered_event_data::MessageAttemptRecoveredEventData,
     message_attempt_trigger_type::MessageAttemptTriggerType,
     message_endpoint_out::MessageEndpointOut,
     message_in::MessageIn,
