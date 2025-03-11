@@ -40,7 +40,7 @@ async fn bulk_recover_failed_messages(
             .filter(messagedestination::Column::Id.lt(MessageEndpointId::start_id(until)))
             .filter(messagedestination::Column::Status.eq(MessageStatus::Fail))
             .order_by_asc(messagedestination::Column::Id)
-            .limit(RECOVER_LIMIT);
+            .limit(BATCH_SIZE);
 
         if let Some(iterator) = iterator {
             query = query.filter(messagedestination::Column::Id.gt(iterator))
@@ -65,7 +65,7 @@ async fn bulk_recover_failed_messages(
         }
 
         num_done += cur_len;
-        if cur_len < BATCH_SIZE || num_done > RECOVER_LIMIT {
+        if cur_len < BATCH_SIZE || num_done >= RECOVER_LIMIT {
             break;
         }
     }
