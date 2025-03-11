@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -23,6 +24,7 @@ import java.time.OffsetDateTime;
 import java.util.LinkedHashSet;
 import java.util.ArrayList;
 import java.net.URI;
+import java.util.Objects;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -156,7 +158,33 @@ public class {{ type.name | to_upper_camel_case }} {
         {% endif -%}
 
     }
+    {% if field.type.is_string_const() -%}
+    {# This field has the type of ClassType.TypeEnum (backwards compat) #}
+    public enum TypeEnum {
+        {{ field.type.string_const_val() | to_upper_snake_case }}("{{ field.type.string_const_val() }}");
+        private final String value;
 
+        TypeEnum(String value) {
+            this.value = value;
+        }
+
+        @JsonValue
+        public String getValue() {
+            return this.value;
+        }
+        @Override
+        public String toString(){
+            return this.value;
+        }
+        public static TypeEnum fromValue(String value) {
+            if (!Objects.equals(value, "{{ field.type.string_const_val() }}")){
+                throw new IllegalArgumentException("Unexpected value '" + value + "'");
+            }
+            return {{ field.type.string_const_val() | to_upper_snake_case }};
+        }
+
+    }
+    {% endif -%}
 {% endfor -%}
     /**
      * Create an instance of {{ class_ty }} given an JSON string

@@ -1,13 +1,14 @@
 package com.svix.kotlin
 
+import com.svix.kotlin.models.BackgroundTaskFinishedEvent
 import com.svix.kotlin.models.CronConfig
 import com.svix.kotlin.models.IngestSourceIn
 import com.svix.kotlin.models.IngestSourceInConfig
 import com.svix.kotlin.models.IngestSourceInConfig.Cron
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.Test
-import kotlin.test.assertIs
 
 class SerializationTests {
     @Test
@@ -18,13 +19,14 @@ class SerializationTests {
             IngestSourceIn(
                 name = "name",
                 uid = "uuiidd",
-                config = Cron(
-                    CronConfig(
-                        contentType = "web-app/json",
-                        payload = "totally json fr fr",
-                        schedule = "* * * * *",
-                    )
-                ),
+                config =
+                    Cron(
+                        CronConfig(
+                            contentType = "web-app/json",
+                            payload = "totally json fr fr",
+                            schedule = "* * * * *",
+                        )
+                    ),
             )
         // de/serialization works both ways
         assertEquals(jsonSource, Json.encodeToString(sourceIn))
@@ -55,5 +57,14 @@ class SerializationTests {
         assertIs<IngestSourceInConfig.Cron>(sourceIn.config)
         // the assertIs smart casted for us
         assertEquals("* * * * *", sourceIn.config.cron.schedule)
+    }
+
+    @Test
+    fun opWebhookModels() {
+        val jsonString =
+            """{"data":{"data":{"appStats":[{"appId":"app_1srOrx2ZWZBpBUvZwXKQmoEYga2","appUid":"null","messageDestinations":343}]},"status":"finished","task":"application.stats","taskId":"qtask_1srOrx2ZWZBpBUvZwXKQmoEYga2"},"type":"background_task.finished"}"""
+        val loadedFromJson =
+            Json.decodeFromString(BackgroundTaskFinishedEvent.serializer(), jsonString)
+        assertEquals(Json.encodeToString(loadedFromJson), jsonString)
     }
 }

@@ -10,9 +10,12 @@
             attributes['{{ field.name }}'].map { | v | Svix::{{ field.type.inner_type().to_ruby() }}.deserialize v } {{ not_nil_check }}
         {%- endset -%}
     {% elif field.type.is_schema_ref() -%}
-        {% set val_expr -%}
+        {# TODO(10055): the schema called "Data" does not exist -#}
+        {% if field.type.to_ruby() != "Data" -%}
+            {% set val_expr -%}
             Svix::{{ field.type.to_ruby() }}.deserialize(attributes['{{ field.name }}']) {{ not_nil_check }}
-        {%- endset -%}
+            {%- endset -%}
+        {% endif -%}
     {% elif field.type.is_datetime() -%}
         {% set val_expr %}DateTime.rfc3339({{ val_expr }}).to_time {{ not_nil_check }}{% endset -%}
     {% endif -%}
@@ -25,7 +28,10 @@
     {% if (field.type.is_set() or  field.type.is_list()) and field.type.inner_type().is_schema_ref() -%}
         {% set val_expr %}{{ val_expr }}.map { | v | v.serialize }{% endset -%}
     {% elif field.type.is_schema_ref() -%}
-        {% set val_expr %}{{ val_expr }}.serialize{% endset -%}
+        {# TODO(10055): the schema called "Data" does not exist -#}
+        {% if field.type.to_ruby() != "Data" -%}
+            {% set val_expr %}Svix::serialize_schema_ref({{ val_expr }}){% endset -%}
+        {% endif -%}
     {% else -%}
         {% set val_expr %}Svix::serialize_primitive({{ val_expr }}){% endset -%}
     {% endif -%}

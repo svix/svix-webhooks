@@ -1,3 +1,4 @@
+{% from "types/macros.rs.jinja" import field_name -%}
 {% for field in type.fields %}
     {% if field.description is defined -%}
         {{ field.description | to_doc_comment(style="rust") }}
@@ -43,5 +44,5 @@
         {% endif -%}
     {% endif -%}
 
-    pub {{ field.name | to_snake_case }}: {{ field_ty }},
+    pub {{ field_name(field.name | to_snake_case) }}: {{ field_ty }},
 {% endfor %}

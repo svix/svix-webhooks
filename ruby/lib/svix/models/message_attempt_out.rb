@@ -67,14 +67,14 @@ module Svix
       out = Hash.new
       out["endpointId"] = Svix::serialize_primitive(@endpoint_id) if @endpoint_id
       out["id"] = Svix::serialize_primitive(@id) if @id
-      out["msg"] = @msg.serialize if @msg
+      out["msg"] = Svix::serialize_schema_ref(@msg) if @msg
       out["msgId"] = Svix::serialize_primitive(@msg_id) if @msg_id
       out["response"] = Svix::serialize_primitive(@response) if @response
       out["responseDurationMs"] = Svix::serialize_primitive(@response_duration_ms) if @response_duration_ms
       out["responseStatusCode"] = Svix::serialize_primitive(@response_status_code) if @response_status_code
-      out["status"] = @status.serialize if @status
+      out["status"] = Svix::serialize_schema_ref(@status) if @status
       out["timestamp"] = Svix::serialize_primitive(@timestamp) if @timestamp
-      out["triggerType"] = @trigger_type.serialize if @trigger_type
+      out["triggerType"] = Svix::serialize_schema_ref(@trigger_type) if @trigger_type
       out["url"] = Svix::serialize_primitive(@url) if @url
       out
     end

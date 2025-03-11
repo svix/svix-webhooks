@@ -1,0 +1,7 @@
+{% macro field_name(name) -%}
+    {%- if name == "type" -%}
+        r#type
+    {%- else -%}
+        {{ name }}
+    {%- endif -%}
+{% endmacro -%}

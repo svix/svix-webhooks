@@ -376,4 +376,10 @@ describe "API Client" do
     ))
     expect(loaded_from_json.config.class).to eql(Svix::IngestSourceInConfig::GenericWebhook)
   end
+  it "op webhook body" do
+    json_event = '{"data":{"data":{"appStats":[{"appId":"app_1srOrx2ZWZBpBUvZwXKQmoEYga2","appUid":null,"messageDestinations":343}]},"status":"finished","task":"application.stats","taskId":"qtask_1srOrx2ZWZBpBUvZwXKQmoEYga2"},"type":"background_task.finished"}';
+    loaded_from_json = Svix::BackgroundTaskFinishedEvent.deserialize(JSON.parse(json_event))
+
+    expect(loaded_from_json.to_json).to eql(json_event)
+  end
 end
