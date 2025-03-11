@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## Version 1.61.4
 * Libs/(C#,Java,Kotlin,Rust): The type of `BackgroundTaskFinishedEvent2.data` changed from `Data` (a custom type) to `Object`(Java C#), `serde_json::Value`(Rust), `Map<String, Any>`(Kotlin)
 
 ## Version 1.61.3
