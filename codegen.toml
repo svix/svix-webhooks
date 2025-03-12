@@ -16,18 +16,18 @@ template = "rust/templates/component_type.rs.jinja"
 output_dir = "rust/src/models"
 
 
-#[javascript]
-#template_dir = "javascript/templates"
-#extra_shell_commands = ["rm javascript/src/api/{ingest,operationalWebhook}.ts"]
-#[[javascript.task]]
-#template = "javascript/templates/api_resource.ts.jinja"
-#output_dir = "javascript/src/api"
-#[[javascript.task]]
-#template = "javascript/templates/component_type_summary.ts.jinja"
-#output_dir = "javascript/src/models"
-#[[javascript.task]]
-#template = "javascript/templates/component_type.ts.jinja"
-#output_dir = "javascript/src/models"
+[javascript]
+template_dir = "javascript/templates"
+extra_shell_commands = ["rm javascript/src/api/{ingest,ingestSource,operationalWebhook}.ts"]
+[[javascript.task]]
+template = "javascript/templates/api_resource.ts.jinja"
+output_dir = "javascript/src/api"
+[[javascript.task]]
+template = "javascript/templates/component_type_summary.ts.jinja"
+output_dir = "javascript/src/models"
+[[javascript.task]]
+template = "javascript/templates/component_type.ts.jinja"
+output_dir = "javascript/src/models"
 #
 #
 #[cli]
