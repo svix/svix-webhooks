@@ -15,7 +15,7 @@ except ImportError:
     print("Python 3.11 or greater is required to run the codegen")
     exit(1)
 
-OPENAPI_CODEGEN_IMAGE = "ghcr.io/svix/openapi-codegen:20250311-281"
+OPENAPI_CODEGEN_IMAGE = "ghcr.io/svix/openapi-codegen:20250312-284"
 REPO_ROOT = pathlib.Path(__file__).parent.resolve()
 DEBUG = os.getenv("DEBUG") is not None
 GREEN = "\033[92m"
