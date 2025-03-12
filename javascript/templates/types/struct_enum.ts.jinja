@@ -43,6 +43,10 @@ export const {{ type.name | to_upper_camel_case }}Serializer = {
                         object['{{ type.content_field }}']
                     );
                 break;
+            {%- else %}
+            case '{{ variant.name }}':
+                {{ content_field_name }} = {}
+                break;
             {% endif -%}
         {% endfor -%}
         }
@@ -67,6 +71,10 @@ export const {{ type.name | to_upper_camel_case }}Serializer = {
                     {{ variant.schema_ref | to_upper_camel_case }}Serializer._toJsonObject(
                         self.{{ content_field_name }}
                     );
+                break;
+            {%- else %}
+            case '{{ variant.name }}':
+                {{ content_field_name }} = {}
                 break;
             {%- endif %}
         {% endfor -%}
