@@ -16,6 +16,8 @@ const EventTypeImportOpenApiOut = `{"data":{"modified":["user.signup"],"to_modif
 const ReplayOut = `{"id":"qtask_1srOrx2ZWZBpBUvZwXKQmoEYga2","status":"running","task":"endpoint.replay"}`;
 const EndpointOut = `{"description":"string","rateLimit":0,"uid":"unique-identifier","url":"http://example.com","version":1,"disabled":true,"filterTypes":["user.signup"],"channels":["project_1337"],"secret":"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD","metadata":{"property1":"string","property2":"string"}}`;
 const ValidationErrorOut = `{"detail":[{"loc":["string"],"msg":"string","type":"string"}]}`;
+// const IngestSourceOutCron = `{"type":"cron","config":{"schedule":"hello","payload":"world"},"id":"src_2yZwUhtgs5Ai8T9yRQJXA","uid":"unique-identifier","name":"string","ingestUrl":"http://example.com","createdAt":"2019-08-24T14:15:22Z","updatedAt":"2019-08-24T14:15:22Z"}`
+// const IngestSourceOutGeneric = `{"type":"generic-webhook","config":{},"id":"src_2yZwUhtgs5Ai8T9yRQJXA","uid":"unique-identifier","name":"string","ingestUrl":"http://example.com","createdAt":"2019-08-24T14:15:22Z","updatedAt":"2019-08-24T14:15:22Z"}`
 const mockServer = mockttp.getLocal();
 
 describe("mockttp tests", () => {
@@ -373,4 +375,37 @@ describe("mockttp tests", () => {
     expect(requests.length).toBe(1);
     expect(requests[0].headers["content-type"]).toBeUndefined();
   });
+
+  // test("struct enum with extra fields", async () => {
+  //   const endpointMock = await mockServer
+  //     .forPost("/ingest/api/v1/source")
+  //     .thenReply(200, IngestSourceOutCron);
+  //   const svx = new Svix("token", { serverUrl: mockServer.url });
+
+  //   const res = await svx.ingestSource.create({ name: "crontab -r", type: "cron", config: { schedule: "hello", payload: "world" } });
+
+  //   expect(res.type).toBe("cron")
+  //   // this will smart cast res.config
+  //   if (res.type === "cron") {
+  //     expect(res.config.schedule).toBe("hello")
+  //     expect(res.config.payload).toBe("world")
+  //   }
+  //   const requests = await endpointMock.getSeenRequests();
+  //   expect(await requests[0].body.getText()).toBe('{"type":"cron","config":{"payload":"world","schedule":"hello"},"name":"crontab -r"}');
+  // });
+
+  // test("struct enum with no extra fields", async () => {
+  //   const endpointMock = await mockServer
+  //     .forPost("/ingest/api/v1/source")
+  //     .thenReply(200, IngestSourceOutGeneric);
+  //   const svx = new Svix("token", { serverUrl: mockServer.url });
+
+  //   const res = await svx.ingestSource.create({ name: "generic over <T>", type: "generic-webhook" });
+
+  //   expect(res.type).toBe("generic-webhook")
+  //   const requests = await endpointMock.getSeenRequests();
+  //   console.log(await requests[0].body.getText())
+  //   // empty config object should be sent
+  //   expect(await requests[0].body.getText()).toBe('{"type":"generic-webhook","config":{},"name":"generic over <T>"}');
+  // });
 });
