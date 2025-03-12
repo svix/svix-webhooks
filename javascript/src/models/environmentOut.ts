@@ -1,13 +1,13 @@
 // this file is @generated
 /* eslint @typescript-eslint/no-explicit-any: 0 */
+import { ConnectorOut, ConnectorOutSerializer } from "./connectorOut";
 import { EventTypeOut, EventTypeOutSerializer } from "./eventTypeOut";
-import { TemplateOut, TemplateOutSerializer } from "./templateOut";
 
 export interface EnvironmentOut {
   createdAt: Date;
   eventTypes: EventTypeOut[];
   settings: any | null;
-  transformationTemplates: TemplateOut[];
+  transformationTemplates: ConnectorOut[];
   version?: number;
 }
 
@@ -20,7 +20,7 @@ export const EnvironmentOutSerializer = {
       ),
       settings: object["settings"],
       transformationTemplates: object["transformationTemplates"].map(
-        (item: TemplateOut) => TemplateOutSerializer._fromJsonObject(item)
+        (item: ConnectorOut) => ConnectorOutSerializer._fromJsonObject(item)
       ),
       version: object["version"],
     };
@@ -34,7 +34,7 @@ export const EnvironmentOutSerializer = {
       ),
       settings: self.settings,
       transformationTemplates: self.transformationTemplates.map((item) =>
-        TemplateOutSerializer._toJsonObject(item)
+        ConnectorOutSerializer._toJsonObject(item)
       ),
       version: self.version,
     };
