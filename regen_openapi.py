@@ -228,6 +228,17 @@ def parse_config():
                     "template_dir": language_config["template_dir"],
                 }
             )
+    # the cli step depends on generated rust code.
+    # there is no way to express this dependency in the codegen.toml. so I am hardcoding this here
+    cli_config = config.get("cli", None)
+    if cli_config is not None and config.get("rust", None) is not None:
+        config["rust"]["tasks"].extend(cli_config["tasks"])
+        config["rust"]["tasks_count"] += cli_config["tasks_count"]
+        config["rust"]["extra_shell_commands"].extend(
+            cli_config["extra_shell_commands"]
+        )
+        config.pop("cli")
+
     if DEBUG:
         print(json.dumps(config, indent=4), flush=True)
     return config
