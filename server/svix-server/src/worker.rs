@@ -5,7 +5,7 @@ use std::{
     collections::HashMap,
     sync::{
         atomic::{AtomicU64, AtomicUsize, Ordering},
-        Arc,
+        Arc, LazyLock,
     },
     time::Duration,
 };
@@ -14,7 +14,6 @@ use axum::body::HttpBody as _;
 use chrono::Utc;
 use futures::future;
 use http::{HeaderValue, StatusCode, Version};
-use once_cell::sync::Lazy;
 use rand::Rng;
 use sea_orm::{
     prelude::DateTimeUtc, ActiveModelBehavior, ActiveModelTrait, ColumnTrait, DatabaseConnection,
@@ -912,7 +911,7 @@ async fn process_queue_task_inner(
     Ok(())
 }
 
-pub static LAST_QUEUE_POLL: Lazy<AtomicU64> = Lazy::new(|| get_unix_timestamp().into());
+pub static LAST_QUEUE_POLL: LazyLock<AtomicU64> = LazyLock::new(|| get_unix_timestamp().into());
 
 async fn update_last_poll_time() {
     LAST_QUEUE_POLL.swap(get_unix_timestamp(), Ordering::Relaxed);
