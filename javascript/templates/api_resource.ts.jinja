@@ -1,6 +1,8 @@
 // this file is @generated
 {% set resource_type_name = resource.name | to_upper_camel_case -%}
 
+{# HACK: api_internal/message.ts generates the `messageInRaw` function that requires `MessageIn` -#}
+import { MessageIn } from "../models/messageIn";
 {% for c in referenced_components -%}
 import {
     {{ c | to_upper_camel_case }},
