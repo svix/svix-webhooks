@@ -1,8 +1,6 @@
 // this file is @generated
 {% set resource_type_name = resource.name | to_upper_camel_case -%}
 
-{# HACK: api_internal/message.ts generates the `messageInRaw` function that requires `MessageIn` -#}
-import { MessageIn } from "../models/messageIn";
 {% for c in referenced_components -%}
 import {
     {{ c | to_upper_camel_case }},
@@ -10,6 +8,8 @@ import {
 } from '../models/{{ c | to_lower_camel_case }}';
 {% endfor -%}
 import { HttpMethod, SvixRequest, SvixRequestContext } from "../request";
+{# HACK: api_internal/message.ts generates the `messageInRaw` function that requires `MessageIn` -#}
+import { MessageIn, MessageInSerializer } from "../models/messageIn";
 
 {% for op in resource.operations -%}
     {% if op | has_query_or_header_params -%}
