@@ -12,4 +12,4 @@ class {{ type.name | to_upper_camel_case }}(BaseModel):
 {%- if type.description is defined %}
     {{ type.description | to_doc_comment(style="python") | indent(4) }}
 {% endif %}
-{%- include "types/struct_fields.py.jinja" %}
+{% include "types/struct_fields.py.jinja" %}
