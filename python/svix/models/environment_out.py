@@ -3,8 +3,8 @@ import typing as t
 from datetime import datetime
 
 from .common import BaseModel
+from .connector_out import ConnectorOut
 from .event_type_out import EventTypeOut
-from .template_out import TemplateOut
 
 
 class EnvironmentOut(BaseModel):
@@ -14,6 +14,6 @@ class EnvironmentOut(BaseModel):
 
     settings: t.Optional[t.Dict[str, t.Any]]
 
-    transformation_templates: t.List[TemplateOut]
+    transformation_templates: t.List[ConnectorOut]
 
     version: t.Optional[int] = None
