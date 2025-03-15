@@ -1,0 +1,43 @@
+{% set excluded_resources = ["environment", "health", "ingest"] -%}
+
+{%- for resource in api.resources -%}
+    {%- if resource.name not in excluded_resources -%}
+        {%- if resource.operations | length > 0 -%}
+            {% include 'api_summary/resource_import.py.jinja' %}
+        {%- endif -%}
+        {%- for _resource_name, resource in resource.subresources | items %}
+            {%- include 'api_summary/resource_import.py.jinja' %}
+        {%- endfor -%}
+    {%- endif -%}
+{% endfor %}
+
+{% for type in types -%}
+from ..models import {{ type | to_upper_camel_case }}
+{% endfor %}
+from .svix import Svix, SvixAsync, SvixOptions, DEFAULT_SERVER_URL
+{# hardcode this import until we fix empty openapi structs #}
+from ..models import BackgroundTaskData
+
+
+
+__all__ = [
+    "Svix",
+    "SvixAsync",
+    "SvixOptions",
+    "DEFAULT_SERVER_URL",
+{%- for resource in api.resources %}
+    {%- if resource.name not in excluded_resources -%}
+        {%- if resource.operations | length > 0 -%}
+                {% include 'api_summary/resource_export.py.jinja' %}
+        {%- endif -%}
+        {%- for _resource_name, resource in resource.subresources | items %}
+            {%- include 'api_summary/resource_export.py.jinja' %}
+        {%- endfor -%}
+    {%- endif -%}
+{% endfor %}
+{# hardcode this until we fix empty openapi structs #}
+    "BackgroundTaskData",
+{% for type in types -%}
+    "{{ type | to_upper_camel_case }}",
+{% endfor -%}
+]
