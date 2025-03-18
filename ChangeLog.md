@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 1.62.0
+* Libs/Python: The client will now reuse the same httpx Client across api calls
+
 ## Version 1.61.4
 * Libs/(C#,Java,Kotlin,Rust): The type of `BackgroundTaskFinishedEvent2.data` changed from `Data` (a custom type) to `Object`(Java C#), `serde_json::Value`(Rust), `Map<String, Any>`(Kotlin)
 

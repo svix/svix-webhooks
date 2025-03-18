@@ -1,3 +1,3 @@
 package com.svix.kotlin
 
-const val Version = "1.61.4"
+const val Version = "1.62.0"
