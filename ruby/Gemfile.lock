@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    svix (1.61.4)
+    svix (1.62.0)
 
 GEM
   remote: https://rubygems.org/
