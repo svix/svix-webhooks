@@ -70,9 +70,17 @@ class PostOptions(BaseOptions):
 
 class ApiBase:
     _client: AuthenticatedClient
+    _httpx_client: httpx.Client
+    _httpx_async_client: httpx.AsyncClient
 
     def __init__(self, client: AuthenticatedClient) -> None:
         self._client = client
+        self._httpx_client = httpx.Client(
+            verify=client.verify_ssl, cookies=self._client.get_cookies()
+        )
+        self._httpx_async_client = httpx.AsyncClient(
+            verify=client.verify_ssl, cookies=self._client.get_cookies()
+        )
 
     def _get_httpx_kwargs(
         self,
@@ -89,7 +97,7 @@ class ApiBase:
 
         headers: t.Dict[str, str] = {
             **self._client.get_headers(),
-            "svix-req-id": f"{random.getrandbits(32)}",
+            "svix-req-id": f"{random.getrandbits(64)}",
         }
         if header_params is not None:
             headers.update(header_params)
@@ -98,10 +106,8 @@ class ApiBase:
             "method": method.upper(),
             "url": url,
             "headers": headers,
-            "cookies": self._client.get_cookies(),
             "timeout": self._client.get_timeout(),
             "follow_redirects": self._client.follow_redirects,
-            "verify": self._client.verify_ssl,
         }
 
         if query_params is not None:
@@ -133,18 +139,15 @@ class ApiBase:
             json_body=json_body,
         )
 
-        response = httpx.request(**httpx_kwargs)
+        response = await self._httpx_async_client.request(**httpx_kwargs)
 
-        async with httpx.AsyncClient(verify=self._client.verify_ssl) as _client:
-            response = await _client.request(**httpx_kwargs)
+        for retry_count, sleep_time in enumerate(self._client.retry_schedule):
+            if response.status_code < 500:
+                break
 
-            for retry_count, sleep_time in enumerate(self._client.retry_schedule):
-                if response.status_code < 500:
-                    break
-
-                await asyncio.sleep(sleep_time)
-                httpx_kwargs["headers"]["svix-retry-count"] = str(retry_count)
-                response = await _client.request(**httpx_kwargs)
+            await asyncio.sleep(sleep_time)
+            httpx_kwargs["headers"]["svix-retry-count"] = str(retry_count)
+            response = await self._httpx_async_client.request(**httpx_kwargs)
 
         return _filter_response_for_errors_response(response)
 
@@ -166,14 +169,14 @@ class ApiBase:
             json_body=json_body,
         )
 
-        response = httpx.request(**httpx_kwargs)
+        response = self._httpx_client.request(**httpx_kwargs)
         for retry_count, sleep_time in enumerate(self._client.retry_schedule):
             if response.status_code < 500:
                 break
 
             time.sleep(sleep_time)
             httpx_kwargs["headers"]["svix-retry-count"] = str(retry_count)
-            response = httpx.request(**httpx_kwargs)
+            response = self._httpx_client.request(**httpx_kwargs)
 
         return _filter_response_for_errors_response(response)
 
