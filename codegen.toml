@@ -60,20 +60,23 @@ template = "svix-cli/templates/api_resource.rs.jinja"
 output_dir = "svix-cli/src/cmds/api"
 #
 #
-#[python]
-#template_dir = "python/templates"
-#extra_shell_commands = [
-#    "rm python/svix/api/{environment,health,ingest,operational_webhook}.py",
-#]
-#[[python.task]]
-#template = "python/templates/api_resource.py.jinja"
-#output_dir = "python/svix/api"
-#[[python.task]]
-#template = "python/templates/component_type_summary.py.jinja"
-#output_dir = "python/svix/models"
-#[[python.task]]
-#template = "python/templates/component_type.py.jinja"
-#output_dir = "python/svix/models"
+[python]
+template_dir = "python/templates"
+extra_shell_commands = [
+   "rm python/svix/api/{environment,health,ingest,operational_webhook}.py",
+]
+[[python.task]]
+template = "python/templates/api_resource.py.jinja"
+output_dir = "python/svix/api"
+[[python.task]]
+template = "python/templates/component_type_summary.py.jinja"
+output_dir = "python/svix/models"
+[[python.task]]
+template = "python/templates/component_type.py.jinja"
+output_dir = "python/svix/models"
+[[python.task]]
+template = "python/templates/summary.py.jinja"
+output_dir = "python/svix/api"
 #
 #
 [ruby]

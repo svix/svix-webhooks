@@ -1,39 +1,42 @@
+{% set type_name = type.name | to_upper_camel_case -%}
 import typing as t
-from typing_extensions import Annotated
-
-from pydantic import Field
+from typing_extensions import Self
+from pydantic import ModelWrapValidatorHandler, model_validator
 from datetime import datetime
-
 from .common import BaseModel
 
 {% for c in referenced_components %}
 from . {{ c | to_snake_case }} import {{ c | to_upper_camel_case }}
 {%- endfor %}
 
-{%- set type_name = type.name | to_upper_camel_case %}
-
-
-{% for variant in type.variants %}
-class {{ type_name }}{{ variant.name | to_upper_camel_case }}(BaseModel):
-    {{ type.discriminator_field | to_snake_case }}: t.Literal["{{ variant.name }}"]
-
+class {{ type_name }}(BaseModel):
     {% include "types/struct_fields.py.jinja" %}
-    {% if variant.schema_ref is defined -%}
-    {{ type.content_field | to_snake_case }}: {{ variant.schema_ref | to_upper_camel_case -}}
-        {% if type.content_field | to_lower_camel_case != type.content_field %}= Field(alias="{{ type.content_field }}"){% endif %}
-    {% endif %}
-{%- endfor %}
+    {{ type.discriminator_field }}: t.Union[
+        {% for variant in type.variants -%}
+            t.Literal["{{ variant.name }}"] {% if not loop.last %},{% endif %}
+        {% endfor -%}
+    ]
+    {{ type.content_field }}: t.Union[
+        {% set content_field_types = [] %}
+        {{ type.variants| map(attribute="schema_ref", default="t.Dict[str,t.Any]") | unique | join(",") }}        
+    ]
 
+    @model_validator(mode="wrap")
+    @classmethod
+    def validate_model(
+        cls, data: t.Any, handler: ModelWrapValidatorHandler[Self]
+    ) -> Self:
+        output = handler(data)
+        match output.type:
+            {% for v in type.variants -%}
+            case "{{ v.name }}":
+                {%- if v.schema_ref is defined %}
+                output.{{ type.content_field | to_snake_case }} = {{ v.schema_ref | to_upper_camel_case }}.model_validate(data.get("{{ type.content_field }}", {}))
+                {%- else %}
+                output.{{ type.content_field | to_snake_case }} = data.get("{{ type.content_field }}", {})
+                {%- endif %}
+            {% endfor -%}
+            case _:
+                raise ValueError(f"Unexpected type `{output.type}`")
+        return output
 
-{{ type_name }} = Annotated[
-    t.Union[
-         {%- for variant in type.variants -%}
-            {{ type_name }}{{ variant.name | to_upper_camel_case }}
-            {%- if not loop.last %}, {% endif %}
-        {%- endfor -%}
-    ],
-    Field(discriminator="{{ type.discriminator_field }}")
-]
-{%- if type.description is defined %}
-{{ type.description | to_doc_comment(style="python") }}
-{% endif %}
