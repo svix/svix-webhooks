@@ -80,7 +80,7 @@ func getTestClient(t *testing.T) *svix.Svix {
 // Suppresses a request error response if it's a 409
 func isNotConflict(err error) error {
 	if err != nil {
-		var svixError svix.Error
+		var svixError *svix.Error
 		if errors.As(err, &svixError) {
 			if svixError.Status() == http.StatusConflict {
 				// Pass if we see the suppressed status
