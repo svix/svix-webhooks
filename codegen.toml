@@ -31,7 +31,6 @@ template = "javascript/templates/api_resource.ts.jinja"
 output_dir = "javascript/src/api_internal"
 extra_codegen_args = [
    "--include-mode=only-hidden",
-   "-e=v1.environment.get-settings",
    "-e=v1.event-type.update-retry-schedule",
    "-e=v1.event-type.get-retry-schedule",
    "-e=v1.sink.get",
