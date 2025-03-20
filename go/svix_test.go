@@ -664,3 +664,86 @@ func TestListResponseOutModels(t *testing.T) {
 	}
 
 }
+
+func TestStructEnumWithFields(t *testing.T) {
+	expectedJson := `{"name":"Mendy","type":"cron","config":{"payload":"Hello from space","schedule":"0 0 0 * *"}}`
+	sourceIn := models.IngestSourceIn{
+		Name: "Mendy",
+		Type: models.IngestSourceInTypeCron,
+		Config: models.CronConfig{
+			Payload:  "Hello from space",
+			Schedule: "0 0 0 * *",
+		},
+	}
+	sourceInJson, err := json.Marshal(sourceIn)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(sourceInJson) != expectedJson {
+		t.Errorf("Expected dumped json to match")
+	}
+}
+
+func TestStructEnumWithNoFields(t *testing.T) {
+	expectedJson := `{"name":"Mendy","uid":"very unique","type":"generic-webhook","config":{}}`
+	uid := "very unique"
+	sourceIn := models.IngestSourceIn{
+		Name: "Mendy",
+		Uid:  &uid,
+		Type: models.IngestSourceInTypeGenericWebhook,
+	}
+	sourceInJson, err := json.Marshal(sourceIn)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(sourceInJson) != expectedJson {
+		t.Errorf("Expected dumped json to match")
+	}
+}
+
+func TestStructEnumWithNoFieldsNilConfig(t *testing.T) {
+	expectedJson := `{"name":"Mendy","uid":"very unique","type":"generic-webhook","config":{}}`
+	uid := "very unique"
+	sourceIn := models.IngestSourceIn{
+		Name:   "Mendy",
+		Uid:    &uid,
+		Type:   models.IngestSourceInTypeGenericWebhook,
+		Config: nil,
+	}
+	sourceInJson, err := json.Marshal(sourceIn)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(sourceInJson) != expectedJson {
+		t.Errorf("Expected dumped json to match")
+	}
+}
+
+func TestReadStructEnumField(t *testing.T) {
+	jsonSourceIn := `{"name":"Mendy","type":"cron","config":{"payload":"Hello from space","schedule":"0 0 0 * *"}}`
+	var sourceIn models.IngestSourceIn
+	err := json.Unmarshal([]byte(jsonSourceIn), &sourceIn)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if sourceIn.Name != "Mendy" {
+		t.Fatal("Unexpected Name")
+	}
+	if sourceIn.Type != models.IngestSourceInTypeCron {
+		t.Fatal("Unexpected Type")
+	}
+	if sourceIn.Uid != nil {
+		t.Fatal("Unexpected Uid")
+	}
+	if cronConfig, ok := sourceIn.Config.(models.CronConfig); ok {
+		if cronConfig.Payload != "Hello from space" {
+			t.Fatal("Unexpected payload")
+		}
+		if cronConfig.Schedule != "0 0 0 * *" {
+			t.Fatal("Unexpected Schedule")
+		}
+	} else {
+		t.Fatal("Unexpected type for Config")
+	}
+
+}
