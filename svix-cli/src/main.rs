@@ -1,7 +1,6 @@
 use anyhow::Result;
 use clap::{Parser, Subcommand};
 use clap_complete::Shell;
-use cmds::api::application::ApplicationArgs;
 use colored_json::{ColorMode, Output};
 use concolor_clap::{Color, ColorChoice};
 use svix::api::SvixOptions;
@@ -9,7 +8,8 @@ use svix::api::SvixOptions;
 use crate::{
     cmds::{
         api::{
-            authentication::AuthenticationArgs, endpoint::EndpointArgs, event_type::EventTypeArgs,
+            application::ApplicationArgs, authentication::AuthenticationArgs,
+            endpoint::EndpointArgs, environment::EnvironmentArgs, event_type::EventTypeArgs,
             integration::IntegrationArgs, message::MessageArgs,
             message_attempt::MessageAttemptArgs,
         },
@@ -63,6 +63,8 @@ enum RootCommands {
     Completion { shell: Shell },
     /// List, create & modify endpoints
     Endpoint(EndpointArgs),
+    /// Import or export environments
+    Environment(EnvironmentArgs),
     /// List, create & modify event types
     EventType(EventTypeArgs),
     /// List integrations by app id
@@ -112,6 +114,10 @@ async fn main() -> Result<()> {
             args.command.exec(&client, color_mode).await?;
         }
         RootCommands::Endpoint(args) => {
+            let client = get_client(&cfg?)?;
+            args.command.exec(&client, color_mode).await?;
+        }
+        RootCommands::Environment(args) => {
             let client = get_client(&cfg?)?;
             args.command.exec(&client, color_mode).await?;
         }

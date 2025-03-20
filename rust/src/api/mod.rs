@@ -9,6 +9,7 @@ mod application;
 mod authentication;
 mod background_task;
 mod endpoint;
+mod environment;
 mod event_type;
 mod ingest;
 mod ingest_endpoint;
@@ -34,6 +35,7 @@ pub use self::{
         EndpointRecoverOptions, EndpointReplayMissingOptions, EndpointRotateSecretOptions,
         EndpointSendExampleOptions,
     },
+    environment::{Environment, EnvironmentExportOptions, EnvironmentImportOptions},
     event_type::{
         EventType, EventTypeCreateOptions, EventTypeDeleteOptions, EventTypeImportOpenapiOptions,
         EventTypeListOptions,
@@ -91,6 +93,10 @@ impl Svix {
 
     pub fn endpoint(&self) -> Endpoint<'_> {
         Endpoint::new(&self.cfg)
+    }
+
+    pub fn environment(&self) -> Environment<'_> {
+        Environment::new(&self.cfg)
     }
 
     pub fn ingest(&self) -> Ingest<'_> {
