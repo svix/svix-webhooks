@@ -114,6 +114,10 @@ from .operational_webhook_endpoint_secret_in import OperationalWebhookEndpointSe
 from .operational_webhook_endpoint_secret_out import OperationalWebhookEndpointSecretOut
 from .operational_webhook_endpoint_update import OperationalWebhookEndpointUpdate
 from .ordering import Ordering
+from .polling_endpoint_consumer_seek_in import PollingEndpointConsumerSeekIn
+from .polling_endpoint_consumer_seek_out import PollingEndpointConsumerSeekOut
+from .polling_endpoint_message_out import PollingEndpointMessageOut
+from .polling_endpoint_out import PollingEndpointOut
 from .recover_in import RecoverIn
 from .recover_out import RecoverOut
 from .replay_in import ReplayIn
@@ -245,6 +249,10 @@ __all__ = [
     "OperationalWebhookEndpointSecretOut",
     "OperationalWebhookEndpointUpdate",
     "Ordering",
+    "PollingEndpointConsumerSeekIn",
+    "PollingEndpointConsumerSeekOut",
+    "PollingEndpointMessageOut",
+    "PollingEndpointOut",
     "RecoverIn",
     "RecoverOut",
     "ReplayIn",

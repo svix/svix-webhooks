@@ -111,6 +111,10 @@ pub mod operational_webhook_endpoint_secret_in;
 pub mod operational_webhook_endpoint_secret_out;
 pub mod operational_webhook_endpoint_update;
 pub mod ordering;
+pub mod polling_endpoint_consumer_seek_in;
+pub mod polling_endpoint_consumer_seek_out;
+pub mod polling_endpoint_message_out;
+pub mod polling_endpoint_out;
 pub mod recover_in;
 pub mod recover_out;
 pub mod replay_in;
@@ -248,6 +252,10 @@ pub use self::{
     operational_webhook_endpoint_secret_out::OperationalWebhookEndpointSecretOut,
     operational_webhook_endpoint_update::OperationalWebhookEndpointUpdate,
     ordering::Ordering,
+    polling_endpoint_consumer_seek_in::PollingEndpointConsumerSeekIn,
+    polling_endpoint_consumer_seek_out::PollingEndpointConsumerSeekOut,
+    polling_endpoint_message_out::PollingEndpointMessageOut,
+    polling_endpoint_out::PollingEndpointOut,
     recover_in::RecoverIn,
     recover_out::RecoverOut,
     replay_in::ReplayIn,
