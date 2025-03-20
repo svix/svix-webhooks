@@ -25,7 +25,8 @@ export class Environment {
 
   /**
    * Import a configuration into the active organization.
-   * It doesn't delete anything, only adds/updates what was passed to it.
+   *
+   * It doesn't delete anything, only adds / updates what was passed to it.
    */
   public import(
     environmentIn: EnvironmentIn,

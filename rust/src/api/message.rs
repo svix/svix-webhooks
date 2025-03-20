@@ -139,9 +139,9 @@ impl<'a> Message<'a> {
             .await
     }
 
-    /// Purge all message content for the application.
-    ///
     /// Delete all message payloads for the application.
+    ///
+    /// This operation is only available in the <a href="https://svix.com/pricing" target="_blank">Enterprise</a> plan.
     pub async fn expunge_all_contents(
         &self,
         app_id: String,

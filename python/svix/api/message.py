@@ -180,9 +180,9 @@ class MessageAsync(ApiBase):
         app_id: str,
         options: MessageExpungeAllContentsOptions = MessageExpungeAllContentsOptions(),
     ) -> ExpungeAllContentsOut:
-        """Purge all message content for the application.
+        """Delete all message payloads for the application.
 
-        Delete all message payloads for the application."""
+        This operation is only available in the <a href="https://svix.com/pricing" target="_blank">Enterprise</a> plan."""
         response = await self._request_asyncio(
             method="post",
             path="/api/v1/app/{app_id}/msg/expunge-all-contents",
@@ -281,9 +281,9 @@ class Message(ApiBase):
         app_id: str,
         options: MessageExpungeAllContentsOptions = MessageExpungeAllContentsOptions(),
     ) -> ExpungeAllContentsOut:
-        """Purge all message content for the application.
+        """Delete all message payloads for the application.
 
-        Delete all message payloads for the application."""
+        This operation is only available in the <a href="https://svix.com/pricing" target="_blank">Enterprise</a> plan."""
         response = self._request_sync(
             method="post",
             path="/api/v1/app/{app_id}/msg/expunge-all-contents",

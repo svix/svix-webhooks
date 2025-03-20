@@ -44,7 +44,8 @@ pub enum EnvironmentCommands {
         options: EnvironmentExportOptions,
     },
     /// Import a configuration into the active organization.
-    /// It doesn't delete anything, only adds/updates what was passed to it.
+    ///
+    /// It doesn't delete anything, only adds / updates what was passed to it.
     Import {
         environment_in: Option<JsonOf<EnvironmentIn>>,
         #[clap(flatten)]

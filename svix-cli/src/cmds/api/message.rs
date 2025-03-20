@@ -145,9 +145,9 @@ pub enum MessageCommands {
         #[clap(flatten)]
         options: MessageCreateOptions,
     },
-    /// Purge all message content for the application.
-    ///
     /// Delete all message payloads for the application.
+    ///
+    /// This operation is only available in the <a href="https://svix.com/pricing" target="_blank">Enterprise</a> plan.
     ExpungeAllContents {
         app_id: String,
         #[clap(flatten)]

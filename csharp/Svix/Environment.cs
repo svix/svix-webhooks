@@ -85,7 +85,8 @@ namespace Svix
 
         /// <summary>
         /// Import a configuration into the active organization.
-        /// It doesn't delete anything, only adds/updates what was passed to it.
+        ///
+        /// It doesn't delete anything, only adds / updates what was passed to it.
         /// </summary>
         public async Task<bool> ImportAsync(
             EnvironmentIn environmentIn,
@@ -116,7 +117,8 @@ namespace Svix
 
         /// <summary>
         /// Import a configuration into the active organization.
-        /// It doesn't delete anything, only adds/updates what was passed to it.
+        ///
+        /// It doesn't delete anything, only adds / updates what was passed to it.
         /// </summary>
         public bool Import(EnvironmentIn environmentIn, EnvironmentImportOptions? options = null)
         {

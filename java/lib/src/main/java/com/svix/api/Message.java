@@ -161,9 +161,10 @@ public class Message {
     }
 
     /**
-     * Purge all message content for the application.
+     * Delete all message payloads for the application.
      *
-     * <p>Delete all message payloads for the application.
+     * <p>This operation is only available in the <a href="https://svix.com/pricing"
+     * target="_blank">Enterprise</a> plan.
      */
     public ExpungeAllContentsOut expungeAllContents(final String appId)
             throws IOException, ApiException {
@@ -171,9 +172,10 @@ public class Message {
     }
 
     /**
-     * Purge all message content for the application.
+     * Delete all message payloads for the application.
      *
-     * <p>Delete all message payloads for the application.
+     * <p>This operation is only available in the <a href="https://svix.com/pricing"
+     * target="_blank">Enterprise</a> plan.
      */
     public ExpungeAllContentsOut expungeAllContents(
             final String appId, final MessageExpungeAllContentsOptions options)
