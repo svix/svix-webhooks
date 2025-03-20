@@ -25,8 +25,9 @@ class Environment(private val client: SvixHttpClient) {
     }
 
     /**
-     * Import a configuration into the active organization. It doesn't delete anything, only
-     * adds/updates what was passed to it.
+     * Import a configuration into the active organization.
+     *
+     * It doesn't delete anything, only adds / updates what was passed to it.
      */
     suspend fun import(
         environmentIn: EnvironmentIn,

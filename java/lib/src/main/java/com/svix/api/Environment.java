@@ -39,16 +39,18 @@ public class Environment {
     }
 
     /**
-     * Import a configuration into the active organization. It doesn't delete anything, only
-     * adds/updates what was passed to it.
+     * Import a configuration into the active organization.
+     *
+     * <p>It doesn't delete anything, only adds / updates what was passed to it.
      */
     public void import_(final EnvironmentIn environmentIn) throws IOException, ApiException {
         this.import_(environmentIn, new EnvironmentImportOptions());
     }
 
     /**
-     * Import a configuration into the active organization. It doesn't delete anything, only
-     * adds/updates what was passed to it.
+     * Import a configuration into the active organization.
+     *
+     * <p>It doesn't delete anything, only adds / updates what was passed to it.
      */
     public void import_(final EnvironmentIn environmentIn, final EnvironmentImportOptions options)
             throws IOException, ApiException {

@@ -2666,6 +2666,37 @@
                 },
                 "type": "object"
             },
+            "EventBridgeConfig": {
+                "properties": {
+                    "accessKeyId": {
+                        "type": "string"
+                    },
+                    "detailType": {
+                        "default": "application/json",
+                        "description": "Free-form string, with a maximum of 128 characters",
+                        "example": "ResourceGroups Resource State Change",
+                        "maxLength": 128,
+                        "type": "string"
+                    },
+                    "eventBusName": {
+                        "description": "The name or ARN of the event bus to receive the event",
+                        "type": "string"
+                    },
+                    "region": {
+                        "type": "string"
+                    },
+                    "secretAccessKey": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "accessKeyId",
+                    "eventBusName",
+                    "region",
+                    "secretAccessKey"
+                ],
+                "type": "object"
+            },
             "EventExampleIn": {
                 "properties": {
                     "eventType": {
@@ -3398,6 +3429,25 @@
                     "detail"
                 ],
                 "title": "HttpError",
+                "type": "object"
+            },
+            "HttpSinkHeadersPatchIn": {
+                "properties": {
+                    "headers": {
+                        "additionalProperties": {
+                            "nullable": true,
+                            "type": "string"
+                        },
+                        "example": {
+                            "X-Example": "123",
+                            "X-Foobar": "Bar"
+                        },
+                        "type": "object"
+                    }
+                },
+                "required": [
+                    "headers"
+                ],
                 "type": "object"
             },
             "HubspotConfig": {
@@ -4911,13 +4961,44 @@
                 ],
                 "type": "object"
             },
-            "KafkaSecurityProtocolType": {
-                "enum": [
-                    "plaintext",
-                    "ssl",
-                    "sasl-ssl"
+            "KafkaSinkConfig": {
+                "oneOf": [
+                    {
+                        "properties": {
+                            "password": {
+                                "type": "string"
+                            },
+                            "securityProtocol": {
+                                "enum": [
+                                    "saslSsl"
+                                ],
+                                "type": "string"
+                            },
+                            "username": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "password",
+                            "securityProtocol",
+                            "username"
+                        ],
+                        "type": "object"
+                    }
                 ],
-                "type": "string"
+                "properties": {
+                    "brokers": {
+                        "type": "string"
+                    },
+                    "topic": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "brokers",
+                    "topic"
+                ],
+                "type": "object"
             },
             "ListResponse_ActiveApplicationOut_": {
                 "properties": {
@@ -6849,6 +6930,29 @@
                 ],
                 "type": "string"
             },
+            "PollingEndpointConsumerSeekIn": {
+                "properties": {
+                    "after": {
+                        "format": "date-time",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "after"
+                ],
+                "type": "object"
+            },
+            "PollingEndpointConsumerSeekOut": {
+                "properties": {
+                    "iterator": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "iterator"
+                ],
+                "type": "object"
+            },
             "PollingEndpointMessageOut": {
                 "description": "The MessageOut equivalent of polling endpoint",
                 "properties": {
@@ -7230,95 +7334,6 @@
                 "oneOf": [
                     {
                         "properties": {
-                            "routingKey": {
-                                "type": "string"
-                            },
-                            "type": {
-                                "enum": [
-                                    "rabbitMQ"
-                                ],
-                                "type": "string"
-                            },
-                            "uri": {
-                                "type": "string"
-                            }
-                        },
-                        "required": [
-                            "routingKey",
-                            "type",
-                            "uri"
-                        ],
-                        "type": "object"
-                    },
-                    {
-                        "properties": {
-                            "accessKey": {
-                                "type": "string"
-                            },
-                            "queueDsn": {
-                                "format": "uri",
-                                "type": "string"
-                            },
-                            "region": {
-                                "type": "string"
-                            },
-                            "secretKey": {
-                                "type": "string"
-                            },
-                            "type": {
-                                "enum": [
-                                    "sqs"
-                                ],
-                                "type": "string"
-                            }
-                        },
-                        "required": [
-                            "accessKey",
-                            "queueDsn",
-                            "region",
-                            "secretKey",
-                            "type"
-                        ],
-                        "type": "object"
-                    },
-                    {
-                        "properties": {
-                            "brokers": {
-                                "type": "string"
-                            },
-                            "saslPassword": {
-                                "description": "Password for SASL, if `security_protocol` is `sasl-ssl`.",
-                                "nullable": true,
-                                "type": "string"
-                            },
-                            "saslUsername": {
-                                "description": "Username for SASL, if `security_protocol` is `sasl-ssl`.",
-                                "nullable": true,
-                                "type": "string"
-                            },
-                            "securityProtocol": {
-                                "$ref": "#/components/schemas/KafkaSecurityProtocolType"
-                            },
-                            "topic": {
-                                "type": "string"
-                            },
-                            "type": {
-                                "enum": [
-                                    "kafka"
-                                ],
-                                "type": "string"
-                            }
-                        },
-                        "required": [
-                            "brokers",
-                            "securityProtocol",
-                            "topic",
-                            "type"
-                        ],
-                        "type": "object"
-                    },
-                    {
-                        "properties": {
                             "type": {
                                 "enum": [
                                     "http"
@@ -7443,95 +7458,6 @@
             },
             "SinkOut": {
                 "oneOf": [
-                    {
-                        "properties": {
-                            "routingKey": {
-                                "type": "string"
-                            },
-                            "type": {
-                                "enum": [
-                                    "rabbitMQ"
-                                ],
-                                "type": "string"
-                            },
-                            "uri": {
-                                "type": "string"
-                            }
-                        },
-                        "required": [
-                            "routingKey",
-                            "type",
-                            "uri"
-                        ],
-                        "type": "object"
-                    },
-                    {
-                        "properties": {
-                            "accessKey": {
-                                "type": "string"
-                            },
-                            "queueDsn": {
-                                "format": "uri",
-                                "type": "string"
-                            },
-                            "region": {
-                                "type": "string"
-                            },
-                            "secretKey": {
-                                "type": "string"
-                            },
-                            "type": {
-                                "enum": [
-                                    "sqs"
-                                ],
-                                "type": "string"
-                            }
-                        },
-                        "required": [
-                            "accessKey",
-                            "queueDsn",
-                            "region",
-                            "secretKey",
-                            "type"
-                        ],
-                        "type": "object"
-                    },
-                    {
-                        "properties": {
-                            "brokers": {
-                                "type": "string"
-                            },
-                            "saslPassword": {
-                                "description": "Password for SASL, if `security_protocol` is `sasl-ssl`.",
-                                "nullable": true,
-                                "type": "string"
-                            },
-                            "saslUsername": {
-                                "description": "Username for SASL, if `security_protocol` is `sasl-ssl`.",
-                                "nullable": true,
-                                "type": "string"
-                            },
-                            "securityProtocol": {
-                                "$ref": "#/components/schemas/KafkaSecurityProtocolType"
-                            },
-                            "topic": {
-                                "type": "string"
-                            },
-                            "type": {
-                                "enum": [
-                                    "kafka"
-                                ],
-                                "type": "string"
-                            }
-                        },
-                        "required": [
-                            "brokers",
-                            "securityProtocol",
-                            "topic",
-                            "type"
-                        ],
-                        "type": "object"
-                    },
                     {
                         "properties": {
                             "type": {
@@ -7776,6 +7702,30 @@
                     "accountIdentifier",
                     "privateKey",
                     "userId"
+                ],
+                "type": "object"
+            },
+            "SnsConfig": {
+                "description": "Configuration for a SNS sink.",
+                "properties": {
+                    "accessKeyId": {
+                        "type": "string"
+                    },
+                    "region": {
+                        "type": "string"
+                    },
+                    "secretAccessKey": {
+                        "type": "string"
+                    },
+                    "topicArn": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "accessKeyId",
+                    "region",
+                    "secretAccessKey",
+                    "topicArn"
                 ],
                 "type": "object"
             },
@@ -8195,6 +8145,60 @@
                             "type"
                         ],
                         "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/KafkaSinkConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "kafka"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/EventBridgeConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "eventBridge"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/SnsConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "sns"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
                     }
                 ],
                 "properties": {
@@ -8422,6 +8426,60 @@
                             "type": {
                                 "enum": [
                                     "sqs"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/KafkaSinkConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "kafka"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/EventBridgeConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "eventBridge"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/SnsConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "sns"
                                 ],
                                 "type": "string"
                             }
@@ -8676,6 +8734,60 @@
                             "type": {
                                 "enum": [
                                     "sqs"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/KafkaSinkConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "kafka"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/EventBridgeConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "eventBridge"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/SnsConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "sns"
                                 ],
                                 "type": "string"
                             }
@@ -8961,7 +9073,7 @@
     "info": {
         "description": "Welcome to the Svix API documentation!\n\nUseful links: [Homepage](https://www.svix.com) | [Support email](mailto:support+docs@svix.com) | [Blog](https://www.svix.com/blog/) | [Slack Community](https://www.svix.com/slack/)\n\n# Introduction\n\nThis is the reference documentation and schemas for the [Svix webhook service](https://www.svix.com) API. For tutorials and other documentation please refer to [the documentation](https://docs.svix.com).\n\n## Main concepts\n\nIn Svix you have four important entities you will be interacting with:\n\n- `messages`: these are the webhooks being sent. They can have contents and a few other properties.\n- `application`: this is where `messages` are sent to. Usually you want to create one application for each user on your platform.\n- `endpoint`: endpoints are the URLs messages will be sent to. Each application can have multiple `endpoints` and each message sent to that application will be sent to all of them (unless they are not subscribed to the sent event type).\n- `event-type`: event types are identifiers denoting the type of the message being sent. Event types are primarily used to decide which events are sent to which endpoint.\n\n\n## Authentication\n\nGet your authentication token (`AUTH_TOKEN`) from the [Svix dashboard](https://dashboard.svix.com) and use it as part of the `Authorization` header as such: `Authorization: Bearer ${AUTH_TOKEN}`. For more information on authentication, please refer to the [authentication token docs](https://docs.svix.com/api-keys).\n\n<SecurityDefinitions />\n\n\n## Code samples\n\nThe code samples assume you already have the respective libraries installed and you know how to use them. For the latest information on how to do that, please refer to [the documentation](https://docs.svix.com/).\n\n\n## Idempotency\n\nSvix supports [idempotency](https://en.wikipedia.org/wiki/Idempotence) for safely retrying requests without accidentally performing the same operation twice. This is useful when an API call is disrupted in transit and you do not receive a response.\n\nTo perform an idempotent request, pass the idempotency key in the `Idempotency-Key` header to the request. The idempotency key should be a unique value generated by the client. You can create the key in however way you like, though we suggest using UUID v4, or any other string with enough entropy to avoid collisions.\n\nSvix's idempotency works by saving the resulting status code and body of the first request made for any given idempotency key for any successful request. Subsequent requests with the same key return the same result for a period of up to 12 hours.\n\nPlease note that idempotency is only supported for `POST` requests.\n\n\n## Cross-Origin Resource Sharing\n\nThis API features Cross-Origin Resource Sharing (CORS) implemented in compliance with [W3C spec](https://www.w3.org/TR/cors/). And that allows cross-domain communication from the browser. All responses have a wildcard same-origin which makes them completely public and accessible to everyone, including any code on any site.\n",
         "title": "Svix API",
-        "version": "1.62.0",
+        "version": "1.61.3",
         "x-logo": {
             "altText": "Svix Logo",
             "url": "https://www.svix.com/static/img/brand-padded.svg"
@@ -19545,7 +19657,7 @@
         },
         "/api/v1/app/{app_id}/msg/expunge-all-contents": {
             "post": {
-                "description": "Purge all message content for the application.\n\nDelete all message payloads for the application.",
+                "description": "Delete all message payloads for the application.\n\nThis operation is only available in the <a href=\"https://svix.com/pricing\" target=\"_blank\">Enterprise</a> plan.",
                 "operationId": "v1.message.expunge-all-contents",
                 "parameters": [
                     {
@@ -21735,6 +21847,479 @@
                         "label": "cURL",
                         "lang": "Shell",
                         "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/poller/{sink_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                    }
+                ],
+                "x-hidden": true
+            }
+        },
+        "/api/v1/app/{app_id}/poller/{sink_id}/consumer/{consumer_id}": {
+            "get": {
+                "description": "Reads the stream of created messages for an application, filtered on the Sink's event types and\nChannels, using server-managed iterator tracking.",
+                "operationId": "v1.events-public.consumer",
+                "parameters": [
+                    {
+                        "description": "The Application's ID or UID.",
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The Application's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The Endpoint's ID or UID.",
+                        "in": "path",
+                        "name": "sink_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The Endpoint's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "in": "path",
+                        "name": "consumer_id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "Limit the number of returned items",
+                        "in": "query",
+                        "name": "limit",
+                        "schema": {
+                            "description": "Limit the number of returned items",
+                            "format": "uint64",
+                            "maximum": 250,
+                            "minimum": 1,
+                            "type": "integer"
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "description": "The iterator returned from a prior invocation",
+                        "in": "query",
+                        "name": "iterator",
+                        "schema": {
+                            "description": "The iterator returned from a prior invocation",
+                            "nullable": true,
+                            "type": "string"
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "description": "Filters messages sent with this event type (optional).",
+                        "in": "query",
+                        "name": "event_type",
+                        "schema": {
+                            "description": "Filters messages sent with this event type (optional).",
+                            "example": "user.signup",
+                            "maxLength": 256,
+                            "nullable": true,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "description": "Filters messages sent with this channel (optional).",
+                        "in": "query",
+                        "name": "channel",
+                        "schema": {
+                            "description": "Filters messages sent with this channel (optional).",
+                            "example": "project_1337",
+                            "maxLength": 128,
+                            "nullable": true,
+                            "pattern": "^[a-zA-Z0-9\\-_.:]+$",
+                            "type": "string"
+                        },
+                        "style": "form"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PollingEndpointOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Public Events Consumer",
+                "tags": [
+                    "Message"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const pollingEndpointOut = await svix.eventsPublic.consumer(\"app_id\", \"sink_id\", \"consumer_id\");"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const pollingEndpointOut = await svix.eventsPublic.consumer(\"app_id\", \"sink_id\", \"consumer_id\");"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "polling_endpoint_out = svix.events_public.consumer(\"app_id\", \"sink_id\", \"consumer_id\")"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "polling_endpoint_out = await svix.events_public.consumer(\"app_id\", \"sink_id\", \"consumer_id\")"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "pollingEndpointOut, err := svixClient.EventsPublic.Consumer(ctx, \"app_id\", \"sink_id\", \"consumer_id\")"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val pollingEndpointOut = svix.eventsPublic.consumer(\"app_id\", \"sink_id\", \"consumer_id\")"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "PollingEndpointOut pollingEndpointOut = svix.getEventsPublic().consumer(\"app_id\", \"sink_id\", \"consumer_id\");"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "polling_endpoint_out = svix.events_public.consumer(\"app_id\", \"sink_id\", \"consumer_id\")"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let polling_endpoint_out = svix.events_public().consumer(\"app_id\", \"sink_id\", \"consumer_id\").await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var pollingEndpointOut = await svix.EventsPublic.ConsumerAsync(\"app_id\", \"sink_id\", \"consumer_id\");"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix events-public consumer \"app_id\" \"sink_id\" \"consumer_id\""
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/poller/{sink_id}/consumer/{consumer_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                    }
+                ],
+                "x-hidden": true
+            }
+        },
+        "/api/v1/app/{app_id}/poller/{sink_id}/consumer/{consumer_id}/seek": {
+            "post": {
+                "description": "Sets the starting offset for the consumer of a polling endpoint.",
+                "operationId": "v1.events-public.consumer-seek",
+                "parameters": [
+                    {
+                        "description": "The Application's ID or UID.",
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The Application's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The Endpoint's ID or UID.",
+                        "in": "path",
+                        "name": "sink_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The Endpoint's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "in": "path",
+                        "name": "consumer_id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PollingEndpointConsumerSeekIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PollingEndpointConsumerSeekOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Public Events Consumer Seek",
+                "tags": [
+                    "Message"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const pollingEndpointConsumerSeekOut = await svix.eventsPublic.consumerSeek(\"app_id\", \"sink_id\", \"consumer_id\", \n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const pollingEndpointConsumerSeekOut = await svix.eventsPublic.consumerSeek(\"app_id\", \"sink_id\", \"consumer_id\", \n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "polling_endpoint_consumer_seek_out = svix.events_public.consumer_seek(\"app_id\", \"sink_id\", \"consumer_id\", PollingEndpointConsumerSeekIn\n), options=...)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "polling_endpoint_consumer_seek_out = await svix.events_public.consumer_seek(\"app_id\", \"sink_id\", \"consumer_id\", PollingEndpointConsumerSeekIn\n), options=...)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "pollingEndpointConsumerSeekOut, err := svixClient.EventsPublic.ConsumerSeek(ctx, \"app_id\", \"sink_id\", \"consumer_id\", &PollingEndpointConsumerSeekIn{\n})"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val pollingEndpointConsumerSeekOut = svix.eventsPublic.consumerSeek(\"app_id\", \"sink_id\", \"consumer_id\", PollingEndpointConsumerSeekIn()\n)"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "PollingEndpointConsumerSeekOut pollingEndpointConsumerSeekOut = svix.getEventsPublic().consumerSeek(\"app_id\", \"sink_id\", \"consumer_id\", new PollingEndpointConsumerSeekIn()\n);"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "polling_endpoint_consumer_seek_out = svix.events_public.consumer_seek(\"app_id\", \"sink_id\", \"consumer_id\", Svix::PollingEndpointConsumerSeekIn.new(\n}))"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let polling_endpoint_consumer_seek_out = svix.events_public().consumer_seek(\"app_id\", \"sink_id\", \"consumer_id\", PollingEndpointConsumerSeekIn {\n}, None).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var pollingEndpointConsumerSeekOut = await svix.EventsPublic.ConsumerSeekAsync(\"app_id\", \"sink_id\", \"consumer_id\", new PollingEndpointConsumerSeekIn\n});"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix events-public consumer-seek \"app_id\" \"sink_id\" \"consumer_id\" '\n}'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/poller/{sink_id}/consumer/{consumer_id}/seek' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '\n    }'"
                     }
                 ],
                 "x-hidden": true
@@ -24820,7 +25405,7 @@
         },
         "/api/v1/environment/import": {
             "post": {
-                "description": "Import a configuration into the active organization.\nIt doesn't delete anything, only adds/updates what was passed to it.",
+                "description": "Import a configuration into the active organization.\n\nIt doesn't delete anything, only adds / updates what was passed to it.",
                 "operationId": "v1.environment.import",
                 "parameters": [
                     {
