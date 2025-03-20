@@ -7,6 +7,6 @@ type EnvironmentOut struct {
 	CreatedAt               time.Time       `json:"createdAt"`
 	EventTypes              []EventTypeOut  `json:"eventTypes"`
 	Settings                *map[string]any `json:"settings,omitempty"`
-	TransformationTemplates []TemplateOut   `json:"transformationTemplates"`
+	TransformationTemplates []ConnectorOut  `json:"transformationTemplates"`
 	Version                 *int64          `json:"version,omitempty"`
 }
