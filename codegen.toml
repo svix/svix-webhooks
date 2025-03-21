@@ -19,9 +19,8 @@ output_dir = "rust/src/models"
 [javascript]
 template_dir = "javascript/templates"
 extra_shell_commands = [
-   "rm javascript/src/models/retryScheduleInOut.ts",
-   "rm javascript/src/models/listResponseSinkOut.ts",
-   "rm javascript/src/api/{ingest,ingestSource,operationalWebhook}.ts",
+   "rm javascript/src/models/{listResponseSinkOut,retryScheduleInOut}.ts",
+   "rm javascript/src/api/{ingest,ingestSource}.ts",
 ]
 [[javascript.task]]
 template = "javascript/templates/api_resource.ts.jinja"
