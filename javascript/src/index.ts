@@ -6,6 +6,7 @@ import { EventType } from "./api/eventType";
 import { Integration } from "./api/integration";
 import { Message } from "./api/message";
 import { MessageAttempt } from "./api/messageAttempt";
+import { OperationalWebhook } from "./api/operationalWebhook";
 import { OperationalWebhookEndpoint } from "./api/operationalWebhookEndpoint";
 import { Statistics } from "./api/statistics";
 import { SvixRequestContext } from "./request";
@@ -80,6 +81,10 @@ export class Svix {
 
   public get statistics() {
     return new Statistics(this.requestCtx);
+  }
+
+  public get operationalWebhook() {
+    return new OperationalWebhook(this.requestCtx);
   }
 
   public get operationalWebhookEndpoint() {

@@ -19,6 +19,7 @@ import {
   TransformationSimulateOutSerializer,
 } from "../models/transformationSimulateOut";
 import { HttpMethod, SvixRequest, SvixRequestContext } from "../request";
+import { BetaConnectorOauth } from "./betaConnectorOauth";
 
 export interface BetaConnectorListOptions {
   /** Limit the number of returned items */
@@ -43,6 +44,10 @@ export interface BetaConnectorSimulateOptions {
 
 export class BetaConnector {
   public constructor(private readonly requestCtx: SvixRequestContext) {}
+
+  public get oauth() {
+    return new BetaConnectorOauth(this.requestCtx);
+  }
 
   /** List all transformation templates for an application. */
   public list(options?: BetaConnectorListOptions): Promise<ListResponseConnectorOut> {

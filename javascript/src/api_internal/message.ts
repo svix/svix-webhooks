@@ -14,6 +14,7 @@ import {
   MessageRawPayloadOutSerializer,
 } from "../models/messageRawPayloadOut";
 import { HttpMethod, SvixRequest, SvixRequestContext } from "../request";
+import { MessageEventsSubscription } from "./messageEventsSubscription";
 
 export interface MessageEventsOptions {
   /** Limit the number of returned items */
@@ -45,6 +46,10 @@ export interface MessagePrecheckOptions {
 
 export class Message {
   public constructor(private readonly requestCtx: SvixRequestContext) {}
+
+  public get events_subscription() {
+    return new MessageEventsSubscription(this.requestCtx);
+  }
 
   /** Reads the stream of created messages for an application. */
   public events(
