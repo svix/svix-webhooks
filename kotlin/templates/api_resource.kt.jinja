@@ -41,6 +41,12 @@ data class {{ resource_type_name }}{{ op.name | to_upper_camel_case }}Options(
 
 
 class {{ resource_type_name }}(private val client: SvixHttpClient) {
+{% for name, sub in resource.subresources | items -%}
+    {% set sub_type_name = sub.name | to_upper_camel_case -%}
+    val {{ name | to_lower_camel_case }}: {{ sub_type_name }} = {{ sub_type_name }}(client)
+
+{% endfor -%}
+
 {% for op in resource.operations -%}
 {% set res_type = op.response_body_schema_name | replace("_", "") -%}
 {% set has_query_params = op.query_params | length > 0 -%}
