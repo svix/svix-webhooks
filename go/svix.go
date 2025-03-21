@@ -19,11 +19,13 @@ type (
 		Authentication             *Authentication
 		Application                *Application
 		Endpoint                   *Endpoint
+		Environment                *Environment
 		EventType                  *EventType
 		Integration                *Integration
 		Message                    *Message
 		MessageAttempt             *MessageAttempt
 		Statistics                 *Statistics
+		OperationalWebhook         *OperationalWebhook
 		OperationalWebhookEndpoint *OperationalWebhookEndpoint
 	}
 )
@@ -53,33 +55,17 @@ func New(token string, options *SvixOptions) (*Svix, error) {
 	svixHttpClient.DefaultHeaders["User-Agent"] = fmt.Sprintf("svix-libs/%s/go", Version)
 
 	svx := Svix{
-		Authentication: &Authentication{
-			client: &svixHttpClient,
-		},
-		Application: &Application{
-			client: &svixHttpClient,
-		},
-		Endpoint: &Endpoint{
-			client: &svixHttpClient,
-		},
-		EventType: &EventType{
-			client: &svixHttpClient,
-		},
-		Message: &Message{
-			client: &svixHttpClient,
-		},
-		Integration: &Integration{
-			client: &svixHttpClient,
-		},
-		MessageAttempt: &MessageAttempt{
-			client: &svixHttpClient,
-		},
-		Statistics: &Statistics{
-			client: &svixHttpClient,
-		},
-		OperationalWebhookEndpoint: &OperationalWebhookEndpoint{
-			client: &svixHttpClient,
-		},
+		Authentication:             newAuthentication(&svixHttpClient),
+		Application:                newApplication(&svixHttpClient),
+		Endpoint:                   newEndpoint(&svixHttpClient),
+		Environment:                newEnvironment(&svixHttpClient),
+		EventType:                  newEventType(&svixHttpClient),
+		Message:                    newMessage(&svixHttpClient),
+		Integration:                newIntegration(&svixHttpClient),
+		MessageAttempt:             newMessageAttempt(&svixHttpClient),
+		Statistics:                 newStatistics(&svixHttpClient),
+		OperationalWebhook:         newOperationalWebhook(&svixHttpClient),
+		OperationalWebhookEndpoint: newOperationalWebhookEndpoint(&svixHttpClient),
 	}
 	return &svx, nil
 }
@@ -96,5 +82,4 @@ func getDefaultBaseUrl(token string) string {
 	} else {
 		return "https://api.svix.com"
 	}
-
 }

@@ -11,6 +11,12 @@ type BackgroundTask struct {
 	client *SvixHttpClient
 }
 
+func newBackgroundTask(client *SvixHttpClient) *BackgroundTask {
+	return &BackgroundTask{
+		client: client,
+	}
+}
+
 type BackgroundTaskListOptions struct {
 
 	// Filter the response based on the status.

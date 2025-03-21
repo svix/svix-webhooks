@@ -12,6 +12,12 @@ type Endpoint struct {
 	client *SvixHttpClient
 }
 
+func newEndpoint(client *SvixHttpClient) *Endpoint {
+	return &Endpoint{
+		client: client,
+	}
+}
+
 type EndpointListOptions struct {
 	// Limit the number of returned items
 	Limit *uint64

@@ -11,6 +11,12 @@ type Authentication struct {
 	client *SvixHttpClient
 }
 
+func newAuthentication(client *SvixHttpClient) *Authentication {
+	return &Authentication{
+		client: client,
+	}
+}
+
 type AuthenticationAppPortalAccessOptions struct {
 	IdempotencyKey *string
 }

@@ -14,14 +14,29 @@ import (
 
 
 type {{ resource_type_name }} struct {
+	{% if resource.operations | length > 0 -%}
 	client *SvixHttpClient
+	{%- endif %}
+	{%- for name, sub in resource.subresources | items %}
+	{{ name | to_upper_camel_case }} *{{ sub.name | to_upper_camel_case }}
+	{%- endfor %}
 }
 
+func new{{ resource_type_name }}(client *SvixHttpClient) *{{ resource_type_name }} {
+	return &{{ resource_type_name }}{
+		{% if resource.operations | length > 0 -%}
+		client: client,
+		{% endif -%}
+		{% for name, sub in resource.subresources | items -%}
+		{{ name | to_upper_camel_case }}: new{{ sub.name | to_upper_camel_case }}(client),
+		{% endfor -%}
+	}
+}
 
 {% for op in resource.operations -%}
 	{% if op | has_query_or_header_params -%}
 	{% set opt_struct_name %}{{ resource_type_name }}{{ op.name | to_upper_camel_case }}Options{% endset %}
-type {{ opt_struct_name }} struct{
+type {{ opt_struct_name }} struct {
 		{% for p in op.query_params -%}
 			{% set p_ty = p.type.to_go() -%}
 			{% if p.type.is_schema_ref() -%}
@@ -36,7 +51,6 @@ type {{ opt_struct_name }} struct{
 		{% for p in op.header_params -%}
 	{{ p.name | to_upper_camel_case }} *string
 		{% endfor -%}
-
 }
 	{% endif -%}
 {% endfor -%}

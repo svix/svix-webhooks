@@ -11,6 +11,12 @@ type Application struct {
 	client *SvixHttpClient
 }
 
+func newApplication(client *SvixHttpClient) *Application {
+	return &Application{
+		client: client,
+	}
+}
+
 type ApplicationListOptions struct {
 	// Limit the number of returned items
 	Limit *uint64
