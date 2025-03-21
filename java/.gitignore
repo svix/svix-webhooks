@@ -24,9 +24,6 @@ build
 # Build files
 bin/
 
-# auto generated files
-lib/generated/
-
 .classpath
 .settings
 
