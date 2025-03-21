@@ -6,8 +6,8 @@ import random
 import shutil
 import string
 import subprocess
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-from threading import Thread
 
 try:
     import tomllib
@@ -22,6 +22,13 @@ GREEN = "\033[92m"
 BLUE = "\033[94m"
 CYAN = "\033[96m"
 ENDC = "\033[0m"
+
+
+# I can't sys.exit from a thread
+class ExitException(Exception):
+    def __init__(self, code: int):
+        super().__init__("")
+        self.code = code
 
 
 def get_docker_binary() -> str:
@@ -116,7 +123,11 @@ def run_cmd(prefix, cmd, dont_dbg=False) -> subprocess.CompletedProcess[bytes]:
     )
     if result.returncode != 0:
         print_cmd_result(result, prefix)
-        raise RuntimeError(f"{prefix}subprocess exited with code {result.returncode}")
+        prefix_print(
+            prefix,
+            f"subprocess exited with code {result.returncode} (run with DEBUG=yes to see extra logs)",
+        )
+        raise ExitException(result.returncode)
 
     if DEBUG and not dont_dbg:
         print_cmd_result(result, prefix)
@@ -172,7 +183,11 @@ def execute_codegen_task(task):
 
     if exit_code != 0:
         prefix_print(prefix, nice_logs)
-        raise RuntimeError(f"{prefix}subprocess exited with code {exit_code}")
+        prefix_print(
+            prefix,
+            f"subprocess exited with code {exit_code} (run with DEBUG=yes to see extra logs)",
+        )
+        raise ExitException(exit_code)
 
     dbg(prefix, nice_logs)
 
@@ -184,14 +199,13 @@ def execute_codegen_task(task):
 
 
 def run_codegen_for_language(language, language_config):
-    threads = []
-    for t in language_config["tasks"]:
-        th = Thread(target=execute_codegen_task, args=[t])
-        th.start()
-        threads.append(th)
-
-    for th in threads:
-        th.join()
+    with ThreadPoolExecutor() as pool:
+        futures = []
+        for t in language_config["tasks"]:
+            futures.append(pool.submit(execute_codegen_task, t))
+        for future in as_completed(futures):
+            if future.exception() is not None:
+                raise future.exception()
 
     extra_shell_commands = language_config.get("extra_shell_commands", [])
     for index, shell_command in enumerate(extra_shell_commands):
@@ -274,17 +288,25 @@ def main():
     all_tasks = sum([i["tasks_count"] for i in config.values()])
     print(f"Running {all_tasks} codegen tasks")
 
-    threads = []
-    for language, language_config in config.items():
-        th = Thread(target=run_codegen_for_language, args=[language, language_config])
-        th.start()
-        threads.append(th)
-
-    for th in threads:
-        th.join()
+    # there may be more then 1 subprocess that exited
+    exit_with_error = False
+    with ThreadPoolExecutor() as pool:
+        futures = []
+        for language, language_config in config.items():
+            futures.append(
+                pool.submit(run_codegen_for_language, language, language_config)
+            )
+        for future in as_completed(futures):
+            if future.exception() is not None:
+                if isinstance(future.exception(), ExitException):
+                    exit_with_error = True
+                else:
+                    raise future.exception()
 
     # final newline
     print()
+    if exit_with_error:
+        exit(1)
 
 
 if __name__ == "__main__":
