@@ -11,8 +11,15 @@ module Svix
     {% include "api_extra/message.rb" %}
   {% endif -%}
   class {{ resource_type_name }}
+    {% for name, _ in resource.subresources | items -%}
+    attr_accessor :{{ name | to_snake_case }}
+    {% endfor -%}
+
     def initialize(client)
       @client = client
+      {%- for name, sub in resource.subresources | items %}
+      @{{ name | to_snake_case }} = {{ sub.name | to_upper_camel_case }}.new(client)
+      {%- endfor %}
     end
 {% for op in resource.operations %}
     {% set func_args -%}

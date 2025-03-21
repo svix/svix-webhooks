@@ -5,8 +5,12 @@ require "net/http"
 
 module Svix
   class Ingest
+    attr_accessor :endpoint
+    attr_accessor :source
     def initialize(client)
       @client = client
+      @endpoint = IngestEndpoint.new(client)
+      @source = IngestSource.new(client)
     end
 
     def dashboard(source_id, ingest_source_consumer_portal_access_in, options = {})
