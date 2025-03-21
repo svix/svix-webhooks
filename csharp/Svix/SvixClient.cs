@@ -49,6 +49,11 @@ namespace Svix
             get => new Statistics(this);
         }
 
+        public OperationalWebhook OperationalWebhook
+        {
+            get => new OperationalWebhook(this);
+        }
+
         public OperationalWebhookEndpoint OperationalWebhookEndpoint
         {
             get => new OperationalWebhookEndpoint(this);
