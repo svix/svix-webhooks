@@ -11,6 +11,12 @@ type Statistics struct {
 	client *SvixHttpClient
 }
 
+func newStatistics(client *SvixHttpClient) *Statistics {
+	return &Statistics{
+		client,
+	}
+}
+
 type StatisticsAggregateAppStatsOptions struct {
 	IdempotencyKey *string
 }

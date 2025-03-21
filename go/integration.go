@@ -11,6 +11,12 @@ type Integration struct {
 	client *SvixHttpClient
 }
 
+func newIntegration(client *SvixHttpClient) *Integration {
+	return &Integration{
+		client,
+	}
+}
+
 type IntegrationListOptions struct {
 	// Limit the number of returned items
 	Limit *uint64

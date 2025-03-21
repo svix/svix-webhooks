@@ -11,6 +11,12 @@ type OperationalWebhookEndpoint struct {
 	client *SvixHttpClient
 }
 
+func newOperationalWebhookEndpoint(client *SvixHttpClient) *OperationalWebhookEndpoint {
+	return &OperationalWebhookEndpoint{
+		client,
+	}
+}
+
 type OperationalWebhookEndpointListOptions struct {
 	// Limit the number of returned items
 	Limit *uint64

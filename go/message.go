@@ -12,6 +12,12 @@ type Message struct {
 	client *SvixHttpClient
 }
 
+func newMessage(client *SvixHttpClient) *Message {
+	return &Message{
+		client,
+	}
+}
+
 type MessageListOptions struct {
 	// Limit the number of returned items
 	Limit *uint64

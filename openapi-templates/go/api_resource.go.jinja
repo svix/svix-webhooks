@@ -17,6 +17,11 @@ type {{ resource_type_name }} struct {
 	client *SvixHttpClient
 }
 
+func new{{ resource_type_name }}(client *SvixHttpClient) *{{ resource_type_name }} {
+	return &{{ resource_type_name }}{
+		client,
+	}
+}
 
 {% for op in resource.operations -%}
 	{% if op | has_query_or_header_params -%}

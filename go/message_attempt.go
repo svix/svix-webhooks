@@ -12,6 +12,12 @@ type MessageAttempt struct {
 	client *SvixHttpClient
 }
 
+func newMessageAttempt(client *SvixHttpClient) *MessageAttempt {
+	return &MessageAttempt{
+		client,
+	}
+}
+
 type MessageAttemptListByEndpointOptions struct {
 	// Limit the number of returned items
 	Limit *uint64

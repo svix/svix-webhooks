@@ -11,6 +11,12 @@ type EventType struct {
 	client *SvixHttpClient
 }
 
+func newEventType(client *SvixHttpClient) *EventType {
+	return &EventType{
+		client,
+	}
+}
+
 type EventTypeListOptions struct {
 	// Limit the number of returned items
 	Limit *uint64
