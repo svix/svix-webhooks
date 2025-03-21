@@ -4,10 +4,12 @@ from dataclasses import field, dataclass
 from .application import Application, ApplicationAsync
 from .authentication import Authentication, AuthenticationAsync
 from .endpoint import Endpoint, EndpointAsync
+from .environment import Environment, EnvironmentAsync
 from .event_type import EventType, EventTypeAsync
 from .integration import Integration, IntegrationAsync
 from .message import Message, MessageAsync
 from .message_attempt import MessageAttempt, MessageAttemptAsync
+from .operational_webhook import OperationalWebhook, OperationalWebhookAsync
 from .operational_webhook_endpoint import (
     OperationalWebhookEndpoint,
     OperationalWebhookEndpointAsync,
@@ -88,6 +90,10 @@ class SvixAsync(ClientBase):
         return EndpointAsync(self._client)
 
     @property
+    def environment(self) -> EnvironmentAsync:
+        return EnvironmentAsync(self._client)
+
+    @property
     def event_type(self) -> EventTypeAsync:
         return EventTypeAsync(self._client)
 
@@ -108,6 +114,10 @@ class SvixAsync(ClientBase):
         return StatisticsAsync(self._client)
 
     @property
+    def operational_webhook(self) -> OperationalWebhookAsync:
+        return OperationalWebhookAsync(self._client)
+
+    @property
     def operational_webhook_endpoint(self) -> OperationalWebhookEndpointAsync:
         return OperationalWebhookEndpointAsync(self._client)
 
@@ -124,6 +134,10 @@ class Svix(ClientBase):
     @property
     def endpoint(self) -> Endpoint:
         return Endpoint(self._client)
+
+    @property
+    def environment(self) -> Environment:
+        return Environment(self._client)
 
     @property
     def event_type(self) -> EventType:
@@ -144,6 +158,10 @@ class Svix(ClientBase):
     @property
     def statistics(self) -> Statistics:
         return Statistics(self._client)
+
+    @property
+    def operational_webhook(self) -> OperationalWebhook:
+        return OperationalWebhook(self._client)
 
     @property
     def operational_webhook_endpoint(self) -> OperationalWebhookEndpoint:
