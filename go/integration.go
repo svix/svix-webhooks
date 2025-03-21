@@ -13,7 +13,7 @@ type Integration struct {
 
 func newIntegration(client *SvixHttpClient) *Integration {
 	return &Integration{
-		client,
+		client: client,
 	}
 }
 

@@ -13,7 +13,7 @@ type Application struct {
 
 func newApplication(client *SvixHttpClient) *Application {
 	return &Application{
-		client,
+		client: client,
 	}
 }
 

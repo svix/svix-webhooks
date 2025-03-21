@@ -14,7 +14,7 @@ type Message struct {
 
 func newMessage(client *SvixHttpClient) *Message {
 	return &Message{
-		client,
+		client: client,
 	}
 }
 

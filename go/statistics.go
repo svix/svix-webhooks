@@ -13,7 +13,7 @@ type Statistics struct {
 
 func newStatistics(client *SvixHttpClient) *Statistics {
 	return &Statistics{
-		client,
+		client: client,
 	}
 }
 

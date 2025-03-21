@@ -13,7 +13,7 @@ type Authentication struct {
 
 func newAuthentication(client *SvixHttpClient) *Authentication {
 	return &Authentication{
-		client,
+		client: client,
 	}
 }
 

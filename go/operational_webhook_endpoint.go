@@ -13,7 +13,7 @@ type OperationalWebhookEndpoint struct {
 
 func newOperationalWebhookEndpoint(client *SvixHttpClient) *OperationalWebhookEndpoint {
 	return &OperationalWebhookEndpoint{
-		client,
+		client: client,
 	}
 }
 

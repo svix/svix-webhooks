@@ -14,7 +14,7 @@ type MessageAttempt struct {
 
 func newMessageAttempt(client *SvixHttpClient) *MessageAttempt {
 	return &MessageAttempt{
-		client,
+		client: client,
 	}
 }
 

@@ -13,7 +13,7 @@ type EventType struct {
 
 func newEventType(client *SvixHttpClient) *EventType {
 	return &EventType{
-		client,
+		client: client,
 	}
 }
 

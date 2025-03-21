@@ -14,7 +14,7 @@ type Endpoint struct {
 
 func newEndpoint(client *SvixHttpClient) *Endpoint {
 	return &Endpoint{
-		client,
+		client: client,
 	}
 }
 

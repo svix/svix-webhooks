@@ -13,7 +13,7 @@ type BackgroundTask struct {
 
 func newBackgroundTask(client *SvixHttpClient) *BackgroundTask {
 	return &BackgroundTask{
-		client,
+		client: client,
 	}
 }
 
