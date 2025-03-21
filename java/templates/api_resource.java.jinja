@@ -17,7 +17,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-{% if resource.name == "message"%}
+{% if resource.subresources | length > 0 -%}
+import lombok.Getter;
+{% endif -%}
+{% if resource.name == "message" %}
 import lombok.*;
 import com.svix.models.*;
 {% endif -%}
@@ -26,12 +29,18 @@ import com.svix.models.{{ c | to_upper_camel_case }};
 {% endfor -%}
 
 
-
 public class {{ resource_type_name }} {
     private final SvixHttpClient client;
 
+    {% for name, sub in resource.subresources | items -%}
+    @Getter private final {{ sub.name | to_upper_camel_case }} {{ name | to_lower_camel_case }};
+    {% endfor %}
+
     public {{ resource_type_name }}(SvixHttpClient client) {
         this.client = client;
+        {% for name, sub in resource.subresources | items -%}
+        this.{{ name | to_lower_camel_case }} = new {{ sub.name | to_upper_camel_case }}(client);
+        {% endfor -%}
     }
 {% for op in resource.operations -%}
     {% set throws = "throws IOException, ApiException" -%}
