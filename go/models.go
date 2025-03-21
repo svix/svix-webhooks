@@ -4,6 +4,8 @@ package svix
 import "github.com/svix/svix-webhooks/go/models"
 
 type (
+	AdobeSignConfig                           = models.AdobeSignConfig
+	AdobeSignConfigOut                        = models.AdobeSignConfigOut
 	AggregateEventTypesOut                    = models.AggregateEventTypesOut
 	AppPortalAccessIn                         = models.AppPortalAccessIn
 	AppPortalAccessOut                        = models.AppPortalAccessOut
@@ -13,12 +15,27 @@ type (
 	ApplicationOut                            = models.ApplicationOut
 	ApplicationPatch                          = models.ApplicationPatch
 	ApplicationTokenExpireIn                  = models.ApplicationTokenExpireIn
+	BackgroundTaskFinishedEvent               = models.BackgroundTaskFinishedEvent
+	BackgroundTaskFinishedEvent2              = models.BackgroundTaskFinishedEvent2
 	BackgroundTaskOut                         = models.BackgroundTaskOut
 	BackgroundTaskStatus                      = models.BackgroundTaskStatus
 	BackgroundTaskType                        = models.BackgroundTaskType
 	ConnectorIn                               = models.ConnectorIn
 	ConnectorKind                             = models.ConnectorKind
+	ConnectorOut                              = models.ConnectorOut
+	CronConfig                                = models.CronConfig
 	DashboardAccessOut                        = models.DashboardAccessOut
+	DocusignConfig                            = models.DocusignConfig
+	DocusignConfigOut                         = models.DocusignConfigOut
+	EndpointCreatedEvent                      = models.EndpointCreatedEvent
+	EndpointCreatedEventData                  = models.EndpointCreatedEventData
+	EndpointDeletedEvent                      = models.EndpointDeletedEvent
+	EndpointDeletedEventData                  = models.EndpointDeletedEventData
+	EndpointDisabledEvent                     = models.EndpointDisabledEvent
+	EndpointDisabledEventData                 = models.EndpointDisabledEventData
+	EndpointDisabledTrigger                   = models.EndpointDisabledTrigger
+	EndpointEnabledEvent                      = models.EndpointEnabledEvent
+	EndpointEnabledEventData                  = models.EndpointEnabledEventData
 	EndpointHeadersIn                         = models.EndpointHeadersIn
 	EndpointHeadersOut                        = models.EndpointHeadersOut
 	EndpointHeadersPatchIn                    = models.EndpointHeadersPatchIn
@@ -32,6 +49,8 @@ type (
 	EndpointTransformationIn                  = models.EndpointTransformationIn
 	EndpointTransformationOut                 = models.EndpointTransformationOut
 	EndpointUpdate                            = models.EndpointUpdate
+	EndpointUpdatedEvent                      = models.EndpointUpdatedEvent
+	EndpointUpdatedEventData                  = models.EndpointUpdatedEventData
 	EnvironmentIn                             = models.EnvironmentIn
 	EnvironmentOut                            = models.EnvironmentOut
 	EventExampleIn                            = models.EventExampleIn
@@ -44,6 +63,10 @@ type (
 	EventTypePatch                            = models.EventTypePatch
 	EventTypeUpdate                           = models.EventTypeUpdate
 	ExpungeAllContentsOut                     = models.ExpungeAllContentsOut
+	GithubConfig                              = models.GithubConfig
+	GithubConfigOut                           = models.GithubConfigOut
+	HubspotConfig                             = models.HubspotConfig
+	HubspotConfigOut                          = models.HubspotConfigOut
 	IngestEndpointHeadersIn                   = models.IngestEndpointHeadersIn
 	IngestEndpointHeadersOut                  = models.IngestEndpointHeadersOut
 	IngestEndpointIn                          = models.IngestEndpointIn
@@ -51,6 +74,9 @@ type (
 	IngestEndpointSecretIn                    = models.IngestEndpointSecretIn
 	IngestEndpointSecretOut                   = models.IngestEndpointSecretOut
 	IngestEndpointUpdate                      = models.IngestEndpointUpdate
+	IngestSourceConsumerPortalAccessIn        = models.IngestSourceConsumerPortalAccessIn
+	IngestSourceIn                            = models.IngestSourceIn
+	IngestSourceOut                           = models.IngestSourceOut
 	IntegrationIn                             = models.IntegrationIn
 	IntegrationKeyOut                         = models.IntegrationKeyOut
 	IntegrationOut                            = models.IntegrationOut
@@ -61,12 +87,20 @@ type (
 	ListResponseEndpointOut                   = models.ListResponseEndpointOut
 	ListResponseEventTypeOut                  = models.ListResponseEventTypeOut
 	ListResponseIngestEndpointOut             = models.ListResponseIngestEndpointOut
+	ListResponseIngestSourceOut               = models.ListResponseIngestSourceOut
 	ListResponseIntegrationOut                = models.ListResponseIntegrationOut
 	ListResponseMessageAttemptOut             = models.ListResponseMessageAttemptOut
 	ListResponseMessageEndpointOut            = models.ListResponseMessageEndpointOut
 	ListResponseMessageOut                    = models.ListResponseMessageOut
 	ListResponseOperationalWebhookEndpointOut = models.ListResponseOperationalWebhookEndpointOut
+	MessageAttemptExhaustedEvent              = models.MessageAttemptExhaustedEvent
+	MessageAttemptExhaustedEventData          = models.MessageAttemptExhaustedEventData
+	MessageAttemptFailedData                  = models.MessageAttemptFailedData
+	MessageAttemptFailingEvent                = models.MessageAttemptFailingEvent
+	MessageAttemptFailingEventData            = models.MessageAttemptFailingEventData
 	MessageAttemptOut                         = models.MessageAttemptOut
+	MessageAttemptRecoveredEvent              = models.MessageAttemptRecoveredEvent
+	MessageAttemptRecoveredEventData          = models.MessageAttemptRecoveredEventData
 	MessageAttemptTriggerType                 = models.MessageAttemptTriggerType
 	MessageEndpointOut                        = models.MessageEndpointOut
 	MessageIn                                 = models.MessageIn
@@ -84,6 +118,18 @@ type (
 	RecoverOut                                = models.RecoverOut
 	ReplayIn                                  = models.ReplayIn
 	ReplayOut                                 = models.ReplayOut
+	RotateTokenOut                            = models.RotateTokenOut
+	SegmentConfig                             = models.SegmentConfig
+	SegmentConfigOut                          = models.SegmentConfigOut
+	ShopifyConfig                             = models.ShopifyConfig
+	ShopifyConfigOut                          = models.ShopifyConfigOut
+	SlackConfig                               = models.SlackConfig
+	SlackConfigOut                            = models.SlackConfigOut
 	StatusCodeClass                           = models.StatusCodeClass
-	TemplateOut                               = models.TemplateOut
+	StripeConfig                              = models.StripeConfig
+	StripeConfigOut                           = models.StripeConfigOut
+	SvixConfig                                = models.SvixConfig
+	SvixConfigOut                             = models.SvixConfigOut
+	ZoomConfig                                = models.ZoomConfig
+	ZoomConfigOut                             = models.ZoomConfigOut
 )

@@ -44,8 +44,8 @@ output_dir = "javascript/src/models"
 template = "javascript/templates/component_type.ts.jinja"
 output_dir = "javascript/src/models"
 extra_codegen_args = ["--include-mode=public-and-hidden"]
-#
-#
+
+
 [cli]
 template_dir = "svix-cli/templates"
 extra_mounts = { "svix-cli/.rustfmt.toml" = "/app/.rustfmt.toml" }
@@ -57,8 +57,8 @@ extra_shell_commands = [
 [[cli.task]]
 template = "svix-cli/templates/api_resource.rs.jinja"
 output_dir = "svix-cli/src/cmds/api"
-#
-#
+
+
 [python]
 template_dir = "python/templates"
 extra_shell_commands = [
@@ -76,13 +76,11 @@ output_dir = "python/svix/models"
 [[python.task]]
 template = "python/templates/summary.py.jinja"
 output_dir = "python/svix/api"
-#
-#
+
+
 [ruby]
 template_dir = "ruby/templates"
-extra_shell_commands = [
-   "rm ruby/lib/svix/api/operational_webhook.rb"
-   ]
+extra_shell_commands = ["rm ruby/lib/svix/api/operational_webhook.rb"]
 [[ruby.task]]
 template = "ruby/templates/api_resource.rb.jinja"
 output_dir = "ruby/lib/svix/api"
@@ -92,8 +90,8 @@ output_dir = "ruby/lib"
 [[ruby.task]]
 template = "ruby/templates/component_type.rb.jinja"
 output_dir = "ruby/lib/svix/models"
-#
-#
+
+
 [csharp]
 template_dir = "csharp/templates"
 extra_shell_commands = [
@@ -121,24 +119,24 @@ output_dir = "java/lib/src/main/java/com/svix/api"
 [[java.task]]
 template = "java/templates/component_type.java.jinja"
 output_dir = "java/lib/src/main/java/com/svix/models"
-#
-#
-#[go]
-#template_dir = "openapi-templates/go"
-#extra_shell_commands = [
-#    "rm go/{environment,health,ingest_endpoint,ingest,operational_webhook}.go",
-#]
-#[[go.task]]
-#template = "openapi-templates/go/api_resource.go.jinja"
-#output_dir = "go"
-#[[go.task]]
-#template = "openapi-templates/go/component_type_summary.go.jinja"
-#output_dir = "go"
-#[[go.task]]
-#template = "openapi-templates/go/component_type.go.jinja"
-#output_dir = "go/models"
-#
-#
+
+
+[go]
+template_dir = "openapi-templates/go"
+extra_shell_commands = [
+   "rm go/{environment,health,ingest_endpoint,ingest,ingest_source,operational_webhook}.go",
+]
+[[go.task]]
+template = "openapi-templates/go/api_resource.go.jinja"
+output_dir = "go"
+[[go.task]]
+template = "openapi-templates/go/component_type_summary.go.jinja"
+output_dir = "go"
+[[go.task]]
+template = "openapi-templates/go/component_type.go.jinja"
+output_dir = "go/models"
+
+
 [kotlin]
 extra_shell_commands = [
    "rm kotlin/lib/src/main/kotlin/{Ingest,OperationalWebhook}.kt",
