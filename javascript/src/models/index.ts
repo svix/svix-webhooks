@@ -109,6 +109,10 @@ export { OperationalWebhookEndpointSecretIn } from "./operationalWebhookEndpoint
 export { OperationalWebhookEndpointSecretOut } from "./operationalWebhookEndpointSecretOut";
 export { OperationalWebhookEndpointUpdate } from "./operationalWebhookEndpointUpdate";
 export { Ordering } from "./ordering";
+export { PollingEndpointConsumerSeekIn } from "./pollingEndpointConsumerSeekIn";
+export { PollingEndpointConsumerSeekOut } from "./pollingEndpointConsumerSeekOut";
+export { PollingEndpointMessageOut } from "./pollingEndpointMessageOut";
+export { PollingEndpointOut } from "./pollingEndpointOut";
 export { RecoverIn } from "./recoverIn";
 export { RecoverOut } from "./recoverOut";
 export { ReplayIn } from "./replayIn";
