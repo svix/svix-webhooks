@@ -4,6 +4,7 @@ from dataclasses import field, dataclass
 from .application import Application, ApplicationAsync
 from .authentication import Authentication, AuthenticationAsync
 from .endpoint import Endpoint, EndpointAsync
+from .environment import Environment, EnvironmentAsync
 from .event_type import EventType, EventTypeAsync
 from .integration import Integration, IntegrationAsync
 from .message import Message, MessageAsync
@@ -89,6 +90,10 @@ class SvixAsync(ClientBase):
         return EndpointAsync(self._client)
 
     @property
+    def environment(self) -> EnvironmentAsync:
+        return EnvironmentAsync(self._client)
+
+    @property
     def event_type(self) -> EventTypeAsync:
         return EventTypeAsync(self._client)
 
@@ -129,6 +134,10 @@ class Svix(ClientBase):
     @property
     def endpoint(self) -> Endpoint:
         return Endpoint(self._client)
+
+    @property
+    def environment(self) -> Environment:
+        return Environment(self._client)
 
     @property
     def event_type(self) -> EventType:

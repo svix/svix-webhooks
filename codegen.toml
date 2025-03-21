@@ -61,7 +61,7 @@ output_dir = "svix-cli/src/cmds/api"
 [python]
 template_dir = "python/templates"
 extra_shell_commands = [
-   "rm python/svix/api/{environment,health,ingest}.py",
+   "rm python/svix/api/{health,ingest}.py",
 ]
 [[python.task]]
 template = "python/templates/api_resource.py.jinja"
