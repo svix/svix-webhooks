@@ -50,7 +50,7 @@ extra_codegen_args = ["--include-mode=public-and-hidden"]
 template_dir = "svix-cli/templates"
 extra_mounts = { "svix-cli/.rustfmt.toml" = "/app/.rustfmt.toml" }
 extra_shell_commands = [
-   "cargo fix --manifest-path svix-cli/Cargo.toml --allow-dirty --allow-staged",
+   "cargo fix --all-targets --all-features --manifest-path svix-cli/Cargo.toml --allow-dirty --allow-staged",
    "cargo fmt --manifest-path svix-cli/Cargo.toml",
    "rm svix-cli/src/cmds/api/{ingest,ingest_source,operational_webhook,background_task,health,operational_webhook_endpoint,statistics}.rs",
 ]
