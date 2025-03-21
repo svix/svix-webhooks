@@ -26,10 +26,10 @@ func new{{ resource_type_name }}(client *SvixHttpClient) *{{ resource_type_name 
 	return &{{ resource_type_name }}{
 		{% if resource.operations | length > 0 -%}
 		client: client,
-		{%- endif %}
-		{%- for name, sub in resource.subresources | items %}
-		{{ name | to_lower_camel_case }}: new{{ sub.name | to_upper_camel_case }}(client),
-		{%- endfor %}
+		{% endif -%}
+		{% for name, sub in resource.subresources | items -%}
+		{{ name | to_upper_camel_case }}: new{{ sub.name | to_upper_camel_case }}(client),
+		{% endfor -%}
 	}
 }
 

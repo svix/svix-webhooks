@@ -24,6 +24,7 @@ type (
 		Message                    *Message
 		MessageAttempt             *MessageAttempt
 		Statistics                 *Statistics
+		OperationalWebhook         *OperationalWebhook
 		OperationalWebhookEndpoint *OperationalWebhookEndpoint
 	}
 )
@@ -61,6 +62,7 @@ func New(token string, options *SvixOptions) (*Svix, error) {
 		Integration:                newIntegration(&svixHttpClient),
 		MessageAttempt:             newMessageAttempt(&svixHttpClient),
 		Statistics:                 newStatistics(&svixHttpClient),
+		OperationalWebhook:         newOperationalWebhook(&svixHttpClient),
 		OperationalWebhookEndpoint: newOperationalWebhookEndpoint(&svixHttpClient),
 	}
 	return &svx, nil

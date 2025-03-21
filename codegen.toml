@@ -124,7 +124,7 @@ output_dir = "java/lib/src/main/java/com/svix/models"
 [go]
 template_dir = "openapi-templates/go"
 extra_shell_commands = [
-   "rm go/{environment,health,ingest_endpoint,ingest,ingest_source,operational_webhook}.go",
+   "rm go/{environment,health,ingest_endpoint,ingest,ingest_source}.go",
 ]
 [[go.task]]
 template = "openapi-templates/go/api_resource.go.jinja"
