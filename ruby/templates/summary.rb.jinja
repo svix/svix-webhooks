@@ -8,9 +8,7 @@ require "uri"
 require "logger"
 
 {% macro require_api(resource) -%}
-  {% if resource.operations | length > 0 -%}
 require "svix/api/{{ resource.name | to_snake_case }}"
-  {% endif -%}
 {% endmacro -%}
 
 

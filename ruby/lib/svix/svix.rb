@@ -22,6 +22,7 @@ module Svix
     attr_accessor :integration
     attr_accessor :message
     attr_accessor :message_attempt
+    attr_accessor :operational_webhook
     attr_accessor :operational_webhook_endpoint
     attr_accessor :statistics
 
@@ -50,6 +51,7 @@ module Svix
       @integration = Integration.new(api_client)
       @message = Message.new(api_client)
       @message_attempt = MessageAttempt.new(api_client)
+      @operational_webhook = OperationalWebhook.new(api_client)
       @operational_webhook_endpoint = OperationalWebhookEndpoint.new(api_client)
       @statistics = Statistics.new(api_client)
     end
