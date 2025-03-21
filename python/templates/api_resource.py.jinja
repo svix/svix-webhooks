@@ -11,6 +11,12 @@ from .. import models
 
 {% for c in referenced_components -%}
 from ..models import {{ c | to_upper_camel_case }}
+{% endfor -%}
+{% for _, sub in resource.subresources | items -%}
+from .{{ sub.name | to_snake_case }} import (
+    {{ sub.name | to_upper_camel_case }},
+    {{ sub.name | to_upper_camel_case }}Async,
+)
 {% endfor %}
 
 
@@ -65,7 +71,15 @@ class {{ resource_type_name }}{{ op.name | to_upper_camel_case }}Options(BaseOpt
 
 {% for is_async in [true, false] %}
 class {{ resource.name | to_upper_camel_case }}{% if is_async %}Async{% endif %}(ApiBase):
-    {%- if resource.operations | length != 0 %}
+    {%- for name, sub in resource.subresources | items %}
+    {%- set sub_type_name %}{{ sub.name | to_upper_camel_case }}{% if is_async %}Async{% endif %}{% endset %}
+    @property
+    def {{ name | to_snake_case }}(self) -> {{ sub_type_name }}:
+        return {{ sub_type_name }}(self._client)
+
+    {% endfor %}
+
+    {%- if resource.operations | length > 0 %}
         {%- for op in resource.operations %}
             {% if op.response_body_schema_name is defined -%}
                 {% set return_type = op.response_body_schema_name | to_upper_camel_case -%}
@@ -142,8 +156,9 @@ class {{ resource.name | to_upper_camel_case }}{% if is_async %}Async{% endif %}
 
 {{ code | indent(4, true) }}
         {% endfor -%}
-    {% else %}
-    {# empty class with no functions, so we have a pass here #}
+    {% endif %}
+    {% if resource.subresources | length == 0 and resource.operations | length == 0 %}
+    {# empty class with no members, so we have a pass here -#}
     pass
     {% endif %}
 {% endfor %}
