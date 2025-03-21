@@ -110,7 +110,7 @@ output_dir = "csharp/Svix/Models"
 [java]
 template_dir = "java/templates"
 extra_shell_commands = [
-   "rm java/lib/src/main/java/com/svix/api/{OperationalWebhook,Ingest}.java",
+   "rm java/lib/src/main/java/com/svix/api/Ingest.java",
 ]
 [[java.task]]
 template = "java/templates/api_resource.java.jinja"
