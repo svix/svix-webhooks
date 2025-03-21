@@ -114,6 +114,10 @@ type (
 	OperationalWebhookEndpointSecretOut       = models.OperationalWebhookEndpointSecretOut
 	OperationalWebhookEndpointUpdate          = models.OperationalWebhookEndpointUpdate
 	Ordering                                  = models.Ordering
+	PollingEndpointConsumerSeekIn             = models.PollingEndpointConsumerSeekIn
+	PollingEndpointConsumerSeekOut            = models.PollingEndpointConsumerSeekOut
+	PollingEndpointMessageOut                 = models.PollingEndpointMessageOut
+	PollingEndpointOut                        = models.PollingEndpointOut
 	RecoverIn                                 = models.RecoverIn
 	RecoverOut                                = models.RecoverOut
 	ReplayIn                                  = models.ReplayIn
