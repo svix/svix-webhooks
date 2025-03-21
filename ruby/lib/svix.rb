@@ -21,6 +21,7 @@ require "svix/api/ingest_source"
 require "svix/api/integration"
 require "svix/api/message"
 require "svix/api/message_attempt"
+require "svix/api/operational_webhook"
 require "svix/api/operational_webhook_endpoint"
 require "svix/api/statistics"
 

@@ -79,7 +79,6 @@ output_dir = "python/svix/api"
 
 [ruby]
 template_dir = "ruby/templates"
-extra_shell_commands = ["rm ruby/lib/svix/api/operational_webhook.rb"]
 [[ruby.task]]
 template = "ruby/templates/api_resource.rb.jinja"
 output_dir = "ruby/lib/svix/api"
