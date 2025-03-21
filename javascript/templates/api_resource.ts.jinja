@@ -7,6 +7,9 @@ import {
     {{ c | to_upper_camel_case }}Serializer,
 } from '../models/{{ c | to_lower_camel_case }}';
 {% endfor -%}
+{% for _, sub in resource.subresources | items -%}
+import { {{ sub.name | to_upper_camel_case}} } from './{{ sub.name | to_lower_camel_case }}';
+{% endfor -%}
 import { HttpMethod, SvixRequest, SvixRequestContext } from "../request";
 {# HACK: api_internal/message.ts generates the `messageInRaw` function that requires `MessageIn` -#}
 import { MessageIn, MessageInSerializer } from "../models/messageIn";
@@ -37,6 +40,13 @@ import { MessageIn, MessageInSerializer } from "../models/messageIn";
 
 export class {{ resource_type_name }} {
     public constructor(private readonly requestCtx: SvixRequestContext) {}
+
+    {% for name, sub in resource.subresources | items -%}
+    public get {{ name | to_snake_case }}() {
+        return new {{ sub.name | to_upper_camel_case }}(this.requestCtx);
+    }
+
+    {% endfor -%}
 
     {% for op in resource.operations -%}
         {% set response_type =
