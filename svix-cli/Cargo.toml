@@ -52,6 +52,10 @@ tokio-tungstenite = { version = "0.26.0", features = ["rustls-tls-native-roots"]
 toml = "0.8.19"
 url = "2.5.4"
 
+[features]
+default = []
+svix_beta = ["svix/svix_beta"]
+
 # The profile that 'dist' will build with
 [profile.dist]
 inherits = "release"
