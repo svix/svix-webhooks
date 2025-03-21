@@ -6,13 +6,15 @@
 
 use std::{
     borrow::Cow,
-    sync::atomic::{AtomicBool, Ordering},
+    sync::{
+        atomic::{AtomicBool, Ordering},
+        LazyLock,
+    },
     time::Duration,
 };
 
 use aide::axum::ApiRouter;
 use cfg::ConfigurationInner;
-use once_cell::sync::Lazy;
 use opentelemetry_otlp::WithExportConfig;
 use opentelemetry_sdk::{metrics::SdkMeterProvider, runtime::Tokio};
 use queue::TaskQueueProducer;
@@ -57,8 +59,8 @@ const CRATE_NAME: &str = env!("CARGO_CRATE_NAME");
 
 pub static SHUTTING_DOWN: AtomicBool = AtomicBool::new(false);
 
-pub static INSTANCE_ID: Lazy<String> =
-    Lazy::new(|| hex::encode(KsuidMs::new(None, None).to_string()));
+pub static INSTANCE_ID: LazyLock<String> =
+    LazyLock::new(|| hex::encode(KsuidMs::new(None, None).to_string()));
 
 async fn graceful_shutdown_handler() {
     let ctrl_c = async {

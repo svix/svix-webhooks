@@ -6,6 +6,7 @@ use std::{
     collections::HashSet,
     error::Error as StdError,
     ops::Deref,
+    sync::LazyLock,
     time::{SystemTime, UNIX_EPOCH},
 };
 
@@ -25,7 +26,6 @@ use axum::{
 };
 use chrono::{DateTime, Utc};
 use http::{request::Parts, Request, StatusCode};
-use once_cell::sync::Lazy;
 use regex::Regex;
 use schemars::JsonSchema;
 use sea_orm::{ColumnTrait, QueryFilter, QueryOrder, QuerySelect};
@@ -49,11 +49,13 @@ const fn default_limit() -> PaginationLimit {
 
 const PAGINATION_LIMIT_CAP_HARD: bool = true;
 const PAGINATION_LIMIT_CAP_LIMIT: u64 = 250;
-static PAGINATION_LIMIT_ERROR: Lazy<String> =
-    Lazy::new(|| format!("Given limit must not exceed {PAGINATION_LIMIT_CAP_LIMIT}"));
+static PAGINATION_LIMIT_ERROR: LazyLock<String> =
+    LazyLock::new(|| format!("Given limit must not exceed {PAGINATION_LIMIT_CAP_LIMIT}"));
 
-static FUTURE_QUERY_LIMIT: Lazy<chrono::Duration> = Lazy::new(|| chrono::Duration::hours(1));
-static LIMITED_QUERY_DURATION: Lazy<chrono::Duration> = Lazy::new(|| chrono::Duration::days(90));
+static FUTURE_QUERY_LIMIT: LazyLock<chrono::Duration> =
+    LazyLock::new(|| chrono::Duration::hours(1));
+static LIMITED_QUERY_DURATION: LazyLock<chrono::Duration> =
+    LazyLock::new(|| chrono::Duration::days(90));
 
 #[derive(Debug, Deserialize, Validate, JsonSchema)]
 pub struct PaginationDescending<T: Validate + JsonSchema> {

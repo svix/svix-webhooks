@@ -4,11 +4,11 @@
 use std::{
     collections::{HashMap, HashSet},
     ops::Deref,
+    sync::LazyLock,
 };
 
 use chrono::{DateTime, Utc};
 use num_enum::{IntoPrimitive, TryFromPrimitive};
-use once_cell::sync::Lazy;
 use rand::Rng;
 use regex::Regex;
 use schemars::JsonSchema;
@@ -229,7 +229,7 @@ pub trait BaseId: Deref<Target = String> {
 
 fn validate_limited_str(s: &str) -> Result<(), ValidationErrors> {
     const MAX_LENGTH: usize = 256;
-    static RE: Lazy<Regex> = Lazy::new(|| Regex::new(r"^[a-zA-Z0-9\-_.]+$").unwrap());
+    static RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^[a-zA-Z0-9\-_.]+$").unwrap());
     let mut errors = ValidationErrors::new();
     if s.is_empty() {
         errors.add(

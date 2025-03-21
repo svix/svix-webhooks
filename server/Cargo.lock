@@ -4827,7 +4827,6 @@ dependencies = [
  "lapin",
  "num_enum",
  "omniqueue",
- "once_cell",
  "openssl",
  "opentelemetry",
  "opentelemetry-http",
