@@ -8,6 +8,7 @@ from .event_type import EventType, EventTypeAsync
 from .integration import Integration, IntegrationAsync
 from .message import Message, MessageAsync
 from .message_attempt import MessageAttempt, MessageAttemptAsync
+from .operational_webhook import OperationalWebhook, OperationalWebhookAsync
 from .operational_webhook_endpoint import (
     OperationalWebhookEndpoint,
     OperationalWebhookEndpointAsync,
@@ -108,6 +109,10 @@ class SvixAsync(ClientBase):
         return StatisticsAsync(self._client)
 
     @property
+    def operational_webhook(self) -> OperationalWebhookAsync:
+        return OperationalWebhookAsync(self._client)
+
+    @property
     def operational_webhook_endpoint(self) -> OperationalWebhookEndpointAsync:
         return OperationalWebhookEndpointAsync(self._client)
 
@@ -144,6 +149,10 @@ class Svix(ClientBase):
     @property
     def statistics(self) -> Statistics:
         return Statistics(self._client)
+
+    @property
+    def operational_webhook(self) -> OperationalWebhook:
+        return OperationalWebhook(self._client)
 
     @property
     def operational_webhook_endpoint(self) -> OperationalWebhookEndpoint:
