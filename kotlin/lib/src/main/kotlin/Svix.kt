@@ -4,7 +4,6 @@ import SvixOptions
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 
 class Svix(token: String, options: SvixOptions = SvixOptions()) {
-
     val application: Application
     val authentication: Authentication
     val endpoint: Endpoint
