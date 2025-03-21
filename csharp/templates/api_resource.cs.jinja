@@ -53,6 +53,15 @@ namespace Svix
     {
         readonly SvixClient _client = client;
 
+        {% for name, sub in resource.subresources | items -%}
+        {% set sub_type_name = sub.name | to_upper_camel_case -%}
+        public {{ sub_type_name }} {{ name | to_upper_camel_case }}
+        {
+            get => new {{ sub_type_name }}(_client);
+        }
+
+        {% endfor -%}
+
     {%- set api_resource_extra -%}api_extra/{{ resource.name | to_snake_case }}.cs{% endset %}
     {%- include api_resource_extra ignore missing %}
 {%- for op in resource.operations %}

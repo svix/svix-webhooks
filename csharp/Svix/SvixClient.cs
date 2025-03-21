@@ -4,25 +4,60 @@ namespace Svix
 {
     public class SvixClient
     {
-        public Application Application { get; }
+        public Application Application
+        {
+            get => new Application(this);
+        }
 
-        public Authentication Authentication { get; }
+        public Authentication Authentication
+        {
+            get => new Authentication(this);
+        }
 
-        public Endpoint Endpoint { get; }
+        public Endpoint Endpoint
+        {
+            get => new Endpoint(this);
+        }
 
-        public EventType EventType { get; }
+        public EventType EventType
+        {
+            get => new EventType(this);
+        }
 
-        public Health Health { get; }
+        public Health Health
+        {
+            get => new Health(this);
+        }
 
-        public Integration Integration { get; }
+        public Integration Integration
+        {
+            get => new Integration(this);
+        }
 
-        public Message Message { get; }
+        public Message Message
+        {
+            get => new Message(this);
+        }
 
-        public MessageAttempt MessageAttempt { get; }
+        public MessageAttempt MessageAttempt
+        {
+            get => new MessageAttempt(this);
+        }
 
-        public Statistics Statistics { get; }
+        public Statistics Statistics
+        {
+            get => new Statistics(this);
+        }
 
-        public OperationalWebhookEndpoint OperationalWebhookEndpoint { get; }
+        public OperationalWebhook OperationalWebhook
+        {
+            get => new OperationalWebhook(this);
+        }
+
+        public OperationalWebhookEndpoint OperationalWebhookEndpoint
+        {
+            get => new OperationalWebhookEndpoint(this);
+        }
 
         public ILogger? Logger { get; }
 
@@ -41,16 +76,6 @@ namespace Svix
             SvixHttpClient =
                 svixHttpClient
                 ?? new SvixHttpClient(token, options, $"svix-libs/{Version.version}/csharp");
-            Application = new Application(this);
-            Authentication = new Authentication(this);
-            Endpoint = new Endpoint(this);
-            EventType = new EventType(this);
-            Health = new Health(this);
-            Integration = new Integration(this);
-            Message = new Message(this);
-            MessageAttempt = new MessageAttempt(this);
-            Statistics = new Statistics(this);
-            OperationalWebhookEndpoint = new OperationalWebhookEndpoint(this);
         }
     }
 }
