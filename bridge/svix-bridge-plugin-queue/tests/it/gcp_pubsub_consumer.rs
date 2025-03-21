@@ -157,7 +157,6 @@ async fn test_consume_ok() {
     let msg = CreateMessageRequest {
         app_id: "app_1234".into(),
         message: MessageIn::new("testing.things".into(), json!({"hi": "there"})),
-        post_options: None,
     };
 
     publish(&topic, &serde_json::to_string(&msg).unwrap()).await;
@@ -233,7 +232,6 @@ async fn test_consume_transformed_json_ok() {
     let msg = CreateMessageRequest {
         app_id: "app_1234".into(),
         message: MessageIn::new("testing.things".into(), json!({"hi": "there"})),
-        post_options: None,
     };
 
     publish(&topic, &serde_json::to_string(&msg).unwrap()).await;
@@ -437,7 +435,8 @@ async fn test_consume_svix_503() {
         // N.b. this test case is different than other backend flavors of these since there's a
         // minimum of 5 delivery attempts made before messages are forwarded to the dead letter topic.
         // In other cases this can happen immediately, but not with gcp pubsub.
-        .up_to_n_times(MAX_DELIVERY_ATTEMPTS.try_into().unwrap())
+        // Additionally, the Rust sdk does automatic retries on 5xx
+        .up_to_n_times((MAX_DELIVERY_ATTEMPTS * 3).try_into().unwrap())
         .expect(1..);
     mock_server.register(mock).await;
 
@@ -455,7 +454,6 @@ async fn test_consume_svix_503() {
         &serde_json::to_string(&CreateMessageRequest {
             app_id: "app_1234".into(),
             message: MessageIn::new("testing.things".into(), json!({"hi": "there"})),
-            post_options: None,
         })
         .unwrap(),
     )
@@ -496,7 +494,6 @@ async fn test_consume_svix_offline() {
         &serde_json::to_string(&CreateMessageRequest {
             app_id: "app_1234".into(),
             message: MessageIn::new("testing.things".into(), json!({"hi": "there"})),
-            post_options: None,
         })
         .unwrap(),
     )

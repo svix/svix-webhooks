@@ -231,14 +231,14 @@ async fn run_inner(consumer: &(impl Consumer + Send + Sync)) -> ! {
 ))]
 async fn create_svix_message(
     svix: &Svix,
-    CreateMessageRequest {
-        app_id,
-        message,
-        post_options,
-    }: CreateMessageRequest,
+    CreateMessageRequest { app_id, message }: CreateMessageRequest,
 ) -> std::io::Result<()> {
     svix.message()
-        .create(app_id, message, post_options.map(Into::into))
+        .create(
+            app_id, message,
+            // FIXME: add a way for the caller to give an idempotency key like we have in kafka
+            None,
+        )
         .await
         .map_err(Error::from)?;
     Ok(())

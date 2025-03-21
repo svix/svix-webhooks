@@ -136,7 +136,6 @@ async fn test_consume_ok() {
     let msg = CreateMessageRequest {
         app_id: "app_1234".into(),
         message: MessageIn::new("testing.things".into(), json!({"hi": "there"})),
-        post_options: None,
     };
 
     publish(&producer, topic, &serde_json::to_vec(&msg).unwrap()).await;
@@ -208,7 +207,6 @@ async fn test_consume_transformed_json_ok() {
     let msg = CreateMessageRequest {
         app_id: "app_1234".into(),
         message: MessageIn::new("testing.things".into(), json!({"hi": "there"})),
-        post_options: None,
     };
 
     publish(&producer, topic, &serde_json::to_vec(&msg).unwrap()).await;
@@ -409,14 +407,12 @@ async fn test_consume_svix_503() {
     let producer = kafka_producer();
 
     let mock_server = MockServer::start().await;
-    // The mock will make asserts on drop (i.e. when the body of the test is returning).
-    // The `expect` call should ensure we see exactly 1 POST request.
-    // <https://docs.rs/wiremock/latest/wiremock/struct.Mock.html#method.expect>
     let mock = Mock::given(method("POST"))
         .respond_with(ResponseTemplate::new(503))
         .named("create_message")
-        // this was originally 1 but why would we assert the number of retries, zero or otherwise??
-        .expect(3);
+        // The svix sdk has automatic retries, and the kafka receiver also
+        // does its own retries (3 each at time of writing).
+        .expect(3 * 3);
     mock_server.register(mock).await;
 
     let plugin = get_test_plugin(mock_server.uri(), topic, None);
@@ -433,7 +429,6 @@ async fn test_consume_svix_503() {
         &serde_json::to_vec(&CreateMessageRequest {
             app_id: "app_1234".into(),
             message: MessageIn::new("testing.things".into(), json!({"hi": "there"})),
-            post_options: None,
         })
         .unwrap(),
     )
@@ -476,7 +471,6 @@ async fn test_consume_svix_offline() {
         &serde_json::to_vec(&CreateMessageRequest {
             app_id: "app_1234".into(),
             message: MessageIn::new("testing.things".into(), json!({"hi": "there"})),
-            post_options: None,
         })
         .unwrap(),
     )
