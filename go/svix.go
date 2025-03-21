@@ -19,6 +19,7 @@ type (
 		Authentication             *Authentication
 		Application                *Application
 		Endpoint                   *Endpoint
+		Environment                *Environment
 		EventType                  *EventType
 		Integration                *Integration
 		Message                    *Message
@@ -57,6 +58,7 @@ func New(token string, options *SvixOptions) (*Svix, error) {
 		Authentication:             newAuthentication(&svixHttpClient),
 		Application:                newApplication(&svixHttpClient),
 		Endpoint:                   newEndpoint(&svixHttpClient),
+		Environment:                newEnvironment(&svixHttpClient),
 		EventType:                  newEventType(&svixHttpClient),
 		Message:                    newMessage(&svixHttpClient),
 		Integration:                newIntegration(&svixHttpClient),
