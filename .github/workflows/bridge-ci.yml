@@ -6,11 +6,14 @@ on:
       - main
     paths:
       - 'bridge/**'
+      - 'rust/**'
       - '.github/workflows/bridge-ci.yml'
   pull_request:
     paths:
       - 'bridge/**'
       - '.github/workflows/bridge-ci.yml'
+      - 'rust/**'
+      - 'lib-openapi.json'
 
 # When pushing to a PR, cancel any jobs still running for the previous head commit of the PR
 concurrency:

@@ -3,7 +3,7 @@ use std::time::Duration;
 pub use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 pub use svix;
-use svix::api::{MessageIn, PostOptions as PostOptions_, SvixOptions as _SvixOptions};
+use svix::api::{MessageIn, SvixOptions as _SvixOptions};
 use tokio::sync::{mpsc, oneshot};
 
 #[derive(Deserialize, Default, Eq, PartialEq, Copy, Clone)]
@@ -201,6 +201,7 @@ pub struct SvixOptions {
     pub debug: bool,
     pub server_url: Option<String>,
     pub timeout_secs: Option<u64>,
+    pub num_retries: Option<u32>,
 }
 
 impl From<SvixOptions> for _SvixOptions {
@@ -209,12 +210,14 @@ impl From<SvixOptions> for _SvixOptions {
             debug,
             server_url,
             timeout_secs,
+            num_retries,
         }: SvixOptions,
     ) -> Self {
         _SvixOptions {
             debug,
             server_url,
             timeout: timeout_secs.map(Duration::from_secs),
+            num_retries,
         }
     }
 }
@@ -234,19 +237,6 @@ pub struct SvixSenderOutputOpts {
     pub options: Option<SvixOptions>,
 }
 
-#[derive(Clone, Default, Deserialize, Serialize)]
-pub struct PostOptions {
-    pub idempotency_key: Option<String>,
-}
-
-impl From<PostOptions> for PostOptions_ {
-    fn from(value: PostOptions) -> Self {
-        PostOptions_ {
-            idempotency_key: value.idempotency_key,
-        }
-    }
-}
-
 /// Senders convert messages into Create Message API calls so the JSON pulled out of message queues
 /// or produced by transformations need to conform to this shape.
 #[derive(Clone, Deserialize, Serialize)]
@@ -254,8 +244,6 @@ impl From<PostOptions> for PostOptions_ {
 pub struct CreateMessageRequest {
     pub app_id: String,
     pub message: MessageIn,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub post_options: Option<PostOptions>,
 }
 
 /// Receivers convert HTTP bodies into messages forwarded to (currently only) message queues, etc.

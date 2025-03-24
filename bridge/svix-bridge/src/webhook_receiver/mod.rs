@@ -8,7 +8,10 @@ use axum::{
 };
 use svix_bridge_types::{
     async_trait,
-    svix::api::{Svix, V1MessageEventsSubscriptionParams},
+    svix::{
+        api::{EventsPublicConsumerOptions, Svix},
+        error::Error,
+    },
     ForwardRequest, PollerInput, ReceiverOutput, TransformationConfig, TransformerInput,
     TransformerInputFormat, TransformerJob, TransformerOutput, TransformerTx,
 };
@@ -16,9 +19,7 @@ use tracing::instrument;
 use types::{IntegrationId, IntegrationState, InternalState, SerializableRequest, Unvalidated};
 
 use crate::{
-    config::{
-        MessageStreamBridgeConfig, PollerInputOpts, PollerReceiverConfig, WebhookReceiverConfig,
-    },
+    config::{PollerInputOpts, PollerReceiverConfig, WebhookReceiverConfig},
     webhook_receiver::types::SerializablePayload,
 };
 
@@ -257,33 +258,32 @@ async fn run_inner(poller: &SvixEventsPoller) -> ! {
     const NO_SLEEP: Duration = Duration::ZERO;
     let mut sleep_time = NO_SLEEP;
 
-    let PollerInputOpts::SvixEvents {
-        subscription_token:
-            MessageStreamBridgeConfig {
-                app_id,
-                subscription_id,
-                ..
-            },
-        ..
+    let PollerInputOpts::SvixPollingEndpoint {
+        consumer_id,
+        token: _,
+        app_id,
+        sink_id,
+        svix_options: _,
     } = &poller.input_opts;
 
     let mut iterator = None;
 
-    loop {
-        tracing::trace!(app_id, subscription_id, "polling `/events`");
+    'outer: loop {
+        tracing::trace!(app_id, sink_id, "polling endpoint");
         match poller
             .svix_client
-            .message()
-            .events_subscription(V1MessageEventsSubscriptionParams {
-                // FIXME: expose more params as poller input cfg
-                app_id: app_id.clone(),
-                subscription_id: subscription_id.clone(),
-                limit: None,
-                iterator: iterator.clone(),
-                event_types: None,
-                channels: None,
-                after: None,
-            })
+            .events_public()
+            .consumer(
+                app_id.clone(),
+                sink_id.clone(),
+                consumer_id.clone(),
+                Some(EventsPublicConsumerOptions {
+                    limit: None,
+                    iterator: iterator.clone(),
+                    event_type: None,
+                    channel: None,
+                }),
+            )
             .await
         {
             Ok(resp) => {
@@ -350,6 +350,25 @@ async fn run_inner(poller: &SvixEventsPoller) -> ! {
             }
 
             Err(err) => {
+                match &err {
+                    Error::Http(x)
+                        if x.status.as_u16() == http::StatusCode::BAD_REQUEST.as_u16() =>
+                    {
+                        if let Some("invalid_iterator") =
+                            x.payload.as_ref().map(|p| p.code.as_str())
+                        {
+                            tracing::error!(
+                                error = ?err,
+                                ?iterator,
+                                "request failed, iterator is invalid syncing with server..."
+                            );
+                            iterator = None;
+                            continue 'outer;
+                        }
+                    }
+                    _ => {}
+                }
+
                 tracing::error!(
                     error = ?err,
                     ?iterator,

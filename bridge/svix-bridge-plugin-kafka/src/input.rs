@@ -9,9 +9,10 @@ use rdkafka::{
     Message as _,
 };
 use svix_bridge_types::{
-    async_trait, svix::api::Svix, CreateMessageRequest, JsObject, SenderInput, SenderOutputOpts,
-    TransformationConfig, TransformerInput, TransformerInputFormat, TransformerJob,
-    TransformerOutput, TransformerTx,
+    async_trait,
+    svix::api::{MessageCreateOptions, Svix},
+    CreateMessageRequest, JsObject, SenderInput, SenderOutputOpts, TransformationConfig,
+    TransformerInput, TransformerInputFormat, TransformerJob, TransformerOutput, TransformerTx,
 };
 use tokio::task::spawn_blocking;
 
@@ -69,27 +70,26 @@ impl KafkaConsumer {
             serde_json::from_slice(payload).map_err(Error::Deserialization)?
         };
 
-        let CreateMessageRequest {
-            app_id,
-            message,
-            mut post_options,
-        } = payload;
+        let CreateMessageRequest { app_id, message } = payload;
 
         let KafkaInputOpts::Inner {
             group_id, topic, ..
         } = &self.opts;
 
-        // If committing the message fails or the process crashes after posting the webhook but
-        // before committing, this makes sure that the next run of this fn with the same kafka
-        // message doesn't end up creating a duplicate webhook in svix.
-        let idempotency_key = format!("svix_bridge_kafka_{group_id}_{topic}_{}", msg.offset());
-        post_options
-            .get_or_insert_with(Default::default)
-            .idempotency_key = Some(idempotency_key);
+        let options = MessageCreateOptions {
+            with_content: None,
+            // If committing the message fails or the process crashes after posting the webhook but
+            // before committing, this makes sure that the next run of this fn with the same kafka
+            // message doesn't end up creating a duplicate webhook in svix.
+            idempotency_key: Some(format!(
+                "svix_bridge_kafka_{group_id}_{topic}_{}",
+                msg.offset()
+            )),
+        };
 
         self.svix_client
             .message()
-            .create(app_id, message, post_options.map(Into::into))
+            .create(app_id, message, Some(options))
             .await?;
 
         Ok(())

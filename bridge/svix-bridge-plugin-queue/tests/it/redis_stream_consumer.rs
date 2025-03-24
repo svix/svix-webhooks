@@ -120,7 +120,6 @@ async fn test_consume_ok() {
     let msg = CreateMessageRequest {
         app_id: "app_1234".into(),
         message: MessageIn::new("testing.things".into(), json!({"hi": "there"})),
-        post_options: None,
     };
 
     publish(&client, &key, &serde_json::to_string(&msg).unwrap()).await;
@@ -194,7 +193,6 @@ async fn test_consume_transformed_json_ok() {
     let msg = CreateMessageRequest {
         app_id: "app_1234".into(),
         message: MessageIn::new("testing.things".into(), json!({"hi": "there"})),
-        post_options: None,
     };
 
     publish(&client, &key, &serde_json::to_string(&msg).unwrap()).await;
@@ -390,7 +388,8 @@ async fn test_consume_svix_503() {
     let mock = Mock::given(method("POST"))
         .respond_with(ResponseTemplate::new(503))
         .named("create_message")
-        .expect(1);
+        // Rust sdk does automatic retries on 5xx
+        .expect(3);
     mock_server.register(mock).await;
 
     let plugin = get_test_plugin(mock_server.uri(), key.clone(), None);
@@ -408,7 +407,6 @@ async fn test_consume_svix_503() {
         &serde_json::to_string(&CreateMessageRequest {
             app_id: "app_1234".into(),
             message: MessageIn::new("testing.things".into(), json!({"hi": "there"})),
-            post_options: None,
         })
         .unwrap(),
     )
@@ -449,7 +447,6 @@ async fn test_consume_svix_offline() {
         &serde_json::to_string(&CreateMessageRequest {
             app_id: "app_1234".into(),
             message: MessageIn::new("testing.things".into(), json!({"hi": "there"})),
-            post_options: None,
         })
         .unwrap(),
     )
