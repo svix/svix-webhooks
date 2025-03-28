@@ -135,7 +135,7 @@ async fn main() -> Result<()> {
         }
 
         RootCommands::Listen(args) => args.exec(&cfg?).await?,
-        RootCommands::Login => cmds::login::prompt()?,
+        RootCommands::Login => cmds::login::prompt(&cfg?).await?,
         RootCommands::Completion { shell } => cmds::completion::generate(&shell)?,
     }
 
