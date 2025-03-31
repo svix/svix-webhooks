@@ -18,15 +18,16 @@ RUN set -ex ; \
         mkdir -p /home/appuser ;\
         chown -R appuser: /home/appuser
 
-WORKDIR /app
+WORKDIR /app/bridge
 
 # Hack to enable docker caching
-COPY Cargo.toml .
-COPY Cargo.lock .
-COPY svix-bridge-types/Cargo.toml svix-bridge-types/
-COPY svix-bridge-plugin-kafka/Cargo.toml svix-bridge-plugin-kafka/
-COPY svix-bridge-plugin-queue/Cargo.toml svix-bridge-plugin-queue/
-COPY svix-bridge/Cargo.toml svix-bridge/
+COPY rust /app/rust
+COPY bridge/Cargo.toml .
+COPY bridge/Cargo.lock .
+COPY bridge/svix-bridge-types/Cargo.toml svix-bridge-types/
+COPY bridge/svix-bridge-plugin-kafka/Cargo.toml svix-bridge-plugin-kafka/
+COPY bridge/svix-bridge-plugin-queue/Cargo.toml svix-bridge-plugin-queue/
+COPY bridge/svix-bridge/Cargo.toml svix-bridge/
 RUN set -ex ;\
         mkdir svix-bridge-plugin-kafka/src ;\
         mkdir svix-bridge-plugin-queue/src ;\
@@ -42,7 +43,7 @@ RUN set -ex ;\
           svix-bridge-types/src \
           svix-bridge/src
 
-COPY . .
+COPY bridge /app/bridge
 # touching the lib.rs/main.rs ensures cargo rebuilds them instead of considering them already built.
 RUN touch */src/lib.rs && touch */src/main.rs
 RUN cargo build --release --frozen
@@ -64,8 +65,8 @@ RUN apt-get update ;\
 
 USER appuser
 
-COPY --from=build /app/target/release/svix-bridge /usr/local/bin/svix-bridge
-COPY scripts/check-deps.sh /usr/local/bin/check-deps.sh
+COPY --from=build /app/bridge/target/release/svix-bridge /usr/local/bin/svix-bridge
+COPY bridge/scripts/check-deps.sh /usr/local/bin/check-deps.sh
 
 # Verify all the dynamic libs we depend on are present in the runtime stage
 RUN /usr/local/bin/check-deps.sh /usr/local/bin/svix-bridge
