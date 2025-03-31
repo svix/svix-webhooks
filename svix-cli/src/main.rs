@@ -6,14 +6,14 @@ use concolor_clap::{Color, ColorChoice};
 use svix::api::SvixOptions;
 
 #[cfg(feature = "svix_beta")]
-use crate::cmds::api::events_public::EventsPublicArgs;
-use crate::{
+use self::cmds::api::events_public::EventsPublicArgs;
+use self::{
     cmds::{
         api::{
             application::ApplicationArgs, authentication::AuthenticationArgs,
             endpoint::EndpointArgs, environment::EnvironmentArgs, event_type::EventTypeArgs,
-            integration::IntegrationArgs, message::MessageArgs,
-            message_attempt::MessageAttemptArgs,
+            ingest::IngestArgs, integration::IntegrationArgs, message::MessageArgs,
+            message_attempt::MessageAttemptArgs, operational_webhook::OperationalWebhookArgs,
         },
         listen::ListenArgs,
         open::OpenArgs,
@@ -72,6 +72,8 @@ enum RootCommands {
     EventsPublic(EventsPublicArgs),
     /// List, create & modify event types
     EventType(EventTypeArgs),
+    /// List, create & modify Svix Ingest sources and endpoints
+    Ingest(IngestArgs),
     /// List integrations by app id
     Integration(IntegrationArgs),
     /// Forward webhook requests to a local url
@@ -84,6 +86,8 @@ enum RootCommands {
     MessageAttempt(MessageAttemptArgs),
     /// Quickly open Svix pages in your browser
     Open(OpenArgs),
+    /// List, create & modify operational webhook endpoints
+    OperationalWebhook(OperationalWebhookArgs),
     /// Verifying and signing webhooks with the Svix signature scheme
     Signature(SignatureArgs),
     /// Get the version of the Svix CLI
@@ -139,7 +143,15 @@ async fn main() -> Result<()> {
             let client = get_client(&cfg?)?;
             args.command.exec(&client, color_mode).await?;
         }
+        RootCommands::Ingest(args) => {
+            let client = get_client(&cfg?)?;
+            args.command.exec(&client, color_mode).await?;
+        }
         RootCommands::Integration(args) => {
+            let client = get_client(&cfg?)?;
+            args.command.exec(&client, color_mode).await?;
+        }
+        RootCommands::OperationalWebhook(args) => {
             let client = get_client(&cfg?)?;
             args.command.exec(&client, color_mode).await?;
         }
