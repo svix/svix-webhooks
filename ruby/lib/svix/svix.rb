@@ -19,6 +19,7 @@ module Svix
     attr_accessor :environment
     attr_accessor :event_type
     attr_accessor :health
+    attr_accessor :ingest
     attr_accessor :integration
     attr_accessor :message
     attr_accessor :message_attempt
@@ -48,6 +49,7 @@ module Svix
       @environment = Environment.new(api_client)
       @event_type = EventType.new(api_client)
       @health = Health.new(api_client)
+      @ingest = Ingest.new(api_client)
       @integration = Integration.new(api_client)
       @message = Message.new(api_client)
       @message_attempt = MessageAttempt.new(api_client)
