@@ -234,7 +234,7 @@ async fn test_custom_retries() {
 
     let diff = std::time::Instant::now() - t0;
     let expected: u32 = (1..=num_retries).map(|x| 20 * x).sum();
-    assert!(diff.as_millis() >= expected as _);
+    assert!(diff.as_millis() >= u128::from(expected));
 
     mock_server.verify().await;
 }
