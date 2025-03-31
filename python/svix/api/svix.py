@@ -6,6 +6,7 @@ from .authentication import Authentication, AuthenticationAsync
 from .endpoint import Endpoint, EndpointAsync
 from .environment import Environment, EnvironmentAsync
 from .event_type import EventType, EventTypeAsync
+from .ingest import Ingest, IngestAsync
 from .integration import Integration, IntegrationAsync
 from .message import Message, MessageAsync
 from .message_attempt import MessageAttempt, MessageAttemptAsync
@@ -98,6 +99,10 @@ class SvixAsync(ClientBase):
         return EventTypeAsync(self._client)
 
     @property
+    def ingest(self) -> IngestAsync:
+        return IngestAsync(self._client)
+
+    @property
     def integration(self) -> IntegrationAsync:
         return IntegrationAsync(self._client)
 
@@ -142,6 +147,10 @@ class Svix(ClientBase):
     @property
     def event_type(self) -> EventType:
         return EventType(self._client)
+
+    @property
+    def ingest(self) -> Ingest:
+        return Ingest(self._client)
 
     @property
     def integration(self) -> Integration:

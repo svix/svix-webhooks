@@ -15,6 +15,7 @@ public class Svix {
     private final BackgroundTask backgroundTask;
     private final Endpoint endpoint;
     private final EventType eventType;
+    private final Ingest ingest;
     private final Integration integration;
     private final Message message;
     private final MessageAttempt messageAttempt;
@@ -64,6 +65,7 @@ public class Svix {
         this.backgroundTask = new BackgroundTask(httpClient);
         this.endpoint = new Endpoint(httpClient);
         this.eventType = new EventType(httpClient);
+        this.ingest = new Ingest(httpClient);
         this.integration = new Integration(httpClient);
         this.message = new Message(httpClient);
         this.messageAttempt = new MessageAttempt(httpClient);

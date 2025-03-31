@@ -29,6 +29,11 @@ namespace Svix
             get => new Health(this);
         }
 
+        public Ingest Ingest
+        {
+            get => new Ingest(this);
+        }
+
         public Integration Integration
         {
             get => new Integration(this);

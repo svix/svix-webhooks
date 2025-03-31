@@ -20,7 +20,6 @@ output_dir = "rust/src/models"
 template_dir = "javascript/templates"
 extra_shell_commands = [
    "rm javascript/src/models/{listResponseSinkOut,retryScheduleInOut}.ts",
-   "rm javascript/src/api/{ingest,ingestSource}.ts",
 ]
 [[javascript.task]]
 template = "javascript/templates/api_resource.ts.jinja"
@@ -61,7 +60,7 @@ output_dir = "svix-cli/src/cmds/api"
 [python]
 template_dir = "python/templates"
 extra_shell_commands = [
-   "rm python/svix/api/{health,ingest}.py",
+   "rm python/svix/api/health.py",
 ]
 [[python.task]]
 template = "python/templates/api_resource.py.jinja"
@@ -92,9 +91,6 @@ output_dir = "ruby/lib/svix/models"
 
 [csharp]
 template_dir = "csharp/templates"
-extra_shell_commands = [
-   "rm csharp/Svix/{IngestEndpoint,Ingest}.cs",
-]
 [[csharp.task]]
 template = "csharp/templates/api_resource.cs.jinja"
 output_dir = "csharp/Svix"
@@ -105,9 +101,6 @@ output_dir = "csharp/Svix/Models"
 
 [java]
 template_dir = "java/templates"
-extra_shell_commands = [
-   "rm java/lib/src/main/java/com/svix/api/Ingest.java",
-]
 [[java.task]]
 template = "java/templates/api_resource.java.jinja"
 output_dir = "java/lib/src/main/java/com/svix/api"
@@ -122,7 +115,7 @@ output_dir = "java/lib/src/main/java/com/svix/models"
 [go]
 template_dir = "openapi-templates/go"
 extra_shell_commands = [
-   "rm go/{health,ingest_endpoint,ingest,ingest_source}.go",
+   "rm go/health.go",
 ]
 [[go.task]]
 template = "openapi-templates/go/api_resource.go.jinja"
@@ -136,9 +129,6 @@ output_dir = "go/models"
 
 
 [kotlin]
-extra_shell_commands = [
-   "rm kotlin/lib/src/main/kotlin/Ingest.kt",
-]
 template_dir = "kotlin/templates"
 [[kotlin.task]]
 template = "kotlin/templates/component_type.kt.jinja"

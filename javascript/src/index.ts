@@ -3,6 +3,7 @@ import { Application } from "./api/application";
 import { BackgroundTask } from "./api/backgroundTask";
 import { Endpoint } from "./api/endpoint";
 import { EventType } from "./api/eventType";
+import { Ingest } from "./api/ingest";
 import { Integration } from "./api/integration";
 import { Message } from "./api/message";
 import { MessageAttempt } from "./api/messageAttempt";
@@ -63,6 +64,10 @@ export class Svix {
     return new EventType(this.requestCtx);
   }
 
+  public get ingest() {
+    return new Ingest(this.requestCtx);
+  }
+
   public get integration() {
     return new Integration(this.requestCtx);
   }
@@ -90,5 +95,4 @@ export class Svix {
   public get operationalWebhookEndpoint() {
     return new OperationalWebhookEndpoint(this.requestCtx);
   }
-  // TODO: whenever we add ingestSource, please uncomment the 2 tests in src/mockttp.test.ts
 }
