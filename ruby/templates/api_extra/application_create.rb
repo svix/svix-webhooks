@@ -5,7 +5,7 @@ def get_or_create(application_in, options = {})
     "POST",
     path,
     query_params: {
-      "get_if_exists" => true
+      "get_if_exists" => "true"
     },
     headers: {
       "idempotency-key" => options["idempotency-key"]
