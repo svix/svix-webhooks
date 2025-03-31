@@ -1,6 +1,5 @@
-{% set resource_snake_case = resource.name | to_snake_case -%}
 {% set resource_type_name = resource.name | to_upper_camel_case -%}
-{% set resource_id_name %}{{ resource_snake_case }}_id{% endset -%}
+{% set resource_id_name %}{{ resource.name | to_snake_case }}_id{% endset -%}
 {% if resource.name == "application" %}{% set resource_id_name = "app_id" %}{% endif -%}
 {% if resource.name == "message" %}{% set resource_id_name = "msg_id" %}{% endif -%}
 {% if resource.name == "integration" %}{% set resource_id_name = "integ_id" %}{% endif -%}
@@ -10,6 +9,9 @@ use clap::{Args, Subcommand};
 use svix::api::*;
 
 use crate::json::JsonOf;
+{% for _, sub in resource.subresources | items -%}
+use super::{{ sub.name | to_snake_case }}::{{ sub.name | to_upper_camel_case }}Args;
+{% endfor %}
 
 {% for op in resource.operations -%}
     {% if (op.query_params | length > 0) or (op.header_params | length > 0) -%}
@@ -82,6 +84,10 @@ pub struct {{ resource_type_name }}Args {
 
 #[derive(Subcommand)]
 pub enum {{ resource_type_name }}Commands {
+    {% for name, sub in resource.subresources | items -%}
+        {{ name | to_upper_camel_case }}({{ sub.name | to_upper_camel_case }}Args),
+    {% endfor -%}
+
     {% for op in resource.operations -%}
         {# exclude the deprecatd dashboard-access route -#}
         {% if op.name != "dashboard-access" -%}
@@ -124,6 +130,12 @@ pub enum {{ resource_type_name }}Commands {
 impl {{ resource_type_name }}Commands {
     pub async fn exec(self, client: &Svix, color_mode: colored_json::ColorMode) -> anyhow::Result<()> {
         match self {
+            {% for name, _ in resource.subresources | items -%}
+                Self::{{ name | to_upper_camel_case }}(args) => {
+                    args.command.exec(client, color_mode).await?;
+                }
+            {% endfor -%}
+
             {% for op in resource.operations -%}
                 {% if op.name != "dashboard-access" -%}
                 {% set has_params = (op.query_params | length > 0) or (op.header_params | length > 0) -%}
@@ -154,7 +166,9 @@ impl {{ resource_type_name }}Commands {
                     {% endif -%}
 
                     client
-                        .{{ resource_snake_case }}()
+                        {% for segment in resource.name | split(".") -%}
+                        .{{ segment | to_snake_case }}()
+                        {% endfor -%}
                         .{{ op.name | to_snake_case }}(
                             {# path parameters -#}
                             {% for p in op.path_params -%}

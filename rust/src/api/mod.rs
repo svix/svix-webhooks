@@ -40,7 +40,7 @@ pub use self::{
         EventType, EventTypeCreateOptions, EventTypeDeleteOptions, EventTypeImportOpenapiOptions,
         EventTypeListOptions,
     },
-    ingest::Ingest,
+    ingest::{Ingest, IngestDashboardOptions},
     ingest_endpoint::{
         IngestEndpoint, IngestEndpointCreateOptions, IngestEndpointListOptions,
         IngestEndpointRotateSecretOptions,
@@ -64,7 +64,7 @@ pub use self::{
     operational_webhook::OperationalWebhook,
     operational_webhook_endpoint::{
         OperationalWebhookEndpoint, OperationalWebhookEndpointCreateOptions,
-        OperationalWebhookEndpointListOptions,
+        OperationalWebhookEndpointListOptions, OperationalWebhookEndpointRotateSecretOptions,
     },
     statistics::{Statistics, StatisticsAggregateAppStatsOptions},
 };
