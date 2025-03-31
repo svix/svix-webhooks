@@ -9,6 +9,8 @@ pub mod ingest;
 pub mod ingest_endpoint;
 pub mod ingest_source;
 pub mod integration;
+pub mod management;
+pub mod management_authentication;
 pub mod message;
 pub mod message_attempt;
 pub mod operational_webhook;

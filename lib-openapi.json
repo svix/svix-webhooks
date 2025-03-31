@@ -169,6 +169,119 @@
                 ],
                 "type": "object"
             },
+            "ApiTokenCensoredOut": {
+                "properties": {
+                    "censoredToken": {
+                        "type": "string"
+                    },
+                    "createdAt": {
+                        "format": "date-time",
+                        "type": "string"
+                    },
+                    "expiresAt": {
+                        "format": "date-time",
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "id": {
+                        "description": "The ApplicationToken's ID.",
+                        "example": "key_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "maxLength": 31,
+                        "minLength": 31,
+                        "pattern": "^key_[A-Za-z0-9]{27}$",
+                        "type": "string"
+                    },
+                    "name": {
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "scopes": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "nullable": true,
+                        "type": "array"
+                    }
+                },
+                "required": [
+                    "censoredToken",
+                    "createdAt",
+                    "id"
+                ],
+                "type": "object"
+            },
+            "ApiTokenExpireIn": {
+                "properties": {
+                    "expiry": {
+                        "default": 0,
+                        "description": "How many seconds until the old key is expired.",
+                        "format": "int32",
+                        "maximum": 259200,
+                        "minimum": 0,
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "ApiTokenIn": {
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "scopes": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "nullable": true,
+                        "type": "array"
+                    }
+                },
+                "required": [
+                    "name"
+                ],
+                "type": "object"
+            },
+            "ApiTokenOut": {
+                "properties": {
+                    "createdAt": {
+                        "format": "date-time",
+                        "type": "string"
+                    },
+                    "expiresAt": {
+                        "format": "date-time",
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "id": {
+                        "description": "The ApplicationToken's ID.",
+                        "example": "key_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "maxLength": 31,
+                        "minLength": 31,
+                        "pattern": "^key_[A-Za-z0-9]{27}$",
+                        "type": "string"
+                    },
+                    "name": {
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "scopes": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "nullable": true,
+                        "type": "array"
+                    },
+                    "token": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "createdAt",
+                    "id",
+                    "token"
+                ],
+                "type": "object"
+            },
             "AppPortalAccessIn": {
                 "properties": {
                     "application": {
@@ -576,47 +689,6 @@
                     "endDate",
                     "period",
                     "startDate"
-                ],
-                "type": "object"
-            },
-            "AuthTokenOut": {
-                "properties": {
-                    "createdAt": {
-                        "format": "date-time",
-                        "type": "string"
-                    },
-                    "expiresAt": {
-                        "format": "date-time",
-                        "nullable": true,
-                        "type": "string"
-                    },
-                    "id": {
-                        "description": "The ApplicationToken's ID.",
-                        "example": "key_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                        "maxLength": 31,
-                        "minLength": 31,
-                        "pattern": "^key_[A-Za-z0-9]{27}$",
-                        "type": "string"
-                    },
-                    "name": {
-                        "nullable": true,
-                        "type": "string"
-                    },
-                    "scopes": {
-                        "items": {
-                            "type": "string"
-                        },
-                        "nullable": true,
-                        "type": "array"
-                    },
-                    "token": {
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "createdAt",
-                    "id",
-                    "token"
                 ],
                 "type": "object"
             },
@@ -5029,6 +5101,35 @@
                 ],
                 "type": "object"
             },
+            "ListResponse_ApiTokenCensoredOut_": {
+                "properties": {
+                    "data": {
+                        "items": {
+                            "$ref": "#/components/schemas/ApiTokenCensoredOut"
+                        },
+                        "type": "array"
+                    },
+                    "done": {
+                        "type": "boolean"
+                    },
+                    "iterator": {
+                        "example": "iterator",
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "prevIterator": {
+                        "example": "-iterator",
+                        "nullable": true,
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "data",
+                    "done",
+                    "iterator"
+                ],
+                "type": "object"
+            },
             "ListResponse_ApplicationOut_": {
                 "properties": {
                     "data": {
@@ -6541,21 +6642,6 @@
                     "Fail",
                     "Sending"
                 ]
-            },
-            "MessageSubscriberAuthTokenOut": {
-                "properties": {
-                    "bridgeToken": {
-                        "type": "string"
-                    },
-                    "token": {
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "bridgeToken",
-                    "token"
-                ],
-                "type": "object"
             },
             "OAuthPayloadIn": {
                 "properties": {
@@ -12558,7 +12644,7 @@
                                 }
                             }
                         },
-                        "description": ""
+                        "description": "The value of the headers is returned in the `headers` field.\n\nSensitive headers that have been redacted are returned in the sensitive field."
                     },
                     "400": {
                         "content": {
@@ -16964,415 +17050,6 @@
                         "label": "cURL",
                         "lang": "Shell",
                         "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/events' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
-                    }
-                ],
-                "x-hidden": true
-            }
-        },
-        "/api/v1/app/{app_id}/events/subscription/{subscription_id}": {
-            "get": {
-                "description": "Reads the stream of created messages for an application, but using server-managed iterator tracking.",
-                "operationId": "v1.message.events-subscription",
-                "parameters": [
-                    {
-                        "description": "The Application's ID or UID.",
-                        "in": "path",
-                        "name": "app_id",
-                        "required": true,
-                        "schema": {
-                            "description": "The Application's ID or UID.",
-                            "example": "unique-identifier",
-                            "maxLength": 256,
-                            "minLength": 1,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                            "type": "string"
-                        },
-                        "style": "simple"
-                    },
-                    {
-                        "description": "The EventsSubscription's ID or UID.",
-                        "in": "path",
-                        "name": "subscription_id",
-                        "required": true,
-                        "schema": {
-                            "description": "The EventsSubscription's ID or UID.",
-                            "example": "unique-identifier",
-                            "maxLength": 256,
-                            "minLength": 1,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                            "type": "string"
-                        },
-                        "style": "simple"
-                    },
-                    {
-                        "description": "Limit the number of returned items",
-                        "in": "query",
-                        "name": "limit",
-                        "schema": {
-                            "description": "Limit the number of returned items",
-                            "format": "uint64",
-                            "maximum": 250,
-                            "minimum": 1,
-                            "type": "integer"
-                        },
-                        "style": "form"
-                    },
-                    {
-                        "description": "The iterator returned from a prior invocation",
-                        "in": "query",
-                        "name": "iterator",
-                        "schema": {
-                            "description": "The iterator returned from a prior invocation",
-                            "nullable": true,
-                            "type": "string"
-                        },
-                        "style": "form"
-                    },
-                    {
-                        "description": "Filter response based on the event type",
-                        "in": "query",
-                        "name": "event_types",
-                        "schema": {
-                            "description": "Filter response based on the event type",
-                            "items": {
-                                "description": "The event type's name",
-                                "example": "user.signup",
-                                "maxLength": 256,
-                                "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                                "type": "string"
-                            },
-                            "nullable": true,
-                            "type": "array",
-                            "uniqueItems": true
-                        },
-                        "style": "form"
-                    },
-                    {
-                        "description": "Filter response based on the event type.",
-                        "in": "query",
-                        "name": "channels",
-                        "schema": {
-                            "description": "Filter response based on the event type.",
-                            "items": {
-                                "example": "project_1337",
-                                "maxLength": 128,
-                                "pattern": "^[a-zA-Z0-9\\-_.:]+$",
-                                "type": "string"
-                            },
-                            "nullable": true,
-                            "type": "array",
-                            "uniqueItems": true
-                        },
-                        "style": "form"
-                    },
-                    {
-                        "in": "query",
-                        "name": "after",
-                        "schema": {
-                            "format": "date-time",
-                            "nullable": true,
-                            "type": "string"
-                        },
-                        "style": "form"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/MessageEventsOut"
-                                }
-                            }
-                        },
-                        "description": ""
-                    },
-                    "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Bad request"
-                    },
-                    "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Forbidden"
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Not Found"
-                    },
-                    "409": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Conflict"
-                    },
-                    "422": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        },
-                        "description": "Validation Error"
-                    },
-                    "429": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Too Many Requests"
-                    }
-                },
-                "security": [
-                    {
-                        "HTTPBearer": []
-                    }
-                ],
-                "summary": "Message Events Subscription",
-                "tags": [
-                    "Message"
-                ],
-                "x-codeSamples": [
-                    {
-                        "label": "JavaScript",
-                        "lang": "JavaScript",
-                        "source": "const messageEventsOut = await svix.message.eventsSubscription(\"app_id\", \"subscription_id\");"
-                    },
-                    {
-                        "label": "TypeScript",
-                        "lang": "JavaScript",
-                        "source": "const messageEventsOut = await svix.message.eventsSubscription(\"app_id\", \"subscription_id\");"
-                    },
-                    {
-                        "label": "Python",
-                        "lang": "Python",
-                        "source": "message_events_out = svix.message.events_subscription(\"app_id\", \"subscription_id\")"
-                    },
-                    {
-                        "label": "Python (Async)",
-                        "lang": "Python",
-                        "source": "message_events_out = await svix.message.events_subscription(\"app_id\", \"subscription_id\")"
-                    },
-                    {
-                        "label": "Go",
-                        "lang": "Go",
-                        "source": "messageEventsOut, err := svixClient.Message.EventsSubscription(ctx, \"app_id\", \"subscription_id\")"
-                    },
-                    {
-                        "label": "Kotlin",
-                        "lang": "Kotlin",
-                        "source": "val messageEventsOut = svix.message.eventsSubscription(\"app_id\", \"subscription_id\")"
-                    },
-                    {
-                        "label": "Java",
-                        "lang": "Java",
-                        "source": "MessageEventsOut messageEventsOut = svix.getMessage().eventsSubscription(\"app_id\", \"subscription_id\");"
-                    },
-                    {
-                        "label": "Ruby",
-                        "lang": "Ruby",
-                        "source": "message_events_out = svix.message.events_subscription(\"app_id\", \"subscription_id\")"
-                    },
-                    {
-                        "label": "Rust",
-                        "lang": "Rust",
-                        "source": "let message_events_out = svix.message().events_subscription(\"app_id\", \"subscription_id\").await?;"
-                    },
-                    {
-                        "label": "C#",
-                        "lang": "C#",
-                        "source": "var messageEventsOut = await svix.Message.EventsSubscriptionAsync(\"app_id\", \"subscription_id\");"
-                    },
-                    {
-                        "label": "CLI",
-                        "lang": "Shell",
-                        "source": "svix message events-subscription \"app_id\" \"subscription_id\""
-                    },
-                    {
-                        "label": "cURL",
-                        "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/events/subscription/{subscription_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
-                    }
-                ],
-                "x-hidden": true
-            }
-        },
-        "/api/v1/app/{app_id}/events/subscription/{subscription_id}/create-token": {
-            "post": {
-                "description": "Creates an auth token that can be used with the `v1.message.events-subscription` endpoint.",
-                "operationId": "v1.message.events-subscription.create-token",
-                "parameters": [
-                    {
-                        "description": "The Application's ID or UID.",
-                        "in": "path",
-                        "name": "app_id",
-                        "required": true,
-                        "schema": {
-                            "description": "The Application's ID or UID.",
-                            "example": "unique-identifier",
-                            "maxLength": 256,
-                            "minLength": 1,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                            "type": "string"
-                        },
-                        "style": "simple"
-                    },
-                    {
-                        "description": "The EventsSubscription's ID or UID.",
-                        "in": "path",
-                        "name": "subscription_id",
-                        "required": true,
-                        "schema": {
-                            "description": "The EventsSubscription's ID or UID.",
-                            "example": "unique-identifier",
-                            "maxLength": 256,
-                            "minLength": 1,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                            "type": "string"
-                        },
-                        "style": "simple"
-                    },
-                    {
-                        "description": "The request's idempotency key",
-                        "in": "header",
-                        "name": "idempotency-key",
-                        "schema": {
-                            "type": "string"
-                        },
-                        "style": "simple"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/MessageSubscriberAuthTokenOut"
-                                }
-                            }
-                        },
-                        "description": ""
-                    },
-                    "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Bad request"
-                    },
-                    "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Forbidden"
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Not Found"
-                    },
-                    "409": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Conflict"
-                    },
-                    "422": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        },
-                        "description": "Validation Error"
-                    },
-                    "429": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Too Many Requests"
-                    }
-                },
-                "security": [
-                    {
-                        "HTTPBearer": []
-                    }
-                ],
-                "summary": "Message Events Create Token",
-                "tags": [
-                    "Message"
-                ],
-                "x-codeSamples": [
-                    {
-                        "label": "cURL",
-                        "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/events/subscription/{subscription_id}/create-token' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
                     }
                 ],
                 "x-hidden": true
@@ -23368,7 +23045,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/AuthTokenOut"
+                                    "$ref": "#/components/schemas/ApiTokenOut"
                                 }
                             }
                         },
@@ -23458,52 +23135,52 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const authTokenOut = await svix.authentication.createMessageToken(\"app_id\", {\n    expiry: null\n});"
+                        "source": "const apiTokenOut = await svix.authentication.createMessageToken(\"app_id\", {\n    expiry: null\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const authTokenOut = await svix.authentication.createMessageToken(\"app_id\", {\n    expiry: null\n});"
+                        "source": "const apiTokenOut = await svix.authentication.createMessageToken(\"app_id\", {\n    expiry: null\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "auth_token_out = svix.authentication.create_message_token(\"app_id\", CreateTokenIn(\n    expiry=None\n), options=...)"
+                        "source": "api_token_out = svix.authentication.create_message_token(\"app_id\", CreateTokenIn(\n    expiry=None\n), options=...)"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "auth_token_out = await svix.authentication.create_message_token(\"app_id\", CreateTokenIn(\n    expiry=None\n), options=...)"
+                        "source": "api_token_out = await svix.authentication.create_message_token(\"app_id\", CreateTokenIn(\n    expiry=None\n), options=...)"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "authTokenOut, err := svixClient.Authentication.CreateMessageToken(ctx, \"app_id\", &CreateTokenIn{\n    Expiry: nil,\n})"
+                        "source": "apiTokenOut, err := svixClient.Authentication.CreateMessageToken(ctx, \"app_id\", &CreateTokenIn{\n    Expiry: nil,\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val authTokenOut = svix.authentication.createMessageToken(\"app_id\", CreateTokenIn()\n    .expiry(null)\n)"
+                        "source": "val apiTokenOut = svix.authentication.createMessageToken(\"app_id\", CreateTokenIn()\n    .expiry(null)\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "AuthTokenOut authTokenOut = svix.getAuthentication().createMessageToken(\"app_id\", new CreateTokenIn()\n    .expiry(null)\n);"
+                        "source": "ApiTokenOut apiTokenOut = svix.getAuthentication().createMessageToken(\"app_id\", new CreateTokenIn()\n    .expiry(null)\n);"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "auth_token_out = svix.authentication.create_message_token(\"app_id\", Svix::CreateTokenIn.new({\n    \"expiry\": nil\n}))"
+                        "source": "api_token_out = svix.authentication.create_message_token(\"app_id\", Svix::CreateTokenIn.new({\n    \"expiry\": nil\n}))"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let auth_token_out = svix.authentication().create_message_token(\"app_id\", CreateTokenIn {\n    expiry: None,\n}, None).await?;"
+                        "source": "let api_token_out = svix.authentication().create_message_token(\"app_id\", CreateTokenIn {\n    expiry: None,\n}, None).await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var authTokenOut = await svix.Authentication.CreateMessageTokenAsync(\"app_id\", new CreateTokenIn{\n    expiry: null\n});"
+                        "source": "var apiTokenOut = await svix.Authentication.CreateMessageTokenAsync(\"app_id\", new CreateTokenIn{\n    expiry: null\n});"
                     },
                     {
                         "label": "CLI",
@@ -23748,7 +23425,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/AuthTokenOut"
+                                    "$ref": "#/components/schemas/ApiTokenOut"
                                 }
                             }
                         },
@@ -23838,52 +23515,52 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const authTokenOut = await svix.authentication.getPollerToken(\"app_id\", \"endpoint_id\");"
+                        "source": "const apiTokenOut = await svix.authentication.getPollerToken(\"app_id\", \"endpoint_id\");"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const authTokenOut = await svix.authentication.getPollerToken(\"app_id\", \"endpoint_id\");"
+                        "source": "const apiTokenOut = await svix.authentication.getPollerToken(\"app_id\", \"endpoint_id\");"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "auth_token_out = svix.authentication.get_poller_token(\"app_id\", \"endpoint_id\")"
+                        "source": "api_token_out = svix.authentication.get_poller_token(\"app_id\", \"endpoint_id\")"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "auth_token_out = await svix.authentication.get_poller_token(\"app_id\", \"endpoint_id\")"
+                        "source": "api_token_out = await svix.authentication.get_poller_token(\"app_id\", \"endpoint_id\")"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "authTokenOut, err := svixClient.Authentication.GetPollerToken(ctx, \"app_id\", \"endpoint_id\")"
+                        "source": "apiTokenOut, err := svixClient.Authentication.GetPollerToken(ctx, \"app_id\", \"endpoint_id\")"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val authTokenOut = svix.authentication.getPollerToken(\"app_id\", \"endpoint_id\")"
+                        "source": "val apiTokenOut = svix.authentication.getPollerToken(\"app_id\", \"endpoint_id\")"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "AuthTokenOut authTokenOut = svix.getAuthentication().getPollerToken(\"app_id\", \"endpoint_id\");"
+                        "source": "ApiTokenOut apiTokenOut = svix.getAuthentication().getPollerToken(\"app_id\", \"endpoint_id\");"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "auth_token_out = svix.authentication.get_poller_token(\"app_id\", \"endpoint_id\")"
+                        "source": "api_token_out = svix.authentication.get_poller_token(\"app_id\", \"endpoint_id\")"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let auth_token_out = svix.authentication().get_poller_token(\"app_id\", \"endpoint_id\").await?;"
+                        "source": "let api_token_out = svix.authentication().get_poller_token(\"app_id\", \"endpoint_id\").await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var authTokenOut = await svix.Authentication.GetPollerTokenAsync(\"app_id\", \"endpoint_id\");"
+                        "source": "var apiTokenOut = await svix.Authentication.GetPollerTokenAsync(\"app_id\", \"endpoint_id\");"
                     },
                     {
                         "label": "CLI",
@@ -23959,7 +23636,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/AuthTokenOut"
+                                    "$ref": "#/components/schemas/ApiTokenOut"
                                 }
                             }
                         },
@@ -24049,52 +23726,52 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const authTokenOut = await svix.authentication.rotatePollerToken(\"app_id\", \"endpoint_id\", {\n    expiry: null\n});"
+                        "source": "const apiTokenOut = await svix.authentication.rotatePollerToken(\"app_id\", \"endpoint_id\", {\n    expiry: null\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const authTokenOut = await svix.authentication.rotatePollerToken(\"app_id\", \"endpoint_id\", {\n    expiry: null\n});"
+                        "source": "const apiTokenOut = await svix.authentication.rotatePollerToken(\"app_id\", \"endpoint_id\", {\n    expiry: null\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "auth_token_out = svix.authentication.rotate_poller_token(\"app_id\", \"endpoint_id\", RotatePollerTokenIn(\n    expiry=None\n), options=...)"
+                        "source": "api_token_out = svix.authentication.rotate_poller_token(\"app_id\", \"endpoint_id\", RotatePollerTokenIn(\n    expiry=None\n), options=...)"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "auth_token_out = await svix.authentication.rotate_poller_token(\"app_id\", \"endpoint_id\", RotatePollerTokenIn(\n    expiry=None\n), options=...)"
+                        "source": "api_token_out = await svix.authentication.rotate_poller_token(\"app_id\", \"endpoint_id\", RotatePollerTokenIn(\n    expiry=None\n), options=...)"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "authTokenOut, err := svixClient.Authentication.RotatePollerToken(ctx, \"app_id\", \"endpoint_id\", &RotatePollerTokenIn{\n    Expiry: nil,\n})"
+                        "source": "apiTokenOut, err := svixClient.Authentication.RotatePollerToken(ctx, \"app_id\", \"endpoint_id\", &RotatePollerTokenIn{\n    Expiry: nil,\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val authTokenOut = svix.authentication.rotatePollerToken(\"app_id\", \"endpoint_id\", RotatePollerTokenIn()\n    .expiry(null)\n)"
+                        "source": "val apiTokenOut = svix.authentication.rotatePollerToken(\"app_id\", \"endpoint_id\", RotatePollerTokenIn()\n    .expiry(null)\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "AuthTokenOut authTokenOut = svix.getAuthentication().rotatePollerToken(\"app_id\", \"endpoint_id\", new RotatePollerTokenIn()\n    .expiry(null)\n);"
+                        "source": "ApiTokenOut apiTokenOut = svix.getAuthentication().rotatePollerToken(\"app_id\", \"endpoint_id\", new RotatePollerTokenIn()\n    .expiry(null)\n);"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "auth_token_out = svix.authentication.rotate_poller_token(\"app_id\", \"endpoint_id\", Svix::RotatePollerTokenIn.new({\n    \"expiry\": nil\n}))"
+                        "source": "api_token_out = svix.authentication.rotate_poller_token(\"app_id\", \"endpoint_id\", Svix::RotatePollerTokenIn.new({\n    \"expiry\": nil\n}))"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let auth_token_out = svix.authentication().rotate_poller_token(\"app_id\", \"endpoint_id\", RotatePollerTokenIn {\n    expiry: None,\n}, None).await?;"
+                        "source": "let api_token_out = svix.authentication().rotate_poller_token(\"app_id\", \"endpoint_id\", RotatePollerTokenIn {\n    expiry: None,\n}, None).await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var authTokenOut = await svix.Authentication.RotatePollerTokenAsync(\"app_id\", \"endpoint_id\", new RotatePollerTokenIn{\n    expiry: null\n});"
+                        "source": "var apiTokenOut = await svix.Authentication.RotatePollerTokenAsync(\"app_id\", \"endpoint_id\", new RotatePollerTokenIn{\n    expiry: null\n});"
                     },
                     {
                         "label": "CLI",
@@ -28022,6 +27699,407 @@
                         "label": "cURL",
                         "lang": "Shell",
                         "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/health' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                    }
+                ]
+            }
+        },
+        "/api/v1/management/authentication/api-token": {
+            "get": {
+                "description": "List all API Tokens.",
+                "operationId": "v1.management.authentication.list-api-tokens",
+                "parameters": [
+                    {
+                        "description": "Limit the number of returned items",
+                        "in": "query",
+                        "name": "limit",
+                        "schema": {
+                            "description": "Limit the number of returned items",
+                            "format": "uint64",
+                            "maximum": 250,
+                            "minimum": 1,
+                            "type": "integer"
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "description": "The iterator returned from a prior invocation",
+                        "in": "query",
+                        "name": "iterator",
+                        "schema": {
+                            "description": "The iterator returned from a prior invocation",
+                            "example": "key_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 31,
+                            "minLength": 31,
+                            "nullable": true,
+                            "pattern": "^key_[A-Za-z0-9]{27}$",
+                            "type": "string"
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "description": "The sorting order of the returned items",
+                        "in": "query",
+                        "name": "order",
+                        "schema": {
+                            "$ref": "#/components/schemas/Ordering",
+                            "description": "The sorting order of the returned items",
+                            "nullable": true
+                        },
+                        "style": "form"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ListResponse_ApiTokenCensoredOut_"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "List Api Tokens",
+                "tags": [
+                    "Authentication"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/management/authentication/api-token' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                    }
+                ]
+            },
+            "post": {
+                "description": "Create a new API Token.",
+                "operationId": "v1.management.authentication.create-api-token",
+                "parameters": [
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiTokenIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiTokenOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Create Api Token",
+                "tags": [
+                    "Authentication"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/management/authentication/api-token' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"scopes\": null\n    }'"
+                    }
+                ]
+            }
+        },
+        "/api/v1/management/authentication/api-token/{key_id}/expire": {
+            "post": {
+                "description": "Expire the selected API Token.",
+                "operationId": "v1.management.authentication.expire-api-token",
+                "parameters": [
+                    {
+                        "description": "The ApplicationToken's ID.",
+                        "in": "path",
+                        "name": "key_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The ApplicationToken's ID.",
+                            "example": "key_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 31,
+                            "minLength": 31,
+                            "pattern": "^key_[A-Za-z0-9]{27}$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiTokenExpireIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "204": {
+                        "description": "no content"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Expire Api Token",
+                "tags": [
+                    "Authentication"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/management/authentication/api-token/{key_id}/expire' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '\n    }'"
                     }
                 ]
             }
@@ -35280,7 +35358,7 @@
                                 }
                             }
                         },
-                        "description": ""
+                        "description": "Some providers need to generate responses to incoming ingest requests."
                     },
                     "204": {
                         "description": "no content"
@@ -35430,7 +35508,7 @@
                                 }
                             }
                         },
-                        "description": ""
+                        "description": "Some providers need to generate responses to incoming ingest requests."
                     },
                     "204": {
                         "description": "no content"

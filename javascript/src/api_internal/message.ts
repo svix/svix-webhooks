@@ -14,21 +14,8 @@ import {
   MessageRawPayloadOutSerializer,
 } from "../models/messageRawPayloadOut";
 import { HttpMethod, SvixRequest, SvixRequestContext } from "../request";
-import { MessageEventsSubscription } from "./messageEventsSubscription";
 
 export interface MessageEventsOptions {
-  /** Limit the number of returned items */
-  limit?: number;
-  /** The iterator returned from a prior invocation */
-  iterator?: string | null;
-  /** Filter response based on the event type */
-  eventTypes?: string[];
-  /** Filter response based on the event type. */
-  channels?: string[];
-  after?: Date | null;
-}
-
-export interface MessageEventsSubscriptionOptions {
   /** Limit the number of returned items */
   limit?: number;
   /** The iterator returned from a prior invocation */
@@ -47,10 +34,6 @@ export interface MessagePrecheckOptions {
 export class Message {
   public constructor(private readonly requestCtx: SvixRequestContext) {}
 
-  public get events_subscription() {
-    return new MessageEventsSubscription(this.requestCtx);
-  }
-
   /** Reads the stream of created messages for an application. */
   public events(
     appId: string,
@@ -59,28 +42,6 @@ export class Message {
     const request = new SvixRequest(HttpMethod.GET, "/api/v1/app/{app_id}/events");
 
     request.setPathParam("app_id", appId);
-    request.setQueryParam("limit", options?.limit);
-    request.setQueryParam("iterator", options?.iterator);
-    request.setQueryParam("event_types", options?.eventTypes);
-    request.setQueryParam("channels", options?.channels);
-    request.setQueryParam("after", options?.after);
-
-    return request.send(this.requestCtx, MessageEventsOutSerializer._fromJsonObject);
-  }
-
-  /** Reads the stream of created messages for an application, but using server-managed iterator tracking. */
-  public eventsSubscription(
-    appId: string,
-    subscriptionId: string,
-    options?: MessageEventsSubscriptionOptions
-  ): Promise<MessageEventsOut> {
-    const request = new SvixRequest(
-      HttpMethod.GET,
-      "/api/v1/app/{app_id}/events/subscription/{subscription_id}"
-    );
-
-    request.setPathParam("app_id", appId);
-    request.setPathParam("subscription_id", subscriptionId);
     request.setQueryParam("limit", options?.limit);
     request.setQueryParam("iterator", options?.iterator);
     request.setQueryParam("event_types", options?.eventTypes);

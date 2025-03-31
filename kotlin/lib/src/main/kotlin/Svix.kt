@@ -10,6 +10,7 @@ class Svix(token: String, options: SvixOptions = SvixOptions()) {
     val eventType: EventType
     val ingest: Ingest
     val integration: Integration
+    val management: Management
     val message: Message
     val messageAttempt: MessageAttempt
     val statistics: Statistics
@@ -37,6 +38,7 @@ class Svix(token: String, options: SvixOptions = SvixOptions()) {
         eventType = EventType(httpClient)
         ingest = Ingest(httpClient)
         integration = Integration(httpClient)
+        management = Management(httpClient)
         message = Message(httpClient)
         messageAttempt = MessageAttempt(httpClient)
         statistics = Statistics(httpClient)
