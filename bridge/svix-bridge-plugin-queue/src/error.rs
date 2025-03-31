@@ -18,10 +18,10 @@ pub type Result<T, E = Error> = std::result::Result<T, E>;
 impl From<Error> for std::io::Error {
     fn from(value: Error) -> Self {
         match value {
-            Error::Json(e) => std::io::Error::new(std::io::ErrorKind::Other, e),
-            Error::Queue(e) => std::io::Error::new(std::io::ErrorKind::Other, e),
-            Error::Svix(e) => std::io::Error::new(std::io::ErrorKind::Other, e),
-            Error::Generic(e) => std::io::Error::new(std::io::ErrorKind::Other, e),
+            Error::Json(e) => std::io::Error::other(e),
+            Error::Queue(e) => std::io::Error::other(e),
+            Error::Svix(e) => std::io::Error::other(e),
+            Error::Generic(e) => std::io::Error::other(e),
         }
     }
 }
