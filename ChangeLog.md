@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 1.63.0
+* Libs, Cli: New Ingest source and Ingest endpoint APIs are now available.
+* Libs: New environment APIs (import, export) are now available.
+* Libs/Ruby: Fix bug causing `application.get_or_create` to raise a `TypeError`
+
 ## Version 1.62.0
 * Libs/Python: The client will now reuse the same httpx Client across api calls
 
