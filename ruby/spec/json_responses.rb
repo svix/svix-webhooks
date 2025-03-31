@@ -218,3 +218,15 @@ ListResponseMessageAttemptOut_without_msg_JSON='{
       "prevIterator": "-iterator",
       "done": true
 }'
+ApplicationOut_JSON='{
+  "uid": "unique-identifier",
+  "name": "My first application",
+  "rateLimit": 0,
+  "id": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+  "createdAt": "2019-08-24T14:15:22Z",
+  "updatedAt": "2019-08-24T14:15:22Z",
+  "metadata": {
+    "property1": "string",
+    "property2": "string"
+  }
+}'
