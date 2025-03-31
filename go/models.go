@@ -7,6 +7,10 @@ type (
 	AdobeSignConfig                           = models.AdobeSignConfig
 	AdobeSignConfigOut                        = models.AdobeSignConfigOut
 	AggregateEventTypesOut                    = models.AggregateEventTypesOut
+	ApiTokenCensoredOut                       = models.ApiTokenCensoredOut
+	ApiTokenExpireIn                          = models.ApiTokenExpireIn
+	ApiTokenIn                                = models.ApiTokenIn
+	ApiTokenOut                               = models.ApiTokenOut
 	AppPortalAccessIn                         = models.AppPortalAccessIn
 	AppPortalAccessOut                        = models.AppPortalAccessOut
 	AppUsageStatsIn                           = models.AppUsageStatsIn
@@ -81,6 +85,7 @@ type (
 	IntegrationKeyOut                         = models.IntegrationKeyOut
 	IntegrationOut                            = models.IntegrationOut
 	IntegrationUpdate                         = models.IntegrationUpdate
+	ListResponseApiTokenCensoredOut           = models.ListResponseApiTokenCensoredOut
 	ListResponseApplicationOut                = models.ListResponseApplicationOut
 	ListResponseBackgroundTaskOut             = models.ListResponseBackgroundTaskOut
 	ListResponseEndpointMessageOut            = models.ListResponseEndpointMessageOut

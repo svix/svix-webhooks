@@ -2,6 +2,10 @@
 export { AdobeSignConfig } from "./adobeSignConfig";
 export { AdobeSignConfigOut } from "./adobeSignConfigOut";
 export { AggregateEventTypesOut } from "./aggregateEventTypesOut";
+export { ApiTokenCensoredOut } from "./apiTokenCensoredOut";
+export { ApiTokenExpireIn } from "./apiTokenExpireIn";
+export { ApiTokenIn } from "./apiTokenIn";
+export { ApiTokenOut } from "./apiTokenOut";
 export { AppPortalAccessIn } from "./appPortalAccessIn";
 export { AppPortalAccessOut } from "./appPortalAccessOut";
 export { AppUsageStatsIn } from "./appUsageStatsIn";
@@ -76,6 +80,7 @@ export { IntegrationIn } from "./integrationIn";
 export { IntegrationKeyOut } from "./integrationKeyOut";
 export { IntegrationOut } from "./integrationOut";
 export { IntegrationUpdate } from "./integrationUpdate";
+export { ListResponseApiTokenCensoredOut } from "./listResponseApiTokenCensoredOut";
 export { ListResponseApplicationOut } from "./listResponseApplicationOut";
 export { ListResponseBackgroundTaskOut } from "./listResponseBackgroundTaskOut";
 export { ListResponseEndpointMessageOut } from "./listResponseEndpointMessageOut";

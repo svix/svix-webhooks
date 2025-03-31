@@ -17,6 +17,7 @@ public class Svix {
     private final EventType eventType;
     private final Ingest ingest;
     private final Integration integration;
+    private final Management management;
     private final Message message;
     private final MessageAttempt messageAttempt;
     private final Statistics statistics;
@@ -67,6 +68,7 @@ public class Svix {
         this.eventType = new EventType(httpClient);
         this.ingest = new Ingest(httpClient);
         this.integration = new Integration(httpClient);
+        this.management = new Management(httpClient);
         this.message = new Message(httpClient);
         this.messageAttempt = new MessageAttempt(httpClient);
         this.statistics = new Statistics(httpClient);

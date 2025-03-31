@@ -1,9 +1,9 @@
 // this file is @generated
+import { ApiTokenOut, ApiTokenOutSerializer } from "../models/apiTokenOut";
 import {
   AppPortalAccessOut,
   AppPortalAccessOutSerializer,
 } from "../models/appPortalAccessOut";
-import { AuthTokenOut, AuthTokenOutSerializer } from "../models/authTokenOut";
 import { CreateTokenIn, CreateTokenInSerializer } from "../models/createTokenIn";
 import { OneTimeTokenIn, OneTimeTokenInSerializer } from "../models/oneTimeTokenIn";
 import { OneTimeTokenOut, OneTimeTokenOutSerializer } from "../models/oneTimeTokenOut";
@@ -41,7 +41,7 @@ export class Authentication {
     appId: string,
     createTokenIn: CreateTokenIn,
     options?: AuthenticationCreateMessageTokenOptions
-  ): Promise<AuthTokenOut> {
+  ): Promise<ApiTokenOut> {
     const request = new SvixRequest(
       HttpMethod.POST,
       "/api/v1/auth/app/{app_id}/create-message-token"
@@ -51,11 +51,11 @@ export class Authentication {
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
     request.setBody(CreateTokenInSerializer._toJsonObject(createTokenIn));
 
-    return request.send(this.requestCtx, AuthTokenOutSerializer._fromJsonObject);
+    return request.send(this.requestCtx, ApiTokenOutSerializer._fromJsonObject);
   }
 
   /** Get the current auth token for the poller. */
-  public getPollerToken(appId: string, endpointId: string): Promise<AuthTokenOut> {
+  public getPollerToken(appId: string, endpointId: string): Promise<ApiTokenOut> {
     const request = new SvixRequest(
       HttpMethod.GET,
       "/api/v1/auth/app/{app_id}/poller/{endpoint_id}/token"
@@ -64,7 +64,7 @@ export class Authentication {
     request.setPathParam("app_id", appId);
     request.setPathParam("endpoint_id", endpointId);
 
-    return request.send(this.requestCtx, AuthTokenOutSerializer._fromJsonObject);
+    return request.send(this.requestCtx, ApiTokenOutSerializer._fromJsonObject);
   }
 
   /** Create a new auth token that can for the poller API. */
@@ -73,7 +73,7 @@ export class Authentication {
     endpointId: string,
     rotatePollerTokenIn: RotatePollerTokenIn,
     options?: AuthenticationRotatePollerTokenOptions
-  ): Promise<AuthTokenOut> {
+  ): Promise<ApiTokenOut> {
     const request = new SvixRequest(
       HttpMethod.POST,
       "/api/v1/auth/app/{app_id}/poller/{endpoint_id}/token/rotate"
@@ -84,7 +84,7 @@ export class Authentication {
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
     request.setBody(RotatePollerTokenInSerializer._toJsonObject(rotatePollerTokenIn));
 
-    return request.send(this.requestCtx, AuthTokenOutSerializer._fromJsonObject);
+    return request.send(this.requestCtx, ApiTokenOutSerializer._fromJsonObject);
   }
 
   /** This is a one time token. */
