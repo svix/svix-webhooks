@@ -70,6 +70,7 @@ pub enum QueueInputOpts {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[allow(clippy::large_enum_variant)] // Largest variant isn't _that_ big
 #[serde(tag = "type", rename_all = "lowercase")]
 pub enum QueueOutputOpts {
     #[serde(rename = "gcp-pubsub")]
