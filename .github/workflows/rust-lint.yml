@@ -38,6 +38,17 @@ jobs:
         run: cargo fmt -- --check
         working-directory: rust
 
+  check-unused-deps:
+    name: Check for unused dependencies
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: taiki-e/install-action@cargo-machete
+
+      - run: cargo machete
+        working-directory: rust
+
   test-versions:
     name: Rust Lint
     runs-on: ubuntu-24.04
