@@ -1,10 +1,5 @@
 use std::{
-    borrow::Cow,
-    collections::HashMap,
-    convert::Infallible,
-    fmt,
-    io::{Error, ErrorKind},
-    net::SocketAddr,
+    borrow::Cow, collections::HashMap, convert::Infallible, fmt, io::Error, net::SocketAddr,
     num::NonZeroUsize,
 };
 
@@ -63,27 +58,21 @@ impl Config {
                 Ok(vars.get(key).map(Cow::from))
             };
             shellexpand::env_with_context(raw_src, context).map_err(|e: LookupError<_>| {
-                Error::new(
-                    ErrorKind::Other,
-                    format!("Variable substitution failed: {e}"),
-                )
+                Error::other(format!("Variable substitution failed: {e}"))
             })?
         } else {
             Cow::Borrowed(raw_src)
         };
         let cfg: Self = serde_yaml::from_str(&src)
-            .map_err(|e| Error::new(ErrorKind::Other, format!("Failed to parse config: {e}")))?;
+            .map_err(|e| Error::other(format!("Failed to parse config: {e}")))?;
 
         for sc in &cfg.senders {
             if let Some(tc) = sc.transformation() {
                 crate::runtime::validate_script(tc.source().as_str()).map_err(|e| {
-                    Error::new(
-                        ErrorKind::Other,
-                        format!(
-                            "failed to parse transformation for sender `{}`: {e:?}",
-                            &sc.name(),
-                        ),
-                    )
+                    Error::other(format!(
+                        "failed to parse transformation for sender `{}`: {e:?}",
+                        &sc.name(),
+                    ))
                 })?;
             }
         }
@@ -99,10 +88,9 @@ impl Config {
                 .map(|tc| (&receiver.name, tc)),
         }) {
             crate::runtime::validate_script(tc.source().as_str()).map_err(|e| {
-                Error::new(
-                    ErrorKind::Other,
-                    format!("failed to parse transformation for receiver `{name}`: {e:?}"),
-                )
+                Error::other(format!(
+                    "failed to parse transformation for receiver `{name}`: {e:?}"
+                ))
             })?;
         }
 
@@ -225,6 +213,7 @@ pub struct WebhookReceiverConfig {
 }
 
 #[derive(Deserialize)]
+#[allow(clippy::large_enum_variant)] // we're talking a couple hundred bytes only
 #[serde(untagged)]
 pub enum ReceiverOutputOpts {
     #[cfg(feature = "kafka")]
