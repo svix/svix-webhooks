@@ -6,12 +6,6 @@ publish = false
 edition.workspace = true
 license.workspace = true
 
-[package.metadata.cargo-machete]
-ignored = [
-    # not a direct dependency, but we want to pin its version
-    "idna_adapter",
-]
-
 [dependencies]
 svix-server_derive = { path = "../svix-server_derive" }
 

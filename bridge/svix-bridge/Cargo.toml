@@ -6,6 +6,7 @@ publish = false
 
 [dependencies]
 anyhow = "1"
+base64 = "0.13.1"
 clap = { version = "4.2.4", features = ["env", "derive"] }
 axum = { version = "0.7.7", features = ["macros"] }
 enum_dispatch = "0.3"
