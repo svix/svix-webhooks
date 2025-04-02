@@ -1,5 +1,5 @@
 use std::{
-    io::{Error, ErrorKind, Result},
+    io::{Error, Result},
     path::PathBuf,
     time::Duration,
 };
@@ -267,7 +267,7 @@ async fn main() -> Result<()> {
                 .expect("config file path");
             std::fs::read_to_string(&fp).map_err(|e| {
                 let p = fp.into_os_string().into_string().expect("config file path");
-                Error::new(ErrorKind::Other, format!("Failed to read {p}: {e}"))
+                Error::other(format!("Failed to read {p}: {e}"))
             })
         }?,
     };
@@ -346,8 +346,7 @@ async fn main() -> Result<()> {
 
     let mut senders = Vec::with_capacity(cfg.senders.len());
     for sc in cfg.senders {
-        let mut sender: Box<dyn SenderInput> =
-            sc.try_into().map_err(|e| Error::new(ErrorKind::Other, e))?;
+        let mut sender: Box<dyn SenderInput> = sc.try_into().map_err(Error::other)?;
         sender.set_transformer(Some(xform_tx.clone()));
         senders.push(sender);
     }

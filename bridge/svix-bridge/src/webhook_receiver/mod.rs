@@ -46,7 +46,7 @@ pub async fn run(
 ) -> std::io::Result<()> {
     let state = InternalState::from_receiver_configs(routes, transformer_tx)
         .await
-        .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))?;
+        .map_err(std::io::Error::other)?;
 
     let router = router().with_state(state);
 
@@ -54,7 +54,7 @@ pub async fn run(
     let listener = tokio::net::TcpListener::bind(listen_addr).await.unwrap();
     axum::serve(listener, router)
         .await
-        .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))
+        .map_err(std::io::Error::other)
 }
 
 #[instrument(
@@ -239,7 +239,7 @@ impl PollerReceiverConfig {
         let output = Arc::new(
             self.into_receiver_output()
                 .await
-                .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))?,
+                .map_err(std::io::Error::other)?,
         );
         Ok(Box::new(SvixEventsPoller {
             name,
