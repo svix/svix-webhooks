@@ -38,6 +38,17 @@ jobs:
         run: cargo fmt -- --check
         working-directory: server
 
+  check-unused-deps:
+    name: Check for unused dependencies
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: taiki-e/install-action@cargo-machete
+
+      - run: cargo machete
+        working-directory: server
+
   test-versions:
     name: Server CI
     runs-on: ubuntu-24.04
