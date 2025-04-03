@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 1.63.1
+* Libs/Python: Removed internal use of `match` statement, allowing python versions older than 3.10 to be used
+
 ## Version 1.63.0
 * Libs, Cli: New Ingest source and Ingest endpoint APIs are now available.
 * Libs: New environment APIs (import, export) are now available.
