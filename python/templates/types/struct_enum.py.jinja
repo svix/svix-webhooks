@@ -27,16 +27,17 @@ class {{ type_name }}(BaseModel):
         cls, data: t.Any, handler: ModelWrapValidatorHandler[Self]
     ) -> Self:
         output = handler(data)
-        match output.type:
-            {% for v in type.variants -%}
-            case "{{ v.name }}":
-                {%- if v.schema_ref is defined %}
-                output.{{ type.content_field | to_snake_case }} = {{ v.schema_ref | to_upper_camel_case }}.model_validate(data.get("{{ type.content_field }}", {}))
-                {%- else %}
-                output.{{ type.content_field | to_snake_case }} = data.get("{{ type.content_field }}", {})
-                {%- endif %}
-            {% endfor -%}
-            case _:
-                raise ValueError(f"Unexpected type `{output.type}`")
+        {% for v in type.variants -%}
+
+        
+        {% if loop.first -%}if{% else %}elif{% endif %} output.type == "{{ v.name }}":
+            {%- if v.schema_ref is defined %}
+            output.{{ type.content_field | to_snake_case }} = {{ v.schema_ref | to_upper_camel_case }}.model_validate(data.get("{{ type.content_field }}", {}))
+            {%- else %}
+            output.{{ type.content_field | to_snake_case }} = data.get("{{ type.content_field }}", {})
+            {%- endif %}
+        {% endfor -%}
+        else:
+            raise ValueError(f"Unexpected type `{output.type}`")
         return output
 
