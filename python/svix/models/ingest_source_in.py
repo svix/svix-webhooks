@@ -72,57 +72,56 @@ class IngestSourceIn(BaseModel):
         cls, data: t.Any, handler: ModelWrapValidatorHandler[Self]
     ) -> Self:
         output = handler(data)
-        match output.type:
-            case "generic-webhook":
-                output.config = data.get("config", {})
-            case "cron":
-                output.config = CronConfig.model_validate(data.get("config", {}))
-            case "adobe-sign":
-                output.config = AdobeSignConfig.model_validate(data.get("config", {}))
-            case "beehiiv":
-                output.config = SvixConfig.model_validate(data.get("config", {}))
-            case "brex":
-                output.config = SvixConfig.model_validate(data.get("config", {}))
-            case "clerk":
-                output.config = SvixConfig.model_validate(data.get("config", {}))
-            case "docusign":
-                output.config = DocusignConfig.model_validate(data.get("config", {}))
-            case "github":
-                output.config = GithubConfig.model_validate(data.get("config", {}))
-            case "guesty":
-                output.config = SvixConfig.model_validate(data.get("config", {}))
-            case "hubspot":
-                output.config = HubspotConfig.model_validate(data.get("config", {}))
-            case "incident-io":
-                output.config = SvixConfig.model_validate(data.get("config", {}))
-            case "lithic":
-                output.config = SvixConfig.model_validate(data.get("config", {}))
-            case "nash":
-                output.config = SvixConfig.model_validate(data.get("config", {}))
-            case "pleo":
-                output.config = SvixConfig.model_validate(data.get("config", {}))
-            case "replicate":
-                output.config = SvixConfig.model_validate(data.get("config", {}))
-            case "resend":
-                output.config = SvixConfig.model_validate(data.get("config", {}))
-            case "safebase":
-                output.config = SvixConfig.model_validate(data.get("config", {}))
-            case "sardine":
-                output.config = SvixConfig.model_validate(data.get("config", {}))
-            case "segment":
-                output.config = SegmentConfig.model_validate(data.get("config", {}))
-            case "shopify":
-                output.config = ShopifyConfig.model_validate(data.get("config", {}))
-            case "slack":
-                output.config = SlackConfig.model_validate(data.get("config", {}))
-            case "stripe":
-                output.config = StripeConfig.model_validate(data.get("config", {}))
-            case "stych":
-                output.config = SvixConfig.model_validate(data.get("config", {}))
-            case "svix":
-                output.config = SvixConfig.model_validate(data.get("config", {}))
-            case "zoom":
-                output.config = ZoomConfig.model_validate(data.get("config", {}))
-            case _:
-                raise ValueError(f"Unexpected type `{output.type}`")
+        if output.type == "generic-webhook":
+            output.config = data.get("config", {})
+        elif output.type == "cron":
+            output.config = CronConfig.model_validate(data.get("config", {}))
+        elif output.type == "adobe-sign":
+            output.config = AdobeSignConfig.model_validate(data.get("config", {}))
+        elif output.type == "beehiiv":
+            output.config = SvixConfig.model_validate(data.get("config", {}))
+        elif output.type == "brex":
+            output.config = SvixConfig.model_validate(data.get("config", {}))
+        elif output.type == "clerk":
+            output.config = SvixConfig.model_validate(data.get("config", {}))
+        elif output.type == "docusign":
+            output.config = DocusignConfig.model_validate(data.get("config", {}))
+        elif output.type == "github":
+            output.config = GithubConfig.model_validate(data.get("config", {}))
+        elif output.type == "guesty":
+            output.config = SvixConfig.model_validate(data.get("config", {}))
+        elif output.type == "hubspot":
+            output.config = HubspotConfig.model_validate(data.get("config", {}))
+        elif output.type == "incident-io":
+            output.config = SvixConfig.model_validate(data.get("config", {}))
+        elif output.type == "lithic":
+            output.config = SvixConfig.model_validate(data.get("config", {}))
+        elif output.type == "nash":
+            output.config = SvixConfig.model_validate(data.get("config", {}))
+        elif output.type == "pleo":
+            output.config = SvixConfig.model_validate(data.get("config", {}))
+        elif output.type == "replicate":
+            output.config = SvixConfig.model_validate(data.get("config", {}))
+        elif output.type == "resend":
+            output.config = SvixConfig.model_validate(data.get("config", {}))
+        elif output.type == "safebase":
+            output.config = SvixConfig.model_validate(data.get("config", {}))
+        elif output.type == "sardine":
+            output.config = SvixConfig.model_validate(data.get("config", {}))
+        elif output.type == "segment":
+            output.config = SegmentConfig.model_validate(data.get("config", {}))
+        elif output.type == "shopify":
+            output.config = ShopifyConfig.model_validate(data.get("config", {}))
+        elif output.type == "slack":
+            output.config = SlackConfig.model_validate(data.get("config", {}))
+        elif output.type == "stripe":
+            output.config = StripeConfig.model_validate(data.get("config", {}))
+        elif output.type == "stych":
+            output.config = SvixConfig.model_validate(data.get("config", {}))
+        elif output.type == "svix":
+            output.config = SvixConfig.model_validate(data.get("config", {}))
+        elif output.type == "zoom":
+            output.config = ZoomConfig.model_validate(data.get("config", {}))
+        else:
+            raise ValueError(f"Unexpected type `{output.type}`")
         return output
