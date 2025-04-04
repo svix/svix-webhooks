@@ -10,7 +10,7 @@ use redis::{
     ProtocolVersion, RedisConnectionInfo, RedisError, TlsMode,
 };
 use sentinel::RedisSentinelConnectionManager;
-use tokio::sync::Mutex;
+use std::sync::Mutex;
 
 pub use self::cluster::RedisClusterConnectionManager;
 use crate::cfg::{CacheBackend, QueueBackend, SentinelConfig};
@@ -180,7 +180,7 @@ impl RedisManager {
                 Ok(RedisConnection::NonClusteredUnpooled(conn.clone()))
             }
             Self::SentinelUnpooled(conn) => {
-                let mut conn = conn.lock().await;
+                let mut conn = conn.lock().unwrap();
                 let con = conn
                     .get_async_connection_with_config(
                         &AsyncConnectionConfig::new().set_response_timeout(REDIS_CONN_TIMEOUT),

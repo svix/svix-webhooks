@@ -2,7 +2,7 @@ use redis::{
     sentinel::{SentinelClient, SentinelNodeConnectionInfo, SentinelServerType},
     ErrorKind, IntoConnectionInfo, RedisError,
 };
-use tokio::sync::Mutex;
+use std::sync::Mutex;
 
 struct LockedSentinelClient(pub(crate) Mutex<SentinelClient>);
 
@@ -34,7 +34,7 @@ impl bb8::ManageConnection for RedisSentinelConnectionManager {
     type Error = RedisError;
 
     async fn connect(&self) -> Result<Self::Connection, Self::Error> {
-        self.client.0.lock().await.get_async_connection().await
+        self.client.0.lock().unwrap().get_async_connection().unwrap()
     }
 
     async fn is_valid(&self, conn: &mut Self::Connection) -> Result<(), Self::Error> {
