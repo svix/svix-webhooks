@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use omniqueue::{DynProducer, QueueError};
 use svix_bridge_types::{async_trait, BoxError, ForwardRequest, ReceiverOutput};
-use std::sync::Mutex;
+use tokio::sync::Mutex;
 
 use crate::{config::QueueOutputOpts, error::Result};
 
@@ -53,7 +53,7 @@ impl ReceiverOutput for QueueForwarder {
     }
 
     async fn handle(&self, request: ForwardRequest) -> Result<(), BoxError> {
-        let mut sender = self.sender.lock().unwrap();
+        let mut sender = self.sender.lock().await;
         // `QueueForwarder` initializes its sender lazily, but also the sender can be discarded if
         // it gets in a bad state.
         // When None, rebuild the sender.
