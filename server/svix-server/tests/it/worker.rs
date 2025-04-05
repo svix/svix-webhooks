@@ -8,7 +8,7 @@ use svix_server::v1::{
     endpoints::{attempt::MessageAttemptOut, endpoint::EndpointOut},
     utils::ListResponse,
 };
-use tokio::sync::Mutex;
+use std::sync::Mutex;
 
 use crate::utils::{
     common_calls::{create_test_app, create_test_endpoint, create_test_message},
@@ -79,7 +79,7 @@ async fn visit_reporting_receiver_route(
         resp_with,
     }): State<RedirectionVisitReportingState>,
 ) -> StatusCode {
-    *visited.lock().await = true;
+    *visited.lock().unwrap() = true;
     resp_with
 }
 
@@ -122,7 +122,7 @@ async fn test_no_redirects_policy() {
     .unwrap();
 
     // Assert that the second endpoint has not been visited
-    assert!(!*receiver.has_been_visited.lock().await);
+    assert!(!*receiver.has_been_visited.lock().unwrap());
 
     receiver.jh.abort();
 }
@@ -271,7 +271,7 @@ async fn sporadically_failing_route(
         resp_with: (resp_ok, resp_fail),
     }): State<SporadicallyFailingState>,
 ) -> StatusCode {
-    let mut count = count.lock().await;
+    let mut count = count.lock().unwrap();
     *count += 1;
 
     if *count % 2 == 0 {
