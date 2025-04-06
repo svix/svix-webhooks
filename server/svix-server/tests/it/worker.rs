@@ -4,11 +4,11 @@ use std::{net::TcpListener, sync::Arc, time::Duration};
 
 use axum::extract::State;
 use http::StatusCode;
+use std::sync::Mutex;
 use svix_server::v1::{
     endpoints::{attempt::MessageAttemptOut, endpoint::EndpointOut},
     utils::ListResponse,
 };
-use std::sync::Mutex;
 
 use crate::utils::{
     common_calls::{create_test_app, create_test_endpoint, create_test_message},
