@@ -58,7 +58,7 @@ impl ReceiverOutput for QueueForwarder {
         // it gets in a bad state.
         // When None, rebuild the sender.
         if sender.is_none() {
-            *sender = Some(Self::build_sender(&self.opts).unwrap()?);
+            *sender = Some(Self::build_sender(&self.opts).await.unwrap());
         }
 
         let res = sender
