@@ -11,7 +11,7 @@ export interface MessageEventsOut {
 export const MessageEventsOutSerializer = {
   _fromJsonObject(object: any): MessageEventsOut {
     return {
-      data: object["data"].map((item: MessageOut) =>
+      data: object["data"]?.map((item: MessageOut) =>
         MessageOutSerializer._fromJsonObject(item)
       ),
       done: object["done"],

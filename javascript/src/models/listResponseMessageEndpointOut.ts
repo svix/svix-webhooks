@@ -12,7 +12,7 @@ export interface ListResponseMessageEndpointOut {
 export const ListResponseMessageEndpointOutSerializer = {
   _fromJsonObject(object: any): ListResponseMessageEndpointOut {
     return {
-      data: object["data"].map((item: MessageEndpointOut) =>
+      data: object["data"]?.map((item: MessageEndpointOut) =>
         MessageEndpointOutSerializer._fromJsonObject(item)
       ),
       done: object["done"],

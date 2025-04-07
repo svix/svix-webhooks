@@ -11,7 +11,7 @@ export interface EventStreamOut {
 export const EventStreamOutSerializer = {
   _fromJsonObject(object: any): EventStreamOut {
     return {
-      data: object["data"].map((item: EventOut) =>
+      data: object["data"]?.map((item: EventOut) =>
         EventOutSerializer._fromJsonObject(item)
       ),
       done: object["done"],

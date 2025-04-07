@@ -13,7 +13,7 @@ export interface GenerateOut {
 export const GenerateOutSerializer = {
   _fromJsonObject(object: any): GenerateOut {
     return {
-      choices: object["choices"].map((item: CompletionChoice) =>
+      choices: object["choices"]?.map((item: CompletionChoice) =>
         CompletionChoiceSerializer._fromJsonObject(item)
       ),
       created: object["created"],
