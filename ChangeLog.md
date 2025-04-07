@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 1.63.2
+* Libs/JavaScript: Fix deserialization for optional arrays
+* Libs/Python: Fix minimum version requirement for pydantic
+
 ## Version 1.63.1
 * Libs/Python: Removed internal use of `match` statement, allowing python versions older than 3.10 to be used
 
