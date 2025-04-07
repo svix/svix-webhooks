@@ -12,7 +12,7 @@ export interface ListResponseStreamEventTypeOut {
 export const ListResponseStreamEventTypeOutSerializer = {
   _fromJsonObject(object: any): ListResponseStreamEventTypeOut {
     return {
-      data: object["data"].map((item: StreamEventTypeOut) =>
+      data: object["data"]?.map((item: StreamEventTypeOut) =>
         StreamEventTypeOutSerializer._fromJsonObject(item)
       ),
       done: object["done"],

@@ -12,7 +12,7 @@ export interface ListResponseMessageAttemptOut {
 export const ListResponseMessageAttemptOutSerializer = {
   _fromJsonObject(object: any): ListResponseMessageAttemptOut {
     return {
-      data: object["data"].map((item: MessageAttemptOut) =>
+      data: object["data"]?.map((item: MessageAttemptOut) =>
         MessageAttemptOutSerializer._fromJsonObject(item)
       ),
       done: object["done"],

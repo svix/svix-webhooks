@@ -12,10 +12,10 @@ export interface EnvironmentIn {
 export const EnvironmentInSerializer = {
   _fromJsonObject(object: any): EnvironmentIn {
     return {
-      connectors: object["connectors"].map((item: ConnectorIn) =>
+      connectors: object["connectors"]?.map((item: ConnectorIn) =>
         ConnectorInSerializer._fromJsonObject(item)
       ),
-      eventTypes: object["eventTypes"].map((item: EventTypeIn) =>
+      eventTypes: object["eventTypes"]?.map((item: EventTypeIn) =>
         EventTypeInSerializer._fromJsonObject(item)
       ),
       settings: object["settings"],

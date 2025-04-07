@@ -12,7 +12,7 @@ export interface ListResponseStreamOut {
 export const ListResponseStreamOutSerializer = {
   _fromJsonObject(object: any): ListResponseStreamOut {
     return {
-      data: object["data"].map((item: StreamOut) =>
+      data: object["data"]?.map((item: StreamOut) =>
         StreamOutSerializer._fromJsonObject(item)
       ),
       done: object["done"],

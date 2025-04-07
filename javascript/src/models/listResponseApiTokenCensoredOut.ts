@@ -15,7 +15,7 @@ export interface ListResponseApiTokenCensoredOut {
 export const ListResponseApiTokenCensoredOutSerializer = {
   _fromJsonObject(object: any): ListResponseApiTokenCensoredOut {
     return {
-      data: object["data"].map((item: ApiTokenCensoredOut) =>
+      data: object["data"]?.map((item: ApiTokenCensoredOut) =>
         ApiTokenCensoredOutSerializer._fromJsonObject(item)
       ),
       done: object["done"],
