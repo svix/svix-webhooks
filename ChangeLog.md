@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 1.64.0 
+* CLI: Add interactive login with dashboard.svix.com
+
 ## Version 1.63.2
 * Libs/JavaScript: Fix deserialization for optional arrays
 * Libs/Python: Fix minimum version requirement for pydantic
