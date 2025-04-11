@@ -7,3 +7,7 @@
 "{{ resource_type_name }}{{ op.name | to_upper_camel_case }}Options",
     {%- endif -%}
 {%- endfor -%}
+{# HACK: equivalent to the one in resource_import... -#}
+{% if resource.name == "authentication" %}
+"AuthenticationDashboardAccessOptions",
+{% endif -%}
