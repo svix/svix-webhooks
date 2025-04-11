@@ -11,11 +11,6 @@ pub struct AuthenticationExpireAllOptions {
 }
 
 #[derive(Default)]
-pub struct AuthenticationDashboardAccessOptions {
-    pub idempotency_key: Option<String>,
-}
-
-#[derive(Default)]
 pub struct AuthenticationLogoutOptions {
     pub idempotency_key: Option<String>,
 }
@@ -68,17 +63,15 @@ impl<'a> Authentication<'a> {
             .await
     }
 
-    /// DEPRECATED: Please use `app-portal-access` instead.
-    ///
-    /// Use this function to get magic links (and authentication codes) for
-    /// connecting your users to the Consumer Application Portal.
-    #[deprecated]
+    #[deprecated = "Please use app_portal_access instead."]
+    #[allow(deprecated)]
     pub async fn dashboard_access(
         &self,
         app_id: String,
-        options: Option<AuthenticationDashboardAccessOptions>,
+        options: Option<super::AuthenticationDashboardAccessOptions>,
     ) -> Result<DashboardAccessOut> {
-        let AuthenticationDashboardAccessOptions { idempotency_key } = options.unwrap_or_default();
+        let super::AuthenticationDashboardAccessOptions { idempotency_key } =
+            options.unwrap_or_default();
 
         crate::request::Request::new(
             http1::Method::POST,

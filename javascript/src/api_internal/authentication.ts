@@ -33,6 +33,11 @@ export interface AuthenticationStreamPortalAccessOptions {
   idempotencyKey?: string;
 }
 
+/** @deprecated */
+export interface AuthenticationDashboardAccessOptions {
+  idempotencyKey?: string;
+}
+
 export class Authentication {
   public constructor(private readonly requestCtx: SvixRequestContext) {}
 

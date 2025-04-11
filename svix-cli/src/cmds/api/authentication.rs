@@ -32,21 +32,6 @@ impl From<AuthenticationExpireAllOptions> for svix::api::AuthenticationExpireAll
 }
 
 #[derive(Args, Clone)]
-pub struct AuthenticationDashboardAccessOptions {
-    #[arg(long)]
-    pub idempotency_key: Option<String>,
-}
-
-impl From<AuthenticationDashboardAccessOptions>
-    for svix::api::AuthenticationDashboardAccessOptions
-{
-    fn from(value: AuthenticationDashboardAccessOptions) -> Self {
-        let AuthenticationDashboardAccessOptions { idempotency_key } = value;
-        Self { idempotency_key }
-    }
-}
-
-#[derive(Args, Clone)]
 pub struct AuthenticationLogoutOptions {
     #[arg(long)]
     pub idempotency_key: Option<String>,

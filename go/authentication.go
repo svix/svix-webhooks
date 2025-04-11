@@ -25,10 +25,6 @@ type AuthenticationExpireAllOptions struct {
 	IdempotencyKey *string
 }
 
-type AuthenticationDashboardAccessOptions struct {
-	IdempotencyKey *string
-}
-
 type AuthenticationLogoutOptions struct {
 	IdempotencyKey *string
 }
@@ -94,9 +90,7 @@ func (authentication *Authentication) ExpireAll(
 	return err
 }
 
-// DEPRECATED: Please use `app-portal-access` instead.
-//
-// Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal.
+// Deprecated: Please use `AppPortalAccess` instead.
 func (authentication *Authentication) DashboardAccess(
 	ctx context.Context,
 	appId string,

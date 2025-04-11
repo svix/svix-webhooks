@@ -29,18 +29,6 @@ namespace Svix
         }
     }
 
-    public class AuthenticationDashboardAccessOptions : SvixOptionsBase
-    {
-        public string? IdempotencyKey { get; set; }
-
-        public new Dictionary<string, string> HeaderParams()
-        {
-            return SerializeParams(
-                new Dictionary<string, object?> { { "idempotency-key", IdempotencyKey } }
-            );
-        }
-    }
-
     public class AuthenticationLogoutOptions : SvixOptionsBase
     {
         public string? IdempotencyKey { get; set; }
@@ -187,12 +175,7 @@ namespace Svix
             }
         }
 
-        /// <summary>
-        /// DEPRECATED: Please use `app-portal-access` instead.
-        ///
-        /// Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal.
-        /// </summary>
-        [Obsolete]
+        [Obsolete("Please use `AppPortalAccessAsync` instead")]
         public async Task<DashboardAccessOut> DashboardAccessAsync(
             string appId,
             AuthenticationDashboardAccessOptions? options = null,
@@ -219,12 +202,7 @@ namespace Svix
             }
         }
 
-        /// <summary>
-        /// DEPRECATED: Please use `app-portal-access` instead.
-        ///
-        /// Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal.
-        /// </summary>
-        [Obsolete]
+        [Obsolete("Please use `AppPortalAccess` instead")]
         public DashboardAccessOut DashboardAccess(
             string appId,
             AuthenticationDashboardAccessOptions? options = null

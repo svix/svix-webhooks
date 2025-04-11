@@ -6,7 +6,6 @@ import com.svix.exceptions.ApiException;
 import com.svix.models.AppPortalAccessIn;
 import com.svix.models.AppPortalAccessOut;
 import com.svix.models.ApplicationTokenExpireIn;
-import com.svix.models.DashboardAccessOut;
 
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
@@ -84,28 +83,19 @@ public class Authentication {
     }
 
     /**
-     * DEPRECATED: Please use `app-portal-access` instead.
-     *
-     * <p>Use this function to get magic links (and authentication codes) for connecting your users
-     * to the Consumer Application Portal.
-     *
-     * @deprecated
+     * @deprecated Please use appPortalAccess instead.
      */
     @Deprecated
-    public DashboardAccessOut dashboardAccess(final String appId) throws IOException, ApiException {
+    public com.svix.models.DashboardAccessOut dashboardAccess(final String appId)
+            throws IOException, ApiException {
         return this.dashboardAccess(appId, new AuthenticationDashboardAccessOptions());
     }
 
     /**
-     * DEPRECATED: Please use `app-portal-access` instead.
-     *
-     * <p>Use this function to get magic links (and authentication codes) for connecting your users
-     * to the Consumer Application Portal.
-     *
-     * @deprecated
+     * @deprecated Please use appPortalAccess instead.
      */
     @Deprecated
-    public DashboardAccessOut dashboardAccess(
+    public com.svix.models.DashboardAccessOut dashboardAccess(
             final String appId, final AuthenticationDashboardAccessOptions options)
             throws IOException, ApiException {
         HttpUrl.Builder url =
@@ -117,7 +107,11 @@ public class Authentication {
             headers.put("idempotency-key", options.idempotencyKey);
         }
         return this.client.executeRequest(
-                "POST", url.build(), Headers.of(headers), null, DashboardAccessOut.class);
+                "POST",
+                url.build(),
+                Headers.of(headers),
+                null,
+                com.svix.models.DashboardAccessOut.class);
     }
 
     /**

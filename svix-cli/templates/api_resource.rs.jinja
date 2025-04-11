@@ -89,8 +89,6 @@ pub enum {{ resource_type_name }}Commands {
     {% endfor -%}
 
     {% for op in resource.operations -%}
-        {# exclude the deprecatd dashboard-access route -#}
-        {% if op.name != "dashboard-access" -%}
         {% set has_params = (op.query_params | length > 0) or (op.header_params | length > 0) -%}
 
         {% if op.description is defined -%}
@@ -123,7 +121,6 @@ pub enum {{ resource_type_name }}Commands {
             options: {{ resource_type_name }}{{ op.name | to_upper_camel_case }}Options,
             {% endif -%}
         },
-        {% endif -%}
     {% endfor %}
 }
 
@@ -137,7 +134,6 @@ impl {{ resource_type_name }}Commands {
             {% endfor -%}
 
             {% for op in resource.operations -%}
-                {% if op.name != "dashboard-access" -%}
                 {% set has_params = (op.query_params | length > 0) or (op.header_params | length > 0) -%}
 
                 Self::{{ op.name | to_upper_camel_case }} {
@@ -206,7 +202,6 @@ impl {{ resource_type_name }}Commands {
                         crate::json::print_json_output(&resp, color_mode)?;
                     {%- endif %}
                 }
-                {% endif -%}
             {% endfor %}
         }
 
