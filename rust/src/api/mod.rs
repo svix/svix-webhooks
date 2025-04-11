@@ -8,6 +8,7 @@ pub use crate::models::*;
 mod application;
 mod authentication;
 mod background_task;
+mod deprecated;
 mod endpoint;
 mod environment;
 mod event_type;
@@ -28,10 +29,11 @@ mod statistics;
 pub use self::{
     application::{Application, ApplicationCreateOptions, ApplicationListOptions},
     authentication::{
-        Authentication, AuthenticationAppPortalAccessOptions, AuthenticationDashboardAccessOptions,
-        AuthenticationExpireAllOptions, AuthenticationLogoutOptions,
+        Authentication, AuthenticationAppPortalAccessOptions, AuthenticationExpireAllOptions,
+        AuthenticationLogoutOptions,
     },
     background_task::{BackgroundTask, BackgroundTaskListOptions},
+    deprecated::*,
     endpoint::{
         Endpoint, EndpointCreateOptions, EndpointGetStatsOptions, EndpointListOptions,
         EndpointRecoverOptions, EndpointReplayMissingOptions, EndpointRotateSecretOptions,
@@ -81,15 +83,6 @@ pub use self::{
     events_public::{EventsPublic, EventsPublicConsumerOptions, EventsPublicConsumerSeekOptions},
     message::{V1MessageEventsParams, V1MessageEventsSubscriptionParams},
 };
-
-#[deprecated = "Use EndpointGetStatusOptions instead"]
-pub type EndpointStatsOptions = EndpointGetStatsOptions;
-#[deprecated = "Use MessageAttemptListByMsgOptions instead"]
-pub type MessageAttemptListOptions = MessageAttemptListByMsgOptions;
-#[deprecated = "Use MessageAttemptListAttemptedDestinationsOptions instead"]
-pub type ListOptions = MessageAttemptListAttemptedDestinationsOptions;
-#[deprecated = "Use AppUsageStatsIn instead"]
-pub type AggregateAppStatsOptions = AppUsageStatsIn;
 
 impl Svix {
     pub fn authentication(&self) -> Authentication<'_> {
