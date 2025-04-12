@@ -66,9 +66,6 @@ pub struct MessageAttemptOut {
     #[schemars(example = "example_status_code")]
     pub response_status_code: i16,
     /// Response duration in milliseconds.
-    ///
-    /// Currently, this is not actually recorded in the OSS version of Svix, so
-    /// this field always has a value of `0`.
     pub response_duration_ms: i64,
     pub status: MessageStatus,
     pub trigger_type: MessageAttemptTriggerType,
@@ -88,7 +85,7 @@ impl From<messageattempt::Model> for MessageAttemptOut {
             url: model.url,
             response: model.response,
             response_status_code: model.response_status_code,
-            response_duration_ms: 0,
+            response_duration_ms: model.response_duration_ms,
             status: model.status,
             trigger_type: model.trigger_type,
             msg_id: model.msg_id,
