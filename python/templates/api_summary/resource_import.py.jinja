@@ -6,4 +6,8 @@ from .{{ resource.name | to_snake_case }} import {{ resource_type_name }}{{ asyn
     {%- if op | has_query_or_header_params %}
 from .{{ resource.name | to_snake_case }} import {{ resource_type_name }}{{ op.name | to_upper_camel_case }}Options
     {%- endif -%}
-{%- endfor -%}
+{%- endfor %}
+{#- HACK: well, what else are we going to do... #}
+{%- if resource.name == "authentication" %}
+from .authentication import AuthenticationDashboardAccessOptions
+{% endif -%}

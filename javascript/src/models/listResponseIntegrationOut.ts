@@ -12,7 +12,7 @@ export interface ListResponseIntegrationOut {
 export const ListResponseIntegrationOutSerializer = {
   _fromJsonObject(object: any): ListResponseIntegrationOut {
     return {
-      data: object["data"].map((item: IntegrationOut) =>
+      data: object["data"]?.map((item: IntegrationOut) =>
         IntegrationOutSerializer._fromJsonObject(item)
       ),
       done: object["done"],

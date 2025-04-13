@@ -12,6 +12,10 @@ from .. import models
 {% for c in referenced_components -%}
 from ..models import {{ c | to_upper_camel_case }}
 {% endfor -%}
+{# HACK: can't easily do this with api_extra files, needs to be up here or ruff complains -#}
+{% if resource.name == "authentication" -%}
+from ..models import DashboardAccessOut
+{% endif -%}
 {% for _, sub in resource.subresources | items -%}
 from .{{ sub.name | to_snake_case }} import (
     {{ sub.name | to_upper_camel_case }},

@@ -16,7 +16,7 @@ export interface CreateStreamIn {
 export const CreateStreamInSerializer = {
   _fromJsonObject(object: any): CreateStreamIn {
     return {
-      events: object["events"].map((item: EventIn) =>
+      events: object["events"]?.map((item: EventIn) =>
         EventInSerializer._fromJsonObject(item)
       ),
       stream: object["stream"]

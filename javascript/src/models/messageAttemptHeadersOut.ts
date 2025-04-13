@@ -10,7 +10,7 @@ export interface MessageAttemptHeadersOut {
 export const MessageAttemptHeadersOutSerializer = {
   _fromJsonObject(object: any): MessageAttemptHeadersOut {
     return {
-      responseHeaders: object["responseHeaders"].map((item: string[]) => item),
+      responseHeaders: object["responseHeaders"]?.map((item: string[]) => item),
       sensitive: object["sensitive"],
       sentHeaders: object["sentHeaders"],
     };

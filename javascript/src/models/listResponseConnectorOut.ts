@@ -12,7 +12,7 @@ export interface ListResponseConnectorOut {
 export const ListResponseConnectorOutSerializer = {
   _fromJsonObject(object: any): ListResponseConnectorOut {
     return {
-      data: object["data"].map((item: ConnectorOut) =>
+      data: object["data"]?.map((item: ConnectorOut) =>
         ConnectorOutSerializer._fromJsonObject(item)
       ),
       done: object["done"],

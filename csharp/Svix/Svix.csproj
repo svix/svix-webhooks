@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <PackageId>Svix</PackageId>
-    <Version>1.63.1</Version>
+    <Version>1.64.0</Version>
     <Authors>Svix</Authors>
     <Company>Svix</Company>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>

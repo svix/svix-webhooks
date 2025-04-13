@@ -25,11 +25,12 @@ export interface AuthenticationExpireAllOptions {
   idempotencyKey?: string;
 }
 
-export interface AuthenticationDashboardAccessOptions {
+export interface AuthenticationLogoutOptions {
   idempotencyKey?: string;
 }
 
-export interface AuthenticationLogoutOptions {
+/** @deprecated */
+export interface AuthenticationDashboardAccessOptions {
   idempotencyKey?: string;
 }
 
@@ -74,13 +75,7 @@ export class Authentication {
     return request.sendNoResponseBody(this.requestCtx);
   }
 
-  /**
-   * DEPRECATED: Please use `app-portal-access` instead.
-   *
-   * Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal.
-   *
-   * @deprecated
-   */
+  /** @deprecated Please use `appPortalAccess` instead. */
   public dashboardAccess(
     appId: string,
     options?: AuthenticationDashboardAccessOptions

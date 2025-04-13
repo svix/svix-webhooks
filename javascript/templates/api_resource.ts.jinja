@@ -7,6 +7,13 @@ import {
     {{ c | to_upper_camel_case }}Serializer,
 } from '../models/{{ c | to_lower_camel_case }}';
 {% endfor -%}
+{# HACK: can't easily do this with api_extra files -#}
+{% if resource.name == "authentication" -%}
+import {
+  DashboardAccessOut,
+  DashboardAccessOutSerializer,
+} from "../models/dashboardAccessOut";
+{% endif -%}
 {% for _, sub in resource.subresources | items -%}
 import { {{ sub.name | to_upper_camel_case}} } from './{{ sub.name | to_lower_camel_case }}';
 {% endfor -%}
@@ -37,6 +44,14 @@ import { MessageIn, MessageInSerializer } from "../models/messageIn";
 
     {% endif -%}
 {% endfor -%}
+
+{% if resource.name == "authentication" %}
+/** @deprecated */
+export interface AuthenticationDashboardAccessOptions {
+  idempotencyKey?: string;
+}
+
+{% endif -%}
 
 export class {{ resource_type_name }} {
     public constructor(private readonly requestCtx: SvixRequestContext) {}

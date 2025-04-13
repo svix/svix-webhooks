@@ -1,6 +1,6 @@
 [package]
 name = "svix-server"
-version = "1.63.1"
+version = "1.64.0"
 description = "Svix webhooks server"
 publish = false
 edition.workspace = true
@@ -28,7 +28,7 @@ hyper-socks2 = "0.8.0"
 # Reduce compile times for idna (we don't need the fastest possible impl of UTS 46)
 # As per https://github.com/hsivonen/idna_adapter?tab=readme-ov-file#opting-to-use-unicode-rs
 idna_adapter = "=1.1.0"
-openssl = "0.10.70"
+openssl = "0.10.72"
 tokio = { version = "1.24.2", features = ["full"] }
 tower = "0.4.11"
 tower-http = { version = "0.4.4", features = ["trace", "cors", "normalize-path", "request-id"] }
