@@ -13,5 +13,6 @@ pub mod management;
 pub mod management_authentication;
 pub mod message;
 pub mod message_attempt;
+pub mod message_poller;
 pub mod operational_webhook;
 pub mod operational_webhook_endpoint;

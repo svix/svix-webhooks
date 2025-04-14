@@ -176,12 +176,6 @@ from .event_type import (
     EventTypeImportOpenapiOptions,
     EventTypeListOptions,
 )
-from .events_public import (
-    EventsPublic,
-    EventsPublicAsync,
-    EventsPublicConsumerOptions,
-    EventsPublicConsumerSeekOptions,
-)
 from .integration import (
     Integration,
     IntegrationAsync,
@@ -212,6 +206,13 @@ from .message_attempt import (
     MessageAttemptListByEndpointOptions,
     MessageAttemptListByMsgOptions,
     MessageAttemptResendOptions,
+)
+from .message_poller import (
+    MessagePoller,
+    MessagePollerAsync,
+    MessagePollerConsumerPollOptions,
+    MessagePollerConsumerSeekOptions,
+    MessagePollerPollOptions,
 )
 from .operational_webhook_endpoint import (
     OperationalWebhookEndpoint,
@@ -256,10 +257,6 @@ __all__ = [
     "EventTypeCreateOptions",
     "EventTypeImportOpenapiOptions",
     "EventTypeDeleteOptions",
-    "EventsPublic",
-    "EventsPublicAsync",
-    "EventsPublicConsumerOptions",
-    "EventsPublicConsumerSeekOptions",
     "Integration",
     "IntegrationAsync",
     "IntegrationListOptions",
@@ -276,6 +273,11 @@ __all__ = [
     "MessageCreateOptions",
     "MessageExpungeAllContentsOptions",
     "MessageGetOptions",
+    "MessagePoller",
+    "MessagePollerAsync",
+    "MessagePollerPollOptions",
+    "MessagePollerConsumerPollOptions",
+    "MessagePollerConsumerSeekOptions",
     "MessageAttempt",
     "MessageAttemptAsync",
     "MessageAttemptListByEndpointOptions",

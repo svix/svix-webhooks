@@ -33,8 +33,10 @@ module Svix
   end
 
   class Message
+    attr_accessor :poller
     def initialize(client)
       @client = client
+      @poller = MessagePoller.new(client)
     end
 
     def list(app_id, options = {})

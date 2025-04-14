@@ -46,6 +46,8 @@ data class MessageGetOptions(
 )
 
 class Message(private val client: SvixHttpClient) {
+    val poller: MessagePoller = MessagePoller(client)
+
     /**
      * List all of the application's messages.
      *
@@ -88,7 +90,7 @@ class Message(private val client: SvixHttpClient) {
      * channels don't imply a specific message content or schema.
      *
      * The `payload` property is the webhook's body (the actual webhook message). Svix supports
-     * payload sizes of up to ~350kb, though it's generally a good idea to keep webhook payloads
+     * payload sizes of up to 1MiB, though it's generally a good idea to keep webhook payloads
      * small, probably no larger than 40kb.
      */
     suspend fun create(

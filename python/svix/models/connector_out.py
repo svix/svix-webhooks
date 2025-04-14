@@ -29,7 +29,7 @@ class ConnectorOut(BaseModel):
     name: str
 
     org_id: str
-    """The Organization's ID."""
+    """The Environment's ID."""
 
     transformation: str
 

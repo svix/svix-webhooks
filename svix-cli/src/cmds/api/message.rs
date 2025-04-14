@@ -2,6 +2,7 @@ use chrono::{DateTime, Utc};
 use clap::{Args, Subcommand};
 use svix::api::*;
 
+use super::message_poller::MessagePollerArgs;
 use crate::json::JsonOf;
 
 #[derive(Args, Clone)]
@@ -116,6 +117,7 @@ pub struct MessageArgs {
 
 #[derive(Subcommand)]
 pub enum MessageCommands {
+    Poller(MessagePollerArgs),
     /// List all of the application's messages.
     ///
     /// The `before` and `after` parameters let you filter all items created before or after a certain date. These can be used alongside an iterator to paginate over results
@@ -138,7 +140,7 @@ pub enum MessageCommands {
     /// The `eventType` indicates the type and schema of the event. All messages of a certain `eventType` are expected to have the same schema. Endpoints can choose to only listen to specific event types.
     /// Messages can also have `channels`, which similar to event types let endpoints filter by them. Unlike event types, messages can have multiple channels, and channels don't imply a specific message content or schema.
     ///
-    /// The `payload` property is the webhook's body (the actual webhook message). Svix supports payload sizes of up to ~350kb, though it's generally a good idea to keep webhook payloads small, probably no larger than 40kb.
+    /// The `payload` property is the webhook's body (the actual webhook message). Svix supports payload sizes of up to 1MiB, though it's generally a good idea to keep webhook payloads small, probably no larger than 40kb.
     Create {
         app_id: String,
         message_in: JsonOf<MessageIn>,
@@ -164,7 +166,10 @@ pub enum MessageCommands {
     ///
     /// Useful in cases when a message was accidentally sent with sensitive content.
     /// The message can't be replayed or resent once its payload has been deleted or expired.
-    ExpungeContent { app_id: String, id: String },
+    ExpungeContent {
+        app_id: String,
+        id: String,
+    },
 }
 
 impl MessageCommands {
@@ -174,6 +179,9 @@ impl MessageCommands {
         color_mode: colored_json::ColorMode,
     ) -> anyhow::Result<()> {
         match self {
+            Self::Poller(args) => {
+                args.command.exec(client, color_mode).await?;
+            }
             Self::List { app_id, options } => {
                 let resp = client.message().list(app_id, Some(options.into())).await?;
                 crate::json::print_json_output(&resp, color_mode)?;

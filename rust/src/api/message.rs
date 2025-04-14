@@ -1,3 +1,4 @@
+use super::MessagePoller;
 use crate::{error::Result, models::*, Configuration};
 
 #[derive(Default)]
@@ -59,6 +60,10 @@ impl<'a> Message<'a> {
         Self { cfg }
     }
 
+    pub fn poller(&self) -> MessagePoller<'a> {
+        MessagePoller::new(self.cfg)
+    }
+
     /// List all of the application's messages.
     ///
     /// The `before` and `after` parameters let you filter all items created
@@ -116,7 +121,7 @@ impl<'a> Message<'a> {
     /// channels don't imply a specific message content or schema.
     ///
     /// The `payload` property is the webhook's body (the actual webhook
-    /// message). Svix supports payload sizes of up to ~350kb, though it's
+    /// message). Svix supports payload sizes of up to 1MiB, though it's
     /// generally a good idea to keep webhook payloads small, probably no larger
     /// than 40kb.
     pub async fn create(

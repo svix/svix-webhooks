@@ -22,6 +22,7 @@ mod management;
 mod management_authentication;
 mod message;
 mod message_attempt;
+mod message_poller;
 mod operational_webhook;
 mod operational_webhook_endpoint;
 mod statistics;
@@ -70,6 +71,10 @@ pub use self::{
         MessageAttempt, MessageAttemptListAttemptedDestinationsOptions,
         MessageAttemptListAttemptedMessagesOptions, MessageAttemptListByEndpointOptions,
         MessageAttemptListByMsgOptions, MessageAttemptResendOptions,
+    },
+    message_poller::{
+        MessagePoller, MessagePollerConsumerPollOptions, MessagePollerConsumerSeekOptions,
+        MessagePollerPollOptions,
     },
     operational_webhook::OperationalWebhook,
     operational_webhook_endpoint::{

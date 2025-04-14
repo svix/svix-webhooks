@@ -33,7 +33,7 @@ pub struct ConnectorOut {
 
     pub name: String,
 
-    /// The Organization's ID.
+    /// The Environment's ID.
     #[serde(rename = "orgId")]
     pub org_id: String,
 
