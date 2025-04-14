@@ -31,7 +31,7 @@ PKG_DIR = os.path.abspath(os.path.dirname(__file__))
 META_PATH = os.path.join(PKG_DIR, PKG_NAME, "__init__.py")
 META_CONTENTS = read_file(META_PATH)
 PKG_REQUIRES = [
-    "pydantic >=2",
+    "pydantic >=2.10",
     "httpx >=0.23.0",
     "attrs >=21.3.0",
     "python-dateutil",
