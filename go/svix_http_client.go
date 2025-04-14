@@ -122,11 +122,13 @@ func executeRequestWithRetries(client *SvixHttpClient, request *http.Request) (*
 	}
 
 	if client.Debug {
-		dump, err := httputil.DumpResponse(resp, true)
-		if err != nil {
-			return resp, err
+		if resp != nil {
+			dump, err := httputil.DumpResponse(resp, true)
+			if err != nil {
+				return resp, err
+			}
+			log.Printf("\n%s\n", string(dump))
 		}
-		log.Printf("\n%s\n", string(dump))
 	}
 	return resp, err
 }
