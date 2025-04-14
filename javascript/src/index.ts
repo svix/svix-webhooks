@@ -13,7 +13,8 @@ import { OperationalWebhookEndpoint } from "./api/operationalWebhookEndpoint";
 import { Statistics } from "./api/statistics";
 import { SvixRequestContext } from "./request";
 
-export { PostOptions } from "./util";
+export { PostOptions, ApiException } from "./util";
+export { HTTPValidationError, HttpErrorOut, ValidationError } from "./HttpErrors";
 export * from "./webhook";
 export * from "./models/index";
 
