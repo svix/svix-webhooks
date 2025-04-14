@@ -10,12 +10,12 @@ func (authentication *Authentication) DashboardAccess(
 	headerMap := map[string]string{}
 	var err error
 	if o != nil {
-		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	return executeRequest[any, models.DashboardAccessOut](
+	return internal.ExecuteRequest[any, models.DashboardAccessOut](
 		ctx,
 		authentication.client,
 		"POST",

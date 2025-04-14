@@ -4,14 +4,15 @@ package svix
 import (
 	"context"
 
+	"github.com/svix/svix-webhooks/go/internal"
 	"github.com/svix/svix-webhooks/go/models"
 )
 
 type Environment struct {
-	client *SvixHttpClient
+	client *internal.SvixHttpClient
 }
 
-func newEnvironment(client *SvixHttpClient) *Environment {
+func newEnvironment(client *internal.SvixHttpClient) *Environment {
 	return &Environment{
 		client: client,
 	}
@@ -33,12 +34,12 @@ func (environment *Environment) Export(
 	headerMap := map[string]string{}
 	var err error
 	if o != nil {
-		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	return executeRequest[any, models.EnvironmentOut](
+	return internal.ExecuteRequest[any, models.EnvironmentOut](
 		ctx,
 		environment.client,
 		"POST",
@@ -61,12 +62,12 @@ func (environment *Environment) Import(
 	headerMap := map[string]string{}
 	var err error
 	if o != nil {
-		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return err
 		}
 	}
-	_, err = executeRequest[models.EnvironmentIn, any](
+	_, err = internal.ExecuteRequest[models.EnvironmentIn, any](
 		ctx,
 		environment.client,
 		"POST",

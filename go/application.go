@@ -4,14 +4,15 @@ package svix
 import (
 	"context"
 
+	"github.com/svix/svix-webhooks/go/internal"
 	"github.com/svix/svix-webhooks/go/models"
 )
 
 type Application struct {
-	client *SvixHttpClient
+	client *internal.SvixHttpClient
 }
 
-func newApplication(client *SvixHttpClient) *Application {
+func newApplication(client *internal.SvixHttpClient) *Application {
 	return &Application{
 		client: client,
 	}
@@ -39,14 +40,14 @@ func (application *Application) List(
 	queryMap := map[string]string{}
 	var err error
 	if o != nil {
-		serializeParamToMap("limit", o.Limit, queryMap, &err)
-		serializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		serializeParamToMap("order", o.Order, queryMap, &err)
+		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
+		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+		internal.SerializeParamToMap("order", o.Order, queryMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	return executeRequest[any, models.ListResponseApplicationOut](
+	return internal.ExecuteRequest[any, models.ListResponseApplicationOut](
 		ctx,
 		application.client,
 		"GET",
@@ -70,12 +71,12 @@ func (application *Application) Create(
 	headerMap := map[string]string{}
 	var err error
 	if o != nil {
-		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	return executeRequest[models.ApplicationIn, models.ApplicationOut](
+	return internal.ExecuteRequest[models.ApplicationIn, models.ApplicationOut](
 		ctx,
 		application.client,
 		"POST",
@@ -100,13 +101,13 @@ func (application *Application) GetOrCreate(
 
 	var err error
 	if o != nil {
-		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	return executeRequest[models.ApplicationIn, models.ApplicationOut](
+	return internal.ExecuteRequest[models.ApplicationIn, models.ApplicationOut](
 		ctx,
 		application.client,
 		"POST",
@@ -126,7 +127,7 @@ func (application *Application) Get(
 	pathMap := map[string]string{
 		"app_id": appId,
 	}
-	return executeRequest[any, models.ApplicationOut](
+	return internal.ExecuteRequest[any, models.ApplicationOut](
 		ctx,
 		application.client,
 		"GET",
@@ -147,7 +148,7 @@ func (application *Application) Update(
 	pathMap := map[string]string{
 		"app_id": appId,
 	}
-	return executeRequest[models.ApplicationIn, models.ApplicationOut](
+	return internal.ExecuteRequest[models.ApplicationIn, models.ApplicationOut](
 		ctx,
 		application.client,
 		"PUT",
@@ -167,7 +168,7 @@ func (application *Application) Delete(
 	pathMap := map[string]string{
 		"app_id": appId,
 	}
-	_, err := executeRequest[any, any](
+	_, err := internal.ExecuteRequest[any, any](
 		ctx,
 		application.client,
 		"DELETE",
@@ -189,7 +190,7 @@ func (application *Application) Patch(
 	pathMap := map[string]string{
 		"app_id": appId,
 	}
-	return executeRequest[models.ApplicationPatch, models.ApplicationOut](
+	return internal.ExecuteRequest[models.ApplicationPatch, models.ApplicationOut](
 		ctx,
 		application.client,
 		"PATCH",

@@ -4,14 +4,15 @@ package svix
 import (
 	"context"
 
+	"github.com/svix/svix-webhooks/go/internal"
 	"github.com/svix/svix-webhooks/go/models"
 )
 
 type Authentication struct {
-	client *SvixHttpClient
+	client *internal.SvixHttpClient
 }
 
-func newAuthentication(client *SvixHttpClient) *Authentication {
+func newAuthentication(client *internal.SvixHttpClient) *Authentication {
 	return &Authentication{
 		client: client,
 	}
@@ -42,12 +43,12 @@ func (authentication *Authentication) AppPortalAccess(
 	headerMap := map[string]string{}
 	var err error
 	if o != nil {
-		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	return executeRequest[models.AppPortalAccessIn, models.AppPortalAccessOut](
+	return internal.ExecuteRequest[models.AppPortalAccessIn, models.AppPortalAccessOut](
 		ctx,
 		authentication.client,
 		"POST",
@@ -72,12 +73,12 @@ func (authentication *Authentication) ExpireAll(
 	headerMap := map[string]string{}
 	var err error
 	if o != nil {
-		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return err
 		}
 	}
-	_, err = executeRequest[models.ApplicationTokenExpireIn, any](
+	_, err = internal.ExecuteRequest[models.ApplicationTokenExpireIn, any](
 		ctx,
 		authentication.client,
 		"POST",
@@ -102,12 +103,12 @@ func (authentication *Authentication) DashboardAccess(
 	headerMap := map[string]string{}
 	var err error
 	if o != nil {
-		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	return executeRequest[any, models.DashboardAccessOut](
+	return internal.ExecuteRequest[any, models.DashboardAccessOut](
 		ctx,
 		authentication.client,
 		"POST",
@@ -129,12 +130,12 @@ func (authentication *Authentication) Logout(
 	headerMap := map[string]string{}
 	var err error
 	if o != nil {
-		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return err
 		}
 	}
-	_, err = executeRequest[any, any](
+	_, err = internal.ExecuteRequest[any, any](
 		ctx,
 		authentication.client,
 		"POST",

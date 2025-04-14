@@ -5,15 +5,16 @@ import (
 	"context"
 	"time"
 
+	"github.com/svix/svix-webhooks/go/internal"
 	"github.com/svix/svix-webhooks/go/models"
 )
 
 type Message struct {
-	client *SvixHttpClient
+	client *internal.SvixHttpClient
 	Poller *MessagePoller
 }
 
-func newMessage(client *SvixHttpClient) *Message {
+func newMessage(client *internal.SvixHttpClient) *Message {
 	return &Message{
 		client: client,
 		Poller: newMessagePoller(client),
@@ -74,19 +75,19 @@ func (message *Message) List(
 	queryMap := map[string]string{}
 	var err error
 	if o != nil {
-		serializeParamToMap("limit", o.Limit, queryMap, &err)
-		serializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		serializeParamToMap("channel", o.Channel, queryMap, &err)
-		serializeParamToMap("before", o.Before, queryMap, &err)
-		serializeParamToMap("after", o.After, queryMap, &err)
-		serializeParamToMap("with_content", o.WithContent, queryMap, &err)
-		serializeParamToMap("tag", o.Tag, queryMap, &err)
-		serializeParamToMap("event_types", o.EventTypes, queryMap, &err)
+		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
+		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+		internal.SerializeParamToMap("channel", o.Channel, queryMap, &err)
+		internal.SerializeParamToMap("before", o.Before, queryMap, &err)
+		internal.SerializeParamToMap("after", o.After, queryMap, &err)
+		internal.SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
+		internal.SerializeParamToMap("tag", o.Tag, queryMap, &err)
+		internal.SerializeParamToMap("event_types", o.EventTypes, queryMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	return executeRequest[any, models.ListResponseMessageOut](
+	return internal.ExecuteRequest[any, models.ListResponseMessageOut](
 		ctx,
 		message.client,
 		"GET",
@@ -120,13 +121,13 @@ func (message *Message) Create(
 	headerMap := map[string]string{}
 	var err error
 	if o != nil {
-		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		serializeParamToMap("with_content", o.WithContent, queryMap, &err)
+		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		internal.SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	return executeRequest[models.MessageIn, models.MessageOut](
+	return internal.ExecuteRequest[models.MessageIn, models.MessageOut](
 		ctx,
 		message.client,
 		"POST",
@@ -152,12 +153,12 @@ func (message *Message) ExpungeAllContents(
 	headerMap := map[string]string{}
 	var err error
 	if o != nil {
-		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	return executeRequest[any, models.ExpungeAllContentsOut](
+	return internal.ExecuteRequest[any, models.ExpungeAllContentsOut](
 		ctx,
 		message.client,
 		"POST",
@@ -183,12 +184,12 @@ func (message *Message) Get(
 	queryMap := map[string]string{}
 	var err error
 	if o != nil {
-		serializeParamToMap("with_content", o.WithContent, queryMap, &err)
+		internal.SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	return executeRequest[any, models.MessageOut](
+	return internal.ExecuteRequest[any, models.MessageOut](
 		ctx,
 		message.client,
 		"GET",
@@ -213,7 +214,7 @@ func (message *Message) ExpungeContent(
 		"app_id": appId,
 		"msg_id": msgId,
 	}
-	_, err := executeRequest[any, any](
+	_, err := internal.ExecuteRequest[any, any](
 		ctx,
 		message.client,
 		"DELETE",

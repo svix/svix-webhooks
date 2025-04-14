@@ -5,14 +5,15 @@ import (
 	"context"
 	"time"
 
+	"github.com/svix/svix-webhooks/go/internal"
 	"github.com/svix/svix-webhooks/go/models"
 )
 
 type MessageAttempt struct {
-	client *SvixHttpClient
+	client *internal.SvixHttpClient
 }
 
-func newMessageAttempt(client *SvixHttpClient) *MessageAttempt {
+func newMessageAttempt(client *internal.SvixHttpClient) *MessageAttempt {
 	return &MessageAttempt{
 		client: client,
 	}
@@ -124,22 +125,22 @@ func (messageAttempt *MessageAttempt) ListByEndpoint(
 	queryMap := map[string]string{}
 	var err error
 	if o != nil {
-		serializeParamToMap("limit", o.Limit, queryMap, &err)
-		serializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		serializeParamToMap("status", o.Status, queryMap, &err)
-		serializeParamToMap("status_code_class", o.StatusCodeClass, queryMap, &err)
-		serializeParamToMap("channel", o.Channel, queryMap, &err)
-		serializeParamToMap("tag", o.Tag, queryMap, &err)
-		serializeParamToMap("before", o.Before, queryMap, &err)
-		serializeParamToMap("after", o.After, queryMap, &err)
-		serializeParamToMap("with_content", o.WithContent, queryMap, &err)
-		serializeParamToMap("with_msg", o.WithMsg, queryMap, &err)
-		serializeParamToMap("event_types", o.EventTypes, queryMap, &err)
+		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
+		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+		internal.SerializeParamToMap("status", o.Status, queryMap, &err)
+		internal.SerializeParamToMap("status_code_class", o.StatusCodeClass, queryMap, &err)
+		internal.SerializeParamToMap("channel", o.Channel, queryMap, &err)
+		internal.SerializeParamToMap("tag", o.Tag, queryMap, &err)
+		internal.SerializeParamToMap("before", o.Before, queryMap, &err)
+		internal.SerializeParamToMap("after", o.After, queryMap, &err)
+		internal.SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
+		internal.SerializeParamToMap("with_msg", o.WithMsg, queryMap, &err)
+		internal.SerializeParamToMap("event_types", o.EventTypes, queryMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	return executeRequest[any, models.ListResponseMessageAttemptOut](
+	return internal.ExecuteRequest[any, models.ListResponseMessageAttemptOut](
 		ctx,
 		messageAttempt.client,
 		"GET",
@@ -170,22 +171,22 @@ func (messageAttempt *MessageAttempt) ListByMsg(
 	queryMap := map[string]string{}
 	var err error
 	if o != nil {
-		serializeParamToMap("limit", o.Limit, queryMap, &err)
-		serializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		serializeParamToMap("status", o.Status, queryMap, &err)
-		serializeParamToMap("status_code_class", o.StatusCodeClass, queryMap, &err)
-		serializeParamToMap("channel", o.Channel, queryMap, &err)
-		serializeParamToMap("tag", o.Tag, queryMap, &err)
-		serializeParamToMap("endpoint_id", o.EndpointId, queryMap, &err)
-		serializeParamToMap("before", o.Before, queryMap, &err)
-		serializeParamToMap("after", o.After, queryMap, &err)
-		serializeParamToMap("with_content", o.WithContent, queryMap, &err)
-		serializeParamToMap("event_types", o.EventTypes, queryMap, &err)
+		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
+		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+		internal.SerializeParamToMap("status", o.Status, queryMap, &err)
+		internal.SerializeParamToMap("status_code_class", o.StatusCodeClass, queryMap, &err)
+		internal.SerializeParamToMap("channel", o.Channel, queryMap, &err)
+		internal.SerializeParamToMap("tag", o.Tag, queryMap, &err)
+		internal.SerializeParamToMap("endpoint_id", o.EndpointId, queryMap, &err)
+		internal.SerializeParamToMap("before", o.Before, queryMap, &err)
+		internal.SerializeParamToMap("after", o.After, queryMap, &err)
+		internal.SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
+		internal.SerializeParamToMap("event_types", o.EventTypes, queryMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	return executeRequest[any, models.ListResponseMessageAttemptOut](
+	return internal.ExecuteRequest[any, models.ListResponseMessageAttemptOut](
 		ctx,
 		messageAttempt.client,
 		"GET",
@@ -218,20 +219,20 @@ func (messageAttempt *MessageAttempt) ListAttemptedMessages(
 	queryMap := map[string]string{}
 	var err error
 	if o != nil {
-		serializeParamToMap("limit", o.Limit, queryMap, &err)
-		serializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		serializeParamToMap("channel", o.Channel, queryMap, &err)
-		serializeParamToMap("tag", o.Tag, queryMap, &err)
-		serializeParamToMap("status", o.Status, queryMap, &err)
-		serializeParamToMap("before", o.Before, queryMap, &err)
-		serializeParamToMap("after", o.After, queryMap, &err)
-		serializeParamToMap("with_content", o.WithContent, queryMap, &err)
-		serializeParamToMap("event_types", o.EventTypes, queryMap, &err)
+		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
+		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+		internal.SerializeParamToMap("channel", o.Channel, queryMap, &err)
+		internal.SerializeParamToMap("tag", o.Tag, queryMap, &err)
+		internal.SerializeParamToMap("status", o.Status, queryMap, &err)
+		internal.SerializeParamToMap("before", o.Before, queryMap, &err)
+		internal.SerializeParamToMap("after", o.After, queryMap, &err)
+		internal.SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
+		internal.SerializeParamToMap("event_types", o.EventTypes, queryMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	return executeRequest[any, models.ListResponseEndpointMessageOut](
+	return internal.ExecuteRequest[any, models.ListResponseEndpointMessageOut](
 		ctx,
 		messageAttempt.client,
 		"GET",
@@ -255,7 +256,7 @@ func (messageAttempt *MessageAttempt) Get(
 		"msg_id":     msgId,
 		"attempt_id": attemptId,
 	}
-	return executeRequest[any, models.MessageAttemptOut](
+	return internal.ExecuteRequest[any, models.MessageAttemptOut](
 		ctx,
 		messageAttempt.client,
 		"GET",
@@ -282,7 +283,7 @@ func (messageAttempt *MessageAttempt) ExpungeContent(
 		"msg_id":     msgId,
 		"attempt_id": attemptId,
 	}
-	_, err := executeRequest[any, any](
+	_, err := internal.ExecuteRequest[any, any](
 		ctx,
 		messageAttempt.client,
 		"DELETE",
@@ -312,13 +313,13 @@ func (messageAttempt *MessageAttempt) ListAttemptedDestinations(
 	queryMap := map[string]string{}
 	var err error
 	if o != nil {
-		serializeParamToMap("limit", o.Limit, queryMap, &err)
-		serializeParamToMap("iterator", o.Iterator, queryMap, &err)
+		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
+		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	return executeRequest[any, models.ListResponseMessageEndpointOut](
+	return internal.ExecuteRequest[any, models.ListResponseMessageEndpointOut](
 		ctx,
 		messageAttempt.client,
 		"GET",
@@ -346,12 +347,12 @@ func (messageAttempt *MessageAttempt) Resend(
 	headerMap := map[string]string{}
 	var err error
 	if o != nil {
-		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return err
 		}
 	}
-	_, err = executeRequest[any, any](
+	_, err = internal.ExecuteRequest[any, any](
 		ctx,
 		messageAttempt.client,
 		"POST",

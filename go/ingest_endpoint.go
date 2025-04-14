@@ -4,14 +4,15 @@ package svix
 import (
 	"context"
 
+	"github.com/svix/svix-webhooks/go/internal"
 	"github.com/svix/svix-webhooks/go/models"
 )
 
 type IngestEndpoint struct {
-	client *SvixHttpClient
+	client *internal.SvixHttpClient
 }
 
-func newIngestEndpoint(client *SvixHttpClient) *IngestEndpoint {
+func newIngestEndpoint(client *internal.SvixHttpClient) *IngestEndpoint {
 	return &IngestEndpoint{
 		client: client,
 	}
@@ -43,14 +44,14 @@ func (ingestEndpoint *IngestEndpoint) List(
 	queryMap := map[string]string{}
 	var err error
 	if o != nil {
-		serializeParamToMap("limit", o.Limit, queryMap, &err)
-		serializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		serializeParamToMap("order", o.Order, queryMap, &err)
+		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
+		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+		internal.SerializeParamToMap("order", o.Order, queryMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	return executeRequest[any, models.ListResponseIngestEndpointOut](
+	return internal.ExecuteRequest[any, models.ListResponseIngestEndpointOut](
 		ctx,
 		ingestEndpoint.client,
 		"GET",
@@ -71,12 +72,12 @@ func (ingestEndpoint *IngestEndpoint) Create(
 	headerMap := map[string]string{}
 	var err error
 	if o != nil {
-		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	return executeRequest[models.IngestEndpointIn, models.IngestEndpointOut](
+	return internal.ExecuteRequest[models.IngestEndpointIn, models.IngestEndpointOut](
 		ctx,
 		ingestEndpoint.client,
 		"POST",
@@ -96,7 +97,7 @@ func (ingestEndpoint *IngestEndpoint) Get(
 	pathMap := map[string]string{
 		"endpoint_id": endpointId,
 	}
-	return executeRequest[any, models.IngestEndpointOut](
+	return internal.ExecuteRequest[any, models.IngestEndpointOut](
 		ctx,
 		ingestEndpoint.client,
 		"GET",
@@ -117,7 +118,7 @@ func (ingestEndpoint *IngestEndpoint) Update(
 	pathMap := map[string]string{
 		"endpoint_id": endpointId,
 	}
-	return executeRequest[models.IngestEndpointUpdate, models.IngestEndpointOut](
+	return internal.ExecuteRequest[models.IngestEndpointUpdate, models.IngestEndpointOut](
 		ctx,
 		ingestEndpoint.client,
 		"PUT",
@@ -137,7 +138,7 @@ func (ingestEndpoint *IngestEndpoint) Delete(
 	pathMap := map[string]string{
 		"endpoint_id": endpointId,
 	}
-	_, err := executeRequest[any, any](
+	_, err := internal.ExecuteRequest[any, any](
 		ctx,
 		ingestEndpoint.client,
 		"DELETE",
@@ -158,7 +159,7 @@ func (ingestEndpoint *IngestEndpoint) GetHeaders(
 	pathMap := map[string]string{
 		"endpoint_id": endpointId,
 	}
-	return executeRequest[any, models.IngestEndpointHeadersOut](
+	return internal.ExecuteRequest[any, models.IngestEndpointHeadersOut](
 		ctx,
 		ingestEndpoint.client,
 		"GET",
@@ -179,7 +180,7 @@ func (ingestEndpoint *IngestEndpoint) UpdateHeaders(
 	pathMap := map[string]string{
 		"endpoint_id": endpointId,
 	}
-	_, err := executeRequest[models.IngestEndpointHeadersIn, any](
+	_, err := internal.ExecuteRequest[models.IngestEndpointHeadersIn, any](
 		ctx,
 		ingestEndpoint.client,
 		"PUT",
@@ -203,7 +204,7 @@ func (ingestEndpoint *IngestEndpoint) GetSecret(
 	pathMap := map[string]string{
 		"endpoint_id": endpointId,
 	}
-	return executeRequest[any, models.IngestEndpointSecretOut](
+	return internal.ExecuteRequest[any, models.IngestEndpointSecretOut](
 		ctx,
 		ingestEndpoint.client,
 		"GET",
@@ -230,12 +231,12 @@ func (ingestEndpoint *IngestEndpoint) RotateSecret(
 	headerMap := map[string]string{}
 	var err error
 	if o != nil {
-		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return err
 		}
 	}
-	_, err = executeRequest[models.IngestEndpointSecretIn, any](
+	_, err = internal.ExecuteRequest[models.IngestEndpointSecretIn, any](
 		ctx,
 		ingestEndpoint.client,
 		"POST",

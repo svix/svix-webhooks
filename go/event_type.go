@@ -4,14 +4,15 @@ package svix
 import (
 	"context"
 
+	"github.com/svix/svix-webhooks/go/internal"
 	"github.com/svix/svix-webhooks/go/models"
 )
 
 type EventType struct {
-	client *SvixHttpClient
+	client *internal.SvixHttpClient
 }
 
-func newEventType(client *SvixHttpClient) *EventType {
+func newEventType(client *internal.SvixHttpClient) *EventType {
 	return &EventType{
 		client: client,
 	}
@@ -52,16 +53,16 @@ func (eventType *EventType) List(
 	queryMap := map[string]string{}
 	var err error
 	if o != nil {
-		serializeParamToMap("limit", o.Limit, queryMap, &err)
-		serializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		serializeParamToMap("order", o.Order, queryMap, &err)
-		serializeParamToMap("include_archived", o.IncludeArchived, queryMap, &err)
-		serializeParamToMap("with_content", o.WithContent, queryMap, &err)
+		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
+		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+		internal.SerializeParamToMap("order", o.Order, queryMap, &err)
+		internal.SerializeParamToMap("include_archived", o.IncludeArchived, queryMap, &err)
+		internal.SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	return executeRequest[any, models.ListResponseEventTypeOut](
+	return internal.ExecuteRequest[any, models.ListResponseEventTypeOut](
 		ctx,
 		eventType.client,
 		"GET",
@@ -86,12 +87,12 @@ func (eventType *EventType) Create(
 	headerMap := map[string]string{}
 	var err error
 	if o != nil {
-		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	return executeRequest[models.EventTypeIn, models.EventTypeOut](
+	return internal.ExecuteRequest[models.EventTypeIn, models.EventTypeOut](
 		ctx,
 		eventType.client,
 		"POST",
@@ -116,12 +117,12 @@ func (eventType *EventType) ImportOpenapi(
 	headerMap := map[string]string{}
 	var err error
 	if o != nil {
-		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	return executeRequest[models.EventTypeImportOpenApiIn, models.EventTypeImportOpenApiOut](
+	return internal.ExecuteRequest[models.EventTypeImportOpenApiIn, models.EventTypeImportOpenApiOut](
 		ctx,
 		eventType.client,
 		"POST",
@@ -141,7 +142,7 @@ func (eventType *EventType) Get(
 	pathMap := map[string]string{
 		"event_type_name": eventTypeName,
 	}
-	return executeRequest[any, models.EventTypeOut](
+	return internal.ExecuteRequest[any, models.EventTypeOut](
 		ctx,
 		eventType.client,
 		"GET",
@@ -162,7 +163,7 @@ func (eventType *EventType) Update(
 	pathMap := map[string]string{
 		"event_type_name": eventTypeName,
 	}
-	return executeRequest[models.EventTypeUpdate, models.EventTypeOut](
+	return internal.ExecuteRequest[models.EventTypeUpdate, models.EventTypeOut](
 		ctx,
 		eventType.client,
 		"PUT",
@@ -191,12 +192,12 @@ func (eventType *EventType) Delete(
 	queryMap := map[string]string{}
 	var err error
 	if o != nil {
-		serializeParamToMap("expunge", o.Expunge, queryMap, &err)
+		internal.SerializeParamToMap("expunge", o.Expunge, queryMap, &err)
 		if err != nil {
 			return err
 		}
 	}
-	_, err = executeRequest[any, any](
+	_, err = internal.ExecuteRequest[any, any](
 		ctx,
 		eventType.client,
 		"DELETE",
@@ -218,7 +219,7 @@ func (eventType *EventType) Patch(
 	pathMap := map[string]string{
 		"event_type_name": eventTypeName,
 	}
-	return executeRequest[models.EventTypePatch, models.EventTypeOut](
+	return internal.ExecuteRequest[models.EventTypePatch, models.EventTypeOut](
 		ctx,
 		eventType.client,
 		"PATCH",

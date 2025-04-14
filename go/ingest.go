@@ -4,16 +4,17 @@ package svix
 import (
 	"context"
 
+	"github.com/svix/svix-webhooks/go/internal"
 	"github.com/svix/svix-webhooks/go/models"
 )
 
 type Ingest struct {
-	client   *SvixHttpClient
+	client   *internal.SvixHttpClient
 	Endpoint *IngestEndpoint
 	Source   *IngestSource
 }
 
-func newIngest(client *SvixHttpClient) *Ingest {
+func newIngest(client *internal.SvixHttpClient) *Ingest {
 	return &Ingest{
 		client:   client,
 		Endpoint: newIngestEndpoint(client),
@@ -38,12 +39,12 @@ func (ingest *Ingest) Dashboard(
 	headerMap := map[string]string{}
 	var err error
 	if o != nil {
-		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	return executeRequest[models.IngestSourceConsumerPortalAccessIn, models.DashboardAccessOut](
+	return internal.ExecuteRequest[models.IngestSourceConsumerPortalAccessIn, models.DashboardAccessOut](
 		ctx,
 		ingest.client,
 		"POST",

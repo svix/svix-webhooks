@@ -5,14 +5,15 @@ import (
 	"context"
 	"time"
 
+	"github.com/svix/svix-webhooks/go/internal"
 	"github.com/svix/svix-webhooks/go/models"
 )
 
 type MessagePoller struct {
-	client *SvixHttpClient
+	client *internal.SvixHttpClient
 }
 
-func newMessagePoller(client *SvixHttpClient) *MessagePoller {
+func newMessagePoller(client *internal.SvixHttpClient) *MessagePoller {
 	return &MessagePoller{
 		client: client,
 	}
@@ -59,16 +60,16 @@ func (messagePoller *MessagePoller) Poll(
 	queryMap := map[string]string{}
 	var err error
 	if o != nil {
-		serializeParamToMap("limit", o.Limit, queryMap, &err)
-		serializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		serializeParamToMap("event_type", o.EventType, queryMap, &err)
-		serializeParamToMap("channel", o.Channel, queryMap, &err)
-		serializeParamToMap("after", o.After, queryMap, &err)
+		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
+		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+		internal.SerializeParamToMap("event_type", o.EventType, queryMap, &err)
+		internal.SerializeParamToMap("channel", o.Channel, queryMap, &err)
+		internal.SerializeParamToMap("after", o.After, queryMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	return executeRequest[any, models.PollingEndpointOut](
+	return internal.ExecuteRequest[any, models.PollingEndpointOut](
 		ctx,
 		messagePoller.client,
 		"GET",
@@ -97,15 +98,15 @@ func (messagePoller *MessagePoller) ConsumerPoll(
 	queryMap := map[string]string{}
 	var err error
 	if o != nil {
-		serializeParamToMap("limit", o.Limit, queryMap, &err)
-		serializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		serializeParamToMap("event_type", o.EventType, queryMap, &err)
-		serializeParamToMap("channel", o.Channel, queryMap, &err)
+		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
+		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+		internal.SerializeParamToMap("event_type", o.EventType, queryMap, &err)
+		internal.SerializeParamToMap("channel", o.Channel, queryMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	return executeRequest[any, models.PollingEndpointOut](
+	return internal.ExecuteRequest[any, models.PollingEndpointOut](
 		ctx,
 		messagePoller.client,
 		"GET",
@@ -134,12 +135,12 @@ func (messagePoller *MessagePoller) ConsumerSeek(
 	headerMap := map[string]string{}
 	var err error
 	if o != nil {
-		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	return executeRequest[models.PollingEndpointConsumerSeekIn, models.PollingEndpointConsumerSeekOut](
+	return internal.ExecuteRequest[models.PollingEndpointConsumerSeekIn, models.PollingEndpointConsumerSeekOut](
 		ctx,
 		messagePoller.client,
 		"POST",

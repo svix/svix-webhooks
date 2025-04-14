@@ -11,13 +11,13 @@ func (application *Application) GetOrCreate(
 
 	var err error
 	if o != nil {
-		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	return executeRequest[models.ApplicationIn, models.ApplicationOut](
+	return internal.ExecuteRequest[models.ApplicationIn, models.ApplicationOut](
 		ctx,
 		application.client,
 		"POST",

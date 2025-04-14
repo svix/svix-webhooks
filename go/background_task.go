@@ -4,14 +4,15 @@ package svix
 import (
 	"context"
 
+	"github.com/svix/svix-webhooks/go/internal"
 	"github.com/svix/svix-webhooks/go/models"
 )
 
 type BackgroundTask struct {
-	client *SvixHttpClient
+	client *internal.SvixHttpClient
 }
 
-func newBackgroundTask(client *SvixHttpClient) *BackgroundTask {
+func newBackgroundTask(client *internal.SvixHttpClient) *BackgroundTask {
 	return &BackgroundTask{
 		client: client,
 	}
@@ -41,16 +42,16 @@ func (backgroundTask *BackgroundTask) List(
 	queryMap := map[string]string{}
 	var err error
 	if o != nil {
-		serializeParamToMap("status", o.Status, queryMap, &err)
-		serializeParamToMap("task", o.Task, queryMap, &err)
-		serializeParamToMap("limit", o.Limit, queryMap, &err)
-		serializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		serializeParamToMap("order", o.Order, queryMap, &err)
+		internal.SerializeParamToMap("status", o.Status, queryMap, &err)
+		internal.SerializeParamToMap("task", o.Task, queryMap, &err)
+		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
+		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+		internal.SerializeParamToMap("order", o.Order, queryMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	return executeRequest[any, models.ListResponseBackgroundTaskOut](
+	return internal.ExecuteRequest[any, models.ListResponseBackgroundTaskOut](
 		ctx,
 		backgroundTask.client,
 		"GET",
@@ -70,7 +71,7 @@ func (backgroundTask *BackgroundTask) Get(
 	pathMap := map[string]string{
 		"task_id": taskId,
 	}
-	return executeRequest[any, models.BackgroundTaskOut](
+	return internal.ExecuteRequest[any, models.BackgroundTaskOut](
 		ctx,
 		backgroundTask.client,
 		"GET",

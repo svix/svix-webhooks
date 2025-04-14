@@ -1,4 +1,4 @@
-package svix
+package internal
 
 import (
 	"bytes"
@@ -25,7 +25,7 @@ type SvixHttpClient struct {
 	Debug          bool
 }
 
-func defaultSvixHttpClient(defaultBaseUrl string) SvixHttpClient {
+func DefaultSvixHttpClient(defaultBaseUrl string) SvixHttpClient {
 	return SvixHttpClient{
 		DefaultHeaders: map[string]string{},
 		HTTPClient:     &http.Client{Timeout: 60 * time.Second},
@@ -35,7 +35,7 @@ func defaultSvixHttpClient(defaultBaseUrl string) SvixHttpClient {
 	}
 }
 
-func executeRequest[ReqBody any, ResBody any](
+func ExecuteRequest[ReqBody any, ResBody any](
 	ctx context.Context,
 	client *SvixHttpClient,
 	method string,
@@ -156,7 +156,7 @@ func addQueryParams(baseURL string, params map[string]string) (string, error) {
 	return parsedURL.String(), nil
 }
 
-func serializeParamToMap(key string, val interface{}, d map[string]string, err *error) {
+func SerializeParamToMap(key string, val interface{}, d map[string]string, err *error) {
 	// I pass the error in here so I don't have to "if err != nil" for every query param
 	if *err != nil {
 		return
