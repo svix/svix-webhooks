@@ -14,7 +14,7 @@ export interface ConnectorOut {
   kind: ConnectorKind;
   logo: string;
   name: string;
-  /** The Organization's ID. */
+  /** The Environment's ID. */
   orgId: string;
   transformation: string;
   updatedAt: Date;

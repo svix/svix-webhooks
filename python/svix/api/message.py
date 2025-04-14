@@ -10,6 +10,10 @@ from ..models import (
     MessageOut,
 )
 from .common import ApiBase, BaseOptions, serialize_params
+from .message_poller import (
+    MessagePoller,
+    MessagePollerAsync,
+)
 
 
 @dataclass
@@ -125,6 +129,10 @@ def message_in_raw(
 
 
 class MessageAsync(ApiBase):
+    @property
+    def poller(self) -> MessagePollerAsync:
+        return MessagePollerAsync(self._client)
+
     async def list(
         self, app_id: str, options: MessageListOptions = MessageListOptions()
     ) -> ListResponseMessageOut:
@@ -162,7 +170,7 @@ class MessageAsync(ApiBase):
         The `eventType` indicates the type and schema of the event. All messages of a certain `eventType` are expected to have the same schema. Endpoints can choose to only listen to specific event types.
         Messages can also have `channels`, which similar to event types let endpoints filter by them. Unlike event types, messages can have multiple channels, and channels don't imply a specific message content or schema.
 
-        The `payload` property is the webhook's body (the actual webhook message). Svix supports payload sizes of up to ~350kb, though it's generally a good idea to keep webhook payloads small, probably no larger than 40kb."""
+        The `payload` property is the webhook's body (the actual webhook message). Svix supports payload sizes of up to 1MiB, though it's generally a good idea to keep webhook payloads small, probably no larger than 40kb."""
         response = await self._request_asyncio(
             method="post",
             path="/api/v1/app/{app_id}/msg",
@@ -226,6 +234,10 @@ class MessageAsync(ApiBase):
 
 
 class Message(ApiBase):
+    @property
+    def poller(self) -> MessagePoller:
+        return MessagePoller(self._client)
+
     def list(
         self, app_id: str, options: MessageListOptions = MessageListOptions()
     ) -> ListResponseMessageOut:
@@ -263,7 +275,7 @@ class Message(ApiBase):
         The `eventType` indicates the type and schema of the event. All messages of a certain `eventType` are expected to have the same schema. Endpoints can choose to only listen to specific event types.
         Messages can also have `channels`, which similar to event types let endpoints filter by them. Unlike event types, messages can have multiple channels, and channels don't imply a specific message content or schema.
 
-        The `payload` property is the webhook's body (the actual webhook message). Svix supports payload sizes of up to ~350kb, though it's generally a good idea to keep webhook payloads small, probably no larger than 40kb."""
+        The `payload` property is the webhook's body (the actual webhook message). Svix supports payload sizes of up to 1MiB, though it's generally a good idea to keep webhook payloads small, probably no larger than 40kb."""
         response = self._request_sync(
             method="post",
             path="/api/v1/app/{app_id}/msg",

@@ -242,7 +242,7 @@ public class ConnectorOut {
     }
 
     /**
-     * The Organization's ID.
+     * The Environment's ID.
      *
      * @return orgId
      */

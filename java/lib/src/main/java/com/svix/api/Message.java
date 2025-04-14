@@ -13,6 +13,7 @@ import com.svix.models.MessageIn;
 import com.svix.models.MessageOut;
 
 import lombok.*;
+import lombok.Getter;
 
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
@@ -26,8 +27,11 @@ import java.util.Set;
 public class Message {
     private final SvixHttpClient client;
 
+    @Getter private final MessagePoller poller;
+
     public Message(SvixHttpClient client) {
         this.client = client;
+        this.poller = new MessagePoller(client);
     }
 
     /**
@@ -104,7 +108,7 @@ public class Message {
      * channels don't imply a specific message content or schema.
      *
      * <p>The `payload` property is the webhook's body (the actual webhook message). Svix supports
-     * payload sizes of up to ~350kb, though it's generally a good idea to keep webhook payloads
+     * payload sizes of up to 1MiB, though it's generally a good idea to keep webhook payloads
      * small, probably no larger than 40kb.
      */
     public MessageOut create(final String appId, final MessageIn messageIn)
@@ -126,7 +130,7 @@ public class Message {
      * channels don't imply a specific message content or schema.
      *
      * <p>The `payload` property is the webhook's body (the actual webhook message). Svix supports
-     * payload sizes of up to ~350kb, though it's generally a good idea to keep webhook payloads
+     * payload sizes of up to 1MiB, though it's generally a good idea to keep webhook payloads
      * small, probably no larger than 40kb.
      */
     public MessageOut create(

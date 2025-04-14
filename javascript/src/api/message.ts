@@ -10,6 +10,7 @@ import {
 import { MessageIn, MessageInSerializer } from "../models/messageIn";
 import { MessageOut, MessageOutSerializer } from "../models/messageOut";
 import { HttpMethod, SvixRequest, SvixRequestContext } from "../request";
+import { MessagePoller } from "./messagePoller";
 
 export interface MessageListOptions {
   /** Limit the number of returned items */
@@ -47,6 +48,10 @@ export interface MessageGetOptions {
 
 export class Message {
   public constructor(private readonly requestCtx: SvixRequestContext) {}
+
+  public get poller() {
+    return new MessagePoller(this.requestCtx);
+  }
 
   /**
    * List all of the application's messages.
@@ -90,7 +95,7 @@ export class Message {
    * The `eventType` indicates the type and schema of the event. All messages of a certain `eventType` are expected to have the same schema. Endpoints can choose to only listen to specific event types.
    * Messages can also have `channels`, which similar to event types let endpoints filter by them. Unlike event types, messages can have multiple channels, and channels don't imply a specific message content or schema.
    *
-   * The `payload` property is the webhook's body (the actual webhook message). Svix supports payload sizes of up to ~350kb, though it's generally a good idea to keep webhook payloads small, probably no larger than 40kb.
+   * The `payload` property is the webhook's body (the actual webhook message). Svix supports payload sizes of up to 1MiB, though it's generally a good idea to keep webhook payloads small, probably no larger than 40kb.
    */
   public create(
     appId: string,

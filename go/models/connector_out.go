@@ -14,7 +14,7 @@ type ConnectorOut struct {
 	Kind             ConnectorKind `json:"kind"`
 	Logo             string        `json:"logo"`
 	Name             string        `json:"name"`
-	OrgId            string        `json:"orgId"` // The Organization's ID.
+	OrgId            string        `json:"orgId"` // The Environment's ID.
 	Transformation   string        `json:"transformation"`
 	UpdatedAt        time.Time     `json:"updatedAt"`
 }
