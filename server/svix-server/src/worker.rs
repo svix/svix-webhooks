@@ -352,18 +352,15 @@ async fn make_http_call(
         url: Set(endp.url.clone()),
         ended_at: Set(Some(Utc::now().into())),
         trigger_type: Set(msg_task.trigger_type),
-        response_duration_ms: Set(0),  // Default to 0, will be updated after the request
+        response_duration_ms: Set(0), // Default to 0, will be updated after the request
         ..Default::default()
     };
-
-    // Record the start time before making the HTTP request
-    let start_time = std::time::Instant::now();
 
     match client.execute(req).await {
         Ok(res) => {
             // Calculate the duration in milliseconds
-            let duration_ms = start_time.elapsed().as_millis() as i64;
-            
+            let duration_ms = (Utc::now() - created_at).num_milliseconds();
+
             let status_code = res.status().as_u16() as i16;
             let status = if res.status().is_success() {
                 MessageStatus::Success
@@ -407,8 +404,8 @@ async fn make_http_call(
         }
         Err(err) => {
             // For errors, we still calculate the duration
-            let duration_ms = start_time.elapsed().as_millis() as i64;
-            
+            let duration_ms = (Utc::now() - created_at).num_milliseconds();
+
             Ok(CompletedDispatch::Failed(FailedDispatch(
                 messageattempt::ActiveModel {
                     response_status_code: Set(0),
