@@ -116,6 +116,7 @@ output_dir = "java/lib/src/main/java/com/svix/models"
 template_dir = "openapi-templates/go"
 extra_shell_commands = [
    "rm go/health.go",
+   "sed -i 's/package svix/package internalapi/g' go/internalapi/management*"
 ]
 [[go.task]]
 template = "openapi-templates/go/api_resource.go.jinja"
@@ -126,6 +127,34 @@ output_dir = "go"
 [[go.task]]
 template = "openapi-templates/go/component_type.go.jinja"
 output_dir = "go/models"
+[[go.task]]
+template = "openapi-templates/go/api_resource.go.jinja"
+output_dir = "go/internalapi"
+extra_codegen_args = [
+   # This is a limited list of operations required by terraform
+   "--include-mode=only-specified",
+   "--include-op-id=v1.management.environment.list",
+   "--include-op-id=v1.management.environment.create",
+   "--include-op-id=v1.management.environment.get",
+   "--include-op-id=v1.management.environment.update",
+   "--include-op-id=v1.management.environment.delete",
+   "--include-op-id=v1.management.environment-settings.get",
+   "--include-op-id=v1.management.environment-settings.update"
+]
+[[go.task]]
+template = "openapi-templates/go/component_type.go.jinja"
+output_dir = "go/models"
+extra_codegen_args = [
+   # This is a limited list of operations required by terraform
+   "--include-mode=only-specified",
+   "--include-op-id=v1.management.environment.list",
+   "--include-op-id=v1.management.environment.create",
+   "--include-op-id=v1.management.environment.get",
+   "--include-op-id=v1.management.environment.update",
+   "--include-op-id=v1.management.environment.delete",
+   "--include-op-id=v1.management.environment-settings.get",
+   "--include-op-id=v1.management.environment-settings.update"
+]
 
 
 [kotlin]
