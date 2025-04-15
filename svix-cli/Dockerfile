@@ -1,5 +1,5 @@
 # Base build
-FROM rust:1.81-slim-bookworm AS build
+FROM rust:1.86-slim-bookworm AS build
 
 RUN apt-get update && apt-get install -y \
     build-essential=12.* \
