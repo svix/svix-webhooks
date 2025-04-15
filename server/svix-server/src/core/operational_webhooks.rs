@@ -116,9 +116,25 @@ pub struct OperationalWebhookSenderInner {
 
 impl OperationalWebhookSenderInner {
     pub fn new(keys: Arc<JwtSigningConfig>, url: Option<String>) -> Arc<Self> {
+        // Sanitize the URL if present
+        let sanitized_url = url.as_ref().map(|url_str| {
+            // Remove trailing slashes
+            let mut cleaned_url = url_str.trim().to_string();
+            while cleaned_url.ends_with('/') {
+                cleaned_url.pop();
+            }
+            
+            // Return the cleaned URL or original if empty
+            if !cleaned_url.is_empty() {
+                cleaned_url
+            } else {
+                url_str.clone()
+            }
+        });
+        
         Arc::new(Self {
             signing_config: keys,
-            url,
+            url: sanitized_url,
         })
     }
 
@@ -151,6 +167,7 @@ impl OperationalWebhookSenderInner {
             .to_string();
 
         let recipient_org_id = recipient_org_id.to_string();
+        let url_clone = url.clone();  // Clone for use in the async block
 
         tokio::spawn(async move {
             // This sends a webhook under the Svix management organization. This organization contains
@@ -171,20 +188,41 @@ impl OperationalWebhookSenderInner {
 
             match resp {
                 Ok(_) => {}
-                // Ignore 404s because not every org will have an associated application
+                // Handle 404s with more context
                 Err(svix::error::Error::Http(svix::error::HttpErrorContent {
                     status: StatusCode::NOT_FOUND,
                     ..
                 })) => {
-                    tracing::warn!(
-                        "Operational webhooks are enabled but no listener set for {}",
-                        recipient_org_id,
+                    // Try to determine if it's a connection issue or an app not found issue
+                    if let Some(app_resp) = svix_api.application().get(recipient_org_id.clone(), None).await.ok() {
+                        // App exists but endpoint not found
+                        tracing::warn!(
+                            "Operational webhooks are enabled, but no endpoint is configured for organization {} (app exists)",
+                            recipient_org_id,
+                        );
+                    } else {
+                        // App doesn't exist
+                        tracing::warn!(
+                            "Operational webhooks are enabled, but no application exists for organization {}",
+                            recipient_org_id,
+                        );
+                    }
+                }
+                // Add specific handling for connection errors
+                Err(svix::error::Error::Http(svix::error::HttpErrorContent {
+                    status: StatusCode::BAD_REQUEST,
+                    ..
+                })) => {
+                    tracing::error!(
+                        "Failed sending operational webhook: Bad request. Check URL format: {}",
+                        url_clone,
                     );
                 }
                 Err(e) => {
                     tracing::error!(
-                        "Failed sending operational webhook for {} {}",
+                        "Failed sending operational webhook for {} to URL {}: {}",
                         recipient_org_id,
+                        url_clone,
                         e.to_string()
                     );
                 }
