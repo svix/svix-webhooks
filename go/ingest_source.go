@@ -4,14 +4,15 @@ package svix
 import (
 	"context"
 
+	"github.com/svix/svix-webhooks/go/internal"
 	"github.com/svix/svix-webhooks/go/models"
 )
 
 type IngestSource struct {
-	client *SvixHttpClient
+	client *internal.SvixHttpClient
 }
 
-func newIngestSource(client *SvixHttpClient) *IngestSource {
+func newIngestSource(client *internal.SvixHttpClient) *IngestSource {
 	return &IngestSource{
 		client: client,
 	}
@@ -43,14 +44,14 @@ func (ingestSource *IngestSource) List(
 	queryMap := map[string]string{}
 	var err error
 	if o != nil {
-		serializeParamToMap("limit", o.Limit, queryMap, &err)
-		serializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		serializeParamToMap("order", o.Order, queryMap, &err)
+		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
+		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+		internal.SerializeParamToMap("order", o.Order, queryMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	return executeRequest[any, models.ListResponseIngestSourceOut](
+	return internal.ExecuteRequest[any, models.ListResponseIngestSourceOut](
 		ctx,
 		ingestSource.client,
 		"GET",
@@ -71,12 +72,12 @@ func (ingestSource *IngestSource) Create(
 	headerMap := map[string]string{}
 	var err error
 	if o != nil {
-		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	return executeRequest[models.IngestSourceIn, models.IngestSourceOut](
+	return internal.ExecuteRequest[models.IngestSourceIn, models.IngestSourceOut](
 		ctx,
 		ingestSource.client,
 		"POST",
@@ -96,7 +97,7 @@ func (ingestSource *IngestSource) Get(
 	pathMap := map[string]string{
 		"source_id": sourceId,
 	}
-	return executeRequest[any, models.IngestSourceOut](
+	return internal.ExecuteRequest[any, models.IngestSourceOut](
 		ctx,
 		ingestSource.client,
 		"GET",
@@ -117,7 +118,7 @@ func (ingestSource *IngestSource) Update(
 	pathMap := map[string]string{
 		"source_id": sourceId,
 	}
-	return executeRequest[models.IngestSourceIn, models.IngestSourceOut](
+	return internal.ExecuteRequest[models.IngestSourceIn, models.IngestSourceOut](
 		ctx,
 		ingestSource.client,
 		"PUT",
@@ -137,7 +138,7 @@ func (ingestSource *IngestSource) Delete(
 	pathMap := map[string]string{
 		"source_id": sourceId,
 	}
-	_, err := executeRequest[any, any](
+	_, err := internal.ExecuteRequest[any, any](
 		ctx,
 		ingestSource.client,
 		"DELETE",
@@ -167,12 +168,12 @@ func (ingestSource *IngestSource) RotateToken(
 	headerMap := map[string]string{}
 	var err error
 	if o != nil {
-		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	return executeRequest[any, models.RotateTokenOut](
+	return internal.ExecuteRequest[any, models.RotateTokenOut](
 		ctx,
 		ingestSource.client,
 		"POST",

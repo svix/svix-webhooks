@@ -4,14 +4,15 @@ package svix
 import (
 	"context"
 
+	"github.com/svix/svix-webhooks/go/internal"
 	"github.com/svix/svix-webhooks/go/models"
 )
 
 type Statistics struct {
-	client *SvixHttpClient
+	client *internal.SvixHttpClient
 }
 
-func newStatistics(client *SvixHttpClient) *Statistics {
+func newStatistics(client *internal.SvixHttpClient) *Statistics {
 	return &Statistics{
 		client: client,
 	}
@@ -33,12 +34,12 @@ func (statistics *Statistics) AggregateAppStats(
 	headerMap := map[string]string{}
 	var err error
 	if o != nil {
-		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	return executeRequest[models.AppUsageStatsIn, models.AppUsageStatsOut](
+	return internal.ExecuteRequest[models.AppUsageStatsIn, models.AppUsageStatsOut](
 		ctx,
 		statistics.client,
 		"POST",
@@ -57,7 +58,7 @@ func (statistics *Statistics) AggregateAppStats(
 func (statistics *Statistics) AggregateEventTypes(
 	ctx context.Context,
 ) (*models.AggregateEventTypesOut, error) {
-	return executeRequest[any, models.AggregateEventTypesOut](
+	return internal.ExecuteRequest[any, models.AggregateEventTypesOut](
 		ctx,
 		statistics.client,
 		"PUT",

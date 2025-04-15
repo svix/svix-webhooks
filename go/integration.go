@@ -4,14 +4,15 @@ package svix
 import (
 	"context"
 
+	"github.com/svix/svix-webhooks/go/internal"
 	"github.com/svix/svix-webhooks/go/models"
 )
 
 type Integration struct {
-	client *SvixHttpClient
+	client *internal.SvixHttpClient
 }
 
-func newIntegration(client *SvixHttpClient) *Integration {
+func newIntegration(client *internal.SvixHttpClient) *Integration {
 	return &Integration{
 		client: client,
 	}
@@ -47,14 +48,14 @@ func (integration *Integration) List(
 	queryMap := map[string]string{}
 	var err error
 	if o != nil {
-		serializeParamToMap("limit", o.Limit, queryMap, &err)
-		serializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		serializeParamToMap("order", o.Order, queryMap, &err)
+		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
+		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+		internal.SerializeParamToMap("order", o.Order, queryMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	return executeRequest[any, models.ListResponseIntegrationOut](
+	return internal.ExecuteRequest[any, models.ListResponseIntegrationOut](
 		ctx,
 		integration.client,
 		"GET",
@@ -79,12 +80,12 @@ func (integration *Integration) Create(
 	headerMap := map[string]string{}
 	var err error
 	if o != nil {
-		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	return executeRequest[models.IntegrationIn, models.IntegrationOut](
+	return internal.ExecuteRequest[models.IntegrationIn, models.IntegrationOut](
 		ctx,
 		integration.client,
 		"POST",
@@ -106,7 +107,7 @@ func (integration *Integration) Get(
 		"app_id":   appId,
 		"integ_id": integId,
 	}
-	return executeRequest[any, models.IntegrationOut](
+	return internal.ExecuteRequest[any, models.IntegrationOut](
 		ctx,
 		integration.client,
 		"GET",
@@ -129,7 +130,7 @@ func (integration *Integration) Update(
 		"app_id":   appId,
 		"integ_id": integId,
 	}
-	return executeRequest[models.IntegrationUpdate, models.IntegrationOut](
+	return internal.ExecuteRequest[models.IntegrationUpdate, models.IntegrationOut](
 		ctx,
 		integration.client,
 		"PUT",
@@ -151,7 +152,7 @@ func (integration *Integration) Delete(
 		"app_id":   appId,
 		"integ_id": integId,
 	}
-	_, err := executeRequest[any, any](
+	_, err := internal.ExecuteRequest[any, any](
 		ctx,
 		integration.client,
 		"DELETE",
@@ -176,7 +177,7 @@ func (integration *Integration) GetKey(
 		"app_id":   appId,
 		"integ_id": integId,
 	}
-	return executeRequest[any, models.IntegrationKeyOut](
+	return internal.ExecuteRequest[any, models.IntegrationKeyOut](
 		ctx,
 		integration.client,
 		"GET",
@@ -202,12 +203,12 @@ func (integration *Integration) RotateKey(
 	headerMap := map[string]string{}
 	var err error
 	if o != nil {
-		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	return executeRequest[any, models.IntegrationKeyOut](
+	return internal.ExecuteRequest[any, models.IntegrationKeyOut](
 		ctx,
 		integration.client,
 		"POST",

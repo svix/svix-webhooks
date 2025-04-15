@@ -4,14 +4,15 @@ package svix
 import (
 	"context"
 
+	"github.com/svix/svix-webhooks/go/internal"
 	"github.com/svix/svix-webhooks/go/models"
 )
 
 type ManagementAuthentication struct {
-	client *SvixHttpClient
+	client *internal.SvixHttpClient
 }
 
-func newManagementAuthentication(client *SvixHttpClient) *ManagementAuthentication {
+func newManagementAuthentication(client *internal.SvixHttpClient) *ManagementAuthentication {
 	return &ManagementAuthentication{
 		client: client,
 	}
@@ -43,14 +44,14 @@ func (managementAuthentication *ManagementAuthentication) ListApiTokens(
 	queryMap := map[string]string{}
 	var err error
 	if o != nil {
-		serializeParamToMap("limit", o.Limit, queryMap, &err)
-		serializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		serializeParamToMap("order", o.Order, queryMap, &err)
+		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
+		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+		internal.SerializeParamToMap("order", o.Order, queryMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	return executeRequest[any, models.ListResponseApiTokenCensoredOut](
+	return internal.ExecuteRequest[any, models.ListResponseApiTokenCensoredOut](
 		ctx,
 		managementAuthentication.client,
 		"GET",
@@ -71,12 +72,12 @@ func (managementAuthentication *ManagementAuthentication) CreateApiToken(
 	headerMap := map[string]string{}
 	var err error
 	if o != nil {
-		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	return executeRequest[models.ApiTokenIn, models.ApiTokenOut](
+	return internal.ExecuteRequest[models.ApiTokenIn, models.ApiTokenOut](
 		ctx,
 		managementAuthentication.client,
 		"POST",
@@ -101,12 +102,12 @@ func (managementAuthentication *ManagementAuthentication) ExpireApiToken(
 	headerMap := map[string]string{}
 	var err error
 	if o != nil {
-		serializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return err
 		}
 	}
-	_, err = executeRequest[models.ApiTokenExpireIn, any](
+	_, err = internal.ExecuteRequest[models.ApiTokenExpireIn, any](
 		ctx,
 		managementAuthentication.client,
 		"POST",

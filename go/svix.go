@@ -6,6 +6,8 @@ import (
 	"net/url"
 	"strings"
 	"time"
+
+	"github.com/svix/svix-webhooks/go/internal"
 )
 
 type (
@@ -33,7 +35,7 @@ type (
 )
 
 func New(token string, options *SvixOptions) (*Svix, error) {
-	svixHttpClient := defaultSvixHttpClient(getDefaultBaseUrl(token))
+	svixHttpClient := internal.DefaultSvixHttpClient(getDefaultBaseUrl(token))
 
 	if options != nil {
 		if options.ServerUrl != nil {
