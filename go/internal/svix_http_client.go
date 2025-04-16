@@ -52,13 +52,23 @@ func ExecuteRequest[ReqBody any, ResBody any](
 	if err != nil {
 		return nil, err
 	}
-	encodedBody, err := json.Marshal(jsonBody)
-	if err != nil {
-		return nil, err
-	}
-	req, err := http.NewRequestWithContext(ctx, method, urlStr, bytes.NewBuffer(encodedBody))
-	if err != nil {
-		return nil, err
+	var req *http.Request
+	if jsonBody != nil {
+		encodedBody, err := json.Marshal(jsonBody)
+		if err != nil {
+			return nil, err
+		}
+		req, err = http.NewRequestWithContext(ctx, method, urlStr, bytes.NewBuffer(encodedBody))
+		if err != nil {
+			return nil, err
+		}
+		req.Header.Set("content-type", "application/json")
+	} else {
+		req, err = http.NewRequestWithContext(ctx, method, urlStr, &bytes.Buffer{})
+		if err != nil {
+			return nil, err
+		}
+
 	}
 
 	req.Header.Set("svix-req-id", strconv.FormatUint(rand.Uint64(), 10))
