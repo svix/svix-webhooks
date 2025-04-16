@@ -10,7 +10,7 @@ const filesPaths = [
     "svix-cli/Cargo.toml",
     "svix-cli/README.md",
     // Rust Server
-    "server/svix-server/Cargo.toml",
+    "server/Cargo.toml",
     // Bridge Server
     "bridge/svix-bridge/Cargo.toml",
     // Rust Client
