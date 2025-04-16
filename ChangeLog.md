@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 1.64.1
+* Libs/JavaScript: Add `HTTPValidationError`, `HttpErrorOut`, `ValidationError` and `ApiException` to the top level exports.
+* Server: Add response duration tracking to webhook message attempts by @CodeMan62 in https://github.com/svix/svix-webhooks/pull/1877
+* Libs/Python: Specify minimum version of pydantic `pydantic >=2.10` in setup.py.
+
 ## Version 1.64.0 
 * CLI: Add interactive login with dashboard.svix.com
 
