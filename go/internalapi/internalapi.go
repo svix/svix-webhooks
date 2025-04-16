@@ -18,6 +18,7 @@ type (
 
 func New(token string, serverUrl *url.URL, debug bool) (*InternalSvix, error) {
 	svixHttpClient := internal.DefaultSvixHttpClient(serverUrl.String())
+	svixHttpClient.Debug = debug
 
 	svixHttpClient.DefaultHeaders["Authorization"] = fmt.Sprintf("Bearer %s", token)
 	svixHttpClient.DefaultHeaders["User-Agent"] = fmt.Sprintf("svix-libs/%s/go", svix.Version)
