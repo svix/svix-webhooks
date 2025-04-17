@@ -9,7 +9,7 @@ use axum::{
 use svix_bridge_types::{
     async_trait,
     svix::{
-        api::{EventsPublicConsumerOptions, Svix},
+        api::{MessagePollerConsumerPollOptions, Svix},
         error::Error,
     },
     ForwardRequest, PollerInput, ReceiverOutput, TransformationConfig, TransformerInput,
@@ -258,7 +258,7 @@ async fn run_inner(poller: &SvixEventsPoller) -> ! {
     const NO_SLEEP: Duration = Duration::ZERO;
     let mut sleep_time = NO_SLEEP;
 
-    let PollerInputOpts::SvixPollingEndpoint {
+    let PollerInputOpts::SvixMessagePoller {
         consumer_id,
         token: _,
         app_id,
@@ -269,19 +269,18 @@ async fn run_inner(poller: &SvixEventsPoller) -> ! {
     let mut iterator = None;
 
     'outer: loop {
-        tracing::trace!(app_id, sink_id, "polling endpoint");
+        tracing::trace!(app_id, sink_id, "polling poller");
         match poller
             .svix_client
-            .events_public()
-            .consumer(
+            .message()
+            .poller()
+            .consumer_poll(
                 app_id.clone(),
                 sink_id.clone(),
                 consumer_id.clone(),
-                Some(EventsPublicConsumerOptions {
+                Some(MessagePollerConsumerPollOptions {
                     limit: None,
                     iterator: iterator.clone(),
-                    event_type: None,
-                    channel: None,
                 }),
             )
             .await

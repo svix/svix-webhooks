@@ -242,7 +242,7 @@ impl WebhookReceiverConfig {
 #[derive(Clone, Deserialize)]
 #[serde(tag = "type", rename_all = "kebab-case")]
 pub enum PollerInputOpts {
-    SvixPollingEndpoint {
+    SvixMessagePoller {
         /// Identifies this client, allowing the server to track progress during iteration.
         /// Processes should not share a consumer id. Only exclusive access is permitted.
         consumer_id: String,
@@ -260,7 +260,7 @@ pub enum PollerInputOpts {
 impl PollerInputOpts {
     pub fn svix_client(&self) -> Option<Svix> {
         match self {
-            PollerInputOpts::SvixPollingEndpoint {
+            PollerInputOpts::SvixMessagePoller {
                 token,
                 svix_options,
                 ..

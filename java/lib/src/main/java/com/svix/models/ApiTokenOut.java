@@ -73,7 +73,7 @@ public class ApiTokenOut {
     }
 
     /**
-     * The ApplicationToken's ID.
+     * The GlobalApplicationToken's ID.
      *
      * @return id
      */

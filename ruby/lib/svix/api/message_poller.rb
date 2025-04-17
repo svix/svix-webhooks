@@ -32,9 +32,7 @@ module Svix
         "/api/v1/app/#{app_id}/poller/#{sink_id}/consumer/#{consumer_id}",
         query_params: {
           "limit" => options["limit"],
-          "iterator" => options["iterator"],
-          "event_type" => options["event_type"],
-          "channel" => options["channel"]
+          "iterator" => options["iterator"]
         }
       )
       PollingEndpointOut.deserialize(res)

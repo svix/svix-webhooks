@@ -49,28 +49,12 @@ pub struct MessagePollerConsumerPollOptions {
     /// The iterator returned from a prior invocation
     #[arg(long)]
     pub iterator: Option<String>,
-    /// Filters messages sent with this event type (optional).
-    #[arg(long)]
-    pub event_type: Option<String>,
-    /// Filters messages sent with this channel (optional).
-    #[arg(long)]
-    pub channel: Option<String>,
 }
 
 impl From<MessagePollerConsumerPollOptions> for svix::api::MessagePollerConsumerPollOptions {
     fn from(value: MessagePollerConsumerPollOptions) -> Self {
-        let MessagePollerConsumerPollOptions {
-            limit,
-            iterator,
-            event_type,
-            channel,
-        } = value;
-        Self {
-            limit,
-            iterator,
-            event_type,
-            channel,
-        }
+        let MessagePollerConsumerPollOptions { limit, iterator } = value;
+        Self { limit, iterator }
     }
 }
 

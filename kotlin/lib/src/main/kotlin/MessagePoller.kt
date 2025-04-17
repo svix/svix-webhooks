@@ -24,10 +24,6 @@ data class MessagePollerConsumerPollOptions(
     val limit: ULong? = null,
     /** The iterator returned from a prior invocation */
     val iterator: String? = null,
-    /** Filters messages sent with this event type (optional). */
-    val eventType: String? = null,
-    /** Filters messages sent with this channel (optional). */
-    val channel: String? = null,
 )
 
 data class MessagePollerConsumerSeekOptions(val idempotencyKey: String? = null)
@@ -67,8 +63,6 @@ class MessagePoller(private val client: SvixHttpClient) {
                 .encodedPath("/api/v1/app/$appId/poller/$sinkId/consumer/$consumerId")
         options.limit?.let { url.addQueryParameter("limit", serializeQueryParam(it)) }
         options.iterator?.let { url.addQueryParameter("iterator", it) }
-        options.eventType?.let { url.addQueryParameter("event_type", it) }
-        options.channel?.let { url.addQueryParameter("channel", it) }
         return client.executeRequest<Any, PollingEndpointOut>("GET", url.build())
     }
 

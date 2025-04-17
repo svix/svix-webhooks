@@ -24,12 +24,6 @@ pub struct MessagePollerConsumerPollOptions {
 
     /// The iterator returned from a prior invocation
     pub iterator: Option<String>,
-
-    /// Filters messages sent with this event type (optional).
-    pub event_type: Option<String>,
-
-    /// Filters messages sent with this channel (optional).
-    pub channel: Option<String>,
 }
 
 #[derive(Default)]
@@ -84,12 +78,7 @@ impl<'a> MessagePoller<'a> {
         consumer_id: String,
         options: Option<MessagePollerConsumerPollOptions>,
     ) -> Result<PollingEndpointOut> {
-        let MessagePollerConsumerPollOptions {
-            limit,
-            iterator,
-            event_type,
-            channel,
-        } = options.unwrap_or_default();
+        let MessagePollerConsumerPollOptions { limit, iterator } = options.unwrap_or_default();
 
         crate::request::Request::new(
             http1::Method::GET,
@@ -100,8 +89,6 @@ impl<'a> MessagePoller<'a> {
         .with_path_param("consumer_id", consumer_id)
         .with_optional_query_param("limit", limit)
         .with_optional_query_param("iterator", iterator)
-        .with_optional_query_param("event_type", event_type)
-        .with_optional_query_param("channel", channel)
         .execute(self.cfg)
         .await
     }

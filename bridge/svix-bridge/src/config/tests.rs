@@ -618,7 +618,7 @@ fn test_pollers_parse_ok() {
     receivers:
       - name: "poller-to-rabbitmq-example"
         input:
-          type: "svix-polling-endpoint"
+          type: "svix-message-poller"
           consumer_id: "my-consumer"
           app_id: "app_AbCd"
           sink_id: "poll_aBcD"

@@ -5,8 +5,6 @@ use colored_json::{ColorMode, Output};
 use concolor_clap::{Color, ColorChoice};
 use svix::api::SvixOptions;
 
-#[cfg(feature = "svix_beta")]
-use self::cmds::api::events_public::EventsPublicArgs;
 use self::{
     cmds::{
         api::{
@@ -68,9 +66,6 @@ enum RootCommands {
     Endpoint(EndpointArgs),
     /// Import or export environments
     Environment(EnvironmentArgs),
-    #[cfg(feature = "svix_beta")]
-    /// Iterate over messages for a Polling Endpoint
-    EventsPublic(EventsPublicArgs),
     /// List, create & modify event types
     EventType(EventTypeArgs),
     /// List, create & modify Svix Ingest sources and endpoints
@@ -119,11 +114,6 @@ async fn main() -> Result<()> {
         RootCommands::Authentication(args) => {
             let cfg = cfg?;
             let client = get_client(&cfg)?;
-            args.command.exec(&client, color_mode).await?;
-        }
-        #[cfg(feature = "svix_beta")]
-        RootCommands::EventsPublic(args) => {
-            let client = get_client(&cfg?)?;
             args.command.exec(&client, color_mode).await?;
         }
         RootCommands::EventType(args) => {

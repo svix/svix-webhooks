@@ -253,11 +253,11 @@
                         "type": "string"
                     },
                     "id": {
-                        "description": "The ApplicationToken's ID.",
-                        "example": "key_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                        "maxLength": 31,
-                        "minLength": 31,
-                        "pattern": "^key_[A-Za-z0-9]{27}$",
+                        "description": "The GlobalApplicationToken's ID.",
+                        "example": "global_key_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "maxLength": 38,
+                        "minLength": 38,
+                        "pattern": "^global_key_[A-Za-z0-9]{27}$",
                         "type": "string"
                     },
                     "name": {
@@ -279,6 +279,17 @@
                     "createdAt",
                     "id",
                     "token"
+                ],
+                "type": "object"
+            },
+            "ApiTokenUpdate": {
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "name"
                 ],
                 "type": "object"
             },
@@ -602,7 +613,6 @@
                 "type": "object"
             },
             "ApplicationStatsOut": {
-                "description": "A copy of  [`backgroundtask::ApplicationStats`], but serialized with camelCase fields for customers.",
                 "properties": {
                     "appId": {
                         "description": "The Application's ID.",
@@ -1419,8 +1429,7 @@
                         ],
                         "type": "object"
                     }
-                ],
-                "description": "A copy of [`backgroundtask::Data`], but serialized with camelCase fields for customers."
+                ]
             },
             "DocusignConfig": {
                 "properties": {
@@ -3542,6 +3551,47 @@
             "GithubConfigOut": {
                 "type": "object"
             },
+            "GlobalApiTokenCensoredOut": {
+                "properties": {
+                    "censoredToken": {
+                        "type": "string"
+                    },
+                    "createdAt": {
+                        "format": "date-time",
+                        "type": "string"
+                    },
+                    "expiresAt": {
+                        "format": "date-time",
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "id": {
+                        "description": "The GlobalApplicationToken's ID.",
+                        "example": "global_key_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "maxLength": 38,
+                        "minLength": 38,
+                        "pattern": "^global_key_[A-Za-z0-9]{27}$",
+                        "type": "string"
+                    },
+                    "name": {
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "scopes": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "nullable": true,
+                        "type": "array"
+                    }
+                },
+                "required": [
+                    "censoredToken",
+                    "createdAt",
+                    "id"
+                ],
+                "type": "object"
+            },
             "GoogleCloudStorageConfig": {
                 "description": "Configuration for a Google Cloud Storage sink.\n\nWrite stream events into the named bucket using the supplied Google Cloud credentials.",
                 "properties": {
@@ -5424,6 +5474,35 @@
                     "data": {
                         "items": {
                             "$ref": "#/components/schemas/EventTypeOut"
+                        },
+                        "type": "array"
+                    },
+                    "done": {
+                        "type": "boolean"
+                    },
+                    "iterator": {
+                        "example": "iterator",
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "prevIterator": {
+                        "example": "-iterator",
+                        "nullable": true,
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "data",
+                    "done",
+                    "iterator"
+                ],
+                "type": "object"
+            },
+            "ListResponse_GlobalApiTokenCensoredOut_": {
+                "properties": {
+                    "data": {
+                        "items": {
+                            "$ref": "#/components/schemas/GlobalApiTokenCensoredOut"
                         },
                         "type": "array"
                     },
@@ -21903,7 +21982,7 @@
                         "HTTPBearer": []
                     }
                 ],
-                "summary": "Public Events",
+                "summary": "Poller Poll",
                 "tags": [
                     "Message"
                 ],
@@ -22038,34 +22117,6 @@
                             "type": "string"
                         },
                         "style": "form"
-                    },
-                    {
-                        "description": "Filters messages sent with this event type (optional).",
-                        "in": "query",
-                        "name": "event_type",
-                        "schema": {
-                            "description": "Filters messages sent with this event type (optional).",
-                            "example": "user.signup",
-                            "maxLength": 256,
-                            "nullable": true,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                            "type": "string"
-                        },
-                        "style": "form"
-                    },
-                    {
-                        "description": "Filters messages sent with this channel (optional).",
-                        "in": "query",
-                        "name": "channel",
-                        "schema": {
-                            "description": "Filters messages sent with this channel (optional).",
-                            "example": "project_1337",
-                            "maxLength": 128,
-                            "nullable": true,
-                            "pattern": "^[a-zA-Z0-9\\-_.:]+$",
-                            "type": "string"
-                        },
-                        "style": "form"
                     }
                 ],
                 "responses": {
@@ -22155,7 +22206,7 @@
                         "HTTPBearer": []
                     }
                 ],
-                "summary": "Public Events Consumer",
+                "summary": "Poller Consumer Poll",
                 "tags": [
                     "Message"
                 ],
@@ -22374,7 +22425,7 @@
                         "HTTPBearer": []
                     }
                 ],
-                "summary": "Public Events Consumer Seek",
+                "summary": "Poller Consumer Seek",
                 "tags": [
                     "Message"
                 ],
@@ -22786,68 +22837,6 @@
                 "summary": "Create Sink",
                 "tags": [
                     "Endpoint"
-                ],
-                "x-codeSamples": [
-                    {
-                        "label": "JavaScript",
-                        "lang": "JavaScript",
-                        "source": "const sinkOut = await svix.sink.create(\"app_id\", {\n    description: \"An example endpoint name\",\n    rateLimit: null,\n    uid: \"unique-identifier\",\n    secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    disabled: false,\n    filterTypes: [\"user.signup\", \"user.deleted\"],\n    channels: [\"project_123\", \"group_2\"]\n});"
-                    },
-                    {
-                        "label": "TypeScript",
-                        "lang": "JavaScript",
-                        "source": "const sinkOut = await svix.sink.create(\"app_id\", {\n    description: \"An example endpoint name\",\n    rateLimit: null,\n    uid: \"unique-identifier\",\n    secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    disabled: false,\n    filterTypes: [\"user.signup\", \"user.deleted\"],\n    channels: [\"project_123\", \"group_2\"]\n});"
-                    },
-                    {
-                        "label": "Python",
-                        "lang": "Python",
-                        "source": "sink_out = svix.sink.create(\"app_id\", SinkIn(\n    description=\"An example endpoint name\",\n    rate_limit=None,\n    uid=\"unique-identifier\",\n    secret=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    disabled=False,\n    filter_types=[\"user.signup\", \"user.deleted\"],\n    channels=[\"project_123\", \"group_2\"]\n), options=...)"
-                    },
-                    {
-                        "label": "Python (Async)",
-                        "lang": "Python",
-                        "source": "sink_out = await svix.sink.create(\"app_id\", SinkIn(\n    description=\"An example endpoint name\",\n    rate_limit=None,\n    uid=\"unique-identifier\",\n    secret=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    disabled=False,\n    filter_types=[\"user.signup\", \"user.deleted\"],\n    channels=[\"project_123\", \"group_2\"]\n), options=...)"
-                    },
-                    {
-                        "label": "Go",
-                        "lang": "Go",
-                        "source": "sinkOut, err := svixClient.Sink.Create(ctx, \"app_id\", &SinkIn{\n    Description: \"An example endpoint name\",\n    RateLimit: nil,\n    Uid: \"unique-identifier\",\n    Secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    Disabled: false,\n    FilterTypes: []string{\"user.signup\", \"user.deleted\"},\n    Channels: []string{\"project_123\", \"group_2\"},\n})"
-                    },
-                    {
-                        "label": "Kotlin",
-                        "lang": "Kotlin",
-                        "source": "val sinkOut = svix.sink.create(\"app_id\", SinkIn()\n    .description(\"An example endpoint name\")\n    .rateLimit(null)\n    .uid(\"unique-identifier\")\n    .secret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n    .disabled(false)\n    .filterTypes(arrayOf(\"user.signup\", \"user.deleted\"))\n    .channels(arrayOf(\"project_123\", \"group_2\"))\n)"
-                    },
-                    {
-                        "label": "Java",
-                        "lang": "Java",
-                        "source": "SinkOut sinkOut = svix.getSink().create(\"app_id\", new SinkIn()\n    .description(\"An example endpoint name\")\n    .rateLimit(null)\n    .uid(\"unique-identifier\")\n    .secret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n    .disabled(false)\n    .filterTypes(new String[]{\"user.signup\", \"user.deleted\"})\n    .channels(new String[]{\"project_123\", \"group_2\"})\n);"
-                    },
-                    {
-                        "label": "Ruby",
-                        "lang": "Ruby",
-                        "source": "sink_out = svix.sink.create(\"app_id\", Svix::SinkIn.new({\n    \"description\": \"An example endpoint name\",\n    \"rate_limit\": nil,\n    \"uid\": \"unique-identifier\",\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    \"disabled\": false,\n    \"filter_types\": [\"user.signup\", \"user.deleted\"],\n    \"channels\": [\"project_123\", \"group_2\"]\n}))"
-                    },
-                    {
-                        "label": "Rust",
-                        "lang": "Rust",
-                        "source": "let sink_out = svix.sink().create(\"app_id\", SinkIn {\n    description: Some(\"An example endpoint name\".to_string()),\n    rate_limit: None,\n    uid: Some(\"unique-identifier\".to_string()),\n    secret: Some(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\".to_string()),\n    disabled: Some(false),\n    filter_types: Some(vec![\"user.signup\".to_string(), \"user.deleted\".to_string()]),\n    channels: Some(vec![\"project_123\".to_string(), \"group_2\".to_string()]),\n}, None).await?;"
-                    },
-                    {
-                        "label": "C#",
-                        "lang": "C#",
-                        "source": "var sinkOut = await svix.Sink.CreateAsync(\"app_id\", new SinkIn{\n    description: \"An example endpoint name\",\n    rateLimit: null,\n    uid: \"unique-identifier\",\n    secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    disabled: false,\n    filterTypes: new string[] {\"user.signup\", \"user.deleted\"},\n    channels: new string[] {\"project_123\", \"group_2\"}\n});"
-                    },
-                    {
-                        "label": "CLI",
-                        "lang": "Shell",
-                        "source": "svix sink create \"app_id\" '{\n    \"description\": \"An example endpoint name\",\n    \"rateLimit\": null,\n    \"uid\": \"unique-identifier\",\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    \"disabled\": false,\n    \"filterTypes\": [\"user.signup\", \"user.deleted\"],\n    \"channels\": [\"project_123\", \"group_2\"]\n}'"
-                    },
-                    {
-                        "label": "cURL",
-                        "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/sink' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"description\": \"An example endpoint name\",\n        \"rateLimit\": null,\n        \"uid\": \"unique-identifier\",\n        \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n        \"disabled\": false,\n        \"filterTypes\": [\"user.signup\", \"user.deleted\"],\n        \"channels\": [\"project_123\", \"group_2\"]\n    }'"
-                    }
                 ],
                 "x-hidden": true
             }
@@ -24566,6 +24555,762 @@
                         "label": "cURL",
                         "lang": "Shell",
                         "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/auth/one-time-token' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '\n    }'"
+                    }
+                ],
+                "x-hidden": true
+            }
+        },
+        "/api/v1/auth/org-group-admin-token": {
+            "get": {
+                "description": "List all org group API tokens.",
+                "operationId": "v1.authentication.org-group-admin-token.list",
+                "parameters": [
+                    {
+                        "description": "Limit the number of returned items",
+                        "in": "query",
+                        "name": "limit",
+                        "schema": {
+                            "description": "Limit the number of returned items",
+                            "format": "uint64",
+                            "maximum": 250,
+                            "minimum": 1,
+                            "type": "integer"
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "description": "The iterator returned from a prior invocation",
+                        "in": "query",
+                        "name": "iterator",
+                        "schema": {
+                            "description": "The iterator returned from a prior invocation",
+                            "example": "key_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 31,
+                            "minLength": 31,
+                            "nullable": true,
+                            "pattern": "^key_[A-Za-z0-9]{27}$",
+                            "type": "string"
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "description": "The sorting order of the returned items",
+                        "in": "query",
+                        "name": "order",
+                        "schema": {
+                            "$ref": "#/components/schemas/Ordering",
+                            "description": "The sorting order of the returned items",
+                            "nullable": true
+                        },
+                        "style": "form"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ListResponse_GlobalApiTokenCensoredOut_"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "List Org Group Tokens",
+                "tags": [
+                    "Authentication"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const listResponseGlobalApiTokenCensoredOut = await svix.authentication.orgGroupAdminToken.list();"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const listResponseGlobalApiTokenCensoredOut = await svix.authentication.orgGroupAdminToken.list();"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "list_response_global_api_token_censored_out = svix.authentication.org_group_admin_token.list(options=...)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "list_response_global_api_token_censored_out = await svix.authentication.org_group_admin_token.list(options=...)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "listResponseGlobalApiTokenCensoredOut, err := svixClient.Authentication.OrgGroupAdminToken.List(ctx, nil)"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val listResponseGlobalApiTokenCensoredOut = svix.authentication.orgGroupAdminToken.list()"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "ListResponseGlobalApiTokenCensoredOut listResponseGlobalApiTokenCensoredOut = svix.getAuthentication().getOrgGroupAdminToken().list();"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "list_response_global_api_token_censored_out = svix.authentication.org_group_admin_token.list()"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let list_response_global_api_token_censored_out = svix.authentication().org_group_admin_token().list(None).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var listResponseGlobalApiTokenCensoredOut = await svix.Authentication.OrgGroupAdminToken.ListAsync();"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix authentication org-group-admin-token list "
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/auth/org-group-admin-token' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                    }
+                ],
+                "x-hidden": true
+            },
+            "post": {
+                "description": "Create a new auth token that can be used for all operations that aren't downstream for a app_id (so no apps, endpoints, messages, attempts, etc)",
+                "operationId": "v1.authentication.org-group-admin-token.create",
+                "parameters": [
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateTokenIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiTokenOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Create Org Group Admin Token",
+                "tags": [
+                    "Authentication"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const apiTokenOut = await svix.authentication.orgGroupAdminToken.create({\n    expiry: null\n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const apiTokenOut = await svix.authentication.orgGroupAdminToken.create({\n    expiry: null\n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "api_token_out = svix.authentication.org_group_admin_token.create(CreateTokenIn(\n    expiry=None\n), options=...)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "api_token_out = await svix.authentication.org_group_admin_token.create(CreateTokenIn(\n    expiry=None\n), options=...)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "apiTokenOut, err := svixClient.Authentication.OrgGroupAdminToken.Create(ctx, &CreateTokenIn{\n    Expiry: nil,\n})"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val apiTokenOut = svix.authentication.orgGroupAdminToken.create(CreateTokenIn()\n    .expiry(null)\n)"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "ApiTokenOut apiTokenOut = svix.getAuthentication().getOrgGroupAdminToken().create(new CreateTokenIn()\n    .expiry(null)\n);"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "api_token_out = svix.authentication.org_group_admin_token.create(Svix::CreateTokenIn.new({\n    \"expiry\": nil\n}))"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let api_token_out = svix.authentication().org_group_admin_token().create(CreateTokenIn {\n    expiry: None,\n}, None).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var apiTokenOut = await svix.Authentication.OrgGroupAdminToken.CreateAsync(new CreateTokenIn{\n    expiry: null\n});"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix authentication org-group-admin-token create '{\n    \"expiry\": null\n}'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/auth/org-group-admin-token' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"expiry\": null\n    }'"
+                    }
+                ],
+                "x-hidden": true
+            }
+        },
+        "/api/v1/auth/org-group-admin-token/{key_id}": {
+            "put": {
+                "description": "Get the organization's settings (with dashboard-only fields exposed).",
+                "operationId": "v1.authentication.org-group-admin-token.update",
+                "parameters": [
+                    {
+                        "description": "The GlobalApplicationToken's ID.",
+                        "in": "path",
+                        "name": "key_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The GlobalApplicationToken's ID.",
+                            "example": "global_key_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 38,
+                            "minLength": 38,
+                            "pattern": "^global_key_[A-Za-z0-9]{27}$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiTokenUpdate"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GlobalApiTokenCensoredOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Update Org Group Token",
+                "tags": [
+                    "Authentication"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const globalApiTokenCensoredOut = await svix.authentication.orgGroupAdminToken.update(\"key_id\", \n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const globalApiTokenCensoredOut = await svix.authentication.orgGroupAdminToken.update(\"key_id\", \n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "global_api_token_censored_out = svix.authentication.org_group_admin_token.update(\"key_id\", ApiTokenUpdate\n))"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "global_api_token_censored_out = await svix.authentication.org_group_admin_token.update(\"key_id\", ApiTokenUpdate\n))"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "globalApiTokenCensoredOut, err := svixClient.Authentication.OrgGroupAdminToken.Update(ctx, \"key_id\", &ApiTokenUpdate{\n})"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val globalApiTokenCensoredOut = svix.authentication.orgGroupAdminToken.update(\"key_id\", ApiTokenUpdate()\n)"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "GlobalApiTokenCensoredOut globalApiTokenCensoredOut = svix.getAuthentication().getOrgGroupAdminToken().update(\"key_id\", new ApiTokenUpdate()\n);"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "global_api_token_censored_out = svix.authentication.org_group_admin_token.update(\"key_id\", Svix::ApiTokenUpdate.new(\n}))"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let global_api_token_censored_out = svix.authentication().org_group_admin_token().update(\"key_id\", ApiTokenUpdate {\n}).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var globalApiTokenCensoredOut = await svix.Authentication.OrgGroupAdminToken.UpdateAsync(\"key_id\", new ApiTokenUpdate\n});"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix authentication org-group-admin-token update \"key_id\" '\n}'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/auth/org-group-admin-token/{key_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '\n    }'"
+                    }
+                ],
+                "x-hidden": true
+            }
+        },
+        "/api/v1/auth/org-group-admin-token/{key_id}/expire": {
+            "post": {
+                "description": "Expire the selected API Token.",
+                "operationId": "v1.authentication.org-group-admin-token.expire",
+                "parameters": [
+                    {
+                        "description": "The GlobalApplicationToken's ID.",
+                        "in": "path",
+                        "name": "key_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The GlobalApplicationToken's ID.",
+                            "example": "global_key_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 38,
+                            "minLength": 38,
+                            "pattern": "^global_key_[A-Za-z0-9]{27}$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiTokenExpireIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "204": {
+                        "description": "no content"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Expire Org Group Token",
+                "tags": [
+                    "Authentication"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "await svix.authentication.orgGroupAdminToken.expire(\"key_id\", \n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "await svix.authentication.orgGroupAdminToken.expire(\"key_id\", \n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "svix.authentication.org_group_admin_token.expire(\"key_id\", ApiTokenExpireIn\n), options=...)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "await svix.authentication.org_group_admin_token.expire(\"key_id\", ApiTokenExpireIn\n), options=...)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "err := svixClient.Authentication.OrgGroupAdminToken.Expire(ctx, \"key_id\", &ApiTokenExpireIn{\n})"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "svix.authentication.orgGroupAdminToken.expire(\"key_id\", ApiTokenExpireIn()\n)"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "svix.getAuthentication().getOrgGroupAdminToken().expire(\"key_id\", new ApiTokenExpireIn()\n);"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "svix.authentication.org_group_admin_token.expire(\"key_id\", Svix::ApiTokenExpireIn.new(\n}))"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "svix.authentication().org_group_admin_token().expire(\"key_id\", ApiTokenExpireIn {\n}, None).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "await svix.Authentication.OrgGroupAdminToken.ExpireAsync(\"key_id\", new ApiTokenExpireIn\n});"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix authentication org-group-admin-token expire \"key_id\" '\n}'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/auth/org-group-admin-token/{key_id}/expire' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '\n    }'"
                     }
                 ],
                 "x-hidden": true
@@ -37506,68 +38251,6 @@
                 "summary": "Create Ingest Source",
                 "tags": [
                     "Ingest Source"
-                ],
-                "x-codeSamples": [
-                    {
-                        "label": "JavaScript",
-                        "lang": "JavaScript",
-                        "source": "const ingestSourceOut = await svix.ingest.source.create({\n    uid: \"unique-identifier\"\n});"
-                    },
-                    {
-                        "label": "TypeScript",
-                        "lang": "JavaScript",
-                        "source": "const ingestSourceOut = await svix.ingest.source.create({\n    uid: \"unique-identifier\"\n});"
-                    },
-                    {
-                        "label": "Python",
-                        "lang": "Python",
-                        "source": "ingest_source_out = svix.ingest.source.create(IngestSourceIn(\n    uid=\"unique-identifier\"\n), options=...)"
-                    },
-                    {
-                        "label": "Python (Async)",
-                        "lang": "Python",
-                        "source": "ingest_source_out = await svix.ingest.source.create(IngestSourceIn(\n    uid=\"unique-identifier\"\n), options=...)"
-                    },
-                    {
-                        "label": "Go",
-                        "lang": "Go",
-                        "source": "ingestSourceOut, err := svixClient.Ingest.Source.Create(ctx, &IngestSourceIn{\n    Uid: \"unique-identifier\",\n})"
-                    },
-                    {
-                        "label": "Kotlin",
-                        "lang": "Kotlin",
-                        "source": "val ingestSourceOut = svix.ingest.source.create(IngestSourceIn()\n    .uid(\"unique-identifier\")\n)"
-                    },
-                    {
-                        "label": "Java",
-                        "lang": "Java",
-                        "source": "IngestSourceOut ingestSourceOut = svix.getIngest().getSource().create(new IngestSourceIn()\n    .uid(\"unique-identifier\")\n);"
-                    },
-                    {
-                        "label": "Ruby",
-                        "lang": "Ruby",
-                        "source": "ingest_source_out = svix.ingest.source.create(Svix::IngestSourceIn.new({\n    \"uid\": \"unique-identifier\"\n}))"
-                    },
-                    {
-                        "label": "Rust",
-                        "lang": "Rust",
-                        "source": "let ingest_source_out = svix.ingest().source().create(IngestSourceIn {\n    uid: Some(\"unique-identifier\".to_string()),\n}, None).await?;"
-                    },
-                    {
-                        "label": "C#",
-                        "lang": "C#",
-                        "source": "var ingestSourceOut = await svix.Ingest.Source.CreateAsync(new IngestSourceIn{\n    uid: \"unique-identifier\"\n});"
-                    },
-                    {
-                        "label": "CLI",
-                        "lang": "Shell",
-                        "source": "svix ingest source create '{\n    \"uid\": \"unique-identifier\"\n}'"
-                    },
-                    {
-                        "label": "cURL",
-                        "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/ingest/api/v1/source' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"uid\": \"unique-identifier\"\n    }'"
-                    }
                 ]
             }
         },
@@ -38040,68 +38723,6 @@
                 "summary": "Update Source",
                 "tags": [
                     "Ingest Source"
-                ],
-                "x-codeSamples": [
-                    {
-                        "label": "JavaScript",
-                        "lang": "JavaScript",
-                        "source": "const ingestSourceOut = await svix.ingest.source.update(\"source_id\", {\n    uid: \"unique-identifier\"\n});"
-                    },
-                    {
-                        "label": "TypeScript",
-                        "lang": "JavaScript",
-                        "source": "const ingestSourceOut = await svix.ingest.source.update(\"source_id\", {\n    uid: \"unique-identifier\"\n});"
-                    },
-                    {
-                        "label": "Python",
-                        "lang": "Python",
-                        "source": "ingest_source_out = svix.ingest.source.update(\"source_id\", IngestSourceIn(\n    uid=\"unique-identifier\"\n))"
-                    },
-                    {
-                        "label": "Python (Async)",
-                        "lang": "Python",
-                        "source": "ingest_source_out = await svix.ingest.source.update(\"source_id\", IngestSourceIn(\n    uid=\"unique-identifier\"\n))"
-                    },
-                    {
-                        "label": "Go",
-                        "lang": "Go",
-                        "source": "ingestSourceOut, err := svixClient.Ingest.Source.Update(ctx, \"source_id\", &IngestSourceIn{\n    Uid: \"unique-identifier\",\n})"
-                    },
-                    {
-                        "label": "Kotlin",
-                        "lang": "Kotlin",
-                        "source": "val ingestSourceOut = svix.ingest.source.update(\"source_id\", IngestSourceIn()\n    .uid(\"unique-identifier\")\n)"
-                    },
-                    {
-                        "label": "Java",
-                        "lang": "Java",
-                        "source": "IngestSourceOut ingestSourceOut = svix.getIngest().getSource().update(\"source_id\", new IngestSourceIn()\n    .uid(\"unique-identifier\")\n);"
-                    },
-                    {
-                        "label": "Ruby",
-                        "lang": "Ruby",
-                        "source": "ingest_source_out = svix.ingest.source.update(\"source_id\", Svix::IngestSourceIn.new({\n    \"uid\": \"unique-identifier\"\n}))"
-                    },
-                    {
-                        "label": "Rust",
-                        "lang": "Rust",
-                        "source": "let ingest_source_out = svix.ingest().source().update(\"source_id\", IngestSourceIn {\n    uid: Some(\"unique-identifier\".to_string()),\n}).await?;"
-                    },
-                    {
-                        "label": "C#",
-                        "lang": "C#",
-                        "source": "var ingestSourceOut = await svix.Ingest.Source.UpdateAsync(\"source_id\", new IngestSourceIn{\n    uid: \"unique-identifier\"\n});"
-                    },
-                    {
-                        "label": "CLI",
-                        "lang": "Shell",
-                        "source": "svix ingest source update \"source_id\" '{\n    \"uid\": \"unique-identifier\"\n}'"
-                    },
-                    {
-                        "label": "cURL",
-                        "lang": "Shell",
-                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/ingest/api/v1/source/{source_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"uid\": \"unique-identifier\"\n    }'"
-                    }
                 ]
             }
         },

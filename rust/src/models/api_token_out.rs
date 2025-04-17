@@ -10,7 +10,7 @@ pub struct ApiTokenOut {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub expires_at: Option<String>,
 
-    /// The ApplicationToken's ID.
+    /// The GlobalApplicationToken's ID.
     pub id: String,
 
     #[serde(skip_serializing_if = "Option::is_none")]

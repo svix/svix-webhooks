@@ -3,8 +3,6 @@ pub mod authentication;
 pub mod endpoint;
 pub mod environment;
 pub mod event_type;
-#[cfg(feature = "svix_beta")]
-pub mod events_public;
 pub mod ingest;
 pub mod ingest_endpoint;
 pub mod ingest_source;

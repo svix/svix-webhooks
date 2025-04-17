@@ -93,12 +93,6 @@ public class MessagePoller {
         if (options.iterator != null) {
             url.addQueryParameter("iterator", options.iterator);
         }
-        if (options.eventType != null) {
-            url.addQueryParameter("event_type", options.eventType);
-        }
-        if (options.channel != null) {
-            url.addQueryParameter("channel", options.channel);
-        }
         return this.client.executeRequest("GET", url.build(), null, null, PollingEndpointOut.class);
     }
 
