@@ -68,28 +68,41 @@ pub struct IngestEndpointArgs {
 pub enum IngestEndpointCommands {
     /// List ingest endpoints.
     List {
+        source_id: String,
         #[clap(flatten)]
         options: IngestEndpointListOptions,
     },
     /// Create an ingest endpoint.
     Create {
+        source_id: String,
         ingest_endpoint_in: JsonOf<IngestEndpointIn>,
         #[clap(flatten)]
         options: IngestEndpointCreateOptions,
     },
     /// Get an ingest endpoint.
-    Get { endpoint_id: String },
+    Get {
+        source_id: String,
+        endpoint_id: String,
+    },
     /// Update an ingest endpoint.
     Update {
+        source_id: String,
         endpoint_id: String,
         ingest_endpoint_update: JsonOf<IngestEndpointUpdate>,
     },
     /// Delete an ingest endpoint.
-    Delete { endpoint_id: String },
+    Delete {
+        source_id: String,
+        endpoint_id: String,
+    },
     /// Get the additional headers to be sent with the ingest.
-    GetHeaders { endpoint_id: String },
+    GetHeaders {
+        source_id: String,
+        endpoint_id: String,
+    },
     /// Set the additional headers to be sent to the endpoint.
     UpdateHeaders {
+        source_id: String,
         endpoint_id: String,
         ingest_endpoint_headers_in: JsonOf<IngestEndpointHeadersIn>,
     },
@@ -97,11 +110,15 @@ pub enum IngestEndpointCommands {
     ///
     /// This is used to verify the authenticity of the webhook.
     /// For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
-    GetSecret { endpoint_id: String },
+    GetSecret {
+        source_id: String,
+        endpoint_id: String,
+    },
     /// Rotates an ingest endpoint's signing secret.
     ///
     /// The previous secret will remain valid for the next 24 hours.
     RotateSecret {
+        source_id: String,
         endpoint_id: String,
         ingest_endpoint_secret_in: Option<JsonOf<IngestEndpointSecretIn>>,
         #[clap(flatten)]
@@ -116,62 +133,102 @@ impl IngestEndpointCommands {
         color_mode: colored_json::ColorMode,
     ) -> anyhow::Result<()> {
         match self {
-            Self::List { options } => {
+            Self::List { source_id, options } => {
                 let resp = client
                     .ingest()
                     .endpoint()
-                    .list(Some(options.into()))
+                    .list(source_id, Some(options.into()))
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
             Self::Create {
+                source_id,
                 ingest_endpoint_in,
                 options,
             } => {
                 let resp = client
                     .ingest()
                     .endpoint()
-                    .create(ingest_endpoint_in.into_inner(), Some(options.into()))
+                    .create(
+                        source_id,
+                        ingest_endpoint_in.into_inner(),
+                        Some(options.into()),
+                    )
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
-            Self::Get { endpoint_id } => {
-                let resp = client.ingest().endpoint().get(endpoint_id).await?;
+            Self::Get {
+                source_id,
+                endpoint_id,
+            } => {
+                let resp = client
+                    .ingest()
+                    .endpoint()
+                    .get(source_id, endpoint_id)
+                    .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
             Self::Update {
+                source_id,
                 endpoint_id,
                 ingest_endpoint_update,
             } => {
                 let resp = client
                     .ingest()
                     .endpoint()
-                    .update(endpoint_id, ingest_endpoint_update.into_inner())
+                    .update(source_id, endpoint_id, ingest_endpoint_update.into_inner())
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
-            Self::Delete { endpoint_id } => {
-                client.ingest().endpoint().delete(endpoint_id).await?;
+            Self::Delete {
+                source_id,
+                endpoint_id,
+            } => {
+                client
+                    .ingest()
+                    .endpoint()
+                    .delete(source_id, endpoint_id)
+                    .await?;
             }
-            Self::GetHeaders { endpoint_id } => {
-                let resp = client.ingest().endpoint().get_headers(endpoint_id).await?;
+            Self::GetHeaders {
+                source_id,
+                endpoint_id,
+            } => {
+                let resp = client
+                    .ingest()
+                    .endpoint()
+                    .get_headers(source_id, endpoint_id)
+                    .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
             Self::UpdateHeaders {
+                source_id,
                 endpoint_id,
                 ingest_endpoint_headers_in,
             } => {
                 client
                     .ingest()
                     .endpoint()
-                    .update_headers(endpoint_id, ingest_endpoint_headers_in.into_inner())
+                    .update_headers(
+                        source_id,
+                        endpoint_id,
+                        ingest_endpoint_headers_in.into_inner(),
+                    )
                     .await?;
             }
-            Self::GetSecret { endpoint_id } => {
-                let resp = client.ingest().endpoint().get_secret(endpoint_id).await?;
+            Self::GetSecret {
+                source_id,
+                endpoint_id,
+            } => {
+                let resp = client
+                    .ingest()
+                    .endpoint()
+                    .get_secret(source_id, endpoint_id)
+                    .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
             Self::RotateSecret {
+                source_id,
                 endpoint_id,
                 ingest_endpoint_secret_in,
                 options,
@@ -180,6 +237,7 @@ impl IngestEndpointCommands {
                     .ingest()
                     .endpoint()
                     .rotate_secret(
+                        source_id,
                         endpoint_id,
                         ingest_endpoint_secret_in.unwrap_or_default().into_inner(),
                         Some(options.into()),
