@@ -1,4 +1,3 @@
-// this file is @generated
 import { ApiTokenOut, ApiTokenOutSerializer } from "../models/apiTokenOut";
 import {
   AppPortalAccessOut,
@@ -16,6 +15,7 @@ import {
   StreamPortalAccessInSerializer,
 } from "../models/streamPortalAccessIn";
 import { HttpMethod, SvixRequest, SvixRequestContext } from "../request";
+import { AuthenticationOrgGroupAdminToken } from "./authenticationOrgGroupAdminToken";
 
 export interface AuthenticationCreateMessageTokenOptions {
   idempotencyKey?: string;
@@ -40,6 +40,10 @@ export interface AuthenticationDashboardAccessOptions {
 
 export class Authentication {
   public constructor(private readonly requestCtx: SvixRequestContext) {}
+
+  public get org_group_admin_token() {
+    return new AuthenticationOrgGroupAdminToken(this.requestCtx);
+  }
 
   /** Create a new access token that only allows creating messages inside this application. */
   public createMessageToken(

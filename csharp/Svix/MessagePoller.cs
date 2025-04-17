@@ -32,19 +32,11 @@ namespace Svix
     {
         public ulong? Limit { get; set; }
         public string? Iterator { get; set; }
-        public string? EventType { get; set; }
-        public string? Channel { get; set; }
 
         public new Dictionary<string, string> QueryParams()
         {
             return SerializeParams(
-                new Dictionary<string, object?>
-                {
-                    { "limit", Limit },
-                    { "iterator", Iterator },
-                    { "event_type", EventType },
-                    { "channel", Channel },
-                }
+                new Dictionary<string, object?> { { "limit", Limit }, { "iterator", Iterator } }
             );
         }
     }

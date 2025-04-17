@@ -41,18 +41,12 @@ class MessagePollerConsumerPollOptions(BaseOptions):
     """Limit the number of returned items"""
     iterator: t.Optional[str] = None
     """The iterator returned from a prior invocation"""
-    event_type: t.Optional[str] = None
-    """Filters messages sent with this event type (optional)."""
-    channel: t.Optional[str] = None
-    """Filters messages sent with this channel (optional)."""
 
     def _query_params(self) -> t.Dict[str, str]:
         return serialize_params(
             {
                 "limit": self.limit,
                 "iterator": self.iterator,
-                "event_type": self.event_type,
-                "channel": self.channel,
             }
         )
 

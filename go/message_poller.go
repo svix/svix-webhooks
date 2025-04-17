@@ -36,10 +36,6 @@ type MessagePollerConsumerPollOptions struct {
 	Limit *uint64
 	// The iterator returned from a prior invocation
 	Iterator *string
-	// Filters messages sent with this event type (optional).
-	EventType *string
-	// Filters messages sent with this channel (optional).
-	Channel *string
 }
 
 type MessagePollerConsumerSeekOptions struct {
@@ -100,8 +96,6 @@ func (messagePoller *MessagePoller) ConsumerPoll(
 	if o != nil {
 		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
 		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		internal.SerializeParamToMap("event_type", o.EventType, queryMap, &err)
-		internal.SerializeParamToMap("channel", o.Channel, queryMap, &err)
 		if err != nil {
 			return nil, err
 		}

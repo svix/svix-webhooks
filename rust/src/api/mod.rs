@@ -12,8 +12,6 @@ mod deprecated;
 mod endpoint;
 mod environment;
 mod event_type;
-#[cfg(feature = "svix_beta")]
-mod events_public;
 mod ingest;
 mod ingest_endpoint;
 mod ingest_source;
@@ -27,6 +25,8 @@ mod operational_webhook;
 mod operational_webhook_endpoint;
 mod statistics;
 
+#[cfg(feature = "svix_beta")]
+pub use self::message::{V1MessageEventsParams, V1MessageEventsSubscriptionParams};
 pub use self::{
     application::{Application, ApplicationCreateOptions, ApplicationListOptions},
     authentication::{
@@ -83,11 +83,6 @@ pub use self::{
     },
     statistics::{Statistics, StatisticsAggregateAppStatsOptions},
 };
-#[cfg(feature = "svix_beta")]
-pub use self::{
-    events_public::{EventsPublic, EventsPublicConsumerOptions, EventsPublicConsumerSeekOptions},
-    message::{V1MessageEventsParams, V1MessageEventsSubscriptionParams},
-};
 
 impl Svix {
     pub fn authentication(&self) -> Authentication<'_> {
@@ -108,11 +103,6 @@ impl Svix {
 
     pub fn environment(&self) -> Environment<'_> {
         Environment::new(&self.cfg)
-    }
-
-    #[cfg(feature = "svix_beta")]
-    pub fn events_public(&self) -> EventsPublic<'_> {
-        EventsPublic::new(&self.cfg)
     }
 
     pub fn ingest(&self) -> Ingest<'_> {

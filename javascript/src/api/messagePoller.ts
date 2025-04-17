@@ -30,10 +30,6 @@ export interface MessagePollerConsumerPollOptions {
   limit?: number;
   /** The iterator returned from a prior invocation */
   iterator?: string | null;
-  /** Filters messages sent with this event type (optional). */
-  eventType?: string;
-  /** Filters messages sent with this channel (optional). */
-  channel?: string;
 }
 
 export interface MessagePollerConsumerSeekOptions {
@@ -85,8 +81,6 @@ export class MessagePoller {
     request.setPathParam("consumer_id", consumerId);
     request.setQueryParam("limit", options?.limit);
     request.setQueryParam("iterator", options?.iterator);
-    request.setQueryParam("event_type", options?.eventType);
-    request.setQueryParam("channel", options?.channel);
 
     return request.send(this.requestCtx, PollingEndpointOutSerializer._fromJsonObject);
   }

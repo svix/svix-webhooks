@@ -25,6 +25,9 @@ opentelemetry:
 # Inputs types are "webhook" which allows you to configure a verification scheme
 # (either "svix" or "none") or "svix-webhook" which is a shorthand version.
 #
+# There is also a "svix-message-poller" input type which will poll a polling endpoint
+# rather than waiting for incoming messages.
+#
 # ```
 #   input:
 #     type: "webhook"
@@ -125,3 +128,17 @@ receivers:
       # Only for SASL
       kafka_sasl_username: "user"
       kafka_sasl_password: "pass"
+
+  - name: "msg-poller-to-rabbitmq-example"
+    input:
+      type: "svix-message-poller"
+      consumer_id: "example-consumer"
+      # The app and sink ids can be seen in the URL for the corresponding Polling Endpoint.
+      app_id: "my-app-uid"
+      sink_id: "poll_XXXX"
+      token: "${POLLING_ENDPOINT_TOKEN}"
+    output:
+      type: "rabbitmq"
+      uri: "${QUEUE_URI}"
+      exchange: ""
+      routing_key: "my_queue"
