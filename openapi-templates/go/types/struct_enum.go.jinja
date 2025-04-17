@@ -46,8 +46,6 @@ type {{ ty_name }}{{ content_field }} interface {
 {% for schema_ref in type.variants| map(attribute="schema_ref") | unique -%}
 	{% if schema_ref is defined -%}
 func ({{ schema_ref | to_upper_camel_case }}) is{{ ty_name }}{{ content_field }}(){}
-	{% else -%}
-func (emptyMap) is{{ ty_name }}{{ content_field }}(){}
 	{% endif -%}
 {% endfor %}
 
@@ -93,7 +91,7 @@ func (i {{ ty_name }}) MarshalJSON() ([]byte, error) {
 	type Alias {{ ty_name }}
 	{% if has_variant_with_no_schema_ref -%}
 	if _, found := {{ ty_name }}{{ discriminator_field }}WithNo{{ content_field }}[string(i.{{ discriminator_field }})]; found {
- 	   i.{{ content_field }} = emptyMap{}
+ 	   i.{{ content_field }} = nil
 	}
 	{% endif -%}
 	return json.Marshal(&struct {Alias}{Alias: (Alias)(i)})

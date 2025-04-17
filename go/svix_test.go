@@ -685,7 +685,7 @@ func TestStructEnumWithFields(t *testing.T) {
 }
 
 func TestStructEnumWithNoFields(t *testing.T) {
-	expectedJson := `{"name":"Mendy","uid":"very unique","type":"generic-webhook","config":{}}`
+	expectedJson := `{"name":"Mendy","uid":"very unique","type":"generic-webhook","config":null}`
 	uid := "very unique"
 	sourceIn := models.IngestSourceIn{
 		Name: "Mendy",
@@ -702,7 +702,7 @@ func TestStructEnumWithNoFields(t *testing.T) {
 }
 
 func TestStructEnumWithNoFieldsNilConfig(t *testing.T) {
-	expectedJson := `{"name":"Mendy","uid":"very unique","type":"generic-webhook","config":{}}`
+	expectedJson := `{"name":"Mendy","uid":"very unique","type":"generic-webhook","config":null}`
 	uid := "very unique"
 	sourceIn := models.IngestSourceIn{
 		Name:   "Mendy",
