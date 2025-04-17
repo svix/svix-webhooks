@@ -56,6 +56,7 @@ namespace Svix
         /// List ingest endpoints.
         /// </summary>
         public async Task<ListResponseIngestEndpointOut> ListAsync(
+            string sourceId,
             IngestEndpointListOptions? options = null,
             CancellationToken cancellationToken = default
         )
@@ -66,6 +67,7 @@ namespace Svix
                     await _client.SvixHttpClient.SendRequestAsync<ListResponseIngestEndpointOut>(
                         method: HttpMethod.Get,
                         path: "/ingest/api/v1/source/{source_id}/endpoint",
+                        pathParams: new Dictionary<string, string> { { "source_id", sourceId } },
                         queryParams: options?.QueryParams(),
                         headerParams: options?.HeaderParams(),
                         cancellationToken: cancellationToken
@@ -83,13 +85,17 @@ namespace Svix
         /// <summary>
         /// List ingest endpoints.
         /// </summary>
-        public ListResponseIngestEndpointOut List(IngestEndpointListOptions? options = null)
+        public ListResponseIngestEndpointOut List(
+            string sourceId,
+            IngestEndpointListOptions? options = null
+        )
         {
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<ListResponseIngestEndpointOut>(
                     method: HttpMethod.Get,
                     path: "/ingest/api/v1/source/{source_id}/endpoint",
+                    pathParams: new Dictionary<string, string> { { "source_id", sourceId } },
                     queryParams: options?.QueryParams(),
                     headerParams: options?.HeaderParams()
                 );
@@ -107,6 +113,7 @@ namespace Svix
         /// Create an ingest endpoint.
         /// </summary>
         public async Task<IngestEndpointOut> CreateAsync(
+            string sourceId,
             IngestEndpointIn ingestEndpointIn,
             IngestEndpointCreateOptions? options = null,
             CancellationToken cancellationToken = default
@@ -119,6 +126,7 @@ namespace Svix
                 var response = await _client.SvixHttpClient.SendRequestAsync<IngestEndpointOut>(
                     method: HttpMethod.Post,
                     path: "/ingest/api/v1/source/{source_id}/endpoint",
+                    pathParams: new Dictionary<string, string> { { "source_id", sourceId } },
                     queryParams: options?.QueryParams(),
                     headerParams: options?.HeaderParams(),
                     content: ingestEndpointIn,
@@ -138,6 +146,7 @@ namespace Svix
         /// Create an ingest endpoint.
         /// </summary>
         public IngestEndpointOut Create(
+            string sourceId,
             IngestEndpointIn ingestEndpointIn,
             IngestEndpointCreateOptions? options = null
         )
@@ -149,6 +158,7 @@ namespace Svix
                 var response = _client.SvixHttpClient.SendRequest<IngestEndpointOut>(
                     method: HttpMethod.Post,
                     path: "/ingest/api/v1/source/{source_id}/endpoint",
+                    pathParams: new Dictionary<string, string> { { "source_id", sourceId } },
                     queryParams: options?.QueryParams(),
                     headerParams: options?.HeaderParams(),
                     content: ingestEndpointIn
@@ -167,6 +177,7 @@ namespace Svix
         /// Get an ingest endpoint.
         /// </summary>
         public async Task<IngestEndpointOut> GetAsync(
+            string sourceId,
             string endpointId,
             CancellationToken cancellationToken = default
         )
@@ -176,7 +187,11 @@ namespace Svix
                 var response = await _client.SvixHttpClient.SendRequestAsync<IngestEndpointOut>(
                     method: HttpMethod.Get,
                     path: "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}",
-                    pathParams: new Dictionary<string, string> { { "endpoint_id", endpointId } },
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "source_id", sourceId },
+                        { "endpoint_id", endpointId },
+                    },
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
@@ -192,14 +207,18 @@ namespace Svix
         /// <summary>
         /// Get an ingest endpoint.
         /// </summary>
-        public IngestEndpointOut Get(string endpointId)
+        public IngestEndpointOut Get(string sourceId, string endpointId)
         {
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<IngestEndpointOut>(
                     method: HttpMethod.Get,
                     path: "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}",
-                    pathParams: new Dictionary<string, string> { { "endpoint_id", endpointId } }
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "source_id", sourceId },
+                        { "endpoint_id", endpointId },
+                    }
                 );
                 return response.Data;
             }
@@ -215,6 +234,7 @@ namespace Svix
         /// Update an ingest endpoint.
         /// </summary>
         public async Task<IngestEndpointOut> UpdateAsync(
+            string sourceId,
             string endpointId,
             IngestEndpointUpdate ingestEndpointUpdate,
             CancellationToken cancellationToken = default
@@ -228,7 +248,11 @@ namespace Svix
                 var response = await _client.SvixHttpClient.SendRequestAsync<IngestEndpointOut>(
                     method: HttpMethod.Put,
                     path: "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}",
-                    pathParams: new Dictionary<string, string> { { "endpoint_id", endpointId } },
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "source_id", sourceId },
+                        { "endpoint_id", endpointId },
+                    },
                     content: ingestEndpointUpdate,
                     cancellationToken: cancellationToken
                 );
@@ -246,6 +270,7 @@ namespace Svix
         /// Update an ingest endpoint.
         /// </summary>
         public IngestEndpointOut Update(
+            string sourceId,
             string endpointId,
             IngestEndpointUpdate ingestEndpointUpdate
         )
@@ -258,7 +283,11 @@ namespace Svix
                 var response = _client.SvixHttpClient.SendRequest<IngestEndpointOut>(
                     method: HttpMethod.Put,
                     path: "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}",
-                    pathParams: new Dictionary<string, string> { { "endpoint_id", endpointId } },
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "source_id", sourceId },
+                        { "endpoint_id", endpointId },
+                    },
                     content: ingestEndpointUpdate
                 );
                 return response.Data;
@@ -275,6 +304,7 @@ namespace Svix
         /// Delete an ingest endpoint.
         /// </summary>
         public async Task<bool> DeleteAsync(
+            string sourceId,
             string endpointId,
             CancellationToken cancellationToken = default
         )
@@ -284,7 +314,11 @@ namespace Svix
                 var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
                     method: HttpMethod.Delete,
                     path: "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}",
-                    pathParams: new Dictionary<string, string> { { "endpoint_id", endpointId } },
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "source_id", sourceId },
+                        { "endpoint_id", endpointId },
+                    },
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
@@ -300,14 +334,18 @@ namespace Svix
         /// <summary>
         /// Delete an ingest endpoint.
         /// </summary>
-        public bool Delete(string endpointId)
+        public bool Delete(string sourceId, string endpointId)
         {
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<bool>(
                     method: HttpMethod.Delete,
                     path: "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}",
-                    pathParams: new Dictionary<string, string> { { "endpoint_id", endpointId } }
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "source_id", sourceId },
+                        { "endpoint_id", endpointId },
+                    }
                 );
                 return response.Data;
             }
@@ -323,6 +361,7 @@ namespace Svix
         /// Get the additional headers to be sent with the ingest.
         /// </summary>
         public async Task<IngestEndpointHeadersOut> GetHeadersAsync(
+            string sourceId,
             string endpointId,
             CancellationToken cancellationToken = default
         )
@@ -335,6 +374,7 @@ namespace Svix
                         path: "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/headers",
                         pathParams: new Dictionary<string, string>
                         {
+                            { "source_id", sourceId },
                             { "endpoint_id", endpointId },
                         },
                         cancellationToken: cancellationToken
@@ -352,14 +392,18 @@ namespace Svix
         /// <summary>
         /// Get the additional headers to be sent with the ingest.
         /// </summary>
-        public IngestEndpointHeadersOut GetHeaders(string endpointId)
+        public IngestEndpointHeadersOut GetHeaders(string sourceId, string endpointId)
         {
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<IngestEndpointHeadersOut>(
                     method: HttpMethod.Get,
                     path: "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/headers",
-                    pathParams: new Dictionary<string, string> { { "endpoint_id", endpointId } }
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "source_id", sourceId },
+                        { "endpoint_id", endpointId },
+                    }
                 );
                 return response.Data;
             }
@@ -375,6 +419,7 @@ namespace Svix
         /// Set the additional headers to be sent to the endpoint.
         /// </summary>
         public async Task<bool> UpdateHeadersAsync(
+            string sourceId,
             string endpointId,
             IngestEndpointHeadersIn ingestEndpointHeadersIn,
             CancellationToken cancellationToken = default
@@ -388,7 +433,11 @@ namespace Svix
                 var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
                     method: HttpMethod.Put,
                     path: "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/headers",
-                    pathParams: new Dictionary<string, string> { { "endpoint_id", endpointId } },
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "source_id", sourceId },
+                        { "endpoint_id", endpointId },
+                    },
                     content: ingestEndpointHeadersIn,
                     cancellationToken: cancellationToken
                 );
@@ -406,6 +455,7 @@ namespace Svix
         /// Set the additional headers to be sent to the endpoint.
         /// </summary>
         public bool UpdateHeaders(
+            string sourceId,
             string endpointId,
             IngestEndpointHeadersIn ingestEndpointHeadersIn
         )
@@ -418,7 +468,11 @@ namespace Svix
                 var response = _client.SvixHttpClient.SendRequest<bool>(
                     method: HttpMethod.Put,
                     path: "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/headers",
-                    pathParams: new Dictionary<string, string> { { "endpoint_id", endpointId } },
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "source_id", sourceId },
+                        { "endpoint_id", endpointId },
+                    },
                     content: ingestEndpointHeadersIn
                 );
                 return response.Data;
@@ -438,6 +492,7 @@ namespace Svix
         /// For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
         /// </summary>
         public async Task<IngestEndpointSecretOut> GetSecretAsync(
+            string sourceId,
             string endpointId,
             CancellationToken cancellationToken = default
         )
@@ -450,6 +505,7 @@ namespace Svix
                         path: "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/secret",
                         pathParams: new Dictionary<string, string>
                         {
+                            { "source_id", sourceId },
                             { "endpoint_id", endpointId },
                         },
                         cancellationToken: cancellationToken
@@ -470,14 +526,18 @@ namespace Svix
         /// This is used to verify the authenticity of the webhook.
         /// For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
         /// </summary>
-        public IngestEndpointSecretOut GetSecret(string endpointId)
+        public IngestEndpointSecretOut GetSecret(string sourceId, string endpointId)
         {
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<IngestEndpointSecretOut>(
                     method: HttpMethod.Get,
                     path: "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/secret",
-                    pathParams: new Dictionary<string, string> { { "endpoint_id", endpointId } }
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "source_id", sourceId },
+                        { "endpoint_id", endpointId },
+                    }
                 );
                 return response.Data;
             }
@@ -495,6 +555,7 @@ namespace Svix
         /// The previous secret will remain valid for the next 24 hours.
         /// </summary>
         public async Task<bool> RotateSecretAsync(
+            string sourceId,
             string endpointId,
             IngestEndpointSecretIn ingestEndpointSecretIn,
             IngestEndpointRotateSecretOptions? options = null,
@@ -509,7 +570,11 @@ namespace Svix
                 var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
                     method: HttpMethod.Post,
                     path: "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/secret/rotate",
-                    pathParams: new Dictionary<string, string> { { "endpoint_id", endpointId } },
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "source_id", sourceId },
+                        { "endpoint_id", endpointId },
+                    },
                     queryParams: options?.QueryParams(),
                     headerParams: options?.HeaderParams(),
                     content: ingestEndpointSecretIn,
@@ -531,6 +596,7 @@ namespace Svix
         /// The previous secret will remain valid for the next 24 hours.
         /// </summary>
         public bool RotateSecret(
+            string sourceId,
             string endpointId,
             IngestEndpointSecretIn ingestEndpointSecretIn,
             IngestEndpointRotateSecretOptions? options = null
@@ -544,7 +610,11 @@ namespace Svix
                 var response = _client.SvixHttpClient.SendRequest<bool>(
                     method: HttpMethod.Post,
                     path: "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/secret/rotate",
-                    pathParams: new Dictionary<string, string> { { "endpoint_id", endpointId } },
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "source_id", sourceId },
+                        { "endpoint_id", endpointId },
+                    },
                     queryParams: options?.QueryParams(),
                     headerParams: options?.HeaderParams(),
                     content: ingestEndpointSecretIn
