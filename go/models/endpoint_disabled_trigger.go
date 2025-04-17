@@ -33,3 +33,8 @@ func (v *EndpointDisabledTrigger) UnmarshalJSON(src []byte) error {
 	return fmt.Errorf("`%+v` is not a valid EndpointDisabledTrigger", value)
 
 }
+
+var EndpointDisabledTriggerFromString = map[string]EndpointDisabledTrigger{
+	"manual":    ENDPOINTDISABLEDTRIGGER_MANUAL,
+	"automatic": ENDPOINTDISABLEDTRIGGER_AUTOMATIC,
+}

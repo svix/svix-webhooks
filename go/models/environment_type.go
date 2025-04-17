@@ -33,3 +33,8 @@ func (v *EnvironmentType) UnmarshalJSON(src []byte) error {
 	return fmt.Errorf("`%+v` is not a valid EnvironmentType", value)
 
 }
+
+var EnvironmentTypeFromString = map[string]EnvironmentType{
+	"development": ENVIRONMENTTYPE_DEVELOPMENT,
+	"production":  ENVIRONMENTTYPE_PRODUCTION,
+}

@@ -36,3 +36,8 @@ func (v *MessageAttemptTriggerType) UnmarshalJSON(src []byte) error {
 	return fmt.Errorf("`%+v` is not a valid MessageAttemptTriggerType", value)
 
 }
+
+var MessageAttemptTriggerTypeFromInt64 = map[int64]MessageAttemptTriggerType{
+	0: MESSAGEATTEMPTTRIGGERTYPE_SCHEDULED,
+	1: MESSAGEATTEMPTTRIGGERTYPE_MANUAL,
+}

@@ -40,3 +40,9 @@ func (v *{{ ty_name }}) UnmarshalJSON(src []byte) error {
 	return fmt.Errorf("`%+v` is not a valid {{ ty_name }}", value)
 
 }
+
+var {{ ty_name }}FromString = map[string]{{ ty_name }}{
+	{% for value in type.values -%}
+	"{{ value }}" : {{ type.name |  to_upper_snake_case | replace("_", "") }}_{{ value | to_upper_snake_case }},
+	{% endfor -%}
+}
