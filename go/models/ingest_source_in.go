@@ -60,7 +60,6 @@ type IngestSourceInConfig interface {
 	isIngestSourceInConfig()
 }
 
-func (emptyMap) isIngestSourceInConfig()        {}
 func (CronConfig) isIngestSourceInConfig()      {}
 func (AdobeSignConfig) isIngestSourceInConfig() {}
 func (SvixConfig) isIngestSourceInConfig()      {}
@@ -145,7 +144,7 @@ var IngestSourceInTypeWithNoConfig = map[string]bool{
 func (i IngestSourceIn) MarshalJSON() ([]byte, error) {
 	type Alias IngestSourceIn
 	if _, found := IngestSourceInTypeWithNoConfig[string(i.Type)]; found {
-		i.Config = emptyMap{}
+		i.Config = nil
 	}
 	return json.Marshal(&struct{ Alias }{Alias: (Alias)(i)})
 }

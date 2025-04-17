@@ -65,7 +65,6 @@ type IngestSourceOutConfig interface {
 	isIngestSourceOutConfig()
 }
 
-func (emptyMap) isIngestSourceOutConfig()           {}
 func (CronConfig) isIngestSourceOutConfig()         {}
 func (AdobeSignConfigOut) isIngestSourceOutConfig() {}
 func (SvixConfigOut) isIngestSourceOutConfig()      {}
@@ -150,7 +149,7 @@ var IngestSourceOutTypeWithNoConfig = map[string]bool{
 func (i IngestSourceOut) MarshalJSON() ([]byte, error) {
 	type Alias IngestSourceOut
 	if _, found := IngestSourceOutTypeWithNoConfig[string(i.Type)]; found {
-		i.Config = emptyMap{}
+		i.Config = nil
 	}
 	return json.Marshal(&struct{ Alias }{Alias: (Alias)(i)})
 }
