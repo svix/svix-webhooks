@@ -149,3 +149,31 @@ func (i IngestSourceIn) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(&struct{ Alias }{Alias: (Alias)(i)})
 }
+
+var IngestSourceInTypeFromString = map[string]IngestSourceInType{
+	"generic-webhook": IngestSourceInTypeGenericWebhook,
+	"cron":            IngestSourceInTypeCron,
+	"adobe-sign":      IngestSourceInTypeAdobeSign,
+	"beehiiv":         IngestSourceInTypeBeehiiv,
+	"brex":            IngestSourceInTypeBrex,
+	"clerk":           IngestSourceInTypeClerk,
+	"docusign":        IngestSourceInTypeDocusign,
+	"github":          IngestSourceInTypeGithub,
+	"guesty":          IngestSourceInTypeGuesty,
+	"hubspot":         IngestSourceInTypeHubspot,
+	"incident-io":     IngestSourceInTypeIncidentIo,
+	"lithic":          IngestSourceInTypeLithic,
+	"nash":            IngestSourceInTypeNash,
+	"pleo":            IngestSourceInTypePleo,
+	"replicate":       IngestSourceInTypeReplicate,
+	"resend":          IngestSourceInTypeResend,
+	"safebase":        IngestSourceInTypeSafebase,
+	"sardine":         IngestSourceInTypeSardine,
+	"segment":         IngestSourceInTypeSegment,
+	"shopify":         IngestSourceInTypeShopify,
+	"slack":           IngestSourceInTypeSlack,
+	"stripe":          IngestSourceInTypeStripe,
+	"stych":           IngestSourceInTypeStych,
+	"svix":            IngestSourceInTypeSvix,
+	"zoom":            IngestSourceInTypeZoom,
+}

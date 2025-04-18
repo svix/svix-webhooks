@@ -35,3 +35,9 @@ func (v *BackgroundTaskStatus) UnmarshalJSON(src []byte) error {
 	return fmt.Errorf("`%+v` is not a valid BackgroundTaskStatus", value)
 
 }
+
+var BackgroundTaskStatusFromString = map[string]BackgroundTaskStatus{
+	"running":  BACKGROUNDTASKSTATUS_RUNNING,
+	"finished": BACKGROUNDTASKSTATUS_FINISHED,
+	"failed":   BACKGROUNDTASKSTATUS_FAILED,
+}

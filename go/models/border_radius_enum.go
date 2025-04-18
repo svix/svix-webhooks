@@ -39,3 +39,11 @@ func (v *BorderRadiusEnum) UnmarshalJSON(src []byte) error {
 	return fmt.Errorf("`%+v` is not a valid BorderRadiusEnum", value)
 
 }
+
+var BorderRadiusEnumFromString = map[string]BorderRadiusEnum{
+	"none": BORDERRADIUSENUM_NONE,
+	"lg":   BORDERRADIUSENUM_LG,
+	"md":   BORDERRADIUSENUM_MD,
+	"sm":   BORDERRADIUSENUM_SM,
+	"full": BORDERRADIUSENUM_FULL,
+}

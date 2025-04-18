@@ -48,3 +48,12 @@ func (v *StatusCodeClass) UnmarshalJSON(src []byte) error {
 	return fmt.Errorf("`%+v` is not a valid StatusCodeClass", value)
 
 }
+
+var StatusCodeClassFromInt64 = map[int64]StatusCodeClass{
+	0:   STATUSCODECLASS_CODE_NONE,
+	100: STATUSCODECLASS_CODE1XX,
+	200: STATUSCODECLASS_CODE2XX,
+	300: STATUSCODECLASS_CODE3XX,
+	400: STATUSCODECLASS_CODE4XX,
+	500: STATUSCODECLASS_CODE5XX,
+}

@@ -98,3 +98,9 @@ func (i {{ ty_name }}) MarshalJSON() ([]byte, error) {
 	{% endif -%}
 	return json.Marshal(&struct {Alias}{Alias: (Alias)(i)})
 }
+
+var {{ ty_name }}{{ discriminator_field }}FromString = map[string]{{ ty_name }}{{ discriminator_field }}{
+	{% for v in type.variants -%}
+	"{{ v.name }}" : {{ ty_name }}{{ discriminator_field }}{{ v.name | to_upper_camel_case }},
+	{% endfor -%}
+}
