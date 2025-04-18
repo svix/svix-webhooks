@@ -39,8 +39,12 @@ type IngestEndpointRotateSecretOptions struct {
 // List ingest endpoints.
 func (ingestEndpoint *IngestEndpoint) List(
 	ctx context.Context,
+	sourceId string,
 	o *IngestEndpointListOptions,
 ) (*models.ListResponseIngestEndpointOut, error) {
+	pathMap := map[string]string{
+		"source_id": sourceId,
+	}
 	queryMap := map[string]string{}
 	var err error
 	if o != nil {
@@ -56,7 +60,7 @@ func (ingestEndpoint *IngestEndpoint) List(
 		ingestEndpoint.client,
 		"GET",
 		"/ingest/api/v1/source/{source_id}/endpoint",
-		nil,
+		pathMap,
 		queryMap,
 		nil,
 		nil,
@@ -66,9 +70,13 @@ func (ingestEndpoint *IngestEndpoint) List(
 // Create an ingest endpoint.
 func (ingestEndpoint *IngestEndpoint) Create(
 	ctx context.Context,
+	sourceId string,
 	ingestEndpointIn models.IngestEndpointIn,
 	o *IngestEndpointCreateOptions,
 ) (*models.IngestEndpointOut, error) {
+	pathMap := map[string]string{
+		"source_id": sourceId,
+	}
 	headerMap := map[string]string{}
 	var err error
 	if o != nil {
@@ -82,7 +90,7 @@ func (ingestEndpoint *IngestEndpoint) Create(
 		ingestEndpoint.client,
 		"POST",
 		"/ingest/api/v1/source/{source_id}/endpoint",
-		nil,
+		pathMap,
 		nil,
 		headerMap,
 		&ingestEndpointIn,
@@ -92,9 +100,11 @@ func (ingestEndpoint *IngestEndpoint) Create(
 // Get an ingest endpoint.
 func (ingestEndpoint *IngestEndpoint) Get(
 	ctx context.Context,
+	sourceId string,
 	endpointId string,
 ) (*models.IngestEndpointOut, error) {
 	pathMap := map[string]string{
+		"source_id":   sourceId,
 		"endpoint_id": endpointId,
 	}
 	return internal.ExecuteRequest[any, models.IngestEndpointOut](
@@ -112,10 +122,12 @@ func (ingestEndpoint *IngestEndpoint) Get(
 // Update an ingest endpoint.
 func (ingestEndpoint *IngestEndpoint) Update(
 	ctx context.Context,
+	sourceId string,
 	endpointId string,
 	ingestEndpointUpdate models.IngestEndpointUpdate,
 ) (*models.IngestEndpointOut, error) {
 	pathMap := map[string]string{
+		"source_id":   sourceId,
 		"endpoint_id": endpointId,
 	}
 	return internal.ExecuteRequest[models.IngestEndpointUpdate, models.IngestEndpointOut](
@@ -133,9 +145,11 @@ func (ingestEndpoint *IngestEndpoint) Update(
 // Delete an ingest endpoint.
 func (ingestEndpoint *IngestEndpoint) Delete(
 	ctx context.Context,
+	sourceId string,
 	endpointId string,
 ) error {
 	pathMap := map[string]string{
+		"source_id":   sourceId,
 		"endpoint_id": endpointId,
 	}
 	_, err := internal.ExecuteRequest[any, any](
@@ -154,9 +168,11 @@ func (ingestEndpoint *IngestEndpoint) Delete(
 // Get the additional headers to be sent with the ingest.
 func (ingestEndpoint *IngestEndpoint) GetHeaders(
 	ctx context.Context,
+	sourceId string,
 	endpointId string,
 ) (*models.IngestEndpointHeadersOut, error) {
 	pathMap := map[string]string{
+		"source_id":   sourceId,
 		"endpoint_id": endpointId,
 	}
 	return internal.ExecuteRequest[any, models.IngestEndpointHeadersOut](
@@ -174,10 +190,12 @@ func (ingestEndpoint *IngestEndpoint) GetHeaders(
 // Set the additional headers to be sent to the endpoint.
 func (ingestEndpoint *IngestEndpoint) UpdateHeaders(
 	ctx context.Context,
+	sourceId string,
 	endpointId string,
 	ingestEndpointHeadersIn models.IngestEndpointHeadersIn,
 ) error {
 	pathMap := map[string]string{
+		"source_id":   sourceId,
 		"endpoint_id": endpointId,
 	}
 	_, err := internal.ExecuteRequest[models.IngestEndpointHeadersIn, any](
@@ -199,9 +217,11 @@ func (ingestEndpoint *IngestEndpoint) UpdateHeaders(
 // For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
 func (ingestEndpoint *IngestEndpoint) GetSecret(
 	ctx context.Context,
+	sourceId string,
 	endpointId string,
 ) (*models.IngestEndpointSecretOut, error) {
 	pathMap := map[string]string{
+		"source_id":   sourceId,
 		"endpoint_id": endpointId,
 	}
 	return internal.ExecuteRequest[any, models.IngestEndpointSecretOut](
@@ -221,11 +241,13 @@ func (ingestEndpoint *IngestEndpoint) GetSecret(
 // The previous secret will remain valid for the next 24 hours.
 func (ingestEndpoint *IngestEndpoint) RotateSecret(
 	ctx context.Context,
+	sourceId string,
 	endpointId string,
 	ingestEndpointSecretIn models.IngestEndpointSecretIn,
 	o *IngestEndpointRotateSecretOptions,
 ) error {
 	pathMap := map[string]string{
+		"source_id":   sourceId,
 		"endpoint_id": endpointId,
 	}
 	headerMap := map[string]string{}
