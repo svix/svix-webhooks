@@ -28,9 +28,10 @@ data class IngestEndpointRotateSecretOptions(val idempotencyKey: String? = null)
 class IngestEndpoint(private val client: SvixHttpClient) {
     /** List ingest endpoints. */
     suspend fun list(
-        options: IngestEndpointListOptions = IngestEndpointListOptions()
+        sourceId: String,
+        options: IngestEndpointListOptions = IngestEndpointListOptions(),
     ): ListResponseIngestEndpointOut {
-        val url = client.newUrlBuilder().encodedPath("/ingest/api/v1/source/{source_id}/endpoint")
+        val url = client.newUrlBuilder().encodedPath("/ingest/api/v1/source/$sourceId/endpoint")
         options.limit?.let { url.addQueryParameter("limit", serializeQueryParam(it)) }
         options.iterator?.let { url.addQueryParameter("iterator", it) }
         options.order?.let { url.addQueryParameter("order", serializeQueryParam(it)) }
@@ -39,10 +40,11 @@ class IngestEndpoint(private val client: SvixHttpClient) {
 
     /** Create an ingest endpoint. */
     suspend fun create(
+        sourceId: String,
         ingestEndpointIn: IngestEndpointIn,
         options: IngestEndpointCreateOptions = IngestEndpointCreateOptions(),
     ): IngestEndpointOut {
-        val url = client.newUrlBuilder().encodedPath("/ingest/api/v1/source/{source_id}/endpoint")
+        val url = client.newUrlBuilder().encodedPath("/ingest/api/v1/source/$sourceId/endpoint")
         val headers = Headers.Builder()
         options.idempotencyKey?.let { headers.add("idempotency-key", it) }
 
@@ -55,23 +57,24 @@ class IngestEndpoint(private val client: SvixHttpClient) {
     }
 
     /** Get an ingest endpoint. */
-    suspend fun get(endpointId: String): IngestEndpointOut {
+    suspend fun get(sourceId: String, endpointId: String): IngestEndpointOut {
         val url =
             client
                 .newUrlBuilder()
-                .encodedPath("/ingest/api/v1/source/{source_id}/endpoint/$endpointId")
+                .encodedPath("/ingest/api/v1/source/$sourceId/endpoint/$endpointId")
         return client.executeRequest<Any, IngestEndpointOut>("GET", url.build())
     }
 
     /** Update an ingest endpoint. */
     suspend fun update(
+        sourceId: String,
         endpointId: String,
         ingestEndpointUpdate: IngestEndpointUpdate,
     ): IngestEndpointOut {
         val url =
             client
                 .newUrlBuilder()
-                .encodedPath("/ingest/api/v1/source/{source_id}/endpoint/$endpointId")
+                .encodedPath("/ingest/api/v1/source/$sourceId/endpoint/$endpointId")
 
         return client.executeRequest<IngestEndpointUpdate, IngestEndpointOut>(
             "PUT",
@@ -81,32 +84,33 @@ class IngestEndpoint(private val client: SvixHttpClient) {
     }
 
     /** Delete an ingest endpoint. */
-    suspend fun delete(endpointId: String) {
+    suspend fun delete(sourceId: String, endpointId: String) {
         val url =
             client
                 .newUrlBuilder()
-                .encodedPath("/ingest/api/v1/source/{source_id}/endpoint/$endpointId")
+                .encodedPath("/ingest/api/v1/source/$sourceId/endpoint/$endpointId")
         client.executeRequest<Any, Boolean>("DELETE", url.build())
     }
 
     /** Get the additional headers to be sent with the ingest. */
-    suspend fun getHeaders(endpointId: String): IngestEndpointHeadersOut {
+    suspend fun getHeaders(sourceId: String, endpointId: String): IngestEndpointHeadersOut {
         val url =
             client
                 .newUrlBuilder()
-                .encodedPath("/ingest/api/v1/source/{source_id}/endpoint/$endpointId/headers")
+                .encodedPath("/ingest/api/v1/source/$sourceId/endpoint/$endpointId/headers")
         return client.executeRequest<Any, IngestEndpointHeadersOut>("GET", url.build())
     }
 
     /** Set the additional headers to be sent to the endpoint. */
     suspend fun updateHeaders(
+        sourceId: String,
         endpointId: String,
         ingestEndpointHeadersIn: IngestEndpointHeadersIn,
     ) {
         val url =
             client
                 .newUrlBuilder()
-                .encodedPath("/ingest/api/v1/source/{source_id}/endpoint/$endpointId/headers")
+                .encodedPath("/ingest/api/v1/source/$sourceId/endpoint/$endpointId/headers")
 
         client.executeRequest<IngestEndpointHeadersIn, Boolean>(
             "PUT",
@@ -121,11 +125,11 @@ class IngestEndpoint(private val client: SvixHttpClient) {
      * This is used to verify the authenticity of the webhook. For more information please refer to
      * [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
      */
-    suspend fun getSecret(endpointId: String): IngestEndpointSecretOut {
+    suspend fun getSecret(sourceId: String, endpointId: String): IngestEndpointSecretOut {
         val url =
             client
                 .newUrlBuilder()
-                .encodedPath("/ingest/api/v1/source/{source_id}/endpoint/$endpointId/secret")
+                .encodedPath("/ingest/api/v1/source/$sourceId/endpoint/$endpointId/secret")
         return client.executeRequest<Any, IngestEndpointSecretOut>("GET", url.build())
     }
 
@@ -135,6 +139,7 @@ class IngestEndpoint(private val client: SvixHttpClient) {
      * The previous secret will remain valid for the next 24 hours.
      */
     suspend fun rotateSecret(
+        sourceId: String,
         endpointId: String,
         ingestEndpointSecretIn: IngestEndpointSecretIn,
         options: IngestEndpointRotateSecretOptions = IngestEndpointRotateSecretOptions(),
@@ -142,7 +147,7 @@ class IngestEndpoint(private val client: SvixHttpClient) {
         val url =
             client
                 .newUrlBuilder()
-                .encodedPath("/ingest/api/v1/source/{source_id}/endpoint/$endpointId/secret/rotate")
+                .encodedPath("/ingest/api/v1/source/$sourceId/endpoint/$endpointId/secret/rotate")
         val headers = Headers.Builder()
         options.idempotencyKey?.let { headers.add("idempotency-key", it) }
 

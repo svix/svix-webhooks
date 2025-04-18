@@ -53,6 +53,7 @@ export class IngestEndpoint {
 
   /** List ingest endpoints. */
   public list(
+    sourceId: string,
     options?: IngestEndpointListOptions
   ): Promise<ListResponseIngestEndpointOut> {
     const request = new SvixRequest(
@@ -60,6 +61,7 @@ export class IngestEndpoint {
       "/ingest/api/v1/source/{source_id}/endpoint"
     );
 
+    request.setPathParam("source_id", sourceId);
     request.setQueryParam("limit", options?.limit);
     request.setQueryParam("iterator", options?.iterator);
     request.setQueryParam("order", options?.order);
@@ -72,6 +74,7 @@ export class IngestEndpoint {
 
   /** Create an ingest endpoint. */
   public create(
+    sourceId: string,
     ingestEndpointIn: IngestEndpointIn,
     options?: IngestEndpointCreateOptions
   ): Promise<IngestEndpointOut> {
@@ -80,6 +83,7 @@ export class IngestEndpoint {
       "/ingest/api/v1/source/{source_id}/endpoint"
     );
 
+    request.setPathParam("source_id", sourceId);
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
     request.setBody(IngestEndpointInSerializer._toJsonObject(ingestEndpointIn));
 
@@ -87,12 +91,13 @@ export class IngestEndpoint {
   }
 
   /** Get an ingest endpoint. */
-  public get(endpointId: string): Promise<IngestEndpointOut> {
+  public get(sourceId: string, endpointId: string): Promise<IngestEndpointOut> {
     const request = new SvixRequest(
       HttpMethod.GET,
       "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}"
     );
 
+    request.setPathParam("source_id", sourceId);
     request.setPathParam("endpoint_id", endpointId);
 
     return request.send(this.requestCtx, IngestEndpointOutSerializer._fromJsonObject);
@@ -100,6 +105,7 @@ export class IngestEndpoint {
 
   /** Update an ingest endpoint. */
   public update(
+    sourceId: string,
     endpointId: string,
     ingestEndpointUpdate: IngestEndpointUpdate
   ): Promise<IngestEndpointOut> {
@@ -108,6 +114,7 @@ export class IngestEndpoint {
       "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}"
     );
 
+    request.setPathParam("source_id", sourceId);
     request.setPathParam("endpoint_id", endpointId);
     request.setBody(IngestEndpointUpdateSerializer._toJsonObject(ingestEndpointUpdate));
 
@@ -115,24 +122,29 @@ export class IngestEndpoint {
   }
 
   /** Delete an ingest endpoint. */
-  public delete(endpointId: string): Promise<void> {
+  public delete(sourceId: string, endpointId: string): Promise<void> {
     const request = new SvixRequest(
       HttpMethod.DELETE,
       "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}"
     );
 
+    request.setPathParam("source_id", sourceId);
     request.setPathParam("endpoint_id", endpointId);
 
     return request.sendNoResponseBody(this.requestCtx);
   }
 
   /** Get the additional headers to be sent with the ingest. */
-  public getHeaders(endpointId: string): Promise<IngestEndpointHeadersOut> {
+  public getHeaders(
+    sourceId: string,
+    endpointId: string
+  ): Promise<IngestEndpointHeadersOut> {
     const request = new SvixRequest(
       HttpMethod.GET,
       "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/headers"
     );
 
+    request.setPathParam("source_id", sourceId);
     request.setPathParam("endpoint_id", endpointId);
 
     return request.send(
@@ -143,6 +155,7 @@ export class IngestEndpoint {
 
   /** Set the additional headers to be sent to the endpoint. */
   public updateHeaders(
+    sourceId: string,
     endpointId: string,
     ingestEndpointHeadersIn: IngestEndpointHeadersIn
   ): Promise<void> {
@@ -151,6 +164,7 @@ export class IngestEndpoint {
       "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/headers"
     );
 
+    request.setPathParam("source_id", sourceId);
     request.setPathParam("endpoint_id", endpointId);
     request.setBody(
       IngestEndpointHeadersInSerializer._toJsonObject(ingestEndpointHeadersIn)
@@ -165,12 +179,16 @@ export class IngestEndpoint {
    * This is used to verify the authenticity of the webhook.
    * For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
    */
-  public getSecret(endpointId: string): Promise<IngestEndpointSecretOut> {
+  public getSecret(
+    sourceId: string,
+    endpointId: string
+  ): Promise<IngestEndpointSecretOut> {
     const request = new SvixRequest(
       HttpMethod.GET,
       "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/secret"
     );
 
+    request.setPathParam("source_id", sourceId);
     request.setPathParam("endpoint_id", endpointId);
 
     return request.send(
@@ -185,6 +203,7 @@ export class IngestEndpoint {
    * The previous secret will remain valid for the next 24 hours.
    */
   public rotateSecret(
+    sourceId: string,
     endpointId: string,
     ingestEndpointSecretIn: IngestEndpointSecretIn,
     options?: IngestEndpointRotateSecretOptions
@@ -194,6 +213,7 @@ export class IngestEndpoint {
       "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/secret/rotate"
     );
 
+    request.setPathParam("source_id", sourceId);
     request.setPathParam("endpoint_id", endpointId);
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
     request.setBody(
