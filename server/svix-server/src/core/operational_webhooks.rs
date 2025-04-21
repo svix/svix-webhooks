@@ -161,7 +161,6 @@ impl OperationalWebhookSenderInner {
             .to_string();
 
         let recipient_org_id = recipient_org_id.to_string();
-        let url_clone = url.clone(); // Clone for use in the async block
 
         tokio::spawn(async move {
             // This sends a webhook under the Svix management organization. This organization contains
@@ -182,7 +181,7 @@ impl OperationalWebhookSenderInner {
 
             match resp {
                 Ok(_) => {}
-                // Handle 404s with more context
+                // Ignore 404s because not every org will have an associated application
                 Err(svix::error::Error::Http(svix::error::HttpErrorContent {
                     status: StatusCode::NOT_FOUND,
                     ..
@@ -194,9 +193,8 @@ impl OperationalWebhookSenderInner {
                 }
                 Err(e) => {
                     tracing::error!(
-                        "Failed sending operational webhook for {} to URL {}: {}",
+                        "Failed sending operational webhook for {} {}",
                         recipient_org_id,
-                        url_clone,
                         e.to_string()
                     );
                 }
