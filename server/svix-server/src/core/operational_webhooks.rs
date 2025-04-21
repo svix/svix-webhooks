@@ -119,14 +119,14 @@ impl OperationalWebhookSenderInner {
         // Sanitize the URL if present
         if let Some(url) = &mut url {
             // Remove trailing slashes
-            while cleaned_url.ends_with('/') {
-                cleaned_url.pop();
+            while curl.ends_with('/') {
+                url.pop();
             }
         }
 
         Arc::new(Self {
             signing_config: keys,
-            url: sanitized_url,
+            url,
         })
     }
 
