@@ -115,16 +115,14 @@ pub struct OperationalWebhookSenderInner {
 }
 
 impl OperationalWebhookSenderInner {
-    pub fn new(keys: Arc<JwtSigningConfig>, url: Option<String>) -> Arc<Self> {
+    pub fn new(keys: Arc<JwtSigningConfig>, mut url: Option<String>) -> Arc<Self> {
         // Sanitize the URL if present
-        let sanitized_url = url.as_ref().map(|url_str| {
+        if let Some(url) = &mut url {
             // Remove trailing slashes
-            let mut cleaned_url = url_str.to_string();
             while cleaned_url.ends_with('/') {
                 cleaned_url.pop();
             }
-            cleaned_url
-        });
+        }
 
         Arc::new(Self {
             signing_config: keys,

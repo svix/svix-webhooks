@@ -76,34 +76,33 @@ fn default_redis_pending_duration_secs() -> u64 {
     45
 }
 
-fn validate_operational_webhook_url(url: &Option<String>) -> Result<(), ValidationError> {
-    if let Some(url_str) = url {
-        match Url::parse(url_str) {
-            Ok(url) => {
-                // Verify scheme is http or https
-                if url.scheme() != "http" && url.scheme() != "https" {
-                    return Err(validation_error(
-                        Some("operational_webhook_address"),
-                        Some("URL scheme must be http or https"),
-                    ));
-                }
-
-                // Verify there's a host
-                if url.host().is_none() {
-                    return Err(validation_error(
-                        Some("operational_webhook_address"),
-                        Some("URL must include a valid host"),
-                    ));
-                }
-            }
-            Err(_) => {
+fn validate_operational_webhook_url(url: &str) -> Result<(), ValidationError> {
+    match Url::parse(url) {
+        Ok(url) => {
+            // Verify scheme is http or https
+            if url.scheme() != "http" && url.scheme() != "https" {
                 return Err(validation_error(
                     Some("operational_webhook_address"),
-                    Some("Invalid URL format"),
+                    Some("URL scheme must be http or https"),
+                ));
+            }
+
+            // Verify there's a host
+            if url.host().is_none() {
+                return Err(validation_error(
+                    Some("operational_webhook_address"),
+                    Some("URL must include a valid host"),
                 ));
             }
         }
+        Err(_) => {
+            return Err(validation_error(
+                Some("operational_webhook_address"),
+                Some("Invalid URL format"),
+            ));
+        }
     }
+
     Ok(())
 }
 
