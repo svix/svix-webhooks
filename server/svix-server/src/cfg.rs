@@ -11,11 +11,13 @@ use figment::{
 use ipnet::IpNet;
 use serde::{Deserialize, Deserializer};
 use tracing::Level;
+use url::Url;
 use validator::{Validate, ValidationError};
 
 use crate::{
     core::{cryptography::Encryption, security::JwtSigningConfig},
     error::Result,
+    v1::utils::validation_error,
 };
 
 fn deserialize_main_secret<'de, D>(deserializer: D) -> Result<Encryption, D::Error>
@@ -74,6 +76,36 @@ fn default_redis_pending_duration_secs() -> u64 {
     45
 }
 
+fn validate_operational_webhook_url(url: &str) -> Result<(), ValidationError> {
+    match Url::parse(url) {
+        Ok(url) => {
+            // Verify scheme is http or https
+            if url.scheme() != "http" && url.scheme() != "https" {
+                return Err(validation_error(
+                    Some("operational_webhook_address"),
+                    Some("URL scheme must be http or https"),
+                ));
+            }
+
+            // Verify there's a host
+            if url.host().is_none() {
+                return Err(validation_error(
+                    Some("operational_webhook_address"),
+                    Some("URL must include a valid host"),
+                ));
+            }
+        }
+        Err(_) => {
+            return Err(validation_error(
+                Some("operational_webhook_address"),
+                Some("Invalid URL format"),
+            ));
+        }
+    }
+
+    Ok(())
+}
+
 #[derive(Clone, Debug, Deserialize, Validate)]
 #[validate(
     schema(function = "validate_config_complete"),
@@ -85,6 +117,7 @@ pub struct ConfigurationInner {
 
     /// The address to send operational webhooks to. When None, operational webhooks will not be
     /// sent. When Some, the API server with the given URL will be used to send operational webhooks.
+    #[validate(custom = "validate_operational_webhook_url")]
     pub operational_webhook_address: Option<String>,
 
     /// The main secret used by Svix. Used for client-side encryption of sensitive data, etc.

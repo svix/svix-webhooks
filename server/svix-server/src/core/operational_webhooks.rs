@@ -115,7 +115,15 @@ pub struct OperationalWebhookSenderInner {
 }
 
 impl OperationalWebhookSenderInner {
-    pub fn new(keys: Arc<JwtSigningConfig>, url: Option<String>) -> Arc<Self> {
+    pub fn new(keys: Arc<JwtSigningConfig>, mut url: Option<String>) -> Arc<Self> {
+        // Sanitize the URL if present
+        if let Some(url) = &mut url {
+            // Remove trailing slashes
+            while url.ends_with('/') {
+                url.pop();
+            }
+        }
+
         Arc::new(Self {
             signing_config: keys,
             url,
@@ -177,7 +185,7 @@ impl OperationalWebhookSenderInner {
                     ..
                 })) => {
                     tracing::warn!(
-                        "Operational webhooks are enabled but no listener set for {}",
+                        "Operational webhooks are enabled, but no listener found for organization {}",
                         recipient_org_id,
                     );
                 }
