@@ -187,25 +187,10 @@ impl OperationalWebhookSenderInner {
                     status: StatusCode::NOT_FOUND,
                     ..
                 })) => {
-                    // Try to determine if it's a connection issue or an app not found issue
-                    if let Some(_app_resp) = svix_api
-                        .application()
-                        .get(recipient_org_id.clone())
-                        .await
-                        .ok()
-                    {
-                        // App exists but endpoint not found
-                        tracing::warn!(
-                            "Operational webhooks are enabled, but no endpoint is configured for organization {}",
-                            recipient_org_id,
-                        );
-                    } else {
-                        // App doesn't exist
-                        tracing::warn!(
-                            "Operational webhooks are enabled, but no application exists for organization {}",
-                            recipient_org_id,
-                        );
-                    }
+                    tracing::warn!(
+                        "Operational webhooks are enabled, but no listener found for organization {}",
+                        recipient_org_id,
+                    );
                 }
                 Err(e) => {
                     tracing::error!(
