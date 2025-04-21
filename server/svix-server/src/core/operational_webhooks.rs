@@ -119,19 +119,13 @@ impl OperationalWebhookSenderInner {
         // Sanitize the URL if present
         let sanitized_url = url.as_ref().map(|url_str| {
             // Remove trailing slashes
-            let mut cleaned_url = url_str.trim().to_string();
+            let mut cleaned_url = url_str.to_string();
             while cleaned_url.ends_with('/') {
                 cleaned_url.pop();
             }
-            
-            // Return the cleaned URL or original if empty
-            if !cleaned_url.is_empty() {
-                cleaned_url
-            } else {
-                url_str.clone()
-            }
+            cleaned_url
         });
-        
+
         Arc::new(Self {
             signing_config: keys,
             url: sanitized_url,
@@ -167,7 +161,7 @@ impl OperationalWebhookSenderInner {
             .to_string();
 
         let recipient_org_id = recipient_org_id.to_string();
-        let url_clone = url.clone();  // Clone for use in the async block
+        let url_clone = url.clone(); // Clone for use in the async block
 
         tokio::spawn(async move {
             // This sends a webhook under the Svix management organization. This organization contains
@@ -194,7 +188,12 @@ impl OperationalWebhookSenderInner {
                     ..
                 })) => {
                     // Try to determine if it's a connection issue or an app not found issue
-                    if let Some(app_resp) = svix_api.application().get(recipient_org_id.clone(), None).await.ok() {
+                    if let Some(_app_resp) = svix_api
+                        .application()
+                        .get(recipient_org_id.clone())
+                        .await
+                        .ok()
+                    {
                         // App exists but endpoint not found
                         tracing::warn!(
                             "Operational webhooks are enabled, but no endpoint is configured for organization {} (app exists)",
@@ -207,16 +206,6 @@ impl OperationalWebhookSenderInner {
                             recipient_org_id,
                         );
                     }
-                }
-                // Add specific handling for connection errors
-                Err(svix::error::Error::Http(svix::error::HttpErrorContent {
-                    status: StatusCode::BAD_REQUEST,
-                    ..
-                })) => {
-                    tracing::error!(
-                        "Failed sending operational webhook: Bad request. Check URL format: {}",
-                        url_clone,
-                    );
                 }
                 Err(e) => {
                     tracing::error!(
