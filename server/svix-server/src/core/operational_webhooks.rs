@@ -196,7 +196,7 @@ impl OperationalWebhookSenderInner {
                     {
                         // App exists but endpoint not found
                         tracing::warn!(
-                            "Operational webhooks are enabled, but no endpoint is configured for organization {} (app exists)",
+                            "Operational webhooks are enabled, but no endpoint is configured for organization {}",
                             recipient_org_id,
                         );
                     } else {
