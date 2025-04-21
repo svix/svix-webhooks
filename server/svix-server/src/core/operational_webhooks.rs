@@ -119,7 +119,7 @@ impl OperationalWebhookSenderInner {
         // Sanitize the URL if present
         if let Some(url) = &mut url {
             // Remove trailing slashes
-            while curl.ends_with('/') {
+            while url.ends_with('/') {
                 url.pop();
             }
         }

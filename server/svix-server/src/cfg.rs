@@ -12,7 +12,7 @@ use ipnet::IpNet;
 use serde::{Deserialize, Deserializer};
 use tracing::Level;
 use url::Url;
-use validator::{Validate, ValidationError, ValidationErrors};
+use validator::{Validate, ValidationError};
 
 use crate::{
     core::{cryptography::Encryption, security::JwtSigningConfig},
