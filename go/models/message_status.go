@@ -42,3 +42,10 @@ func (v *MessageStatus) UnmarshalJSON(src []byte) error {
 	return fmt.Errorf("`%+v` is not a valid MessageStatus", value)
 
 }
+
+var MessageStatusFromInt64 = map[int64]MessageStatus{
+	0: MESSAGESTATUS_SUCCESS,
+	1: MESSAGESTATUS_PENDING,
+	2: MESSAGESTATUS_FAIL,
+	3: MESSAGESTATUS_SENDING,
+}

@@ -41,3 +41,12 @@ func (v *EnvironmentRegion) UnmarshalJSON(src []byte) error {
 	return fmt.Errorf("`%+v` is not a valid EnvironmentRegion", value)
 
 }
+
+var EnvironmentRegionFromString = map[string]EnvironmentRegion{
+	"eu":          ENVIRONMENTREGION_EU,
+	"us":          ENVIRONMENTREGION_US,
+	"in":          ENVIRONMENTREGION_IN,
+	"au":          ENVIRONMENTREGION_AU,
+	"ca":          ENVIRONMENTREGION_CA,
+	"self-hosted": ENVIRONMENTREGION_SELF_HOSTED,
+}

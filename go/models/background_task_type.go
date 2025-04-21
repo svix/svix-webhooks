@@ -43,3 +43,13 @@ func (v *BackgroundTaskType) UnmarshalJSON(src []byte) error {
 	return fmt.Errorf("`%+v` is not a valid BackgroundTaskType", value)
 
 }
+
+var BackgroundTaskTypeFromString = map[string]BackgroundTaskType{
+	"endpoint.replay":           BACKGROUNDTASKTYPE_ENDPOINT_REPLAY,
+	"endpoint.recover":          BACKGROUNDTASKTYPE_ENDPOINT_RECOVER,
+	"application.stats":         BACKGROUNDTASKTYPE_APPLICATION_STATS,
+	"message.broadcast":         BACKGROUNDTASKTYPE_MESSAGE_BROADCAST,
+	"sdk.generate":              BACKGROUNDTASKTYPE_SDK_GENERATE,
+	"event-type.aggregate":      BACKGROUNDTASKTYPE_EVENT_TYPE_AGGREGATE,
+	"application.purge_content": BACKGROUNDTASKTYPE_APPLICATION_PURGE_CONTENT,
+}

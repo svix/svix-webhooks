@@ -34,3 +34,8 @@ func (v *Ordering) UnmarshalJSON(src []byte) error {
 	return fmt.Errorf("`%+v` is not a valid Ordering", value)
 
 }
+
+var OrderingFromString = map[string]Ordering{
+	"ascending":  ORDERING_ASCENDING,
+	"descending": ORDERING_DESCENDING,
+}

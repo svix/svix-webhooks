@@ -53,3 +53,18 @@ func (v *ConnectorKind) UnmarshalJSON(src []byte) error {
 	return fmt.Errorf("`%+v` is not a valid ConnectorKind", value)
 
 }
+
+var ConnectorKindFromString = map[string]ConnectorKind{
+	"Custom":     CONNECTORKIND_CUSTOM,
+	"CustomerIO": CONNECTORKIND_CUSTOMER_IO,
+	"Discord":    CONNECTORKIND_DISCORD,
+	"Hubspot":    CONNECTORKIND_HUBSPOT,
+	"Inngest":    CONNECTORKIND_INNGEST,
+	"Salesforce": CONNECTORKIND_SALESFORCE,
+	"Segment":    CONNECTORKIND_SEGMENT,
+	"Slack":      CONNECTORKIND_SLACK,
+	"Teams":      CONNECTORKIND_TEAMS,
+	"TriggerDev": CONNECTORKIND_TRIGGER_DEV,
+	"Windmill":   CONNECTORKIND_WINDMILL,
+	"Zapier":     CONNECTORKIND_ZAPIER,
+}
