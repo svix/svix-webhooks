@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+* Libs/Python: Bring back the (deprecated) sync `dashboard_access` method, which was accidentally
+  removed in v1.64.1
+
 ## Version 1.64.1
 * Libs/JavaScript: Add `HTTPValidationError`, `HttpErrorOut`, `ValidationError` and `ApiException` to the top level exports.
 * Server: Add response duration tracking to webhook message attempts by @CodeMan62 in https://github.com/svix/svix-webhooks/pull/1877
