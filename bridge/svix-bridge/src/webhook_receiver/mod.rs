@@ -3,10 +3,9 @@ use std::{net::SocketAddr, sync::Arc, time::Duration};
 use axum::{
     extract::{Path, State},
     http,
-    routing::{get, post},
+    routing::post,
     Router,
 };
-use shellexpand::env;
 use svix_bridge_types::{
     async_trait,
     svix::{
