@@ -9,6 +9,9 @@ extra_shell_commands = ["rm rust/src/api/health.rs"]
 template = "codegen-templates/rust/api_resource.rs.jinja"
 output_dir = "rust/src/api"
 [[rust.task]]
+template = "codegen-templates/rust/api_summary.rs.jinja"
+output_dir = "rust/src/api"
+[[rust.task]]
 template = "codegen-templates/rust/component_type_summary.rs.jinja"
 output_dir = "rust/src/models"
 [[rust.task]]
