@@ -16,12 +16,12 @@ type (
 	}
 )
 
-func New(token string, serverUrl *url.URL, debug bool) (*InternalSvix, error) {
+func New(token string, serverUrl *url.URL, debug bool, userAgentSuffix string) (*InternalSvix, error) {
 	svixHttpClient := internal.DefaultSvixHttpClient(serverUrl.String())
 	svixHttpClient.Debug = debug
 
 	svixHttpClient.DefaultHeaders["Authorization"] = fmt.Sprintf("Bearer %s", token)
-	svixHttpClient.DefaultHeaders["User-Agent"] = fmt.Sprintf("svix-libs/%s/go", svix.Version)
+	svixHttpClient.DefaultHeaders["User-Agent"] = fmt.Sprintf("svix-libs/%s/go/%s", svix.Version, userAgentSuffix)
 
 	svx := InternalSvix{
 		Management: newManagement(&svixHttpClient),
