@@ -1,17 +1,63 @@
-{% for resource in api.resources -%}
+// this file is @generated
+#![warn(unreachable_pub)]
+
+mod client;
+mod deprecated;
+
+pub use self::client::{Svix, SvixOptions};
+pub use crate::models::*;
+
+{% macro resource_mods(resource) -%}
+{% if resource.name != "health" -%}
     mod {{ resource.name | to_snake_case }};
+    {%- for _, sub in resource.subresources | items -%}
+        {{- resource_mods(sub) -}}
+    {%- endfor -%}
+{% endif -%}
+{% endmacro -%}
+
+{% for res in api.resources -%}
+    {{ resource_mods(res) -}}
 {% endfor %}
 
+{% macro resource_reexports(resource) -%}
+{% if resource.name != "health" -%}
+    {% set resource_type_name = resource.name | to_upper_camel_case -%}
+    {{ resource.name | to_snake_case }}::{
+        {{ resource_type_name }},
+        {% for op in resource.operations -%}
+            {% if op | has_query_or_header_params -%}
+                {{ resource_type_name }}{{ op.name | to_upper_camel_case }}Options,
+            {% endif -%}
+        {% endfor -%}
+    },
+    {% for _, sub in resource.subresources | items -%}
+        {{ resource_reexports(sub) -}}
+    {% endfor -%}
+{% endif -%}
+{% endmacro -%}
+
+#[cfg(feature = "svix_beta")]
+pub use self::message::{V1MessageEventsParams, V1MessageEventsSubscriptionParams};
 pub use self::{
-    {% for resource in api.resources -%}
-        {% set resource_type_name = resource.name | to_upper_camel_case -%}
-        {{ resource.name | to_snake_case }}::{
-            {{ resource_type_name }},
-            {% for op in resource.operations -%}
-                {% if op | has_query_or_header_params -%}
-                    {{ resource_type_name }}{{ op.name | to_upper_camel_case }}Options,
-                {% endif -%}
-            {% endfor -%}
-        },
+    {% for res in api.resources -%}
+        {{ resource_reexports(res) }}
     {% endfor -%}
 };
+pub use self::deprecated::*;
+
+impl Svix {
+    {% for resource in api.resources -%}
+        {% if resource.name != "health" -%}
+            {% set resource_type_name = resource.name | to_upper_camel_case -%}
+            pub fn {{ resource.name | to_snake_case }}(&self) -> {{ resource_type_name }}<'_> {
+                {{ resource_type_name }}::new(&self.cfg)
+            }
+        {% endif%}
+    {% endfor -%}
+
+    #[deprecated = "Use .operational_webhook().endpoint() instead"]
+    pub fn operational_webhook_endpoint(&self) -> OperationalWebhookEndpoint<'_> {
+        OperationalWebhookEndpoint::new(&self.cfg)
+    }
+}

@@ -1,6 +1,8 @@
+// this file is @generated
 #![warn(unreachable_pub)]
 
 mod client;
+mod deprecated;
 
 pub use self::client::{Svix, SvixOptions};
 pub use crate::models::*;
@@ -8,7 +10,6 @@ pub use crate::models::*;
 mod application;
 mod authentication;
 mod background_task;
-mod deprecated;
 mod endpoint;
 mod environment;
 mod event_type;
@@ -85,12 +86,12 @@ pub use self::{
 };
 
 impl Svix {
-    pub fn authentication(&self) -> Authentication<'_> {
-        Authentication::new(&self.cfg)
-    }
-
     pub fn application(&self) -> Application<'_> {
         Application::new(&self.cfg)
+    }
+
+    pub fn authentication(&self) -> Authentication<'_> {
+        Authentication::new(&self.cfg)
     }
 
     pub fn background_task(&self) -> BackgroundTask<'_> {
@@ -105,16 +106,16 @@ impl Svix {
         Environment::new(&self.cfg)
     }
 
+    pub fn event_type(&self) -> EventType<'_> {
+        EventType::new(&self.cfg)
+    }
+
     pub fn ingest(&self) -> Ingest<'_> {
         Ingest::new(&self.cfg)
     }
 
     pub fn integration(&self) -> Integration<'_> {
         Integration::new(&self.cfg)
-    }
-
-    pub fn event_type(&self) -> EventType<'_> {
-        EventType::new(&self.cfg)
     }
 
     pub fn management(&self) -> Management<'_> {
@@ -133,11 +134,12 @@ impl Svix {
         OperationalWebhook::new(&self.cfg)
     }
 
-    pub fn operational_webhook_endpoint(&self) -> OperationalWebhookEndpoint<'_> {
-        OperationalWebhookEndpoint::new(&self.cfg)
-    }
-
     pub fn statistics(&self) -> Statistics<'_> {
         Statistics::new(&self.cfg)
+    }
+
+    #[deprecated = "Use .operational_webhook().endpoint() instead"]
+    pub fn operational_webhook_endpoint(&self) -> OperationalWebhookEndpoint<'_> {
+        OperationalWebhookEndpoint::new(&self.cfg)
     }
 }
