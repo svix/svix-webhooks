@@ -24,7 +24,7 @@ jobs:
         run: |
           cd csharp
           dotnet restore
-          dotnet tool install csharpier -g
+          dotnet tool install csharpier -g --version 0.30.6
 
       - name: Check formatting
         run: |
