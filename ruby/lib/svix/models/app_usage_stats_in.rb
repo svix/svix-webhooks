@@ -4,6 +4,9 @@ require "json"
 
 module Svix
   class AppUsageStatsIn
+    # Specific app IDs or UIDs to aggregate stats for.
+    #
+    # Note that if none of the given IDs or UIDs are resolved, a 422 response will be given.
     attr_accessor :app_ids
     attr_accessor :since
     attr_accessor :until

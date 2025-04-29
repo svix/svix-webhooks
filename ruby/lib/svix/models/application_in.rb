@@ -7,6 +7,7 @@ module Svix
     attr_accessor :metadata
     attr_accessor :name
     attr_accessor :rate_limit
+    # Optional unique identifier for the application.
     attr_accessor :uid
 
     ALL_FIELD ||= ["metadata", "name", "rate_limit", "uid"].freeze

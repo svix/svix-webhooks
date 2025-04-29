@@ -5,10 +5,12 @@ require "json"
 module Svix
   class ApplicationOut
     attr_accessor :created_at
+    # The Application's ID.
     attr_accessor :id
     attr_accessor :metadata
     attr_accessor :name
     attr_accessor :rate_limit
+    # The Application's UID.
     attr_accessor :uid
     attr_accessor :updated_at
 

@@ -9,6 +9,7 @@ module Svix
     attr_accessor :filter_types
     attr_accessor :metadata
     attr_accessor :rate_limit
+    # Optional unique identifier for the endpoint.
     attr_accessor :uid
     attr_accessor :url
 

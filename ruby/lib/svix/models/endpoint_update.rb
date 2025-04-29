@@ -4,12 +4,14 @@ require "json"
 
 module Svix
   class EndpointUpdate
+    # List of message channels this endpoint listens to (omit for all).
     attr_accessor :channels
     attr_accessor :description
     attr_accessor :disabled
     attr_accessor :filter_types
     attr_accessor :metadata
     attr_accessor :rate_limit
+    # Optional unique identifier for the endpoint.
     attr_accessor :uid
     attr_accessor :url
     attr_accessor :version

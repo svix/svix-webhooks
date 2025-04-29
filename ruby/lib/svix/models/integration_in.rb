@@ -4,6 +4,7 @@ require "json"
 
 module Svix
   class IntegrationIn
+    # The set of feature flags the integration will have access to.
     attr_accessor :feature_flags
     attr_accessor :name
 

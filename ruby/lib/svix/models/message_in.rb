@@ -4,14 +4,27 @@ require "json"
 
 module Svix
   class MessageIn
+    # Optionally creates a new application alongside the message.
+    #
+    # If the application id or uid that is used in the path already exists, this argument is ignored.
     attr_accessor :application
+    # List of free-form identifiers that endpoints can filter by
     attr_accessor :channels
+    # Optional unique identifier for the message
     attr_accessor :event_id
+    # The event type's name
     attr_accessor :event_type
+    # JSON payload to send as the request body of the webhook.
+    #
+    # We also support sending non-JSON payloads. Please contact us for more information.
     attr_accessor :payload
+    # Optional number of hours to retain the message payload. Note that this is mutually exclusive with `payloadRetentionPeriod`.
     attr_accessor :payload_retention_hours
+    # Optional number of days to retain the message payload. Defaults to 90. Note that this is mutually exclusive with `payloadRetentionHours`.
     attr_accessor :payload_retention_period
+    # List of free-form tags that can be filtered by when listing messages
     attr_accessor :tags
+    # Extra parameters to pass to Transformations (for future use)
     attr_accessor :transformations_params
 
     ALL_FIELD ||= [

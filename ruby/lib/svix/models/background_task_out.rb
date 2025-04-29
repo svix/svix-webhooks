@@ -5,6 +5,7 @@ require "json"
 module Svix
   class BackgroundTaskOut
     attr_accessor :data
+    # The QueueBackgroundTask's ID.
     attr_accessor :id
     attr_accessor :status
     attr_accessor :task

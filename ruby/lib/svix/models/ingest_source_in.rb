@@ -107,6 +107,7 @@ module Svix
 
   class IngestSourceIn
     attr_accessor :name
+    # The Source's UID.
     attr_accessor :uid
     attr_accessor :config
 

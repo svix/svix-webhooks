@@ -4,6 +4,9 @@ require "json"
 
 module Svix
   class CronConfig
+    # Override the default content-type.
+    #
+    # Recommended if the payload is not JSON.
     attr_accessor :content_type
     attr_accessor :payload
     attr_accessor :schedule

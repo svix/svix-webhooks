@@ -5,11 +5,16 @@ require "json"
 module Svix
   # Sent when a message delivery has failed (all of the retry attempts have been exhausted) as a "message.attempt.exhausted" type or after it's failed four times as a "message.attempt.failing" event.
   class MessageAttemptRecoveredEventData
+    # The Application's ID.
     attr_accessor :app_id
+    # The Application's UID.
     attr_accessor :app_uid
+    # The Endpoint's ID.
     attr_accessor :endpoint_id
     attr_accessor :last_attempt
+    # The Message's UID.
     attr_accessor :msg_event_id
+    # The Message's ID.
     attr_accessor :msg_id
 
     ALL_FIELD ||= ["app_id", "app_uid", "endpoint_id", "last_attempt", "msg_event_id", "msg_id"].freeze

@@ -8,12 +8,14 @@ module Svix
     attr_accessor :description
     attr_accessor :feature_flag
     attr_accessor :filter_types
+    # The Connector's ID.
     attr_accessor :id
     attr_accessor :instructions
     attr_accessor :instructions_link
     attr_accessor :kind
     attr_accessor :logo
     attr_accessor :name
+    # The Environment's ID.
     attr_accessor :org_id
     attr_accessor :transformation
     attr_accessor :updated_at

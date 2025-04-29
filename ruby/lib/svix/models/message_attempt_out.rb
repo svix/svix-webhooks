@@ -4,11 +4,15 @@ require "json"
 
 module Svix
   class MessageAttemptOut
+    # The Endpoint's ID.
     attr_accessor :endpoint_id
+    # The MessageAttempt's ID.
     attr_accessor :id
     attr_accessor :msg
+    # The Message's ID.
     attr_accessor :msg_id
     attr_accessor :response
+    # Response duration in milliseconds.
     attr_accessor :response_duration_ms
     attr_accessor :response_status_code
     attr_accessor :status

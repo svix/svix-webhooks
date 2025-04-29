@@ -5,9 +5,13 @@ require "json"
 module Svix
   # Sent when an endpoint has been automatically disabled after continuous failures, or manually via an API call.
   class EndpointDisabledEventData
+    # The Application's ID.
     attr_accessor :app_id
+    # The Application's UID.
     attr_accessor :app_uid
+    # The Endpoint's ID.
     attr_accessor :endpoint_id
+    # The Endpoint's UID.
     attr_accessor :endpoint_uid
     attr_accessor :fail_since
     attr_accessor :trigger

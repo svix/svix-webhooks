@@ -5,9 +5,13 @@ require "json"
 module Svix
   # Sent when an endpoint is created, updated, or deleted
   class EndpointCreatedEventData
+    # The Application's ID.
     attr_accessor :app_id
+    # The Application's UID.
     attr_accessor :app_uid
+    # The Endpoint's ID.
     attr_accessor :endpoint_id
+    # The Endpoint's UID.
     attr_accessor :endpoint_uid
 
     ALL_FIELD ||= ["app_id", "app_uid", "endpoint_id", "endpoint_uid"].freeze

@@ -5,9 +5,13 @@ require "json"
 module Svix
   # A model containing information on a given message plus additional fields on the last attempt for that message.
   class EndpointMessageOut
+    # List of free-form identifiers that endpoints can filter by
     attr_accessor :channels
+    # Optional unique identifier for the message
     attr_accessor :event_id
+    # The event type's name
     attr_accessor :event_type
+    # The Message's ID.
     attr_accessor :id
     attr_accessor :next_attempt
     attr_accessor :payload

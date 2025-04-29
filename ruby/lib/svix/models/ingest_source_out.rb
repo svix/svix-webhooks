@@ -107,9 +107,11 @@ module Svix
 
   class IngestSourceOut
     attr_accessor :created_at
+    # The Source's ID.
     attr_accessor :id
     attr_accessor :ingest_url
     attr_accessor :name
+    # The Source's UID.
     attr_accessor :uid
     attr_accessor :updated_at
     attr_accessor :config

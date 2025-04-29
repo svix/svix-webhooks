@@ -35,6 +35,9 @@ module Svix
   {% endif -%}
   class {{ class_ty }}
     {% for field in type.fields -%}
+    {% if field.description is defined -%}
+    {{ field.description | to_doc_comment(style="ruby") }}
+    {% endif -%}
     attr_accessor :{{ field.name | to_snake_case }}
     {% endfor -%}
     attr_accessor :{{ type.content_field | to_snake_case }}

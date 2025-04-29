@@ -5,11 +5,14 @@ require "json"
 module Svix
   class IngestEndpointOut
     attr_accessor :created_at
+    # An example endpoint name.
     attr_accessor :description
     attr_accessor :disabled
+    # The Endpoint's ID.
     attr_accessor :id
     attr_accessor :metadata
     attr_accessor :rate_limit
+    # Optional unique identifier for the endpoint.
     attr_accessor :uid
     attr_accessor :updated_at
     attr_accessor :url

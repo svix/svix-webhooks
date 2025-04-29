@@ -4,9 +4,13 @@ require "json"
 
 module Svix
   class AppUsageStatsOut
+    # The QueueBackgroundTask's ID.
     attr_accessor :id
     attr_accessor :status
     attr_accessor :task
+    # Any app IDs or UIDs received in the request that weren't found.
+    #
+    # Stats will be produced for all the others.
     attr_accessor :unresolved_app_ids
 
     ALL_FIELD ||= ["id", "status", "task", "unresolved_app_ids"].freeze
