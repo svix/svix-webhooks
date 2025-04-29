@@ -3,7 +3,7 @@ use std::{net::SocketAddr, sync::Arc, time::Duration};
 use axum::{
     extract::{Path, State},
     http,
-    routing::post,
+    routing::{get, post},
     Router,
 };
 use svix_bridge_types::{
@@ -37,13 +37,34 @@ fn router() -> Router<InternalState> {
             "/webhook/:integration_id/",
             post(route).put(route).get(route).patch(route),
         )
+        .route("/health", get(health_handler))
 }
+static START_TIME: once_cell::sync::Lazy<std::time::Instant> =
+    once_cell::sync::Lazy::new(std::time::Instant::now);
 
+fn get_uptime_seconds() -> u64 {
+    START_TIME.elapsed().as_secs()
+}
+#[derive(serde::Serialize)]
+struct HealthResponse {
+    pub status: &'static str,
+    pub version: &'static str,
+    pub uptime: u64,
+}
+async fn health_handler() -> impl axum::response::IntoResponse {
+    let health_response = HealthResponse {
+        status: "OK",
+        version: env!("CARGO_PKG_VERSION"),
+        uptime: get_uptime_seconds(),
+    };
+    axum::Json(health_response)
+}
 pub async fn run(
     listen_addr: SocketAddr,
     routes: Vec<WebhookReceiverConfig>,
     transformer_tx: TransformerTx,
 ) -> std::io::Result<()> {
+    once_cell::sync::Lazy::force(&START_TIME);
     let state = InternalState::from_receiver_configs(routes, transformer_tx)
         .await
         .map_err(std::io::Error::other)?;
