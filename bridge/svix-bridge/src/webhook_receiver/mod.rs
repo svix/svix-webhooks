@@ -40,7 +40,7 @@ fn router() -> Router<InternalState> {
         .route("/health", get(health_handler))
 }
 static START_TIME: once_cell::sync::Lazy<std::time::Instant> =
-    once_cell::sync::Lazy::new(|| std::time::Instant::now());
+    once_cell::sync::Lazy::new(std::time::Instant::now);
 
 fn get_uptime_seconds() -> u64 {
     START_TIME.elapsed().as_secs()
