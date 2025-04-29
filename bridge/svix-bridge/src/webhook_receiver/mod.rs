@@ -3,7 +3,7 @@ use std::{net::SocketAddr, sync::Arc, time::Duration};
 use axum::{
     extract::{Path, State},
     http,
-    routing::post,
+    routing::{get, post},
     Router,
 };
 use svix_bridge_types::{
