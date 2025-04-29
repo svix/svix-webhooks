@@ -2,6 +2,7 @@
 import { ConnectorIn, ConnectorInSerializer } from "../models/connectorIn";
 import { ConnectorOut, ConnectorOutSerializer } from "../models/connectorOut";
 import { ConnectorPatch, ConnectorPatchSerializer } from "../models/connectorPatch";
+import { ConnectorUpdate, ConnectorUpdateSerializer } from "../models/connectorUpdate";
 import { GenerateIn, GenerateInSerializer } from "../models/generateIn";
 import { GenerateOut, GenerateOutSerializer } from "../models/generateOut";
 import {
@@ -9,7 +10,6 @@ import {
   ListResponseConnectorOutSerializer,
 } from "../models/listResponseConnectorOut";
 import { Ordering } from "../models/ordering";
-import { TemplateUpdate, TemplateUpdateSerializer } from "../models/templateUpdate";
 import {
   TransformationSimulateIn,
   TransformationSimulateInSerializer,
@@ -128,7 +128,7 @@ export class BetaConnector {
   /** Update a connector. */
   public update(
     transformationTemplateId: string,
-    templateUpdate: TemplateUpdate
+    connectorUpdate: ConnectorUpdate
   ): Promise<ConnectorOut> {
     const request = new SvixRequest(
       HttpMethod.PUT,
@@ -136,7 +136,7 @@ export class BetaConnector {
     );
 
     request.setPathParam("transformation_template_id", transformationTemplateId);
-    request.setBody(TemplateUpdateSerializer._toJsonObject(templateUpdate));
+    request.setBody(ConnectorUpdateSerializer._toJsonObject(connectorUpdate));
 
     return request.send(this.requestCtx, ConnectorOutSerializer._fromJsonObject);
   }

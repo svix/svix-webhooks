@@ -34,6 +34,7 @@ export interface SettingsInternalIn {
   eventCatalogPublished?: boolean;
   readOnly?: boolean;
   requireEndpointChannel?: boolean;
+  requireEndpointFilterTypes?: boolean;
   retryPolicy?: number[] | null;
   showUseSvixPlay?: boolean;
   whitelabelHeaders?: boolean;
@@ -74,6 +75,7 @@ export const SettingsInternalInSerializer = {
       eventCatalogPublished: object["eventCatalogPublished"],
       readOnly: object["readOnly"],
       requireEndpointChannel: object["requireEndpointChannel"],
+      requireEndpointFilterTypes: object["requireEndpointFilterTypes"],
       retryPolicy: object["retryPolicy"],
       showUseSvixPlay: object["showUseSvixPlay"],
       whitelabelHeaders: object["whitelabelHeaders"],
@@ -114,6 +116,7 @@ export const SettingsInternalInSerializer = {
       eventCatalogPublished: self.eventCatalogPublished,
       readOnly: self.readOnly,
       requireEndpointChannel: self.requireEndpointChannel,
+      requireEndpointFilterTypes: self.requireEndpointFilterTypes,
       retryPolicy: self.retryPolicy,
       showUseSvixPlay: self.showUseSvixPlay,
       whitelabelHeaders: self.whitelabelHeaders,

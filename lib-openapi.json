@@ -1049,7 +1049,7 @@
                         "uniqueItems": true
                     },
                     "id": {
-                        "description": "The TransformationTemplate's ID.",
+                        "description": "The Connector's ID.",
                         "example": "trtmpl_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                         "maxLength": 34,
                         "minLength": 34,
@@ -1157,6 +1157,69 @@
                         "type": "string"
                     }
                 },
+                "type": "object"
+            },
+            "ConnectorUpdate": {
+                "properties": {
+                    "description": {
+                        "default": "",
+                        "type": "string"
+                    },
+                    "featureFlag": {
+                        "example": "cool-new-feature",
+                        "maxLength": 256,
+                        "nullable": true,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                        "type": "string"
+                    },
+                    "filterTypes": {
+                        "example": [
+                            "user.signup",
+                            "user.deleted"
+                        ],
+                        "items": {
+                            "description": "The event type's name",
+                            "example": "user.signup",
+                            "maxLength": 256,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "minItems": 1,
+                        "nullable": true,
+                        "type": "array",
+                        "uniqueItems": true
+                    },
+                    "instructions": {
+                        "default": "",
+                        "type": "string"
+                    },
+                    "instructionsLink": {
+                        "format": "uri",
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "kind": {
+                        "$ref": "#/components/schemas/ConnectorKind",
+                        "default": "Custom"
+                    },
+                    "logo": {
+                        "format": "uri",
+                        "type": "string"
+                    },
+                    "name": {
+                        "default": "",
+                        "type": "string"
+                    },
+                    "transformation": {
+                        "maxLength": 51200,
+                        "minLength": 10,
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "logo",
+                    "transformation"
+                ],
                 "type": "object"
             },
             "CountOut": {
@@ -7232,6 +7295,7 @@
             "PollingEndpointConsumerSeekIn": {
                 "properties": {
                     "after": {
+                        "example": "2025-04-21T11:20:34Z",
                         "format": "date-time",
                         "type": "string"
                     }
@@ -7695,6 +7759,10 @@
                         "default": false,
                         "type": "boolean"
                     },
+                    "requireEndpointFilterTypes": {
+                        "default": false,
+                        "type": "boolean"
+                    },
                     "retryPolicy": {
                         "items": {
                             "format": "int32",
@@ -7819,6 +7887,10 @@
                         "type": "boolean"
                     },
                     "requireEndpointChannel": {
+                        "default": false,
+                        "type": "boolean"
+                    },
+                    "requireEndpointFilterTypes": {
                         "default": false,
                         "type": "boolean"
                     },
@@ -9429,69 +9501,6 @@
             "SvixConfigOut": {
                 "type": "object"
             },
-            "TemplateUpdate": {
-                "properties": {
-                    "description": {
-                        "default": "",
-                        "type": "string"
-                    },
-                    "featureFlag": {
-                        "example": "cool-new-feature",
-                        "maxLength": 256,
-                        "nullable": true,
-                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                        "type": "string"
-                    },
-                    "filterTypes": {
-                        "example": [
-                            "user.signup",
-                            "user.deleted"
-                        ],
-                        "items": {
-                            "description": "The event type's name",
-                            "example": "user.signup",
-                            "maxLength": 256,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                            "type": "string"
-                        },
-                        "minItems": 1,
-                        "nullable": true,
-                        "type": "array",
-                        "uniqueItems": true
-                    },
-                    "instructions": {
-                        "default": "",
-                        "type": "string"
-                    },
-                    "instructionsLink": {
-                        "format": "uri",
-                        "nullable": true,
-                        "type": "string"
-                    },
-                    "kind": {
-                        "$ref": "#/components/schemas/ConnectorKind",
-                        "default": "Custom"
-                    },
-                    "logo": {
-                        "format": "uri",
-                        "type": "string"
-                    },
-                    "name": {
-                        "default": "",
-                        "type": "string"
-                    },
-                    "transformation": {
-                        "maxLength": 51200,
-                        "minLength": 10,
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "logo",
-                    "transformation"
-                ],
-                "type": "object"
-            },
             "TransformationHttpMethod": {
                 "enum": [
                     "POST",
@@ -9829,7 +9838,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             },
@@ -10028,7 +10037,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"name\": \"My first application\",\n        \"rateLimit\": null,\n        \"uid\": \"unique-identifier\"\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"name\": \"My first application\",\n        \"rateLimit\": null,\n        \"uid\": \"unique-identifier\"\n    }'"
                     }
                 ]
             }
@@ -10187,7 +10196,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/stats/usage' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/stats/usage' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ],
                 "x-hidden": true
@@ -10357,7 +10366,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             },
@@ -10531,7 +10540,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             },
@@ -10715,7 +10724,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"rateLimit\": null,\n        \"uid\": \"unique-identifier\"\n    }'"
+                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"rateLimit\": null,\n        \"uid\": \"unique-identifier\"\n    }'"
                     }
                 ]
             },
@@ -10909,7 +10918,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"name\": \"My first application\",\n        \"rateLimit\": null,\n        \"uid\": \"unique-identifier\"\n    }'"
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"name\": \"My first application\",\n        \"rateLimit\": null,\n        \"uid\": \"unique-identifier\"\n    }'"
                     }
                 ]
             }
@@ -11245,7 +11254,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/attempt/endpoint/{endpoint_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/attempt/endpoint/{endpoint_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -11531,7 +11540,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/attempt/endpoint/{endpoint_id}/count' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/attempt/endpoint/{endpoint_id}/count' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ],
                 "x-hidden": true
@@ -11872,7 +11881,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/attempt/msg/{msg_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/attempt/msg/{msg_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -12087,7 +12096,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             },
@@ -12280,7 +12289,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"description\": \"An example endpoint name\",\n        \"rateLimit\": null,\n        \"uid\": \"unique-identifier\",\n        \"url\": \"https://example.com/webhook/\",\n        \"version\": 1,\n        \"disabled\": false,\n        \"filterTypes\": [\"user.signup\", \"user.deleted\"],\n        \"channels\": [\"project_123\", \"group_2\"],\n        \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n        \"headers\": {\"X-Example\":\"123\",\"X-Foobar\":\"Bar\"}\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"description\": \"An example endpoint name\",\n        \"rateLimit\": null,\n        \"uid\": \"unique-identifier\",\n        \"url\": \"https://example.com/webhook/\",\n        \"version\": 1,\n        \"disabled\": false,\n        \"filterTypes\": [\"user.signup\", \"user.deleted\"],\n        \"channels\": [\"project_123\", \"group_2\"],\n        \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n        \"headers\": {\"X-Example\":\"123\",\"X-Foobar\":\"Bar\"}\n    }'"
                     }
                 ]
             }
@@ -12464,7 +12473,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             },
@@ -12653,7 +12662,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             },
@@ -12852,7 +12861,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"rateLimit\": null,\n        \"uid\": \"unique-identifier\",\n        \"version\": 1,\n        \"filterTypes\": null,\n        \"channels\": null,\n        \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n    }'"
+                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"rateLimit\": null,\n        \"uid\": \"unique-identifier\",\n        \"version\": 1,\n        \"filterTypes\": null,\n        \"channels\": null,\n        \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n    }'"
                     }
                 ]
             },
@@ -13061,7 +13070,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"description\": \"An example endpoint name\",\n        \"rateLimit\": null,\n        \"uid\": \"unique-identifier\",\n        \"url\": \"https://example.com/webhook/\",\n        \"version\": 1,\n        \"disabled\": false,\n        \"filterTypes\": [\"user.signup\", \"user.deleted\"],\n        \"channels\": [\"project_123\", \"group_2\"]\n    }'"
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"description\": \"An example endpoint name\",\n        \"rateLimit\": null,\n        \"uid\": \"unique-identifier\",\n        \"url\": \"https://example.com/webhook/\",\n        \"version\": 1,\n        \"disabled\": false,\n        \"filterTypes\": [\"user.signup\", \"user.deleted\"],\n        \"channels\": [\"project_123\", \"group_2\"]\n    }'"
                     }
                 ]
             }
@@ -13252,7 +13261,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             },
@@ -13444,7 +13453,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"headers\": {\"X-Example\":\"123\",\"X-Foobar\":\"Bar\"}\n    }'"
+                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"headers\": {\"X-Example\":\"123\",\"X-Foobar\":\"Bar\"}\n    }'"
                     }
                 ]
             },
@@ -13636,7 +13645,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"headers\": {\"X-Example\":\"123\",\"X-Foobar\":\"Bar\"}\n    }'"
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"headers\": {\"X-Example\":\"123\",\"X-Foobar\":\"Bar\"}\n    }'"
                     }
                 ]
             }
@@ -13949,7 +13958,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/msg' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/msg' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -14104,7 +14113,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/msg/test-attempt' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"eventId\": \"unique-identifier\",\n        \"eventType\": \"user.signup\",\n        \"payload\": {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n        \"channels\": [\"project_123\", \"group_2\"],\n        \"application\": null,\n        \"tags\": [\"my_tag\", \"other\"],\n        \"transformationsParams\": null,\n        \"payloadRetentionPeriod\": 90,\n        \"payloadRetentionHours\": null\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/msg/test-attempt' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"eventId\": \"unique-identifier\",\n        \"eventType\": \"user.signup\",\n        \"payload\": {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n        \"channels\": [\"project_123\", \"group_2\"],\n        \"application\": null,\n        \"tags\": [\"my_tag\", \"other\"],\n        \"transformationsParams\": null,\n        \"payloadRetentionPeriod\": 90,\n        \"payloadRetentionHours\": null\n    }'"
                     }
                 ],
                 "x-hidden": true
@@ -14289,7 +14298,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/mtls' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/mtls' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ],
                 "x-hidden": true
@@ -14479,7 +14488,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/mtls' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/mtls' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ],
                 "x-hidden": true
@@ -14672,7 +14681,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/mtls' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"serverCaCert\": null\n    }'"
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/mtls' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"serverCaCert\": null\n    }'"
                     }
                 ],
                 "x-hidden": true
@@ -14857,7 +14866,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/oauth' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/oauth' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ],
                 "x-hidden": true
@@ -15047,7 +15056,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/oauth' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/oauth' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ],
                 "x-hidden": true
@@ -15240,7 +15249,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/oauth' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"jwtParams\": null,\n        \"clientSecret\": null,\n        \"scopes\": null,\n        \"extraParams\": null,\n        \"refreshToken\": null\n    }'"
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/oauth' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"jwtParams\": null,\n        \"clientSecret\": null,\n        \"scopes\": null,\n        \"extraParams\": null,\n        \"refreshToken\": null\n    }'"
                     }
                 ],
                 "x-hidden": true
@@ -15451,7 +15460,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/recover' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"until\": null\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/recover' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"until\": null\n    }'"
                     }
                 ]
             }
@@ -15661,7 +15670,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/replay-missing' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"until\": null\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/replay-missing' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"until\": null\n    }'"
                     }
                 ]
             }
@@ -15852,7 +15861,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -16055,7 +16064,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n    }'"
                     }
                 ]
             }
@@ -16265,7 +16274,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/send-example' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"eventType\": \"user.signup\"\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/send-example' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"eventType\": \"user.signup\"\n    }'"
                     }
                 ]
             }
@@ -16480,7 +16489,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/stats' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/stats' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -16671,7 +16680,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             },
@@ -16863,7 +16872,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"code\": null\n    }'"
+                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"code\": null\n    }'"
                     }
                 ]
             }
@@ -17002,22 +17011,22 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "await svix.endpoint.updateHubspotOauthConfig(\"app_id\", \"endpoint_id\", \n});"
+                        "source": "await svix.endpoint.updateHubspotOauthConfig(\"app_id\", \"endpoint_id\", {\n\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "await svix.endpoint.updateHubspotOauthConfig(\"app_id\", \"endpoint_id\", \n});"
+                        "source": "await svix.endpoint.updateHubspotOauthConfig(\"app_id\", \"endpoint_id\", {\n\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "svix.endpoint.update_hubspot_oauth_config(\"app_id\", \"endpoint_id\", HubspotOauthConfigIn\n))"
+                        "source": "svix.endpoint.update_hubspot_oauth_config(\"app_id\", \"endpoint_id\", HubspotOauthConfigIn(\n\n))"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "await svix.endpoint.update_hubspot_oauth_config(\"app_id\", \"endpoint_id\", HubspotOauthConfigIn\n))"
+                        "source": "await svix.endpoint.update_hubspot_oauth_config(\"app_id\", \"endpoint_id\", HubspotOauthConfigIn(\n\n))"
                     },
                     {
                         "label": "Go",
@@ -17037,7 +17046,7 @@
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "svix.endpoint.update_hubspot_oauth_config(\"app_id\", \"endpoint_id\", Svix::HubspotOauthConfigIn.new(\n}))"
+                        "source": "svix.endpoint.update_hubspot_oauth_config(\"app_id\", \"endpoint_id\", Svix::HubspotOauthConfigIn.new({\n\n}))"
                     },
                     {
                         "label": "Rust",
@@ -17047,17 +17056,17 @@
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "await svix.Endpoint.UpdateHubspotOauthConfigAsync(\"app_id\", \"endpoint_id\", new HubspotOauthConfigIn\n});"
+                        "source": "await svix.Endpoint.UpdateHubspotOauthConfigAsync(\"app_id\", \"endpoint_id\", new HubspotOauthConfigIn{\n\n});"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix endpoint update-hubspot-oauth-config \"app_id\" \"endpoint_id\" '\n}'"
+                        "source": "svix endpoint update-hubspot-oauth-config \"app_id\" \"endpoint_id\" '{\n\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation-template/oauth/hubspot' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '\n    }'"
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation-template/oauth/hubspot' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \n    }'"
                     }
                 ],
                 "x-hidden": true
@@ -17268,7 +17277,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation/simulate' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"eventType\": \"user.signup\",\n        \"channels\": null\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation/simulate' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"eventType\": \"user.signup\",\n        \"channels\": null\n    }'"
                     }
                 ],
                 "x-hidden": true
@@ -17516,7 +17525,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/events' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/events' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ],
                 "x-hidden": true
@@ -17735,7 +17744,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/inbound/msg/{inbound_token}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/inbound/msg/{inbound_token}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ],
                 "x-hidden": true
@@ -17921,7 +17930,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/inbound/rotate-url' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/inbound/rotate-url' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ],
                 "x-hidden": true
@@ -18137,7 +18146,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/integration' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/integration' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             },
@@ -18330,7 +18339,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/integration' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"name\": \"Example Integration\",\n        \"featureFlags\": []\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/integration' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"name\": \"Example Integration\",\n        \"featureFlags\": []\n    }'"
                     }
                 ]
             }
@@ -18514,7 +18523,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/integration/{integ_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/integration/{integ_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             },
@@ -18703,7 +18712,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/integration/{integ_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/integration/{integ_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             },
@@ -18902,7 +18911,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/integration/{integ_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"name\": \"Example Integration\",\n        \"featureFlags\": []\n    }'"
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/integration/{integ_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"name\": \"Example Integration\",\n        \"featureFlags\": []\n    }'"
                     }
                 ]
             }
@@ -19094,7 +19103,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/integration/{integ_id}/key' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/integration/{integ_id}/key' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -19294,7 +19303,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/integration/{integ_id}/key/rotate' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/integration/{integ_id}/key/rotate' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -19580,7 +19589,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             },
@@ -19794,7 +19803,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"eventId\": \"unique-identifier\",\n        \"eventType\": \"user.signup\",\n        \"payload\": {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n        \"channels\": [\"project_123\", \"group_2\"],\n        \"application\": null,\n        \"tags\": [\"my_tag\", \"other\"],\n        \"transformationsParams\": null,\n        \"payloadRetentionPeriod\": 90,\n        \"payloadRetentionHours\": null\n    }'\n\n# Alternatively, with a raw string payload.\ncurl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n      \"eventType\": \"user.signup\",\n      \"payload\": {},\n      \"transformationsParams\": {\n          \"rawPayload\": \"This is a raw body.\",\n          \"headers\": { \"content-type\": \"text/plain\" }\n      }\n  }'\n"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"eventId\": \"unique-identifier\",\n        \"eventType\": \"user.signup\",\n        \"payload\": {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n        \"channels\": [\"project_123\", \"group_2\"],\n        \"application\": null,\n        \"tags\": [\"my_tag\", \"other\"],\n        \"transformationsParams\": null,\n        \"payloadRetentionPeriod\": 90,\n        \"payloadRetentionHours\": null\n    }'\n\n# Alternatively, with a raw string payload.\ncurl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n      \"eventType\": \"user.signup\",\n      \"payload\": {},\n      \"transformationsParams\": {\n          \"rawPayload\": \"This is a raw body.\",\n          \"headers\": { \"content-type\": \"text/plain\" }\n      }\n  }'\n"
                     }
                 ]
             }
@@ -19979,7 +19988,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg/expunge-all-contents' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg/expunge-all-contents' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -20174,7 +20183,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg/precheck/active' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"eventType\": \"user.signup\",\n        \"channels\": [\"project_123\", \"group_2\"]\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg/precheck/active' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"eventType\": \"user.signup\",\n        \"channels\": [\"project_123\", \"group_2\"]\n    }'"
                     }
                 ],
                 "x-hidden": true
@@ -20377,7 +20386,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg/{msg_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg/{msg_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -20583,7 +20592,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -20782,7 +20791,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/content' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/content' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -20988,7 +20997,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/headers' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/headers' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ],
                 "x-hidden": true
@@ -21173,7 +21182,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg/{msg_id}/content' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg/{msg_id}/content' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -21392,7 +21401,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg/{msg_id}/endpoint' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg/{msg_id}/endpoint' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -21600,7 +21609,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/resend' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/resend' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -21791,7 +21800,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg/{msg_id}/raw' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg/{msg_id}/raw' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ],
                 "x-hidden": true
@@ -22045,7 +22054,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/poller/{sink_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/poller/{sink_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -22269,7 +22278,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/poller/{sink_id}/consumer/{consumer_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/poller/{sink_id}/consumer/{consumer_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -22433,62 +22442,62 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const pollingEndpointConsumerSeekOut = await svix.message.poller.consumerSeek(\"app_id\", \"sink_id\", \"consumer_id\", \n});"
+                        "source": "const pollingEndpointConsumerSeekOut = await svix.message.poller.consumerSeek(\"app_id\", \"sink_id\", \"consumer_id\", {\n    after: \"2025-04-21T11:20:34Z\"\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const pollingEndpointConsumerSeekOut = await svix.message.poller.consumerSeek(\"app_id\", \"sink_id\", \"consumer_id\", \n});"
+                        "source": "const pollingEndpointConsumerSeekOut = await svix.message.poller.consumerSeek(\"app_id\", \"sink_id\", \"consumer_id\", {\n    after: \"2025-04-21T11:20:34Z\"\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "polling_endpoint_consumer_seek_out = svix.message.poller.consumer_seek(\"app_id\", \"sink_id\", \"consumer_id\", PollingEndpointConsumerSeekIn\n), options=...)"
+                        "source": "polling_endpoint_consumer_seek_out = svix.message.poller.consumer_seek(\"app_id\", \"sink_id\", \"consumer_id\", PollingEndpointConsumerSeekIn(\n    after=\"2025-04-21T11:20:34Z\"\n), options=...)"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "polling_endpoint_consumer_seek_out = await svix.message.poller.consumer_seek(\"app_id\", \"sink_id\", \"consumer_id\", PollingEndpointConsumerSeekIn\n), options=...)"
+                        "source": "polling_endpoint_consumer_seek_out = await svix.message.poller.consumer_seek(\"app_id\", \"sink_id\", \"consumer_id\", PollingEndpointConsumerSeekIn(\n    after=\"2025-04-21T11:20:34Z\"\n), options=...)"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "pollingEndpointConsumerSeekOut, err := svixClient.Message.Poller.ConsumerSeek(ctx, \"app_id\", \"sink_id\", \"consumer_id\", &PollingEndpointConsumerSeekIn{\n})"
+                        "source": "pollingEndpointConsumerSeekOut, err := svixClient.Message.Poller.ConsumerSeek(ctx, \"app_id\", \"sink_id\", \"consumer_id\", &PollingEndpointConsumerSeekIn{\n    After: \"2025-04-21T11:20:34Z\",\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val pollingEndpointConsumerSeekOut = svix.message.poller.consumerSeek(\"app_id\", \"sink_id\", \"consumer_id\", PollingEndpointConsumerSeekIn()\n)"
+                        "source": "val pollingEndpointConsumerSeekOut = svix.message.poller.consumerSeek(\"app_id\", \"sink_id\", \"consumer_id\", PollingEndpointConsumerSeekIn()\n    .after(\"2025-04-21T11:20:34Z\")\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "PollingEndpointConsumerSeekOut pollingEndpointConsumerSeekOut = svix.getMessage().getPoller().consumerSeek(\"app_id\", \"sink_id\", \"consumer_id\", new PollingEndpointConsumerSeekIn()\n);"
+                        "source": "PollingEndpointConsumerSeekOut pollingEndpointConsumerSeekOut = svix.getMessage().getPoller().consumerSeek(\"app_id\", \"sink_id\", \"consumer_id\", new PollingEndpointConsumerSeekIn()\n    .after(\"2025-04-21T11:20:34Z\")\n);"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "polling_endpoint_consumer_seek_out = svix.message.poller.consumer_seek(\"app_id\", \"sink_id\", \"consumer_id\", Svix::PollingEndpointConsumerSeekIn.new(\n}))"
+                        "source": "polling_endpoint_consumer_seek_out = svix.message.poller.consumer_seek(\"app_id\", \"sink_id\", \"consumer_id\", Svix::PollingEndpointConsumerSeekIn.new({\n    \"after\": \"2025-04-21T11:20:34Z\"\n}))"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let polling_endpoint_consumer_seek_out = svix.message().poller().consumer_seek(\"app_id\", \"sink_id\", \"consumer_id\", PollingEndpointConsumerSeekIn {\n}, None).await?;"
+                        "source": "let polling_endpoint_consumer_seek_out = svix.message().poller().consumer_seek(\"app_id\", \"sink_id\", \"consumer_id\", PollingEndpointConsumerSeekIn {\n    after: \"2025-04-21T11:20:34Z\".to_string(),\n}, None).await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var pollingEndpointConsumerSeekOut = await svix.Message.Poller.ConsumerSeekAsync(\"app_id\", \"sink_id\", \"consumer_id\", new PollingEndpointConsumerSeekIn\n});"
+                        "source": "var pollingEndpointConsumerSeekOut = await svix.Message.Poller.ConsumerSeekAsync(\"app_id\", \"sink_id\", \"consumer_id\", new PollingEndpointConsumerSeekIn{\n    after: \"2025-04-21T11:20:34Z\"\n});"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix message poller consumer-seek \"app_id\" \"sink_id\" \"consumer_id\" '\n}'"
+                        "source": "svix message poller consumer-seek \"app_id\" \"sink_id\" \"consumer_id\" '{\n    \"after\": \"2025-04-21T11:20:34Z\"\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/poller/{sink_id}/consumer/{consumer_id}/seek' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/poller/{sink_id}/consumer/{consumer_id}/seek' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"after\": \"2025-04-21T11:20:34Z\"\n    }'"
                     }
                 ]
             }
@@ -22703,7 +22712,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/sink' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/sink' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ],
                 "x-hidden": true
@@ -23027,7 +23036,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/sink/{sink_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/sink/{sink_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ],
                 "x-hidden": true
@@ -23228,7 +23237,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/stats' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/stats' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ],
                 "x-hidden": true
@@ -23424,7 +23433,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/auth/app-portal-access/{app_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"application\": null,\n        \"featureFlags\": [],\n        \"expiry\": null,\n        \"readOnly\": null\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/auth/app-portal-access/{app_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"application\": null,\n        \"featureFlags\": [],\n        \"expiry\": null,\n        \"readOnly\": null\n    }'"
                     }
                 ]
             }
@@ -23619,7 +23628,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/auth/app/{app_id}/create-message-token' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"expiry\": null\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/auth/app/{app_id}/create-message-token' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"expiry\": null\n    }'"
                     }
                 ],
                 "x-hidden": true
@@ -23808,7 +23817,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/auth/app/{app_id}/expire-all' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"expiry\": 60\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/auth/app/{app_id}/expire-all' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"expiry\": 60\n    }'"
                     }
                 ]
             }
@@ -23999,7 +24008,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/auth/app/{app_id}/poller/{endpoint_id}/token' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/auth/app/{app_id}/poller/{endpoint_id}/token' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ],
                 "x-hidden": true
@@ -24210,7 +24219,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/auth/app/{app_id}/poller/{endpoint_id}/token/rotate' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"expiry\": null\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/auth/app/{app_id}/poller/{endpoint_id}/token/rotate' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"expiry\": null\n    }'"
                     }
                 ],
                 "x-hidden": true
@@ -24374,7 +24383,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/auth/logout' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/auth/logout' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -24499,22 +24508,22 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const oneTimeTokenOut = await svix.authentication.exchangeOneTimeToken(\n});"
+                        "source": "const oneTimeTokenOut = await svix.authentication.exchangeOneTimeToken({\n\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const oneTimeTokenOut = await svix.authentication.exchangeOneTimeToken(\n});"
+                        "source": "const oneTimeTokenOut = await svix.authentication.exchangeOneTimeToken({\n\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "one_time_token_out = svix.authentication.exchange_one_time_token(OneTimeTokenIn\n), options=...)"
+                        "source": "one_time_token_out = svix.authentication.exchange_one_time_token(OneTimeTokenIn(\n\n), options=...)"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "one_time_token_out = await svix.authentication.exchange_one_time_token(OneTimeTokenIn\n), options=...)"
+                        "source": "one_time_token_out = await svix.authentication.exchange_one_time_token(OneTimeTokenIn(\n\n), options=...)"
                     },
                     {
                         "label": "Go",
@@ -24534,7 +24543,7 @@
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "one_time_token_out = svix.authentication.exchange_one_time_token(Svix::OneTimeTokenIn.new(\n}))"
+                        "source": "one_time_token_out = svix.authentication.exchange_one_time_token(Svix::OneTimeTokenIn.new({\n\n}))"
                     },
                     {
                         "label": "Rust",
@@ -24544,17 +24553,17 @@
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var oneTimeTokenOut = await svix.Authentication.ExchangeOneTimeTokenAsync(new OneTimeTokenIn\n});"
+                        "source": "var oneTimeTokenOut = await svix.Authentication.ExchangeOneTimeTokenAsync(new OneTimeTokenIn{\n\n});"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix authentication exchange-one-time-token '\n}'"
+                        "source": "svix authentication exchange-one-time-token '{\n\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/auth/one-time-token' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/auth/one-time-token' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \n    }'"
                     }
                 ],
                 "x-hidden": true
@@ -24755,7 +24764,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/auth/org-group-admin-token' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/auth/org-group-admin-token' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ],
                 "x-hidden": true
@@ -24934,7 +24943,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/auth/org-group-admin-token' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"expiry\": null\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/auth/org-group-admin-token' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"expiry\": null\n    }'"
                     }
                 ],
                 "x-hidden": true
@@ -25066,22 +25075,22 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const globalApiTokenCensoredOut = await svix.authentication.orgGroupAdminToken.update(\"key_id\", \n});"
+                        "source": "const globalApiTokenCensoredOut = await svix.authentication.orgGroupAdminToken.update(\"key_id\", {\n\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const globalApiTokenCensoredOut = await svix.authentication.orgGroupAdminToken.update(\"key_id\", \n});"
+                        "source": "const globalApiTokenCensoredOut = await svix.authentication.orgGroupAdminToken.update(\"key_id\", {\n\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "global_api_token_censored_out = svix.authentication.org_group_admin_token.update(\"key_id\", ApiTokenUpdate\n))"
+                        "source": "global_api_token_censored_out = svix.authentication.org_group_admin_token.update(\"key_id\", ApiTokenUpdate(\n\n))"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "global_api_token_censored_out = await svix.authentication.org_group_admin_token.update(\"key_id\", ApiTokenUpdate\n))"
+                        "source": "global_api_token_censored_out = await svix.authentication.org_group_admin_token.update(\"key_id\", ApiTokenUpdate(\n\n))"
                     },
                     {
                         "label": "Go",
@@ -25101,7 +25110,7 @@
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "global_api_token_censored_out = svix.authentication.org_group_admin_token.update(\"key_id\", Svix::ApiTokenUpdate.new(\n}))"
+                        "source": "global_api_token_censored_out = svix.authentication.org_group_admin_token.update(\"key_id\", Svix::ApiTokenUpdate.new({\n\n}))"
                     },
                     {
                         "label": "Rust",
@@ -25111,17 +25120,17 @@
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var globalApiTokenCensoredOut = await svix.Authentication.OrgGroupAdminToken.UpdateAsync(\"key_id\", new ApiTokenUpdate\n});"
+                        "source": "var globalApiTokenCensoredOut = await svix.Authentication.OrgGroupAdminToken.UpdateAsync(\"key_id\", new ApiTokenUpdate{\n\n});"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix authentication org-group-admin-token update \"key_id\" '\n}'"
+                        "source": "svix authentication org-group-admin-token update \"key_id\" '{\n\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/auth/org-group-admin-token/{key_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '\n    }'"
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/auth/org-group-admin-token/{key_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \n    }'"
                     }
                 ],
                 "x-hidden": true
@@ -25255,22 +25264,22 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "await svix.authentication.orgGroupAdminToken.expire(\"key_id\", \n});"
+                        "source": "await svix.authentication.orgGroupAdminToken.expire(\"key_id\", {\n\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "await svix.authentication.orgGroupAdminToken.expire(\"key_id\", \n});"
+                        "source": "await svix.authentication.orgGroupAdminToken.expire(\"key_id\", {\n\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "svix.authentication.org_group_admin_token.expire(\"key_id\", ApiTokenExpireIn\n), options=...)"
+                        "source": "svix.authentication.org_group_admin_token.expire(\"key_id\", ApiTokenExpireIn(\n\n), options=...)"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "await svix.authentication.org_group_admin_token.expire(\"key_id\", ApiTokenExpireIn\n), options=...)"
+                        "source": "await svix.authentication.org_group_admin_token.expire(\"key_id\", ApiTokenExpireIn(\n\n), options=...)"
                     },
                     {
                         "label": "Go",
@@ -25290,7 +25299,7 @@
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "svix.authentication.org_group_admin_token.expire(\"key_id\", Svix::ApiTokenExpireIn.new(\n}))"
+                        "source": "svix.authentication.org_group_admin_token.expire(\"key_id\", Svix::ApiTokenExpireIn.new({\n\n}))"
                     },
                     {
                         "label": "Rust",
@@ -25300,17 +25309,17 @@
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "await svix.Authentication.OrgGroupAdminToken.ExpireAsync(\"key_id\", new ApiTokenExpireIn\n});"
+                        "source": "await svix.Authentication.OrgGroupAdminToken.ExpireAsync(\"key_id\", new ApiTokenExpireIn{\n\n});"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix authentication org-group-admin-token expire \"key_id\" '\n}'"
+                        "source": "svix authentication org-group-admin-token expire \"key_id\" '{\n\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/auth/org-group-admin-token/{key_id}/expire' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/auth/org-group-admin-token/{key_id}/expire' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \n    }'"
                     }
                 ],
                 "x-hidden": true
@@ -25505,7 +25514,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/auth/stream-portal-access/{stream_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"featureFlags\": [],\n        \"expiry\": null,\n        \"readOnly\": null\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/auth/stream-portal-access/{stream_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"featureFlags\": [],\n        \"expiry\": null,\n        \"readOnly\": null\n    }'"
                     }
                 ],
                 "x-hidden": true
@@ -25728,7 +25737,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/background-task' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/background-task' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -25904,7 +25913,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/background-task/{task_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/background-task/{task_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -26074,7 +26083,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/environment/export' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/environment/export' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -26247,7 +26256,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/environment/import' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"eventTypes\": null,\n        \"settings\": null,\n        \"connectors\": null\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/environment/import' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"eventTypes\": null,\n        \"settings\": null,\n        \"connectors\": null\n    }'"
                     }
                 ]
             }
@@ -26406,7 +26415,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/environment/settings' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/environment/settings' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ],
                 "x-hidden": true
@@ -26628,7 +26637,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/event-type' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/event-type' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             },
@@ -26806,7 +26815,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/event-type' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"name\": \"user.signup\",\n        \"description\": \"A user has signed up\",\n        \"archived\": false,\n        \"schemas\": {\"1\":{\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}},\n        \"featureFlag\": \"cool-new-feature\",\n        \"groupName\": \"user\"\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/event-type' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"name\": \"user.signup\",\n        \"description\": \"A user has signed up\",\n        \"archived\": false,\n        \"schemas\": {\"1\":{\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}},\n        \"featureFlag\": \"cool-new-feature\",\n        \"groupName\": \"user\"\n    }'"
                     }
                 ]
             }
@@ -26976,7 +26985,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/event-type/export/openapi' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/event-type/export/openapi' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ],
                 "x-hidden": true
@@ -27158,7 +27167,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/event-type/import/openapi' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"spec\": {\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}},\n        \"specRaw\": \"\n    # Both YAML and JSON are supported\n    openapi: 3.1.0\n    info:\n      title: Webhook Example\n      version: 1.0.0\n    # Since OAS 3.1.0 the paths element isn't necessary. Now a valid OpenAPI Document can describe only paths, webhooks, or even only reusable components\n    webhooks:\n      # Each webhook needs a name\n      \"pet.new\":\n        # This is a Path Item Object, the only difference is that the request is initiated by the API provider\n        post:\n          requestBody:\n            description: Information about a new pet in the system\n            content:\n              application/json:\n                schema:\n                  $ref: \"#/components/schemas/Pet\"\n          responses:\n            \"200\":\n              description: Return a 200 status to indicate that the data was received successfully\n    \n    components:\n      schemas:\n        Pet:\n          required:\n            - id\n            - name\n          properties:\n            id:\n              type: integer\n              format: int64\n            name:\n              type: string\n            tag:\n              type: string\n    \"\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/event-type/import/openapi' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"spec\": {\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}},\n        \"specRaw\": \"\n    # Both YAML and JSON are supported\n    openapi: 3.1.0\n    info:\n      title: Webhook Example\n      version: 1.0.0\n    # Since OAS 3.1.0 the paths element isn't necessary. Now a valid OpenAPI Document can describe only paths, webhooks, or even only reusable components\n    webhooks:\n      # Each webhook needs a name\n      \"pet.new\":\n        # This is a Path Item Object, the only difference is that the request is initiated by the API provider\n        post:\n          requestBody:\n            description: Information about a new pet in the system\n            content:\n              application/json:\n                schema:\n                  $ref: \"#/components/schemas/Pet\"\n          responses:\n            \"200\":\n              description: Return a 200 status to indicate that the data was received successfully\n    \n    components:\n      schemas:\n        Pet:\n          required:\n            - id\n            - name\n          properties:\n            id:\n              type: integer\n              format: int64\n            name:\n              type: string\n            tag:\n              type: string\n    \"\n    }'"
                     }
                 ]
             }
@@ -27338,7 +27347,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/event-type/schema/generate-example' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"schema\": {\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/event-type/schema/generate-example' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"schema\": {\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}\n    }'"
                     }
                 ],
                 "x-hidden": true
@@ -27518,7 +27527,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/event-type/{event_type_name}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/event-type/{event_type_name}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             },
@@ -27691,7 +27700,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/event-type/{event_type_name}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/event-type/{event_type_name}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             },
@@ -27874,7 +27883,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/event-type/{event_type_name}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"schemas\": {\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"},\n        \"featureFlag\": \"cool-new-feature\",\n        \"groupName\": \"user\"\n    }'"
+                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/event-type/{event_type_name}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"schemas\": {\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"},\n        \"featureFlag\": \"cool-new-feature\",\n        \"groupName\": \"user\"\n    }'"
                     }
                 ]
             },
@@ -28067,7 +28076,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/event-type/{event_type_name}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"description\": \"A user has signed up\",\n        \"archived\": false,\n        \"schemas\": {\"1\":{\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}},\n        \"featureFlag\": \"cool-new-feature\",\n        \"groupName\": \"user\"\n    }'"
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/event-type/{event_type_name}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"description\": \"A user has signed up\",\n        \"archived\": false,\n        \"schemas\": {\"1\":{\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}},\n        \"featureFlag\": \"cool-new-feature\",\n        \"groupName\": \"user\"\n    }'"
                     }
                 ]
             }
@@ -28242,7 +28251,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/event-type/{event_type_name}/retry-schedule' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/event-type/{event_type_name}/retry-schedule' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ],
                 "x-hidden": true
@@ -28426,7 +28435,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/event-type/{event_type_name}/retry-schedule' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"retrySchedule\": null\n    }'"
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/event-type/{event_type_name}/retry-schedule' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"retrySchedule\": null\n    }'"
                     }
                 ],
                 "x-hidden": true
@@ -28604,7 +28613,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/events' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/events' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ],
                 "x-hidden": true
@@ -28697,7 +28706,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/health' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/health' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -28897,7 +28906,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/management/authentication/api-token' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/management/authentication/api-token' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             },
@@ -29075,7 +29084,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/management/authentication/api-token' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"scopes\": null\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/management/authentication/api-token' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"scopes\": null\n    }'"
                     }
                 ]
             }
@@ -29208,22 +29217,22 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "await svix.management.authentication.expireApiToken(\"key_id\", \n});"
+                        "source": "await svix.management.authentication.expireApiToken(\"key_id\", {\n\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "await svix.management.authentication.expireApiToken(\"key_id\", \n});"
+                        "source": "await svix.management.authentication.expireApiToken(\"key_id\", {\n\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "svix.management.authentication.expire_api_token(\"key_id\", ApiTokenExpireIn\n), options=...)"
+                        "source": "svix.management.authentication.expire_api_token(\"key_id\", ApiTokenExpireIn(\n\n), options=...)"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "await svix.management.authentication.expire_api_token(\"key_id\", ApiTokenExpireIn\n), options=...)"
+                        "source": "await svix.management.authentication.expire_api_token(\"key_id\", ApiTokenExpireIn(\n\n), options=...)"
                     },
                     {
                         "label": "Go",
@@ -29243,7 +29252,7 @@
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "svix.management.authentication.expire_api_token(\"key_id\", Svix::ApiTokenExpireIn.new(\n}))"
+                        "source": "svix.management.authentication.expire_api_token(\"key_id\", Svix::ApiTokenExpireIn.new({\n\n}))"
                     },
                     {
                         "label": "Rust",
@@ -29253,17 +29262,17 @@
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "await svix.Management.Authentication.ExpireApiTokenAsync(\"key_id\", new ApiTokenExpireIn\n});"
+                        "source": "await svix.Management.Authentication.ExpireApiTokenAsync(\"key_id\", new ApiTokenExpireIn{\n\n});"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix management authentication expire-api-token \"key_id\" '\n}'"
+                        "source": "svix management authentication expire-api-token \"key_id\" '{\n\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/management/authentication/api-token/{key_id}/expire' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/management/authentication/api-token/{key_id}/expire' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \n    }'"
                     }
                 ]
             }
@@ -29463,7 +29472,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/management/environment' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/management/environment' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ],
                 "x-hidden": true
@@ -29587,22 +29596,22 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const environmentModelOut = await svix.management.environment.create(\n});"
+                        "source": "const environmentModelOut = await svix.management.environment.create({\n\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const environmentModelOut = await svix.management.environment.create(\n});"
+                        "source": "const environmentModelOut = await svix.management.environment.create({\n\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "environment_model_out = svix.management.environment.create(EnvironmentModelIn\n), options=...)"
+                        "source": "environment_model_out = svix.management.environment.create(EnvironmentModelIn(\n\n), options=...)"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "environment_model_out = await svix.management.environment.create(EnvironmentModelIn\n), options=...)"
+                        "source": "environment_model_out = await svix.management.environment.create(EnvironmentModelIn(\n\n), options=...)"
                     },
                     {
                         "label": "Go",
@@ -29622,7 +29631,7 @@
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "environment_model_out = svix.management.environment.create(Svix::EnvironmentModelIn.new(\n}))"
+                        "source": "environment_model_out = svix.management.environment.create(Svix::EnvironmentModelIn.new({\n\n}))"
                     },
                     {
                         "label": "Rust",
@@ -29632,17 +29641,17 @@
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var environmentModelOut = await svix.Management.Environment.CreateAsync(new EnvironmentModelIn\n});"
+                        "source": "var environmentModelOut = await svix.Management.Environment.CreateAsync(new EnvironmentModelIn{\n\n});"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix management environment create '\n}'"
+                        "source": "svix management environment create '{\n\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/management/environment' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/management/environment' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \n    }'"
                     }
                 ],
                 "x-hidden": true
@@ -29802,7 +29811,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/management/environment-settings' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/management/environment-settings' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ],
                 "x-hidden": true
@@ -29970,7 +29979,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/management/environment-settings' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"retryPolicy\": null,\n        \"customColor\": null,\n        \"customLogoUrl\": null,\n        \"customThemeOverride\": null,\n        \"customStringsOverride\": null,\n        \"customBaseFontSize\": null,\n        \"customFontFamily\": \"Open Sans\",\n        \"customFontFamilyUrl\": null,\n        \"displayName\": null,\n        \"colorPaletteLight\": null,\n        \"colorPaletteDark\": null\n    }'"
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/management/environment-settings' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"retryPolicy\": null,\n        \"customColor\": null,\n        \"customLogoUrl\": null,\n        \"customThemeOverride\": null,\n        \"customStringsOverride\": null,\n        \"customBaseFontSize\": null,\n        \"customFontFamily\": \"Open Sans\",\n        \"customFontFamilyUrl\": null,\n        \"displayName\": null,\n        \"colorPaletteLight\": null,\n        \"colorPaletteDark\": null\n    }'"
                     }
                 ],
                 "x-hidden": true
@@ -30123,7 +30132,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/management/environment-settings/customer-otel' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/management/environment-settings/customer-otel' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ],
                 "x-hidden": true
@@ -30284,7 +30293,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/management/environment-settings/customer-otel' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"additionalHeaders\": null\n    }'"
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/management/environment-settings/customer-otel' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"additionalHeaders\": null\n    }'"
                     }
                 ],
                 "x-hidden": true
@@ -30454,7 +30463,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/management/environment/{env_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/management/environment/{env_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ],
                 "x-hidden": true
@@ -30629,7 +30638,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/management/environment/{env_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/management/environment/{env_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ],
                 "x-hidden": true
@@ -30759,22 +30768,22 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const environmentModelOut = await svix.management.environment.update(\"env_id\", \n});"
+                        "source": "const environmentModelOut = await svix.management.environment.update(\"env_id\", {\n\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const environmentModelOut = await svix.management.environment.update(\"env_id\", \n});"
+                        "source": "const environmentModelOut = await svix.management.environment.update(\"env_id\", {\n\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "environment_model_out = svix.management.environment.update(\"env_id\", EnvironmentModelUpdate\n))"
+                        "source": "environment_model_out = svix.management.environment.update(\"env_id\", EnvironmentModelUpdate(\n\n))"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "environment_model_out = await svix.management.environment.update(\"env_id\", EnvironmentModelUpdate\n))"
+                        "source": "environment_model_out = await svix.management.environment.update(\"env_id\", EnvironmentModelUpdate(\n\n))"
                     },
                     {
                         "label": "Go",
@@ -30794,7 +30803,7 @@
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "environment_model_out = svix.management.environment.update(\"env_id\", Svix::EnvironmentModelUpdate.new(\n}))"
+                        "source": "environment_model_out = svix.management.environment.update(\"env_id\", Svix::EnvironmentModelUpdate.new({\n\n}))"
                     },
                     {
                         "label": "Rust",
@@ -30804,17 +30813,17 @@
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var environmentModelOut = await svix.Management.Environment.UpdateAsync(\"env_id\", new EnvironmentModelUpdate\n});"
+                        "source": "var environmentModelOut = await svix.Management.Environment.UpdateAsync(\"env_id\", new EnvironmentModelUpdate{\n\n});"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix management environment update \"env_id\" '\n}'"
+                        "source": "svix management environment update \"env_id\" '{\n\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/management/environment/{env_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '\n    }'"
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/management/environment/{env_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \n    }'"
                     }
                 ],
                 "x-hidden": true
@@ -30940,7 +30949,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/msg/broadcast' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"eventId\": \"unique-identifier\",\n        \"eventType\": \"user.signup\",\n        \"payload\": {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n        \"channels\": [\"project_123\", \"group_2\"],\n        \"payloadRetentionPeriod\": 90,\n        \"payloadRetentionHours\": null\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/msg/broadcast' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"eventId\": \"unique-identifier\",\n        \"eventType\": \"user.signup\",\n        \"payload\": {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n        \"channels\": [\"project_123\", \"group_2\"],\n        \"payloadRetentionPeriod\": 90,\n        \"payloadRetentionHours\": null\n    }'"
                     }
                 ],
                 "x-hidden": true
@@ -31141,7 +31150,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/operational-webhook/endpoint' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/operational-webhook/endpoint' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             },
@@ -31319,7 +31328,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/operational-webhook/endpoint' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"description\": \"An example endpoint name\",\n        \"rateLimit\": null,\n        \"uid\": \"unique-identifier\",\n        \"url\": \"https://example.com/webhook/\",\n        \"disabled\": false,\n        \"filterTypes\": [\"message.attempt.failing\"],\n        \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/operational-webhook/endpoint' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"description\": \"An example endpoint name\",\n        \"rateLimit\": null,\n        \"uid\": \"unique-identifier\",\n        \"url\": \"https://example.com/webhook/\",\n        \"disabled\": false,\n        \"filterTypes\": [\"message.attempt.failing\"],\n        \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n    }'"
                     }
                 ]
             }
@@ -31488,7 +31497,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/operational-webhook/endpoint/{endpoint_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/operational-webhook/endpoint/{endpoint_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             },
@@ -31662,7 +31671,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/operational-webhook/endpoint/{endpoint_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/operational-webhook/endpoint/{endpoint_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             },
@@ -31846,7 +31855,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/operational-webhook/endpoint/{endpoint_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"description\": \"An example endpoint name\",\n        \"rateLimit\": null,\n        \"uid\": \"unique-identifier\",\n        \"url\": \"https://example.com/webhook/\",\n        \"disabled\": false,\n        \"filterTypes\": [\"message.attempt.failing\"]\n    }'"
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/operational-webhook/endpoint/{endpoint_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"description\": \"An example endpoint name\",\n        \"rateLimit\": null,\n        \"uid\": \"unique-identifier\",\n        \"url\": \"https://example.com/webhook/\",\n        \"disabled\": false,\n        \"filterTypes\": [\"message.attempt.failing\"]\n    }'"
                     }
                 ]
             }
@@ -32022,7 +32031,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/operational-webhook/endpoint/{endpoint_id}/headers' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/operational-webhook/endpoint/{endpoint_id}/headers' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             },
@@ -32199,7 +32208,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/operational-webhook/endpoint/{endpoint_id}/headers' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"headers\": {\"X-Example\":\"123\",\"X-Foobar\":\"Bar\"}\n    }'"
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/operational-webhook/endpoint/{endpoint_id}/headers' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"headers\": {\"X-Example\":\"123\",\"X-Foobar\":\"Bar\"}\n    }'"
                     }
                 ]
             }
@@ -32375,7 +32384,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/operational-webhook/endpoint/{endpoint_id}/secret' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/operational-webhook/endpoint/{endpoint_id}/secret' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -32563,7 +32572,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/operational-webhook/endpoint/{endpoint_id}/secret/rotate' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/operational-webhook/endpoint/{endpoint_id}/secret/rotate' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n    }'"
                     }
                 ]
             }
@@ -32763,7 +32772,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/stats/app/{app_id}/attempt' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/stats/app/{app_id}/attempt' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ],
                 "x-hidden": true
@@ -32979,7 +32988,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/stats/app/{app_id}/ep/{endpoint_id}/attempt' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/stats/app/{app_id}/ep/{endpoint_id}/attempt' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ],
                 "x-hidden": true
@@ -33160,7 +33169,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/stats/usage/app' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"appIds\": null\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/stats/usage/app' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"appIds\": null\n    }'"
                     }
                 ]
             }
@@ -33319,7 +33328,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/stats/usage/event-types' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/stats/usage/event-types' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -33519,7 +33528,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/stream' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/stream' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ],
                 "x-hidden": true
@@ -33698,7 +33707,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/stream' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"uid\": \"unique-identifier\"\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/stream' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"uid\": \"unique-identifier\"\n    }'"
                     }
                 ],
                 "x-hidden": true
@@ -33898,7 +33907,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/stream/event-type' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/stream/event-type' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ],
                 "x-hidden": true
@@ -34077,7 +34086,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/stream/event-type' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"name\": \"user.signup\",\n        \"description\": null\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/stream/event-type' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"name\": \"user.signup\",\n        \"description\": null\n    }'"
                     }
                 ],
                 "x-hidden": true
@@ -34246,7 +34255,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/stream/event-type/{name}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/stream/event-type/{name}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ],
                 "x-hidden": true
@@ -34420,7 +34429,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/stream/event-type/{name}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/stream/event-type/{name}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ],
                 "x-hidden": true
@@ -34604,7 +34613,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/stream/event-type/{name}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"name\": \"user.signup\",\n        \"description\": null\n    }'"
+                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/stream/event-type/{name}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"name\": \"user.signup\",\n        \"description\": null\n    }'"
                     }
                 ],
                 "x-hidden": true
@@ -34798,7 +34807,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/stream/event-type/{name}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"name\": \"user.signup\",\n        \"description\": null\n    }'"
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/stream/event-type/{name}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"name\": \"user.signup\",\n        \"description\": null\n    }'"
                     }
                 ],
                 "x-hidden": true
@@ -34967,7 +34976,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/stream/{stream_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/stream/{stream_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ],
                 "x-hidden": true
@@ -35141,7 +35150,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/stream/{stream_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/stream/{stream_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ],
                 "x-hidden": true
@@ -35325,7 +35334,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/stream/{stream_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"uid\": \"unique-identifier\"\n    }'"
+                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/stream/{stream_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"uid\": \"unique-identifier\"\n    }'"
                     }
                 ],
                 "x-hidden": true
@@ -35519,7 +35528,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/stream/{stream_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"uid\": \"unique-identifier\"\n    }'"
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/stream/{stream_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"uid\": \"unique-identifier\"\n    }'"
                     }
                 ],
                 "x-hidden": true
@@ -35729,7 +35738,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/stream/{stream_id}/events' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/stream/{stream_id}/events' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ],
                 "x-hidden": true
@@ -35922,7 +35931,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/stream/{stream_id}/events' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"stream\": null\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/stream/{stream_id}/events' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"stream\": null\n    }'"
                     }
                 ],
                 "x-hidden": true
@@ -36060,7 +36069,7 @@
                         "HTTPBearer": []
                     }
                 ],
-                "summary": "List Transformation Templates",
+                "summary": "List Connectors",
                 "tags": [
                     "Transformation Template"
                 ],
@@ -36123,7 +36132,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/transformation-template' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/transformation-template' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ],
                 "x-hidden": true
@@ -36239,7 +36248,7 @@
                         "HTTPBearer": []
                     }
                 ],
-                "summary": "Create Transformation Template",
+                "summary": "Create Connector",
                 "tags": [
                     "Transformation Template"
                 ],
@@ -36302,7 +36311,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/transformation-template' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"instructionsLink\": null,\n        \"filterTypes\": [\"user.signup\", \"user.deleted\"],\n        \"featureFlag\": \"cool-new-feature\"\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/transformation-template' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"instructionsLink\": null,\n        \"filterTypes\": [\"user.signup\", \"user.deleted\"],\n        \"featureFlag\": \"cool-new-feature\"\n    }'"
                     }
                 ],
                 "x-hidden": true
@@ -36428,22 +36437,22 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const generateOut = await svix.beta.connector.generate(\n});"
+                        "source": "const generateOut = await svix.beta.connector.generate({\n\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const generateOut = await svix.beta.connector.generate(\n});"
+                        "source": "const generateOut = await svix.beta.connector.generate({\n\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "generate_out = svix.beta.connector.generate(GenerateIn\n), options=...)"
+                        "source": "generate_out = svix.beta.connector.generate(GenerateIn(\n\n), options=...)"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "generate_out = await svix.beta.connector.generate(GenerateIn\n), options=...)"
+                        "source": "generate_out = await svix.beta.connector.generate(GenerateIn(\n\n), options=...)"
                     },
                     {
                         "label": "Go",
@@ -36463,7 +36472,7 @@
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "generate_out = svix.beta.connector.generate(Svix::GenerateIn.new(\n}))"
+                        "source": "generate_out = svix.beta.connector.generate(Svix::GenerateIn.new({\n\n}))"
                     },
                     {
                         "label": "Rust",
@@ -36473,17 +36482,17 @@
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var generateOut = await svix.Beta.Connector.GenerateAsync(new GenerateIn\n});"
+                        "source": "var generateOut = await svix.Beta.Connector.GenerateAsync(new GenerateIn{\n\n});"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix beta connector generate '\n}'"
+                        "source": "svix beta connector generate '{\n\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/generate' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/generate' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \n    }'"
                     }
                 ],
                 "x-hidden": true
@@ -36609,22 +36618,22 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const incomingWebhookPayloadOut = await svix.beta.connector.oauth.discord(\n});"
+                        "source": "const incomingWebhookPayloadOut = await svix.beta.connector.oauth.discord({\n\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const incomingWebhookPayloadOut = await svix.beta.connector.oauth.discord(\n});"
+                        "source": "const incomingWebhookPayloadOut = await svix.beta.connector.oauth.discord({\n\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "incoming_webhook_payload_out = svix.beta.connector.oauth.discord(OAuthPayloadIn\n), options=...)"
+                        "source": "incoming_webhook_payload_out = svix.beta.connector.oauth.discord(OAuthPayloadIn(\n\n), options=...)"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "incoming_webhook_payload_out = await svix.beta.connector.oauth.discord(OAuthPayloadIn\n), options=...)"
+                        "source": "incoming_webhook_payload_out = await svix.beta.connector.oauth.discord(OAuthPayloadIn(\n\n), options=...)"
                     },
                     {
                         "label": "Go",
@@ -36644,7 +36653,7 @@
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "incoming_webhook_payload_out = svix.beta.connector.oauth.discord(Svix::OAuthPayloadIn.new(\n}))"
+                        "source": "incoming_webhook_payload_out = svix.beta.connector.oauth.discord(Svix::OAuthPayloadIn.new({\n\n}))"
                     },
                     {
                         "label": "Rust",
@@ -36654,17 +36663,17 @@
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var incomingWebhookPayloadOut = await svix.Beta.Connector.Oauth.DiscordAsync(new OAuthPayloadIn\n});"
+                        "source": "var incomingWebhookPayloadOut = await svix.Beta.Connector.Oauth.DiscordAsync(new OAuthPayloadIn{\n\n});"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix beta connector oauth discord '\n}'"
+                        "source": "svix beta connector oauth discord '{\n\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/oauth/discord' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/oauth/discord' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \n    }'"
                     }
                 ],
                 "x-hidden": true
@@ -36790,22 +36799,22 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const oAuthPayloadOut = await svix.beta.connector.oauth.hubspot(\n});"
+                        "source": "const oAuthPayloadOut = await svix.beta.connector.oauth.hubspot({\n\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const oAuthPayloadOut = await svix.beta.connector.oauth.hubspot(\n});"
+                        "source": "const oAuthPayloadOut = await svix.beta.connector.oauth.hubspot({\n\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "o_auth_payload_out = svix.beta.connector.oauth.hubspot(OAuthPayloadIn\n), options=...)"
+                        "source": "o_auth_payload_out = svix.beta.connector.oauth.hubspot(OAuthPayloadIn(\n\n), options=...)"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "o_auth_payload_out = await svix.beta.connector.oauth.hubspot(OAuthPayloadIn\n), options=...)"
+                        "source": "o_auth_payload_out = await svix.beta.connector.oauth.hubspot(OAuthPayloadIn(\n\n), options=...)"
                     },
                     {
                         "label": "Go",
@@ -36825,7 +36834,7 @@
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "o_auth_payload_out = svix.beta.connector.oauth.hubspot(Svix::OAuthPayloadIn.new(\n}))"
+                        "source": "o_auth_payload_out = svix.beta.connector.oauth.hubspot(Svix::OAuthPayloadIn.new({\n\n}))"
                     },
                     {
                         "label": "Rust",
@@ -36835,17 +36844,17 @@
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var oAuthPayloadOut = await svix.Beta.Connector.Oauth.HubspotAsync(new OAuthPayloadIn\n});"
+                        "source": "var oAuthPayloadOut = await svix.Beta.Connector.Oauth.HubspotAsync(new OAuthPayloadIn{\n\n});"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix beta connector oauth hubspot '\n}'"
+                        "source": "svix beta connector oauth hubspot '{\n\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/oauth/hubspot' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/oauth/hubspot' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \n    }'"
                     }
                 ],
                 "x-hidden": true
@@ -36971,22 +36980,22 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const incomingWebhookPayloadOut = await svix.beta.connector.oauth.slack(\n});"
+                        "source": "const incomingWebhookPayloadOut = await svix.beta.connector.oauth.slack({\n\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const incomingWebhookPayloadOut = await svix.beta.connector.oauth.slack(\n});"
+                        "source": "const incomingWebhookPayloadOut = await svix.beta.connector.oauth.slack({\n\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "incoming_webhook_payload_out = svix.beta.connector.oauth.slack(OAuthPayloadIn\n), options=...)"
+                        "source": "incoming_webhook_payload_out = svix.beta.connector.oauth.slack(OAuthPayloadIn(\n\n), options=...)"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "incoming_webhook_payload_out = await svix.beta.connector.oauth.slack(OAuthPayloadIn\n), options=...)"
+                        "source": "incoming_webhook_payload_out = await svix.beta.connector.oauth.slack(OAuthPayloadIn(\n\n), options=...)"
                     },
                     {
                         "label": "Go",
@@ -37006,7 +37015,7 @@
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "incoming_webhook_payload_out = svix.beta.connector.oauth.slack(Svix::OAuthPayloadIn.new(\n}))"
+                        "source": "incoming_webhook_payload_out = svix.beta.connector.oauth.slack(Svix::OAuthPayloadIn.new({\n\n}))"
                     },
                     {
                         "label": "Rust",
@@ -37016,17 +37025,17 @@
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var incomingWebhookPayloadOut = await svix.Beta.Connector.Oauth.SlackAsync(new OAuthPayloadIn\n});"
+                        "source": "var incomingWebhookPayloadOut = await svix.Beta.Connector.Oauth.SlackAsync(new OAuthPayloadIn{\n\n});"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix beta connector oauth slack '\n}'"
+                        "source": "svix beta connector oauth slack '{\n\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/oauth/slack' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/oauth/slack' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \n    }'"
                     }
                 ],
                 "x-hidden": true
@@ -37207,7 +37216,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/simulate' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"eventType\": \"user.signup\",\n        \"channels\": null\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/simulate' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"eventType\": \"user.signup\",\n        \"channels\": null\n    }'"
                     }
                 ],
                 "x-hidden": true
@@ -37219,12 +37228,12 @@
                 "operationId": "v1.beta.connector.delete",
                 "parameters": [
                     {
-                        "description": "The TransformationTemplate's ID.",
+                        "description": "The Connector's ID.",
                         "in": "path",
                         "name": "transformation_template_id",
                         "required": true,
                         "schema": {
-                            "description": "The TransformationTemplate's ID.",
+                            "description": "The Connector's ID.",
                             "example": "trtmpl_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                             "maxLength": 34,
                             "minLength": 34,
@@ -37314,7 +37323,7 @@
                         "HTTPBearer": []
                     }
                 ],
-                "summary": "Delete Transformation Template",
+                "summary": "Delete Connector",
                 "tags": [
                     "Transformation Template"
                 ],
@@ -37377,7 +37386,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/{transformation_template_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/{transformation_template_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ],
                 "x-hidden": true
@@ -37387,12 +37396,12 @@
                 "operationId": "v1.beta.connector.get",
                 "parameters": [
                     {
-                        "description": "The TransformationTemplate's ID.",
+                        "description": "The Connector's ID.",
                         "in": "path",
                         "name": "transformation_template_id",
                         "required": true,
                         "schema": {
-                            "description": "The TransformationTemplate's ID.",
+                            "description": "The Connector's ID.",
                             "example": "trtmpl_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                             "maxLength": 34,
                             "minLength": 34,
@@ -37489,7 +37498,7 @@
                         "HTTPBearer": []
                     }
                 ],
-                "summary": "Get Transformation Template",
+                "summary": "Get Connector",
                 "tags": [
                     "Transformation Template"
                 ],
@@ -37552,7 +37561,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/{transformation_template_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/{transformation_template_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ],
                 "x-hidden": true
@@ -37562,12 +37571,12 @@
                 "operationId": "v1.beta.connector.patch",
                 "parameters": [
                     {
-                        "description": "The TransformationTemplate's ID.",
+                        "description": "The Connector's ID.",
                         "in": "path",
                         "name": "transformation_template_id",
                         "required": true,
                         "schema": {
-                            "description": "The TransformationTemplate's ID.",
+                            "description": "The Connector's ID.",
                             "example": "trtmpl_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                             "maxLength": 34,
                             "minLength": 34,
@@ -37674,7 +37683,7 @@
                         "HTTPBearer": []
                     }
                 ],
-                "summary": "Patch Transformation Template",
+                "summary": "Patch Connector",
                 "tags": [
                     "Transformation Template"
                 ],
@@ -37737,7 +37746,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/{transformation_template_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"instructionsLink\": null,\n        \"filterTypes\": [\"user.signup\", \"user.deleted\"],\n        \"featureFlag\": \"cool-new-feature\"\n    }'"
+                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/{transformation_template_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"instructionsLink\": null,\n        \"filterTypes\": [\"user.signup\", \"user.deleted\"],\n        \"featureFlag\": \"cool-new-feature\"\n    }'"
                     }
                 ],
                 "x-hidden": true
@@ -37747,12 +37756,12 @@
                 "operationId": "v1.beta.connector.update",
                 "parameters": [
                     {
-                        "description": "The TransformationTemplate's ID.",
+                        "description": "The Connector's ID.",
                         "in": "path",
                         "name": "transformation_template_id",
                         "required": true,
                         "schema": {
-                            "description": "The TransformationTemplate's ID.",
+                            "description": "The Connector's ID.",
                             "example": "trtmpl_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                             "maxLength": 34,
                             "minLength": 34,
@@ -37766,7 +37775,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/TemplateUpdate"
+                                "$ref": "#/components/schemas/ConnectorUpdate"
                             }
                         }
                     },
@@ -37869,7 +37878,7 @@
                         "HTTPBearer": []
                     }
                 ],
-                "summary": "Update Transformation Template",
+                "summary": "Update Connector",
                 "tags": [
                     "Transformation Template"
                 ],
@@ -37887,42 +37896,42 @@
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "connector_out = svix.beta.connector.update(\"transformation_template_id\", TemplateUpdate(\n    instructions_link=None,\n    filter_types=[\"user.signup\", \"user.deleted\"],\n    feature_flag=\"cool-new-feature\"\n))"
+                        "source": "connector_out = svix.beta.connector.update(\"transformation_template_id\", ConnectorUpdate(\n    instructions_link=None,\n    filter_types=[\"user.signup\", \"user.deleted\"],\n    feature_flag=\"cool-new-feature\"\n))"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "connector_out = await svix.beta.connector.update(\"transformation_template_id\", TemplateUpdate(\n    instructions_link=None,\n    filter_types=[\"user.signup\", \"user.deleted\"],\n    feature_flag=\"cool-new-feature\"\n))"
+                        "source": "connector_out = await svix.beta.connector.update(\"transformation_template_id\", ConnectorUpdate(\n    instructions_link=None,\n    filter_types=[\"user.signup\", \"user.deleted\"],\n    feature_flag=\"cool-new-feature\"\n))"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "connectorOut, err := svixClient.Beta.Connector.Update(ctx, \"transformation_template_id\", &TemplateUpdate{\n    InstructionsLink: nil,\n    FilterTypes: []string{\"user.signup\", \"user.deleted\"},\n    FeatureFlag: \"cool-new-feature\",\n})"
+                        "source": "connectorOut, err := svixClient.Beta.Connector.Update(ctx, \"transformation_template_id\", &ConnectorUpdate{\n    InstructionsLink: nil,\n    FilterTypes: []string{\"user.signup\", \"user.deleted\"},\n    FeatureFlag: \"cool-new-feature\",\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val connectorOut = svix.beta.connector.update(\"transformation_template_id\", TemplateUpdate()\n    .instructionsLink(null)\n    .filterTypes(arrayOf(\"user.signup\", \"user.deleted\"))\n    .featureFlag(\"cool-new-feature\")\n)"
+                        "source": "val connectorOut = svix.beta.connector.update(\"transformation_template_id\", ConnectorUpdate()\n    .instructionsLink(null)\n    .filterTypes(arrayOf(\"user.signup\", \"user.deleted\"))\n    .featureFlag(\"cool-new-feature\")\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "ConnectorOut connectorOut = svix.getBeta().getConnector().update(\"transformation_template_id\", new TemplateUpdate()\n    .instructionsLink(null)\n    .filterTypes(new String[]{\"user.signup\", \"user.deleted\"})\n    .featureFlag(\"cool-new-feature\")\n);"
+                        "source": "ConnectorOut connectorOut = svix.getBeta().getConnector().update(\"transformation_template_id\", new ConnectorUpdate()\n    .instructionsLink(null)\n    .filterTypes(new String[]{\"user.signup\", \"user.deleted\"})\n    .featureFlag(\"cool-new-feature\")\n);"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "connector_out = svix.beta.connector.update(\"transformation_template_id\", Svix::TemplateUpdate.new({\n    \"instructions_link\": nil,\n    \"filter_types\": [\"user.signup\", \"user.deleted\"],\n    \"feature_flag\": \"cool-new-feature\"\n}))"
+                        "source": "connector_out = svix.beta.connector.update(\"transformation_template_id\", Svix::ConnectorUpdate.new({\n    \"instructions_link\": nil,\n    \"filter_types\": [\"user.signup\", \"user.deleted\"],\n    \"feature_flag\": \"cool-new-feature\"\n}))"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let connector_out = svix.beta().connector().update(\"transformation_template_id\", TemplateUpdate {\n    instructions_link: None,\n    filter_types: Some(vec![\"user.signup\".to_string(), \"user.deleted\".to_string()]),\n    feature_flag: Some(\"cool-new-feature\".to_string()),\n}).await?;"
+                        "source": "let connector_out = svix.beta().connector().update(\"transformation_template_id\", ConnectorUpdate {\n    instructions_link: None,\n    filter_types: Some(vec![\"user.signup\".to_string(), \"user.deleted\".to_string()]),\n    feature_flag: Some(\"cool-new-feature\".to_string()),\n}).await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var connectorOut = await svix.Beta.Connector.UpdateAsync(\"transformation_template_id\", new TemplateUpdate{\n    instructionsLink: null,\n    filterTypes: new string[] {\"user.signup\", \"user.deleted\"},\n    featureFlag: \"cool-new-feature\"\n});"
+                        "source": "var connectorOut = await svix.Beta.Connector.UpdateAsync(\"transformation_template_id\", new ConnectorUpdate{\n    instructionsLink: null,\n    filterTypes: new string[] {\"user.signup\", \"user.deleted\"},\n    featureFlag: \"cool-new-feature\"\n});"
                     },
                     {
                         "label": "CLI",
@@ -37932,7 +37941,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/{transformation_template_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"instructionsLink\": null,\n        \"filterTypes\": [\"user.signup\", \"user.deleted\"],\n        \"featureFlag\": \"cool-new-feature\"\n    }'"
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/{transformation_template_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"instructionsLink\": null,\n        \"filterTypes\": [\"user.signup\", \"user.deleted\"],\n        \"featureFlag\": \"cool-new-feature\"\n    }'"
                     }
                 ],
                 "x-hidden": true
@@ -38133,7 +38142,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/ingest/api/v1/source' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/ingest/api/v1/source' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             },
@@ -38251,6 +38260,68 @@
                 "summary": "Create Ingest Source",
                 "tags": [
                     "Ingest Source"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const ingestSourceOut = await svix.ingest.source.create({\n    name: \"myPeriodicWebhook\",\n    uid: \"unique-identifier\",\n    type: \"cron\",\n    config: {\n        payload: JSON.stringify({ key: \"value\" }),\n        schedule: \"0 0 0 * *\",\n    },\n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const ingestSourceOut = await svix.ingest.source.create({\n    name: \"myPeriodicWebhook\",\n    uid: \"unique-identifier\",\n    type: \"cron\",\n    config: {\n        payload: JSON.stringify({ key: \"value\" }),\n        schedule: \"0 0 0 * *\",\n    },\n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "ingest_source_out = svix.ingest.source.create(IngestSourceIn(\n    name=\"myPeriodicWebhook\",\n    uid=\"unique-identifier\",\n    type=\"cron\",\n    config=CronConfig(\n        payload='{\"key\":\"value\"}',\n        schedule=\"0 0 0 * *\",\n    ),\n), options=...)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "ingest_source_out = await svix.ingest.source.create(IngestSourceIn(\n    name=\"myPeriodicWebhook\",\n    uid=\"unique-identifier\",\n    type=\"cron\",\n    config=CronConfig(\n        payload='{\"key\":\"value\"}',\n        schedule=\"0 0 0 * *\",\n    ),\n), options=...)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "ingestSourceOut, err := svixClient.Ingest.Source.Create(\n    ctx,\n    &IngestSourceIn{\n        Name: \"myPeriodicWebhook\",\n        Uid: \"unique-identifier\",\n        Type: IngestSourceInTypeCron,\n        Config: CronConfig{\n            Payload:  \"Hello from space\",\n            Schedule: \"0 0 0 * *\",\n        },\n    },\n)"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val ingestSourceOut = svix.ingest.source.create(IngestSourceIn(\n    name = \"myPeriodicWebhook\",\n    uid = \"unique-identifier\",\n    config = IngestSourceInConfig.Cron(CronConfig(\n        payload = \"{\\\"key\\\":\\\"value\\\"}\",\n        schedule = \"0 0 0 * *\",\n    )),\n))"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "IngestSourceOut ingestSourceOut = svix\n    .getIngest()\n    .getSource()\n    .create(new IngestSourceIn()\n        .name(\"myPeriodicWebhooks\")\n        .uid(\"unique-identifier\")\n        .config(new IngestSourceInConfig.Cron(new CronConfig()\n            .payload(\"{\\\"key\\\":\\\"value\\\"}\")\n            .schedule(\"0 0 0 * *\")\n        ))\n    );"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "ingest_source_out = svix.ingest.source.create(Svix::IngestSourceIn.new({\n    \"name\": \"myPeriodicWebhook\",\n    \"uid\": \"unique-identifier\"\n    \"config\": Svix::IngestSourceInConfig::Cron.new({\n        \"payload\": '{\"key\":\"value\"}',\n        \"schedule\": \"0 0 0 * *\"\n    })\n}))"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let ingest_source_out = svix.ingest().source().create(\n    IngestSourceIn {\n        name: \"myPeriodicWebhook\".to_owned(),\n        uid: Some(\"unique-identifier\".to_owned()),\n        config: IngestSourceInConfig::Cron(CronConfig {\n            payload: r#\"{\"key\":\"value\"}\"#.to_owned(),\n            schedule: \"0 0 0 * *\".to_owned(),\n            ..Default::default()\n        }),\n        ..Default::default()\n    },\n    None,\n).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var ingestSourceOut = await svix.Ingest.Source.CreateAsync(\n    new IngestSourceIn{\n        Name = \"myPeriodicWebhook\",\n        Uid = \"unique-identifier\",\n        Config = IngestSourceInConfig.Cron(new CronConfig {\n            Payload = \"{\\\"key\\\":\\\"value\\\"}\",\n            Schedule = \"0 0 0 * *\",\n        }),\n    }\n);"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix ingest source create '{\n    \"name\": \"myPeriodicWebhook\",\n    \"uid\": \"unique-identifier\",\n    \"type\": \"cron\",\n    \"config\": {\n        \"payload\": \"{\\\"key\\\":\\\"value\\\"\\\",\n        \"schedule\": \"0 0 0 * *\"\n    }\n}'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'POST' \\\n    'https://api.eu.svix.com/ingest/api/v1/source' \\\n    -H 'Authorization: Bearer AUTH_TOKEN' \\\n    -H 'Accept: application/json' \\\n    -H 'Content-Type: application/json' \\\n    -d '{\n        \"name\": \"myPeriodicWebhook\",\n        \"uid\": \"unique-identifier\",\n        \"type\": \"cron\",\n        \"config\": {\n            \"payload\": \"{\\\"key\\\":\\\"value\\\"\\\",\n            \"schedule\": \"0 0 0 * *\"\n        }\n    }'"
+                    }
                 ]
             }
         },
@@ -38417,7 +38488,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/ingest/api/v1/source/{source_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/ingest/api/v1/source/{source_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             },
@@ -38590,7 +38661,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/ingest/api/v1/source/{source_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/ingest/api/v1/source/{source_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             },
@@ -38915,7 +38986,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/ingest/api/v1/source/{source_id}/dashboard' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"expiry\": null,\n        \"readOnly\": null\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/ingest/api/v1/source/{source_id}/dashboard' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"expiry\": null,\n        \"readOnly\": null\n    }'"
                     }
                 ]
             }
@@ -39129,7 +39200,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/ingest/api/v1/source/{source_id}/endpoint' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/ingest/api/v1/source/{source_id}/endpoint' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             },
@@ -39321,7 +39392,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/ingest/api/v1/source/{source_id}/endpoint' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"description\": \"An example endpoint name\",\n        \"rateLimit\": null,\n        \"uid\": \"unique-identifier\",\n        \"url\": \"https://example.com/webhook/\",\n        \"disabled\": false,\n        \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/ingest/api/v1/source/{source_id}/endpoint' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"description\": \"An example endpoint name\",\n        \"rateLimit\": null,\n        \"uid\": \"unique-identifier\",\n        \"url\": \"https://example.com/webhook/\",\n        \"disabled\": false,\n        \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n    }'"
                     }
                 ]
             }
@@ -39504,7 +39575,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             },
@@ -39692,7 +39763,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             },
@@ -39890,7 +39961,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"description\": \"An example endpoint name\",\n        \"rateLimit\": null,\n        \"uid\": \"unique-identifier\",\n        \"url\": \"https://example.com/webhook/\",\n        \"disabled\": false\n    }'"
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"description\": \"An example endpoint name\",\n        \"rateLimit\": null,\n        \"uid\": \"unique-identifier\",\n        \"url\": \"https://example.com/webhook/\",\n        \"disabled\": false\n    }'"
                     }
                 ]
             }
@@ -40080,7 +40151,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/headers' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/headers' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             },
@@ -40271,7 +40342,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/headers' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"headers\": {\"X-Example\":\"123\",\"X-Foobar\":\"Bar\"}\n    }'"
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/headers' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"headers\": {\"X-Example\":\"123\",\"X-Foobar\":\"Bar\"}\n    }'"
                     }
                 ]
             }
@@ -40461,7 +40532,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/secret' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/secret' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -40663,7 +40734,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/secret/rotate' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n \\\n  -d '{\n        \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/secret/rotate' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n    }'"
                     }
                 ]
             }
@@ -40805,7 +40876,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/ingest/api/v1/source/{source_id}/in/{token}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/ingest/api/v1/source/{source_id}/in/{token}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ],
                 "x-hidden": true
@@ -40955,7 +41026,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/ingest/api/v1/source/{source_id}/in/{token}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/ingest/api/v1/source/{source_id}/in/{token}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ],
                 "x-hidden": true
@@ -41140,7 +41211,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/ingest/api/v1/source/{source_id}/token/rotate' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'\n"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/ingest/api/v1/source/{source_id}/token/rotate' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }

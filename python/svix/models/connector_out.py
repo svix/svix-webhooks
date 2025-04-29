@@ -16,7 +16,7 @@ class ConnectorOut(BaseModel):
     filter_types: t.Optional[t.List[str]] = None
 
     id: str
-    """The TransformationTemplate's ID."""
+    """The Connector's ID."""
 
     instructions: str
 

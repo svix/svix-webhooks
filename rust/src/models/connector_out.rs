@@ -18,7 +18,7 @@ pub struct ConnectorOut {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub filter_types: Option<Vec<String>>,
 
-    /// The TransformationTemplate's ID.
+    /// The Connector's ID.
     pub id: String,
 
     pub instructions: String,
