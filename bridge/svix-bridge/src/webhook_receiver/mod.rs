@@ -64,6 +64,7 @@ pub async fn run(
     routes: Vec<WebhookReceiverConfig>,
     transformer_tx: TransformerTx,
 ) -> std::io::Result<()> {
+    START_TIME.force();
     let state = InternalState::from_receiver_configs(routes, transformer_tx)
         .await
         .map_err(std::io::Error::other)?;
