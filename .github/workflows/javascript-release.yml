@@ -33,17 +33,6 @@ jobs:
           cd javascript
           yarn
 
-      - name: Publish (pre-release)
-        if: ${{ github.ref_type == 'branch' && !startsWith(github.event.workflow_run.head_branch,'v') }}
-        run: |
-          git config user.name "${{ github.event.pusher.name || 'svix-bot' }}"
-          git config user.email "${{ github.event.pusher.email || 'svix-bot@svix.com' }}"
-          cd javascript
-          yarn version --prerelease --preid next-${{ github.sha }}
-          yarn publish --tag next
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
       - name: Publish
         if: ${{ github.ref_type == 'tag' || startsWith(github.event.workflow_run.head_branch,'v') }}
         run: |
