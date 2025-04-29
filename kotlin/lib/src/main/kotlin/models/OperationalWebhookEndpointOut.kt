@@ -7,12 +7,15 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class OperationalWebhookEndpointOut(
     val createdAt: Instant,
+    /** An example endpoint name. */
     val description: String,
     val disabled: Boolean? = null,
     val filterTypes: Set<String>? = null,
+    /** The Endpoint's ID. */
     val id: String,
     val metadata: Map<String, String>,
     val rateLimit: UShort? = null,
+    /** Optional unique identifier for the endpoint. */
     val uid: String? = null,
     val updatedAt: Instant,
     val url: String,

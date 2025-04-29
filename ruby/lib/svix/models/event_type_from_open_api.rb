@@ -7,7 +7,9 @@ module Svix
     attr_accessor :deprecated
     attr_accessor :description
     attr_accessor :feature_flag
+    # The event type group's name
     attr_accessor :group_name
+    # The event type's name
     attr_accessor :name
     attr_accessor :schemas
 

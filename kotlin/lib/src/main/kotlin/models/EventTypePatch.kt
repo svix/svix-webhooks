@@ -11,6 +11,7 @@ data class EventTypePatch(
     val deprecated: Boolean? = null,
     val description: String? = null,
     val featureFlag: MaybeUnset<String> = MaybeUnset.Unset,
+    /** The event type group's name */
     val groupName: MaybeUnset<String> = MaybeUnset.Unset,
     @Serializable(with = MaybeUnsetStringAnyMapSerializer::class)
     val schemas: MaybeUnset<Map<String, Any>> = MaybeUnset.Unset,

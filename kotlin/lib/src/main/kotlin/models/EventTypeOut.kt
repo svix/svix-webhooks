@@ -12,8 +12,12 @@ data class EventTypeOut(
     val deprecated: Boolean,
     val description: String,
     val featureFlag: String? = null,
+    /** The event type group's name */
     val groupName: String? = null,
+    /** The event type's name */
     val name: String,
-    @Serializable(with = StringAnyMapSerializer::class) val schemas: Map<String, Any>? = null,
+    @Serializable(with = StringAnyMapSerializer::class)
+    /** The schema for the event type for a specific version as a JSON schema. */
+    val schemas: Map<String, Any>? = null,
     val updatedAt: Instant,
 )

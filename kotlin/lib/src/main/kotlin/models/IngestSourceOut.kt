@@ -15,9 +15,11 @@ import kotlinx.serialization.json.buildJsonObject
 @Serializable(with = IngestSourceOutSerializer::class)
 data class IngestSourceOut(
     val createdAt: Instant,
+    /** The Source's ID. */
     val id: String,
     val ingestUrl: String? = null,
     val name: String,
+    /** The Source's UID. */
     val uid: String? = null,
     val updatedAt: Instant,
     val config: IngestSourceOutConfig,
@@ -280,9 +282,11 @@ class IngestSourceOutSerializer : KSerializer<IngestSourceOut> {
     @Serializable
     private data class IngestSourceOutSurrogate(
         val createdAt: Instant,
+        /** The Source's ID. */
         val id: String,
         val ingestUrl: String? = null,
         val name: String,
+        /** The Source's UID. */
         val uid: String? = null,
         val updatedAt: Instant,
         val type: String,

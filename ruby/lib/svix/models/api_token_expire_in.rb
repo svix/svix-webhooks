@@ -4,6 +4,7 @@ require "json"
 
 module Svix
   class ApiTokenExpireIn
+    # How many seconds until the old key is expired.
     attr_accessor :expiry
 
     ALL_FIELD ||= ["expiry"].freeze

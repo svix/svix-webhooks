@@ -4,6 +4,7 @@ require "json"
 
 module Svix
   class ReplayOut
+    # The QueueBackgroundTask's ID.
     attr_accessor :id
     attr_accessor :status
     attr_accessor :task

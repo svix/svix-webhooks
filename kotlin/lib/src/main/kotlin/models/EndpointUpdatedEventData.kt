@@ -5,8 +5,12 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class EndpointUpdatedEventData(
+    /** The Application's ID. */
     val appId: String,
+    /** The Application's UID. */
     val appUid: String? = null,
+    /** The Endpoint's ID. */
     val endpointId: String,
+    /** The Endpoint's UID. */
     val endpointUid: String? = null,
 )

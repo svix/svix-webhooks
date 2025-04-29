@@ -7,9 +7,13 @@ module Svix
   #
   # The OpenAPI spec can be specified as either `spec` given the spec as a JSON object, or as `specRaw` (a `string`) which will be parsed as YAML or JSON by the server. Sending neither or both is invalid, resulting in a `400` **Bad Request**.
   class EventTypeImportOpenApiIn
+    # If `true`, return the event types that would be modified without actually modifying them.
     attr_accessor :dry_run
+    # If `true`, all existing event types that are not in the spec will be archived.
     attr_accessor :replace_all
+    # A pre-parsed JSON spec.
     attr_accessor :spec
+    # A string, parsed by the server as YAML or JSON.
     attr_accessor :spec_raw
 
     ALL_FIELD ||= ["dry_run", "replace_all", "spec", "spec_raw"].freeze

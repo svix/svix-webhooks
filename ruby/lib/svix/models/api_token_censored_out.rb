@@ -7,6 +7,7 @@ module Svix
     attr_accessor :censored_token
     attr_accessor :created_at
     attr_accessor :expires_at
+    # The ApplicationToken's ID.
     attr_accessor :id
     attr_accessor :name
     attr_accessor :scopes

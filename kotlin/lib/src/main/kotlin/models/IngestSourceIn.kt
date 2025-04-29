@@ -14,6 +14,7 @@ import kotlinx.serialization.json.buildJsonObject
 @Serializable(with = IngestSourceInSerializer::class)
 data class IngestSourceIn(
     val name: String,
+    /** The Source's UID. */
     val uid: String? = null,
     val config: IngestSourceInConfig,
 )
@@ -265,6 +266,7 @@ class IngestSourceInSerializer : KSerializer<IngestSourceIn> {
     @Serializable
     private data class IngestSourceInSurrogate(
         val name: String,
+        /** The Source's UID. */
         val uid: String? = null,
         val type: String,
         val config: JsonElement,

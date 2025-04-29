@@ -4,7 +4,11 @@ require "json"
 
 module Svix
   class IngestSourceConsumerPortalAccessIn
+    # How long the token will be valid for, in seconds.
+    #
+    # Valid values are between 1 hour and 7 days. The default is 7 days.
     attr_accessor :expiry
+    # Whether the app portal should be in read-only mode.
     attr_accessor :read_only
 
     ALL_FIELD ||= ["expiry", "read_only"].freeze

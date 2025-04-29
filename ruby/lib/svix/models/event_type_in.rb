@@ -8,8 +8,11 @@ module Svix
     attr_accessor :deprecated
     attr_accessor :description
     attr_accessor :feature_flag
+    # The event type group's name
     attr_accessor :group_name
+    # The event type's name
     attr_accessor :name
+    # The schema for the event type for a specific version as a JSON schema.
     attr_accessor :schemas
 
     ALL_FIELD ||= ["archived", "deprecated", "description", "feature_flag", "group_name", "name", "schemas"].freeze

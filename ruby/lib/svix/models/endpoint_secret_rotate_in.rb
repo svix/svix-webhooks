@@ -4,6 +4,10 @@ require "json"
 
 module Svix
   class EndpointSecretRotateIn
+    # The endpoint's verification secret.
+    #
+    # Format: `base64` encoded random bytes optionally prefixed with `whsec_`.
+    # It is recommended to not set this and let the server generate the secret.
     attr_accessor :key
 
     ALL_FIELD ||= ["key"].freeze

@@ -23,6 +23,9 @@
         {% elif field.type.is_json_object() and use_nullable -%}
         @Serializable(with = MaybeUnsetStringAnyMapSerializer::class)
         {% endif -%}
+        {% if field.description is defined -%}
+        {{ field.description | to_doc_comment(style="kotlin") }}
+        {% endif -%}
         {% if type.name == "MessageIn" and field.name == "transformationsParams" -%}var {% else %}val {% endif -%}
         {{ field.name | to_lower_camel_case }}: {{ f_type }} {{ f_val }},
     {% endif -%}

@@ -4,9 +4,17 @@ require "json"
 
 module Svix
   class AppPortalAccessIn
+    # Optionally creates a new application while generating the access link.
+    #
+    # If the application id or uid that is used in the path already exists, this argument is ignored.
     attr_accessor :application
+    # How long the token will be valid for, in seconds.
+    #
+    # Valid values are between 1 hour and 7 days. The default is 7 days.
     attr_accessor :expiry
+    # The set of feature flags the created token will have access to.
     attr_accessor :feature_flags
+    # Whether the app portal should be in read-only mode.
     attr_accessor :read_only
 
     ALL_FIELD ||= ["application", "expiry", "feature_flags", "read_only"].freeze

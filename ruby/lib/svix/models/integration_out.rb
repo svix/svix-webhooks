@@ -5,7 +5,9 @@ require "json"
 module Svix
   class IntegrationOut
     attr_accessor :created_at
+    # The set of feature flags the integration has access to.
     attr_accessor :feature_flags
+    # The Integration's ID.
     attr_accessor :id
     attr_accessor :name
     attr_accessor :updated_at

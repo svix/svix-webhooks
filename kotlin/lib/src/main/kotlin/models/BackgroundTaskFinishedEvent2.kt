@@ -9,5 +9,6 @@ data class BackgroundTaskFinishedEvent2(
     @Serializable(with = StringAnyMapSerializer::class) val data: Map<String, Any>,
     val status: BackgroundTaskStatus,
     val task: BackgroundTaskType,
+    /** The QueueBackgroundTask's ID. */
     val taskId: String,
 )

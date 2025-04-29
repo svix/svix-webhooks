@@ -4,7 +4,11 @@ require "json"
 
 module Svix
   class EventExampleIn
+    # The event type's name
     attr_accessor :event_type
+    # If the event type schema contains an array of examples, chooses which one to send.
+    #
+    # Defaults to the first example. Ignored if the schema doesn't contain an array of examples.
     attr_accessor :example_index
 
     ALL_FIELD ||= ["event_type", "example_index"].freeze

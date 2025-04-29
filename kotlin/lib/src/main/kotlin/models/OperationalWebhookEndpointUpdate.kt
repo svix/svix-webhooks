@@ -10,6 +10,7 @@ data class OperationalWebhookEndpointUpdate(
     val filterTypes: Set<String>? = null,
     val metadata: Map<String, String>? = null,
     val rateLimit: UShort? = null,
+    /** Optional unique identifier for the endpoint. */
     val uid: String? = null,
     val url: String,
 )

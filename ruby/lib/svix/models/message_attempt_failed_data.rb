@@ -4,6 +4,7 @@ require "json"
 
 module Svix
   class MessageAttemptFailedData
+    # The MessageAttempt's ID.
     attr_accessor :id
     attr_accessor :response_status_code
     attr_accessor :timestamp

@@ -4,9 +4,13 @@ require "json"
 
 module Svix
   class MessageOut
+    # List of free-form identifiers that endpoints can filter by
     attr_accessor :channels
+    # Optional unique identifier for the message
     attr_accessor :event_id
+    # The event type's name
     attr_accessor :event_type
+    # The Message's ID.
     attr_accessor :id
     attr_accessor :payload
     attr_accessor :tags

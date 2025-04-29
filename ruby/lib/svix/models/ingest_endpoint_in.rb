@@ -8,7 +8,12 @@ module Svix
     attr_accessor :disabled
     attr_accessor :metadata
     attr_accessor :rate_limit
+    # The endpoint's verification secret.
+    #
+    # Format: `base64` encoded random bytes optionally prefixed with `whsec_`.
+    # It is recommended to not set this and let the server generate the secret.
     attr_accessor :secret
+    # Optional unique identifier for the endpoint.
     attr_accessor :uid
     attr_accessor :url
 

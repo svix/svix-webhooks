@@ -7,6 +7,7 @@ module Svix
     attr_accessor :data
     attr_accessor :status
     attr_accessor :task
+    # The QueueBackgroundTask's ID.
     attr_accessor :task_id
 
     ALL_FIELD ||= ["data", "status", "task", "task_id"].freeze
