@@ -3,4 +3,8 @@ package com.svix.kotlin.models
 
 import kotlinx.serialization.Serializable
 
-@Serializable data class ApplicationTokenExpireIn(val expiry: Long? = null)
+@Serializable
+data class ApplicationTokenExpireIn(
+    /** How many seconds until the old key is expired. */
+    val expiry: Long? = null
+)

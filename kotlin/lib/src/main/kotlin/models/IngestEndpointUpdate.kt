@@ -9,6 +9,7 @@ data class IngestEndpointUpdate(
     val disabled: Boolean? = null,
     val metadata: Map<String, String>? = null,
     val rateLimit: UShort? = null,
+    /** Optional unique identifier for the endpoint. */
     val uid: String? = null,
     val url: String,
 )

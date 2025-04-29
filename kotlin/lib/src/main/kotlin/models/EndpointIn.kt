@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class EndpointIn(
+    /** List of message channels this endpoint listens to (omit for all). */
     val channels: Set<String>? = null,
     val description: String? = null,
     val disabled: Boolean? = null,
@@ -12,7 +13,14 @@ data class EndpointIn(
     val headers: Map<String, String>? = null,
     val metadata: Map<String, String>? = null,
     val rateLimit: UShort? = null,
+    /**
+     * The endpoint's verification secret.
+     *
+     * Format: `base64` encoded random bytes optionally prefixed with `whsec_`. It is recommended to
+     * not set this and let the server generate the secret.
+     */
     val secret: String? = null,
+    /** Optional unique identifier for the endpoint. */
     val uid: String? = null,
     val url: String,
     val version: UShort? = null,

@@ -8,5 +8,6 @@ data class ApplicationIn(
     val metadata: Map<String, String>? = null,
     val name: String,
     val rateLimit: UShort? = null,
+    /** Optional unique identifier for the application. */
     val uid: String? = null,
 )

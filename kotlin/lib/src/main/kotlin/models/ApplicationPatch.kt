@@ -9,5 +9,6 @@ data class ApplicationPatch(
     val metadata: Map<String, String>? = null,
     val name: String? = null,
     val rateLimit: MaybeUnset<UShort> = MaybeUnset.Unset,
+    /** The Application's UID. */
     val uid: MaybeUnset<String> = MaybeUnset.Unset,
 )

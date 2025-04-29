@@ -9,7 +9,14 @@ data class IngestEndpointIn(
     val disabled: Boolean? = null,
     val metadata: Map<String, String>? = null,
     val rateLimit: UShort? = null,
+    /**
+     * The endpoint's verification secret.
+     *
+     * Format: `base64` encoded random bytes optionally prefixed with `whsec_`. It is recommended to
+     * not set this and let the server generate the secret.
+     */
     val secret: String? = null,
+    /** Optional unique identifier for the endpoint. */
     val uid: String? = null,
     val url: String,
 )

@@ -3,4 +3,13 @@ package com.svix.kotlin.models
 
 import kotlinx.serialization.Serializable
 
-@Serializable data class EndpointSecretOut(val key: String)
+@Serializable
+data class EndpointSecretOut(
+    /**
+     * The endpoint's verification secret.
+     *
+     * Format: `base64` encoded random bytes optionally prefixed with `whsec_`. It is recommended to
+     * not set this and let the server generate the secret.
+     */
+    val key: String
+)
