@@ -413,7 +413,6 @@ describe("mockttp tests", () => {
 
     expect(res.type).toBe("generic-webhook");
     const requests = await endpointMock.getSeenRequests();
-    console.log(await requests[0].body.getText());
     // empty config object should be sent
     expect(await requests[0].body.getText()).toBe(
       '{"type":"generic-webhook","config":{},"name":"generic over <T>"}'

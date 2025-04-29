@@ -21,30 +21,15 @@ output_dir = "rust/src/models"
 
 [javascript]
 template_dir = "codegen-templates/javascript"
-extra_shell_commands = [
-   "rm javascript/src/models/{listResponseSinkOut,retryScheduleInOut}.ts",
-]
 [[javascript.task]]
 template = "codegen-templates/javascript/api_resource.ts.jinja"
 output_dir = "javascript/src/api"
-[[javascript.task]]
-template = "codegen-templates/javascript/api_resource.ts.jinja"
-output_dir = "javascript/src/api_internal"
-extra_codegen_args = [
-   "--include-mode=only-hidden",
-   "-e=v1.event-type.update-retry-schedule",
-   "-e=v1.event-type.get-retry-schedule",
-   "-e=v1.sink.get",
-   "-e=v1.sink.list",
-   "-e=v1.sink.create",
-]
 [[javascript.task]]
 template = "codegen-templates/javascript/component_type_summary.ts.jinja"
 output_dir = "javascript/src/models"
 [[javascript.task]]
 template = "codegen-templates/javascript/component_type.ts.jinja"
 output_dir = "javascript/src/models"
-extra_codegen_args = ["--include-mode=public-and-hidden"]
 
 
 [cli]
