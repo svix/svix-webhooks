@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"regexp"
 	"strings"
 	"time"
 
@@ -18,6 +19,10 @@ type (
 		Debug         bool
 	}
 	Svix struct {
+		// hidden field. allows me to override the user agent in `SvixHttpClient.DefaultHeaders["User-Agent"]`
+		// to override the user agent use `SetUseragentSuffix`
+		client *internal.SvixHttpClient
+
 		Authentication             *Authentication
 		Application                *Application
 		Endpoint                   *Endpoint
@@ -59,6 +64,8 @@ func New(token string, options *SvixOptions) (*Svix, error) {
 	svixHttpClient.DefaultHeaders["User-Agent"] = fmt.Sprintf("svix-libs/%s/go", Version)
 
 	svx := Svix{
+		client: &svixHttpClient,
+
 		Authentication:             newAuthentication(&svixHttpClient),
 		Application:                newApplication(&svixHttpClient),
 		Endpoint:                   newEndpoint(&svixHttpClient),
@@ -74,6 +81,25 @@ func New(token string, options *SvixOptions) (*Svix, error) {
 		OperationalWebhookEndpoint: newOperationalWebhookEndpoint(&svixHttpClient),
 	}
 	return &svx, nil
+}
+
+// Add a custom suffix to the default user-agent
+//
+// The default user agent is `svix-libs/<version>/go`.
+// The suffix will be separated from the base user agent with a `/`
+//
+// The suffix must be less then 50 chars, And must match this regex `^[A-Za-z\d\.\-]+$`
+func SetUserAgentSuffix(s *Svix, userAgentSuffix string) error {
+	if len(userAgentSuffix) > 50 {
+		return fmt.Errorf("user agent suffix must be less then 50 chars")
+	}
+	validateStr := regexp.MustCompile(`^[A-Za-z\d\.\-]+$`).MatchString
+	if !validateStr(userAgentSuffix) {
+		return fmt.Errorf("invalid user agent suffix")
+	}
+
+	s.client.DefaultHeaders["User-Agent"] = fmt.Sprintf("svix-libs/%s/go/%s", Version, userAgentSuffix)
+	return nil
 }
 
 func getDefaultBaseUrl(token string) string {
