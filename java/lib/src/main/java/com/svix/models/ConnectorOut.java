@@ -128,7 +128,7 @@ public class ConnectorOut {
     }
 
     /**
-     * The TransformationTemplate's ID.
+     * The Connector's ID.
      *
      * @return id
      */

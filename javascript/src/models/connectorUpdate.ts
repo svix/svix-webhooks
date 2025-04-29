@@ -2,58 +2,46 @@
 /* eslint @typescript-eslint/no-explicit-any: 0 */
 import { ConnectorKind, ConnectorKindSerializer } from "./connectorKind";
 
-export interface ConnectorOut {
-  createdAt: Date;
-  description: string;
+export interface ConnectorUpdate {
+  description?: string;
   featureFlag?: string | null;
   filterTypes?: string[] | null;
-  /** The Connector's ID. */
-  id: string;
-  instructions: string;
+  instructions?: string;
   instructionsLink?: string | null;
-  kind: ConnectorKind;
+  kind?: ConnectorKind;
   logo: string;
-  name: string;
-  /** The Environment's ID. */
-  orgId: string;
+  name?: string;
   transformation: string;
-  updatedAt: Date;
 }
 
-export const ConnectorOutSerializer = {
-  _fromJsonObject(object: any): ConnectorOut {
+export const ConnectorUpdateSerializer = {
+  _fromJsonObject(object: any): ConnectorUpdate {
     return {
-      createdAt: new Date(object["createdAt"]),
       description: object["description"],
       featureFlag: object["featureFlag"],
       filterTypes: object["filterTypes"],
-      id: object["id"],
       instructions: object["instructions"],
       instructionsLink: object["instructionsLink"],
-      kind: ConnectorKindSerializer._fromJsonObject(object["kind"]),
+      kind: object["kind"]
+        ? ConnectorKindSerializer._fromJsonObject(object["kind"])
+        : undefined,
       logo: object["logo"],
       name: object["name"],
-      orgId: object["orgId"],
       transformation: object["transformation"],
-      updatedAt: new Date(object["updatedAt"]),
     };
   },
 
-  _toJsonObject(self: ConnectorOut): any {
+  _toJsonObject(self: ConnectorUpdate): any {
     return {
-      createdAt: self.createdAt,
       description: self.description,
       featureFlag: self.featureFlag,
       filterTypes: self.filterTypes,
-      id: self.id,
       instructions: self.instructions,
       instructionsLink: self.instructionsLink,
-      kind: ConnectorKindSerializer._toJsonObject(self.kind),
+      kind: self.kind ? ConnectorKindSerializer._toJsonObject(self.kind) : undefined,
       logo: self.logo,
       name: self.name,
-      orgId: self.orgId,
       transformation: self.transformation,
-      updatedAt: self.updatedAt,
     };
   },
 };

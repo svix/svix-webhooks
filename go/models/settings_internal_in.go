@@ -25,6 +25,7 @@ type SettingsInternalIn struct {
 	EventCatalogPublished       *bool                  `json:"eventCatalogPublished,omitempty"`
 	ReadOnly                    *bool                  `json:"readOnly,omitempty"`
 	RequireEndpointChannel      *bool                  `json:"requireEndpointChannel,omitempty"`
+	RequireEndpointFilterTypes  *bool                  `json:"requireEndpointFilterTypes,omitempty"`
 	RetryPolicy                 []int32                `json:"retryPolicy,omitempty"`
 	ShowUseSvixPlay             *bool                  `json:"showUseSvixPlay,omitempty"`
 	WhitelabelHeaders           *bool                  `json:"whitelabelHeaders,omitempty"`
