@@ -9,6 +9,9 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/svix/svix-webhooks.git</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/svix/svix-webhooks/tree/main/csharp</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
