@@ -71,21 +71,23 @@ namespace Svix
 
         public ILogger? Logger { get; }
 
-        private readonly SvixOptions Options;
         public SvixHttpClient SvixHttpClient;
 
         public SvixClient(
             string token,
-            SvixOptions options,
+            SvixOptions? options = null,
             ILogger<SvixClient>? logger = null,
             SvixHttpClient? svixHttpClient = null
         )
         {
-            Options = options;
             Logger = logger;
             SvixHttpClient =
                 svixHttpClient
-                ?? new SvixHttpClient(token, options, $"svix-libs/{Version.version}/csharp");
+                ?? new SvixHttpClient(
+                    token,
+                    options ?? new SvixOptions(Utils.DefaultServerUrlFromToken(token)),
+                    $"svix-libs/{Version.version}/csharp"
+                );
         }
     }
 }

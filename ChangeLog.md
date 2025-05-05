@@ -3,6 +3,7 @@
 ## Unreleased
 * Libs/Python: Bring back the (deprecated) sync `dashboard_access` method, which was accidentally
   removed in v1.64.1
+* Libs/Csharp: The `options` argument to the `SvixClient` initializer is now optional.
 
 ## Version 1.64.1
 * Libs/JavaScript: Add `HTTPValidationError`, `HttpErrorOut`, `ValidationError` and `ApiException` to the top level exports.

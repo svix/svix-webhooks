@@ -23,5 +23,28 @@ namespace Svix
 
             return result == 0;
         }
+
+        internal static string DefaultServerUrlFromToken(string token)
+        {
+            string[] tokenParts = token.Split('.');
+            string region = tokenParts[tokenParts.Length - 1];
+
+            if (region == "us")
+            {
+                return "https://api.us.svix.com";
+            }
+            else if (region == "eu")
+            {
+                return "https://api.eu.svix.com";
+            }
+            else if (region == "in")
+            {
+                return "https://api.in.svix.com";
+            }
+            else
+            {
+                return "https://api.svix.com";
+            }
+        }
     }
 }
