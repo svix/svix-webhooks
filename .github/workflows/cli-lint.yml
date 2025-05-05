@@ -8,6 +8,7 @@ on:
       - 'svix-cli/**'
       - 'rust/**'
       - '.github/workflows/cli-lint.yml'
+      - 'lib-openapi.json'
   pull_request:
     paths:
       - 'svix-cli/**'

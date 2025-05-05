@@ -8,6 +8,15 @@ on:
       - "go.mod"
       - "lib-openapi.json"
       - ".github/workflows/go-ci.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "go/**"
+      - "go.sum"
+      - "go.mod"
+      - "lib-openapi.json"
+      - ".github/workflows/go-ci.yml"
 
 jobs:
   build:

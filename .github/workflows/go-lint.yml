@@ -3,7 +3,18 @@ on:
   pull_request:
     paths:
       - "go/**"
+      - "go.sum"
+      - "go.mod"
       - "lib-openapi.json"
+  push:
+    branches:
+      - main
+    paths:
+      - "go/**"
+      - "go.sum"
+      - "go.mod"
+      - "lib-openapi.json"
+
 jobs:
   build:
     runs-on: ubuntu-24.04
