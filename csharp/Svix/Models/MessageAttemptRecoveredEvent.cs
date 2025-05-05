@@ -7,7 +7,6 @@ namespace Svix.Models
     /// <summary>
     /// Sent on a successful dispatch after an earlier failure op webhook has already been sent.
     /// <summary>
-
     public class MessageAttemptRecoveredEvent
     {
         [JsonProperty("data", Required = Required.Always)]

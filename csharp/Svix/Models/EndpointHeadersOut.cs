@@ -9,7 +9,6 @@ namespace Svix.Models
     ///
     /// Sensitive headers that have been redacted are returned in the sensitive field.
     /// <summary>
-
     public class EndpointHeadersOut
     {
         [JsonProperty("headers", Required = Required.Always)]

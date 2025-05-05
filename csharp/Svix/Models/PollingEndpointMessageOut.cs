@@ -7,7 +7,6 @@ namespace Svix.Models
     /// <summary>
     /// The MessageOut equivalent of polling endpoint
     /// <summary>
-
     public class PollingEndpointMessageOut
     {
         [JsonProperty("channels")]

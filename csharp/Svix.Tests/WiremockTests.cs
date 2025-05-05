@@ -226,8 +226,8 @@ namespace Svix.Tests
         public async void ApplicationCreateAsync_WithoutApplication_ThrowsException()
         {
             // Don't need to create a stub since the ArgumentNullException will be raised before we try to use the server
-            await Assert.ThrowsAsync<ArgumentNullException>(
-                () => client.Application.CreateAsync(null, null, default)
+            await Assert.ThrowsAsync<ArgumentNullException>(() =>
+                client.Application.CreateAsync(null, null, default)
             );
         }
 

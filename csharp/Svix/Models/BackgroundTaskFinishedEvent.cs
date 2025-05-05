@@ -7,7 +7,6 @@ namespace Svix.Models
     /// <summary>
     /// Sent when a background task is finished.
     /// <summary>
-
     public class BackgroundTaskFinishedEvent
     {
         [JsonProperty("data", Required = Required.Always)]

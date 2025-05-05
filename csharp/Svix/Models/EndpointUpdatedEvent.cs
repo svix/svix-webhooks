@@ -7,7 +7,6 @@ namespace Svix.Models
     /// <summary>
     /// Sent when an endpoint is updated.
     /// <summary>
-
     public class EndpointUpdatedEvent
     {
         [JsonProperty("data", Required = Required.Always)]

@@ -7,7 +7,6 @@ namespace Svix.Models
     /// <summary>
     /// Sent when an endpoint is deleted.
     /// <summary>
-
     public class EndpointDeletedEvent
     {
         [JsonProperty("data", Required = Required.Always)]
