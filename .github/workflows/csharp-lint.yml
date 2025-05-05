@@ -31,13 +31,13 @@ jobs:
         run: |
           cd csharp
           dotnet restore
-          dotnet tool install csharpier -g --version 0.30.6
+          dotnet tool install csharpier -g --version 1.0.1
 
       - name: Check formatting
         run: |
           cd csharp
-          dotnet csharpier --check Svix.Tests
-          dotnet csharpier --check Svix
+          csharpier check Svix.Tests
+          csharpier check Svix
 
       - name: Build
         run: dotnet build --configuration Release --no-restore
