@@ -5,14 +5,14 @@ on:
     paths:
       - "ruby/**"
       - "lib-openapi.json"
-      - '.github/workflows/ruby-lint.yml'
+      - ".github/workflows/ruby-lint.yml"
   push:
     branches:
       - main
     paths:
       - "ruby/**"
       - "lib-openapi.json"
-      - '.github/workflows/ruby-lint.yml'
+      - ".github/workflows/ruby-lint.yml"
 
 jobs:
   dotnet:

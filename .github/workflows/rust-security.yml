@@ -5,14 +5,14 @@ on:
     branches:
     - main
     paths:
-      - 'rust/**/Cargo.toml'
-      - 'rust/**/Cargo.lock'
-      - '.github/workflows/rust-security.yml'
+      - "rust/**/Cargo.toml"
+      - "rust/**/Cargo.lock"
+      - ".github/workflows/rust-security.yml"
   pull_request:
     paths:
-      - 'rust/**/Cargo.toml'
-      - 'rust/**/Cargo.lock'
-      - '.github/workflows/rust-security.yml'
+      - "rust/**/Cargo.toml"
+      - "rust/**/Cargo.lock"
+      - ".github/workflows/rust-security.yml"
 
 jobs:
   security_audit:

@@ -5,14 +5,14 @@ on:
     paths:
       - "javascript/**"
       - "lib-openapi.json"
-      - '.github/workflows/javascript-lint.yml'
+      - ".github/workflows/javascript-lint.yml"
   push:
     branches:
       - main
     paths:
       - "javascript/**"
       - "lib-openapi.json"
-      - '.github/workflows/javascript-lint.yml'
+      - ".github/workflows/javascript-lint.yml"
 
 jobs:
   build:
@@ -22,8 +22,8 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 'latest'
-          registry-url: 'https://registry.npmjs.org'
+          node-version: "latest"
+          registry-url: "https://registry.npmjs.org"
 
       - name: Install modules
         run: |

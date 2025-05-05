@@ -32,9 +32,9 @@ jobs:
       run: |
         gs=$(git status -s)
         if [[ -n "$gs" ]]; then
-          echo 'there are uncommitted changes!'
+          echo "there are uncommitted changes!"
           git status
           exit 1
         else
-          echo 'all good.'
+          echo "all good."
         fi

@@ -5,16 +5,16 @@ on:
     branches:
       - main
     paths:
-      - 'svix-cli/**'
-      - 'rust/**'
-      - '.github/workflows/cli-lint.yml'
-      - 'lib-openapi.json'
+      - "svix-cli/**"
+      - "rust/**"
+      - ".github/workflows/cli-lint.yml"
+      - "lib-openapi.json"
   pull_request:
     paths:
-      - 'svix-cli/**'
-      - 'rust/**'
-      - '.github/workflows/cli-lint.yml'
-      - 'lib-openapi.json'
+      - "svix-cli/**"
+      - "rust/**"
+      - ".github/workflows/cli-lint.yml"
+      - "lib-openapi.json"
 
 # When pushing to a PR, cancel any jobs still running for the previous head commit of the PR
 concurrency:

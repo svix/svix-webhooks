@@ -5,12 +5,12 @@ on:
     branches:
       - main
     paths:
-      - 'server/Dockerfile'
-      - '.github/workflows/server-docker-image.yml'
+      - "server/Dockerfile"
+      - ".github/workflows/server-docker-image.yml"
   pull_request:
     paths:
-      - 'server/Dockerfile'
-      - '.github/workflows/server-docker-image.yml'
+      - "server/Dockerfile"
+      - ".github/workflows/server-docker-image.yml"
 
 jobs:
   test-image:

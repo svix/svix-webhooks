@@ -5,12 +5,12 @@ on:
     branches:
       - main
     paths:
-      - 'php/**'
-      - '.github/workflows/php-ci.yml'
+      - "php/**"
+      - ".github/workflows/php-ci.yml"
   pull_request:
     paths:
-      - 'php/**'
-      - '.github/workflows/php-ci.yml'
+      - "php/**"
+      - ".github/workflows/php-ci.yml"
 jobs:
   build-test:
     runs-on: ubuntu-24.04

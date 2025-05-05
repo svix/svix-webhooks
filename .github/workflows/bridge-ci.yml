@@ -5,15 +5,15 @@ on:
     branches:
       - main
     paths:
-      - 'bridge/**'
-      - 'rust/**'
-      - '.github/workflows/bridge-ci.yml'
+      - "bridge/**"
+      - "rust/**"
+      - ".github/workflows/bridge-ci.yml"
   pull_request:
     paths:
-      - 'bridge/**'
-      - '.github/workflows/bridge-ci.yml'
-      - 'rust/**'
-      - 'lib-openapi.json'
+      - "bridge/**"
+      - ".github/workflows/bridge-ci.yml"
+      - "rust/**"
+      - "lib-openapi.json"
 
 # When pushing to a PR, cancel any jobs still running for the previous head commit of the PR
 concurrency:
@@ -65,7 +65,7 @@ jobs:
     - name: Install CMake v3.31
       uses: jwlawson/actions-setup-cmake@09fd9b0fb3b239b4b68d9256cd65adf8d6b91da0
       with:
-        cmake-version: '3.31.x'
+        cmake-version: "3.31.x"
 
     - uses: dtolnay/rust-toolchain@master
       with:

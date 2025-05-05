@@ -5,18 +5,18 @@ on:
     branches:
       - main
     paths:
-      - 'svix-cli/**/Cargo.toml'
-      - 'svix-cli/**/Cargo.lock'
-      - 'rust/**/Cargo.toml'
-      - 'rust/**/Cargo.lock'
-      - '.github/workflows/cli-security.yml'
+      - "svix-cli/**/Cargo.toml"
+      - "svix-cli/**/Cargo.lock"
+      - "rust/**/Cargo.toml"
+      - "rust/**/Cargo.lock"
+      - ".github/workflows/cli-security.yml"
   pull_request:
     paths:
-      - 'svix-cli/**/Cargo.toml'
-      - 'svix-cli/**/Cargo.lock'
-      - 'rust/**/Cargo.toml'
-      - 'rust/**/Cargo.lock'
-      - '.github/workflows/cli-security.yml'
+      - "svix-cli/**/Cargo.toml"
+      - "svix-cli/**/Cargo.lock"
+      - "rust/**/Cargo.toml"
+      - "rust/**/Cargo.lock"
+      - ".github/workflows/cli-security.yml"
 
 jobs:
   security_audit:

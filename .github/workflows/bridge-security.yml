@@ -8,16 +8,16 @@ on:
     branches:
     - main
     paths:
-      - 'bridge/**/Cargo.toml'
-      - 'bridge/**/Cargo.lock'
-      - '.github/workflows/bridge-security.yml'
-      - 'deny.toml'
+      - "bridge/**/Cargo.toml"
+      - "bridge/**/Cargo.lock"
+      - ".github/workflows/bridge-security.yml"
+      - "deny.toml"
   pull_request:
     paths:
-      - 'bridge/**/Cargo.toml'
-      - 'bridge/**/Cargo.lock'
-      - '.github/workflows/bridge-security.yml'
-      - 'deny.toml'
+      - "bridge/**/Cargo.toml"
+      - "bridge/**/Cargo.lock"
+      - ".github/workflows/bridge-security.yml"
+      - "deny.toml"
 
 jobs:
   security_audit:

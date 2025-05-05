@@ -18,7 +18,7 @@ jobs:
       - name: Update Packagist
         run: |
           curl -X POST "https://packagist.org/api/update-package?username=svix&apiToken=$PACKAGIST_API_KEY" \
-            -H 'content-type: application/json' \
+            -H "content-type: application/json" \
             -d '{"repository":{"url":"https://packagist.org/packages/svix/svix"}}'
         env:
           PACKAGIST_API_KEY: ${{ secrets.PACKAGIST_API_KEY }}

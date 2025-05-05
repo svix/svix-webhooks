@@ -5,12 +5,12 @@ on:
     branches:
       - main
     paths:
-      - 'server/**'
-      - '.github/workflows/server-ci.yml'
+      - "server/**"
+      - ".github/workflows/server-ci.yml"
   pull_request:
     paths:
-      - 'server/**'
-      - '.github/workflows/server-ci.yml'
+      - "server/**"
+      - ".github/workflows/server-ci.yml"
 
 # When pushing to a PR, cancel any jobs still running for the previous head commit of the PR
 concurrency:

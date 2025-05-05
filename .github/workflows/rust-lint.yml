@@ -5,13 +5,13 @@ on:
     branches:
       - main
     paths:
-      - 'rust/**'
-      - '.github/workflows/rust-lint.yml'
+      - "rust/**"
+      - ".github/workflows/rust-lint.yml"
       - "lib-openapi.json"
   pull_request:
     paths:
-      - 'rust/**'
-      - '.github/workflows/rust-lint.yml'
+      - "rust/**"
+      - ".github/workflows/rust-lint.yml"
       - "lib-openapi.json"
 
 # When pushing to a PR, cancel any jobs still running for the previous head commit of the PR

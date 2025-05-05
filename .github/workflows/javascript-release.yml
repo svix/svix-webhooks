@@ -5,9 +5,9 @@ on:
     branches:
       - main
     paths:
-      - 'lib-openapi.json'
-      - 'javascript/**'
-      - '.github/workflows/javascript-release.yml'
+      - "lib-openapi.json"
+      - "javascript/**"
+      - ".github/workflows/javascript-release.yml"
   workflow_dispatch:
   workflow_run:
     workflows:
@@ -25,8 +25,8 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 'latest'
-          registry-url: 'https://registry.npmjs.org'
+          node-version: "latest"
+          registry-url: "https://registry.npmjs.org"
 
       - name: Install modules
         run: |
@@ -34,7 +34,7 @@ jobs:
           yarn
 
       - name: Publish
-        if: ${{ github.ref_type == 'tag' || startsWith(github.event.workflow_run.head_branch,'v') }}
+        if: ${{ github.ref_type == "tag" || startsWith(github.event.workflow_run.head_branch,"v") }}
         run: |
           cd javascript
           yarn publish
