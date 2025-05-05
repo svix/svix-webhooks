@@ -3,13 +3,17 @@ name: CLI Security
 on:
   push:
     branches:
-    - main
+      - main
     paths:
       - 'svix-cli/**/Cargo.toml'
       - 'svix-cli/**/Cargo.lock'
+      - 'rust/**/Cargo.toml'
+      - 'rust/**/Cargo.lock'
       - '.github/workflows/cli-security.yml'
   pull_request:
     paths:
+      - 'svix-cli/**/Cargo.toml'
+      - 'svix-cli/**/Cargo.lock'
       - 'rust/**/Cargo.toml'
       - 'rust/**/Cargo.lock'
       - '.github/workflows/cli-security.yml'

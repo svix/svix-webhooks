@@ -4,6 +4,13 @@ on:
     paths:
       - "java/**"
       - "lib-openapi.json"
+  push:
+    branches:
+      - main
+    paths:
+      - "java/**"
+      - "lib-openapi.json"
+
 jobs:
   dotnet:
     name: Java Lint

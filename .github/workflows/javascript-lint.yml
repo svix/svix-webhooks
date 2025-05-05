@@ -6,6 +6,13 @@ on:
       - "javascript/**"
       - "lib-openapi.json"
       - '.github/workflows/javascript-lint.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - "javascript/**"
+      - "lib-openapi.json"
+      - '.github/workflows/javascript-lint.yml'
 
 jobs:
   build:

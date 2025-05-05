@@ -6,6 +6,13 @@ on:
       - "csharp/**"
       - "lib-openapi.json"
       - '.github/workflows/csharp-lint.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - "csharp/**"
+      - "lib-openapi.json"
+      - '.github/workflows/csharp-lint.yml'
 
 jobs:
   dotnet:
