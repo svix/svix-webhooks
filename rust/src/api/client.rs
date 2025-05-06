@@ -76,6 +76,8 @@ impl Svix {
                 Some("us") => "https://api.us.svix.com",
                 Some("eu") => "https://api.eu.svix.com",
                 Some("in") => "https://api.in.svix.com",
+                Some("ca") => "https://api.ca.svix.com",
+                Some("au") => "https://api.au.svix.com",
                 _ => "https://api.svix.com",
             }
             .to_string()

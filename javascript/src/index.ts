@@ -38,6 +38,8 @@ const REGIONS = [
   { region: "us", url: "https://api.us.svix.com" },
   { region: "eu", url: "https://api.eu.svix.com" },
   { region: "in", url: "https://api.in.svix.com" },
+  { region: "ca", url: "https://api.ca.svix.com" },
+  { region: "au", url: "https://api.au.svix.com" },
 ];
 
 export class Svix {

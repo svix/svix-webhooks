@@ -41,6 +41,14 @@ namespace Svix
             {
                 return "https://api.in.svix.com";
             }
+            else if (region == "ca")
+            {
+                return "https://api.ca.svix.com";
+            }
+            else if (region == "au")
+            {
+                return "https://api.au.svix.com";
+            }
             else
             {
                 return "https://api.svix.com";
