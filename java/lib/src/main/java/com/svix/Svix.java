@@ -43,6 +43,13 @@ public class Svix {
                 case "in":
                     options.setServerUrl("https://api.in.svix.com");
                     break;
+                case "ca":
+                    options.setServerUrl("https://api.ca.svix.com");
+                    break;
+                case "au":
+                    options.setServerUrl("https://api.au.svix.com");
+                    break;
+
                 default:
                     options.setServerUrl(SvixOptions.DEFAULT_URL);
             }

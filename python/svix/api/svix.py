@@ -63,6 +63,10 @@ class ClientBase:
             regional_url = "https://api.eu.svix.com"
         elif region == "in":
             regional_url = "https://api.in.svix.com"
+        elif region == "ca":
+            regional_url = "https://api.ca.svix.com"
+        elif region == "au":
+            regional_url = "https://api.au.svix.com"
 
         host = options.server_url or regional_url or DEFAULT_SERVER_URL
         client = AuthenticatedClient(

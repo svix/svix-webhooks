@@ -36,6 +36,10 @@ module Svix
         regional_url = "https://api.eu.svix.com"
       elsif region == "in"
         regional_url = "https://api.in.svix.com"
+      elsif region == "ca"
+        regional_url = "https://api.ca.svix.com"
+      elsif region == "au"
+        regional_url = "https://api.au.svix.com"
       else
         regional_url = "https://api.svix.com"
       end

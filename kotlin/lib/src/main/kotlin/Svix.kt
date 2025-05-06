@@ -25,6 +25,8 @@ class Svix(token: String, options: SvixOptions = SvixOptions()) {
                 "us" -> options.baseUrl = "https://api.us.svix.com"
                 "eu" -> options.baseUrl = "https://api.eu.svix.com"
                 "in" -> options.baseUrl = "https://api.in.svix.com"
+                "ca" -> options.baseUrl = "https://api.ca.svix.com"
+                "au" -> options.baseUrl = "https://api.au.svix.com"
                 else -> options.baseUrl = "https://api.svix.com"
             }
         }
