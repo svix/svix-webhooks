@@ -8,16 +8,18 @@ namespace Svix
         public List<int> RetryScheduleMilliseconds { get; } = [50, 100, 200];
         public int TimeoutMilliseconds { get; } = 15000;
 
+        /// <param name="serverUrl">The server URL to connect to.</param>
+        /// <param name="baseUrl">[Deprecated] Please use serverUrl parameter instead.</param>
+#pragma warning disable CS0618
         public SvixOptions(
             string serverUrl,
             int timeoutMilliseconds = 15000,
-            List<int>? retryScheduleMilliseconds = null
+            List<int>? retryScheduleMilliseconds = null,
+            string? baseUrl = null
         )
         {
-            ServerUrl = serverUrl;
-#pragma warning disable CS0618
-            BaseUrl = serverUrl;
-#pragma warning restore CS0618
+            ServerUrl = baseUrl ?? serverUrl;
+            BaseUrl = baseUrl ?? serverUrl;
             TimeoutMilliseconds = timeoutMilliseconds;
             retryScheduleMilliseconds ??= [50, 100, 200];
             if (retryScheduleMilliseconds.Count > 5)
@@ -26,5 +28,6 @@ namespace Svix
             }
             RetryScheduleMilliseconds = retryScheduleMilliseconds;
         }
+#pragma warning restore CS0618
     }
 }
