@@ -3,8 +3,11 @@ namespace Svix
     public class SvixOptions
     {
         [Obsolete("BaseUrl is deprecated, please use ServerUrl instead.")]
-        public string BaseUrl { get; }
-        public string ServerUrl { get; }
+        public string? BaseUrl
+        {
+            get => ServerUrl;
+        }
+        public string? ServerUrl { get; }
         public List<int> RetryScheduleMilliseconds { get; } = [50, 100, 200];
         public int TimeoutMilliseconds { get; } = 15000;
 
@@ -12,14 +15,13 @@ namespace Svix
         /// <param name="baseUrl">[Deprecated] Please use serverUrl parameter instead.</param>
 #pragma warning disable CS0618
         public SvixOptions(
-            string serverUrl,
+            string? serverUrl = null,
             int timeoutMilliseconds = 15000,
             List<int>? retryScheduleMilliseconds = null,
             string? baseUrl = null
         )
         {
-            ServerUrl = baseUrl ?? serverUrl;
-            BaseUrl = baseUrl ?? serverUrl;
+            ServerUrl = serverUrl ?? baseUrl;
             TimeoutMilliseconds = timeoutMilliseconds;
             retryScheduleMilliseconds ??= [50, 100, 200];
             if (retryScheduleMilliseconds.Count > 5)
