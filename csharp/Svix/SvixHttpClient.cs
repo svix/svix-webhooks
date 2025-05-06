@@ -1,14 +1,21 @@
-﻿using System.Net;
+﻿using System.Collections.Generic;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 using Newtonsoft.Json;
 
 namespace Svix
 {
-    public class SvixHttpClient(string token, SvixOptions options, string userAgent)
+    public class SvixHttpClient(
+        string token,
+        List<int> retryScheduleMilliseconds,
+        string userAgent,
+        string serverUrl
+    )
     {
-        readonly SvixOptions _options = options;
-        readonly HttpClient _httpClient = new();
+        private readonly List<int> retryScheduleMilliseconds = retryScheduleMilliseconds;
+        private readonly string serverUrl = serverUrl;
+        private readonly HttpClient _httpClient = new();
         private readonly string _token = token;
         private readonly JsonSerializerSettings patchJsonOptions = new();
         private readonly JsonSerializerSettings JsonOptions = new()
@@ -63,13 +70,13 @@ namespace Svix
                 content
             );
             var response = await _httpClient.SendAsync(request, cancellationToken);
-            for (var index = 0; index < _options.RetryScheduleMilliseconds.Count; index++)
+            for (var index = 0; index < retryScheduleMilliseconds.Count; index++)
             {
                 if ((int)response.StatusCode < 500)
                 {
                     break;
                 }
-                Thread.Sleep(_options.RetryScheduleMilliseconds[index]);
+                Thread.Sleep(retryScheduleMilliseconds[index]);
                 HttpRequestMessage retryRequest = BuildRequest(
                     method,
                     path,
@@ -131,7 +138,7 @@ namespace Svix
             object? content = null
         )
         {
-            var url = _options.ServerUrl;
+            var url = serverUrl;
 
             // Apply path parameters if provided
             if (pathParams != null)

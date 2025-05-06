@@ -43,8 +43,10 @@ namespace Svix
             }
             else
             {
-                return "https://api.svix.com";
+                return DEFAULT_SERVER_URL;
             }
         }
+
+        internal static string DEFAULT_SERVER_URL = "https://api.svix.com";
     }
 }

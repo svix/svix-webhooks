@@ -81,12 +81,14 @@ namespace Svix
         )
         {
             Logger = logger;
+            var opts = options ?? new SvixOptions(Utils.DefaultServerUrlFromToken(token));
             SvixHttpClient =
                 svixHttpClient
                 ?? new SvixHttpClient(
                     token,
-                    options ?? new SvixOptions(Utils.DefaultServerUrlFromToken(token)),
-                    $"svix-libs/{Version.version}/csharp"
+                    opts.RetryScheduleMilliseconds,
+                    $"svix-libs/{Version.version}/csharp",
+                    opts.ServerUrl ?? Utils.DEFAULT_SERVER_URL
                 );
         }
     }
