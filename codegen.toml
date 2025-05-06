@@ -104,7 +104,8 @@ output_dir = "java/lib/src/main/java/com/svix/models"
 template_dir = "codegen-templates/go"
 extra_shell_commands = [
    "rm go/health.go",
-   "sed -i 's/package svix/package internalapi/g' go/internalapi/management*"
+   "sed -i.bak 's/package svix/package internalapi/g' go/internalapi/management* && rm go/internalapi/management*.bak"
+
 ]
 [[go.task]]
 template = "codegen-templates/go/api_resource.go.jinja"
