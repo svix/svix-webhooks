@@ -131,7 +131,7 @@ namespace Svix
             object? content = null
         )
         {
-            var url = _options.BaseUrl;
+            var url = _options.ServerUrl;
 
             // Apply path parameters if provided
             if (pathParams != null)
