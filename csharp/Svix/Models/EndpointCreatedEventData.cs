@@ -7,7 +7,6 @@ namespace Svix.Models
     /// <summary>
     /// Sent when an endpoint is created, updated, or deleted
     /// <summary>
-
     public class EndpointCreatedEventData
     {
         [JsonProperty("appId", Required = Required.Always)]

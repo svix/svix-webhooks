@@ -59,8 +59,8 @@ namespace Svix.Tests
             {
                 if (index == 0)
                 {
-                    Assert.Throws<KeyNotFoundException>(
-                        () => stub.LogEntries[index].RequestMessage.Headers["svix-retry-count"]
+                    Assert.Throws<KeyNotFoundException>(() =>
+                        stub.LogEntries[index].RequestMessage.Headers["svix-retry-count"]
                     );
                     continue;
                 }

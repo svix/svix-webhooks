@@ -7,7 +7,6 @@ namespace Svix.Models
     /// <summary>
     /// Sent when a message delivery has failed (all of the retry attempts have been exhausted) as a "message.attempt.exhausted" type or after it's failed four times as a "message.attempt.failing" event.
     /// <summary>
-
     public class MessageAttemptRecoveredEventData
     {
         [JsonProperty("appId", Required = Required.Always)]

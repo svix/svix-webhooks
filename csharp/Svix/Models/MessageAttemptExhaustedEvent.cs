@@ -7,7 +7,6 @@ namespace Svix.Models
     /// <summary>
     /// Sent when a message delivery has failed (all of the retry attempts have been exhausted).
     /// <summary>
-
     public class MessageAttemptExhaustedEvent
     {
         [JsonProperty("data", Required = Required.Always)]

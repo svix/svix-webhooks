@@ -7,7 +7,6 @@ namespace Svix.Models
     /// <summary>
     /// Sent when an endpoint has been automatically disabled after continuous failures, or manually via an API call.
     /// <summary>
-
     public class EndpointDisabledEventData
     {
         [JsonProperty("appId", Required = Required.Always)]

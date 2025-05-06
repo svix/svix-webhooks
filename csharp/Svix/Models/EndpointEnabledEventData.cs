@@ -7,7 +7,6 @@ namespace Svix.Models
     /// <summary>
     /// Sent when an endpoint has been enabled.
     /// <summary>
-
     public class EndpointEnabledEventData
     {
         [JsonProperty("appId", Required = Required.Always)]

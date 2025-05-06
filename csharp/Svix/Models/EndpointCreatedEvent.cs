@@ -7,7 +7,6 @@ namespace Svix.Models
     /// <summary>
     /// Sent when an endpoint is created.
     /// <summary>
-
     public class EndpointCreatedEvent
     {
         [JsonProperty("data", Required = Required.Always)]

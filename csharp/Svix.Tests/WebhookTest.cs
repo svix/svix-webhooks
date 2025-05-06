@@ -51,8 +51,8 @@ namespace Svix.Tests
 
             var wh = new Webhook(testPayload.secret);
 
-            Assert.Throws<WebhookVerificationException>(
-                () => wh.Verify(testPayload.payload, testPayload.headers)
+            Assert.Throws<WebhookVerificationException>(() =>
+                wh.Verify(testPayload.payload, testPayload.headers)
             );
         }
 
@@ -64,8 +64,8 @@ namespace Svix.Tests
 
             var wh = new Webhook(testPayload.secret);
 
-            Assert.Throws<WebhookVerificationException>(
-                () => wh.Verify(testPayload.payload, testPayload.headers)
+            Assert.Throws<WebhookVerificationException>(() =>
+                wh.Verify(testPayload.payload, testPayload.headers)
             );
         }
 
@@ -77,8 +77,8 @@ namespace Svix.Tests
 
             var wh = new Webhook(testPayload.secret);
 
-            Assert.Throws<WebhookVerificationException>(
-                () => wh.Verify(testPayload.payload, testPayload.headers)
+            Assert.Throws<WebhookVerificationException>(() =>
+                wh.Verify(testPayload.payload, testPayload.headers)
             );
         }
 
@@ -93,8 +93,8 @@ namespace Svix.Tests
 
             var wh = new Webhook(testPayload.secret);
 
-            Assert.Throws<WebhookVerificationException>(
-                () => wh.Verify(testPayload.payload, testPayload.headers)
+            Assert.Throws<WebhookVerificationException>(() =>
+                wh.Verify(testPayload.payload, testPayload.headers)
             );
         }
 
@@ -140,8 +140,8 @@ namespace Svix.Tests
 
             var wh = new Webhook(testPayload.secret);
 
-            Assert.Throws<WebhookVerificationException>(
-                () => wh.Verify(testPayload.payload, testPayload.headers)
+            Assert.Throws<WebhookVerificationException>(() =>
+                wh.Verify(testPayload.payload, testPayload.headers)
             );
         }
 
@@ -154,8 +154,8 @@ namespace Svix.Tests
 
             var wh = new Webhook(testPayload.secret);
 
-            Assert.Throws<WebhookVerificationException>(
-                () => wh.Verify(testPayload.payload, testPayload.headers)
+            Assert.Throws<WebhookVerificationException>(() =>
+                wh.Verify(testPayload.payload, testPayload.headers)
             );
         }
 
@@ -166,8 +166,8 @@ namespace Svix.Tests
 
             var wh = new Webhook(testPayload.secret);
 
-            Assert.Throws<ArgumentNullException>(
-                () => wh.Verify(testPayload.payload, (WebHeaderCollection)null)
+            Assert.Throws<ArgumentNullException>(() =>
+                wh.Verify(testPayload.payload, (WebHeaderCollection)null)
             );
         }
 
@@ -178,8 +178,8 @@ namespace Svix.Tests
 
             var wh = new Webhook(testPayload.secret);
 
-            Assert.Throws<ArgumentNullException>(
-                () => wh.Verify(testPayload.payload, (Func<string, string>)null)
+            Assert.Throws<ArgumentNullException>(() =>
+                wh.Verify(testPayload.payload, (Func<string, string>)null)
             );
         }
 

@@ -8,7 +8,6 @@ namespace Svix.Models
     /// Sent after a message has been failing for a few times.
     /// It's sent on the fourth failure. It complements `message.attempt.exhausted` which is sent after the last failure.
     /// <summary>
-
     public class MessageAttemptFailingEvent
     {
         [JsonProperty("data", Required = Required.Always)]
