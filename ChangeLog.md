@@ -1,10 +1,15 @@
 # Changelog
 
-## Unreleased
+## Version 1.65.0
 * Libs/Python: Bring back the (deprecated) sync `dashboard_access` method, which was accidentally
   removed in v1.64.1
 * Libs/Csharp: The `options` argument to the `SvixClient` initializer is now optional.
 * Libs/Csharp: The `SvixOptions.BaseUrl` field is deprecated in favor of `SvixOptions.ServerUrl`
+* Libs/(Ruby and Kotlin): Add doc comments to class attributes
+* Libs/Go: Added a new `<Enum>From<UnderlyingType>` map to all enums. For example `BackgroundTaskStatusFromString["running"]` will result in `BACKGROUNDTASKSTATUS_RUNNING`
+* Libs/Go: Fixed bug where the correct `content-type` was not set on `PUT` requests
+* Bridge: Add `/health` endpoint by @CodeMan62 in https://github.com/svix/svix-webhooks/pull/1903
+* Server: Add URL validation to operational server webhooks by @CodeMan62 in https://github.com/svix/svix-webhooks/pull/1887
 
 ## Version 1.64.1
 * Libs/JavaScript: Add `HTTPValidationError`, `HttpErrorOut`, `ValidationError` and `ApiException` to the top level exports.
