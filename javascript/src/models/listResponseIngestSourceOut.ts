@@ -12,7 +12,7 @@ export interface ListResponseIngestSourceOut {
 export const ListResponseIngestSourceOutSerializer = {
   _fromJsonObject(object: any): ListResponseIngestSourceOut {
     return {
-      data: object["data"]?.map((item: IngestSourceOut) =>
+      data: object["data"].map((item: IngestSourceOut) =>
         IngestSourceOutSerializer._fromJsonObject(item)
       ),
       done: object["done"],

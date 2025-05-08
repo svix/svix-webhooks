@@ -26,7 +26,7 @@ export const EndpointDisabledEventDataSerializer = {
       appUid: object["appUid"],
       endpointId: object["endpointId"],
       endpointUid: object["endpointUid"],
-      failSince: new Date(object["failSince"]),
+      failSince: object["failSince"] ? new Date(object["failSince"]) : null,
       trigger: object["trigger"]
         ? EndpointDisabledTriggerSerializer._fromJsonObject(object["trigger"])
         : undefined,

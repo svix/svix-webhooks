@@ -1,6 +1,10 @@
 {% macro field_from_json(field_expr, type, field_required) %}
     {%- if type.is_datetime() -%}
-        new Date({{ field_expr }})
+        {% if not field_required -%}
+            {{ field_expr }} ? new Date({{ field_expr }}) : null
+        {%- else -%}
+            new Date({{ field_expr }})
+        {%- endif -%}
     {%- elif type.is_schema_ref() -%}
         {# TODO(10055) remove this hack #}
         {% if type.to_js() == "any" -%}
@@ -20,7 +24,8 @@
             or inner_t.is_list()
             or inner_t.is_set()
             or inner_t.is_map() -%}
-            ?.map((item: {{ inner_t.to_js() }}) => {{ field_from_json("item", inner_t, true) }})
+            {% if not field_required -%}?{% endif -%}
+            .map((item: {{ inner_t.to_js() }}) => {{ field_from_json("item", inner_t, true) }})
         {%- endif -%}
     {%- elif type.is_map() -%}
         {%- set value_t = type.value_type() -%}
