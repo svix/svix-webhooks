@@ -16,7 +16,7 @@ export const ApiTokenCensoredOutSerializer = {
     return {
       censoredToken: object["censoredToken"],
       createdAt: new Date(object["createdAt"]),
-      expiresAt: new Date(object["expiresAt"]),
+      expiresAt: object["expiresAt"] ? new Date(object["expiresAt"]) : null,
       id: object["id"],
       name: object["name"],
       scopes: object["scopes"],

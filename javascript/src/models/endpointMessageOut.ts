@@ -26,7 +26,7 @@ export const EndpointMessageOutSerializer = {
       eventId: object["eventId"],
       eventType: object["eventType"],
       id: object["id"],
-      nextAttempt: new Date(object["nextAttempt"]),
+      nextAttempt: object["nextAttempt"] ? new Date(object["nextAttempt"]) : null,
       payload: object["payload"],
       status: MessageStatusSerializer._fromJsonObject(object["status"]),
       tags: object["tags"],

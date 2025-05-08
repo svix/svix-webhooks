@@ -31,7 +31,7 @@ export const MessageEndpointOutSerializer = {
       disabled: object["disabled"],
       filterTypes: object["filterTypes"],
       id: object["id"],
-      nextAttempt: new Date(object["nextAttempt"]),
+      nextAttempt: object["nextAttempt"] ? new Date(object["nextAttempt"]) : null,
       rateLimit: object["rateLimit"],
       status: MessageStatusSerializer._fromJsonObject(object["status"]),
       uid: object["uid"],

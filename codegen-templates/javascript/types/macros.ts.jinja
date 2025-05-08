@@ -1,6 +1,10 @@
 {% macro field_from_json(field_expr, type, field_required) %}
     {%- if type.is_datetime() -%}
-        new Date({{ field_expr }})
+        {% if not field_required -%}
+            {{ field_expr }} ? new Date({{ field_expr }}) : null
+        {%- else -%}
+            new Date({{ field_expr }})
+        {%- endif -%}
     {%- elif type.is_schema_ref() -%}
         {# TODO(10055) remove this hack #}
         {% if type.to_js() == "any" -%}
