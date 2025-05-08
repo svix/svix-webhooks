@@ -20,7 +20,8 @@
             or inner_t.is_list()
             or inner_t.is_set()
             or inner_t.is_map() -%}
-            ?.map((item: {{ inner_t.to_js() }}) => {{ field_from_json("item", inner_t, true) }})
+            {% if not field_required -%}?{% endif -%}
+            .map((item: {{ inner_t.to_js() }}) => {{ field_from_json("item", inner_t, true) }})
         {%- endif -%}
     {%- elif type.is_map() -%}
         {%- set value_t = type.value_type() -%}

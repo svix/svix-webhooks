@@ -15,7 +15,7 @@ export interface ListResponseOperationalWebhookEndpointOut {
 export const ListResponseOperationalWebhookEndpointOutSerializer = {
   _fromJsonObject(object: any): ListResponseOperationalWebhookEndpointOut {
     return {
-      data: object["data"]?.map((item: OperationalWebhookEndpointOut) =>
+      data: object["data"].map((item: OperationalWebhookEndpointOut) =>
         OperationalWebhookEndpointOutSerializer._fromJsonObject(item)
       ),
       done: object["done"],
