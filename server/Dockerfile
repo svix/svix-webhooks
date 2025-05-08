@@ -1,5 +1,17 @@
-# Base build
-FROM rust:1.86-slim-bookworm AS build
+# Using https://github.com/LukeMathWalker/cargo-chef for better layer caching
+
+# Base image for planner and build - keep in sync with .github/workflows/server-ci.yml
+FROM docker.io/rust:1.86-slim-bookworm AS chef
+RUN cargo install cargo-chef
+WORKDIR /app
+
+# Build plan environment
+FROM chef AS planner
+COPY . .
+RUN cargo chef prepare --recipe-path recipe.json
+
+# Build environment
+FROM chef AS build
 
 RUN apt-get update && apt-get install -y \
         build-essential=12.* \
@@ -16,24 +28,17 @@ RUN set -ex ; \
         mkdir -p /home/appuser ;\
         chown -R appuser: /home/appuser
 
-WORKDIR /app
+COPY --from=planner /app/recipe.json recipe.json
 
-# Hack to enable docker caching
-COPY Cargo.toml .
-COPY Cargo.lock .
-COPY svix-server_derive svix-server_derive
-COPY svix-server/Cargo.toml svix-server/
-RUN set -ex ;\
-        mkdir svix-server/src ;\
-        echo 'fn main() { println!("Dummy!"); }' > svix-server/src/main.rs ;\
-        cargo build --release ;\
-        rm -rf svix-server/src
+# Build dependencies - this is the caching Docker layer
+RUN cargo chef cook --release --package svix-server --bin svix-server --recipe-path recipe.json
 
+# Build the server
 COPY . .
-RUN cargo build --release --frozen
+RUN cargo build --release --package svix-server --bin svix-server --frozen
 
 # Production
-FROM debian:bookworm-slim AS prod
+FROM docker.io/debian:bookworm-slim AS prod
 
 RUN set -ex ; \
         mkdir -p /app ;\
