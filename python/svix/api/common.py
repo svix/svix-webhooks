@@ -75,11 +75,29 @@ class ApiBase:
 
     def __init__(self, client: AuthenticatedClient) -> None:
         self._client = client
+
+        if self._client.proxy is not None:
+            proxy_mounts = {
+                "http://": httpx.HTTPTransport(proxy=httpx.Proxy(self._client.proxy)),
+                "https://": httpx.HTTPTransport(proxy=httpx.Proxy(self._client.proxy)),
+            }
+            async_proxy_mounts = {
+                "http://": httpx.AsyncHTTPTransport(
+                    proxy=httpx.Proxy(self._client.proxy)
+                ),
+                "https://": httpx.AsyncHTTPTransport(
+                    proxy=httpx.Proxy(self._client.proxy)
+                ),
+            }
+        else:
+            proxy_mounts = None
+            async_proxy_mounts = None
+
         self._httpx_client = httpx.Client(
-            verify=client.verify_ssl, cookies=self._client.get_cookies()
+            mounts=proxy_mounts, cookies=self._client.get_cookies()
         )
         self._httpx_async_client = httpx.AsyncClient(
-            verify=client.verify_ssl, cookies=self._client.get_cookies()
+            mounts=async_proxy_mounts, cookies=self._client.get_cookies()
         )
 
     def _get_httpx_kwargs(
@@ -168,7 +186,6 @@ class ApiBase:
             header_params=header_params,
             json_body=json_body,
         )
-
         response = self._httpx_client.request(**httpx_kwargs)
         for retry_count, sleep_time in enumerate(self._client.retry_schedule):
             if response.status_code < 500:
