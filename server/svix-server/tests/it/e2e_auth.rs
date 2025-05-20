@@ -118,7 +118,7 @@ async fn test_invalid_auth_error_detail() {
                 .to_owned()
         }
 
-        _ => return {},
+        _ => return,
     };
 
     client.set_auth_header("some-nonsense-key".to_string());
