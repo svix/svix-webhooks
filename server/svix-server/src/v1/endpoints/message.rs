@@ -124,6 +124,27 @@ pub struct MessageIn {
     #[serde(default = "default_90")]
     #[schemars(example = "default_90")]
     pub payload_retention_period: i64,
+    #[serde(rename = "transformationsParams")]
+    #[schemars(skip)]
+    pub extra_params: Option<MessageInExtraParams>,
+}
+
+impl MessageIn {
+    fn payload(&self) -> Vec<u8> {
+        if let Some(params) = &self.extra_params {
+            if let Some(raw_payload) = &params.raw_payload {
+                return raw_payload.as_bytes().to_owned();
+            }
+        }
+
+        self.payload.0.get().as_bytes().to_owned()
+    }
+}
+
+#[derive(Clone, Debug, Default, PartialEq, Eq, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct MessageInExtraParams {
+    raw_payload: Option<String>,
 }
 
 fn example_channel_set() -> Vec<&'static str> {
@@ -350,7 +371,7 @@ pub(crate) async fn create_message_inner(
     // Should never happen since you're giving it an existing Application, but just in case
     .ok_or_else(|| Error::generic(format!("Application doesn't exist: {}", app.id)))?;
 
-    let payload = data.payload.to_string().into_bytes();
+    let payload = data.payload();
     let msg = message::ActiveModel {
         app_id: Set(app.id.clone()),
         org_id: Set(app.org_id),

@@ -123,6 +123,7 @@ pub fn message_in<T: Serialize>(event_type: &str, payload: T) -> Result<MessageI
         payload_retention_period: 5,
         channels: None,
         uid: None,
+        extra_params: None,
     })
 }
 
