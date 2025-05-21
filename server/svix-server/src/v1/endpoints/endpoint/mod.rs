@@ -799,6 +799,7 @@ async fn send_example(
         payload: RawPayload::from_string(example).unwrap(),
         uid: None,
         payload_retention_period: 90,
+        extra_params: None,
     };
 
     let create_message =

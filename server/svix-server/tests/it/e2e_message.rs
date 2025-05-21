@@ -531,3 +531,36 @@ async fn test_message_validation() {
         .await
         .unwrap();
 }
+
+#[tokio::test]
+async fn test_raw_payload() {
+    let (client, _jh) = start_svix_server().await;
+
+    let app_id = create_test_app(&client, "testRawPayload").await.unwrap().id;
+
+    let mut receiver = TestReceiver::start(axum::http::StatusCode::OK);
+
+    create_test_endpoint(&client, &app_id, &receiver.endpoint)
+        .await
+        .unwrap();
+
+    let msg_payload = json!({ "test": "value1" });
+
+    let _: IgnoredAny = client
+        .post(
+            &format!("api/v1/app/{app_id}/msg/"),
+            json!({
+                "eventType": "payload.raw",
+                "payload": {},
+                "transformationsParams": {
+                    "rawPayload": msg_payload.to_string(),
+                },
+            }),
+            StatusCode::ACCEPTED,
+        )
+        .await
+        .unwrap();
+
+    let rec_body = receiver.data_recv.recv().await;
+    assert_eq!(msg_payload.to_string(), rec_body.unwrap().to_string());
+}
