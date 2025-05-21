@@ -10,11 +10,11 @@ use serde::{
     de::{DeserializeOwned, IgnoredAny},
     Serialize,
 };
+use serde_json::json;
 use svix::api::DashboardAccessOut;
 use svix_server::{
     core::types::{
-        metadata::Metadata, ApplicationId, EventChannel, EventChannelSet, EventTypeName,
-        FeatureFlagSet, MessageId,
+        metadata::Metadata, ApplicationId, EventChannel, EventTypeName, FeatureFlagSet, MessageId,
     },
     v1::{
         endpoints::{
@@ -152,22 +152,19 @@ pub async fn create_test_msg_with(
         .map(|x| EventChannel(x.to_string()))
         .collect();
 
-    let channels = if channels.is_empty() {
-        None
-    } else {
-        Some(EventChannelSet(channels))
-    };
+    let mut message_in = json!({
+        "eventType": event_type,
+        "payload": payload,
+        "payloadRetentionPeriod": 5,
+    });
+    if !channels.is_empty() {
+        message_in["channels"] = json!(channels);
+    }
 
     client
         .post(
-            &format!("api/v1/app/{}/msg/", &app_id),
-            MessageIn {
-                event_type: EventTypeName(event_type.to_owned()),
-                payload: RawPayload::from_string(serde_json::to_string(&payload).unwrap()).unwrap(),
-                payload_retention_period: 5,
-                channels,
-                uid: None,
-            },
+            &format!("api/v1/app/{app_id}/msg/"),
+            message_in,
             StatusCode::ACCEPTED,
         )
         .await

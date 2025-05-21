@@ -16,6 +16,7 @@ use sea_orm::{
     Statement,
 };
 use serde::{de::IgnoredAny, Deserialize};
+use serde_json::json;
 use svix::webhooks::Webhook;
 use svix_server::{
     cfg::DefaultSignatureType,
@@ -33,10 +34,10 @@ use svix_server::{
         endpoints::{
             endpoint::{
                 EndpointHeadersIn, EndpointHeadersOut, EndpointHeadersPatchIn, EndpointIn,
-                EndpointOut, EndpointSecretOut, EndpointStatsOut, RecoverIn,
+                EndpointOut, EndpointSecretOut, EndpointStatsOut,
             },
             event_type::EventTypeOut,
-            message::{MessageIn, MessageOut, RawPayload},
+            message::MessageOut,
         },
         utils::ListResponse,
     },
@@ -142,7 +143,7 @@ async fn test_patch() {
     let _: EndpointOut = client
         .patch(
             &url,
-            serde_json::json!({
+            json!({
                 "description": "test"
             }),
             StatusCode::OK,
@@ -167,13 +168,7 @@ async fn test_patch() {
 
     // Test that the rate limit may be set
     let _: EndpointOut = client
-        .patch(
-            &url,
-            serde_json::json!({
-                "rateLimit": 1,
-            }),
-            StatusCode::OK,
-        )
+        .patch(&url, json!({ "rateLimit": 1 }), StatusCode::OK)
         .await
         .unwrap();
 
@@ -196,7 +191,7 @@ async fn test_patch() {
     let _: EndpointOut = client
         .patch(
             &url,
-            serde_json::json!({
+            json!({
                 "rateLimit": null,
             }),
             StatusCode::OK,
@@ -221,13 +216,7 @@ async fn test_patch() {
 
     // Test that the UID may be set
     let _: EndpointOut = client
-        .patch(
-            &url,
-            serde_json::json!({
-                "uid": "some",
-            }),
-            StatusCode::OK,
-        )
+        .patch(&url, json!({ "uid": "some" }), StatusCode::OK)
         .await
         .unwrap();
 
@@ -248,13 +237,7 @@ async fn test_patch() {
 
     // Test the UID may be unset
     let _: EndpointOut = client
-        .patch(
-            &url,
-            serde_json::json!({
-                "uid": null,
-            }),
-            StatusCode::OK,
-        )
+        .patch(&url, json!({ "uid": null }), StatusCode::OK)
         .await
         .unwrap();
 
@@ -275,13 +258,7 @@ async fn test_patch() {
 
     // Test that the URL may be set
     let _: EndpointOut = client
-        .patch(
-            &url,
-            serde_json::json!({
-                "url": "http://bad.url2",
-            }),
-            StatusCode::OK,
-        )
+        .patch(&url, json!({ "url": "http://bad.url2" }), StatusCode::OK)
         .await
         .unwrap();
 
@@ -302,13 +279,7 @@ async fn test_patch() {
 
     // Test that the version may be set
     let _: EndpointOut = client
-        .patch(
-            &url,
-            serde_json::json!({
-                "version": 2,
-            }),
-            StatusCode::OK,
-        )
+        .patch(&url, json!({ "version": 2 }), StatusCode::OK)
         .await
         .unwrap();
 
@@ -329,13 +300,7 @@ async fn test_patch() {
 
     // Test that disabled may be set
     let _: EndpointOut = client
-        .patch(
-            &url,
-            serde_json::json!({
-                "disabled": true,
-            }),
-            StatusCode::OK,
-        )
+        .patch(&url, json!({ "disabled": true }), StatusCode::OK)
         .await
         .unwrap();
 
@@ -360,7 +325,7 @@ async fn test_patch() {
     let _: EventTypeOut = client
         .post(
             "api/v1/event-type/",
-            serde_json::json!({
+            json!({
                 "description": "a test event type",
                 "name": "test",
             }),
@@ -372,8 +337,8 @@ async fn test_patch() {
     let _: EndpointOut = client
         .patch(
             &url,
-            serde_json::json!({
-                "filterTypes": [ "test" ],
+            json!({
+                "filterTypes": ["test"],
             }),
             StatusCode::OK,
         )
@@ -402,13 +367,7 @@ async fn test_patch() {
 
     // Test that event type IDs may be unset
     let _: EndpointOut = client
-        .patch(
-            &url,
-            serde_json::json!({
-                "filterTypes": null,
-            }),
-            StatusCode::OK,
-        )
+        .patch(&url, json!({ "filterTypes": null }), StatusCode::OK)
         .await
         .unwrap();
 
@@ -431,8 +390,8 @@ async fn test_patch() {
     let _: EndpointOut = client
         .patch(
             &url,
-            serde_json::json!({
-                "channels": [ "test" ],
+            json!({
+                "channels": ["test"],
             }),
             StatusCode::OK,
         )
@@ -461,13 +420,7 @@ async fn test_patch() {
 
     // Test that channels may be unset
     let _: EndpointOut = client
-        .patch(
-            &url,
-            serde_json::json!({
-                "channels": null,
-            }),
-            StatusCode::OK,
-        )
+        .patch(&url, json!({ "channels": null }), StatusCode::OK)
         .await
         .unwrap();
 
@@ -593,7 +546,7 @@ async fn test_crud() {
 
     // LIST
     let list_app_1: ListResponse<EndpointOut> = client
-        .get(&format!("api/v1/app/{}/endpoint/", &app_1), StatusCode::OK)
+        .get(&format!("api/v1/app/{app_1}/endpoint/"), StatusCode::OK)
         .await
         .unwrap();
     assert_eq!(list_app_1.data.len(), 3);
@@ -653,8 +606,8 @@ async fn test_crud() {
     // Test that metadata may be unset
     let ep_alias2: EndpointOut = client
         .patch(
-            &format!("api/v1/app/{}/endpoint/{}/", &app_1, &ep.id),
-            serde_json::json!({
+            &format!("api/v1/app/{app_1}/endpoint/{}/", ep.id),
+            json!({
                 "metadata": {},
             }),
             StatusCode::OK,
@@ -696,7 +649,7 @@ async fn test_endpoint_list_ordering() {
 
     let first_list: ListResponse<EndpointOut> = client
         .get(
-            &format!("api/v1/app/{}/endpoint/?limit=2", &app_id),
+            &format!("api/v1/app/{app_id}/endpoint/?limit=2"),
             StatusCode::OK,
         )
         .await
@@ -713,8 +666,7 @@ async fn test_endpoint_list_ordering() {
     let list: ListResponse<EndpointOut> = client
         .get(
             &format!(
-                "api/v1/app/{}/endpoint/?limit=2&iterator={}",
-                &app_id,
+                "api/v1/app/{app_id}/endpoint/?limit=2&iterator={}",
                 first_list.iterator.unwrap()
             ),
             StatusCode::OK,
@@ -730,8 +682,7 @@ async fn test_endpoint_list_ordering() {
     let list: ListResponse<EndpointOut> = client
         .get(
             &format!(
-                "api/v1/app/{}/endpoint/?iterator={}",
-                &app_id,
+                "api/v1/app/{app_id}/endpoint/?iterator={}",
                 list.prev_iterator.unwrap()
             ),
             StatusCode::OK,
@@ -759,8 +710,7 @@ async fn test_endpoint_list_ordering() {
     let list: ListResponse<EndpointOut> = client
         .get(
             &format!(
-                "api/v1/app/{}/endpoint/?limit=3&order=ascending&iterator={}",
-                &app_id,
+                "api/v1/app/{app_id}/endpoint/?limit=3&order=ascending&iterator={}",
                 list.iterator.unwrap(),
             ),
             StatusCode::OK,
@@ -776,8 +726,7 @@ async fn test_endpoint_list_ordering() {
     let list: ListResponse<EndpointOut> = client
         .get(
             &format!(
-                "api/v1/app/{}/endpoint/?limit=2&order=ascending&iterator={}",
-                &app_id,
+                "api/v1/app/{app_id}/endpoint/?limit=2&order=ascending&iterator={}",
                 list.prev_iterator.unwrap(),
             ),
             StatusCode::OK,
@@ -918,7 +867,7 @@ async fn test_endpoint_secret_get_and_rotation() {
     client
         .post_without_response(
             &format!("api/v1/app/{app_id}/endpoint/{}/secret/rotate/", ep.id),
-            serde_json::json!({ "key": null }),
+            json!({ "key": null }),
             StatusCode::NO_CONTENT,
         )
         .await
@@ -972,10 +921,7 @@ async fn test_recovery_should_fail_if_start_time_too_old() {
     let _: serde_json::Value = client
         .post(
             &format!("api/v1/app/{app_id}/endpoint/{endp_id}/recover/"),
-            RecoverIn {
-                since: Utc::now() - chrono::Duration::weeks(3),
-                until: None,
-            },
+            json!({ "since": Utc::now() - chrono::Duration::weeks(3) }),
             StatusCode::UNPROCESSABLE_ENTITY,
         )
         .await
@@ -1004,7 +950,7 @@ async fn test_recovery_expected_retry_counts() {
 
     let before_msg = Utc::now();
 
-    let msg = create_test_message(&client, &app_id, serde_json::json!({"test": "data1"}))
+    let msg = create_test_message(&client, &app_id, json!({ "test": "data1" }))
         .await
         .unwrap();
 
@@ -1057,7 +1003,7 @@ async fn test_endpoint_rotate_max() {
         client
             .post_without_response(
                 &format!("api/v1/app/{app_id}/endpoint/{endp_id}/secret/rotate/"),
-                serde_json::json!({ "key": null }),
+                json!({ "key": null }),
                 StatusCode::NO_CONTENT,
             )
             .await
@@ -1067,7 +1013,7 @@ async fn test_endpoint_rotate_max() {
     let _: IgnoredAny = client
         .post(
             &format!("api/v1/app/{app_id}/endpoint/{endp_id}/secret/rotate/"),
-            serde_json::json!({ "key": null }),
+            json!({ "key": null }),
             StatusCode::BAD_REQUEST,
         )
         .await
@@ -1097,7 +1043,7 @@ async fn test_endpoint_rotate_signing_e2e() {
     client
         .post_without_response(
             &format!("api/v1/app/{app_id}/endpoint/{}/secret/rotate/", endp.id),
-            serde_json::json!({ "key": null }),
+            json!({ "key": null }),
             StatusCode::NO_CONTENT,
         )
         .await
@@ -1121,7 +1067,7 @@ async fn test_endpoint_rotate_signing_e2e() {
     client
         .post_without_response(
             &format!("api/v1/app/{app_id}/endpoint/{}/secret/rotate/", endp.id),
-            serde_json::json!({ "key": secret3_key }),
+            json!({ "key": secret3_key }),
             StatusCode::NO_CONTENT,
         )
         .await
@@ -1188,7 +1134,7 @@ async fn test_endpoint_rotate_signing_symmetric_and_asymmetric() {
     client
         .post_without_response(
             &format!("api/v1/app/{app_id}/endpoint/{}/secret/rotate/", endp.id),
-            serde_json::json!({ "key": "whsk_6Xb/dCcHpPea21PS1N9VY/NZW723CEc77N4rJCubMbfVKIDij2HKpMKkioLlX0dRqSKJp4AJ6p9lMicMFs6Kvg==" }),
+            json!({ "key": "whsk_6Xb/dCcHpPea21PS1N9VY/NZW723CEc77N4rJCubMbfVKIDij2HKpMKkioLlX0dRqSKJp4AJ6p9lMicMFs6Kvg==" }),
             StatusCode::NO_CONTENT,
         )
         .await
@@ -1198,7 +1144,7 @@ async fn test_endpoint_rotate_signing_symmetric_and_asymmetric() {
     client
         .post_without_response(
             &format!("api/v1/app/{app_id}/endpoint/{}/secret/rotate/", endp.id),
-            serde_json::json!({ "key": secret_3.serialize_public_key() }),
+            json!({ "key": secret_3.serialize_public_key() }),
             StatusCode::NO_CONTENT,
         )
         .await
@@ -1286,7 +1232,7 @@ async fn test_endpoint_secret_config() {
     client
         .post_without_response(
             &format!("api/v1/app/{app_id}/endpoint/{}/secret/rotate/", ep.id),
-            serde_json::json!({ "key": null }),
+            json!({ "key": null }),
             StatusCode::NO_CONTENT,
         )
         .await
@@ -1345,7 +1291,9 @@ async fn test_custom_endpoint_secret() {
     client
         .post_without_response(
             &format!("api/v1/app/{app_id}/endpoint/{}/secret/rotate/", endp_3.id),
-            serde_json::json!({ "key": "whsk_6Xb/dCcHpPea21PS1N9VY/NZW723CEc77N4rJCubMbfVKIDij2HKpMKkioLlX0dRqSKJp4AJ6p9lMicMFs6Kvg==" }),
+            json!({
+                "key": "whsk_6Xb/dCcHpPea21PS1N9VY/NZW723CEc77N4rJCubMbfVKIDij2HKpMKkioLlX0dRqSKJp4AJ6p9lMicMFs6Kvg==",
+            }),
             StatusCode::NO_CONTENT,
         )
         .await
@@ -1421,7 +1369,7 @@ async fn test_endpoint_secret_encryption() {
     client
         .post_without_response(
             &format!("api/v1/app/{app_id}/endpoint/{}/secret/rotate/", ep.id),
-            serde_json::json!({ "key": secret }),
+            json!({ "key": secret }),
             StatusCode::NO_CONTENT,
         )
         .await
@@ -1465,16 +1413,14 @@ async fn test_invalid_endpoint_secret() {
     let invalid_prefix = "hwsec_C2FVsBQIhrscChlQIM+b5sSYspob7oDazfgh".to_owned();
 
     for sec in [secret_too_short, secret_too_long, invalid_prefix] {
-        let ep_in: serde_json::Value = serde_json::json!({
-            "url": "http://www.example.com".to_owned(),
-            "version": 1,
-            "secret": sec,
-        });
-
         let _: IgnoredAny = client
             .post(
                 &format!("api/v1/app/{app_id}/endpoint/"),
-                ep_in,
+                json!({
+                    "url": "http://www.example.com",
+                    "version": 1,
+                    "secret": sec,
+                }),
                 StatusCode::UNPROCESSABLE_ENTITY,
             )
             .await
@@ -1738,21 +1684,21 @@ async fn test_endpoint_filter_events() {
 
     let app_id = create_test_app(&client, "app1").await.unwrap().id;
 
-    let ep_empty_events: serde_json::Value = serde_json::json!({
+    let ep_empty_events: serde_json::Value = json!({
         "url": "http://www.example.com",
         "version": 1,
-        "filterTypes": []
+        "filterTypes": [],
     });
 
-    let ep_with_events: serde_json::Value = serde_json::json!({
+    let ep_with_events: serde_json::Value = json!({
         "url": "http://www.example.com",
         "version": 1,
-        "filterTypes": ["et1"]
+        "filterTypes": ["et1"],
     });
 
-    let ep_no_events: serde_json::Value = serde_json::json!({
+    let ep_no_events: serde_json::Value = json!({
         "url": "http://www.example.com",
-        "version": 1
+        "version": 1,
     });
 
     let expected_et = EventTypeNameSet(HashSet::from([EventTypeName("et1".to_owned())]));
@@ -1837,21 +1783,21 @@ async fn test_endpoint_filter_channels() {
     let app_id = create_test_app(&client, "app1").await.unwrap().id;
 
     // Channels must not be empty:
-    let ep_empty_channels: serde_json::Value = serde_json::json!({
+    let ep_empty_channels = json!({
         "url": "http://www.example.com",
         "version": 1,
-        "channels": []
+        "channels": [],
     });
 
-    let ep_with_channels: serde_json::Value = serde_json::json!({
+    let ep_with_channels = json!({
         "url": "http://www.example.com",
         "version": 1,
-        "channels": ["tag1"]
+        "channels": ["tag1"],
     });
 
-    let ep_without_channels: serde_json::Value = serde_json::json!({
+    let ep_without_channels = json!({
         "url": "http://www.example.com",
-        "version": 1
+        "version": 1,
     });
 
     let expected_ec = EventChannelSet(HashSet::from([EventChannel("tag1".to_owned())]));
@@ -2002,14 +1948,12 @@ async fn test_msg_event_types_filter() {
     ] {
         let msg: MessageOut = client
             .post(
-                &format!("api/v1/app/{}/msg/", &app_id),
-                MessageIn {
-                    channels: None,
-                    event_type: event_name,
-                    payload: RawPayload::from_string("{}".to_string()).unwrap(),
-                    uid: None,
-                    payload_retention_period: 5,
-                },
+                &format!("api/v1/app/{app_id}/msg/"),
+                json!({
+                    "eventType": event_name,
+                    "payload": {},
+                    "payloadRetentionPeriod": 5,
+                }),
                 StatusCode::ACCEPTED,
             )
             .await
@@ -2048,17 +1992,20 @@ async fn test_msg_channels_filter() {
         .unwrap();
     }
 
-    for (channels, expected_count) in [(Some(ec.clone()), 2), (None, 1)] {
+    for (channels, expected_count) in [(Some(&ec), 2), (None, 1)] {
+        let mut message_in = json!({
+            "eventType": "et1",
+            "payload": {},
+            "payloadRetentionPeriod": 5,
+        });
+        if let Some(channels) = channels {
+            message_in["channels"] = json!(channels);
+        }
+
         let msg: MessageOut = client
             .post(
                 &format!("api/v1/app/{}/msg/", &app_id),
-                MessageIn {
-                    channels: channels.clone(),
-                    event_type: EventTypeName("et1".to_owned()),
-                    payload: RawPayload::from_string("{}".to_string()).unwrap(),
-                    uid: None,
-                    payload_retention_period: 5,
-                },
+                message_in,
                 StatusCode::ACCEPTED,
             )
             .await
@@ -2071,13 +2018,13 @@ async fn test_msg_channels_filter() {
 
         let msg: MessageOut = client
             .get(
-                &format!("api/v1/app/{}/msg/{}/", &app_id, &msg.id),
+                &format!("api/v1/app/{app_id}/msg/{}/", msg.id),
                 StatusCode::OK,
             )
             .await
             .unwrap();
 
-        assert_eq!(msg.channels, channels);
+        assert_eq!(msg.channels.as_ref(), channels);
     }
 }
 
@@ -2135,7 +2082,9 @@ async fn test_endpoint_headers_manipulation() {
         let _: IgnoredAny = client
             .put(
                 &format!("api/v1/app/{app_id}/endpoint/{}/headers/", endp.id),
-                serde_json::json!({ "headers": { bad_hdr: "123"}}),
+                json!({
+                    "headers": { bad_hdr: "123" },
+                }),
                 StatusCode::UNPROCESSABLE_ENTITY,
             )
             .await
@@ -2272,7 +2221,7 @@ async fn test_endpoint_headers_sending() {
         .await
         .unwrap();
 
-    create_test_message(&client, &app_id, serde_json::json!({"test": "data1"}))
+    create_test_message(&client, &app_id, json!({ "test": "data1" }))
         .await
         .unwrap();
 
@@ -2400,12 +2349,12 @@ async fn test_send_example() {
     let _: IgnoredAny = client
         .post(
             &format!("api/v1/app/{app_id}/endpoint/{endp_id}/send-example/"),
-            serde_json::json!({"eventType": "svix.ping"}),
+            json!({ "eventType": "svix.ping" }),
             StatusCode::OK,
         )
         .await
         .unwrap();
 
     let msg = receiver.data_recv.recv().await.unwrap();
-    assert_eq!(msg, serde_json::json!({"success": true}));
+    assert_eq!(msg, serde_json::json!({ "success": true }));
 }

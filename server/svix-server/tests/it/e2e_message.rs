@@ -5,14 +5,14 @@ use chrono::{Duration, Utc};
 use reqwest::StatusCode;
 use sea_orm::{sea_query::Expr, ColumnTrait, EntityTrait, QueryFilter};
 use serde::de::IgnoredAny;
+use serde_json::json;
 use svix_server::{
-    core::types::{EventTypeName, MessageUid},
     db::models::messagecontent,
     expired_message_cleaner,
     v1::{
         endpoints::{
             attempt::MessageAttemptOut,
-            message::{MessageIn, MessageOut, RawPayload},
+            message::{MessageOut, RawPayload},
         },
         utils::ListResponse,
     },
@@ -40,16 +40,16 @@ async fn test_message_create_read_list() {
     // CREATE
     let message_1: MessageOut = client
         .post(
-            &format!("api/v1/app/{}/msg/", &app_id),
-            message_in(&app_id, serde_json::json!({"test": "value"})).unwrap(),
+            &format!("api/v1/app/{app_id}/msg/"),
+            message_in(&app_id, json!({ "test": "value" })).unwrap(),
             StatusCode::ACCEPTED,
         )
         .await
         .unwrap();
     let message_2: MessageOut = client
         .post(
-            &format!("api/v1/app/{}/msg/", &app_id),
-            message_in(&app_id, serde_json::json!({"test": "value2"})).unwrap(),
+            &format!("api/v1/app/{app_id}/msg/"),
+            message_in(&app_id, json!({ "test": "value2" })).unwrap(),
             StatusCode::ACCEPTED,
         )
         .await
@@ -57,7 +57,7 @@ async fn test_message_create_read_list() {
     let message_3 = create_test_msg_with(
         &client,
         &app_id,
-        serde_json::json!({"test": "data3"}),
+        json!({ "test": "data3" }),
         "balloon.popped",
         ["news"],
     )
@@ -66,7 +66,7 @@ async fn test_message_create_read_list() {
     assert_eq!(
         client
             .get::<MessageOut>(
-                &format!("api/v1/app/{}/msg/{}/", &app_id, &message_1.id),
+                &format!("api/v1/app/{app_id}/msg/{}/", message_1.id),
                 StatusCode::OK
             )
             .await
@@ -76,7 +76,7 @@ async fn test_message_create_read_list() {
     assert_eq!(
         client
             .get::<MessageOut>(
-                &format!("api/v1/app/{}/msg/{}/", &app_id, &message_2.id),
+                &format!("api/v1/app/{app_id}/msg/{}/", message_2.id),
                 StatusCode::OK
             )
             .await
@@ -85,7 +85,7 @@ async fn test_message_create_read_list() {
     );
 
     let list: ListResponse<MessageOut> = client
-        .get(&format!("api/v1/app/{}/msg/", &app_id), StatusCode::OK)
+        .get(&format!("api/v1/app/{app_id}/msg/"), StatusCode::OK)
         .await
         .unwrap();
     assert_eq!(list.data.len(), 3);
@@ -95,7 +95,7 @@ async fn test_message_create_read_list() {
 
     let list: ListResponse<MessageOut> = client
         .get(
-            &format!("api/v1/app/{}/msg/?channel=news", &app_id),
+            &format!("api/v1/app/{app_id}/msg/?channel=news"),
             StatusCode::OK,
         )
         .await
@@ -118,11 +118,11 @@ async fn test_message_create_read_list_with_content() {
         .unwrap()
         .id;
 
-    let msg_payload = serde_json::json!({"test": "value"});
+    let msg_payload = json!({ "test": "value" });
 
     let msg_1_w_payload: MessageOut = client
         .post(
-            &format!("api/v1/app/{}/msg/", &app_id),
+            &format!("api/v1/app/{app_id}/msg/"),
             message_in(&app_id, msg_payload.clone()).unwrap(),
             StatusCode::ACCEPTED,
         )
@@ -136,7 +136,7 @@ async fn test_message_create_read_list_with_content() {
 
     let msg_2_wo_payload: MessageOut = client
         .post(
-            &format!("api/v1/app/{}/msg/?with_content=false", &app_id),
+            &format!("api/v1/app/{app_id}/msg/?with_content=false"),
             message_in(&app_id, msg_payload.clone()).unwrap(),
             StatusCode::ACCEPTED,
         )
@@ -158,7 +158,7 @@ async fn test_message_create_read_list_with_content() {
         assert_eq!(
             client
                 .get::<MessageOut>(
-                    &format!("api/v1/app/{}/msg/{}/", &app_id, &m.id),
+                    &format!("api/v1/app/{app_id}/msg/{}/", m.id),
                     StatusCode::OK
                 )
                 .await
@@ -171,7 +171,7 @@ async fn test_message_create_read_list_with_content() {
         assert_eq!(
             client
                 .get::<MessageOut>(
-                    &format!("api/v1/app/{}/msg/{}/?with_content=false", &app_id, &m.id),
+                    &format!("api/v1/app/{app_id}/msg/{}/?with_content=false", m.id),
                     StatusCode::OK
                 )
                 .await
@@ -181,7 +181,7 @@ async fn test_message_create_read_list_with_content() {
     }
 
     let list: ListResponse<MessageOut> = client
-        .get(&format!("api/v1/app/{}/msg/", &app_id), StatusCode::OK)
+        .get(&format!("api/v1/app/{app_id}/msg/"), StatusCode::OK)
         .await
         .unwrap();
     assert_eq!(list.data.len(), 2);
@@ -190,7 +190,7 @@ async fn test_message_create_read_list_with_content() {
 
     let list: ListResponse<MessageOut> = client
         .get(
-            &format!("api/v1/app/{}/msg/?with_content=false", &app_id),
+            &format!("api/v1/app/{app_id}/msg/?with_content=false"),
             StatusCode::OK,
         )
         .await
@@ -216,11 +216,11 @@ async fn test_failed_message_gets_recorded() {
         .unwrap()
         .id;
 
-    let msg_payload = serde_json::json!({"test": "value"});
+    let msg_payload = json!({ "test": "value" });
 
     let msg_res: MessageOut = client
         .post(
-            &format!("api/v1/app/{}/msg/", &app_id),
+            &format!("api/v1/app/{app_id}/msg/"),
             message_in(&app_id, msg_payload.clone()).unwrap(),
             StatusCode::ACCEPTED,
         )
@@ -274,11 +274,11 @@ async fn test_multiple_endpoints() {
         .unwrap()
         .id;
 
-    let msg_payload = serde_json::json!({"test": "value1"});
+    let msg_payload = json!({ "test": "value1" });
 
     let msg_res: MessageOut = client
         .post(
-            &format!("api/v1/app/{}/msg/", &app_id),
+            &format!("api/v1/app/{app_id}/msg/"),
             message_in(&app_id, msg_payload.clone()).unwrap(),
             StatusCode::ACCEPTED,
         )
@@ -335,11 +335,11 @@ async fn test_failed_message_gets_requeued() {
         .unwrap()
         .id;
 
-    let msg_payload = serde_json::json!({"test": "value"});
+    let msg_payload = json!({ "test": "value" });
 
     let msg_res: MessageOut = client
         .post(
-            &format!("api/v1/app/{}/msg/", &app_id),
+            &format!("api/v1/app/{app_id}/msg/"),
             message_in(&app_id, msg_payload.clone()).unwrap(),
             StatusCode::ACCEPTED,
         )
@@ -387,8 +387,8 @@ async fn test_payload_retention_period() {
 
     let msg: MessageOut = client
         .post(
-            &format!("api/v1/app/{}/msg/", &app_id),
-            message_in(&app_id, serde_json::json!({"test": "value"})).unwrap(),
+            &format!("api/v1/app/{app_id}/msg/"),
+            message_in(&app_id, json!({ "test": "value" })).unwrap(),
             StatusCode::ACCEPTED,
         )
         .await
@@ -429,10 +429,10 @@ async fn test_expunge_message_payload() {
 
     let app_id = create_test_app(&client, "testApp").await.unwrap().id;
 
-    let payload = serde_json::json!({"sensitive": "data"});
+    let payload = json!({ "sensitive": "data" });
     let msg: MessageOut = client
         .post(
-            &format!("api/v1/app/{}/msg/", &app_id),
+            &format!("api/v1/app/{app_id}/msg/"),
             message_in(&app_id, payload.clone()).unwrap(),
             StatusCode::ACCEPTED,
         )
@@ -446,7 +446,7 @@ async fn test_expunge_message_payload() {
 
     let msg = client
         .get::<MessageOut>(
-            &format!("api/v1/app/{}/msg/{}/", &app_id, &msg.id),
+            &format!("api/v1/app/{app_id}/msg/{}/", msg.id),
             StatusCode::OK,
         )
         .await
@@ -458,7 +458,7 @@ async fn test_expunge_message_payload() {
 
     client
         .delete(
-            &format!("api/v1/app/{}/msg/{}/content/", &app_id, &msg.id),
+            &format!("api/v1/app/{app_id}/msg/{}/content/", msg.id),
             StatusCode::NO_CONTENT,
         )
         .await
@@ -466,7 +466,7 @@ async fn test_expunge_message_payload() {
 
     let msg = client
         .get::<MessageOut>(
-            &format!("api/v1/app/{}/msg/{}/", &app_id, &msg.id),
+            &format!("api/v1/app/{app_id}/msg/{}/", msg.id),
             StatusCode::OK,
         )
         .await
@@ -489,17 +489,16 @@ async fn test_message_conflict() {
         .unwrap()
         .id;
 
-    let msg_in = MessageIn {
-        event_type: EventTypeName("user.signup".to_owned()),
-        payload: RawPayload::from_string(serde_json::json!({"test": "value"}).to_string()).unwrap(),
-        payload_retention_period: 5,
-        channels: None,
-        uid: Some(MessageUid("test1".to_owned())),
-    };
+    let msg_in = json!({
+        "eventType": "user.signup",
+        "payload": { "test": "value" },
+        "payloadRetentionPeriod": 5,
+        "eventId": "test1",
+    });
 
     let _: MessageOut = client
         .post(
-            &format!("api/v1/app/{}/msg/", &app_id),
+            &format!("api/v1/app/{app_id}/msg/"),
             msg_in.clone(),
             StatusCode::ACCEPTED,
         )
@@ -508,7 +507,7 @@ async fn test_message_conflict() {
 
     let _: IgnoredAny = client
         .post(
-            &format!("api/v1/app/{}/msg/", &app_id),
+            &format!("api/v1/app/{app_id}/msg/"),
             msg_in,
             StatusCode::CONFLICT,
         )
@@ -521,11 +520,11 @@ async fn test_message_validation() {
     let (client, _jh) = start_svix_server().await;
 
     let app_id = create_test_app(&client, "testApp").await.unwrap().id;
-    let payload = serde_json::json!({"large_payload": "payload-".repeat(1_000_000)});
+    let payload = json!({ "large_payload": "payload-".repeat(1_000_000) });
 
     client
         .post::<_, IgnoredAny>(
-            &format!("api/v1/app/{}/msg/", &app_id),
+            &format!("api/v1/app/{app_id}/msg/"),
             message_in(&app_id, payload).unwrap(),
             StatusCode::PAYLOAD_TOO_LARGE,
         )

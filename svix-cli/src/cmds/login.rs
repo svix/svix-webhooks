@@ -100,11 +100,11 @@ pub async fn dashboard_login() -> Result<String> {
     let url = format!("{DASHBOARD_URL}/cli/login?sessionId={session_id}&code={code}");
 
     println!("\nPlease approve the login in your browser, then return here.");
-    println!("Verification code: \x1b[32m{}\x1b[0m\n", code);
+    println!("Verification code: \x1b[32m{code}\x1b[0m\n");
 
     if let Err(e) = open::that(&url) {
-        eprintln!("Failed to open browser: {}", e);
-        println!("Please manually open this URL in your browser: {}", url);
+        eprintln!("Failed to open browser: {e}");
+        println!("Please manually open this URL in your browser: {url}");
     }
 
     println!("Waiting for approval...");
