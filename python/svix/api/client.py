@@ -1,5 +1,5 @@
 import ssl
-from typing import Dict, List, Union
+from typing import Dict, List, Union, Optional
 
 import attr
 
@@ -60,6 +60,7 @@ class AuthenticatedClient(Client):
     token: str
     prefix: str = "Bearer"
     auth_header_name: str = "Authorization"
+    proxy: Optional[str] = attr.ib(default=None)
 
     def get_headers(self) -> Dict[str, str]:
         """Get headers to be used in authenticated endpoints"""
