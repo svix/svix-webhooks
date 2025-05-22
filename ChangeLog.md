@@ -1,7 +1,11 @@
 # Changelog
 
 ## Unreleased
+
+## Version 1.66.0
 * Libs/JavaScript: Fix response processing code for endpoints with an optional datetime field in the response body
+* Libs/PHP: Update minimum version of PHP to 8.0
+* Server: Support sending raw (pre-formatted) JSON payloads
 
 ## Version 1.65.0
 * Libs/Python: Bring back the (deprecated) sync `dashboard_access` method, which was accidentally
