@@ -25,6 +25,7 @@ mod message_poller;
 mod operational_webhook;
 mod operational_webhook_endpoint;
 mod statistics;
+mod svix_optional;
 
 #[cfg(feature = "svix_beta")]
 pub use self::message::{V1MessageEventsParams, V1MessageEventsSubscriptionParams};
