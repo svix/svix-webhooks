@@ -116,6 +116,8 @@ pub mod operational_webhook_endpoint_secret_in;
 pub mod operational_webhook_endpoint_secret_out;
 pub mod operational_webhook_endpoint_update;
 pub mod ordering;
+pub mod panda_doc_config;
+pub mod panda_doc_config_out;
 pub mod polling_endpoint_consumer_seek_in;
 pub mod polling_endpoint_consumer_seek_out;
 pub mod polling_endpoint_message_out;
@@ -262,6 +264,8 @@ pub use self::{
     operational_webhook_endpoint_secret_out::OperationalWebhookEndpointSecretOut,
     operational_webhook_endpoint_update::OperationalWebhookEndpointUpdate,
     ordering::Ordering,
+    panda_doc_config::PandaDocConfig,
+    panda_doc_config_out::PandaDocConfigOut,
     polling_endpoint_consumer_seek_in::PollingEndpointConsumerSeekIn,
     polling_endpoint_consumer_seek_out::PollingEndpointConsumerSeekOut,
     polling_endpoint_message_out::PollingEndpointMessageOut,

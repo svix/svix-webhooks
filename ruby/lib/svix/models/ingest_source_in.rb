@@ -7,6 +7,7 @@ require_relative "./cron_config"
 require_relative "./docusign_config"
 require_relative "./github_config"
 require_relative "./hubspot_config"
+require_relative "./panda_doc_config"
 require_relative "./segment_config"
 require_relative "./shopify_config"
 require_relative "./slack_config"
@@ -68,6 +69,9 @@ module Svix
     class Nash < SvixConfig
     end
 
+    class PandaDoc < PandaDocConfig
+    end
+
     class Pleo < SvixConfig
     end
 
@@ -127,6 +131,7 @@ module Svix
       IngestSourceInConfig::IncidentIo => "incident-io",
       IngestSourceInConfig::Lithic => "lithic",
       IngestSourceInConfig::Nash => "nash",
+      IngestSourceInConfig::PandaDoc => "panda-doc",
       IngestSourceInConfig::Pleo => "pleo",
       IngestSourceInConfig::Replicate => "replicate",
       IngestSourceInConfig::Resend => "resend",

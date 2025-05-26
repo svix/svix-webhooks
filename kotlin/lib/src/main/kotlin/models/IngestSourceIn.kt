@@ -93,6 +93,12 @@ sealed class IngestSourceInConfig {
         override fun toJsonElement() = Json.encodeToJsonElement(SvixConfig.serializer(), nash)
     }
 
+    @VariantName("panda-doc")
+    data class PandaDoc(val pandaDoc: PandaDocConfig) : IngestSourceInConfig() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement(PandaDocConfig.serializer(), pandaDoc)
+    }
+
     @VariantName("pleo")
     data class Pleo(val pleo: SvixConfig) : IngestSourceInConfig() {
         override fun toJsonElement() = Json.encodeToJsonElement(SvixConfig.serializer(), pleo)
@@ -204,6 +210,10 @@ sealed class IngestSourceInConfig {
                 "nash" to
                     { config ->
                         Nash(Json.decodeFromJsonElement(SvixConfig.serializer(), config))
+                    },
+                "panda-doc" to
+                    { config ->
+                        PandaDoc(Json.decodeFromJsonElement(PandaDocConfig.serializer(), config))
                     },
                 "pleo" to
                     { config ->

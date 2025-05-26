@@ -14,6 +14,7 @@ import (
 //   - "docusign": Use DocusignConfigOut
 //   - "github": Use GithubConfigOut
 //   - "hubspot": Use HubspotConfigOut
+//   - "panda-doc": Use PandaDocConfigOut
 //   - "segment": Use SegmentConfigOut
 //   - "shopify": Use ShopifyConfigOut
 //   - "slack": Use SlackConfigOut
@@ -47,6 +48,7 @@ const (
 	IngestSourceOutTypeIncidentIo     IngestSourceOutType = "incident-io"
 	IngestSourceOutTypeLithic         IngestSourceOutType = "lithic"
 	IngestSourceOutTypeNash           IngestSourceOutType = "nash"
+	IngestSourceOutTypePandaDoc       IngestSourceOutType = "panda-doc"
 	IngestSourceOutTypePleo           IngestSourceOutType = "pleo"
 	IngestSourceOutTypeReplicate      IngestSourceOutType = "replicate"
 	IngestSourceOutTypeResend         IngestSourceOutType = "resend"
@@ -72,6 +74,7 @@ func (SvixConfigOut) isIngestSourceOutConfig()      {}
 func (DocusignConfigOut) isIngestSourceOutConfig()  {}
 func (GithubConfigOut) isIngestSourceOutConfig()    {}
 func (HubspotConfigOut) isIngestSourceOutConfig()   {}
+func (PandaDocConfigOut) isIngestSourceOutConfig()  {}
 func (SegmentConfigOut) isIngestSourceOutConfig()   {}
 func (ShopifyConfigOut) isIngestSourceOutConfig()   {}
 func (SlackConfigOut) isIngestSourceOutConfig()     {}
@@ -110,6 +113,10 @@ func (i *IngestSourceOut) UnmarshalJSON(data []byte) error {
 		i.Config = c
 	case "hubspot":
 		var c HubspotConfigOut
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
+	case "panda-doc":
+		var c PandaDocConfigOut
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "segment":
@@ -169,6 +176,7 @@ var IngestSourceOutTypeFromString = map[string]IngestSourceOutType{
 	"incident-io":     IngestSourceOutTypeIncidentIo,
 	"lithic":          IngestSourceOutTypeLithic,
 	"nash":            IngestSourceOutTypeNash,
+	"panda-doc":       IngestSourceOutTypePandaDoc,
 	"pleo":            IngestSourceOutTypePleo,
 	"replicate":       IngestSourceOutTypeReplicate,
 	"resend":          IngestSourceOutTypeResend,

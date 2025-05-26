@@ -5,6 +5,7 @@ import { CronConfig, CronConfigSerializer } from "./cronConfig";
 import { DocusignConfig, DocusignConfigSerializer } from "./docusignConfig";
 import { GithubConfig, GithubConfigSerializer } from "./githubConfig";
 import { HubspotConfig, HubspotConfigSerializer } from "./hubspotConfig";
+import { PandaDocConfig, PandaDocConfigSerializer } from "./pandaDocConfig";
 import { SegmentConfig, SegmentConfigSerializer } from "./segmentConfig";
 import { ShopifyConfig, ShopifyConfigSerializer } from "./shopifyConfig";
 import { SlackConfig, SlackConfigSerializer } from "./slackConfig";
@@ -79,6 +80,11 @@ interface IngestSourceInLithic {
 interface IngestSourceInNash {
   type: "nash";
   config: SvixConfig;
+}
+
+interface IngestSourceInPandaDoc {
+  type: "panda-doc";
+  config: PandaDocConfig;
 }
 
 interface IngestSourceInPleo {
@@ -156,6 +162,7 @@ export type IngestSourceIn = _IngestSourceInFields &
     | IngestSourceInIncidentIo
     | IngestSourceInLithic
     | IngestSourceInNash
+    | IngestSourceInPandaDoc
     | IngestSourceInPleo
     | IngestSourceInReplicate
     | IngestSourceInResend
@@ -214,6 +221,9 @@ export const IngestSourceInSerializer = {
         break;
       case "nash":
         config = SvixConfigSerializer._fromJsonObject(object["config"]);
+        break;
+      case "panda-doc":
+        config = PandaDocConfigSerializer._fromJsonObject(object["config"]);
         break;
       case "pleo":
         config = SvixConfigSerializer._fromJsonObject(object["config"]);
@@ -314,6 +324,10 @@ export const IngestSourceInSerializer = {
 
       case "nash":
         config = SvixConfigSerializer._toJsonObject(self.config);
+        break;
+
+      case "panda-doc":
+        config = PandaDocConfigSerializer._toJsonObject(self.config);
         break;
 
       case "pleo":

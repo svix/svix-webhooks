@@ -10,6 +10,7 @@ from .cron_config import CronConfig
 from .docusign_config import DocusignConfig
 from .github_config import GithubConfig
 from .hubspot_config import HubspotConfig
+from .panda_doc_config import PandaDocConfig
 from .segment_config import SegmentConfig
 from .shopify_config import ShopifyConfig
 from .slack_config import SlackConfig
@@ -38,6 +39,7 @@ class IngestSourceIn(BaseModel):
         t.Literal["incident-io"],
         t.Literal["lithic"],
         t.Literal["nash"],
+        t.Literal["panda-doc"],
         t.Literal["pleo"],
         t.Literal["replicate"],
         t.Literal["resend"],
@@ -59,6 +61,7 @@ class IngestSourceIn(BaseModel):
         DocusignConfig,
         GithubConfig,
         HubspotConfig,
+        PandaDocConfig,
         SegmentConfig,
         ShopifyConfig,
         SlackConfig,
@@ -98,6 +101,8 @@ class IngestSourceIn(BaseModel):
             output.config = SvixConfig.model_validate(data.get("config", {}))
         elif output.type == "nash":
             output.config = SvixConfig.model_validate(data.get("config", {}))
+        elif output.type == "panda-doc":
+            output.config = PandaDocConfig.model_validate(data.get("config", {}))
         elif output.type == "pleo":
             output.config = SvixConfig.model_validate(data.get("config", {}))
         elif output.type == "replicate":

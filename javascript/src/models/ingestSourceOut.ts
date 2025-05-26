@@ -5,6 +5,7 @@ import { CronConfig, CronConfigSerializer } from "./cronConfig";
 import { DocusignConfigOut, DocusignConfigOutSerializer } from "./docusignConfigOut";
 import { GithubConfigOut, GithubConfigOutSerializer } from "./githubConfigOut";
 import { HubspotConfigOut, HubspotConfigOutSerializer } from "./hubspotConfigOut";
+import { PandaDocConfigOut, PandaDocConfigOutSerializer } from "./pandaDocConfigOut";
 import { SegmentConfigOut, SegmentConfigOutSerializer } from "./segmentConfigOut";
 import { ShopifyConfigOut, ShopifyConfigOutSerializer } from "./shopifyConfigOut";
 import { SlackConfigOut, SlackConfigOutSerializer } from "./slackConfigOut";
@@ -86,6 +87,11 @@ interface IngestSourceOutNash {
   config: SvixConfigOut;
 }
 
+interface IngestSourceOutPandaDoc {
+  type: "panda-doc";
+  config: PandaDocConfigOut;
+}
+
 interface IngestSourceOutPleo {
   type: "pleo";
   config: SvixConfigOut;
@@ -161,6 +167,7 @@ export type IngestSourceOut = _IngestSourceOutFields &
     | IngestSourceOutIncidentIo
     | IngestSourceOutLithic
     | IngestSourceOutNash
+    | IngestSourceOutPandaDoc
     | IngestSourceOutPleo
     | IngestSourceOutReplicate
     | IngestSourceOutResend
@@ -219,6 +226,9 @@ export const IngestSourceOutSerializer = {
         break;
       case "nash":
         config = SvixConfigOutSerializer._fromJsonObject(object["config"]);
+        break;
+      case "panda-doc":
+        config = PandaDocConfigOutSerializer._fromJsonObject(object["config"]);
         break;
       case "pleo":
         config = SvixConfigOutSerializer._fromJsonObject(object["config"]);
@@ -323,6 +333,10 @@ export const IngestSourceOutSerializer = {
 
       case "nash":
         config = SvixConfigOutSerializer._toJsonObject(self.config);
+        break;
+
+      case "panda-doc":
+        config = PandaDocConfigOutSerializer._toJsonObject(self.config);
         break;
 
       case "pleo":

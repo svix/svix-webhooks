@@ -38,8 +38,8 @@ func (managementEnvironmentSettings *ManagementEnvironmentSettings) Get(
 func (managementEnvironmentSettings *ManagementEnvironmentSettings) Update(
 	ctx context.Context,
 	settingsInternalIn models.SettingsInternalIn,
-) (*models.SettingsInternalOut, error) {
-	return internal.ExecuteRequest[models.SettingsInternalIn, models.SettingsInternalOut](
+) (*models.SettingsInternalUpdateOut, error) {
+	return internal.ExecuteRequest[models.SettingsInternalIn, models.SettingsInternalUpdateOut](
 		ctx,
 		managementEnvironmentSettings.client,
 		"PUT",

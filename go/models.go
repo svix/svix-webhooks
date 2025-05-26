@@ -119,6 +119,8 @@ type (
 	OperationalWebhookEndpointSecretOut       = models.OperationalWebhookEndpointSecretOut
 	OperationalWebhookEndpointUpdate          = models.OperationalWebhookEndpointUpdate
 	Ordering                                  = models.Ordering
+	PandaDocConfig                            = models.PandaDocConfig
+	PandaDocConfigOut                         = models.PandaDocConfigOut
 	PollingEndpointConsumerSeekIn             = models.PollingEndpointConsumerSeekIn
 	PollingEndpointConsumerSeekOut            = models.PollingEndpointConsumerSeekOut
 	PollingEndpointMessageOut                 = models.PollingEndpointMessageOut

@@ -119,6 +119,8 @@ from .operational_webhook_endpoint_secret_in import OperationalWebhookEndpointSe
 from .operational_webhook_endpoint_secret_out import OperationalWebhookEndpointSecretOut
 from .operational_webhook_endpoint_update import OperationalWebhookEndpointUpdate
 from .ordering import Ordering
+from .panda_doc_config import PandaDocConfig
+from .panda_doc_config_out import PandaDocConfigOut
 from .polling_endpoint_consumer_seek_in import PollingEndpointConsumerSeekIn
 from .polling_endpoint_consumer_seek_out import PollingEndpointConsumerSeekOut
 from .polling_endpoint_message_out import PollingEndpointMessageOut
@@ -259,6 +261,8 @@ __all__ = [
     "OperationalWebhookEndpointSecretOut",
     "OperationalWebhookEndpointUpdate",
     "Ordering",
+    "PandaDocConfig",
+    "PandaDocConfigOut",
     "PollingEndpointConsumerSeekIn",
     "PollingEndpointConsumerSeekOut",
     "PollingEndpointMessageOut",
