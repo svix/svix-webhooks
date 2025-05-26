@@ -45,6 +45,8 @@ class SvixOptions:
     """
     timeout: float = 15.0
 
+    proxy: t.Optional[str] = None
+
 
 class ClientBase:
     _client: AuthenticatedClient
@@ -78,6 +80,7 @@ class ClientBase:
             timeout=options.timeout,
             follow_redirects=False,
             raise_on_unexpected_status=True,
+            proxy=options.proxy,
         )
         self._client = client
 
