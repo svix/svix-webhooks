@@ -4,10 +4,10 @@ use serde::{Deserialize, Serialize};
 use super::{
     adobe_sign_config_out::AdobeSignConfigOut, cron_config::CronConfig,
     docusign_config_out::DocusignConfigOut, github_config_out::GithubConfigOut,
-    hubspot_config_out::HubspotConfigOut, segment_config_out::SegmentConfigOut,
-    shopify_config_out::ShopifyConfigOut, slack_config_out::SlackConfigOut,
-    stripe_config_out::StripeConfigOut, svix_config_out::SvixConfigOut,
-    zoom_config_out::ZoomConfigOut,
+    hubspot_config_out::HubspotConfigOut, panda_doc_config_out::PandaDocConfigOut,
+    segment_config_out::SegmentConfigOut, shopify_config_out::ShopifyConfigOut,
+    slack_config_out::SlackConfigOut, stripe_config_out::StripeConfigOut,
+    svix_config_out::SvixConfigOut, zoom_config_out::ZoomConfigOut,
 };
 
 #[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
@@ -64,6 +64,8 @@ pub enum IngestSourceOutConfig {
     Lithic(SvixConfigOut),
     #[serde(rename = "nash")]
     Nash(SvixConfigOut),
+    #[serde(rename = "panda-doc")]
+    PandaDoc(PandaDocConfigOut),
     #[serde(rename = "pleo")]
     Pleo(SvixConfigOut),
     #[serde(rename = "replicate")]

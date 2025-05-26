@@ -1,7 +1,7 @@
 // Package svix this file is @generated DO NOT EDIT
 package models
 
-type SettingsInternalOut struct {
+type SettingsInternalUpdateOut struct {
 	ColorPaletteDark            *CustomColorPalette    `json:"colorPaletteDark,omitempty"`
 	ColorPaletteLight           *CustomColorPalette    `json:"colorPaletteLight,omitempty"`
 	CustomBaseFontSize          *int64                 `json:"customBaseFontSize,omitempty"`
@@ -27,7 +27,6 @@ type SettingsInternalOut struct {
 	RequireEndpointChannel      *bool                  `json:"requireEndpointChannel,omitempty"`
 	RequireEndpointFilterTypes  *bool                  `json:"requireEndpointFilterTypes,omitempty"`
 	RetryPolicy                 []int32                `json:"retryPolicy,omitempty"`
-	ShowSvixBrandFooter         *bool                  `json:"showSvixBrandFooter,omitempty"`
 	ShowUseSvixPlay             *bool                  `json:"showUseSvixPlay,omitempty"`
 	WhitelabelHeaders           *bool                  `json:"whitelabelHeaders,omitempty"`
 	WipeSuccessfulPayload       *bool                  `json:"wipeSuccessfulPayload,omitempty"`

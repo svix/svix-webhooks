@@ -114,6 +114,8 @@ export { OperationalWebhookEndpointSecretIn } from "./operationalWebhookEndpoint
 export { OperationalWebhookEndpointSecretOut } from "./operationalWebhookEndpointSecretOut";
 export { OperationalWebhookEndpointUpdate } from "./operationalWebhookEndpointUpdate";
 export { Ordering } from "./ordering";
+export { PandaDocConfig } from "./pandaDocConfig";
+export { PandaDocConfigOut } from "./pandaDocConfigOut";
 export { PollingEndpointConsumerSeekIn } from "./pollingEndpointConsumerSeekIn";
 export { PollingEndpointConsumerSeekOut } from "./pollingEndpointConsumerSeekOut";
 export { PollingEndpointMessageOut } from "./pollingEndpointMessageOut";

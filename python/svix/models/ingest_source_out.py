@@ -11,6 +11,7 @@ from .cron_config import CronConfig
 from .docusign_config_out import DocusignConfigOut
 from .github_config_out import GithubConfigOut
 from .hubspot_config_out import HubspotConfigOut
+from .panda_doc_config_out import PandaDocConfigOut
 from .segment_config_out import SegmentConfigOut
 from .shopify_config_out import ShopifyConfigOut
 from .slack_config_out import SlackConfigOut
@@ -48,6 +49,7 @@ class IngestSourceOut(BaseModel):
         t.Literal["incident-io"],
         t.Literal["lithic"],
         t.Literal["nash"],
+        t.Literal["panda-doc"],
         t.Literal["pleo"],
         t.Literal["replicate"],
         t.Literal["resend"],
@@ -69,6 +71,7 @@ class IngestSourceOut(BaseModel):
         DocusignConfigOut,
         GithubConfigOut,
         HubspotConfigOut,
+        PandaDocConfigOut,
         SegmentConfigOut,
         ShopifyConfigOut,
         SlackConfigOut,
@@ -108,6 +111,8 @@ class IngestSourceOut(BaseModel):
             output.config = SvixConfigOut.model_validate(data.get("config", {}))
         elif output.type == "nash":
             output.config = SvixConfigOut.model_validate(data.get("config", {}))
+        elif output.type == "panda-doc":
+            output.config = PandaDocConfigOut.model_validate(data.get("config", {}))
         elif output.type == "pleo":
             output.config = SvixConfigOut.model_validate(data.get("config", {}))
         elif output.type == "replicate":

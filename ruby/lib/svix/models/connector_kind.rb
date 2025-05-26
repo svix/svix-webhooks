@@ -3,12 +3,16 @@
 module Svix
   class ConnectorKind
     CUSTOM = "Custom".freeze
+    CLOSE_CRM = "CloseCRM".freeze
     CUSTOMER_IO = "CustomerIO".freeze
     DISCORD = "Discord".freeze
     HUBSPOT = "Hubspot".freeze
     INNGEST = "Inngest".freeze
+    LOOPS = "Loops".freeze
+    RESEND = "Resend".freeze
     SALESFORCE = "Salesforce".freeze
     SEGMENT = "Segment".freeze
+    SENDGRID = "Sendgrid".freeze
     SLACK = "Slack".freeze
     TEAMS = "Teams".freeze
     TRIGGER_DEV = "TriggerDev".freeze
@@ -18,12 +22,16 @@ module Svix
     def self.all_vars
       @all_vars ||= [
         CUSTOM,
+        CLOSE_CRM,
         CUSTOMER_IO,
         DISCORD,
         HUBSPOT,
         INNGEST,
+        LOOPS,
+        RESEND,
         SALESFORCE,
         SEGMENT,
+        SENDGRID,
         SLACK,
         TEAMS,
         TRIGGER_DEV,

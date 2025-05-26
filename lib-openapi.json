@@ -1001,12 +1001,16 @@
             "ConnectorKind": {
                 "enum": [
                     "Custom",
+                    "CloseCRM",
                     "CustomerIO",
                     "Discord",
                     "Hubspot",
                     "Inngest",
+                    "Loops",
+                    "Resend",
                     "Salesforce",
                     "Segment",
+                    "Sendgrid",
                     "Slack",
                     "Teams",
                     "TriggerDev",
@@ -2878,6 +2882,10 @@
                         "default": false,
                         "type": "boolean"
                     },
+                    "showSvixBrandFooter": {
+                        "default": false,
+                        "type": "boolean"
+                    },
                     "showUseSvixPlay": {
                         "default": true,
                         "type": "boolean"
@@ -4395,6 +4403,24 @@
                     {
                         "properties": {
                             "config": {
+                                "$ref": "#/components/schemas/PandaDocConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "panda-doc"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
                                 "$ref": "#/components/schemas/SvixConfig"
                             },
                             "type": {
@@ -4852,6 +4878,24 @@
                             "type": {
                                 "enum": [
                                     "nash"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/PandaDocConfigOut"
+                            },
+                            "type": {
+                                "enum": [
+                                    "panda-doc"
                                 ],
                                 "type": "string"
                             }
@@ -7292,6 +7336,20 @@
                 ],
                 "type": "object"
             },
+            "PandaDocConfig": {
+                "properties": {
+                    "secret": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "secret"
+                ],
+                "type": "object"
+            },
+            "PandaDocConfigOut": {
+                "type": "object"
+            },
             "PollingEndpointConsumerSeekIn": {
                 "properties": {
                     "after": {
@@ -7787,6 +7845,141 @@
                 "type": "object"
             },
             "SettingsInternalOut": {
+                "properties": {
+                    "colorPaletteDark": {
+                        "$ref": "#/components/schemas/CustomColorPalette",
+                        "nullable": true
+                    },
+                    "colorPaletteLight": {
+                        "$ref": "#/components/schemas/CustomColorPalette",
+                        "nullable": true
+                    },
+                    "customBaseFontSize": {
+                        "format": "int",
+                        "nullable": true,
+                        "type": "integer"
+                    },
+                    "customColor": {
+                        "format": "color",
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "customFontFamily": {
+                        "example": "Open Sans",
+                        "nullable": true,
+                        "pattern": "^[a-zA-Z0-9\\-_ ]+$",
+                        "type": "string"
+                    },
+                    "customFontFamilyUrl": {
+                        "format": "uri",
+                        "maxLength": 65536,
+                        "minLength": 1,
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "customLogoUrl": {
+                        "format": "uri",
+                        "maxLength": 65536,
+                        "minLength": 1,
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "customStringsOverride": {
+                        "$ref": "#/components/schemas/CustomStringsOverride",
+                        "nullable": true
+                    },
+                    "customThemeOverride": {
+                        "$ref": "#/components/schemas/CustomThemeOverride",
+                        "nullable": true
+                    },
+                    "disableEndpointOnFailure": {
+                        "default": true,
+                        "type": "boolean"
+                    },
+                    "displayName": {
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "enableChannels": {
+                        "default": false,
+                        "type": "boolean"
+                    },
+                    "enableEndpointMtlsConfig": {
+                        "default": false,
+                        "type": "boolean"
+                    },
+                    "enableEndpointOauthConfig": {
+                        "default": false,
+                        "type": "boolean"
+                    },
+                    "enableIntegrationManagement": {
+                        "default": false,
+                        "type": "boolean"
+                    },
+                    "enableMessageStream": {
+                        "default": false,
+                        "type": "boolean"
+                    },
+                    "enableMsgAtmptLog": {
+                        "default": false,
+                        "type": "boolean"
+                    },
+                    "enableOtlp": {
+                        "default": false,
+                        "type": "boolean"
+                    },
+                    "enableTransformations": {
+                        "default": false,
+                        "type": "boolean"
+                    },
+                    "enforceHttps": {
+                        "default": true,
+                        "type": "boolean"
+                    },
+                    "eventCatalogPublished": {
+                        "default": false,
+                        "type": "boolean"
+                    },
+                    "readOnly": {
+                        "default": false,
+                        "type": "boolean"
+                    },
+                    "requireEndpointChannel": {
+                        "default": false,
+                        "type": "boolean"
+                    },
+                    "requireEndpointFilterTypes": {
+                        "default": false,
+                        "type": "boolean"
+                    },
+                    "retryPolicy": {
+                        "items": {
+                            "format": "int32",
+                            "type": "integer"
+                        },
+                        "nullable": true,
+                        "type": "array"
+                    },
+                    "showSvixBrandFooter": {
+                        "default": false,
+                        "type": "boolean"
+                    },
+                    "showUseSvixPlay": {
+                        "default": true,
+                        "type": "boolean"
+                    },
+                    "whitelabelHeaders": {
+                        "default": false,
+                        "type": "boolean"
+                    },
+                    "wipeSuccessfulPayload": {
+                        "default": false,
+                        "type": "boolean"
+                    }
+                },
+                "type": "object"
+            },
+            "SettingsInternalUpdateOut": {
                 "properties": {
                     "colorPaletteDark": {
                         "$ref": "#/components/schemas/CustomColorPalette",
@@ -9158,6 +9351,11 @@
                     "maxWaitSecs": {
                         "format": "int32",
                         "type": "integer"
+                    },
+                    "nextRetryAt": {
+                        "format": "date-time",
+                        "nullable": true,
+                        "type": "string"
                     },
                     "status": {
                         "$ref": "#/components/schemas/SinkStatus"
@@ -29834,7 +30032,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/SettingsInternalOut"
+                                    "$ref": "#/components/schemas/SettingsInternalUpdateOut"
                                 }
                             }
                         },
@@ -29924,52 +30122,52 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const settingsInternalOut = await svix.management.environmentSettings.update({\n    retryPolicy: null,\n    customColor: null,\n    customLogoUrl: null,\n    customThemeOverride: null,\n    customStringsOverride: null,\n    customBaseFontSize: null,\n    customFontFamily: \"Open Sans\",\n    customFontFamilyUrl: null,\n    displayName: null,\n    colorPaletteLight: null,\n    colorPaletteDark: null\n});"
+                        "source": "const settingsInternalUpdateOut = await svix.management.environmentSettings.update({\n    retryPolicy: null,\n    customColor: null,\n    customLogoUrl: null,\n    customThemeOverride: null,\n    customStringsOverride: null,\n    customBaseFontSize: null,\n    customFontFamily: \"Open Sans\",\n    customFontFamilyUrl: null,\n    displayName: null,\n    colorPaletteLight: null,\n    colorPaletteDark: null\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const settingsInternalOut = await svix.management.environmentSettings.update({\n    retryPolicy: null,\n    customColor: null,\n    customLogoUrl: null,\n    customThemeOverride: null,\n    customStringsOverride: null,\n    customBaseFontSize: null,\n    customFontFamily: \"Open Sans\",\n    customFontFamilyUrl: null,\n    displayName: null,\n    colorPaletteLight: null,\n    colorPaletteDark: null\n});"
+                        "source": "const settingsInternalUpdateOut = await svix.management.environmentSettings.update({\n    retryPolicy: null,\n    customColor: null,\n    customLogoUrl: null,\n    customThemeOverride: null,\n    customStringsOverride: null,\n    customBaseFontSize: null,\n    customFontFamily: \"Open Sans\",\n    customFontFamilyUrl: null,\n    displayName: null,\n    colorPaletteLight: null,\n    colorPaletteDark: null\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "settings_internal_out = svix.management.environment_settings.update(SettingsInternalIn(\n    retry_policy=None,\n    custom_color=None,\n    custom_logo_url=None,\n    custom_theme_override=None,\n    custom_strings_override=None,\n    custom_base_font_size=None,\n    custom_font_family=\"Open Sans\",\n    custom_font_family_url=None,\n    display_name=None,\n    color_palette_light=None,\n    color_palette_dark=None\n))"
+                        "source": "settings_internal_update_out = svix.management.environment_settings.update(SettingsInternalIn(\n    retry_policy=None,\n    custom_color=None,\n    custom_logo_url=None,\n    custom_theme_override=None,\n    custom_strings_override=None,\n    custom_base_font_size=None,\n    custom_font_family=\"Open Sans\",\n    custom_font_family_url=None,\n    display_name=None,\n    color_palette_light=None,\n    color_palette_dark=None\n))"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "settings_internal_out = await svix.management.environment_settings.update(SettingsInternalIn(\n    retry_policy=None,\n    custom_color=None,\n    custom_logo_url=None,\n    custom_theme_override=None,\n    custom_strings_override=None,\n    custom_base_font_size=None,\n    custom_font_family=\"Open Sans\",\n    custom_font_family_url=None,\n    display_name=None,\n    color_palette_light=None,\n    color_palette_dark=None\n))"
+                        "source": "settings_internal_update_out = await svix.management.environment_settings.update(SettingsInternalIn(\n    retry_policy=None,\n    custom_color=None,\n    custom_logo_url=None,\n    custom_theme_override=None,\n    custom_strings_override=None,\n    custom_base_font_size=None,\n    custom_font_family=\"Open Sans\",\n    custom_font_family_url=None,\n    display_name=None,\n    color_palette_light=None,\n    color_palette_dark=None\n))"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "settingsInternalOut, err := svixClient.Management.EnvironmentSettings.Update(ctx, &SettingsInternalIn{\n    RetryPolicy: nil,\n    CustomColor: nil,\n    CustomLogoUrl: nil,\n    CustomThemeOverride: nil,\n    CustomStringsOverride: nil,\n    CustomBaseFontSize: nil,\n    CustomFontFamily: \"Open Sans\",\n    CustomFontFamilyUrl: nil,\n    DisplayName: nil,\n    ColorPaletteLight: nil,\n    ColorPaletteDark: nil,\n})"
+                        "source": "settingsInternalUpdateOut, err := svixClient.Management.EnvironmentSettings.Update(ctx, &SettingsInternalIn{\n    RetryPolicy: nil,\n    CustomColor: nil,\n    CustomLogoUrl: nil,\n    CustomThemeOverride: nil,\n    CustomStringsOverride: nil,\n    CustomBaseFontSize: nil,\n    CustomFontFamily: \"Open Sans\",\n    CustomFontFamilyUrl: nil,\n    DisplayName: nil,\n    ColorPaletteLight: nil,\n    ColorPaletteDark: nil,\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val settingsInternalOut = svix.management.environmentSettings.update(SettingsInternalIn()\n    .retryPolicy(null)\n    .customColor(null)\n    .customLogoUrl(null)\n    .customThemeOverride(null)\n    .customStringsOverride(null)\n    .customBaseFontSize(null)\n    .customFontFamily(\"Open Sans\")\n    .customFontFamilyUrl(null)\n    .displayName(null)\n    .colorPaletteLight(null)\n    .colorPaletteDark(null)\n)"
+                        "source": "val settingsInternalUpdateOut = svix.management.environmentSettings.update(SettingsInternalIn()\n    .retryPolicy(null)\n    .customColor(null)\n    .customLogoUrl(null)\n    .customThemeOverride(null)\n    .customStringsOverride(null)\n    .customBaseFontSize(null)\n    .customFontFamily(\"Open Sans\")\n    .customFontFamilyUrl(null)\n    .displayName(null)\n    .colorPaletteLight(null)\n    .colorPaletteDark(null)\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "SettingsInternalOut settingsInternalOut = svix.getManagement().getEnvironmentSettings().update(new SettingsInternalIn()\n    .retryPolicy(null)\n    .customColor(null)\n    .customLogoUrl(null)\n    .customThemeOverride(null)\n    .customStringsOverride(null)\n    .customBaseFontSize(null)\n    .customFontFamily(\"Open Sans\")\n    .customFontFamilyUrl(null)\n    .displayName(null)\n    .colorPaletteLight(null)\n    .colorPaletteDark(null)\n);"
+                        "source": "SettingsInternalUpdateOut settingsInternalUpdateOut = svix.getManagement().getEnvironmentSettings().update(new SettingsInternalIn()\n    .retryPolicy(null)\n    .customColor(null)\n    .customLogoUrl(null)\n    .customThemeOverride(null)\n    .customStringsOverride(null)\n    .customBaseFontSize(null)\n    .customFontFamily(\"Open Sans\")\n    .customFontFamilyUrl(null)\n    .displayName(null)\n    .colorPaletteLight(null)\n    .colorPaletteDark(null)\n);"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "settings_internal_out = svix.management.environment_settings.update(Svix::SettingsInternalIn.new({\n    \"retry_policy\": nil,\n    \"custom_color\": nil,\n    \"custom_logo_url\": nil,\n    \"custom_theme_override\": nil,\n    \"custom_strings_override\": nil,\n    \"custom_base_font_size\": nil,\n    \"custom_font_family\": \"Open Sans\",\n    \"custom_font_family_url\": nil,\n    \"display_name\": nil,\n    \"color_palette_light\": nil,\n    \"color_palette_dark\": nil\n}))"
+                        "source": "settings_internal_update_out = svix.management.environment_settings.update(Svix::SettingsInternalIn.new({\n    \"retry_policy\": nil,\n    \"custom_color\": nil,\n    \"custom_logo_url\": nil,\n    \"custom_theme_override\": nil,\n    \"custom_strings_override\": nil,\n    \"custom_base_font_size\": nil,\n    \"custom_font_family\": \"Open Sans\",\n    \"custom_font_family_url\": nil,\n    \"display_name\": nil,\n    \"color_palette_light\": nil,\n    \"color_palette_dark\": nil\n}))"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let settings_internal_out = svix.management().environment_settings().update(SettingsInternalIn {\n    retry_policy: None,\n    custom_color: None,\n    custom_logo_url: None,\n    custom_theme_override: None,\n    custom_strings_override: None,\n    custom_base_font_size: None,\n    custom_font_family: Some(\"Open Sans\".to_string()),\n    custom_font_family_url: None,\n    display_name: None,\n    color_palette_light: None,\n    color_palette_dark: None,\n}).await?;"
+                        "source": "let settings_internal_update_out = svix.management().environment_settings().update(SettingsInternalIn {\n    retry_policy: None,\n    custom_color: None,\n    custom_logo_url: None,\n    custom_theme_override: None,\n    custom_strings_override: None,\n    custom_base_font_size: None,\n    custom_font_family: Some(\"Open Sans\".to_string()),\n    custom_font_family_url: None,\n    display_name: None,\n    color_palette_light: None,\n    color_palette_dark: None,\n}).await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var settingsInternalOut = await svix.Management.EnvironmentSettings.UpdateAsync(new SettingsInternalIn{\n    retryPolicy: null,\n    customColor: null,\n    customLogoUrl: null,\n    customThemeOverride: null,\n    customStringsOverride: null,\n    customBaseFontSize: null,\n    customFontFamily: \"Open Sans\",\n    customFontFamilyUrl: null,\n    displayName: null,\n    colorPaletteLight: null,\n    colorPaletteDark: null\n});"
+                        "source": "var settingsInternalUpdateOut = await svix.Management.EnvironmentSettings.UpdateAsync(new SettingsInternalIn{\n    retryPolicy: null,\n    customColor: null,\n    customLogoUrl: null,\n    customThemeOverride: null,\n    customStringsOverride: null,\n    customBaseFontSize: null,\n    customFontFamily: \"Open Sans\",\n    customFontFamilyUrl: null,\n    displayName: null,\n    colorPaletteLight: null,\n    colorPaletteDark: null\n});"
                     },
                     {
                         "label": "CLI",
@@ -38265,62 +38463,62 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const ingestSourceOut = await svix.ingest.source.create({\n    name: \"myPeriodicWebhook\",\n    uid: \"unique-identifier\",\n    type: \"cron\",\n    config: {\n        payload: JSON.stringify({ key: \"value\" }),\n        schedule: \"0 0 0 * *\",\n    },\n});"
+                        "source": "const ingestSourceOut = await svix.ingest.source.create({\n    name: \"myGithubWebhook\",\n    uid: \"unique-identifier\",\n    type: \"github\",\n    config: {\n        secret: \"SECRET\"\n    },\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const ingestSourceOut = await svix.ingest.source.create({\n    name: \"myPeriodicWebhook\",\n    uid: \"unique-identifier\",\n    type: \"cron\",\n    config: {\n        payload: JSON.stringify({ key: \"value\" }),\n        schedule: \"0 0 0 * *\",\n    },\n});"
+                        "source": "const ingestSourceOut = await svix.ingest.source.create({\n    name: \"myGithubWebhook\",\n    uid: \"unique-identifier\",\n    type: \"github\",\n    config: {\n        secret: \"SECRET\"\n    },\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "ingest_source_out = svix.ingest.source.create(IngestSourceIn(\n    name=\"myPeriodicWebhook\",\n    uid=\"unique-identifier\",\n    type=\"cron\",\n    config=CronConfig(\n        payload='{\"key\":\"value\"}',\n        schedule=\"0 0 0 * *\",\n    ),\n), options=...)"
+                        "source": "ingest_source_out = svix.ingest.source.create(IngestSourceIn(\n    name=\"myGithubWebhook\",\n    uid=\"unique-identifier\",\n    type=\"github\",\n    config=GithubConfig(\n        secret=\"SECRET\"\n    ),\n))"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "ingest_source_out = await svix.ingest.source.create(IngestSourceIn(\n    name=\"myPeriodicWebhook\",\n    uid=\"unique-identifier\",\n    type=\"cron\",\n    config=CronConfig(\n        payload='{\"key\":\"value\"}',\n        schedule=\"0 0 0 * *\",\n    ),\n), options=...)"
+                        "source": "ingest_source_out = await svix.ingest.source.create(IngestSourceIn(\n    name=\"myGithubWebhook\",\n    uid=\"unique-identifier\",\n    type=\"github\",\n    config=GithubConfig(\n        secret=\"SECRET\"\n    ),\n))"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "ingestSourceOut, err := svixClient.Ingest.Source.Create(\n    ctx,\n    &IngestSourceIn{\n        Name: \"myPeriodicWebhook\",\n        Uid: \"unique-identifier\",\n        Type: IngestSourceInTypeCron,\n        Config: CronConfig{\n            Payload:  \"Hello from space\",\n            Schedule: \"0 0 0 * *\",\n        },\n    },\n)"
+                        "source": "ingestSourceOut, err := svixClient.Ingest.Source.Create(\n    ctx,\n    &IngestSourceIn{\n        Name: \"myGithubWebhook\",\n        Uid: \"unique-identifier\",\n        Type: IngestSourceInTypeGithub,\n        Config: GithubConfig{\n            Secret: \"SECRET\",\n        },\n    },\n)"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val ingestSourceOut = svix.ingest.source.create(IngestSourceIn(\n    name = \"myPeriodicWebhook\",\n    uid = \"unique-identifier\",\n    config = IngestSourceInConfig.Cron(CronConfig(\n        payload = \"{\\\"key\\\":\\\"value\\\"}\",\n        schedule = \"0 0 0 * *\",\n    )),\n))"
+                        "source": "val ingestSourceOut = svix.ingest.source.create(IngestSourceIn(\n    name = \"myGithubWebhook\",\n    uid = \"unique-identifier\",\n    config = IngestSourceInConfig.Github(GithubConfig(\n        secret = \"SECRET\"\n    )),\n))"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "IngestSourceOut ingestSourceOut = svix\n    .getIngest()\n    .getSource()\n    .create(new IngestSourceIn()\n        .name(\"myPeriodicWebhooks\")\n        .uid(\"unique-identifier\")\n        .config(new IngestSourceInConfig.Cron(new CronConfig()\n            .payload(\"{\\\"key\\\":\\\"value\\\"}\")\n            .schedule(\"0 0 0 * *\")\n        ))\n    );"
+                        "source": "IngestSourceOut ingestSourceOut = svix\n    .getIngest()\n    .getSource()\n    .create(new IngestSourceIn()\n        .name(\"myGithubWebhook\")\n        .uid(\"unique-identifier\")\n        .config(new IngestSourceInConfig.Github(new GithubConfig()\n        .secret(\"SECRET\")\n        ))\n    );"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "ingest_source_out = svix.ingest.source.create(Svix::IngestSourceIn.new({\n    \"name\": \"myPeriodicWebhook\",\n    \"uid\": \"unique-identifier\"\n    \"config\": Svix::IngestSourceInConfig::Cron.new({\n        \"payload\": '{\"key\":\"value\"}',\n        \"schedule\": \"0 0 0 * *\"\n    })\n}))"
+                        "source": "ingest_source_out = svix.ingest.source.create(Svix::IngestSourceIn.new({\n    \"name\": \"myGithubWebhook\",\n    \"uid\": \"unique-identifier\",\n    \"config\": Svix::IngestSourceInConfig::Github.new({\n        \"secret\": \"SECRET\"\n    })\n}))"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let ingest_source_out = svix.ingest().source().create(\n    IngestSourceIn {\n        name: \"myPeriodicWebhook\".to_owned(),\n        uid: Some(\"unique-identifier\".to_owned()),\n        config: IngestSourceInConfig::Cron(CronConfig {\n            payload: r#\"{\"key\":\"value\"}\"#.to_owned(),\n            schedule: \"0 0 0 * *\".to_owned(),\n            ..Default::default()\n        }),\n        ..Default::default()\n    },\n    None,\n).await?;"
+                        "source": "let ingest_source_out = svix.ingest().source().create(\n    IngestSourceIn {\n        name: \"myGithubWebhook\".to_owned(),\n        uid: Some(\"unique-identifier\".to_owned()),\n        config: IngestSourceInConfig::Github(GithubConfig {\n            secret: \"SECRET\".to_owned(),\n            ..Default::default()\n        }),\n        ..Default::default()\n    },\n    None,\n).await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var ingestSourceOut = await svix.Ingest.Source.CreateAsync(\n    new IngestSourceIn{\n        Name = \"myPeriodicWebhook\",\n        Uid = \"unique-identifier\",\n        Config = IngestSourceInConfig.Cron(new CronConfig {\n            Payload = \"{\\\"key\\\":\\\"value\\\"}\",\n            Schedule = \"0 0 0 * *\",\n        }),\n    }\n);"
+                        "source": "var ingestSourceOut = await svix.Ingest.Source.CreateAsync(\n    new IngestSourceIn{\n        Name = \"myGithubWebhook\",\n        Uid = \"unique-identifier\",\n        Config = IngestSourceInConfig.Github(new GithubConfig {\n            Secret = \"SECRET\",\n        }),\n    }\n);"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix ingest source create '{\n    \"name\": \"myPeriodicWebhook\",\n    \"uid\": \"unique-identifier\",\n    \"type\": \"cron\",\n    \"config\": {\n        \"payload\": \"{\\\"key\\\":\\\"value\\\"\\\",\n        \"schedule\": \"0 0 0 * *\"\n    }\n}'"
+                        "source": "svix ingest source create '{\n    \"name\": \"myGithubWebhook\",\n    \"uid\": \"unique-identifier\",\n    \"type\": \"github\",\n    \"config\": {\n        \"secret\": \"SECRET\"\n    }\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n    'https://api.eu.svix.com/ingest/api/v1/source' \\\n    -H 'Authorization: Bearer AUTH_TOKEN' \\\n    -H 'Accept: application/json' \\\n    -H 'Content-Type: application/json' \\\n    -d '{\n        \"name\": \"myPeriodicWebhook\",\n        \"uid\": \"unique-identifier\",\n        \"type\": \"cron\",\n        \"config\": {\n            \"payload\": \"{\\\"key\\\":\\\"value\\\"\\\",\n            \"schedule\": \"0 0 0 * *\"\n        }\n    }'"
+                        "source": "curl -X 'POST' \\\n    'https://api.eu.svix.com/ingest/api/v1/source' \\\n    -H 'Authorization: Bearer AUTH_TOKEN' \\\n    -H 'Accept: application/json' \\\n    -H 'Content-Type: application/json' \\\n    -d '{\n        \"name\": \"myGithubWebhook\",\n        \"uid\": \"unique-identifier\",\n        \"type\": \"github\",\n        \"config\": {\n            \"secret\": \"SECRET\"\n        }\n    }'"
                     }
                 ]
             }

@@ -6,12 +6,16 @@ import com.svix.Utils.ToQueryParam;
 
 public enum ConnectorKind implements ToQueryParam {
     CUSTOM("Custom"),
+    CLOSE_CRM("CloseCRM"),
     CUSTOMER_IO("CustomerIO"),
     DISCORD("Discord"),
     HUBSPOT("Hubspot"),
     INNGEST("Inngest"),
+    LOOPS("Loops"),
+    RESEND("Resend"),
     SALESFORCE("Salesforce"),
     SEGMENT("Segment"),
+    SENDGRID("Sendgrid"),
     SLACK("Slack"),
     TEAMS("Teams"),
     TRIGGER_DEV("TriggerDev"),

@@ -11,12 +11,16 @@ import kotlinx.serialization.json.jsonPrimitive
 @Serializable
 enum class ConnectorKind : ToQueryParam {
     @SerialName("Custom") CUSTOM,
+    @SerialName("CloseCRM") CLOSE_CRM,
     @SerialName("CustomerIO") CUSTOMER_IO,
     @SerialName("Discord") DISCORD,
     @SerialName("Hubspot") HUBSPOT,
     @SerialName("Inngest") INNGEST,
+    @SerialName("Loops") LOOPS,
+    @SerialName("Resend") RESEND,
     @SerialName("Salesforce") SALESFORCE,
     @SerialName("Segment") SEGMENT,
+    @SerialName("Sendgrid") SENDGRID,
     @SerialName("Slack") SLACK,
     @SerialName("Teams") TEAMS,
     @SerialName("TriggerDev") TRIGGER_DEV,

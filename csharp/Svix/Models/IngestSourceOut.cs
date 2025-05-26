@@ -127,6 +127,9 @@ namespace Svix.Models
         public static IngestSourceOutConfig Nash(SvixConfigOut svixConfigOut) =>
             new(svixConfigOut, ConfigType.Nash);
 
+        public static IngestSourceOutConfig PandaDoc(PandaDocConfigOut pandaDocConfigOut) =>
+            new(pandaDocConfigOut, ConfigType.PandaDoc);
+
         public static IngestSourceOutConfig Pleo(SvixConfigOut svixConfigOut) =>
             new(svixConfigOut, ConfigType.Pleo);
 
@@ -204,6 +207,9 @@ namespace Svix.Models
             [EnumMember(Value = "nash")]
             Nash,
 
+            [EnumMember(Value = "panda-doc")]
+            PandaDoc,
+
             [EnumMember(Value = "pleo")]
             Pleo,
 
@@ -255,6 +261,7 @@ namespace Svix.Models
             Func<SvixConfigOut, TResult> onIncidentIo,
             Func<SvixConfigOut, TResult> onLithic,
             Func<SvixConfigOut, TResult> onNash,
+            Func<PandaDocConfigOut, TResult> onPandaDoc,
             Func<SvixConfigOut, TResult> onPleo,
             Func<SvixConfigOut, TResult> onReplicate,
             Func<SvixConfigOut, TResult> onResend,
@@ -284,6 +291,7 @@ namespace Svix.Models
                 ConfigType.IncidentIo => onIncidentIo((SvixConfigOut)_value),
                 ConfigType.Lithic => onLithic((SvixConfigOut)_value),
                 ConfigType.Nash => onNash((SvixConfigOut)_value),
+                ConfigType.PandaDoc => onPandaDoc((PandaDocConfigOut)_value),
                 ConfigType.Pleo => onPleo((SvixConfigOut)_value),
                 ConfigType.Replicate => onReplicate((SvixConfigOut)_value),
                 ConfigType.Resend => onResend((SvixConfigOut)_value),
@@ -315,6 +323,7 @@ namespace Svix.Models
             Action<SvixConfigOut> onIncidentIo,
             Action<SvixConfigOut> onLithic,
             Action<SvixConfigOut> onNash,
+            Action<PandaDocConfigOut> onPandaDoc,
             Action<SvixConfigOut> onPleo,
             Action<SvixConfigOut> onReplicate,
             Action<SvixConfigOut> onResend,
@@ -369,6 +378,9 @@ namespace Svix.Models
                     break;
                 case ConfigType.Nash:
                     onNash((SvixConfigOut)_value);
+                    break;
+                case ConfigType.PandaDoc:
+                    onPandaDoc((PandaDocConfigOut)_value);
                     break;
                 case ConfigType.Pleo:
                     onPleo((SvixConfigOut)_value);
@@ -524,6 +536,7 @@ namespace Svix.Models
             ["incident-io"] = c => IngestSourceOutConfig.IncidentIo(ToObj<SvixConfigOut>(c)),
             ["lithic"] = c => IngestSourceOutConfig.Lithic(ToObj<SvixConfigOut>(c)),
             ["nash"] = c => IngestSourceOutConfig.Nash(ToObj<SvixConfigOut>(c)),
+            ["panda-doc"] = c => IngestSourceOutConfig.PandaDoc(ToObj<PandaDocConfigOut>(c)),
             ["pleo"] = c => IngestSourceOutConfig.Pleo(ToObj<SvixConfigOut>(c)),
             ["replicate"] = c => IngestSourceOutConfig.Replicate(ToObj<SvixConfigOut>(c)),
             ["resend"] = c => IngestSourceOutConfig.Resend(ToObj<SvixConfigOut>(c)),

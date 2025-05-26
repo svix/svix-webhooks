@@ -217,6 +217,21 @@ public abstract class IngestSourceOutConfig {
     @AllArgsConstructor
     @ToString
     @EqualsAndHashCode(callSuper = false)
+    @VariantName("panda-doc")
+    public static class PandaDoc extends IngestSourceOutConfig {
+        private final PandaDocConfigOut pandaDoc;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(pandaDoc);
+        }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
     @VariantName("pleo")
     public static class Pleo extends IngestSourceOutConfig {
         private final SvixConfigOut pleo;
@@ -414,6 +429,7 @@ public abstract class IngestSourceOutConfig {
         TY_M.put("incident-io", c -> new IncidentIo(m.convertValue(c, SvixConfigOut.class)));
         TY_M.put("lithic", c -> new Lithic(m.convertValue(c, SvixConfigOut.class)));
         TY_M.put("nash", c -> new Nash(m.convertValue(c, SvixConfigOut.class)));
+        TY_M.put("panda-doc", c -> new PandaDoc(m.convertValue(c, PandaDocConfigOut.class)));
         TY_M.put("pleo", c -> new Pleo(m.convertValue(c, SvixConfigOut.class)));
         TY_M.put("replicate", c -> new Replicate(m.convertValue(c, SvixConfigOut.class)));
         TY_M.put("resend", c -> new Resend(m.convertValue(c, SvixConfigOut.class)));
