@@ -3,6 +3,7 @@ package internal
 import (
 	"bytes"
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -26,12 +27,21 @@ type SvixHttpClient struct {
 }
 
 func DefaultSvixHttpClient(defaultBaseUrl string) SvixHttpClient {
+	// Disable HTTP/2.0
+	tr := http.DefaultTransport.(*http.Transport).Clone()
+	tr.ForceAttemptHTTP2 = false
+	tr.TLSClientConfig = new(tls.Config)
+	tr.TLSNextProto = make(map[string]func(authority string, c *tls.Conn) http.RoundTripper)
+
 	return SvixHttpClient{
 		DefaultHeaders: map[string]string{},
-		HTTPClient:     &http.Client{Timeout: 60 * time.Second},
-		RetrySchedule:  []time.Duration{50 * time.Microsecond, 100 * time.Microsecond, 200 * time.Microsecond},
-		BaseURL:        defaultBaseUrl,
-		Debug:          false,
+		HTTPClient: &http.Client{
+			Timeout:   60 * time.Second,
+			Transport: tr,
+		},
+		RetrySchedule: []time.Duration{50 * time.Microsecond, 100 * time.Microsecond, 200 * time.Microsecond},
+		BaseURL:       defaultBaseUrl,
+		Debug:         false,
 	}
 }
 
