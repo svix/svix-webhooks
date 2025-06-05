@@ -65,7 +65,11 @@ func newMockClient() svix.Svix {
 	if err != nil {
 		panic(err)
 	}
-	svx, err := svix.New("randomToken", &svix.SvixOptions{ServerUrl: url})
+	svx, err := svix.New("randomToken", &svix.SvixOptions{
+		ServerUrl: url,
+		// need to explicitly use the default, which httpmock.Activate() modifies
+		HTTPClient: http.DefaultClient,
+	})
 	if err != nil {
 		panic(err)
 	}
