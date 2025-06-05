@@ -180,92 +180,68 @@ export type IngestSourceIn = _IngestSourceInFields &
 export const IngestSourceInSerializer = {
   _fromJsonObject(object: any): IngestSourceIn {
     const type = object["type"];
-    let config;
-    switch (type) {
-      case "generic-webhook":
-        config = {};
-        break;
 
-      case "cron":
-        config = CronConfigSerializer._fromJsonObject(object["config"]);
-        break;
-      case "adobe-sign":
-        config = AdobeSignConfigSerializer._fromJsonObject(object["config"]);
-        break;
-      case "beehiiv":
-        config = SvixConfigSerializer._fromJsonObject(object["config"]);
-        break;
-      case "brex":
-        config = SvixConfigSerializer._fromJsonObject(object["config"]);
-        break;
-      case "clerk":
-        config = SvixConfigSerializer._fromJsonObject(object["config"]);
-        break;
-      case "docusign":
-        config = DocusignConfigSerializer._fromJsonObject(object["config"]);
-        break;
-      case "github":
-        config = GithubConfigSerializer._fromJsonObject(object["config"]);
-        break;
-      case "guesty":
-        config = SvixConfigSerializer._fromJsonObject(object["config"]);
-        break;
-      case "hubspot":
-        config = HubspotConfigSerializer._fromJsonObject(object["config"]);
-        break;
-      case "incident-io":
-        config = SvixConfigSerializer._fromJsonObject(object["config"]);
-        break;
-      case "lithic":
-        config = SvixConfigSerializer._fromJsonObject(object["config"]);
-        break;
-      case "nash":
-        config = SvixConfigSerializer._fromJsonObject(object["config"]);
-        break;
-      case "panda-doc":
-        config = PandaDocConfigSerializer._fromJsonObject(object["config"]);
-        break;
-      case "pleo":
-        config = SvixConfigSerializer._fromJsonObject(object["config"]);
-        break;
-      case "replicate":
-        config = SvixConfigSerializer._fromJsonObject(object["config"]);
-        break;
-      case "resend":
-        config = SvixConfigSerializer._fromJsonObject(object["config"]);
-        break;
-      case "safebase":
-        config = SvixConfigSerializer._fromJsonObject(object["config"]);
-        break;
-      case "sardine":
-        config = SvixConfigSerializer._fromJsonObject(object["config"]);
-        break;
-      case "segment":
-        config = SegmentConfigSerializer._fromJsonObject(object["config"]);
-        break;
-      case "shopify":
-        config = ShopifyConfigSerializer._fromJsonObject(object["config"]);
-        break;
-      case "slack":
-        config = SlackConfigSerializer._fromJsonObject(object["config"]);
-        break;
-      case "stripe":
-        config = StripeConfigSerializer._fromJsonObject(object["config"]);
-        break;
-      case "stych":
-        config = SvixConfigSerializer._fromJsonObject(object["config"]);
-        break;
-      case "svix":
-        config = SvixConfigSerializer._fromJsonObject(object["config"]);
-        break;
-      case "zoom":
-        config = ZoomConfigSerializer._fromJsonObject(object["config"]);
-        break;
+    function getConfig(type: string): any {
+      switch (type) {
+        case "generic-webhook":
+          return {};
+        case "cron":
+          return CronConfigSerializer._fromJsonObject(object["config"]);
+        case "adobe-sign":
+          return AdobeSignConfigSerializer._fromJsonObject(object["config"]);
+        case "beehiiv":
+          return SvixConfigSerializer._fromJsonObject(object["config"]);
+        case "brex":
+          return SvixConfigSerializer._fromJsonObject(object["config"]);
+        case "clerk":
+          return SvixConfigSerializer._fromJsonObject(object["config"]);
+        case "docusign":
+          return DocusignConfigSerializer._fromJsonObject(object["config"]);
+        case "github":
+          return GithubConfigSerializer._fromJsonObject(object["config"]);
+        case "guesty":
+          return SvixConfigSerializer._fromJsonObject(object["config"]);
+        case "hubspot":
+          return HubspotConfigSerializer._fromJsonObject(object["config"]);
+        case "incident-io":
+          return SvixConfigSerializer._fromJsonObject(object["config"]);
+        case "lithic":
+          return SvixConfigSerializer._fromJsonObject(object["config"]);
+        case "nash":
+          return SvixConfigSerializer._fromJsonObject(object["config"]);
+        case "panda-doc":
+          return PandaDocConfigSerializer._fromJsonObject(object["config"]);
+        case "pleo":
+          return SvixConfigSerializer._fromJsonObject(object["config"]);
+        case "replicate":
+          return SvixConfigSerializer._fromJsonObject(object["config"]);
+        case "resend":
+          return SvixConfigSerializer._fromJsonObject(object["config"]);
+        case "safebase":
+          return SvixConfigSerializer._fromJsonObject(object["config"]);
+        case "sardine":
+          return SvixConfigSerializer._fromJsonObject(object["config"]);
+        case "segment":
+          return SegmentConfigSerializer._fromJsonObject(object["config"]);
+        case "shopify":
+          return ShopifyConfigSerializer._fromJsonObject(object["config"]);
+        case "slack":
+          return SlackConfigSerializer._fromJsonObject(object["config"]);
+        case "stripe":
+          return StripeConfigSerializer._fromJsonObject(object["config"]);
+        case "stych":
+          return SvixConfigSerializer._fromJsonObject(object["config"]);
+        case "svix":
+          return SvixConfigSerializer._fromJsonObject(object["config"]);
+        case "zoom":
+          return ZoomConfigSerializer._fromJsonObject(object["config"]);
+        default:
+          throw new Error(`Unexpected type: ${type}`);
+      }
     }
-
     return {
       type,
-      config,
+      config: getConfig(type),
       name: object["name"],
       uid: object["uid"],
     };
@@ -277,103 +253,78 @@ export const IngestSourceInSerializer = {
       case "generic-webhook":
         config = {};
         break;
-
       case "cron":
         config = CronConfigSerializer._toJsonObject(self.config);
         break;
-
       case "adobe-sign":
         config = AdobeSignConfigSerializer._toJsonObject(self.config);
         break;
-
       case "beehiiv":
         config = SvixConfigSerializer._toJsonObject(self.config);
         break;
-
       case "brex":
         config = SvixConfigSerializer._toJsonObject(self.config);
         break;
-
       case "clerk":
         config = SvixConfigSerializer._toJsonObject(self.config);
         break;
-
       case "docusign":
         config = DocusignConfigSerializer._toJsonObject(self.config);
         break;
-
       case "github":
         config = GithubConfigSerializer._toJsonObject(self.config);
         break;
-
       case "guesty":
         config = SvixConfigSerializer._toJsonObject(self.config);
         break;
-
       case "hubspot":
         config = HubspotConfigSerializer._toJsonObject(self.config);
         break;
-
       case "incident-io":
         config = SvixConfigSerializer._toJsonObject(self.config);
         break;
-
       case "lithic":
         config = SvixConfigSerializer._toJsonObject(self.config);
         break;
-
       case "nash":
         config = SvixConfigSerializer._toJsonObject(self.config);
         break;
-
       case "panda-doc":
         config = PandaDocConfigSerializer._toJsonObject(self.config);
         break;
-
       case "pleo":
         config = SvixConfigSerializer._toJsonObject(self.config);
         break;
-
       case "replicate":
         config = SvixConfigSerializer._toJsonObject(self.config);
         break;
-
       case "resend":
         config = SvixConfigSerializer._toJsonObject(self.config);
         break;
-
       case "safebase":
         config = SvixConfigSerializer._toJsonObject(self.config);
         break;
-
       case "sardine":
         config = SvixConfigSerializer._toJsonObject(self.config);
         break;
-
       case "segment":
         config = SegmentConfigSerializer._toJsonObject(self.config);
         break;
-
       case "shopify":
         config = ShopifyConfigSerializer._toJsonObject(self.config);
         break;
-
       case "slack":
         config = SlackConfigSerializer._toJsonObject(self.config);
         break;
-
       case "stripe":
         config = StripeConfigSerializer._toJsonObject(self.config);
         break;
-
       case "stych":
         config = SvixConfigSerializer._toJsonObject(self.config);
         break;
-
       case "svix":
         config = SvixConfigSerializer._toJsonObject(self.config);
         break;
-
       case "zoom":
         config = ZoomConfigSerializer._toJsonObject(self.config);
         break;

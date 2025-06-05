@@ -33,27 +33,28 @@ export type {{ type_name }} = _{{ type_name }}Fields & (
 export const {{ type.name | to_upper_camel_case }}Serializer = {
     _fromJsonObject(object: any): {{ type.name | to_upper_camel_case }} {
         const {{ disc_field_name }} = object['{{ type.discriminator_field }}'];
-        let {{ content_field_name }};
-        switch ({{ disc_field_name }}) {
-        {%- for variant in type.variants %}
-            {% if variant.schema_ref is defined -%}
-            case '{{ variant.name }}':
-                {{ content_field_name }} =
-                    {{ variant.schema_ref | to_upper_camel_case }}Serializer._fromJsonObject(
-                        object['{{ type.content_field }}']
-                    );
-                break;
-            {%- else %}
-            case '{{ variant.name }}':
-                {{ content_field_name }} = {}
-                break;
-            {% endif -%}
-        {% endfor -%}
-        }
 
+        function get{{ content_field_name | to_upper_camel_case }}({{ disc_field_name }}: string): any {
+            switch ({{ disc_field_name }}) {
+            {%- for variant in type.variants %}
+                {% if variant.schema_ref is defined -%}
+                case '{{ variant.name }}':
+                    return {{ variant.schema_ref | to_upper_camel_case }}Serializer._fromJsonObject(
+                            object['{{ type.content_field }}']
+                        );
+                {%- else %}
+                case '{{ variant.name }}':
+                    return {}
+                {%- endif -%}
+            {%- endfor -%}
+                default:
+                    throw new Error(`Unexpected {{ type.discriminator_field }}: ${ {{ disc_field_name}} }`);
+            }
+
+        }
         return {
             {{ disc_field_name }},
-            {{ content_field_name }},
+            {{ content_field_name }}:get{{ content_field_name | to_upper_camel_case }}({{ disc_field_name }}),
             {% for field in type.fields -%}
                 {% set field_expr %}object['{{ field.name }}']{% endset -%}
                 {{ field.name | to_lower_camel_case }}: {{ field_from_json(field_expr, field.type, field.required) }},
@@ -65,7 +66,7 @@ export const {{ type.name | to_upper_camel_case }}Serializer = {
         let {{ content_field_name }};
         switch (self.{{ disc_field_name }}) {
         {%- for variant in type.variants %}
-            {% if variant.schema_ref is defined %}
+            {%- if variant.schema_ref is defined %}
             case '{{ variant.name }}':
                 {{ content_field_name }} =
                     {{ variant.schema_ref | to_upper_camel_case }}Serializer._toJsonObject(
@@ -77,7 +78,7 @@ export const {{ type.name | to_upper_camel_case }}Serializer = {
                 {{ content_field_name }} = {}
                 break;
             {%- endif %}
-        {% endfor -%}
+        {%- endfor -%}
         }
 
         return {
