@@ -1,6 +1,9 @@
 # Changelog
 
-## Unreleased
+## Version 1.67.0
+* Libs/Go: Disable HTTP/2 for API calls because it was causing issues for some users
+* Libs/Python: Enable configuring a proxy for API requests
+* Libs/All: Add support for PandaDoc ingest source
 
 ## Version 1.66.0
 * Libs/JavaScript: Fix response processing code for endpoints with an optional datetime field in the response body
