@@ -1,19 +1,9 @@
 // this file is @generated
-import { Application } from "./api/application";
-import { Authentication } from "./api/authentication";
-import { BackgroundTask } from "./api/backgroundTask";
-import { Endpoint } from "./api/endpoint";
-import { Environment } from "./api/environment";
-import { EventType } from "./api/eventType";
-import { Health } from "./api/health";
-import { Ingest } from "./api/ingest";
-import { Integration } from "./api/integration";
-import { Management } from "./api/management";
-import { Message } from "./api/message";
-import { MessageAttempt } from "./api/messageAttempt";
-import { OperationalWebhook } from "./api/operationalWebhook";
+{% for resource in api.resources -%}
+import { {{ resource.name | to_upper_camel_case }} } from "./api/{{ resource.name | to_lower_camel_case }}";
+{% endfor -%}
+{# hardcoded for backwards compat -#}
 import { OperationalWebhookEndpoint } from "./api/operationalWebhookEndpoint";
-import { Statistics } from "./api/statistics";
 import { SvixRequestContext } from "./request";
 
 export { PostOptions, ApiException } from "./util";
@@ -30,6 +20,7 @@ export { MessageListOptions, messageInRaw } from "./api/message";
 export { MessageAttemptListByEndpointOptions } from "./api/messageAttempt";
 export { OperationalWebhookEndpointListOptions } from "./api/operationalWebhookEndpoint";
 
+
 export interface SvixOptions {
   debug?: boolean;
   serverUrl?: string;
@@ -45,6 +36,7 @@ const REGIONS = [
   { region: "au", url: "https://api.au.svix.com" },
 ];
 
+
 export class Svix {
   private readonly requestCtx: SvixRequestContext;
 
@@ -55,62 +47,14 @@ export class Svix {
     this.requestCtx = { baseUrl, token, timeout: options.requestTimeout };
   }
 
-  public get application() {
-    return new Application(this.requestCtx);
+
+  {% for resource in api.resources -%}
+  public get {{ resource.name | to_lower_camel_case }}(){
+    return new {{ resource.name | to_upper_camel_case }}(this.requestCtx);
   }
 
-  public get authentication() {
-    return new Authentication(this.requestCtx);
-  }
-
-  public get backgroundTask() {
-    return new BackgroundTask(this.requestCtx);
-  }
-
-  public get endpoint() {
-    return new Endpoint(this.requestCtx);
-  }
-
-  public get environment() {
-    return new Environment(this.requestCtx);
-  }
-
-  public get eventType() {
-    return new EventType(this.requestCtx);
-  }
-
-  public get health() {
-    return new Health(this.requestCtx);
-  }
-
-  public get ingest() {
-    return new Ingest(this.requestCtx);
-  }
-
-  public get integration() {
-    return new Integration(this.requestCtx);
-  }
-
-  public get management() {
-    return new Management(this.requestCtx);
-  }
-
-  public get message() {
-    return new Message(this.requestCtx);
-  }
-
-  public get messageAttempt() {
-    return new MessageAttempt(this.requestCtx);
-  }
-
-  public get operationalWebhook() {
-    return new OperationalWebhook(this.requestCtx);
-  }
-
-  public get statistics() {
-    return new Statistics(this.requestCtx);
-  }
-
+  {% endfor -%}
+  {# hardcoded for backwards compat #}
   public get operationalWebhookEndpoint() {
     return new OperationalWebhookEndpoint(this.requestCtx);
   }
