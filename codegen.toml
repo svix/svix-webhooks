@@ -30,6 +30,9 @@ output_dir = "javascript/src/models"
 [[javascript.task]]
 template = "codegen-templates/javascript/component_type.ts.jinja"
 output_dir = "javascript/src/models"
+[[javascript.task]]
+template = "codegen-templates/javascript/summary.ts.jinja"
+output_dir = "javascript/src"
 
 
 [cli]
