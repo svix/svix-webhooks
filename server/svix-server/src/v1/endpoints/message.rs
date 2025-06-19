@@ -382,7 +382,8 @@ pub(crate) async fn create_message_inner(
         .transaction(|txn| {
             async move {
                 let msg = msg.insert(txn).await.map_err(http_error_on_conflict)?;
-                let msg_content = messagecontent::ActiveModel::new(msg.id.clone(), payload);
+                let msg_content =
+                    messagecontent::ActiveModel::new(msg.id.clone(), payload, msg.expiration);
                 let msg_content = msg_content.insert(txn).await?;
                 Ok((msg, msg_content))
             }

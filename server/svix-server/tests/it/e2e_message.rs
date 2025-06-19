@@ -424,6 +424,45 @@ async fn test_payload_retention_period() {
 }
 
 #[tokio::test]
+async fn test_payload_retention_period_messagecontent() {
+    let (client, _jh) = start_svix_server().await;
+    dotenvy::dotenv().ok();
+    let cfg = svix_server::cfg::load().expect("Error loading configuration");
+    let pool = svix_server::db::init_db(&cfg).await;
+
+    let app_id = create_test_app(&client, "test-content-expiration-period")
+        .await
+        .unwrap()
+        .id;
+
+    let custom_retention_period = 5;
+    let msg: MessageOut = client
+        .post(
+            &format!("api/v1/app/{app_id}/msg/"),
+            json!({
+                "eventType": "test.event",
+                "payload": { "test": "value" },
+                "payloadRetentionPeriod": custom_retention_period
+            }),
+            StatusCode::ACCEPTED,
+        )
+        .await
+        .unwrap();
+    let msg_id = msg.id.clone();
+
+    let content: messagecontent::Model = messagecontent::Entity::find_by_id(msg_id.clone())
+        .one(&pool)
+        .await
+        .unwrap()
+        .unwrap();
+
+    let expected = Utc::now() + Duration::days(custom_retention_period) + Duration::hours(1);
+    let actual: chrono::DateTime<Utc> = content.expiration.into();
+
+    assert!(actual < expected);
+}
+
+#[tokio::test]
 async fn test_expunge_message_payload() {
     let (client, _jh) = start_svix_server().await;
 

@@ -35,13 +35,13 @@ impl Related<super::message::Entity> for Entity {
 impl ActiveModelBehavior for ActiveModel {}
 
 impl ActiveModel {
-    pub fn new(msg_id: MessageId, payload: Vec<u8>) -> Self {
+    pub fn new(msg_id: MessageId, payload: Vec<u8>, expiration: DateTimeWithTimeZone) -> Self {
         let timestamp = Utc::now();
         Self {
             id: Set(msg_id),
             created_at: Set(timestamp.into()),
             payload: Set(payload),
-            ..ActiveModelTrait::default()
+            expiration: Set(expiration),
         }
     }
 }
