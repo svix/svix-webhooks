@@ -52,6 +52,18 @@ final class WebhookTest extends \PHPUnit\Framework\TestCase
         $wh->verify($testPayload->payload, $testPayload->header);
     }
 
+    public function testBadlyFormattedSignatureThrowsException()
+    {
+        $this->expectException(\Svix\Exception\WebhookVerificationException::class);
+        $this->expectExceptionMessage("No matching signature found");
+
+        $testPayload = new TestPayload(time());
+        $testPayload->header['svix-signature'] = 'BAD_SIG_NATURE';
+
+        $wh = new \Svix\Webhook($testPayload->secret);
+        $wh->verify($testPayload->payload, $testPayload->header);
+    }
+
     public function testMissingIdThrowsException()
     {
         $this->expectException(\Svix\Exception\WebhookVerificationException::class);
