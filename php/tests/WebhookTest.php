@@ -58,7 +58,7 @@ final class WebhookTest extends \PHPUnit\Framework\TestCase
         $this->expectExceptionMessage("No matching signature found");
 
         $testPayload = new TestPayload(time());
-        $testPayload->header['svix-signature'] = 'BAD_SIG_NA_TURE';
+        $testPayload->header['svix-signature'] = 'BAD_SIG_NATURE';
 
         $wh = new \Svix\Webhook($testPayload->secret);
         $wh->verify($testPayload->payload, $testPayload->header);
