@@ -113,6 +113,11 @@ export class SvixRequest {
       url.searchParams.set(name, value);
     }
 
+    if (this.headerParams["idempotency-key"] === undefined) {
+      this.headerParams["idempotency-key"] =
+        "auto_" + Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+    }
+
     const randomId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
 
     if (this.body != null) {
