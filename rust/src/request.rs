@@ -114,10 +114,8 @@ impl Request {
             .insert("svix-req-id", rand::rng().random::<u32>().to_string());
 
         if !self.header_params.contains_key("idempotency-key") {
-            self.header_params.insert(
-                "idempotency-key",
-                format!("auto_{}", rand::rng().random::<u64>()),
-            );
+            self.header_params
+                .insert("idempotency-key", format!("auto_{}", uuid::Uuid::new_v4()));
         }
 
         loop {

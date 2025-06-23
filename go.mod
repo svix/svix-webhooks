@@ -28,6 +28,7 @@ retract (
 	v1.46.0
 )
 
-require gopkg.in/validator.v2 v2.0.1
-
-require github.com/jarcoal/httpmock v1.3.1 // indirect
+require (
+	github.com/google/uuid v1.6.0
+	github.com/jarcoal/httpmock v1.3.1
+)

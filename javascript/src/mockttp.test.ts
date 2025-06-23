@@ -429,7 +429,8 @@ describe("mockttp tests", () => {
 
     const requests = await endpointMock.getSeenRequests();
     expect(requests.length).toBe(1);
-    expect(requests[0].headers["idempotency-key"]).toMatch(/^auto_\d+$/);
+    const idempotencyKey = requests[0].headers["idempotency-key"] as string;
+    expect(idempotencyKey.startsWith("auto_")).toBe(true);
   });
 
   test("test idempotency key is sent for create request", async () => {
@@ -442,7 +443,8 @@ describe("mockttp tests", () => {
 
     const requests = await endpointMock.getSeenRequests();
     expect(requests.length).toBe(1);
-    expect(requests[0].headers["idempotency-key"]).toMatch(/^auto_\d+$/);
+    const idempotencyKey = requests[0].headers["idempotency-key"] as string;
+    expect(idempotencyKey.startsWith("auto_")).toBe(true);
   });
 
   test("test client provided idempotency key is not overridden", async () => {

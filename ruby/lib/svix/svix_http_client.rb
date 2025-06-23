@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 require "uri"
 require "net/http"
+require "securerandom"
+
 
 module Svix
   class SvixHttpClient
@@ -52,7 +54,7 @@ module Svix
 
       # Check if idempotency-key header already exists
       if !request.key?("idempotency-key")
-        request["idempotency-key"] = "auto_" + rand(0...(2 ** 64)).to_s
+        request["idempotency-key"] = "auto_" + SecureRandom.uuid_v4.to_s
       end
 
       # Add body for non-GET requests

@@ -16,6 +16,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type SvixHttpClient struct {
@@ -83,7 +85,7 @@ func ExecuteRequest[ReqBody any, ResBody any](
 
 	key, ok := headerParams["idempotency-key"]
 	if !ok || key == "" {
-		req.Header.Set("idempotency-key", "auto_"+strconv.FormatUint(rand.Uint64(), 10))
+		req.Header.Set("idempotency-key", "auto_"+uuid.New().String())
 	}
 
 	req.Header.Set("svix-req-id", strconv.FormatUint(rand.Uint64(), 10))

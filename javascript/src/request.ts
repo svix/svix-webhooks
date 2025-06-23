@@ -1,6 +1,7 @@
 import "svix-fetch";
 import { ApiException } from "./util";
 import { HttpErrorOut, HTTPValidationError } from "./HttpErrors";
+import { v4 as uuidv4 } from "uuid";
 
 export const LIB_VERSION = "1.67.0";
 const USER_AGENT = `svix-libs/${LIB_VERSION}/javascript`;
@@ -114,8 +115,7 @@ export class SvixRequest {
     }
 
     if (this.headerParams["idempotency-key"] === undefined) {
-      this.headerParams["idempotency-key"] =
-        "auto_" + Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+      this.headerParams["idempotency-key"] = "auto_" + uuidv4();
     }
 
     const randomId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
