@@ -325,5 +325,62 @@ namespace Svix.Tests
             );
             Assert.Equal(jsonString, JsonConvert.SerializeObject(loadedFromJson));
         }
+
+        [Fact]
+        public void IdempotencyKeyIsSentForListRequest()
+        {
+            stub.Given(Request.Create().WithPath("/api/v1/app"))
+                .RespondWith(
+                    Response
+                        .Create()
+                        .WithStatusCode(200)
+                        .WithBody("""{"data":[],"iterator":null,"prevIterator":null,"done":true}""")
+                );
+            client.Application.List();
+
+            Assert.Equal(1, stub.LogEntries.Count);
+            Assert.True(stub.LogEntries[0].RequestMessage.Headers.ContainsKey("idempotency-key"));
+            Assert.StartsWith(
+                "auto_",
+                stub.LogEntries[0].RequestMessage.Headers["idempotency-key"][0]
+            );
+            Assert.Equal(1, stub.LogEntries.Count);
+        }
+
+        [Fact]
+        public void IdempotencyKeyIsSentForCreateRequest()
+        {
+            stub.Given(Request.Create().WithPath("/api/v1/app"))
+                .RespondWith(Response.Create().WithStatusCode(200).WithBody(applicationOutJsonStr));
+
+            client.Application.Create(new ApplicationIn { Name = "app" });
+
+            Assert.Equal(1, stub.LogEntries.Count);
+            Assert.True(stub.LogEntries[0].RequestMessage.Headers.ContainsKey("idempotency-key"));
+            Assert.StartsWith(
+                "auto_",
+                stub.LogEntries[0].RequestMessage.Headers["idempotency-key"][0]
+            );
+            Assert.Equal(1, stub.LogEntries.Count);
+        }
+
+        [Fact]
+        public void ClientProvidedIdempotencyKeyIsNotOverridden()
+        {
+            stub.Given(Request.Create().WithPath("/api/v1/app"))
+                .RespondWith(Response.Create().WithStatusCode(200).WithBody(applicationOutJsonStr));
+
+            var options = new ApplicationCreateOptions { IdempotencyKey = "test-key-123" };
+
+            client.Application.Create(new ApplicationIn { Name = "app" }, options);
+
+            Assert.Equal(1, stub.LogEntries.Count);
+            Assert.True(stub.LogEntries[0].RequestMessage.Headers.ContainsKey("idempotency-key"));
+            Assert.Equal(
+                "test-key-123",
+                stub.LogEntries[0].RequestMessage.Headers["idempotency-key"][0]
+            );
+            Assert.Equal(1, stub.LogEntries.Count);
+        }
     }
 }
