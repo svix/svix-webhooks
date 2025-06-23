@@ -50,6 +50,11 @@ module Svix
       # Add headers
       headers.each { |key, value| request[key] = value }
 
+      # Check if idempotency-key header already exists
+      if !request.key?("idempotency-key")
+        request["idempotency-key"] = "auto_" + rand(0...(2 ** 64)).to_s
+      end
+
       # Add body for non-GET requests
       if %w[POST PUT PATCH].include?(method.to_s.upcase) && !body.nil?
         request.body = body.to_json

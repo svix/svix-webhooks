@@ -394,4 +394,61 @@ describe "API Client" do
 
     expect(WebMock).to(have_requested(:post, "#{host}/api/v1/app?get_if_exists=true"))
   end
+
+  it "test idempotency key is sent for list request" do
+    stub_request(:get, "#{host}/api/v1/app")
+      .to_return(
+        status: 200,
+        body: ListResponseAppOut_JSON
+      )
+
+    svx.application.list
+
+    expect(WebMock).to(
+      have_requested(:get, "#{host}/api/v1/app")
+    )
+
+    # Check that the idempotency key starts with "auto_"
+    request = WebMock::RequestRegistry.instance.requested_signatures.hash.first[0]
+    expect(request.headers["Idempotency-Key"]).to(start_with("auto_"))
+  end
+
+  it "test idempotency key is sent for create request" do
+    stub_request(:post, "#{host}/api/v1/app")
+      .to_return(
+        status: 200,
+        body: ApplicationOut_JSON
+      )
+
+    svx.application.create(Svix::ApplicationIn.new(name: "test app"))
+
+    expect(WebMock).to(
+      have_requested(:post, "#{host}/api/v1/app")
+    )
+
+    # Check that the idempotency key starts with "auto_"
+    request = WebMock::RequestRegistry.instance.requested_signatures.hash.first[0]
+    expect(request.headers["Idempotency-Key"]).to(start_with("auto_"))
+  end
+
+  it "test client provided idempotency key is not overridden" do
+    stub_request(:post, "#{host}/api/v1/app")
+      .to_return(
+        status: 200,
+        body: ApplicationOut_JSON
+      )
+
+    client_provided_key = "test-key-123"
+    svx.application.create(
+      Svix::ApplicationIn.new(name: "test app"),
+      {"idempotency-key" => client_provided_key}
+    )
+
+    expect(WebMock).to(
+      have_requested(:post, "#{host}/api/v1/app")
+    )
+
+    request = WebMock::RequestRegistry.instance.requested_signatures.hash.first[0]
+    expect(request.headers["Idempotency-Key"]).to(eq(client_provided_key))
+  end
 end
