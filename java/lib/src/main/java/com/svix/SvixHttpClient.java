@@ -53,6 +53,11 @@ public class SvixHttpClient {
         // Add default headers
         defaultHeaders.forEach(reqBuilder::addHeader);
 
+        String idempotencyKey = headers == null ? null : headers.get("idempotency-key");
+        if (idempotencyKey == null || idempotencyKey.isEmpty()) {
+            reqBuilder.addHeader("idempotency-key", "auto_" + ThreadLocalRandom.current().nextLong(0, Long.MAX_VALUE));
+        }
+
         // Add custom headers if present
         if (headers != null) {
             headers.forEach(pair -> reqBuilder.addHeader(pair.getFirst(), pair.getSecond()));
