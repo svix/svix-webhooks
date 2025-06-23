@@ -41,6 +41,11 @@ internal constructor(
                 reqBuilder.addHeader(k, v)
             }
         }
+
+        if (headers?.get("idempotency-key") == null) {
+            reqBuilder.addHeader("idempotency-key", "auto_" + Random.nextULong().toString())
+        }
+
         reqBuilder.addHeader("svix-req-id", Random.nextULong().toString())
 
         val request = reqBuilder.build()
