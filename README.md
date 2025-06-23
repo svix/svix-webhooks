@@ -123,6 +123,14 @@ To stay up-to-date with new features and improvements be sure to watch our repo!
     <th>✅</th>
     <th colspan="4"></th>
   </tr>
+  <tr>
+    <th><a href="https://registry.terraform.io/providers/svix/svix/latest/docs/">Terraform</a></th>
+    <th>✅</th>
+    <th>✅</th>
+    <th>N/A</th>
+    <th colspan="4"></th>
+  </tr>
+
 </table>
 
 # Running the server
