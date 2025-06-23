@@ -4,7 +4,7 @@ import time
 import typing as t
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
-
+import uuid
 import httpx
 
 from .client import AuthenticatedClient
@@ -119,6 +119,9 @@ class ApiBase:
         }
         if header_params is not None:
             headers.update(header_params)
+
+        if headers.get("idempotency-key") is None:
+            headers["idempotency-key"] = f"auto_{uuid.uuid4()}"
 
         httpx_kwargs = {
             "method": method.upper(),

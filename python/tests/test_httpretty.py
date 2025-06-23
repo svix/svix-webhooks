@@ -1,5 +1,5 @@
 import svix
-from svix.api import MessageListOptions,IngestSourceIn, CronConfig
+from svix.api import MessageListOptions,IngestSourceIn, CronConfig, ApplicationIn, ApplicationCreateOptions
 from svix.api.ingest_source import IngestSource
 
 import httpretty
@@ -51,3 +51,53 @@ def test_struct_enum_without_fields():
 
     assert isinstance(res.config, dict)
     assert res.config == {}
+
+
+@httpretty.activate(verbose=True, allow_net_connect=False)
+def test_idempotency_key_is_sent_for_list_request():
+    svx = svix.Svix("token", svix.SvixOptions(server_url="http://test.example"))
+    httpretty.register_uri(
+        httpretty.GET,
+        "http://test.example/api/v1/app",
+        body='{"data":[],"iterator":null,"prevIterator":null,"done":true}'
+    )
+    svx.application.list()
+
+    request = httpretty.latest_requests()[0]
+    assert "idempotency-key" in request.headers
+    assert request.headers["idempotency-key"].startswith("auto_")
+
+
+@httpretty.activate(verbose=True, allow_net_connect=False)
+def test_idempotency_key_is_sent_for_create_request():
+    svx = svix.Svix("token", svix.SvixOptions(server_url="http://test.example"))
+    httpretty.register_uri(
+        httpretty.POST,
+        "http://test.example/api/v1/app",
+        body='{"uid":"unique-identifier","name":"My first application","rateLimit":0,"id":"app_1srOrx2ZWZBpBUvZwXKQmoEYga2","createdAt":"2019-08-24T14:15:22Z","updatedAt":"2019-08-24T14:15:22Z","metadata":{"property1":"string","property2":"string"}}'
+    )
+    svx.application.create(ApplicationIn(name="test app"))
+
+    request = httpretty.latest_requests()[0]
+    assert "idempotency-key" in request.headers
+    assert request.headers["idempotency-key"].startswith("auto_")
+
+
+@httpretty.activate(verbose=True, allow_net_connect=False)
+def test_client_provided_idempotency_key_is_not_overridden():
+    svx = svix.Svix("token", svix.SvixOptions(server_url="http://test.example"))
+    httpretty.register_uri(
+        httpretty.POST,
+        "http://test.example/api/v1/app",
+        body='{"uid":"unique-identifier","name":"My first application","rateLimit":0,"id":"app_1srOrx2ZWZBpBUvZwXKQmoEYga2","createdAt":"2019-08-24T14:15:22Z","updatedAt":"2019-08-24T14:15:22Z","metadata":{"property1":"string","property2":"string"}}'
+    )
+    
+    client_provided_key = "test-key-123"
+    svx.application.create(
+        ApplicationIn(name="test app"),
+        ApplicationCreateOptions(idempotency_key=client_provided_key)
+    )
+
+    request = httpretty.latest_requests()[0]
+    assert "idempotency-key" in request.headers
+    assert request.headers["idempotency-key"] == client_provided_key
