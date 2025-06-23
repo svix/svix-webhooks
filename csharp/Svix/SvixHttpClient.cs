@@ -55,6 +55,15 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (headerParams == null)
+            {
+                headerParams = new Dictionary<string, string>();
+            }
+            if (!headerParams.ContainsKey("idempotency-key"))
+            {
+                headerParams["idempotency-key"] = "auto_" + Guid.NewGuid().ToString();
+            }
+
             byte[] randomBytes = new byte[8];
             new Random().NextBytes(randomBytes);
             ulong req_id = BitConverter.ToUInt64(randomBytes, 0);

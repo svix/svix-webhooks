@@ -7,6 +7,7 @@ import kotlinx.coroutines.delay
 import kotlinx.serialization.json.Json
 import okhttp3.*
 import okhttp3.RequestBody.Companion.toRequestBody
+import java.util.UUID
 
 open class SvixHttpClient
 internal constructor(
@@ -41,6 +42,12 @@ internal constructor(
                 reqBuilder.addHeader(k, v)
             }
         }
+
+        if (headers?.get("idempotency-key") == null) {
+            val uuid = UUID.randomUUID().toString()
+            reqBuilder.addHeader("idempotency-key", "auto_" + uuid)
+        }
+
         reqBuilder.addHeader("svix-req-id", Random.nextULong().toString())
 
         val request = reqBuilder.build()

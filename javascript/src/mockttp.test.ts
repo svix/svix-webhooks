@@ -418,4 +418,49 @@ describe("mockttp tests", () => {
       '{"type":"generic-webhook","config":{},"name":"generic over <T>"}'
     );
   });
+
+  test("test idempotency key is sent for list request", async () => {
+    const endpointMock = await mockServer
+      .forGet("/api/v1/app")
+      .thenReply(200, ListResponseApplicationOut);
+    const svx = new Svix("token", { serverUrl: mockServer.url });
+
+    await svx.application.list();
+
+    const requests = await endpointMock.getSeenRequests();
+    expect(requests.length).toBe(1);
+    const idempotencyKey = requests[0].headers["idempotency-key"] as string;
+    expect(idempotencyKey.startsWith("auto_")).toBe(true);
+  });
+
+  test("test idempotency key is sent for create request", async () => {
+    const endpointMock = await mockServer
+      .forPost("/api/v1/app")
+      .thenReply(200, ApplicationOut);
+    const svx = new Svix("token", { serverUrl: mockServer.url });
+
+    await svx.application.create({ name: "test app" });
+
+    const requests = await endpointMock.getSeenRequests();
+    expect(requests.length).toBe(1);
+    const idempotencyKey = requests[0].headers["idempotency-key"] as string;
+    expect(idempotencyKey.startsWith("auto_")).toBe(true);
+  });
+
+  test("test client provided idempotency key is not overridden", async () => {
+    const endpointMock = await mockServer
+      .forPost("/api/v1/app")
+      .thenReply(200, ApplicationOut);
+    const svx = new Svix("token", { serverUrl: mockServer.url });
+
+    const clientProvidedKey = "test-key-123";
+    await svx.application.create(
+      { name: "test app" },
+      { idempotencyKey: clientProvidedKey }
+    );
+
+    const requests = await endpointMock.getSeenRequests();
+    expect(requests.length).toBe(1);
+    expect(requests[0].headers["idempotency-key"]).toBe(clientProvidedKey);
+  });
 });

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.locks.LockSupport;
+import java.util.UUID;
 
 public class SvixHttpClient {
     private final HttpUrl baseUrl;
@@ -52,6 +53,11 @@ public class SvixHttpClient {
 
         // Add default headers
         defaultHeaders.forEach(reqBuilder::addHeader);
+
+        String idempotencyKey = headers == null ? null : headers.get("idempotency-key");
+        if (idempotencyKey == null || idempotencyKey.isEmpty()) {
+            reqBuilder.addHeader("idempotency-key", "auto_" + UUID.randomUUID().toString());
+        }
 
         // Add custom headers if present
         if (headers != null) {

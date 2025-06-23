@@ -445,4 +445,55 @@ class WiremockTests {
                 .withRequestBody(equalTo(expectedBody)),
         )
     }
+
+  @Test
+  fun testIdempotencyKeyIsSentForListRequest() {
+    val svx = testClient()
+    wireMockServer.stubFor(
+        get(urlEqualTo("/api/v1/app"))
+            .willReturn(ok().withBodyFile("ListResponseApplicationOut.json")))
+
+    runBlocking { svx.application.list() }
+
+    wireMockServer.verify(
+        1,
+        getRequestedFor(urlEqualTo("/api/v1/app"))
+            .withHeader("idempotency-key", matching("auto_.*")),
+    )
+  }
+
+  @Test
+  fun testIdempotencyKeyIsSentForCreateRequest() {
+    val svx = testClient()
+    wireMockServer.stubFor(
+        post(urlEqualTo("/api/v1/app")).willReturn(ok().withBodyFile("ApplicationOut.json")))
+
+    runBlocking { svx.application.create(ApplicationIn(name = "test app")) }
+
+    wireMockServer.verify(
+        1,
+        postRequestedFor(urlEqualTo("/api/v1/app"))
+            .withHeader("idempotency-key", matching("auto_.*")),
+    )
+  }
+
+  @Test
+  fun testClientProvidedIdempotencyKeyIsNotOverridden() {
+    val svx = testClient()
+    wireMockServer.stubFor(
+        post(urlEqualTo("/api/v1/app")).willReturn(ok().withBodyFile("ApplicationOut.json")))
+
+    val clientProvidedKey = "test-key-123"
+    runBlocking {
+      svx.application.create(
+          ApplicationIn(name = "test app"),
+          ApplicationCreateOptions(idempotencyKey = clientProvidedKey))
+    }
+
+    wireMockServer.verify(
+        1,
+        postRequestedFor(urlEqualTo("/api/v1/app"))
+            .withHeader("idempotency-key", equalTo(clientProvidedKey)),
+    )
+  }
 }

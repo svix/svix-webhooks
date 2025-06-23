@@ -507,4 +507,56 @@ public class WiremockTests {
                         .withRequestBody(equalTo(expectedBody)));
     }
 
+    @Test
+    public void testIdempotencyKeyIsSentForListRequest() throws Exception {
+        Svix svx = testClient();
+        wireMockRule.stubFor(
+                WireMock.get(urlEqualTo("/api/v1/app"))
+                        .willReturn(WireMock.ok().withBodyFile("ListResponseApplicationOut.json")));
+
+        svx.getApplication().list();
+
+        wireMockRule.verify(
+                1,
+                getRequestedFor(urlEqualTo("/api/v1/app"))
+                        .withHeader("idempotency-key", matching("auto_.*")));
+    }
+
+    @Test
+    public void testIdempotencyKeyIsSentForCreateRequest() throws Exception {
+        Svix svx = testClient();
+        wireMockRule.stubFor(
+                WireMock.post(urlEqualTo("/api/v1/app"))
+                        .willReturn(WireMock.ok().withBodyFile("ApplicationOut.json")));
+
+        ApplicationIn app = new ApplicationIn();
+        app.setName("test app");
+        svx.getApplication().create(app);
+
+        wireMockRule.verify(
+                1,
+                postRequestedFor(urlEqualTo("/api/v1/app"))
+                        .withHeader("idempotency-key", matching("auto_.*")));
+    }
+
+    @Test
+    public void testClientProvidedIdempotencyKeyIsNotOverridden() throws Exception {
+        Svix svx = testClient();
+        wireMockRule.stubFor(
+                WireMock.post(urlEqualTo("/api/v1/app"))
+                        .willReturn(WireMock.ok().withBodyFile("ApplicationOut.json")));
+
+        String clientProvidedKey = "test-key-123";
+        ApplicationIn app = new ApplicationIn();
+        app.setName("test app");
+        ApplicationCreateOptions opts = new ApplicationCreateOptions();
+        opts.setIdempotencyKey(clientProvidedKey);
+        svx.getApplication().create(app, opts);
+
+        wireMockRule.verify(
+                1,
+                postRequestedFor(urlEqualTo("/api/v1/app"))
+                        .withHeader("idempotency-key", equalTo(clientProvidedKey)));
+    }
+
 }
