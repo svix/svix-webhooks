@@ -81,6 +81,11 @@ func ExecuteRequest[ReqBody any, ResBody any](
 
 	}
 
+	key, ok := headerParams["idempotency-key"]
+	if !ok || key == "" {
+		req.Header.Set("idempotency-key", "auto_"+strconv.FormatUint(rand.Uint64(), 10))
+	}
+
 	req.Header.Set("svix-req-id", strconv.FormatUint(rand.Uint64(), 10))
 	for hKey, hVal := range client.DefaultHeaders {
 		req.Header.Add(hKey, hVal)

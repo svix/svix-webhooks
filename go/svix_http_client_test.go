@@ -60,6 +60,19 @@ var appListOut = `{
   "done": true
 }`
 
+var appCreateOut = `{
+	"uid": "unique-identifier",
+	"name": "My first application",
+	"rateLimit": 0,
+	"id": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+	"createdAt": "2019-08-24T14:15:22Z",
+	"updatedAt": "2019-08-24T14:15:22Z",
+	"metadata": {
+		"property1": "string",
+		"property2": "string"
+	}
+}`
+
 func newMockClient() svix.Svix {
 	url, err := url.Parse("http://testapi.test")
 	if err != nil {
@@ -221,5 +234,100 @@ func TestOctothorpeUrlParam(t *testing.T) {
 	_, err := svx.Message.List(context.Background(), "random_app_id", &listOpts)
 	if err != nil {
 		t.Error(err)
+	}
+}
+
+func TestIdempotencyKeyIsSentForListRequest(t *testing.T) {
+	svx := newMockClient()
+	httpmock.Activate()
+	defer httpmock.DeactivateAndReset()
+
+	httpmock.RegisterResponder("GET", "http://testapi.test/api/v1/app",
+		func(r *http.Request) (*http.Response, error) {
+			idempotencyKey := r.Header.Get("idempotency-key")
+			if idempotencyKey == "" {
+				t.Errorf("Expected idempotency-key header to be set")
+			}
+			if !strings.HasPrefix(idempotencyKey, "auto_") {
+				t.Errorf("Expected idempotency-key to start with 'auto_', got: %s", idempotencyKey)
+			}
+			return httpmock.NewStringResponse(200, appListOut), nil
+		},
+	)
+
+	_, err := svx.Application.List(context.Background(), nil)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if httpmock.GetTotalCallCount() != 1 {
+		t.Errorf("Expected 1 request, got %v", httpmock.GetTotalCallCount())
+	}
+}
+
+func TestIdempotencyKeyIsSentForCreateRequest(t *testing.T) {
+	svx := newMockClient()
+	httpmock.Activate()
+	defer httpmock.DeactivateAndReset()
+
+	httpmock.RegisterResponder("POST", "http://testapi.test/api/v1/app",
+		func(r *http.Request) (*http.Response, error) {
+			idempotencyKey := r.Header.Get("idempotency-key")
+			if idempotencyKey == "" {
+				t.Errorf("Expected idempotency-key header to be set")
+			}
+			if !strings.HasPrefix(idempotencyKey, "auto_") {
+				t.Errorf("Expected idempotency-key to start with 'auto_', got: %s", idempotencyKey)
+			}
+			return httpmock.NewStringResponse(200, appCreateOut), nil
+		},
+	)
+
+	appIn := models.ApplicationIn{
+		Name: "test app",
+	}
+	_, err := svx.Application.Create(context.Background(), appIn, nil)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if httpmock.GetTotalCallCount() != 1 {
+		t.Errorf("Expected 1 request, got %v", httpmock.GetTotalCallCount())
+	}
+}
+
+func TestClientProvidedIdempotencyKeyIsNotOverridden(t *testing.T) {
+	svx := newMockClient()
+	httpmock.Activate()
+	defer httpmock.DeactivateAndReset()
+
+	clientProvidedKey := "test-key-123"
+
+	httpmock.RegisterResponder("POST", "http://testapi.test/api/v1/app",
+		func(r *http.Request) (*http.Response, error) {
+			idempotencyKey := r.Header.Get("idempotency-key")
+			if idempotencyKey == "" {
+				t.Errorf("Expected idempotency-key header to be set")
+			}
+			if idempotencyKey != clientProvidedKey {
+				t.Errorf("Expected idempotency-key to be %s, got: %s", clientProvidedKey, idempotencyKey)
+			}
+			return httpmock.NewStringResponse(200, appCreateOut), nil
+		},
+	)
+
+	appIn := models.ApplicationIn{
+		Name: "test app",
+	}
+	createOpts := svix.ApplicationCreateOptions{
+		IdempotencyKey: &clientProvidedKey,
+	}
+	_, err := svx.Application.Create(context.Background(), appIn, &createOpts)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if httpmock.GetTotalCallCount() != 1 {
+		t.Errorf("Expected 1 request, got %v", httpmock.GetTotalCallCount())
 	}
 }
