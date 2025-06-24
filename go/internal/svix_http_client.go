@@ -84,7 +84,7 @@ func ExecuteRequest[ReqBody any, ResBody any](
 	}
 
 	key, ok := headerParams["idempotency-key"]
-	if !ok || key == "" {
+	if (!ok || key == "") && strings.ToUpper(method) == "POST" {
 		req.Header.Set("idempotency-key", "auto_"+uuid.New().String())
 	}
 

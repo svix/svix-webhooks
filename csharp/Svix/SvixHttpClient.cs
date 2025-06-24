@@ -59,7 +59,7 @@ namespace Svix
             {
                 headerParams = new Dictionary<string, string>();
             }
-            if (!headerParams.ContainsKey("idempotency-key"))
+            if (!headerParams.ContainsKey("idempotency-key") && method == HttpMethod.Post)
             {
                 headerParams["idempotency-key"] = "auto_" + Guid.NewGuid().ToString();
             }

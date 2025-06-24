@@ -237,34 +237,6 @@ func TestOctothorpeUrlParam(t *testing.T) {
 	}
 }
 
-func TestIdempotencyKeyIsSentForListRequest(t *testing.T) {
-	svx := newMockClient()
-	httpmock.Activate()
-	defer httpmock.DeactivateAndReset()
-
-	httpmock.RegisterResponder("GET", "http://testapi.test/api/v1/app",
-		func(r *http.Request) (*http.Response, error) {
-			idempotencyKey := r.Header.Get("idempotency-key")
-			if idempotencyKey == "" {
-				t.Errorf("Expected idempotency-key header to be set")
-			}
-			if !strings.HasPrefix(idempotencyKey, "auto_") {
-				t.Errorf("Expected idempotency-key to start with 'auto_', got: %s", idempotencyKey)
-			}
-			return httpmock.NewStringResponse(200, appListOut), nil
-		},
-	)
-
-	_, err := svx.Application.List(context.Background(), nil)
-	if err != nil {
-		t.Error(err)
-	}
-
-	if httpmock.GetTotalCallCount() != 1 {
-		t.Errorf("Expected 1 request, got %v", httpmock.GetTotalCallCount())
-	}
-}
-
 func TestIdempotencyKeyIsSentForCreateRequest(t *testing.T) {
 	svx := newMockClient()
 	httpmock.Activate()

@@ -113,7 +113,8 @@ impl Request {
         self.header_params
             .insert("svix-req-id", rand::rng().random::<u32>().to_string());
 
-        if !self.header_params.contains_key("idempotency-key") {
+        if self.method == http1::Method::POST && !self.header_params.contains_key("idempotency-key")
+        {
             self.header_params
                 .insert("idempotency-key", format!("auto_{}", uuid::Uuid::new_v4()));
         }

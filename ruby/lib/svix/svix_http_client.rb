@@ -53,7 +53,7 @@ module Svix
       headers.each { |key, value| request[key] = value }
 
       # Check if idempotency-key header already exists
-      if !request.key?("idempotency-key")
+      if !request.key?("idempotency-key") && method.to_s.upcase == "POST"
         request["idempotency-key"] = "auto_" + SecureRandom.uuid_v4.to_s
       end
 

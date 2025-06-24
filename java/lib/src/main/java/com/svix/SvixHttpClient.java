@@ -55,8 +55,8 @@ public class SvixHttpClient {
         defaultHeaders.forEach(reqBuilder::addHeader);
 
         String idempotencyKey = headers == null ? null : headers.get("idempotency-key");
-        if (idempotencyKey == null || idempotencyKey.isEmpty()) {
-            reqBuilder.addHeader("idempotency-key", "auto_" + UUID.randomUUID().toString());
+        if ((idempotencyKey == null || idempotencyKey.isEmpty()) && method.toUpperCase() == "POST") {
+                reqBuilder.addHeader("idempotency-key", "auto_" + UUID.randomUUID().toString());
         }
 
         // Add custom headers if present

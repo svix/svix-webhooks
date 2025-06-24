@@ -52,22 +52,6 @@ def test_struct_enum_without_fields():
     assert isinstance(res.config, dict)
     assert res.config == {}
 
-
-@httpretty.activate(verbose=True, allow_net_connect=False)
-def test_idempotency_key_is_sent_for_list_request():
-    svx = svix.Svix("token", svix.SvixOptions(server_url="http://test.example"))
-    httpretty.register_uri(
-        httpretty.GET,
-        "http://test.example/api/v1/app",
-        body='{"data":[],"iterator":null,"prevIterator":null,"done":true}'
-    )
-    svx.application.list()
-
-    request = httpretty.latest_requests()[0]
-    assert "idempotency-key" in request.headers
-    assert request.headers["idempotency-key"].startswith("auto_")
-
-
 @httpretty.activate(verbose=True, allow_net_connect=False)
 def test_idempotency_key_is_sent_for_create_request():
     svx = svix.Svix("token", svix.SvixOptions(server_url="http://test.example"))
