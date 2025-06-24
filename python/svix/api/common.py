@@ -120,7 +120,7 @@ class ApiBase:
         if header_params is not None:
             headers.update(header_params)
 
-        if headers.get("idempotency-key") is None:
+        if headers.get("idempotency-key") is None and method.upper() == "POST":
             headers["idempotency-key"] = f"auto_{uuid.uuid4()}"
 
         httpx_kwargs = {

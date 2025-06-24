@@ -508,21 +508,6 @@ public class WiremockTests {
     }
 
     @Test
-    public void testIdempotencyKeyIsSentForListRequest() throws Exception {
-        Svix svx = testClient();
-        wireMockRule.stubFor(
-                WireMock.get(urlEqualTo("/api/v1/app"))
-                        .willReturn(WireMock.ok().withBodyFile("ListResponseApplicationOut.json")));
-
-        svx.getApplication().list();
-
-        wireMockRule.verify(
-                1,
-                getRequestedFor(urlEqualTo("/api/v1/app"))
-                        .withHeader("idempotency-key", matching("auto_.*")));
-    }
-
-    @Test
     public void testIdempotencyKeyIsSentForCreateRequest() throws Exception {
         Svix svx = testClient();
         wireMockRule.stubFor(

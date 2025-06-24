@@ -114,7 +114,10 @@ export class SvixRequest {
       url.searchParams.set(name, value);
     }
 
-    if (this.headerParams["idempotency-key"] === undefined) {
+    if (
+      this.headerParams["idempotency-key"] === undefined &&
+      this.method.toUpperCase() === "POST"
+    ) {
       this.headerParams["idempotency-key"] = "auto_" + uuidv4();
     }
 

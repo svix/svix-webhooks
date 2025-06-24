@@ -446,21 +446,6 @@ class WiremockTests {
         )
     }
 
-  @Test
-  fun testIdempotencyKeyIsSentForListRequest() {
-    val svx = testClient()
-    wireMockServer.stubFor(
-        get(urlEqualTo("/api/v1/app"))
-            .willReturn(ok().withBodyFile("ListResponseApplicationOut.json")))
-
-    runBlocking { svx.application.list() }
-
-    wireMockServer.verify(
-        1,
-        getRequestedFor(urlEqualTo("/api/v1/app"))
-            .withHeader("idempotency-key", matching("auto_.*")),
-    )
-  }
 
   @Test
   fun testIdempotencyKeyIsSentForCreateRequest() {

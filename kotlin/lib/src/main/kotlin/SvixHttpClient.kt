@@ -43,9 +43,9 @@ internal constructor(
             }
         }
 
-        if (headers?.get("idempotency-key") == null) {
-            val uuid = UUID.randomUUID().toString()
-            reqBuilder.addHeader("idempotency-key", "auto_" + uuid)
+        if (headers?.get("idempotency-key") == null && method == "POST") {
+                val uuid = UUID.randomUUID().toString()
+                reqBuilder.addHeader("idempotency-key", "auto_" + uuid)
         }
 
         reqBuilder.addHeader("svix-req-id", Random.nextULong().toString())
