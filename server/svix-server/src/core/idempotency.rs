@@ -25,7 +25,7 @@ use tower::Service;
 use super::cache::{kv_def, Cache, CacheBehavior, CacheKey, CacheValue};
 use crate::error::Error;
 
-/// Returns the default exipry period for cached responses
+/// Returns the default expiry period for cached responses
 const fn expiry_default() -> Duration {
     Duration::from_secs(60 * 60 * 12)
 }
