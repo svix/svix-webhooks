@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 1.68.0
+* Server: Ensure messagecontent expiration is set
+* Libs/PHP: Handle Badly Formatted Signatures by @rodnaph in https://github.com/svix/svix-webhooks/pull/1942
+* Libs/All: Automatically send an idempotency key on all outgoing post requests
+
 ## Version 1.67.0
 * Libs/Go: Disable HTTP/2 for API calls because it was causing issues for some users
 * Libs/Python: Enable configuring a proxy for API requests
