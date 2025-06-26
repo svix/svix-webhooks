@@ -82,6 +82,10 @@ enum Commands {
     /// Generate OpenAPI JSON specification and exit
     #[clap()]
     GenerateOpenapi,
+
+    /// Health check command
+    #[clap()]
+    Healthcheck,
 }
 
 #[derive(Subcommand)]
@@ -113,6 +117,22 @@ async fn main() -> anyhow::Result<()> {
     dotenv().ok();
 
     let args = Args::parse();
+
+    // Handle commands that don't need configuration first
+    if let Some(Commands::Healthcheck) = args.command {
+        let client = reqwest::Client::new();
+        let response = client
+            .head("http://localhost:8071/api/v1/health")
+            .send()
+            .await?;
+
+        if response.status().is_success() {
+            return Ok(());
+        } else {
+            return Err(anyhow::anyhow!("healthcheck failed ({})", response.status()));
+        }
+    }
+
     let cfg = cfg::load()?;
 
     let (tracing_subscriber, _guard) = setup_tracing(&cfg, /* for_test = */ false);
@@ -194,6 +214,11 @@ async fn main() -> anyhow::Result<()> {
                 "{}",
                 serde_json::to_string_pretty(&openapi).expect("Failed to serialize JSON spec")
             );
+        }
+
+        Some(Commands::Healthcheck) => {
+            // This should never be reached due to early return above
+            unreachable!("Healthcheck command should be handled before config loading")
         }
         None => {
             run(cfg).await;

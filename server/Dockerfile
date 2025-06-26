@@ -14,6 +14,7 @@ RUN cargo chef prepare --recipe-path recipe.json
 FROM chef AS build
 
 RUN apt-get update && apt-get install -y \
+        curl=7.* \
         build-essential=12.* \
         checkinstall=1.* \
         zlib1g-dev=1:* \
