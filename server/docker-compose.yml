@@ -5,6 +5,12 @@ services:
       context: .
       dockerfile: Dockerfile
     image: svix/svix-server
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8071/api/v1/health"]
+      # test: ["CMD-SHELL", "svix-server healthcheck"]
+      interval: 1s
+      timeout: 1s
+      retries: 600
     environment:
       WAIT_FOR: "true"  # We want to wait for the default services
       SVIX_REDIS_DSN: "redis://redis:6379"
