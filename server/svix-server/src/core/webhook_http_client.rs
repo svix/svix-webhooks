@@ -220,14 +220,19 @@ pub struct RequestBuildError(pub Vec<BuildError>);
 
 impl std::fmt::Display for RequestBuildError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let err_str = self.0.iter().fold(String::default(), |acc, err| {
-            if acc.is_empty() {
-                format!("Build failed: {err}")
-            } else {
-                format!("{acc}; {err}")
+        let mut iter = self.0.iter();
+
+        f.write_str("Build failed")?;
+
+        if let Some(first) = iter.next() {
+            write!(f, ": {first}")?;
+
+            for err in iter {
+                write!(f, "; {err}")?;
             }
-        });
-        write!(f, "{err_str}")
+        }
+
+        Ok(())
     }
 }
 
