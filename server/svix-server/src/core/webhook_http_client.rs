@@ -383,15 +383,15 @@ impl RequestBuilder {
         let uri = self.uri.unwrap();
         let authority = uri.authority().expect("Missing authority");
         let host = match authority.port() {
-            Some(port) => format!("{}:{port}", authority.host()),
-            None => authority.host().to_string(),
-        };
+            Some(port) => HeaderValue::from_str(&format!("{}:{port}", authority.host())),
+            None => HeaderValue::from_str(authority.host()),
+        }.unwrap();
 
         let mut headers = HeaderMap::with_capacity(3 + custom_headers.len());
 
         // Ensure that host header is first -- even though this is technically
         // not required by HTTP spec, some clients fail if it's not first:
-        headers.insert(http::header::HOST, HeaderValue::from_str(&host).unwrap());
+        headers.insert(http::header::HOST, host);
         headers.insert(
             http::header::ACCEPT,
             self.accept.unwrap_or(HeaderValue::from_static("*/*")),

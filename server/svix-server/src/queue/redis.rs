@@ -251,7 +251,7 @@ async fn new_pair_inner(
         payload_key: QUEUE_KV_KEY.to_owned(),
         ack_deadline_ms: pending_duration,
         dlq_config: Some(DeadLetterQueueConfig {
-            queue_key: dlq_name.to_string(),
+            queue_key: dlq_name,
             max_receives: 3,
         }),
         sentinel_config: cfg.redis_sentinel_cfg.clone().map(|c| c.into()),
