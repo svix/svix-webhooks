@@ -230,7 +230,7 @@ impl<T: OmniMessage> SvixOmniConsumer<T> {
                         acker
                             .payload_serde_json()
                             .map_err(|e| {
-                                Error::queue(format!("Failed to decode queue task: {e:?}"))
+                                Error::queue(format_args!("Failed to decode queue task: {e:?}"))
                             })?
                             .ok_or_else(|| Error::queue("Unexpected empty delivery"))?,
                     ),

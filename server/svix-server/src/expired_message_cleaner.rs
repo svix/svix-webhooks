@@ -79,7 +79,7 @@ pub async fn clean_expired_messages(
         DELETE FROM messagecontent WHERE id = any(
             array(
                 SELECT id FROM messagecontent
-                WHERE 
+                WHERE
                     expiration <= now()
                 LIMIT $1
                 FOR UPDATE SKIP LOCKED
@@ -114,7 +114,7 @@ async fn has_message_payloads_pending_expiry(pool: &DatabaseConnection) -> Resul
     .await?
     .ok_or_else(|| Error::generic("failed to check for message payloads"))?
     .try_get_by_index(0)
-    .map_err(|e| Error::generic(format!("failed to check for message payloads: {e}")))
+    .map_err(|e| Error::generic(format_args!("failed to check for message payloads: {e}")))
 }
 
 /// Polls the database for expired messages to nullify payloads for.

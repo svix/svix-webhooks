@@ -196,14 +196,14 @@ fn generate_msg_headers(
     let id_hdr = msg_id
         .0
         .parse()
-        .map_err(|e| Error::generic(format!("Error parsing message id: {e:?}")))?;
+        .map_err(|e| Error::generic(format_args!("Error parsing message id: {e:?}")))?;
     let timestamp = timestamp
         .to_string()
         .parse()
-        .map_err(|e| Error::generic(format!("Error parsing message timestamp: {e:?}")))?;
+        .map_err(|e| Error::generic(format_args!("Error parsing message timestamp: {e:?}")))?;
     let signatures_str = signatures
         .parse()
-        .map_err(|e| Error::generic(format!("Error parsing message signatures: {e:?}")))?;
+        .map_err(|e| Error::generic(format_args!("Error parsing message signatures: {e:?}")))?;
     if whitelabel_headers {
         headers.insert("webhook-id".to_owned(), id_hdr);
         headers.insert("webhook-timestamp".to_owned(), timestamp);
@@ -334,7 +334,7 @@ async fn make_http_call(
     let req = RequestBuilder::new()
         .method(method)
         .uri_str(&url)
-        .map_err(|e| Error::validation(format!("URL is invalid: {e:?}")))?
+        .map_err(|e| Error::validation(format_args!("URL is invalid: {e:?}")))?
         .headers(headers)
         .body(payload.into(), HeaderValue::from_static("application/json"))
         .version(Version::HTTP_11)
@@ -626,7 +626,7 @@ async fn handle_failed_dispatch(
                 .one(*db)
                 .await?
                 .ok_or_else(|| {
-                    Error::generic(format!(
+                    Error::generic(format_args!(
                         "Endpoint not found {app_id} {}",
                         &msg_task.endpoint_id
                     ))
@@ -772,7 +772,10 @@ async fn process_queue_task_inner(
                     .one(db)
                     .await?
                     .ok_or_else(|| {
-                        Error::generic(format!("Unexpected: message doesn't exist {}", task.msg_id))
+                        Error::generic(format_args!(
+                            "Unexpected: message doesn't exist {}",
+                            task.msg_id
+                        ))
                     })?;
 
                 let destination =
@@ -781,7 +784,7 @@ async fn process_queue_task_inner(
                         .one(db)
                         .await?
                         .ok_or_else(|| {
-                            Error::generic(format!(
+                            Error::generic(format_args!(
                                 "MessageDestination not found for message {}",
                                 &task.msg_id
                             ))
@@ -802,7 +805,10 @@ async fn process_queue_task_inner(
                     .one(db)
                     .await?
                     .ok_or_else(|| {
-                        Error::generic(format!("Unexpected: message doesn't exist {}", task.msg_id))
+                        Error::generic(format_args!(
+                            "Unexpected: message doesn't exist {}",
+                            task.msg_id
+                        ))
                     })?;
                 (
                     msg,
@@ -914,7 +920,7 @@ async fn process_queue_task_inner(
 
     let errs: Vec<_> = join.iter().filter(|x| x.is_err()).collect();
     if !errs.is_empty() {
-        return Err(Error::generic(format!(
+        return Err(Error::generic(format_args!(
             "Some dispatches failed unexpectedly: {errs:?}",
         )));
     }

@@ -21,7 +21,7 @@ impl RedisQueueType<'_> {
             RedisQueueType::Stream(q) => conn
                 .xlen(q)
                 .await
-                .map_err(|e| Error::queue(format!("Failed to query queue depth: {e}"))),
+                .map_err(|e| Error::queue(format_args!("Failed to query queue depth: {e}"))),
             RedisQueueType::StreamPending { stream, group } => {
                 let reply: StreamPendingReply = conn.xpending(stream, group).await?;
                 Ok(reply.count() as _)
@@ -29,11 +29,11 @@ impl RedisQueueType<'_> {
             RedisQueueType::List(q) => conn
                 .llen(q)
                 .await
-                .map_err(|e| Error::queue(format!("Failed to query queue depth: {e}"))),
+                .map_err(|e| Error::queue(format_args!("Failed to query queue depth: {e}"))),
             RedisQueueType::SortedSet(q) => conn
                 .zcard(q)
                 .await
-                .map_err(|e| Error::queue(format!("Failed to query queue depth: {e}"))),
+                .map_err(|e| Error::queue(format_args!("Failed to query queue depth: {e}"))),
         }
     }
 }

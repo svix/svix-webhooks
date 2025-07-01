@@ -37,8 +37,10 @@ pub fn expand_aide_annotate(
             operation_summary = lit.value();
         } else {
             let path = arg.path.to_token_stream().to_string();
-            let msg = format!("Unknown argument `{path}`, expected `op_id` or `op_summary`");
-            return Err(syn::Error::new_spanned(arg.path, msg));
+            return Err(syn::Error::new_spanned(
+                arg.path,
+                format_args!("Unknown argument `{path}`, expected `op_id` or `op_summary`"),
+            ));
         }
     }
 
