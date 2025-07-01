@@ -4796,7 +4796,7 @@ dependencies = [
  "assert_matches",
  "axum",
  "axum-server",
- "base64 0.13.1",
+ "base64 0.22.1",
  "bb8",
  "bb8-redis",
  "blake2",

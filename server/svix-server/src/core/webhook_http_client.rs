@@ -385,7 +385,8 @@ impl RequestBuilder {
         let host = match authority.port() {
             Some(port) => HeaderValue::from_str(&format!("{}:{port}", authority.host())),
             None => HeaderValue::from_str(authority.host()),
-        }.unwrap();
+        }
+        .unwrap();
 
         let mut headers = HeaderMap::with_capacity(3 + custom_headers.len());
 

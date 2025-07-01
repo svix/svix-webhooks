@@ -11,6 +11,7 @@ use std::{
 };
 
 use axum::body::HttpBody as _;
+use base64::{engine::general_purpose::STANDARD, Engine};
 use chrono::Utc;
 use futures::future;
 use http::{HeaderValue, StatusCode, Version};
@@ -177,7 +178,7 @@ fn sign_msg(
                 EndpointSecretType::Hmac256 => "v1",
                 EndpointSecretType::Ed25519 => "v1a",
             };
-            format!("{version},{}", base64::encode(sig))
+            format!("{version},{}", STANDARD.encode(sig))
         })
         .collect::<Vec<String>>()
         .join(" ")
@@ -733,7 +734,7 @@ async fn dispatch_message_task(
 fn bytes_to_string(bytes: bytes::Bytes) -> String {
     match std::str::from_utf8(&bytes) {
         Ok(v) => v.to_owned(),
-        Err(_) => base64::encode(&bytes),
+        Err(_) => STANDARD.encode(&bytes),
     }
 }
 
@@ -1069,6 +1070,7 @@ pub async fn queue_handler(
 mod tests {
     use std::collections::HashMap;
 
+    use base64::{engine::general_purpose::STANDARD, Engine};
     use bytes::Bytes;
     use ed25519_compact::Signature;
 
@@ -1150,7 +1152,7 @@ mod tests {
         let test_timestamp = 1614265330;
         let test_body = "{\"test\": 2432232314}";
         let test_key = EndpointSecretInternal::from_endpoint_secret(
-            EndpointSecret::Symmetric(base64::decode("MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw").unwrap()),
+            EndpointSecret::Symmetric(STANDARD.decode("MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw").unwrap()),
             &Encryption::new_noop(),
         )
         .unwrap();
@@ -1206,7 +1208,8 @@ mod tests {
         let to_sign = format!("{msg_id}.{timestamp}.{body}");
         assert!(signatures.starts_with("v1a,"));
         let sig: Signature = Signature::from_slice(
-            base64::decode(&signatures["v1a,".len()..])
+            STANDARD
+                .decode(&signatures["v1a,".len()..])
                 .unwrap()
                 .as_slice(),
         )

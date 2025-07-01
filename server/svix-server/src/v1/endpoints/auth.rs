@@ -6,6 +6,7 @@ use axum::{
     extract::{Path, State},
     Json,
 };
+use base64::{engine::general_purpose::STANDARD, Engine};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use svix_server_derive::aide_annotate;
@@ -81,7 +82,7 @@ async fn app_portal_access(
     }))
     .map_err(|_| HttpError::internal_server_error(None, None))?;
 
-    let login_key = base64::encode(login_key);
+    let login_key = STANDARD.encode(login_key);
 
     // Included for API compatibility, but this URL will not be useful
     let url = format!("{}/login#key={login_key}", &cfg.internal.app_portal_url);

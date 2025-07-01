@@ -3,6 +3,7 @@
 
 use std::fmt::Debug;
 
+use base64::{engine::general_purpose::STANDARD, Engine};
 use chacha20poly1305::{
     aead::{Aead, KeyInit},
     Key, XChaCha20Poly1305, XNonce,
@@ -28,7 +29,8 @@ impl AsymmetricKey {
     }
 
     pub fn from_base64(b64: &str) -> Result<Self> {
-        let bytes = base64::decode(b64)
+        let bytes = STANDARD
+            .decode(b64)
             .map_err(|_| crate::error::Error::generic("Failed parsing base64"))?;
 
         Self::from_slice(bytes.as_slice())
@@ -44,7 +46,7 @@ impl Debug for AsymmetricKey {
         write!(
             f,
             "<AsymmetricKey sk=*** pk={}>",
-            base64::encode(self.0.pk.as_slice())
+            STANDARD.encode(self.0.pk.as_slice())
         )
     }
 }

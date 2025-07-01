@@ -215,6 +215,7 @@ impl AppEndpointKey {
 
 #[cfg(test)]
 mod tests {
+    use base64::{engine::general_purpose::STANDARD, Engine};
     use chrono::Utc;
 
     use super::CreateMessageEndpoint;
@@ -229,7 +230,7 @@ mod tests {
     #[test]
     fn test_valid_signing_keys() {
         let key = EndpointSecretInternal::from_endpoint_secret(
-            EndpointSecret::Symmetric(base64::decode("MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw").unwrap()),
+            EndpointSecret::Symmetric(STANDARD.decode("MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw").unwrap()),
             &Encryption::new_noop(),
         )
         .unwrap();

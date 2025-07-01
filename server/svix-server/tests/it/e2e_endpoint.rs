@@ -8,6 +8,7 @@ use std::{
 };
 
 use anyhow::Result;
+use base64::{engine::general_purpose::STANDARD, Engine};
 use chrono::{DateTime, Utc};
 use ed25519_compact::Signature;
 use reqwest::{StatusCode, Url};
@@ -1094,7 +1095,7 @@ async fn test_endpoint_rotate_signing_e2e() {
 
     for sec in [secret1, secret2, secret3] {
         if let EndpointSecret::Symmetric(key) = &sec.key {
-            let sec = base64::encode(key);
+            let sec = STANDARD.encode(key);
             let wh = Webhook::new(&sec).unwrap();
             wh.verify(last_body.as_bytes(), &last_headers).unwrap();
         } else {
@@ -1118,7 +1119,7 @@ async fn test_endpoint_rotate_signing_symmetric_and_asymmetric() {
     // Asymmetric key
     let secret_2 = EndpointSecret::Asymmetric(AsymmetricKey::from_base64("6Xb/dCcHpPea21PS1N9VY/NZW723CEc77N4rJCubMbfVKIDij2HKpMKkioLlX0dRqSKJp4AJ6p9lMicMFs6Kvg==").unwrap());
     // Long key
-    let secret_3 = EndpointSecret::Symmetric(base64::decode("TUdfVE5UMnZlci1TeWxOYXQtX1ZlTW1kLTRtMFdhYmEwanIxdHJvenRCbmlTQ2hFdzBnbHhFbWdFaTJLdzQwSA==").unwrap());
+    let secret_3 = EndpointSecret::Symmetric(STANDARD.decode("TUdfVE5UMnZlci1TeWxOYXQtX1ZlTW1kLTRtMFdhYmEwanIxdHJvenRCbmlTQ2hFdzBnbHhFbWdFaTJLdzQwSA==").unwrap());
 
     let ep_in = EndpointIn {
         url: Url::parse(&receiver.endpoint).unwrap(),
@@ -1162,7 +1163,7 @@ async fn test_endpoint_rotate_signing_symmetric_and_asymmetric() {
     for sec in [secret_1, secret_2, secret_3] {
         match sec {
             EndpointSecret::Symmetric(key) => {
-                let sec = base64::encode(key);
+                let sec = STANDARD.encode(key);
                 let wh = Webhook::new(&sec).unwrap();
                 wh.verify(last_body.as_bytes(), &last_headers).unwrap();
             }
@@ -1185,7 +1186,8 @@ async fn test_endpoint_rotate_signing_symmetric_and_asymmetric() {
                         .filter(|x| x.starts_with("v1a,"))
                         .any(|signature| {
                             let sig: Signature = Signature::from_slice(
-                                base64::decode(&signature["v1a,".len()..])
+                                STANDARD
+                                    .decode(&signature["v1a,".len()..])
                                     .unwrap()
                                     .as_slice(),
                             )
@@ -1261,7 +1263,7 @@ async fn test_custom_endpoint_secret() {
         .into_endpoint_secret(&Encryption::new_noop())
         .unwrap();
     // Long key
-    let secret_2 = EndpointSecret::Symmetric(base64::decode("TUdfVE5UMnZlci1TeWxOYXQtX1ZlTW1kLTRtMFdhYmEwanIxdHJvenRCbmlTQ2hFdzBnbHhFbWdFaTJLdzQwSA==").unwrap());
+    let secret_2 = EndpointSecret::Symmetric(STANDARD.decode("TUdfVE5UMnZlci1TeWxOYXQtX1ZlTW1kLTRtMFdhYmEwanIxdHJvenRCbmlTQ2hFdzBnbHhFbWdFaTJLdzQwSA==").unwrap());
     // Asymmetric key
     let secret_3 = EndpointSecret::Asymmetric(AsymmetricKey::from_base64("6Xb/dCcHpPea21PS1N9VY/NZW723CEc77N4rJCubMbfVKIDij2HKpMKkioLlX0dRqSKJp4AJ6p9lMicMFs6Kvg==").unwrap());
     assert_eq!(
@@ -1584,7 +1586,7 @@ async fn test_legacy_endpoint_secret() {
         .unwrap()
         .into_endpoint_secret(&Encryption::new_noop())
         .unwrap();
-    let raw_key = base64::decode("5gasBsSw3Nvf3ugNYVJIqnRVYPW7hPts").unwrap();
+    let raw_key = STANDARD.decode("5gasBsSw3Nvf3ugNYVJIqnRVYPW7hPts").unwrap();
     let secret_1 = EndpointSecret::Symmetric(raw_key.clone());
 
     let ep_in = EndpointIn {

@@ -7,6 +7,7 @@ use std::{
     sync::LazyLock,
 };
 
+use base64::{engine::general_purpose::STANDARD, Engine};
 use chrono::{DateTime, Utc};
 use num_enum::{IntoPrimitive, TryFromPrimitive};
 use rand::Rng;
@@ -834,7 +835,7 @@ impl Serialize for EndpointSecretInternal {
     where
         S: serde::Serializer,
     {
-        serializer.serialize_str(&base64::encode(self.clone().into_vec()))
+        serializer.serialize_str(&STANDARD.encode(self.clone().into_vec()))
     }
 }
 
@@ -857,11 +858,15 @@ impl<'de> Deserialize<'de> for EndpointSecretInternal {
                         .get(EndpointSecretType::Hmac256.secret_prefix().len()..)
                         .ok_or_else(|| Error::custom("invalid prefix".to_string()))
                         .and_then(|string| {
-                            base64::decode(string).map_err(|err| Error::custom(err.to_string()))
+                            STANDARD
+                                .decode(string)
+                                .map_err(|err| Error::custom(err.to_string()))
                         })?,
                 })
             } else {
-                let buf = base64::decode(string).map_err(|err| Error::custom(err.to_string()))?;
+                let buf = STANDARD
+                    .decode(string)
+                    .map_err(|err| Error::custom(err.to_string()))?;
                 Self::from_vec(buf).map_err(|err| Error::custom(err.to_string()))
             }
         })
@@ -954,14 +959,14 @@ impl EndpointSecret {
                 format!(
                     "{}{}",
                     EndpointSecretType::Hmac256.secret_prefix(),
-                    base64::encode(key)
+                    STANDARD.encode(key)
                 )
             }
             Self::Asymmetric(key) => {
                 format!(
                     "{}{}",
                     EndpointSecretType::Ed25519.secret_prefix(),
-                    &base64::encode(key.0.sk.as_slice())
+                    &STANDARD.encode(key.0.sk.as_slice())
                 )
             }
         }
@@ -973,14 +978,14 @@ impl EndpointSecret {
                 format!(
                     "{}{}",
                     EndpointSecretType::Hmac256.public_prefix(),
-                    base64::encode(key)
+                    STANDARD.encode(key)
                 )
             }
             Self::Asymmetric(key) => {
                 format!(
                     "{}{}",
                     EndpointSecretType::Ed25519.public_prefix(),
-                    &base64::encode(key.pubkey())
+                    &STANDARD.encode(key.pubkey())
                 )
             }
         }
@@ -1019,7 +1024,9 @@ impl<'de> Deserialize<'de> for EndpointSecret {
                         .get(EndpointSecretType::Hmac256.secret_prefix().len()..)
                         .ok_or(invalid_prefix)
                         .and_then(|string| {
-                            base64::decode(string).map_err(|err| Error::custom(err.to_string()))
+                            STANDARD
+                                .decode(string)
+                                .map_err(|err| Error::custom(err.to_string()))
                         })?,
                 ))
             } else {
@@ -1391,6 +1398,7 @@ pub type FeatureFlagSet = HashSet<FeatureFlag>;
 mod tests {
     use std::collections::HashMap;
 
+    use base64::{engine::general_purpose::STANDARD, Engine};
     use validator::Validate;
 
     use super::{
@@ -1537,11 +1545,11 @@ mod tests {
 
     #[test]
     fn test_endpoint_secret_validation() {
-        let secret = EndpointSecret::Symmetric(base64::decode("bm90LXZhbGlkCg==").unwrap());
+        let secret = EndpointSecret::Symmetric(STANDARD.decode("bm90LXZhbGlkCg==").unwrap());
         assert!(secret.validate().is_err());
 
         let secret =
-            EndpointSecret::Symmetric(base64::decode("C2FVsBQIhrscChlQIMV+b5sSYspob7oD").unwrap());
+            EndpointSecret::Symmetric(STANDARD.decode("C2FVsBQIhrscChlQIMV+b5sSYspob7oD").unwrap());
         secret.validate().unwrap();
 
         let secret = EndpointSecret::Asymmetric(AsymmetricKey::from_base64("6Xb/dCcHpPea21PS1N9VY/NZW723CEc77N4rJCubMbfVKIDij2HKpMKkioLlX0dRqSKJp4AJ6p9lMicMFs6Kvg==").unwrap());
@@ -1574,7 +1582,7 @@ mod tests {
         let ep = serde_json::from_value::<EndpointSecretTestStruct>(js).unwrap();
         if let EndpointSecret::Symmetric(key) = ep.key {
             assert_eq!(
-                base64::decode("C2FVsBQIhrscChlQIMV+b5sSYspob7oD").unwrap(),
+                STANDARD.decode("C2FVsBQIhrscChlQIMV+b5sSYspob7oD").unwrap(),
                 key
             );
         } else {
@@ -1591,7 +1599,7 @@ mod tests {
         let js = serde_json::json!({ "key": format!("whsec_{long_sec}") });
         let ep = serde_json::from_value::<EndpointSecretTestStruct>(js).unwrap();
         if let EndpointSecret::Symmetric(key) = ep.key {
-            assert_eq!(base64::decode(long_sec).unwrap(), key);
+            assert_eq!(STANDARD.decode(long_sec).unwrap(), key);
         } else {
             panic!("Shouldn't get here");
         }
@@ -1601,7 +1609,7 @@ mod tests {
         let js = serde_json::json!({ "key": format!("whsk_{asym_sec}") });
         let ep = serde_json::from_value::<EndpointSecretTestStruct>(js).unwrap();
         if let EndpointSecret::Asymmetric(key) = ep.key {
-            assert_eq!(base64::decode(asym_sec).unwrap(), key.0.sk.as_slice());
+            assert_eq!(STANDARD.decode(asym_sec).unwrap(), key.0.sk.as_slice());
         } else {
             panic!("Shouldn't get here");
         }

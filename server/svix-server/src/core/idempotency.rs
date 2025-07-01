@@ -17,6 +17,7 @@ use axum::{
     http::{Request, StatusCode},
     response::{IntoResponse, Response},
 };
+use base64::{engine::general_purpose::STANDARD, Engine};
 use blake2::{Blake2b512, Digest};
 use http::request::Parts;
 use serde::{Deserialize, Serialize};
@@ -67,7 +68,7 @@ impl IdempotencyKey {
 
         let res = hasher.finalize();
         // FIXME: add (previously omitted) prefix: `SVIX_IDEMPOTENCY_CACHE`
-        IdempotencyKey(base64::encode(res))
+        IdempotencyKey(STANDARD.encode(res))
     }
 }
 
