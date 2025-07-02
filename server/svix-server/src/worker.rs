@@ -174,17 +174,14 @@ fn sign_msg(
 
     endpoint_signing_keys
         .iter()
-        .map(|x| {
+        .format_with(" ", |x, f| {
             let sig = x.sign(main_secret, to_sign.as_bytes());
             let version = match x.type_() {
                 EndpointSecretType::Hmac256 => "v1",
                 EndpointSecretType::Ed25519 => "v1a",
             };
 
-            (version, STANDARD.encode(sig))
-        })
-        .format_with(" ", |(version, sign), f| {
-            f(&format_args!("{version},{sign}"))
+            f(&format_args!("{version},{}", STANDARD.encode(sig)))
         })
         .to_string()
 }
