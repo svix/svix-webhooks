@@ -85,6 +85,7 @@ omniqueue = { git = "https://github.com/svix/omniqueue-rs", rev = "63fe1f303c547
 hyper-proxy = { version = "=0.9.1", default-features = false, features = ["openssl-tls"] }
 hex = "0.4.3"
 anyhow = "1.0.56"
+itertools = "0.14"
 
 [target.'cfg(not(target_env = "msvc"))'.dependencies]
 tikv-jemallocator = { version = "0.5", optional = true }

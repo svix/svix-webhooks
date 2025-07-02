@@ -3,7 +3,6 @@
 
 use std::{
     collections::HashMap,
-    fmt::Write,
     sync::{
         atomic::{AtomicU64, AtomicUsize, Ordering},
         Arc, LazyLock,
@@ -16,6 +15,7 @@ use base64::{engine::general_purpose::STANDARD, Engine};
 use chrono::Utc;
 use futures::future;
 use http::{HeaderValue, StatusCode, Version};
+use itertools::Itertools;
 use rand::Rng;
 use sea_orm::{
     prelude::DateTimeUtc, ActiveModelBehavior, ActiveModelTrait, ColumnTrait, DatabaseConnection,
@@ -172,24 +172,21 @@ fn sign_msg(
 ) -> String {
     let to_sign = format!("{msg_id}.{timestamp}.{body}");
 
-    let mut iter = endpoint_signing_keys.iter().map(|x| {
-        let sig = x.sign(main_secret, to_sign.as_bytes());
-        let version = match x.type_() {
-            EndpointSecretType::Hmac256 => "v1",
-            EndpointSecretType::Ed25519 => "v1a",
-        };
-        format!("{version},{}", STANDARD.encode(sig))
-    });
+    endpoint_signing_keys
+        .iter()
+        .map(|x| {
+            let sig = x.sign(main_secret, to_sign.as_bytes());
+            let version = match x.type_() {
+                EndpointSecretType::Hmac256 => "v1",
+                EndpointSecretType::Ed25519 => "v1a",
+            };
 
-    iter.next()
-        .map(|first| {
-            iter.fold(first, |mut signs_acc, sign| {
-                write!(&mut signs_acc, " {sign}").unwrap();
-
-                signs_acc
-            })
+            (version, STANDARD.encode(sig))
         })
-        .unwrap_or_default()
+        .format_with(" ", |(version, sign), f| {
+            f(&format_args!("{version},{sign}"))
+        })
+        .to_string()
 }
 
 /// Generates a set of headers for any one webhook event
