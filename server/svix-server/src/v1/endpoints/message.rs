@@ -369,7 +369,7 @@ pub(crate) async fn create_message_inner(
     )
     .await?
     // Should never happen since you're giving it an existing Application, but just in case
-    .ok_or_else(|| Error::generic(format!("Application doesn't exist: {}", app.id)))?;
+    .ok_or_else(|| Error::generic(format_args!("Application doesn't exist: {}", app.id)))?;
 
     let payload = data.payload();
     let msg = message::ActiveModel {

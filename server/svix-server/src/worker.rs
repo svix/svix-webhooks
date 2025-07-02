@@ -11,9 +11,11 @@ use std::{
 };
 
 use axum::body::HttpBody as _;
+use base64::{engine::general_purpose::STANDARD, Engine};
 use chrono::Utc;
 use futures::future;
 use http::{HeaderValue, StatusCode, Version};
+use itertools::Itertools;
 use rand::Rng;
 use sea_orm::{
     prelude::DateTimeUtc, ActiveModelBehavior, ActiveModelTrait, ColumnTrait, DatabaseConnection,
@@ -169,18 +171,19 @@ fn sign_msg(
     endpoint_signing_keys: &[&EndpointSecretInternal],
 ) -> String {
     let to_sign = format!("{msg_id}.{timestamp}.{body}");
+
     endpoint_signing_keys
         .iter()
-        .map(|x| {
+        .format_with(" ", |x, f| {
             let sig = x.sign(main_secret, to_sign.as_bytes());
             let version = match x.type_() {
                 EndpointSecretType::Hmac256 => "v1",
                 EndpointSecretType::Ed25519 => "v1a",
             };
-            format!("{version},{}", base64::encode(sig))
+
+            f(&format_args!("{version},{}", STANDARD.encode(sig)))
         })
-        .collect::<Vec<String>>()
-        .join(" ")
+        .to_string()
 }
 
 /// Generates a set of headers for any one webhook event
@@ -196,14 +199,14 @@ fn generate_msg_headers(
     let id_hdr = msg_id
         .0
         .parse()
-        .map_err(|e| Error::generic(format!("Error parsing message id: {e:?}")))?;
+        .map_err(|e| Error::generic(format_args!("Error parsing message id: {e:?}")))?;
     let timestamp = timestamp
         .to_string()
         .parse()
-        .map_err(|e| Error::generic(format!("Error parsing message timestamp: {e:?}")))?;
+        .map_err(|e| Error::generic(format_args!("Error parsing message timestamp: {e:?}")))?;
     let signatures_str = signatures
         .parse()
-        .map_err(|e| Error::generic(format!("Error parsing message signatures: {e:?}")))?;
+        .map_err(|e| Error::generic(format_args!("Error parsing message signatures: {e:?}")))?;
     if whitelabel_headers {
         headers.insert("webhook-id".to_owned(), id_hdr);
         headers.insert("webhook-timestamp".to_owned(), timestamp);
@@ -334,7 +337,7 @@ async fn make_http_call(
     let req = RequestBuilder::new()
         .method(method)
         .uri_str(&url)
-        .map_err(|e| Error::validation(format!("URL is invalid: {e:?}")))?
+        .map_err(|e| Error::validation(format_args!("URL is invalid: {e:?}")))?
         .headers(headers)
         .body(payload.into(), HeaderValue::from_static("application/json"))
         .version(Version::HTTP_11)
@@ -626,7 +629,7 @@ async fn handle_failed_dispatch(
                 .one(*db)
                 .await?
                 .ok_or_else(|| {
-                    Error::generic(format!(
+                    Error::generic(format_args!(
                         "Endpoint not found {app_id} {}",
                         &msg_task.endpoint_id
                     ))
@@ -733,7 +736,7 @@ async fn dispatch_message_task(
 fn bytes_to_string(bytes: bytes::Bytes) -> String {
     match std::str::from_utf8(&bytes) {
         Ok(v) => v.to_owned(),
-        Err(_) => base64::encode(&bytes),
+        Err(_) => STANDARD.encode(&bytes),
     }
 }
 
@@ -772,7 +775,10 @@ async fn process_queue_task_inner(
                     .one(db)
                     .await?
                     .ok_or_else(|| {
-                        Error::generic(format!("Unexpected: message doesn't exist {}", task.msg_id))
+                        Error::generic(format_args!(
+                            "Unexpected: message doesn't exist {}",
+                            task.msg_id
+                        ))
                     })?;
 
                 let destination =
@@ -781,7 +787,7 @@ async fn process_queue_task_inner(
                         .one(db)
                         .await?
                         .ok_or_else(|| {
-                            Error::generic(format!(
+                            Error::generic(format_args!(
                                 "MessageDestination not found for message {}",
                                 &task.msg_id
                             ))
@@ -802,7 +808,10 @@ async fn process_queue_task_inner(
                     .one(db)
                     .await?
                     .ok_or_else(|| {
-                        Error::generic(format!("Unexpected: message doesn't exist {}", task.msg_id))
+                        Error::generic(format_args!(
+                            "Unexpected: message doesn't exist {}",
+                            task.msg_id
+                        ))
                     })?;
                 (
                     msg,
@@ -914,7 +923,7 @@ async fn process_queue_task_inner(
 
     let errs: Vec<_> = join.iter().filter(|x| x.is_err()).collect();
     if !errs.is_empty() {
-        return Err(Error::generic(format!(
+        return Err(Error::generic(format_args!(
             "Some dispatches failed unexpectedly: {errs:?}",
         )));
     }
@@ -1063,6 +1072,7 @@ pub async fn queue_handler(
 mod tests {
     use std::collections::HashMap;
 
+    use base64::{engine::general_purpose::STANDARD, Engine};
     use bytes::Bytes;
     use ed25519_compact::Signature;
 
@@ -1144,7 +1154,7 @@ mod tests {
         let test_timestamp = 1614265330;
         let test_body = "{\"test\": 2432232314}";
         let test_key = EndpointSecretInternal::from_endpoint_secret(
-            EndpointSecret::Symmetric(base64::decode("MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw").unwrap()),
+            EndpointSecret::Symmetric(STANDARD.decode("MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw").unwrap()),
             &Encryption::new_noop(),
         )
         .unwrap();
@@ -1200,7 +1210,8 @@ mod tests {
         let to_sign = format!("{msg_id}.{timestamp}.{body}");
         assert!(signatures.starts_with("v1a,"));
         let sig: Signature = Signature::from_slice(
-            base64::decode(&signatures["v1a,".len()..])
+            STANDARD
+                .decode(&signatures["v1a,".len()..])
                 .unwrap()
                 .as_slice(),
         )

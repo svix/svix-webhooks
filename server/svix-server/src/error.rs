@@ -213,7 +213,7 @@ impl From<TransactionError<Error>> for Error {
 impl From<lapin::Error> for Error {
     #[track_caller]
     fn from(value: lapin::Error) -> Self {
-        Error::queue(format!("{value:?}"))
+        Error::queue(format_args!("{value:?}"))
     }
 }
 
