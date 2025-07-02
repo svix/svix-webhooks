@@ -5,19 +5,31 @@ services:
       context: .
       dockerfile: Dockerfile
     image: svix/svix-server
+    healthcheck:
+      test: ["CMD-SHELL", "svix-server healthcheck http://localhost:8071"]
+      interval: 1s
+      timeout: 1s
+      retries: 600
     environment:
-      WAIT_FOR: "true"  # We want to wait for the default services
+      WAIT_FOR: "true" # We want to wait for the default services
       SVIX_REDIS_DSN: "redis://redis:6379"
       SVIX_DB_DSN: "postgresql://postgres:postgres@pgbouncer/postgres"
       # SVIX_JWT_SECRET: "x"  # IMPORTANT: uncomment and set a real JWT secret here.
     ports:
       - "8071:8071"
     depends_on:
-    - pgbouncer
-    - redis
+      pgbouncer:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
   postgres:
     image: "docker.io/postgres:13.4"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 1s
+      timeout: 1s
+      retries: 600
     volumes:
       - "postgres-data:/var/lib/postgresql/data/"
     environment:
@@ -36,10 +48,16 @@ services:
       DB_PASSWORD: "postgres"
       MAX_CLIENT_CONN: 500
     depends_on:
-    - postgres
+      postgres:
+        condition: service_healthy
 
   redis:
     image: "docker.io/redis:7-alpine"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 1s
+      timeout: 1s
+      retries: 600
     # Enable persistence
     command: "--save 60 500 --appendonly yes --appendfsync everysec"
     volumes:
