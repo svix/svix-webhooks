@@ -168,51 +168,28 @@ fn sign_msg(
     timestamp: i64,
     body: &str,
     msg_id: &MessageId,
-    mut endpoint_signing_keys: &[&EndpointSecretInternal],
+    endpoint_signing_keys: &[&EndpointSecretInternal],
 ) -> String {
-    if let Some(first) = endpoint_signing_keys.split_off_first() {
-        let mut signs = String::with_capacity(
-            endpoint_signing_keys
-                .iter()
-                .map(|x| {
-                    const HMAC_LEN: usize = "v1".len() + base64::encoded_len(32, true).unwrap();
-                    const ED25519_LEN: usize = "v1a".len() + base64::encoded_len(64, true).unwrap();
+    let to_sign = format!("{msg_id}.{timestamp}.{body}");
 
-                    ",".len()
-                        + match x.type_() {
-                            EndpointSecretType::Hmac256 => HMAC_LEN,
-                            EndpointSecretType::Ed25519 => ED25519_LEN,
-                        }
-                })
-                .sum::<usize>()
-                + endpoint_signing_keys.len() * " ".len(),
-        );
-
-        let to_sign = format!("{msg_id}.{timestamp}.{body}");
-        let write_signs = |signs: &mut String, x: &&EndpointSecretInternal| {
-            let sig = x.sign(main_secret, to_sign.as_bytes());
-            let version = match x.type_() {
-                EndpointSecretType::Hmac256 => "v1",
-                EndpointSecretType::Ed25519 => "v1a",
-            };
-
-            write!(signs, "{version},").unwrap();
-
-            STANDARD.encode_string(sig, signs)
+    let mut iter = endpoint_signing_keys.iter().map(|x| {
+        let sig = x.sign(main_secret, to_sign.as_bytes());
+        let version = match x.type_() {
+            EndpointSecretType::Hmac256 => "v1",
+            EndpointSecretType::Ed25519 => "v1a",
         };
+        format!("{version},{}", STANDARD.encode(sig))
+    });
 
-        write_signs(&mut signs, first);
+    iter.next()
+        .map(|first| {
+            iter.fold(first, |mut signs_acc, sign| {
+                write!(&mut signs_acc, " {sign}").unwrap();
 
-        for x in endpoint_signing_keys {
-            signs.push(' ');
-
-            write_signs(&mut signs, x);
-        }
-
-        signs
-    } else {
-        String::new()
-    }
+                signs_acc
+            })
+        })
+        .unwrap_or_default()
 }
 
 /// Generates a set of headers for any one webhook event
