@@ -85,7 +85,10 @@ enum Commands {
 
     /// Health check command
     #[clap()]
-    Healthcheck,
+    Healthcheck {
+        /// The server URL, for example http://localhost:8071
+        server_url: String,
+    },
 }
 
 #[derive(Subcommand)]
@@ -119,17 +122,20 @@ async fn main() -> anyhow::Result<()> {
     let args = Args::parse();
 
     // Handle commands that don't need configuration first
-    if let Some(Commands::Healthcheck) = args.command {
+    if let Some(Commands::Healthcheck { server_url }) = args.command {
         let client = reqwest::Client::new();
         let response = client
-            .head("http://localhost:8071/api/v1/health")
+            .head(format!("{server_url}/api/v1/health"))
             .send()
             .await?;
 
         if response.status().is_success() {
             return Ok(());
         } else {
-            return Err(anyhow::anyhow!("healthcheck failed ({})", response.status()));
+            return Err(anyhow::anyhow!(
+                "healthcheck failed ({})",
+                response.status()
+            ));
         }
     }
 
@@ -216,8 +222,7 @@ async fn main() -> anyhow::Result<()> {
             );
         }
 
-        Some(Commands::Healthcheck) => {
-            // This should never be reached due to early return above
+        Some(Commands::Healthcheck { .. }) => {
             unreachable!("Healthcheck command should be handled before config loading")
         }
         None => {
