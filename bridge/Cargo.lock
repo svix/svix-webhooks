@@ -4407,6 +4407,7 @@ dependencies = [
  "hyper-util",
  "itertools 0.14.0",
  "js_option",
+ "percent-encoding",
  "rand 0.9.0",
  "serde",
  "serde_json",
