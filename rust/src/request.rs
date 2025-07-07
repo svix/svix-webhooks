@@ -141,6 +141,38 @@ impl Request {
     }
 
     async fn execute_inner(self, conf: &Configuration) -> Result<Option<Bytes>, Error> {
+        let no_return_type = self.no_return_type;
+        let request = self.build_request(conf)?;
+
+        let execute_request = async {
+            let response = conf.client.request(request).await.map_err(Error::generic)?;
+
+            let status = response.status();
+            if !status.is_success() {
+                Err(Error::from_response(status, response.into_body()).await)
+            } else if no_return_type {
+                Ok(None)
+            } else {
+                let bytes = response
+                    .into_body()
+                    .collect()
+                    .await
+                    .map_err(Error::generic)?
+                    .to_bytes();
+                Ok(Some(bytes))
+            }
+        };
+
+        if let Some(duration) = conf.timeout {
+            tokio::time::timeout(duration, execute_request)
+                .await
+                .map_err(Error::generic)?
+        } else {
+            execute_request.await
+        }
+    }
+
+    fn build_request(self, conf: &Configuration) -> Result<http1::Request<Full<Bytes>>, Error> {
         let mut path = self.path.to_owned();
         for (k, v) in self.path_params {
             // replace {id} with the value of the id path param
@@ -149,20 +181,15 @@ impl Request {
 
         let mut uri = format!("{}{}", conf.base_path, path);
 
-        // Work around rustc issue - we need to make sure that `query_string` is
-        // not captured by the outer `async` generator. Using
-        // `drop(query_string)` is insufficient, so we create a new scope
-        {
-            let mut query_string = ::url::form_urlencoded::Serializer::new("".to_owned());
-            for (key, val) in self.query_params {
-                query_string.append_pair(key, &val);
-            }
+        let mut query_string = ::url::form_urlencoded::Serializer::new("".to_owned());
+        for (key, val) in self.query_params {
+            query_string.append_pair(key, &val);
+        }
 
-            let query_string_str = query_string.finish();
-            if !query_string_str.is_empty() {
-                uri += "?";
-                uri += &query_string_str;
-            }
+        let query_string_str = query_string.finish();
+        if !query_string_str.is_empty() {
+            uri += "?";
+            uri += &query_string_str;
         }
 
         let mut req_builder = http1::Request::builder().uri(uri).method(self.method);
@@ -194,39 +221,12 @@ impl Request {
         }
 
         let req_headers = req_builder.headers_mut().unwrap();
-        let request = if let Some(body) = self.serialized_body {
+        if let Some(body) = self.serialized_body {
             req_headers.insert(CONTENT_TYPE, HeaderValue::from_static("application/json"));
             req_headers.insert(CONTENT_LENGTH, body.len().into());
-            req_builder.body(Full::from(body)).map_err(Error::generic)?
+            Ok(req_builder.body(Full::from(body)).map_err(Error::generic)?)
         } else {
-            req_builder.body(Full::default()).map_err(Error::generic)?
-        };
-
-        let execute_request = async {
-            let response = conf.client.request(request).await.map_err(Error::generic)?;
-
-            let status = response.status();
-            if !status.is_success() {
-                Err(Error::from_response(status, response.into_body()).await)
-            } else if self.no_return_type {
-                Ok(None)
-            } else {
-                let bytes = response
-                    .into_body()
-                    .collect()
-                    .await
-                    .map_err(Error::generic)?
-                    .to_bytes();
-                Ok(Some(bytes))
-            }
-        };
-
-        if let Some(duration) = conf.timeout {
-            tokio::time::timeout(duration, execute_request)
-                .await
-                .map_err(Error::generic)?
-        } else {
-            execute_request.await
+            Ok(req_builder.body(Full::default()).map_err(Error::generic)?)
         }
     }
 }
