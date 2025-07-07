@@ -29,5 +29,6 @@ allow-dirty = ["ci"]
 [dist.github-custom-runners]
 x86_64-unknown-linux-musl = "ubuntu-22.04"
 x86_64-unknown-linux-gnu = "ubuntu-22.04"
+x86_64-pc-windows-msvc = "windows-2022"
 aarch64-unknown-linux-gnu = "ubuntu-22.04"
 global = "ubuntu-22.04"
