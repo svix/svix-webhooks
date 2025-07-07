@@ -107,19 +107,20 @@ impl Request {
         mut retries: u32,
     ) -> Result<Option<Bytes>, Error> {
         let no_return_type = self.no_return_type;
-
-        let mut retry_count = 0;
-        const MAX_BACKOFF: Duration = Duration::from_secs(5);
-        let mut backoff = Duration::from_millis(20);
-
-        self.header_params
-            .insert("svix-req-id", rand::rng().random::<u32>().to_string());
-
         if self.method == http1::Method::POST && !self.header_params.contains_key("idempotency-key")
         {
             self.header_params
                 .insert("idempotency-key", format!("auto_{}", uuid::Uuid::new_v4()));
         }
+
+        let mut request = self.build_request(conf)?;
+        request
+            .headers_mut()
+            .insert("svix-req-id", rand::rng().random::<u32>().into());
+
+        let mut retry_count = 0;
+        const MAX_BACKOFF: Duration = Duration::from_secs(5);
+        let mut backoff = Duration::from_millis(20);
 
         let execute_request = async |request| {
             let response = conf.client.request(request).await.map_err(Error::generic)?;
@@ -141,7 +142,7 @@ impl Request {
         };
 
         loop {
-            let request_fut = execute_request(self.clone().build_request(conf)?);
+            let request_fut = execute_request(request.clone());
             let res = if let Some(duration) = conf.timeout {
                 tokio::time::timeout(duration, request_fut)
                     .await
@@ -164,8 +165,9 @@ impl Request {
             tokio::time::sleep(backoff).await;
             retry_count += 1;
             retries -= 1;
-            self.header_params
-                .insert("svix-retry-count", retry_count.to_string());
+            request
+                .headers_mut()
+                .insert("svix-retry-count", retry_count.into());
             backoff = MAX_BACKOFF.min(backoff * 2);
         }
     }
