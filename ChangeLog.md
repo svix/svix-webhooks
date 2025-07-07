@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 1.69.0
+* Server: Reduce allocations (thanks @fluiderson!)
+* Server: Add healthcheck command (thanks @y-nk!)
+* Libs/Rust: Don't panic on invalid inputs to request building
+
 ## Version 1.68.0
 * Server: Ensure messagecontent expiration is set
 * Libs/PHP: Handle Badly Formatted Signatures by @rodnaph in https://github.com/svix/svix-webhooks/pull/1942
