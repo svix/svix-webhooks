@@ -188,7 +188,7 @@ impl Request {
 
         let mut uri = format!("{}{}", conf.base_path, path);
 
-        let mut query_string = ::url::form_urlencoded::Serializer::new("".to_owned());
+        let mut query_string = url::form_urlencoded::Serializer::new("".to_owned());
         for (key, val) in self.query_params {
             query_string.append_pair(key, &val);
         }
@@ -202,6 +202,17 @@ impl Request {
         let uri = http1::Uri::try_from(uri).map_err(Error::generic)?;
         let mut req_builder = http1::Request::builder().uri(uri).method(self.method);
 
+        let mut request = if let Some(body) = self.serialized_body {
+            let req_headers = req_builder.headers_mut().unwrap();
+            req_headers.insert(CONTENT_TYPE, HeaderValue::from_static("application/json"));
+            req_headers.insert(CONTENT_LENGTH, body.len().into());
+            req_builder.body(Full::from(body)).map_err(Error::generic)?
+        } else {
+            req_builder.body(Full::default()).map_err(Error::generic)?
+        };
+
+        let request_headers = request.headers_mut();
+
         // Detect the authorization type if it hasn't been set.
         let auth = if conf.bearer_access_token.is_some() {
             Auth::Bearer
@@ -211,34 +222,26 @@ impl Request {
         match auth {
             Auth::Bearer => {
                 if let Some(token) = &conf.bearer_access_token {
-                    let value =
-                        HeaderValue::try_from(format!("Bearer {token}")).map_err(Error::generic)?;
-                    req_builder = req_builder.header(AUTHORIZATION, value);
+                    let value = format!("Bearer {token}")
+                        .try_into()
+                        .map_err(Error::generic)?;
+                    request_headers.insert(AUTHORIZATION, value);
                 }
             }
             Auth::None => {}
         }
 
         if let Some(user_agent) = &conf.user_agent {
-            let value = HeaderValue::try_from(user_agent).map_err(Error::generic)?;
-            req_builder = req_builder.header(USER_AGENT, value);
+            let value = user_agent.try_into().map_err(Error::generic)?;
+            request_headers.insert(USER_AGENT, value);
         }
 
         for (k, v) in self.header_params {
-            // Return invalid header values back to the caller.
-            // Previously, these would trigger the unwrap below this loop.
-            let v = HeaderValue::try_from(v).map_err(Error::generic)?;
-            req_builder = req_builder.header(k, v);
+            let v = v.try_into().map_err(Error::generic)?;
+            request_headers.insert(k, v);
         }
 
-        let req_headers = req_builder.headers_mut().unwrap();
-        if let Some(body) = self.serialized_body {
-            req_headers.insert(CONTENT_TYPE, HeaderValue::from_static("application/json"));
-            req_headers.insert(CONTENT_LENGTH, body.len().into());
-            Ok(req_builder.body(Full::from(body)).map_err(Error::generic)?)
-        } else {
-            Ok(req_builder.body(Full::default()).map_err(Error::generic)?)
-        }
+        Ok(request)
     }
 }
 
