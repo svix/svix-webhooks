@@ -106,6 +106,8 @@ impl Request {
         conf: &Configuration,
         mut retries: u32,
     ) -> Result<Option<Bytes>, Error> {
+        let no_return_type = self.no_return_type;
+
         let mut retry_count = 0;
         const MAX_BACKOFF: Duration = Duration::from_secs(5);
         let mut backoff = Duration::from_millis(20);
@@ -119,32 +121,7 @@ impl Request {
                 .insert("idempotency-key", format!("auto_{}", uuid::Uuid::new_v4()));
         }
 
-        loop {
-            match self.clone().execute_inner(conf).await {
-                Ok(result) => return Ok(result),
-                e @ Err(Error::Validation(_)) => return e,
-                Err(Error::Http(err)) if err.status.as_u16() < 500 => return Err(Error::Http(err)),
-                e @ Err(_) => {
-                    if retries == 0 {
-                        return e;
-                    }
-                }
-            }
-
-            tokio::time::sleep(backoff).await;
-            retry_count += 1;
-            retries -= 1;
-            self.header_params
-                .insert("svix-retry-count", retry_count.to_string());
-            backoff = MAX_BACKOFF.min(backoff * 2);
-        }
-    }
-
-    async fn execute_inner(self, conf: &Configuration) -> Result<Option<Bytes>, Error> {
-        let no_return_type = self.no_return_type;
-        let request = self.build_request(conf)?;
-
-        let execute_request = async {
+        let execute_request = async |request| {
             let response = conf.client.request(request).await.map_err(Error::generic)?;
 
             let status = response.status();
@@ -163,12 +140,33 @@ impl Request {
             }
         };
 
-        if let Some(duration) = conf.timeout {
-            tokio::time::timeout(duration, execute_request)
-                .await
-                .map_err(Error::generic)?
-        } else {
-            execute_request.await
+        loop {
+            let request_fut = execute_request(self.clone().build_request(conf)?);
+            let res = if let Some(duration) = conf.timeout {
+                tokio::time::timeout(duration, request_fut)
+                    .await
+                    .map_err(Error::generic)?
+            } else {
+                request_fut.await
+            };
+
+            match res {
+                Ok(result) => return Ok(result),
+                e @ Err(Error::Validation(_)) => return e,
+                Err(Error::Http(err)) if err.status.as_u16() < 500 => return Err(Error::Http(err)),
+                e @ Err(_) => {
+                    if retries == 0 {
+                        return e;
+                    }
+                }
+            }
+
+            tokio::time::sleep(backoff).await;
+            retry_count += 1;
+            retries -= 1;
+            self.header_params
+                .insert("svix-retry-count", retry_count.to_string());
+            backoff = MAX_BACKOFF.min(backoff * 2);
         }
     }
 
