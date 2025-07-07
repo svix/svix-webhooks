@@ -192,6 +192,7 @@ impl Request {
             uri += &query_string_str;
         }
 
+        let uri = http1::Uri::try_from(uri).map_err(Error::generic)?;
         let mut req_builder = http1::Request::builder().uri(uri).method(self.method);
 
         // Detect the authorization type if it hasn't been set.
