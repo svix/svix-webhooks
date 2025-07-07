@@ -203,20 +203,23 @@ impl Request {
         match auth {
             Auth::Bearer => {
                 if let Some(token) = &conf.bearer_access_token {
-                    req_builder = req_builder.header(AUTHORIZATION, format!("Bearer {token}"));
+                    let value =
+                        HeaderValue::try_from(format!("Bearer {token}")).map_err(Error::generic)?;
+                    req_builder = req_builder.header(AUTHORIZATION, value);
                 }
             }
             Auth::None => {}
         }
 
         if let Some(user_agent) = &conf.user_agent {
-            req_builder = req_builder.header(
-                USER_AGENT,
-                HeaderValue::from_str(user_agent).map_err(Error::generic)?,
-            );
+            let value = HeaderValue::try_from(user_agent).map_err(Error::generic)?;
+            req_builder = req_builder.header(USER_AGENT, value);
         }
 
         for (k, v) in self.header_params {
+            // Return invalid header values back to the caller.
+            // Previously, these would trigger the unwrap below this loop.
+            let v = HeaderValue::try_from(v).map_err(Error::generic)?;
             req_builder = req_builder.header(k, v);
         }
 
