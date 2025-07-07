@@ -7,6 +7,7 @@ use http1::header::{HeaderValue, AUTHORIZATION, CONTENT_LENGTH, CONTENT_TYPE, US
 use http_body_util::{BodyExt as _, Full};
 use hyper::body::Bytes;
 use itertools::Itertools as _;
+use percent_encoding::{utf8_percent_encode, AsciiSet, CONTROLS};
 use rand::Rng;
 use serde::de::DeserializeOwned;
 
@@ -173,10 +174,16 @@ impl Request {
     }
 
     fn build_request(self, conf: &Configuration) -> Result<http1::Request<Full<Bytes>>, Error> {
+        const FRAGMENT: &AsciiSet = &CONTROLS.add(b' ').add(b'"').add(b'<').add(b'>').add(b'`');
+        const PATH: &AsciiSet = &FRAGMENT.add(b'#').add(b'?').add(b'{').add(b'}');
+        const PATH_SEGMENT: &AsciiSet = &PATH.add(b'/').add(b'%');
+
         let mut path = self.path.to_owned();
         for (k, v) in self.path_params {
             // replace {id} with the value of the id path param
-            path = path.replace(&format!("{{{k}}}"), &v);
+            let percent_encoded_path_param_value =
+                utf8_percent_encode(&v, PATH_SEGMENT).to_string();
+            path = path.replace(&format!("{{{k}}}"), &percent_encoded_path_param_value);
         }
 
         let mut uri = format!("{}{}", conf.base_path, path);
