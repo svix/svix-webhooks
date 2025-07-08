@@ -128,7 +128,6 @@ func ExecuteRequest[ReqBody any, ResBody any](
 }
 
 func executeRequestWithRetries(client *SvixHttpClient, request *http.Request) (*http.Response, error) {
-
 	var bodyBytes []byte
 	if request.Body != nil {
 		var err error
@@ -136,7 +135,10 @@ func executeRequestWithRetries(client *SvixHttpClient, request *http.Request) (*
 		if err != nil {
 			return nil, err
 		}
-		request.Body.Close()
+		err = request.Body.Close()
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	if bodyBytes != nil {

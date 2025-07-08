@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"sync/atomic"
@@ -55,18 +56,22 @@ func Test_executeRequestWithRetries(t *testing.T) {
 
 				body, err := io.ReadAll(r.Body)
 				if err != nil {
-					t.Errorf("Failed to read request body: %v", err)
+					t.Errorf("failed to read request body: %v", err)
 					return
 				}
 				receivedBodies = append(receivedBodies, string(body))
 
 				t.Logf("Request %d: Content-Length=%s, Body-Length=%d",
 					count, r.Header.Get("Content-Length"), len(body))
-				t.Logf("Request %d body: %s", count, string(body))
+				t.Logf("request %d body: %s", count, string(body))
 
 				if tt.failFirst && count == 1 {
 					w.WriteHeader(http.StatusInternalServerError)
-					w.Write([]byte(`{"error": "server error"}`))
+					_, err := w.Write([]byte(`{"error": "server error"}`))
+					if err != nil {
+						t.Errorf("failed to write status code - error: %v", err)
+						return
+					}
 					return
 				}
 
@@ -77,7 +82,10 @@ func Test_executeRequestWithRetries(t *testing.T) {
 					EventType: eventType,
 					Payload:   payload,
 				}
-				json.NewEncoder(w).Encode(response)
+				err = json.NewEncoder(w).Encode(response)
+				if err != nil {
+					t.Errorf("failed to encode json - error: %v", err)
+				}
 			}))
 			defer server.Close()
 
@@ -110,9 +118,15 @@ func Test_executeRequestWithRetries(t *testing.T) {
 
 			resp, err := executeRequestWithRetries(client, req)
 			if err != nil {
-				t.Fatalf("Request failed: %v", err)
+				t.Fatalf("request failed: %v", err)
 			}
-			defer resp.Body.Close()
+
+			defer func() {
+				err := resp.Body.Close()
+				if err != nil {
+					log.Fatalf("error closing response body: %v", err)
+				}
+			}()
 
 			// Then ... the response should be decoded without error
 			var result models.MessageOut
