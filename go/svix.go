@@ -30,7 +30,6 @@ type (
 		EventType                  *EventType
 		Ingest                     *Ingest
 		Integration                *Integration
-		Management                 *Management
 		Message                    *Message
 		MessageAttempt             *MessageAttempt
 		Statistics                 *Statistics
@@ -74,7 +73,6 @@ func New(token string, options *SvixOptions) (*Svix, error) {
 		Message:                    newMessage(&svixHttpClient),
 		Ingest:                     newIngest(&svixHttpClient),
 		Integration:                newIntegration(&svixHttpClient),
-		Management:                 newManagement(&svixHttpClient),
 		MessageAttempt:             newMessageAttempt(&svixHttpClient),
 		Statistics:                 newStatistics(&svixHttpClient),
 		OperationalWebhook:         newOperationalWebhook(&svixHttpClient),

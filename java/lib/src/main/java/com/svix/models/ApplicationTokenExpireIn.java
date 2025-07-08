@@ -11,12 +11,16 @@ import com.svix.Utils;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @ToString
 @EqualsAndHashCode
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class ApplicationTokenExpireIn {
     @JsonProperty private Long expiry;
+    @JsonProperty private List<String> sessionIds;
 
     public ApplicationTokenExpireIn() {}
 
@@ -37,6 +41,37 @@ public class ApplicationTokenExpireIn {
 
     public void setExpiry(Long expiry) {
         this.expiry = expiry;
+    }
+
+    public ApplicationTokenExpireIn sessionIds(List<String> sessionIds) {
+        this.sessionIds = sessionIds;
+        return this;
+    }
+
+    public ApplicationTokenExpireIn addSessionIdsItem(String sessionIdsItem) {
+        if (this.sessionIds == null) {
+            this.sessionIds = new ArrayList<>();
+        }
+        this.sessionIds.add(sessionIdsItem);
+
+        return this;
+    }
+
+    /**
+     * An optional list of session ids.
+     *
+     * <p>If any session ids are specified, only Application tokens created with that session id
+     * will be expired.
+     *
+     * @return sessionIds
+     */
+    @javax.annotation.Nullable
+    public List<String> getSessionIds() {
+        return sessionIds;
+    }
+
+    public void setSessionIds(List<String> sessionIds) {
+        this.sessionIds = sessionIds;
     }
 
     /**

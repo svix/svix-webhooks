@@ -2,6 +2,7 @@
 /* eslint @typescript-eslint/no-explicit-any: 0 */
 /**
  * The different classes of HTTP status codes:
+ *
  * - CodeNone = 0
  * - Code1xx = 100
  * - Code2xx = 200

@@ -97,6 +97,21 @@ public abstract class IngestSourceOutConfig {
     @AllArgsConstructor
     @ToString
     @EqualsAndHashCode(callSuper = false)
+    @VariantName("checkbook")
+    public static class Checkbook extends IngestSourceOutConfig {
+        private final CheckbookConfigOut checkbook;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(checkbook);
+        }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
     @VariantName("clerk")
     public static class Clerk extends IngestSourceOutConfig {
         private final SvixConfigOut clerk;
@@ -217,6 +232,21 @@ public abstract class IngestSourceOutConfig {
     @AllArgsConstructor
     @ToString
     @EqualsAndHashCode(callSuper = false)
+    @VariantName("orum-io")
+    public static class OrumIo extends IngestSourceOutConfig {
+        private final OrumIoConfigOut orumIo;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(orumIo);
+        }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
     @VariantName("panda-doc")
     public static class PandaDoc extends IngestSourceOutConfig {
         private final PandaDocConfigOut pandaDoc;
@@ -269,6 +299,21 @@ public abstract class IngestSourceOutConfig {
         @Override
         public JsonNode toJsonNode() {
             return Utils.getObjectMapper().valueToTree(resend);
+        }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
+    @VariantName("rutter")
+    public static class Rutter extends IngestSourceOutConfig {
+        private final RutterConfigOut rutter;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(rutter);
         }
     }
 
@@ -407,6 +452,81 @@ public abstract class IngestSourceOutConfig {
         }
     }
 
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
+    @VariantName("telnyx")
+    public static class Telnyx extends IngestSourceOutConfig {
+        private final TelnyxConfigOut telnyx;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(telnyx);
+        }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
+    @VariantName("open-ai")
+    public static class OpenAi extends IngestSourceOutConfig {
+        private final SvixConfigOut openAi;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(openAi);
+        }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
+    @VariantName("render")
+    public static class Render extends IngestSourceOutConfig {
+        private final SvixConfigOut render;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(render);
+        }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
+    @VariantName("veriff")
+    public static class Veriff extends IngestSourceOutConfig {
+        private final VeriffConfigOut veriff;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(veriff);
+        }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
+    @VariantName("airwallex")
+    public static class Airwallex extends IngestSourceOutConfig {
+        private final AirwallexConfigOut airwallex;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(airwallex);
+        }
+    }
+
     @FunctionalInterface
     private interface TypeFactory {
         IngestSourceOutConfig create(JsonNode config);
@@ -421,6 +541,7 @@ public abstract class IngestSourceOutConfig {
         TY_M.put("adobe-sign", c -> new AdobeSign(m.convertValue(c, AdobeSignConfigOut.class)));
         TY_M.put("beehiiv", c -> new Beehiiv(m.convertValue(c, SvixConfigOut.class)));
         TY_M.put("brex", c -> new Brex(m.convertValue(c, SvixConfigOut.class)));
+        TY_M.put("checkbook", c -> new Checkbook(m.convertValue(c, CheckbookConfigOut.class)));
         TY_M.put("clerk", c -> new Clerk(m.convertValue(c, SvixConfigOut.class)));
         TY_M.put("docusign", c -> new Docusign(m.convertValue(c, DocusignConfigOut.class)));
         TY_M.put("github", c -> new Github(m.convertValue(c, GithubConfigOut.class)));
@@ -429,10 +550,12 @@ public abstract class IngestSourceOutConfig {
         TY_M.put("incident-io", c -> new IncidentIo(m.convertValue(c, SvixConfigOut.class)));
         TY_M.put("lithic", c -> new Lithic(m.convertValue(c, SvixConfigOut.class)));
         TY_M.put("nash", c -> new Nash(m.convertValue(c, SvixConfigOut.class)));
+        TY_M.put("orum-io", c -> new OrumIo(m.convertValue(c, OrumIoConfigOut.class)));
         TY_M.put("panda-doc", c -> new PandaDoc(m.convertValue(c, PandaDocConfigOut.class)));
         TY_M.put("pleo", c -> new Pleo(m.convertValue(c, SvixConfigOut.class)));
         TY_M.put("replicate", c -> new Replicate(m.convertValue(c, SvixConfigOut.class)));
         TY_M.put("resend", c -> new Resend(m.convertValue(c, SvixConfigOut.class)));
+        TY_M.put("rutter", c -> new Rutter(m.convertValue(c, RutterConfigOut.class)));
         TY_M.put("safebase", c -> new Safebase(m.convertValue(c, SvixConfigOut.class)));
         TY_M.put("sardine", c -> new Sardine(m.convertValue(c, SvixConfigOut.class)));
         TY_M.put("segment", c -> new Segment(m.convertValue(c, SegmentConfigOut.class)));
@@ -442,6 +565,11 @@ public abstract class IngestSourceOutConfig {
         TY_M.put("stych", c -> new Stych(m.convertValue(c, SvixConfigOut.class)));
         TY_M.put("svix", c -> new Svix(m.convertValue(c, SvixConfigOut.class)));
         TY_M.put("zoom", c -> new Zoom(m.convertValue(c, ZoomConfigOut.class)));
+        TY_M.put("telnyx", c -> new Telnyx(m.convertValue(c, TelnyxConfigOut.class)));
+        TY_M.put("open-ai", c -> new OpenAi(m.convertValue(c, SvixConfigOut.class)));
+        TY_M.put("render", c -> new Render(m.convertValue(c, SvixConfigOut.class)));
+        TY_M.put("veriff", c -> new Veriff(m.convertValue(c, VeriffConfigOut.class)));
+        TY_M.put("airwallex", c -> new Airwallex(m.convertValue(c, AirwallexConfigOut.class)));
     }
 
     public static IngestSourceOutConfig fromTypeAndConfig(String type, JsonNode config) {

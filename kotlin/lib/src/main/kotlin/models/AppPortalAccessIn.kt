@@ -22,4 +22,11 @@ data class AppPortalAccessIn(
     val featureFlags: Set<String>? = null,
     /** Whether the app portal should be in read-only mode. */
     val readOnly: Boolean? = null,
+    /**
+     * An optional session ID to attach to the token.
+     *
+     * When expiring tokens with "Expire All", you can include the session ID to only expire tokens
+     * that were created with that session ID.
+     */
+    val sessionId: String? = null,
 )

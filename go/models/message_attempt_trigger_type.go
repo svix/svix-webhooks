@@ -8,6 +8,7 @@ import (
 )
 
 // The reason an attempt was made:
+//
 // - Scheduled = 0
 // - Manual = 1
 type MessageAttemptTriggerType int64

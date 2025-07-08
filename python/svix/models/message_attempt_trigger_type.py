@@ -4,6 +4,7 @@ from enum import IntEnum
 
 class MessageAttemptTriggerType(IntEnum):
     """The reason an attempt was made:
+
     - Scheduled = 0
     - Manual = 1"""
 

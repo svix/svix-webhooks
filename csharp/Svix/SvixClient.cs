@@ -39,11 +39,6 @@ namespace Svix
             get => new Integration(this);
         }
 
-        public Management Management
-        {
-            get => new Management(this);
-        }
-
         public Message Message
         {
             get => new Message(this);

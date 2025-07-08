@@ -6,8 +6,12 @@ module Svix
   class ApplicationTokenExpireIn
     # How many seconds until the old key is expired.
     attr_accessor :expiry
+    # An optional list of session ids.
+    #
+    # If any session ids are specified, only Application tokens created with that session id will be expired.
+    attr_accessor :session_ids
 
-    ALL_FIELD ||= ["expiry"].freeze
+    ALL_FIELD ||= ["expiry", "session_ids"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -32,12 +36,14 @@ module Svix
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
       attrs["expiry"] = attributes["expiry"]
+      attrs["session_ids"] = attributes["sessionIds"]
       new(attrs)
     end
 
     def serialize
       out = Hash.new
       out["expiry"] = Svix::serialize_primitive(@expiry) if @expiry
+      out["sessionIds"] = Svix::serialize_primitive(@session_ids) if @session_ids
       out
     end
 

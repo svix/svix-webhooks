@@ -24,6 +24,7 @@ public class ConnectorOut {
     @JsonProperty private OffsetDateTime createdAt;
     @JsonProperty private String description;
     @JsonProperty private String featureFlag;
+    @JsonProperty private Set<String> featureFlags;
     @JsonProperty private Set<String> filterTypes;
     @JsonProperty private String id;
     @JsonProperty private String instructions;
@@ -92,6 +93,34 @@ public class ConnectorOut {
 
     public void setFeatureFlag(String featureFlag) {
         this.featureFlag = featureFlag;
+    }
+
+    public ConnectorOut featureFlags(Set<String> featureFlags) {
+        this.featureFlags = featureFlags;
+        return this;
+    }
+
+    public ConnectorOut addFeatureFlagsItem(String featureFlagsItem) {
+        if (this.featureFlags == null) {
+            this.featureFlags = new LinkedHashSet<>();
+        }
+        this.featureFlags.add(featureFlagsItem);
+
+        return this;
+    }
+
+    /**
+     * Get featureFlags
+     *
+     * @return featureFlags
+     */
+    @javax.annotation.Nullable
+    public Set<String> getFeatureFlags() {
+        return featureFlags;
+    }
+
+    public void setFeatureFlags(Set<String> featureFlags) {
+        this.featureFlags = featureFlags;
     }
 
     public ConnectorOut filterTypes(Set<String> filterTypes) {

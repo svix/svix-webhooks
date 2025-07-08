@@ -2,10 +2,13 @@
 use serde::{Deserialize, Serialize};
 
 use super::{
-    adobe_sign_config::AdobeSignConfig, cron_config::CronConfig, docusign_config::DocusignConfig,
-    github_config::GithubConfig, hubspot_config::HubspotConfig, panda_doc_config::PandaDocConfig,
-    segment_config::SegmentConfig, shopify_config::ShopifyConfig, slack_config::SlackConfig,
-    stripe_config::StripeConfig, svix_config::SvixConfig, zoom_config::ZoomConfig,
+    adobe_sign_config::AdobeSignConfig, airwallex_config::AirwallexConfig,
+    checkbook_config::CheckbookConfig, cron_config::CronConfig, docusign_config::DocusignConfig,
+    github_config::GithubConfig, hubspot_config::HubspotConfig, orum_io_config::OrumIoConfig,
+    panda_doc_config::PandaDocConfig, rutter_config::RutterConfig, segment_config::SegmentConfig,
+    shopify_config::ShopifyConfig, slack_config::SlackConfig, stripe_config::StripeConfig,
+    svix_config::SvixConfig, telnyx_config::TelnyxConfig, veriff_config::VeriffConfig,
+    zoom_config::ZoomConfig,
 };
 
 #[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
@@ -33,6 +36,8 @@ pub enum IngestSourceInConfig {
     Beehiiv(SvixConfig),
     #[serde(rename = "brex")]
     Brex(SvixConfig),
+    #[serde(rename = "checkbook")]
+    Checkbook(CheckbookConfig),
     #[serde(rename = "clerk")]
     Clerk(SvixConfig),
     #[serde(rename = "docusign")]
@@ -49,6 +54,8 @@ pub enum IngestSourceInConfig {
     Lithic(SvixConfig),
     #[serde(rename = "nash")]
     Nash(SvixConfig),
+    #[serde(rename = "orum-io")]
+    OrumIo(OrumIoConfig),
     #[serde(rename = "panda-doc")]
     PandaDoc(PandaDocConfig),
     #[serde(rename = "pleo")]
@@ -57,6 +64,8 @@ pub enum IngestSourceInConfig {
     Replicate(SvixConfig),
     #[serde(rename = "resend")]
     Resend(SvixConfig),
+    #[serde(rename = "rutter")]
+    Rutter(RutterConfig),
     #[serde(rename = "safebase")]
     Safebase(SvixConfig),
     #[serde(rename = "sardine")]
@@ -75,6 +84,16 @@ pub enum IngestSourceInConfig {
     Svix(SvixConfig),
     #[serde(rename = "zoom")]
     Zoom(ZoomConfig),
+    #[serde(rename = "telnyx")]
+    Telnyx(TelnyxConfig),
+    #[serde(rename = "open-ai")]
+    OpenAi(SvixConfig),
+    #[serde(rename = "render")]
+    Render(SvixConfig),
+    #[serde(rename = "veriff")]
+    Veriff(VeriffConfig),
+    #[serde(rename = "airwallex")]
+    Airwallex(AirwallexConfig),
 }
 
 impl Default for IngestSourceInConfig {

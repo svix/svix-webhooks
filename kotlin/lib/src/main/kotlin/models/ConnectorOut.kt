@@ -9,6 +9,7 @@ data class ConnectorOut(
     val createdAt: Instant,
     val description: String,
     val featureFlag: String? = null,
+    val featureFlags: Set<String>? = null,
     val filterTypes: Set<String>? = null,
     /** The Connector's ID. */
     val id: String,

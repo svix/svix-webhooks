@@ -21,3 +21,8 @@ class AppPortalAccessIn(BaseModel):
 
     read_only: t.Optional[bool] = None
     """Whether the app portal should be in read-only mode."""
+
+    session_id: t.Optional[str] = None
+    """An optional session ID to attach to the token.
+
+    When expiring tokens with "Expire All", you can include the session ID to only expire tokens that were created with that session ID."""

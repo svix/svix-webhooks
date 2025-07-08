@@ -7,13 +7,14 @@ module Svix
     attr_accessor :deprecated
     attr_accessor :description
     attr_accessor :feature_flag
+    attr_accessor :feature_flags
     # The event type group's name
     attr_accessor :group_name
     # The event type's name
     attr_accessor :name
     attr_accessor :schemas
 
-    ALL_FIELD ||= ["deprecated", "description", "feature_flag", "group_name", "name", "schemas"].freeze
+    ALL_FIELD ||= ["deprecated", "description", "feature_flag", "feature_flags", "group_name", "name", "schemas"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -37,6 +38,7 @@ module Svix
       attrs["deprecated"] = attributes["deprecated"]
       attrs["description"] = attributes["description"]
       attrs["feature_flag"] = attributes["featureFlag"]
+      attrs["feature_flags"] = attributes["featureFlags"]
       attrs["group_name"] = attributes["groupName"]
       attrs["name"] = attributes["name"]
       attrs["schemas"] = attributes["schemas"]
@@ -48,6 +50,7 @@ module Svix
       out["deprecated"] = Svix::serialize_primitive(@deprecated) if @deprecated
       out["description"] = Svix::serialize_primitive(@description) if @description
       out["featureFlag"] = Svix::serialize_primitive(@feature_flag) if @feature_flag
+      out["featureFlags"] = Svix::serialize_primitive(@feature_flags) if @feature_flags
       out["groupName"] = Svix::serialize_primitive(@group_name) if @group_name
       out["name"] = Svix::serialize_primitive(@name) if @name
       out["schemas"] = Svix::serialize_primitive(@schemas) if @schemas

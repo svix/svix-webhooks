@@ -4,6 +4,7 @@ from enum import IntEnum
 
 class StatusCodeClass(IntEnum):
     """The different classes of HTTP status codes:
+
     - CodeNone = 0
     - Code1xx = 100
     - Code2xx = 200

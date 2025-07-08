@@ -2,6 +2,7 @@
 # This file is @generated
 module Svix
   # The reason an attempt was made:
+  #
   # - Scheduled = 0
   # - Manual = 1
   class MessageAttemptTriggerType

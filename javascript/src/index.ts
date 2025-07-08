@@ -8,7 +8,6 @@ import { EventType } from "./api/eventType";
 import { Health } from "./api/health";
 import { Ingest } from "./api/ingest";
 import { Integration } from "./api/integration";
-import { Management } from "./api/management";
 import { Message } from "./api/message";
 import { MessageAttempt } from "./api/messageAttempt";
 import { OperationalWebhook } from "./api/operationalWebhook";
@@ -89,10 +88,6 @@ export class Svix {
 
   public get integration() {
     return new Integration(this.requestCtx);
-  }
-
-  public get management() {
-    return new Management(this.requestCtx);
   }
 
   public get message() {

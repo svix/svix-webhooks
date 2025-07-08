@@ -11,6 +11,9 @@ import com.svix.Utils;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 @ToString
 @EqualsAndHashCode
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -19,6 +22,7 @@ public class EventTypeFromOpenApi {
     @JsonProperty private Boolean deprecated;
     @JsonProperty private String description;
     @JsonProperty private String featureFlag;
+    @JsonProperty private Set<String> featureFlags;
     @JsonProperty private String groupName;
     @JsonProperty private String name;
     @JsonProperty private Object schemas;
@@ -63,6 +67,7 @@ public class EventTypeFromOpenApi {
         this.description = description;
     }
 
+    @Deprecated
     public EventTypeFromOpenApi featureFlag(String featureFlag) {
         this.featureFlag = featureFlag;
         return this;
@@ -74,12 +79,42 @@ public class EventTypeFromOpenApi {
      * @return featureFlag
      */
     @javax.annotation.Nullable
+    @Deprecated
     public String getFeatureFlag() {
         return featureFlag;
     }
 
+    @Deprecated
     public void setFeatureFlag(String featureFlag) {
         this.featureFlag = featureFlag;
+    }
+
+    public EventTypeFromOpenApi featureFlags(Set<String> featureFlags) {
+        this.featureFlags = featureFlags;
+        return this;
+    }
+
+    public EventTypeFromOpenApi addFeatureFlagsItem(String featureFlagsItem) {
+        if (this.featureFlags == null) {
+            this.featureFlags = new LinkedHashSet<>();
+        }
+        this.featureFlags.add(featureFlagsItem);
+
+        return this;
+    }
+
+    /**
+     * Get featureFlags
+     *
+     * @return featureFlags
+     */
+    @javax.annotation.Nullable
+    public Set<String> getFeatureFlags() {
+        return featureFlags;
+    }
+
+    public void setFeatureFlags(Set<String> featureFlags) {
+        this.featureFlags = featureFlags;
     }
 
     public EventTypeFromOpenApi groupName(String groupName) {

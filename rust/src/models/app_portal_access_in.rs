@@ -27,6 +27,14 @@ pub struct AppPortalAccessIn {
     #[serde(rename = "readOnly")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub read_only: Option<bool>,
+
+    /// An optional session ID to attach to the token.
+    ///
+    /// When expiring tokens with "Expire All", you can include the session ID
+    /// to only expire tokens that were created with that session ID.
+    #[serde(rename = "sessionId")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub session_id: Option<String>,
 }
 
 impl AppPortalAccessIn {
@@ -36,6 +44,7 @@ impl AppPortalAccessIn {
             expiry: None,
             feature_flags: None,
             read_only: None,
+            session_id: None,
         }
     }
 }

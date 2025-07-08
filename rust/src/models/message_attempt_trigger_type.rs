@@ -4,6 +4,7 @@ use std::fmt;
 use serde_repr::{Deserialize_repr, Serialize_repr};
 
 /// The reason an attempt was made:
+///
 /// - Scheduled = 0
 /// - Manual = 1
 #[repr(i64)]

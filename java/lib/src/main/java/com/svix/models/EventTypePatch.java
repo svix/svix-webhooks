@@ -12,6 +12,9 @@ import com.svix.Utils;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 @ToString
 @EqualsAndHashCode
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -21,6 +24,7 @@ public class EventTypePatch {
     @JsonProperty private Boolean deprecated;
     @JsonProperty private String description;
     @JsonProperty private MaybeUnset<String> featureFlag;
+    @JsonProperty private MaybeUnset<Set<String>> featureFlags;
     @JsonProperty private MaybeUnset<String> groupName;
     @JsonProperty private MaybeUnset<Object> schemas;
 
@@ -83,6 +87,7 @@ public class EventTypePatch {
         this.description = description;
     }
 
+    @Deprecated
     public EventTypePatch featureFlag(String featureFlag) {
         this.featureFlag = new MaybeUnset<>(featureFlag);
         return this;
@@ -94,6 +99,7 @@ public class EventTypePatch {
      * @return featureFlag
      */
     @javax.annotation.Nullable
+    @Deprecated
     public String getFeatureFlag() {
         if (featureFlag == null) {
             return null;
@@ -101,8 +107,40 @@ public class EventTypePatch {
         return featureFlag.getValue();
     }
 
+    @Deprecated
     public void setFeatureFlag(String featureFlag) {
         this.featureFlag = new MaybeUnset<>(featureFlag);
+    }
+
+    public EventTypePatch featureFlags(Set<String> featureFlags) {
+        this.featureFlags = new MaybeUnset<>(featureFlags);
+        return this;
+    }
+
+    public EventTypePatch addFeatureFlagsItem(String featureFlagsItem) {
+        if (this.featureFlags == null) {
+            this.featureFlags = new MaybeUnset<>(new LinkedHashSet<>());
+        }
+        this.featureFlags.getValue().add(featureFlagsItem);
+
+        return this;
+    }
+
+    /**
+     * Get featureFlags
+     *
+     * @return featureFlags
+     */
+    @javax.annotation.Nullable
+    public Set<String> getFeatureFlags() {
+        if (featureFlags == null) {
+            return null;
+        }
+        return featureFlags.getValue();
+    }
+
+    public void setFeatureFlags(Set<String> featureFlags) {
+        this.featureFlags = new MaybeUnset<>(featureFlags);
     }
 
     public EventTypePatch groupName(String groupName) {

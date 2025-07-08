@@ -12,6 +12,8 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.time.OffsetDateTime;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @ToString
 @EqualsAndHashCode
@@ -23,6 +25,7 @@ public class EventTypeOut {
     @JsonProperty private Boolean deprecated;
     @JsonProperty private String description;
     @JsonProperty private String featureFlag;
+    @JsonProperty private Set<String> featureFlags;
     @JsonProperty private String groupName;
     @JsonProperty private String name;
     @JsonProperty private Object schemas;
@@ -123,6 +126,34 @@ public class EventTypeOut {
 
     public void setFeatureFlag(String featureFlag) {
         this.featureFlag = featureFlag;
+    }
+
+    public EventTypeOut featureFlags(Set<String> featureFlags) {
+        this.featureFlags = featureFlags;
+        return this;
+    }
+
+    public EventTypeOut addFeatureFlagsItem(String featureFlagsItem) {
+        if (this.featureFlags == null) {
+            this.featureFlags = new LinkedHashSet<>();
+        }
+        this.featureFlags.add(featureFlagsItem);
+
+        return this;
+    }
+
+    /**
+     * Get featureFlags
+     *
+     * @return featureFlags
+     */
+    @javax.annotation.Nullable
+    public Set<String> getFeatureFlags() {
+        return featureFlags;
+    }
+
+    public void setFeatureFlags(Set<String> featureFlags) {
+        this.featureFlags = featureFlags;
     }
 
     public EventTypeOut groupName(String groupName) {

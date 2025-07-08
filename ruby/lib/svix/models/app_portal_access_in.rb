@@ -16,8 +16,12 @@ module Svix
     attr_accessor :feature_flags
     # Whether the app portal should be in read-only mode.
     attr_accessor :read_only
+    # An optional session ID to attach to the token.
+    #
+    # When expiring tokens with "Expire All", you can include the session ID to only expire tokens that were created with that session ID.
+    attr_accessor :session_id
 
-    ALL_FIELD ||= ["application", "expiry", "feature_flags", "read_only"].freeze
+    ALL_FIELD ||= ["application", "expiry", "feature_flags", "read_only", "session_id"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -42,6 +46,7 @@ module Svix
       attrs["expiry"] = attributes["expiry"]
       attrs["feature_flags"] = attributes["featureFlags"]
       attrs["read_only"] = attributes["readOnly"]
+      attrs["session_id"] = attributes["sessionId"]
       new(attrs)
     end
 
@@ -51,6 +56,7 @@ module Svix
       out["expiry"] = Svix::serialize_primitive(@expiry) if @expiry
       out["featureFlags"] = Svix::serialize_primitive(@feature_flags) if @feature_flags
       out["readOnly"] = Svix::serialize_primitive(@read_only) if @read_only
+      out["sessionId"] = Svix::serialize_primitive(@session_id) if @session_id
       out
     end
 

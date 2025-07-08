@@ -4,6 +4,7 @@ namespace Svix.Models
 {
     /// <summary>
     /// The different classes of HTTP status codes:
+    ///
     /// - CodeNone = 0
     /// - Code1xx = 100
     /// - Code2xx = 200

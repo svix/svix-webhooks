@@ -8,12 +8,13 @@ import (
 )
 
 type EventTypePatch struct {
-	Archived    *bool                          `json:"archived,omitempty"`
-	Deprecated  *bool                          `json:"deprecated,omitempty"`
-	Description *string                        `json:"description,omitempty"`
-	FeatureFlag utils.Nullable[string]         `json:"featureFlag"`
-	GroupName   utils.Nullable[string]         `json:"groupName"` // The event type group's name
-	Schemas     utils.Nullable[map[string]any] `json:"schemas"`
+	Archived     *bool                          `json:"archived,omitempty"`
+	Deprecated   *bool                          `json:"deprecated,omitempty"`
+	Description  *string                        `json:"description,omitempty"`
+	FeatureFlag  utils.Nullable[string]         `json:"featureFlag"`
+	FeatureFlags utils.Nullable[[]string]       `json:"featureFlags"`
+	GroupName    utils.Nullable[string]         `json:"groupName"` // The event type group's name
+	Schemas      utils.Nullable[map[string]any] `json:"schemas"`
 }
 
 func (o EventTypePatch) MarshalJSON() ([]byte, error) {
@@ -29,6 +30,9 @@ func (o EventTypePatch) MarshalJSON() ([]byte, error) {
 	}
 	if o.FeatureFlag.IsSet() {
 		toSerialize["featureFlag"] = o.FeatureFlag
+	}
+	if o.FeatureFlags.IsSet() {
+		toSerialize["featureFlags"] = o.FeatureFlags
 	}
 	if o.GroupName.IsSet() {
 		toSerialize["groupName"] = o.GroupName

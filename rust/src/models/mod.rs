@@ -4,10 +4,8 @@
 pub mod adobe_sign_config;
 pub mod adobe_sign_config_out;
 pub mod aggregate_event_types_out;
-pub mod api_token_censored_out;
-pub mod api_token_expire_in;
-pub mod api_token_in;
-pub mod api_token_out;
+pub mod airwallex_config;
+pub mod airwallex_config_out;
 pub mod app_portal_access_in;
 pub mod app_portal_access_out;
 pub mod app_usage_stats_in;
@@ -21,6 +19,8 @@ pub mod background_task_finished_event2;
 pub mod background_task_out;
 pub mod background_task_status;
 pub mod background_task_type;
+pub mod checkbook_config;
+pub mod checkbook_config_out;
 pub mod connector_in;
 pub mod connector_kind;
 pub mod connector_out;
@@ -82,7 +82,6 @@ pub mod integration_in;
 pub mod integration_key_out;
 pub mod integration_out;
 pub mod integration_update;
-pub mod list_response_api_token_censored_out;
 pub mod list_response_application_out;
 pub mod list_response_background_task_out;
 pub mod list_response_endpoint_message_out;
@@ -116,6 +115,8 @@ pub mod operational_webhook_endpoint_secret_in;
 pub mod operational_webhook_endpoint_secret_out;
 pub mod operational_webhook_endpoint_update;
 pub mod ordering;
+pub mod orum_io_config;
+pub mod orum_io_config_out;
 pub mod panda_doc_config;
 pub mod panda_doc_config_out;
 pub mod polling_endpoint_consumer_seek_in;
@@ -127,6 +128,8 @@ pub mod recover_out;
 pub mod replay_in;
 pub mod replay_out;
 pub mod rotate_token_out;
+pub mod rutter_config;
+pub mod rutter_config_out;
 pub mod segment_config;
 pub mod segment_config_out;
 pub mod shopify_config;
@@ -138,6 +141,10 @@ pub mod stripe_config;
 pub mod stripe_config_out;
 pub mod svix_config;
 pub mod svix_config_out;
+pub mod telnyx_config;
+pub mod telnyx_config_out;
+pub mod veriff_config;
+pub mod veriff_config_out;
 pub mod zoom_config;
 pub mod zoom_config_out;
 // not currently generated
@@ -152,10 +159,8 @@ pub use self::{
     adobe_sign_config::AdobeSignConfig,
     adobe_sign_config_out::AdobeSignConfigOut,
     aggregate_event_types_out::AggregateEventTypesOut,
-    api_token_censored_out::ApiTokenCensoredOut,
-    api_token_expire_in::ApiTokenExpireIn,
-    api_token_in::ApiTokenIn,
-    api_token_out::ApiTokenOut,
+    airwallex_config::AirwallexConfig,
+    airwallex_config_out::AirwallexConfigOut,
     app_portal_access_in::AppPortalAccessIn,
     app_portal_access_out::AppPortalAccessOut,
     app_usage_stats_in::AppUsageStatsIn,
@@ -169,6 +174,8 @@ pub use self::{
     background_task_out::BackgroundTaskOut,
     background_task_status::BackgroundTaskStatus,
     background_task_type::BackgroundTaskType,
+    checkbook_config::CheckbookConfig,
+    checkbook_config_out::CheckbookConfigOut,
     connector_in::ConnectorIn,
     connector_kind::ConnectorKind,
     connector_out::ConnectorOut,
@@ -230,7 +237,6 @@ pub use self::{
     integration_key_out::IntegrationKeyOut,
     integration_out::IntegrationOut,
     integration_update::IntegrationUpdate,
-    list_response_api_token_censored_out::ListResponseApiTokenCensoredOut,
     list_response_application_out::ListResponseApplicationOut,
     list_response_background_task_out::ListResponseBackgroundTaskOut,
     list_response_endpoint_message_out::ListResponseEndpointMessageOut,
@@ -264,6 +270,8 @@ pub use self::{
     operational_webhook_endpoint_secret_out::OperationalWebhookEndpointSecretOut,
     operational_webhook_endpoint_update::OperationalWebhookEndpointUpdate,
     ordering::Ordering,
+    orum_io_config::OrumIoConfig,
+    orum_io_config_out::OrumIoConfigOut,
     panda_doc_config::PandaDocConfig,
     panda_doc_config_out::PandaDocConfigOut,
     polling_endpoint_consumer_seek_in::PollingEndpointConsumerSeekIn,
@@ -275,6 +283,8 @@ pub use self::{
     replay_in::ReplayIn,
     replay_out::ReplayOut,
     rotate_token_out::RotateTokenOut,
+    rutter_config::RutterConfig,
+    rutter_config_out::RutterConfigOut,
     segment_config::SegmentConfig,
     segment_config_out::SegmentConfigOut,
     shopify_config::ShopifyConfig,
@@ -286,6 +296,10 @@ pub use self::{
     stripe_config_out::StripeConfigOut,
     svix_config::SvixConfig,
     svix_config_out::SvixConfigOut,
+    telnyx_config::TelnyxConfig,
+    telnyx_config_out::TelnyxConfigOut,
+    veriff_config::VeriffConfig,
+    veriff_config_out::VeriffConfigOut,
     zoom_config::ZoomConfig,
     zoom_config_out::ZoomConfigOut,
 };

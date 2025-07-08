@@ -3,16 +3,22 @@
 require "json"
 
 require_relative "./adobe_sign_config"
+require_relative "./airwallex_config"
+require_relative "./checkbook_config"
 require_relative "./cron_config"
 require_relative "./docusign_config"
 require_relative "./github_config"
 require_relative "./hubspot_config"
+require_relative "./orum_io_config"
 require_relative "./panda_doc_config"
+require_relative "./rutter_config"
 require_relative "./segment_config"
 require_relative "./shopify_config"
 require_relative "./slack_config"
 require_relative "./stripe_config"
 require_relative "./svix_config"
+require_relative "./telnyx_config"
+require_relative "./veriff_config"
 require_relative "./zoom_config"
 
 module Svix
@@ -45,6 +51,9 @@ module Svix
     class Brex < SvixConfig
     end
 
+    class Checkbook < CheckbookConfig
+    end
+
     class Clerk < SvixConfig
     end
 
@@ -69,6 +78,9 @@ module Svix
     class Nash < SvixConfig
     end
 
+    class OrumIo < OrumIoConfig
+    end
+
     class PandaDoc < PandaDocConfig
     end
 
@@ -79,6 +91,9 @@ module Svix
     end
 
     class Resend < SvixConfig
+    end
+
+    class Rutter < RutterConfig
     end
 
     class Safebase < SvixConfig
@@ -107,6 +122,21 @@ module Svix
 
     class Zoom < ZoomConfig
     end
+
+    class Telnyx < TelnyxConfig
+    end
+
+    class OpenAi < SvixConfig
+    end
+
+    class Render < SvixConfig
+    end
+
+    class Veriff < VeriffConfig
+    end
+
+    class Airwallex < AirwallexConfig
+    end
   end
 
   class IngestSourceIn
@@ -123,6 +153,7 @@ module Svix
       IngestSourceInConfig::AdobeSign => "adobe-sign",
       IngestSourceInConfig::Beehiiv => "beehiiv",
       IngestSourceInConfig::Brex => "brex",
+      IngestSourceInConfig::Checkbook => "checkbook",
       IngestSourceInConfig::Clerk => "clerk",
       IngestSourceInConfig::Docusign => "docusign",
       IngestSourceInConfig::Github => "github",
@@ -131,10 +162,12 @@ module Svix
       IngestSourceInConfig::IncidentIo => "incident-io",
       IngestSourceInConfig::Lithic => "lithic",
       IngestSourceInConfig::Nash => "nash",
+      IngestSourceInConfig::OrumIo => "orum-io",
       IngestSourceInConfig::PandaDoc => "panda-doc",
       IngestSourceInConfig::Pleo => "pleo",
       IngestSourceInConfig::Replicate => "replicate",
       IngestSourceInConfig::Resend => "resend",
+      IngestSourceInConfig::Rutter => "rutter",
       IngestSourceInConfig::Safebase => "safebase",
       IngestSourceInConfig::Sardine => "sardine",
       IngestSourceInConfig::Segment => "segment",
@@ -143,7 +176,12 @@ module Svix
       IngestSourceInConfig::Stripe => "stripe",
       IngestSourceInConfig::Stych => "stych",
       IngestSourceInConfig::Svix => "svix",
-      IngestSourceInConfig::Zoom => "zoom"
+      IngestSourceInConfig::Zoom => "zoom",
+      IngestSourceInConfig::Telnyx => "telnyx",
+      IngestSourceInConfig::OpenAi => "open-ai",
+      IngestSourceInConfig::Render => "render",
+      IngestSourceInConfig::Veriff => "veriff",
+      IngestSourceInConfig::Airwallex => "airwallex"
     }
     private_constant :TYPE_TO_NAME
     NAME_TO_TYPE = TYPE_TO_NAME.invert

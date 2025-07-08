@@ -7,6 +7,7 @@ module Svix
     attr_accessor :created_at
     attr_accessor :description
     attr_accessor :feature_flag
+    attr_accessor :feature_flags
     attr_accessor :filter_types
     # The Connector's ID.
     attr_accessor :id
@@ -24,6 +25,7 @@ module Svix
       "created_at",
       "description",
       "feature_flag",
+      "feature_flags",
       "filter_types",
       "id",
       "instructions",
@@ -58,6 +60,7 @@ module Svix
       attrs["created_at"] = DateTime.rfc3339(attributes["createdAt"]).to_time
       attrs["description"] = attributes["description"]
       attrs["feature_flag"] = attributes["featureFlag"]
+      attrs["feature_flags"] = attributes["featureFlags"]
       attrs["filter_types"] = attributes["filterTypes"]
       attrs["id"] = attributes["id"]
       attrs["instructions"] = attributes["instructions"]
@@ -76,6 +79,7 @@ module Svix
       out["createdAt"] = Svix::serialize_primitive(@created_at) if @created_at
       out["description"] = Svix::serialize_primitive(@description) if @description
       out["featureFlag"] = Svix::serialize_primitive(@feature_flag) if @feature_flag
+      out["featureFlags"] = Svix::serialize_primitive(@feature_flags) if @feature_flags
       out["filterTypes"] = Svix::serialize_primitive(@filter_types) if @filter_types
       out["id"] = Svix::serialize_primitive(@id) if @id
       out["instructions"] = Svix::serialize_primitive(@instructions) if @instructions

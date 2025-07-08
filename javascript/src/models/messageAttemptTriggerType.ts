@@ -2,6 +2,7 @@
 /* eslint @typescript-eslint/no-explicit-any: 0 */
 /**
  * The reason an attempt was made:
+ *
  * - Scheduled = 0
  * - Manual = 1
  */

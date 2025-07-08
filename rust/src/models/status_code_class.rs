@@ -4,6 +4,7 @@ use std::fmt;
 use serde_repr::{Deserialize_repr, Serialize_repr};
 
 /// The different classes of HTTP status codes:
+///
 /// - CodeNone = 0
 /// - Code1xx = 100
 /// - Code2xx = 200

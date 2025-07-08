@@ -6,6 +6,7 @@ export interface ConnectorOut {
   createdAt: Date;
   description: string;
   featureFlag?: string | null;
+  featureFlags?: string[] | null;
   filterTypes?: string[] | null;
   /** The Connector's ID. */
   id: string;
@@ -26,6 +27,7 @@ export const ConnectorOutSerializer = {
       createdAt: new Date(object["createdAt"]),
       description: object["description"],
       featureFlag: object["featureFlag"],
+      featureFlags: object["featureFlags"],
       filterTypes: object["filterTypes"],
       id: object["id"],
       instructions: object["instructions"],
@@ -44,6 +46,7 @@ export const ConnectorOutSerializer = {
       createdAt: self.createdAt,
       description: self.description,
       featureFlag: self.featureFlag,
+      featureFlags: self.featureFlags,
       filterTypes: self.filterTypes,
       id: self.id,
       instructions: self.instructions,
