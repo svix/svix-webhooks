@@ -4,6 +4,7 @@ namespace Svix.Models
 {
     /// <summary>
     /// The sending status of the message:
+    ///
     /// - Success = 0
     /// - Pending = 1
     /// - Fail = 2

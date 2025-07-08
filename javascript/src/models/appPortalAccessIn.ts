@@ -19,6 +19,12 @@ export interface AppPortalAccessIn {
   featureFlags?: string[];
   /** Whether the app portal should be in read-only mode. */
   readOnly?: boolean | null;
+  /**
+   * An optional session ID to attach to the token.
+   *
+   * When expiring tokens with "Expire All", you can include the session ID to only expire tokens that were created with that session ID.
+   */
+  sessionId?: string | null;
 }
 
 export const AppPortalAccessInSerializer = {
@@ -30,6 +36,7 @@ export const AppPortalAccessInSerializer = {
       expiry: object["expiry"],
       featureFlags: object["featureFlags"],
       readOnly: object["readOnly"],
+      sessionId: object["sessionId"],
     };
   },
 
@@ -41,6 +48,7 @@ export const AppPortalAccessInSerializer = {
       expiry: self.expiry,
       featureFlags: self.featureFlags,
       readOnly: self.readOnly,
+      sessionId: self.sessionId,
     };
   },
 };

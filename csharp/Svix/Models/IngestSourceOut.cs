@@ -103,6 +103,9 @@ namespace Svix.Models
         public static IngestSourceOutConfig Brex(SvixConfigOut svixConfigOut) =>
             new(svixConfigOut, ConfigType.Brex);
 
+        public static IngestSourceOutConfig Checkbook(CheckbookConfigOut checkbookConfigOut) =>
+            new(checkbookConfigOut, ConfigType.Checkbook);
+
         public static IngestSourceOutConfig Clerk(SvixConfigOut svixConfigOut) =>
             new(svixConfigOut, ConfigType.Clerk);
 
@@ -127,6 +130,9 @@ namespace Svix.Models
         public static IngestSourceOutConfig Nash(SvixConfigOut svixConfigOut) =>
             new(svixConfigOut, ConfigType.Nash);
 
+        public static IngestSourceOutConfig OrumIo(OrumIoConfigOut orumIoConfigOut) =>
+            new(orumIoConfigOut, ConfigType.OrumIo);
+
         public static IngestSourceOutConfig PandaDoc(PandaDocConfigOut pandaDocConfigOut) =>
             new(pandaDocConfigOut, ConfigType.PandaDoc);
 
@@ -138,6 +144,9 @@ namespace Svix.Models
 
         public static IngestSourceOutConfig Resend(SvixConfigOut svixConfigOut) =>
             new(svixConfigOut, ConfigType.Resend);
+
+        public static IngestSourceOutConfig Rutter(RutterConfigOut rutterConfigOut) =>
+            new(rutterConfigOut, ConfigType.Rutter);
 
         public static IngestSourceOutConfig Safebase(SvixConfigOut svixConfigOut) =>
             new(svixConfigOut, ConfigType.Safebase);
@@ -166,6 +175,21 @@ namespace Svix.Models
         public static IngestSourceOutConfig Zoom(ZoomConfigOut zoomConfigOut) =>
             new(zoomConfigOut, ConfigType.Zoom);
 
+        public static IngestSourceOutConfig Telnyx(TelnyxConfigOut telnyxConfigOut) =>
+            new(telnyxConfigOut, ConfigType.Telnyx);
+
+        public static IngestSourceOutConfig OpenAi(SvixConfigOut svixConfigOut) =>
+            new(svixConfigOut, ConfigType.OpenAi);
+
+        public static IngestSourceOutConfig Render(SvixConfigOut svixConfigOut) =>
+            new(svixConfigOut, ConfigType.Render);
+
+        public static IngestSourceOutConfig Veriff(VeriffConfigOut veriffConfigOut) =>
+            new(veriffConfigOut, ConfigType.Veriff);
+
+        public static IngestSourceOutConfig Airwallex(AirwallexConfigOut airwallexConfigOut) =>
+            new(airwallexConfigOut, ConfigType.Airwallex);
+
         private enum ConfigType
         {
             [EnumMember(Value = "generic-webhook")]
@@ -182,6 +206,9 @@ namespace Svix.Models
 
             [EnumMember(Value = "brex")]
             Brex,
+
+            [EnumMember(Value = "checkbook")]
+            Checkbook,
 
             [EnumMember(Value = "clerk")]
             Clerk,
@@ -207,6 +234,9 @@ namespace Svix.Models
             [EnumMember(Value = "nash")]
             Nash,
 
+            [EnumMember(Value = "orum-io")]
+            OrumIo,
+
             [EnumMember(Value = "panda-doc")]
             PandaDoc,
 
@@ -218,6 +248,9 @@ namespace Svix.Models
 
             [EnumMember(Value = "resend")]
             Resend,
+
+            [EnumMember(Value = "rutter")]
+            Rutter,
 
             [EnumMember(Value = "safebase")]
             Safebase,
@@ -245,6 +278,21 @@ namespace Svix.Models
 
             [EnumMember(Value = "zoom")]
             Zoom,
+
+            [EnumMember(Value = "telnyx")]
+            Telnyx,
+
+            [EnumMember(Value = "open-ai")]
+            OpenAi,
+
+            [EnumMember(Value = "render")]
+            Render,
+
+            [EnumMember(Value = "veriff")]
+            Veriff,
+
+            [EnumMember(Value = "airwallex")]
+            Airwallex,
         }
 
         public TResult Match<TResult>(
@@ -253,6 +301,7 @@ namespace Svix.Models
             Func<AdobeSignConfigOut, TResult> onAdobeSign,
             Func<SvixConfigOut, TResult> onBeehiiv,
             Func<SvixConfigOut, TResult> onBrex,
+            Func<CheckbookConfigOut, TResult> onCheckbook,
             Func<SvixConfigOut, TResult> onClerk,
             Func<DocusignConfigOut, TResult> onDocusign,
             Func<GithubConfigOut, TResult> onGithub,
@@ -261,10 +310,12 @@ namespace Svix.Models
             Func<SvixConfigOut, TResult> onIncidentIo,
             Func<SvixConfigOut, TResult> onLithic,
             Func<SvixConfigOut, TResult> onNash,
+            Func<OrumIoConfigOut, TResult> onOrumIo,
             Func<PandaDocConfigOut, TResult> onPandaDoc,
             Func<SvixConfigOut, TResult> onPleo,
             Func<SvixConfigOut, TResult> onReplicate,
             Func<SvixConfigOut, TResult> onResend,
+            Func<RutterConfigOut, TResult> onRutter,
             Func<SvixConfigOut, TResult> onSafebase,
             Func<SvixConfigOut, TResult> onSardine,
             Func<SegmentConfigOut, TResult> onSegment,
@@ -273,7 +324,12 @@ namespace Svix.Models
             Func<StripeConfigOut, TResult> onStripe,
             Func<SvixConfigOut, TResult> onStych,
             Func<SvixConfigOut, TResult> onSvix,
-            Func<ZoomConfigOut, TResult> onZoom
+            Func<ZoomConfigOut, TResult> onZoom,
+            Func<TelnyxConfigOut, TResult> onTelnyx,
+            Func<SvixConfigOut, TResult> onOpenAi,
+            Func<SvixConfigOut, TResult> onRender,
+            Func<VeriffConfigOut, TResult> onVeriff,
+            Func<AirwallexConfigOut, TResult> onAirwallex
         )
         {
             return _type switch
@@ -283,6 +339,7 @@ namespace Svix.Models
                 ConfigType.AdobeSign => onAdobeSign((AdobeSignConfigOut)_value),
                 ConfigType.Beehiiv => onBeehiiv((SvixConfigOut)_value),
                 ConfigType.Brex => onBrex((SvixConfigOut)_value),
+                ConfigType.Checkbook => onCheckbook((CheckbookConfigOut)_value),
                 ConfigType.Clerk => onClerk((SvixConfigOut)_value),
                 ConfigType.Docusign => onDocusign((DocusignConfigOut)_value),
                 ConfigType.Github => onGithub((GithubConfigOut)_value),
@@ -291,10 +348,12 @@ namespace Svix.Models
                 ConfigType.IncidentIo => onIncidentIo((SvixConfigOut)_value),
                 ConfigType.Lithic => onLithic((SvixConfigOut)_value),
                 ConfigType.Nash => onNash((SvixConfigOut)_value),
+                ConfigType.OrumIo => onOrumIo((OrumIoConfigOut)_value),
                 ConfigType.PandaDoc => onPandaDoc((PandaDocConfigOut)_value),
                 ConfigType.Pleo => onPleo((SvixConfigOut)_value),
                 ConfigType.Replicate => onReplicate((SvixConfigOut)_value),
                 ConfigType.Resend => onResend((SvixConfigOut)_value),
+                ConfigType.Rutter => onRutter((RutterConfigOut)_value),
                 ConfigType.Safebase => onSafebase((SvixConfigOut)_value),
                 ConfigType.Sardine => onSardine((SvixConfigOut)_value),
                 ConfigType.Segment => onSegment((SegmentConfigOut)_value),
@@ -304,6 +363,11 @@ namespace Svix.Models
                 ConfigType.Stych => onStych((SvixConfigOut)_value),
                 ConfigType.Svix => onSvix((SvixConfigOut)_value),
                 ConfigType.Zoom => onZoom((ZoomConfigOut)_value),
+                ConfigType.Telnyx => onTelnyx((TelnyxConfigOut)_value),
+                ConfigType.OpenAi => onOpenAi((SvixConfigOut)_value),
+                ConfigType.Render => onRender((SvixConfigOut)_value),
+                ConfigType.Veriff => onVeriff((VeriffConfigOut)_value),
+                ConfigType.Airwallex => onAirwallex((AirwallexConfigOut)_value),
                 // unreachable
                 _ => throw new InvalidOperationException("Unknown config type"),
             };
@@ -315,6 +379,7 @@ namespace Svix.Models
             Action<AdobeSignConfigOut> onAdobeSign,
             Action<SvixConfigOut> onBeehiiv,
             Action<SvixConfigOut> onBrex,
+            Action<CheckbookConfigOut> onCheckbook,
             Action<SvixConfigOut> onClerk,
             Action<DocusignConfigOut> onDocusign,
             Action<GithubConfigOut> onGithub,
@@ -323,10 +388,12 @@ namespace Svix.Models
             Action<SvixConfigOut> onIncidentIo,
             Action<SvixConfigOut> onLithic,
             Action<SvixConfigOut> onNash,
+            Action<OrumIoConfigOut> onOrumIo,
             Action<PandaDocConfigOut> onPandaDoc,
             Action<SvixConfigOut> onPleo,
             Action<SvixConfigOut> onReplicate,
             Action<SvixConfigOut> onResend,
+            Action<RutterConfigOut> onRutter,
             Action<SvixConfigOut> onSafebase,
             Action<SvixConfigOut> onSardine,
             Action<SegmentConfigOut> onSegment,
@@ -335,7 +402,12 @@ namespace Svix.Models
             Action<StripeConfigOut> onStripe,
             Action<SvixConfigOut> onStych,
             Action<SvixConfigOut> onSvix,
-            Action<ZoomConfigOut> onZoom
+            Action<ZoomConfigOut> onZoom,
+            Action<TelnyxConfigOut> onTelnyx,
+            Action<SvixConfigOut> onOpenAi,
+            Action<SvixConfigOut> onRender,
+            Action<VeriffConfigOut> onVeriff,
+            Action<AirwallexConfigOut> onAirwallex
         )
         {
             switch (_type)
@@ -354,6 +426,9 @@ namespace Svix.Models
                     break;
                 case ConfigType.Brex:
                     onBrex((SvixConfigOut)_value);
+                    break;
+                case ConfigType.Checkbook:
+                    onCheckbook((CheckbookConfigOut)_value);
                     break;
                 case ConfigType.Clerk:
                     onClerk((SvixConfigOut)_value);
@@ -379,6 +454,9 @@ namespace Svix.Models
                 case ConfigType.Nash:
                     onNash((SvixConfigOut)_value);
                     break;
+                case ConfigType.OrumIo:
+                    onOrumIo((OrumIoConfigOut)_value);
+                    break;
                 case ConfigType.PandaDoc:
                     onPandaDoc((PandaDocConfigOut)_value);
                     break;
@@ -390,6 +468,9 @@ namespace Svix.Models
                     break;
                 case ConfigType.Resend:
                     onResend((SvixConfigOut)_value);
+                    break;
+                case ConfigType.Rutter:
+                    onRutter((RutterConfigOut)_value);
                     break;
                 case ConfigType.Safebase:
                     onSafebase((SvixConfigOut)_value);
@@ -417,6 +498,21 @@ namespace Svix.Models
                     break;
                 case ConfigType.Zoom:
                     onZoom((ZoomConfigOut)_value);
+                    break;
+                case ConfigType.Telnyx:
+                    onTelnyx((TelnyxConfigOut)_value);
+                    break;
+                case ConfigType.OpenAi:
+                    onOpenAi((SvixConfigOut)_value);
+                    break;
+                case ConfigType.Render:
+                    onRender((SvixConfigOut)_value);
+                    break;
+                case ConfigType.Veriff:
+                    onVeriff((VeriffConfigOut)_value);
+                    break;
+                case ConfigType.Airwallex:
+                    onAirwallex((AirwallexConfigOut)_value);
                     break;
                 default:
                     // unreachable
@@ -528,6 +624,7 @@ namespace Svix.Models
             ["adobe-sign"] = c => IngestSourceOutConfig.AdobeSign(ToObj<AdobeSignConfigOut>(c)),
             ["beehiiv"] = c => IngestSourceOutConfig.Beehiiv(ToObj<SvixConfigOut>(c)),
             ["brex"] = c => IngestSourceOutConfig.Brex(ToObj<SvixConfigOut>(c)),
+            ["checkbook"] = c => IngestSourceOutConfig.Checkbook(ToObj<CheckbookConfigOut>(c)),
             ["clerk"] = c => IngestSourceOutConfig.Clerk(ToObj<SvixConfigOut>(c)),
             ["docusign"] = c => IngestSourceOutConfig.Docusign(ToObj<DocusignConfigOut>(c)),
             ["github"] = c => IngestSourceOutConfig.Github(ToObj<GithubConfigOut>(c)),
@@ -536,10 +633,12 @@ namespace Svix.Models
             ["incident-io"] = c => IngestSourceOutConfig.IncidentIo(ToObj<SvixConfigOut>(c)),
             ["lithic"] = c => IngestSourceOutConfig.Lithic(ToObj<SvixConfigOut>(c)),
             ["nash"] = c => IngestSourceOutConfig.Nash(ToObj<SvixConfigOut>(c)),
+            ["orum-io"] = c => IngestSourceOutConfig.OrumIo(ToObj<OrumIoConfigOut>(c)),
             ["panda-doc"] = c => IngestSourceOutConfig.PandaDoc(ToObj<PandaDocConfigOut>(c)),
             ["pleo"] = c => IngestSourceOutConfig.Pleo(ToObj<SvixConfigOut>(c)),
             ["replicate"] = c => IngestSourceOutConfig.Replicate(ToObj<SvixConfigOut>(c)),
             ["resend"] = c => IngestSourceOutConfig.Resend(ToObj<SvixConfigOut>(c)),
+            ["rutter"] = c => IngestSourceOutConfig.Rutter(ToObj<RutterConfigOut>(c)),
             ["safebase"] = c => IngestSourceOutConfig.Safebase(ToObj<SvixConfigOut>(c)),
             ["sardine"] = c => IngestSourceOutConfig.Sardine(ToObj<SvixConfigOut>(c)),
             ["segment"] = c => IngestSourceOutConfig.Segment(ToObj<SegmentConfigOut>(c)),
@@ -549,6 +648,11 @@ namespace Svix.Models
             ["stych"] = c => IngestSourceOutConfig.Stych(ToObj<SvixConfigOut>(c)),
             ["svix"] = c => IngestSourceOutConfig.Svix(ToObj<SvixConfigOut>(c)),
             ["zoom"] = c => IngestSourceOutConfig.Zoom(ToObj<ZoomConfigOut>(c)),
+            ["telnyx"] = c => IngestSourceOutConfig.Telnyx(ToObj<TelnyxConfigOut>(c)),
+            ["open-ai"] = c => IngestSourceOutConfig.OpenAi(ToObj<SvixConfigOut>(c)),
+            ["render"] = c => IngestSourceOutConfig.Render(ToObj<SvixConfigOut>(c)),
+            ["veriff"] = c => IngestSourceOutConfig.Veriff(ToObj<VeriffConfigOut>(c)),
+            ["airwallex"] = c => IngestSourceOutConfig.Airwallex(ToObj<AirwallexConfigOut>(c)),
         };
     }
 }

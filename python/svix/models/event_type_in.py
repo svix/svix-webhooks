@@ -12,6 +12,9 @@ class EventTypeIn(BaseModel):
     description: str
 
     feature_flag: t.Optional[str] = None
+    """Deprecated - prefer featureFlags instead."""
+
+    feature_flags: t.Optional[t.List[str]] = None
 
     group_name: t.Optional[str] = None
     """The event type group's name"""

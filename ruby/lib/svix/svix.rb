@@ -21,7 +21,6 @@ module Svix
     attr_accessor :health
     attr_accessor :ingest
     attr_accessor :integration
-    attr_accessor :management
     attr_accessor :message
     attr_accessor :message_attempt
     attr_accessor :operational_webhook
@@ -56,7 +55,6 @@ module Svix
       @health = Health.new(api_client)
       @ingest = Ingest.new(api_client)
       @integration = Integration.new(api_client)
-      @management = Management.new(api_client)
       @message = Message.new(api_client)
       @message_attempt = MessageAttempt.new(api_client)
       @operational_webhook = OperationalWebhook.new(api_client)

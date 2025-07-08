@@ -52,6 +52,12 @@ sealed class IngestSourceInConfig {
         override fun toJsonElement() = Json.encodeToJsonElement(SvixConfig.serializer(), brex)
     }
 
+    @VariantName("checkbook")
+    data class Checkbook(val checkbook: CheckbookConfig) : IngestSourceInConfig() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement(CheckbookConfig.serializer(), checkbook)
+    }
+
     @VariantName("clerk")
     data class Clerk(val clerk: SvixConfig) : IngestSourceInConfig() {
         override fun toJsonElement() = Json.encodeToJsonElement(SvixConfig.serializer(), clerk)
@@ -93,6 +99,11 @@ sealed class IngestSourceInConfig {
         override fun toJsonElement() = Json.encodeToJsonElement(SvixConfig.serializer(), nash)
     }
 
+    @VariantName("orum-io")
+    data class OrumIo(val orumIo: OrumIoConfig) : IngestSourceInConfig() {
+        override fun toJsonElement() = Json.encodeToJsonElement(OrumIoConfig.serializer(), orumIo)
+    }
+
     @VariantName("panda-doc")
     data class PandaDoc(val pandaDoc: PandaDocConfig) : IngestSourceInConfig() {
         override fun toJsonElement() =
@@ -112,6 +123,11 @@ sealed class IngestSourceInConfig {
     @VariantName("resend")
     data class Resend(val resend: SvixConfig) : IngestSourceInConfig() {
         override fun toJsonElement() = Json.encodeToJsonElement(SvixConfig.serializer(), resend)
+    }
+
+    @VariantName("rutter")
+    data class Rutter(val rutter: RutterConfig) : IngestSourceInConfig() {
+        override fun toJsonElement() = Json.encodeToJsonElement(RutterConfig.serializer(), rutter)
     }
 
     @VariantName("safebase")
@@ -159,6 +175,32 @@ sealed class IngestSourceInConfig {
         override fun toJsonElement() = Json.encodeToJsonElement(ZoomConfig.serializer(), zoom)
     }
 
+    @VariantName("telnyx")
+    data class Telnyx(val telnyx: TelnyxConfig) : IngestSourceInConfig() {
+        override fun toJsonElement() = Json.encodeToJsonElement(TelnyxConfig.serializer(), telnyx)
+    }
+
+    @VariantName("open-ai")
+    data class OpenAi(val openAi: SvixConfig) : IngestSourceInConfig() {
+        override fun toJsonElement() = Json.encodeToJsonElement(SvixConfig.serializer(), openAi)
+    }
+
+    @VariantName("render")
+    data class Render(val render: SvixConfig) : IngestSourceInConfig() {
+        override fun toJsonElement() = Json.encodeToJsonElement(SvixConfig.serializer(), render)
+    }
+
+    @VariantName("veriff")
+    data class Veriff(val veriff: VeriffConfig) : IngestSourceInConfig() {
+        override fun toJsonElement() = Json.encodeToJsonElement(VeriffConfig.serializer(), veriff)
+    }
+
+    @VariantName("airwallex")
+    data class Airwallex(val airwallex: AirwallexConfig) : IngestSourceInConfig() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement(AirwallexConfig.serializer(), airwallex)
+    }
+
     companion object {
         private val typeMap =
             mapOf<String, (JsonElement) -> IngestSourceInConfig>(
@@ -178,6 +220,10 @@ sealed class IngestSourceInConfig {
                 "brex" to
                     { config ->
                         Brex(Json.decodeFromJsonElement(SvixConfig.serializer(), config))
+                    },
+                "checkbook" to
+                    { config ->
+                        Checkbook(Json.decodeFromJsonElement(CheckbookConfig.serializer(), config))
                     },
                 "clerk" to
                     { config ->
@@ -211,6 +257,10 @@ sealed class IngestSourceInConfig {
                     { config ->
                         Nash(Json.decodeFromJsonElement(SvixConfig.serializer(), config))
                     },
+                "orum-io" to
+                    { config ->
+                        OrumIo(Json.decodeFromJsonElement(OrumIoConfig.serializer(), config))
+                    },
                 "panda-doc" to
                     { config ->
                         PandaDoc(Json.decodeFromJsonElement(PandaDocConfig.serializer(), config))
@@ -226,6 +276,10 @@ sealed class IngestSourceInConfig {
                 "resend" to
                     { config ->
                         Resend(Json.decodeFromJsonElement(SvixConfig.serializer(), config))
+                    },
+                "rutter" to
+                    { config ->
+                        Rutter(Json.decodeFromJsonElement(RutterConfig.serializer(), config))
                     },
                 "safebase" to
                     { config ->
@@ -262,6 +316,26 @@ sealed class IngestSourceInConfig {
                 "zoom" to
                     { config ->
                         Zoom(Json.decodeFromJsonElement(ZoomConfig.serializer(), config))
+                    },
+                "telnyx" to
+                    { config ->
+                        Telnyx(Json.decodeFromJsonElement(TelnyxConfig.serializer(), config))
+                    },
+                "open-ai" to
+                    { config ->
+                        OpenAi(Json.decodeFromJsonElement(SvixConfig.serializer(), config))
+                    },
+                "render" to
+                    { config ->
+                        Render(Json.decodeFromJsonElement(SvixConfig.serializer(), config))
+                    },
+                "veriff" to
+                    { config ->
+                        Veriff(Json.decodeFromJsonElement(VeriffConfig.serializer(), config))
+                    },
+                "airwallex" to
+                    { config ->
+                        Airwallex(Json.decodeFromJsonElement(AirwallexConfig.serializer(), config))
                     },
             )
 

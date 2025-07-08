@@ -7,6 +7,7 @@ export interface EventTypeOut {
   deprecated: boolean;
   description: string;
   featureFlag?: string | null;
+  featureFlags?: string[] | null;
   /** The event type group's name */
   groupName?: string | null;
   /** The event type's name */
@@ -24,6 +25,7 @@ export const EventTypeOutSerializer = {
       deprecated: object["deprecated"],
       description: object["description"],
       featureFlag: object["featureFlag"],
+      featureFlags: object["featureFlags"],
       groupName: object["groupName"],
       name: object["name"],
       schemas: object["schemas"],
@@ -38,6 +40,7 @@ export const EventTypeOutSerializer = {
       deprecated: self.deprecated,
       description: self.description,
       featureFlag: self.featureFlag,
+      featureFlags: self.featureFlags,
       groupName: self.groupName,
       name: self.name,
       schemas: self.schemas,

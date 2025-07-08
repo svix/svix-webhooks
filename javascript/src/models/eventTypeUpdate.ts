@@ -6,6 +6,7 @@ export interface EventTypeUpdate {
   deprecated?: boolean;
   description: string;
   featureFlag?: string | null;
+  featureFlags?: string[] | null;
   /** The event type group's name */
   groupName?: string | null;
   /** The schema for the event type for a specific version as a JSON schema. */
@@ -19,6 +20,7 @@ export const EventTypeUpdateSerializer = {
       deprecated: object["deprecated"],
       description: object["description"],
       featureFlag: object["featureFlag"],
+      featureFlags: object["featureFlags"],
       groupName: object["groupName"],
       schemas: object["schemas"],
     };
@@ -30,6 +32,7 @@ export const EventTypeUpdateSerializer = {
       deprecated: self.deprecated,
       description: self.description,
       featureFlag: self.featureFlag,
+      featureFlags: self.featureFlags,
       groupName: self.groupName,
       schemas: self.schemas,
     };

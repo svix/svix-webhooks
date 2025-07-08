@@ -7,6 +7,7 @@ type ConnectorOut struct {
 	CreatedAt        time.Time     `json:"createdAt"`
 	Description      string        `json:"description"`
 	FeatureFlag      *string       `json:"featureFlag,omitempty"`
+	FeatureFlags     []string      `json:"featureFlags,omitempty"`
 	FilterTypes      []string      `json:"filterTypes,omitempty"`
 	Id               string        `json:"id"` // The Connector's ID.
 	Instructions     string        `json:"instructions"`

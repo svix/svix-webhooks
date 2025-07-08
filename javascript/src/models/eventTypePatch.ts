@@ -6,6 +6,7 @@ export interface EventTypePatch {
   deprecated?: boolean;
   description?: string;
   featureFlag?: string | null;
+  featureFlags?: string[] | null;
   /** The event type group's name */
   groupName?: string | null;
   schemas?: any | null;
@@ -18,6 +19,7 @@ export const EventTypePatchSerializer = {
       deprecated: object["deprecated"],
       description: object["description"],
       featureFlag: object["featureFlag"],
+      featureFlags: object["featureFlags"],
       groupName: object["groupName"],
       schemas: object["schemas"],
     };
@@ -29,6 +31,7 @@ export const EventTypePatchSerializer = {
       deprecated: self.deprecated,
       description: self.description,
       featureFlag: self.featureFlag,
+      featureFlags: self.featureFlags,
       groupName: self.groupName,
       schemas: self.schemas,
     };

@@ -246,6 +246,7 @@ describe("mockttp tests", () => {
         schemas: {},
         deprecated: true,
         featureFlag: "cool-new-feature",
+        featureFlags: undefined,
         groupName: "user",
       },
     ]);

@@ -22,6 +22,7 @@ import java.util.Set;
 public class ConnectorIn {
     @JsonProperty private String description;
     @JsonProperty private String featureFlag;
+    @JsonProperty private Set<String> featureFlags;
     @JsonProperty private Set<String> filterTypes;
     @JsonProperty private String instructions;
     @JsonProperty private URI instructionsLink;
@@ -51,23 +52,54 @@ public class ConnectorIn {
         this.description = description;
     }
 
+    @Deprecated
     public ConnectorIn featureFlag(String featureFlag) {
         this.featureFlag = featureFlag;
         return this;
     }
 
     /**
-     * Get featureFlag
+     * Deprecated - prefer featureFlags instead.
      *
      * @return featureFlag
      */
     @javax.annotation.Nullable
+    @Deprecated
     public String getFeatureFlag() {
         return featureFlag;
     }
 
+    @Deprecated
     public void setFeatureFlag(String featureFlag) {
         this.featureFlag = featureFlag;
+    }
+
+    public ConnectorIn featureFlags(Set<String> featureFlags) {
+        this.featureFlags = featureFlags;
+        return this;
+    }
+
+    public ConnectorIn addFeatureFlagsItem(String featureFlagsItem) {
+        if (this.featureFlags == null) {
+            this.featureFlags = new LinkedHashSet<>();
+        }
+        this.featureFlags.add(featureFlagsItem);
+
+        return this;
+    }
+
+    /**
+     * Get featureFlags
+     *
+     * @return featureFlags
+     */
+    @javax.annotation.Nullable
+    public Set<String> getFeatureFlags() {
+        return featureFlags;
+    }
+
+    public void setFeatureFlags(Set<String> featureFlags) {
+        this.featureFlags = featureFlags;
     }
 
     public ConnectorIn filterTypes(Set<String> filterTypes) {

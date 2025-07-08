@@ -1,16 +1,22 @@
 // this file is @generated
 /* eslint @typescript-eslint/no-explicit-any: 0 */
 import { AdobeSignConfigOut, AdobeSignConfigOutSerializer } from "./adobeSignConfigOut";
+import { AirwallexConfigOut, AirwallexConfigOutSerializer } from "./airwallexConfigOut";
+import { CheckbookConfigOut, CheckbookConfigOutSerializer } from "./checkbookConfigOut";
 import { CronConfig, CronConfigSerializer } from "./cronConfig";
 import { DocusignConfigOut, DocusignConfigOutSerializer } from "./docusignConfigOut";
 import { GithubConfigOut, GithubConfigOutSerializer } from "./githubConfigOut";
 import { HubspotConfigOut, HubspotConfigOutSerializer } from "./hubspotConfigOut";
+import { OrumIoConfigOut, OrumIoConfigOutSerializer } from "./orumIoConfigOut";
 import { PandaDocConfigOut, PandaDocConfigOutSerializer } from "./pandaDocConfigOut";
+import { RutterConfigOut, RutterConfigOutSerializer } from "./rutterConfigOut";
 import { SegmentConfigOut, SegmentConfigOutSerializer } from "./segmentConfigOut";
 import { ShopifyConfigOut, ShopifyConfigOutSerializer } from "./shopifyConfigOut";
 import { SlackConfigOut, SlackConfigOutSerializer } from "./slackConfigOut";
 import { StripeConfigOut, StripeConfigOutSerializer } from "./stripeConfigOut";
 import { SvixConfigOut, SvixConfigOutSerializer } from "./svixConfigOut";
+import { TelnyxConfigOut, TelnyxConfigOutSerializer } from "./telnyxConfigOut";
+import { VeriffConfigOut, VeriffConfigOutSerializer } from "./veriffConfigOut";
 import { ZoomConfigOut, ZoomConfigOutSerializer } from "./zoomConfigOut";
 interface _IngestSourceOutFields {
   createdAt: Date;
@@ -45,6 +51,11 @@ interface IngestSourceOutBeehiiv {
 interface IngestSourceOutBrex {
   type: "brex";
   config: SvixConfigOut;
+}
+
+interface IngestSourceOutCheckbook {
+  type: "checkbook";
+  config: CheckbookConfigOut;
 }
 
 interface IngestSourceOutClerk {
@@ -87,6 +98,11 @@ interface IngestSourceOutNash {
   config: SvixConfigOut;
 }
 
+interface IngestSourceOutOrumIo {
+  type: "orum-io";
+  config: OrumIoConfigOut;
+}
+
 interface IngestSourceOutPandaDoc {
   type: "panda-doc";
   config: PandaDocConfigOut;
@@ -105,6 +121,11 @@ interface IngestSourceOutReplicate {
 interface IngestSourceOutResend {
   type: "resend";
   config: SvixConfigOut;
+}
+
+interface IngestSourceOutRutter {
+  type: "rutter";
+  config: RutterConfigOut;
 }
 
 interface IngestSourceOutSafebase {
@@ -152,6 +173,31 @@ interface IngestSourceOutZoom {
   config: ZoomConfigOut;
 }
 
+interface IngestSourceOutTelnyx {
+  type: "telnyx";
+  config: TelnyxConfigOut;
+}
+
+interface IngestSourceOutOpenAi {
+  type: "open-ai";
+  config: SvixConfigOut;
+}
+
+interface IngestSourceOutRender {
+  type: "render";
+  config: SvixConfigOut;
+}
+
+interface IngestSourceOutVeriff {
+  type: "veriff";
+  config: VeriffConfigOut;
+}
+
+interface IngestSourceOutAirwallex {
+  type: "airwallex";
+  config: AirwallexConfigOut;
+}
+
 export type IngestSourceOut = _IngestSourceOutFields &
   (
     | IngestSourceOutGenericWebhook
@@ -159,6 +205,7 @@ export type IngestSourceOut = _IngestSourceOutFields &
     | IngestSourceOutAdobeSign
     | IngestSourceOutBeehiiv
     | IngestSourceOutBrex
+    | IngestSourceOutCheckbook
     | IngestSourceOutClerk
     | IngestSourceOutDocusign
     | IngestSourceOutGithub
@@ -167,10 +214,12 @@ export type IngestSourceOut = _IngestSourceOutFields &
     | IngestSourceOutIncidentIo
     | IngestSourceOutLithic
     | IngestSourceOutNash
+    | IngestSourceOutOrumIo
     | IngestSourceOutPandaDoc
     | IngestSourceOutPleo
     | IngestSourceOutReplicate
     | IngestSourceOutResend
+    | IngestSourceOutRutter
     | IngestSourceOutSafebase
     | IngestSourceOutSardine
     | IngestSourceOutSegment
@@ -180,6 +229,11 @@ export type IngestSourceOut = _IngestSourceOutFields &
     | IngestSourceOutStych
     | IngestSourceOutSvix
     | IngestSourceOutZoom
+    | IngestSourceOutTelnyx
+    | IngestSourceOutOpenAi
+    | IngestSourceOutRender
+    | IngestSourceOutVeriff
+    | IngestSourceOutAirwallex
   );
 
 export const IngestSourceOutSerializer = {
@@ -198,6 +252,8 @@ export const IngestSourceOutSerializer = {
           return SvixConfigOutSerializer._fromJsonObject(object["config"]);
         case "brex":
           return SvixConfigOutSerializer._fromJsonObject(object["config"]);
+        case "checkbook":
+          return CheckbookConfigOutSerializer._fromJsonObject(object["config"]);
         case "clerk":
           return SvixConfigOutSerializer._fromJsonObject(object["config"]);
         case "docusign":
@@ -214,6 +270,8 @@ export const IngestSourceOutSerializer = {
           return SvixConfigOutSerializer._fromJsonObject(object["config"]);
         case "nash":
           return SvixConfigOutSerializer._fromJsonObject(object["config"]);
+        case "orum-io":
+          return OrumIoConfigOutSerializer._fromJsonObject(object["config"]);
         case "panda-doc":
           return PandaDocConfigOutSerializer._fromJsonObject(object["config"]);
         case "pleo":
@@ -222,6 +280,8 @@ export const IngestSourceOutSerializer = {
           return SvixConfigOutSerializer._fromJsonObject(object["config"]);
         case "resend":
           return SvixConfigOutSerializer._fromJsonObject(object["config"]);
+        case "rutter":
+          return RutterConfigOutSerializer._fromJsonObject(object["config"]);
         case "safebase":
           return SvixConfigOutSerializer._fromJsonObject(object["config"]);
         case "sardine":
@@ -240,6 +300,16 @@ export const IngestSourceOutSerializer = {
           return SvixConfigOutSerializer._fromJsonObject(object["config"]);
         case "zoom":
           return ZoomConfigOutSerializer._fromJsonObject(object["config"]);
+        case "telnyx":
+          return TelnyxConfigOutSerializer._fromJsonObject(object["config"]);
+        case "open-ai":
+          return SvixConfigOutSerializer._fromJsonObject(object["config"]);
+        case "render":
+          return SvixConfigOutSerializer._fromJsonObject(object["config"]);
+        case "veriff":
+          return VeriffConfigOutSerializer._fromJsonObject(object["config"]);
+        case "airwallex":
+          return AirwallexConfigOutSerializer._fromJsonObject(object["config"]);
         default:
           throw new Error(`Unexpected type: ${type}`);
       }
@@ -274,6 +344,9 @@ export const IngestSourceOutSerializer = {
       case "brex":
         config = SvixConfigOutSerializer._toJsonObject(self.config);
         break;
+      case "checkbook":
+        config = CheckbookConfigOutSerializer._toJsonObject(self.config);
+        break;
       case "clerk":
         config = SvixConfigOutSerializer._toJsonObject(self.config);
         break;
@@ -298,6 +371,9 @@ export const IngestSourceOutSerializer = {
       case "nash":
         config = SvixConfigOutSerializer._toJsonObject(self.config);
         break;
+      case "orum-io":
+        config = OrumIoConfigOutSerializer._toJsonObject(self.config);
+        break;
       case "panda-doc":
         config = PandaDocConfigOutSerializer._toJsonObject(self.config);
         break;
@@ -309,6 +385,9 @@ export const IngestSourceOutSerializer = {
         break;
       case "resend":
         config = SvixConfigOutSerializer._toJsonObject(self.config);
+        break;
+      case "rutter":
+        config = RutterConfigOutSerializer._toJsonObject(self.config);
         break;
       case "safebase":
         config = SvixConfigOutSerializer._toJsonObject(self.config);
@@ -336,6 +415,21 @@ export const IngestSourceOutSerializer = {
         break;
       case "zoom":
         config = ZoomConfigOutSerializer._toJsonObject(self.config);
+        break;
+      case "telnyx":
+        config = TelnyxConfigOutSerializer._toJsonObject(self.config);
+        break;
+      case "open-ai":
+        config = SvixConfigOutSerializer._toJsonObject(self.config);
+        break;
+      case "render":
+        config = SvixConfigOutSerializer._toJsonObject(self.config);
+        break;
+      case "veriff":
+        config = VeriffConfigOutSerializer._toJsonObject(self.config);
+        break;
+      case "airwallex":
+        config = AirwallexConfigOutSerializer._toJsonObject(self.config);
         break;
     }
 

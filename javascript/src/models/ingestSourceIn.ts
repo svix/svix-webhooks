@@ -1,16 +1,22 @@
 // this file is @generated
 /* eslint @typescript-eslint/no-explicit-any: 0 */
 import { AdobeSignConfig, AdobeSignConfigSerializer } from "./adobeSignConfig";
+import { AirwallexConfig, AirwallexConfigSerializer } from "./airwallexConfig";
+import { CheckbookConfig, CheckbookConfigSerializer } from "./checkbookConfig";
 import { CronConfig, CronConfigSerializer } from "./cronConfig";
 import { DocusignConfig, DocusignConfigSerializer } from "./docusignConfig";
 import { GithubConfig, GithubConfigSerializer } from "./githubConfig";
 import { HubspotConfig, HubspotConfigSerializer } from "./hubspotConfig";
+import { OrumIoConfig, OrumIoConfigSerializer } from "./orumIoConfig";
 import { PandaDocConfig, PandaDocConfigSerializer } from "./pandaDocConfig";
+import { RutterConfig, RutterConfigSerializer } from "./rutterConfig";
 import { SegmentConfig, SegmentConfigSerializer } from "./segmentConfig";
 import { ShopifyConfig, ShopifyConfigSerializer } from "./shopifyConfig";
 import { SlackConfig, SlackConfigSerializer } from "./slackConfig";
 import { StripeConfig, StripeConfigSerializer } from "./stripeConfig";
 import { SvixConfig, SvixConfigSerializer } from "./svixConfig";
+import { TelnyxConfig, TelnyxConfigSerializer } from "./telnyxConfig";
+import { VeriffConfig, VeriffConfigSerializer } from "./veriffConfig";
 import { ZoomConfig, ZoomConfigSerializer } from "./zoomConfig";
 interface _IngestSourceInFields {
   name: string;
@@ -40,6 +46,11 @@ interface IngestSourceInBeehiiv {
 interface IngestSourceInBrex {
   type: "brex";
   config: SvixConfig;
+}
+
+interface IngestSourceInCheckbook {
+  type: "checkbook";
+  config: CheckbookConfig;
 }
 
 interface IngestSourceInClerk {
@@ -82,6 +93,11 @@ interface IngestSourceInNash {
   config: SvixConfig;
 }
 
+interface IngestSourceInOrumIo {
+  type: "orum-io";
+  config: OrumIoConfig;
+}
+
 interface IngestSourceInPandaDoc {
   type: "panda-doc";
   config: PandaDocConfig;
@@ -100,6 +116,11 @@ interface IngestSourceInReplicate {
 interface IngestSourceInResend {
   type: "resend";
   config: SvixConfig;
+}
+
+interface IngestSourceInRutter {
+  type: "rutter";
+  config: RutterConfig;
 }
 
 interface IngestSourceInSafebase {
@@ -147,6 +168,31 @@ interface IngestSourceInZoom {
   config: ZoomConfig;
 }
 
+interface IngestSourceInTelnyx {
+  type: "telnyx";
+  config: TelnyxConfig;
+}
+
+interface IngestSourceInOpenAi {
+  type: "open-ai";
+  config: SvixConfig;
+}
+
+interface IngestSourceInRender {
+  type: "render";
+  config: SvixConfig;
+}
+
+interface IngestSourceInVeriff {
+  type: "veriff";
+  config: VeriffConfig;
+}
+
+interface IngestSourceInAirwallex {
+  type: "airwallex";
+  config: AirwallexConfig;
+}
+
 export type IngestSourceIn = _IngestSourceInFields &
   (
     | IngestSourceInGenericWebhook
@@ -154,6 +200,7 @@ export type IngestSourceIn = _IngestSourceInFields &
     | IngestSourceInAdobeSign
     | IngestSourceInBeehiiv
     | IngestSourceInBrex
+    | IngestSourceInCheckbook
     | IngestSourceInClerk
     | IngestSourceInDocusign
     | IngestSourceInGithub
@@ -162,10 +209,12 @@ export type IngestSourceIn = _IngestSourceInFields &
     | IngestSourceInIncidentIo
     | IngestSourceInLithic
     | IngestSourceInNash
+    | IngestSourceInOrumIo
     | IngestSourceInPandaDoc
     | IngestSourceInPleo
     | IngestSourceInReplicate
     | IngestSourceInResend
+    | IngestSourceInRutter
     | IngestSourceInSafebase
     | IngestSourceInSardine
     | IngestSourceInSegment
@@ -175,6 +224,11 @@ export type IngestSourceIn = _IngestSourceInFields &
     | IngestSourceInStych
     | IngestSourceInSvix
     | IngestSourceInZoom
+    | IngestSourceInTelnyx
+    | IngestSourceInOpenAi
+    | IngestSourceInRender
+    | IngestSourceInVeriff
+    | IngestSourceInAirwallex
   );
 
 export const IngestSourceInSerializer = {
@@ -193,6 +247,8 @@ export const IngestSourceInSerializer = {
           return SvixConfigSerializer._fromJsonObject(object["config"]);
         case "brex":
           return SvixConfigSerializer._fromJsonObject(object["config"]);
+        case "checkbook":
+          return CheckbookConfigSerializer._fromJsonObject(object["config"]);
         case "clerk":
           return SvixConfigSerializer._fromJsonObject(object["config"]);
         case "docusign":
@@ -209,6 +265,8 @@ export const IngestSourceInSerializer = {
           return SvixConfigSerializer._fromJsonObject(object["config"]);
         case "nash":
           return SvixConfigSerializer._fromJsonObject(object["config"]);
+        case "orum-io":
+          return OrumIoConfigSerializer._fromJsonObject(object["config"]);
         case "panda-doc":
           return PandaDocConfigSerializer._fromJsonObject(object["config"]);
         case "pleo":
@@ -217,6 +275,8 @@ export const IngestSourceInSerializer = {
           return SvixConfigSerializer._fromJsonObject(object["config"]);
         case "resend":
           return SvixConfigSerializer._fromJsonObject(object["config"]);
+        case "rutter":
+          return RutterConfigSerializer._fromJsonObject(object["config"]);
         case "safebase":
           return SvixConfigSerializer._fromJsonObject(object["config"]);
         case "sardine":
@@ -235,6 +295,16 @@ export const IngestSourceInSerializer = {
           return SvixConfigSerializer._fromJsonObject(object["config"]);
         case "zoom":
           return ZoomConfigSerializer._fromJsonObject(object["config"]);
+        case "telnyx":
+          return TelnyxConfigSerializer._fromJsonObject(object["config"]);
+        case "open-ai":
+          return SvixConfigSerializer._fromJsonObject(object["config"]);
+        case "render":
+          return SvixConfigSerializer._fromJsonObject(object["config"]);
+        case "veriff":
+          return VeriffConfigSerializer._fromJsonObject(object["config"]);
+        case "airwallex":
+          return AirwallexConfigSerializer._fromJsonObject(object["config"]);
         default:
           throw new Error(`Unexpected type: ${type}`);
       }
@@ -265,6 +335,9 @@ export const IngestSourceInSerializer = {
       case "brex":
         config = SvixConfigSerializer._toJsonObject(self.config);
         break;
+      case "checkbook":
+        config = CheckbookConfigSerializer._toJsonObject(self.config);
+        break;
       case "clerk":
         config = SvixConfigSerializer._toJsonObject(self.config);
         break;
@@ -289,6 +362,9 @@ export const IngestSourceInSerializer = {
       case "nash":
         config = SvixConfigSerializer._toJsonObject(self.config);
         break;
+      case "orum-io":
+        config = OrumIoConfigSerializer._toJsonObject(self.config);
+        break;
       case "panda-doc":
         config = PandaDocConfigSerializer._toJsonObject(self.config);
         break;
@@ -300,6 +376,9 @@ export const IngestSourceInSerializer = {
         break;
       case "resend":
         config = SvixConfigSerializer._toJsonObject(self.config);
+        break;
+      case "rutter":
+        config = RutterConfigSerializer._toJsonObject(self.config);
         break;
       case "safebase":
         config = SvixConfigSerializer._toJsonObject(self.config);
@@ -327,6 +406,21 @@ export const IngestSourceInSerializer = {
         break;
       case "zoom":
         config = ZoomConfigSerializer._toJsonObject(self.config);
+        break;
+      case "telnyx":
+        config = TelnyxConfigSerializer._toJsonObject(self.config);
+        break;
+      case "open-ai":
+        config = SvixConfigSerializer._toJsonObject(self.config);
+        break;
+      case "render":
+        config = SvixConfigSerializer._toJsonObject(self.config);
+        break;
+      case "veriff":
+        config = VeriffConfigSerializer._toJsonObject(self.config);
+        break;
+      case "airwallex":
+        config = AirwallexConfigSerializer._toJsonObject(self.config);
         break;
     }
 

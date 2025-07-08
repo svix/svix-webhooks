@@ -10,16 +10,22 @@ import (
 // When creating an IngestSourceOut, use the appropriate config structure based on the Type:
 //   - "generic-webhook": No config needed (nil or just ignore the config field)
 //   - "adobe-sign": Use AdobeSignConfigOut
+//   - "airwallex": Use AirwallexConfigOut
+//   - "checkbook": Use CheckbookConfigOut
 //   - "cron": Use CronConfig
 //   - "docusign": Use DocusignConfigOut
 //   - "github": Use GithubConfigOut
 //   - "hubspot": Use HubspotConfigOut
+//   - "orum-io": Use OrumIoConfigOut
 //   - "panda-doc": Use PandaDocConfigOut
+//   - "rutter": Use RutterConfigOut
 //   - "segment": Use SegmentConfigOut
 //   - "shopify": Use ShopifyConfigOut
 //   - "slack": Use SlackConfigOut
 //   - "stripe": Use StripeConfigOut
-//   - "beehiiv","brex","clerk","guesty","incident-io","lithic","nash","pleo","replicate","resend","safebase","sardine","stych","svix": Use SvixConfigOut
+//   - "beehiiv","brex","clerk","guesty","incident-io","lithic","nash","pleo","replicate","resend","safebase","sardine","stych","svix","open-ai","render": Use SvixConfigOut
+//   - "telnyx": Use TelnyxConfigOut
+//   - "veriff": Use VeriffConfigOut
 //   - "zoom": Use ZoomConfigOut
 type IngestSourceOut struct {
 	CreatedAt time.Time             `json:"createdAt"`
@@ -40,6 +46,7 @@ const (
 	IngestSourceOutTypeAdobeSign      IngestSourceOutType = "adobe-sign"
 	IngestSourceOutTypeBeehiiv        IngestSourceOutType = "beehiiv"
 	IngestSourceOutTypeBrex           IngestSourceOutType = "brex"
+	IngestSourceOutTypeCheckbook      IngestSourceOutType = "checkbook"
 	IngestSourceOutTypeClerk          IngestSourceOutType = "clerk"
 	IngestSourceOutTypeDocusign       IngestSourceOutType = "docusign"
 	IngestSourceOutTypeGithub         IngestSourceOutType = "github"
@@ -48,10 +55,12 @@ const (
 	IngestSourceOutTypeIncidentIo     IngestSourceOutType = "incident-io"
 	IngestSourceOutTypeLithic         IngestSourceOutType = "lithic"
 	IngestSourceOutTypeNash           IngestSourceOutType = "nash"
+	IngestSourceOutTypeOrumIo         IngestSourceOutType = "orum-io"
 	IngestSourceOutTypePandaDoc       IngestSourceOutType = "panda-doc"
 	IngestSourceOutTypePleo           IngestSourceOutType = "pleo"
 	IngestSourceOutTypeReplicate      IngestSourceOutType = "replicate"
 	IngestSourceOutTypeResend         IngestSourceOutType = "resend"
+	IngestSourceOutTypeRutter         IngestSourceOutType = "rutter"
 	IngestSourceOutTypeSafebase       IngestSourceOutType = "safebase"
 	IngestSourceOutTypeSardine        IngestSourceOutType = "sardine"
 	IngestSourceOutTypeSegment        IngestSourceOutType = "segment"
@@ -61,6 +70,11 @@ const (
 	IngestSourceOutTypeStych          IngestSourceOutType = "stych"
 	IngestSourceOutTypeSvix           IngestSourceOutType = "svix"
 	IngestSourceOutTypeZoom           IngestSourceOutType = "zoom"
+	IngestSourceOutTypeTelnyx         IngestSourceOutType = "telnyx"
+	IngestSourceOutTypeOpenAi         IngestSourceOutType = "open-ai"
+	IngestSourceOutTypeRender         IngestSourceOutType = "render"
+	IngestSourceOutTypeVeriff         IngestSourceOutType = "veriff"
+	IngestSourceOutTypeAirwallex      IngestSourceOutType = "airwallex"
 )
 
 type IngestSourceOutConfig interface {
@@ -71,15 +85,21 @@ func (emptyMap) isIngestSourceOutConfig()           {}
 func (CronConfig) isIngestSourceOutConfig()         {}
 func (AdobeSignConfigOut) isIngestSourceOutConfig() {}
 func (SvixConfigOut) isIngestSourceOutConfig()      {}
+func (CheckbookConfigOut) isIngestSourceOutConfig() {}
 func (DocusignConfigOut) isIngestSourceOutConfig()  {}
 func (GithubConfigOut) isIngestSourceOutConfig()    {}
 func (HubspotConfigOut) isIngestSourceOutConfig()   {}
+func (OrumIoConfigOut) isIngestSourceOutConfig()    {}
 func (PandaDocConfigOut) isIngestSourceOutConfig()  {}
+func (RutterConfigOut) isIngestSourceOutConfig()    {}
 func (SegmentConfigOut) isIngestSourceOutConfig()   {}
 func (ShopifyConfigOut) isIngestSourceOutConfig()   {}
 func (SlackConfigOut) isIngestSourceOutConfig()     {}
 func (StripeConfigOut) isIngestSourceOutConfig()    {}
 func (ZoomConfigOut) isIngestSourceOutConfig()      {}
+func (TelnyxConfigOut) isIngestSourceOutConfig()    {}
+func (VeriffConfigOut) isIngestSourceOutConfig()    {}
+func (AirwallexConfigOut) isIngestSourceOutConfig() {}
 
 func (i *IngestSourceOut) UnmarshalJSON(data []byte) error {
 	type Alias IngestSourceOut
@@ -99,6 +119,14 @@ func (i *IngestSourceOut) UnmarshalJSON(data []byte) error {
 		var c AdobeSignConfigOut
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
+	case "airwallex":
+		var c AirwallexConfigOut
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
+	case "checkbook":
+		var c CheckbookConfigOut
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
 	case "cron":
 		var c CronConfig
 		err = json.Unmarshal(aux.Config, &c)
@@ -115,8 +143,16 @@ func (i *IngestSourceOut) UnmarshalJSON(data []byte) error {
 		var c HubspotConfigOut
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
+	case "orum-io":
+		var c OrumIoConfigOut
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
 	case "panda-doc":
 		var c PandaDocConfigOut
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
+	case "rutter":
+		var c RutterConfigOut
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "segment":
@@ -135,8 +171,16 @@ func (i *IngestSourceOut) UnmarshalJSON(data []byte) error {
 		var c StripeConfigOut
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
-	case "beehiiv", "brex", "clerk", "guesty", "incident-io", "lithic", "nash", "pleo", "replicate", "resend", "safebase", "sardine", "stych", "svix":
+	case "beehiiv", "brex", "clerk", "guesty", "incident-io", "lithic", "nash", "pleo", "replicate", "resend", "safebase", "sardine", "stych", "svix", "open-ai", "render":
 		var c SvixConfigOut
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
+	case "telnyx":
+		var c TelnyxConfigOut
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
+	case "veriff":
+		var c VeriffConfigOut
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "zoom":
@@ -168,6 +212,7 @@ var IngestSourceOutTypeFromString = map[string]IngestSourceOutType{
 	"adobe-sign":      IngestSourceOutTypeAdobeSign,
 	"beehiiv":         IngestSourceOutTypeBeehiiv,
 	"brex":            IngestSourceOutTypeBrex,
+	"checkbook":       IngestSourceOutTypeCheckbook,
 	"clerk":           IngestSourceOutTypeClerk,
 	"docusign":        IngestSourceOutTypeDocusign,
 	"github":          IngestSourceOutTypeGithub,
@@ -176,10 +221,12 @@ var IngestSourceOutTypeFromString = map[string]IngestSourceOutType{
 	"incident-io":     IngestSourceOutTypeIncidentIo,
 	"lithic":          IngestSourceOutTypeLithic,
 	"nash":            IngestSourceOutTypeNash,
+	"orum-io":         IngestSourceOutTypeOrumIo,
 	"panda-doc":       IngestSourceOutTypePandaDoc,
 	"pleo":            IngestSourceOutTypePleo,
 	"replicate":       IngestSourceOutTypeReplicate,
 	"resend":          IngestSourceOutTypeResend,
+	"rutter":          IngestSourceOutTypeRutter,
 	"safebase":        IngestSourceOutTypeSafebase,
 	"sardine":         IngestSourceOutTypeSardine,
 	"segment":         IngestSourceOutTypeSegment,
@@ -189,4 +236,9 @@ var IngestSourceOutTypeFromString = map[string]IngestSourceOutType{
 	"stych":           IngestSourceOutTypeStych,
 	"svix":            IngestSourceOutTypeSvix,
 	"zoom":            IngestSourceOutTypeZoom,
+	"telnyx":          IngestSourceOutTypeTelnyx,
+	"open-ai":         IngestSourceOutTypeOpenAi,
+	"render":          IngestSourceOutTypeRender,
+	"veriff":          IngestSourceOutTypeVeriff,
+	"airwallex":       IngestSourceOutTypeAirwallex,
 }

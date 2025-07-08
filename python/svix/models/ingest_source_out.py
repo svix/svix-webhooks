@@ -6,17 +6,23 @@ from pydantic import ModelWrapValidatorHandler, model_validator
 from typing_extensions import Self
 
 from .adobe_sign_config_out import AdobeSignConfigOut
+from .airwallex_config_out import AirwallexConfigOut
+from .checkbook_config_out import CheckbookConfigOut
 from .common import BaseModel
 from .cron_config import CronConfig
 from .docusign_config_out import DocusignConfigOut
 from .github_config_out import GithubConfigOut
 from .hubspot_config_out import HubspotConfigOut
+from .orum_io_config_out import OrumIoConfigOut
 from .panda_doc_config_out import PandaDocConfigOut
+from .rutter_config_out import RutterConfigOut
 from .segment_config_out import SegmentConfigOut
 from .shopify_config_out import ShopifyConfigOut
 from .slack_config_out import SlackConfigOut
 from .stripe_config_out import StripeConfigOut
 from .svix_config_out import SvixConfigOut
+from .telnyx_config_out import TelnyxConfigOut
+from .veriff_config_out import VeriffConfigOut
 from .zoom_config_out import ZoomConfigOut
 
 
@@ -41,6 +47,7 @@ class IngestSourceOut(BaseModel):
         t.Literal["adobe-sign"],
         t.Literal["beehiiv"],
         t.Literal["brex"],
+        t.Literal["checkbook"],
         t.Literal["clerk"],
         t.Literal["docusign"],
         t.Literal["github"],
@@ -49,10 +56,12 @@ class IngestSourceOut(BaseModel):
         t.Literal["incident-io"],
         t.Literal["lithic"],
         t.Literal["nash"],
+        t.Literal["orum-io"],
         t.Literal["panda-doc"],
         t.Literal["pleo"],
         t.Literal["replicate"],
         t.Literal["resend"],
+        t.Literal["rutter"],
         t.Literal["safebase"],
         t.Literal["sardine"],
         t.Literal["segment"],
@@ -62,21 +71,32 @@ class IngestSourceOut(BaseModel):
         t.Literal["stych"],
         t.Literal["svix"],
         t.Literal["zoom"],
+        t.Literal["telnyx"],
+        t.Literal["open-ai"],
+        t.Literal["render"],
+        t.Literal["veriff"],
+        t.Literal["airwallex"],
     ]
     config: t.Union[
         t.Dict[str, t.Any],
         CronConfig,
         AdobeSignConfigOut,
         SvixConfigOut,
+        CheckbookConfigOut,
         DocusignConfigOut,
         GithubConfigOut,
         HubspotConfigOut,
+        OrumIoConfigOut,
         PandaDocConfigOut,
+        RutterConfigOut,
         SegmentConfigOut,
         ShopifyConfigOut,
         SlackConfigOut,
         StripeConfigOut,
         ZoomConfigOut,
+        TelnyxConfigOut,
+        VeriffConfigOut,
+        AirwallexConfigOut,
     ]
 
     @model_validator(mode="wrap")
@@ -95,6 +115,8 @@ class IngestSourceOut(BaseModel):
             output.config = SvixConfigOut.model_validate(data.get("config", {}))
         elif output.type == "brex":
             output.config = SvixConfigOut.model_validate(data.get("config", {}))
+        elif output.type == "checkbook":
+            output.config = CheckbookConfigOut.model_validate(data.get("config", {}))
         elif output.type == "clerk":
             output.config = SvixConfigOut.model_validate(data.get("config", {}))
         elif output.type == "docusign":
@@ -111,6 +133,8 @@ class IngestSourceOut(BaseModel):
             output.config = SvixConfigOut.model_validate(data.get("config", {}))
         elif output.type == "nash":
             output.config = SvixConfigOut.model_validate(data.get("config", {}))
+        elif output.type == "orum-io":
+            output.config = OrumIoConfigOut.model_validate(data.get("config", {}))
         elif output.type == "panda-doc":
             output.config = PandaDocConfigOut.model_validate(data.get("config", {}))
         elif output.type == "pleo":
@@ -119,6 +143,8 @@ class IngestSourceOut(BaseModel):
             output.config = SvixConfigOut.model_validate(data.get("config", {}))
         elif output.type == "resend":
             output.config = SvixConfigOut.model_validate(data.get("config", {}))
+        elif output.type == "rutter":
+            output.config = RutterConfigOut.model_validate(data.get("config", {}))
         elif output.type == "safebase":
             output.config = SvixConfigOut.model_validate(data.get("config", {}))
         elif output.type == "sardine":
@@ -137,6 +163,16 @@ class IngestSourceOut(BaseModel):
             output.config = SvixConfigOut.model_validate(data.get("config", {}))
         elif output.type == "zoom":
             output.config = ZoomConfigOut.model_validate(data.get("config", {}))
+        elif output.type == "telnyx":
+            output.config = TelnyxConfigOut.model_validate(data.get("config", {}))
+        elif output.type == "open-ai":
+            output.config = SvixConfigOut.model_validate(data.get("config", {}))
+        elif output.type == "render":
+            output.config = SvixConfigOut.model_validate(data.get("config", {}))
+        elif output.type == "veriff":
+            output.config = VeriffConfigOut.model_validate(data.get("config", {}))
+        elif output.type == "airwallex":
+            output.config = AirwallexConfigOut.model_validate(data.get("config", {}))
         else:
             raise ValueError(f"Unexpected type `{output.type}`")
         return output

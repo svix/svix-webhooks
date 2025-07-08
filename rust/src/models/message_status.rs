@@ -4,6 +4,7 @@ use std::fmt;
 use serde_repr::{Deserialize_repr, Serialize_repr};
 
 /// The sending status of the message:
+///
 /// - Success = 0
 /// - Pending = 1
 /// - Fail = 2

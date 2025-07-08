@@ -9,6 +9,7 @@ data class EventTypeFromOpenApi(
     val deprecated: Boolean,
     val description: String,
     val featureFlag: String? = null,
+    val featureFlags: Set<String>? = null,
     /** The event type group's name */
     val groupName: String? = null,
     /** The event type's name */

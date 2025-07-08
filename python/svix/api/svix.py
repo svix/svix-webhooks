@@ -8,7 +8,6 @@ from .environment import Environment, EnvironmentAsync
 from .event_type import EventType, EventTypeAsync
 from .ingest import Ingest, IngestAsync
 from .integration import Integration, IntegrationAsync
-from .management import Management, ManagementAsync
 from .message import Message, MessageAsync
 from .message_attempt import MessageAttempt, MessageAttemptAsync
 from .operational_webhook import OperationalWebhook, OperationalWebhookAsync
@@ -115,10 +114,6 @@ class SvixAsync(ClientBase):
         return IntegrationAsync(self._client)
 
     @property
-    def management(self) -> ManagementAsync:
-        return ManagementAsync(self._client)
-
-    @property
     def message(self) -> MessageAsync:
         return MessageAsync(self._client)
 
@@ -167,10 +162,6 @@ class Svix(ClientBase):
     @property
     def integration(self) -> Integration:
         return Integration(self._client)
-
-    @property
-    def management(self) -> Management:
-        return Management(self._client)
 
     @property
     def message(self) -> Message:

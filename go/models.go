@@ -7,10 +7,8 @@ type (
 	AdobeSignConfig                           = models.AdobeSignConfig
 	AdobeSignConfigOut                        = models.AdobeSignConfigOut
 	AggregateEventTypesOut                    = models.AggregateEventTypesOut
-	ApiTokenCensoredOut                       = models.ApiTokenCensoredOut
-	ApiTokenExpireIn                          = models.ApiTokenExpireIn
-	ApiTokenIn                                = models.ApiTokenIn
-	ApiTokenOut                               = models.ApiTokenOut
+	AirwallexConfig                           = models.AirwallexConfig
+	AirwallexConfigOut                        = models.AirwallexConfigOut
 	AppPortalAccessIn                         = models.AppPortalAccessIn
 	AppPortalAccessOut                        = models.AppPortalAccessOut
 	AppUsageStatsIn                           = models.AppUsageStatsIn
@@ -24,6 +22,8 @@ type (
 	BackgroundTaskOut                         = models.BackgroundTaskOut
 	BackgroundTaskStatus                      = models.BackgroundTaskStatus
 	BackgroundTaskType                        = models.BackgroundTaskType
+	CheckbookConfig                           = models.CheckbookConfig
+	CheckbookConfigOut                        = models.CheckbookConfigOut
 	ConnectorIn                               = models.ConnectorIn
 	ConnectorKind                             = models.ConnectorKind
 	ConnectorOut                              = models.ConnectorOut
@@ -85,7 +85,6 @@ type (
 	IntegrationKeyOut                         = models.IntegrationKeyOut
 	IntegrationOut                            = models.IntegrationOut
 	IntegrationUpdate                         = models.IntegrationUpdate
-	ListResponseApiTokenCensoredOut           = models.ListResponseApiTokenCensoredOut
 	ListResponseApplicationOut                = models.ListResponseApplicationOut
 	ListResponseBackgroundTaskOut             = models.ListResponseBackgroundTaskOut
 	ListResponseEndpointMessageOut            = models.ListResponseEndpointMessageOut
@@ -119,6 +118,8 @@ type (
 	OperationalWebhookEndpointSecretOut       = models.OperationalWebhookEndpointSecretOut
 	OperationalWebhookEndpointUpdate          = models.OperationalWebhookEndpointUpdate
 	Ordering                                  = models.Ordering
+	OrumIoConfig                              = models.OrumIoConfig
+	OrumIoConfigOut                           = models.OrumIoConfigOut
 	PandaDocConfig                            = models.PandaDocConfig
 	PandaDocConfigOut                         = models.PandaDocConfigOut
 	PollingEndpointConsumerSeekIn             = models.PollingEndpointConsumerSeekIn
@@ -130,6 +131,8 @@ type (
 	ReplayIn                                  = models.ReplayIn
 	ReplayOut                                 = models.ReplayOut
 	RotateTokenOut                            = models.RotateTokenOut
+	RutterConfig                              = models.RutterConfig
+	RutterConfigOut                           = models.RutterConfigOut
 	SegmentConfig                             = models.SegmentConfig
 	SegmentConfigOut                          = models.SegmentConfigOut
 	ShopifyConfig                             = models.ShopifyConfig
@@ -141,6 +144,10 @@ type (
 	StripeConfigOut                           = models.StripeConfigOut
 	SvixConfig                                = models.SvixConfig
 	SvixConfigOut                             = models.SvixConfigOut
+	TelnyxConfig                              = models.TelnyxConfig
+	TelnyxConfigOut                           = models.TelnyxConfigOut
+	VeriffConfig                              = models.VeriffConfig
+	VeriffConfigOut                           = models.VeriffConfigOut
 	ZoomConfig                                = models.ZoomConfig
 	ZoomConfigOut                             = models.ZoomConfigOut
 )

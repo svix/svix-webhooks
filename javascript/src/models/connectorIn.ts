@@ -4,7 +4,13 @@ import { ConnectorKind, ConnectorKindSerializer } from "./connectorKind";
 
 export interface ConnectorIn {
   description?: string;
+  /**
+   * Deprecated - prefer featureFlags instead.
+   *
+   * @deprecated
+   */
   featureFlag?: string | null;
+  featureFlags?: string[] | null;
   filterTypes?: string[] | null;
   instructions?: string;
   instructionsLink?: string | null;
@@ -19,6 +25,7 @@ export const ConnectorInSerializer = {
     return {
       description: object["description"],
       featureFlag: object["featureFlag"],
+      featureFlags: object["featureFlags"],
       filterTypes: object["filterTypes"],
       instructions: object["instructions"],
       instructionsLink: object["instructionsLink"],
@@ -35,6 +42,7 @@ export const ConnectorInSerializer = {
     return {
       description: self.description,
       featureFlag: self.featureFlag,
+      featureFlags: self.featureFlags,
       filterTypes: self.filterTypes,
       instructions: self.instructions,
       instructionsLink: self.instructionsLink,

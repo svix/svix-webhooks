@@ -9,16 +9,22 @@ import (
 // When creating an IngestSourceIn, use the appropriate config structure based on the Type:
 //   - "generic-webhook": No config needed (nil or just ignore the config field)
 //   - "adobe-sign": Use AdobeSignConfig
+//   - "airwallex": Use AirwallexConfig
+//   - "checkbook": Use CheckbookConfig
 //   - "cron": Use CronConfig
 //   - "docusign": Use DocusignConfig
 //   - "github": Use GithubConfig
 //   - "hubspot": Use HubspotConfig
+//   - "orum-io": Use OrumIoConfig
 //   - "panda-doc": Use PandaDocConfig
+//   - "rutter": Use RutterConfig
 //   - "segment": Use SegmentConfig
 //   - "shopify": Use ShopifyConfig
 //   - "slack": Use SlackConfig
 //   - "stripe": Use StripeConfig
-//   - "beehiiv","brex","clerk","guesty","incident-io","lithic","nash","pleo","replicate","resend","safebase","sardine","stych","svix": Use SvixConfig
+//   - "beehiiv","brex","clerk","guesty","incident-io","lithic","nash","pleo","replicate","resend","safebase","sardine","stych","svix","open-ai","render": Use SvixConfig
+//   - "telnyx": Use TelnyxConfig
+//   - "veriff": Use VeriffConfig
 //   - "zoom": Use ZoomConfig
 type IngestSourceIn struct {
 	Name   string               `json:"name"`
@@ -35,6 +41,7 @@ const (
 	IngestSourceInTypeAdobeSign      IngestSourceInType = "adobe-sign"
 	IngestSourceInTypeBeehiiv        IngestSourceInType = "beehiiv"
 	IngestSourceInTypeBrex           IngestSourceInType = "brex"
+	IngestSourceInTypeCheckbook      IngestSourceInType = "checkbook"
 	IngestSourceInTypeClerk          IngestSourceInType = "clerk"
 	IngestSourceInTypeDocusign       IngestSourceInType = "docusign"
 	IngestSourceInTypeGithub         IngestSourceInType = "github"
@@ -43,10 +50,12 @@ const (
 	IngestSourceInTypeIncidentIo     IngestSourceInType = "incident-io"
 	IngestSourceInTypeLithic         IngestSourceInType = "lithic"
 	IngestSourceInTypeNash           IngestSourceInType = "nash"
+	IngestSourceInTypeOrumIo         IngestSourceInType = "orum-io"
 	IngestSourceInTypePandaDoc       IngestSourceInType = "panda-doc"
 	IngestSourceInTypePleo           IngestSourceInType = "pleo"
 	IngestSourceInTypeReplicate      IngestSourceInType = "replicate"
 	IngestSourceInTypeResend         IngestSourceInType = "resend"
+	IngestSourceInTypeRutter         IngestSourceInType = "rutter"
 	IngestSourceInTypeSafebase       IngestSourceInType = "safebase"
 	IngestSourceInTypeSardine        IngestSourceInType = "sardine"
 	IngestSourceInTypeSegment        IngestSourceInType = "segment"
@@ -56,6 +65,11 @@ const (
 	IngestSourceInTypeStych          IngestSourceInType = "stych"
 	IngestSourceInTypeSvix           IngestSourceInType = "svix"
 	IngestSourceInTypeZoom           IngestSourceInType = "zoom"
+	IngestSourceInTypeTelnyx         IngestSourceInType = "telnyx"
+	IngestSourceInTypeOpenAi         IngestSourceInType = "open-ai"
+	IngestSourceInTypeRender         IngestSourceInType = "render"
+	IngestSourceInTypeVeriff         IngestSourceInType = "veriff"
+	IngestSourceInTypeAirwallex      IngestSourceInType = "airwallex"
 )
 
 type IngestSourceInConfig interface {
@@ -66,15 +80,21 @@ func (emptyMap) isIngestSourceInConfig()        {}
 func (CronConfig) isIngestSourceInConfig()      {}
 func (AdobeSignConfig) isIngestSourceInConfig() {}
 func (SvixConfig) isIngestSourceInConfig()      {}
+func (CheckbookConfig) isIngestSourceInConfig() {}
 func (DocusignConfig) isIngestSourceInConfig()  {}
 func (GithubConfig) isIngestSourceInConfig()    {}
 func (HubspotConfig) isIngestSourceInConfig()   {}
+func (OrumIoConfig) isIngestSourceInConfig()    {}
 func (PandaDocConfig) isIngestSourceInConfig()  {}
+func (RutterConfig) isIngestSourceInConfig()    {}
 func (SegmentConfig) isIngestSourceInConfig()   {}
 func (ShopifyConfig) isIngestSourceInConfig()   {}
 func (SlackConfig) isIngestSourceInConfig()     {}
 func (StripeConfig) isIngestSourceInConfig()    {}
 func (ZoomConfig) isIngestSourceInConfig()      {}
+func (TelnyxConfig) isIngestSourceInConfig()    {}
+func (VeriffConfig) isIngestSourceInConfig()    {}
+func (AirwallexConfig) isIngestSourceInConfig() {}
 
 func (i *IngestSourceIn) UnmarshalJSON(data []byte) error {
 	type Alias IngestSourceIn
@@ -94,6 +114,14 @@ func (i *IngestSourceIn) UnmarshalJSON(data []byte) error {
 		var c AdobeSignConfig
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
+	case "airwallex":
+		var c AirwallexConfig
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
+	case "checkbook":
+		var c CheckbookConfig
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
 	case "cron":
 		var c CronConfig
 		err = json.Unmarshal(aux.Config, &c)
@@ -110,8 +138,16 @@ func (i *IngestSourceIn) UnmarshalJSON(data []byte) error {
 		var c HubspotConfig
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
+	case "orum-io":
+		var c OrumIoConfig
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
 	case "panda-doc":
 		var c PandaDocConfig
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
+	case "rutter":
+		var c RutterConfig
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "segment":
@@ -130,8 +166,16 @@ func (i *IngestSourceIn) UnmarshalJSON(data []byte) error {
 		var c StripeConfig
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
-	case "beehiiv", "brex", "clerk", "guesty", "incident-io", "lithic", "nash", "pleo", "replicate", "resend", "safebase", "sardine", "stych", "svix":
+	case "beehiiv", "brex", "clerk", "guesty", "incident-io", "lithic", "nash", "pleo", "replicate", "resend", "safebase", "sardine", "stych", "svix", "open-ai", "render":
 		var c SvixConfig
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
+	case "telnyx":
+		var c TelnyxConfig
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
+	case "veriff":
+		var c VeriffConfig
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "zoom":
@@ -163,6 +207,7 @@ var IngestSourceInTypeFromString = map[string]IngestSourceInType{
 	"adobe-sign":      IngestSourceInTypeAdobeSign,
 	"beehiiv":         IngestSourceInTypeBeehiiv,
 	"brex":            IngestSourceInTypeBrex,
+	"checkbook":       IngestSourceInTypeCheckbook,
 	"clerk":           IngestSourceInTypeClerk,
 	"docusign":        IngestSourceInTypeDocusign,
 	"github":          IngestSourceInTypeGithub,
@@ -171,10 +216,12 @@ var IngestSourceInTypeFromString = map[string]IngestSourceInType{
 	"incident-io":     IngestSourceInTypeIncidentIo,
 	"lithic":          IngestSourceInTypeLithic,
 	"nash":            IngestSourceInTypeNash,
+	"orum-io":         IngestSourceInTypeOrumIo,
 	"panda-doc":       IngestSourceInTypePandaDoc,
 	"pleo":            IngestSourceInTypePleo,
 	"replicate":       IngestSourceInTypeReplicate,
 	"resend":          IngestSourceInTypeResend,
+	"rutter":          IngestSourceInTypeRutter,
 	"safebase":        IngestSourceInTypeSafebase,
 	"sardine":         IngestSourceInTypeSardine,
 	"segment":         IngestSourceInTypeSegment,
@@ -184,4 +231,9 @@ var IngestSourceInTypeFromString = map[string]IngestSourceInType{
 	"stych":           IngestSourceInTypeStych,
 	"svix":            IngestSourceInTypeSvix,
 	"zoom":            IngestSourceInTypeZoom,
+	"telnyx":          IngestSourceInTypeTelnyx,
+	"open-ai":         IngestSourceInTypeOpenAi,
+	"render":          IngestSourceInTypeRender,
+	"veriff":          IngestSourceInTypeVeriff,
+	"airwallex":       IngestSourceInTypeAirwallex,
 }

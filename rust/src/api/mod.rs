@@ -17,8 +17,6 @@ mod ingest;
 mod ingest_endpoint;
 mod ingest_source;
 mod integration;
-mod management;
-mod management_authentication;
 mod message;
 mod message_attempt;
 mod message_poller;
@@ -57,12 +55,6 @@ pub use self::{
     },
     integration::{
         Integration, IntegrationCreateOptions, IntegrationListOptions, IntegrationRotateKeyOptions,
-    },
-    management::Management,
-    management_authentication::{
-        ManagementAuthentication, ManagementAuthenticationCreateApiTokenOptions,
-        ManagementAuthenticationExpireApiTokenOptions,
-        ManagementAuthenticationListApiTokensOptions,
     },
     message::{
         Message, MessageCreateOptions, MessageExpungeAllContentsOptions, MessageGetOptions,
@@ -116,10 +108,6 @@ impl Svix {
 
     pub fn integration(&self) -> Integration<'_> {
         Integration::new(&self.cfg)
-    }
-
-    pub fn management(&self) -> Management<'_> {
-        Management::new(&self.cfg)
     }
 
     pub fn message(&self) -> Message<'_> {

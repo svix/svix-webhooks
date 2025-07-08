@@ -10,9 +10,8 @@ use self::{
         api::{
             application::ApplicationArgs, authentication::AuthenticationArgs,
             endpoint::EndpointArgs, environment::EnvironmentArgs, event_type::EventTypeArgs,
-            ingest::IngestArgs, integration::IntegrationArgs, management::ManagementArgs,
-            message::MessageArgs, message_attempt::MessageAttemptArgs,
-            operational_webhook::OperationalWebhookArgs,
+            ingest::IngestArgs, integration::IntegrationArgs, message::MessageArgs,
+            message_attempt::MessageAttemptArgs, operational_webhook::OperationalWebhookArgs,
         },
         listen::ListenArgs,
         open::OpenArgs,
@@ -76,8 +75,6 @@ enum RootCommands {
     Listen(ListenArgs),
     /// Interactively configure your Svix API credentials
     Login,
-    /// Access to management API calls
-    Management(ManagementArgs),
     /// List & create messages
     Message(MessageArgs),
     /// List, lookup & resend message attempts
@@ -125,10 +122,6 @@ async fn main() -> Result<()> {
             args.command.exec(&client, color_mode).await?;
         }
         RootCommands::Environment(args) => {
-            let client = get_client(&cfg?)?;
-            args.command.exec(&client, color_mode).await?;
-        }
-        RootCommands::Management(args) => {
             let client = get_client(&cfg?)?;
             args.command.exec(&client, color_mode).await?;
         }

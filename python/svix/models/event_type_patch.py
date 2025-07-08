@@ -13,6 +13,8 @@ class EventTypePatch(BaseModel):
 
     feature_flag: t.Optional[str] = None
 
+    feature_flags: t.Optional[t.List[str]] = None
+
     group_name: t.Optional[str] = None
     """The event type group's name"""
 

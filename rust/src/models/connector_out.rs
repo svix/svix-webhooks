@@ -14,6 +14,10 @@ pub struct ConnectorOut {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub feature_flag: Option<String>,
 
+    #[serde(rename = "featureFlags")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub feature_flags: Option<Vec<String>>,
+
     #[serde(rename = "filterTypes")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub filter_types: Option<Vec<String>>,
@@ -60,6 +64,7 @@ impl ConnectorOut {
             created_at,
             description,
             feature_flag: None,
+            feature_flags: None,
             filter_types: None,
             id,
             instructions,

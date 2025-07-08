@@ -9,12 +9,16 @@ namespace Svix.Models
         [JsonProperty("expiry")]
         public long? Expiry { get; set; } = null;
 
+        [JsonProperty("sessionIds")]
+        public List<string>? SessionIds { get; set; } = null;
+
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
 
             sb.Append("class ApplicationTokenExpireIn {\n");
             sb.Append("  Expiry: ").Append(Expiry).Append('\n');
+            sb.Append("  SessionIds: ").Append(SessionIds).Append('\n');
             sb.Append("}\n");
             return sb.ToString();
         }

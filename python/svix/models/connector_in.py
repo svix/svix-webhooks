@@ -9,6 +9,9 @@ class ConnectorIn(BaseModel):
     description: t.Optional[str] = None
 
     feature_flag: t.Optional[str] = None
+    """Deprecated - prefer featureFlags instead."""
+
+    feature_flags: t.Optional[t.List[str]] = None
 
     filter_types: t.Optional[t.List[str]] = None
 

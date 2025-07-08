@@ -23,6 +23,7 @@ public class AppPortalAccessIn {
     @JsonProperty private Long expiry;
     @JsonProperty private Set<String> featureFlags;
     @JsonProperty private Boolean readOnly;
+    @JsonProperty private String sessionId;
 
     public AppPortalAccessIn() {}
 
@@ -114,6 +115,28 @@ public class AppPortalAccessIn {
 
     public void setReadOnly(Boolean readOnly) {
         this.readOnly = readOnly;
+    }
+
+    public AppPortalAccessIn sessionId(String sessionId) {
+        this.sessionId = sessionId;
+        return this;
+    }
+
+    /**
+     * An optional session ID to attach to the token.
+     *
+     * <p>When expiring tokens with "Expire All", you can include the session ID to only expire
+     * tokens that were created with that session ID.
+     *
+     * @return sessionId
+     */
+    @javax.annotation.Nullable
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
     }
 
     /**

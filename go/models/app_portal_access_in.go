@@ -12,4 +12,8 @@ type AppPortalAccessIn struct {
 	Expiry       *uint64  `json:"expiry,omitempty"`
 	FeatureFlags []string `json:"featureFlags,omitempty"` // The set of feature flags the created token will have access to.
 	ReadOnly     *bool    `json:"readOnly,omitempty"`     // Whether the app portal should be in read-only mode.
+	// An optional session ID to attach to the token.
+	//
+	// When expiring tokens with "Expire All", you can include the session ID to only expire tokens that were created with that session ID.
+	SessionId *string `json:"sessionId,omitempty"`
 }
