@@ -128,6 +128,23 @@ func ExecuteRequest[ReqBody any, ResBody any](
 }
 
 func executeRequestWithRetries(client *SvixHttpClient, request *http.Request) (*http.Response, error) {
+	var bodyBytes []byte
+	if request.Body != nil {
+		var err error
+		bodyBytes, err = io.ReadAll(request.Body)
+		if err != nil {
+			return nil, err
+		}
+		err = request.Body.Close()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if bodyBytes != nil {
+		request.Body = io.NopCloser(bytes.NewReader(bodyBytes))
+	}
+
 	if client.Debug {
 		log.Printf("URL: %s", request.URL)
 		dump, err := httputil.DumpRequestOut(request, true)
@@ -141,6 +158,9 @@ func executeRequestWithRetries(client *SvixHttpClient, request *http.Request) (*
 	for try := 0; try < len(client.RetrySchedule); try++ {
 		if err == nil && resp.StatusCode < 500 {
 			break
+		}
+		if bodyBytes != nil {
+			request.Body = io.NopCloser(bytes.NewReader(bodyBytes))
 		}
 		request.Header.Set("svix-retry-count", strconv.Itoa(try+1))
 		sleepTime := client.RetrySchedule[try]
