@@ -24,6 +24,7 @@ import lombok.ToString;
 import java.io.IOException;
 import java.net.URI;
 import java.time.OffsetDateTime;
+import java.util.Map;
 
 @Setter
 @Getter
@@ -37,6 +38,7 @@ public class IngestSourceOut {
     private OffsetDateTime createdAt;
     private String id;
     private URI ingestUrl;
+    private Map<String, String> metadata;
     private String name;
     private String uid;
     private OffsetDateTime updatedAt;
@@ -54,6 +56,11 @@ public class IngestSourceOut {
 
     public IngestSourceOut ingestUrl(URI ingestUrl) {
         this.ingestUrl = ingestUrl;
+        return this;
+    }
+
+    public IngestSourceOut metadata(Map<String, String> metadata) {
+        this.metadata = metadata;
         return this;
     }
 
@@ -98,6 +105,9 @@ class IngestSourceOutSurrogate {
     @JsonProperty("ingestUrl")
     URI ingestUrl;
 
+    @JsonProperty("metadata")
+    Map<String, String> metadata;
+
     @JsonProperty("name")
     String name;
 
@@ -117,6 +127,7 @@ class IngestSourceOutSurrogate {
         this.createdAt = o.getCreatedAt();
         this.id = o.getId();
         this.ingestUrl = o.getIngestUrl();
+        this.metadata = o.getMetadata();
         this.name = o.getName();
         this.uid = o.getUid();
         this.updatedAt = o.getUpdatedAt();
@@ -161,12 +172,14 @@ class IngestSourceOutDeserializer extends StdDeserializer<IngestSourceOut> {
         OffsetDateTime createdAt = surrogate.getCreatedAt();
         String id = surrogate.getId();
         URI ingestUrl = surrogate.getIngestUrl();
+        Map<String, String> metadata = surrogate.getMetadata();
         String name = surrogate.getName();
         String uid = surrogate.getUid();
         OffsetDateTime updatedAt = surrogate.getUpdatedAt();
         String type = surrogate.getType();
         JsonNode config = surrogate.getConfig();
         IngestSourceOutConfig sourceType = IngestSourceOutConfig.fromTypeAndConfig(type, config);
-        return new IngestSourceOut(createdAt, id, ingestUrl, name, uid, updatedAt, sourceType);
+        return new IngestSourceOut(
+                createdAt, id, ingestUrl, metadata, name, uid, updatedAt, sourceType);
     }
 }

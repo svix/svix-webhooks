@@ -34,6 +34,8 @@ class IngestSourceOut(BaseModel):
 
     ingest_url: t.Optional[str] = None
 
+    metadata: t.Dict[str, str]
+
     name: str
 
     uid: t.Optional[str] = None

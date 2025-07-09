@@ -9,6 +9,9 @@ namespace Svix.Models
     [JsonConverter(typeof(IngestSourceInConverter))]
     public class IngestSourceIn
     {
+        [JsonProperty("metadata")]
+        public Dictionary<string, string>? Metadata { get; set; } = null;
+
         [JsonProperty("name", Required = Required.Always)]
         public required string Name { get; set; }
 
@@ -33,6 +36,7 @@ namespace Svix.Models
             StringBuilder sb = new StringBuilder();
 
             sb.Append("class IngestSourceIn {\n");
+            sb.Append("  Metadata: ").Append(Metadata).Append('\n');
             sb.Append("  Name: ").Append(Name).Append('\n');
             sb.Append("  Uid: ").Append(Uid).Append('\n');
             sb.Append("  Config: ").Append(Config).Append('\n');
@@ -507,6 +511,9 @@ namespace Svix.Models
 
     internal class IngestSourceInSurrogate
     {
+        [JsonProperty("metadata")]
+        public Dictionary<string, string>? Metadata { get; set; } = null;
+
         [JsonProperty("name", Required = Required.Always)]
         public required string Name { get; set; }
 
@@ -566,6 +573,7 @@ namespace Svix.Models
 
             return new IngestSourceIn
             {
+                Metadata = surrogate.Metadata,
                 Name = surrogate.Name,
                 Uid = surrogate.Uid,
                 Config = config,

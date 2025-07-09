@@ -50,3 +50,20 @@ func (managementEnvironmentSettings *ManagementEnvironmentSettings) Update(
 		&settingsInternalIn,
 	)
 }
+
+// Patch environment settings
+func (managementEnvironmentSettings *ManagementEnvironmentSettings) Patch(
+	ctx context.Context,
+	settingsInternalPatch models.SettingsInternalPatch,
+) (*models.SettingsInternalOut, error) {
+	return internal.ExecuteRequest[models.SettingsInternalPatch, models.SettingsInternalOut](
+		ctx,
+		managementEnvironmentSettings.client,
+		"PATCH",
+		"/api/v1/management/environment-settings",
+		nil,
+		nil,
+		nil,
+		&settingsInternalPatch,
+	)
+}

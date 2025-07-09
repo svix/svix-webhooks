@@ -19,6 +19,7 @@ import { TelnyxConfig, TelnyxConfigSerializer } from "./telnyxConfig";
 import { VeriffConfig, VeriffConfigSerializer } from "./veriffConfig";
 import { ZoomConfig, ZoomConfigSerializer } from "./zoomConfig";
 interface _IngestSourceInFields {
+  metadata?: { [key: string]: string };
   name: string;
   /** The Source's UID. */
   uid?: string | null;
@@ -312,6 +313,7 @@ export const IngestSourceInSerializer = {
     return {
       type,
       config: getConfig(type),
+      metadata: object["metadata"],
       name: object["name"],
       uid: object["uid"],
     };
@@ -427,6 +429,7 @@ export const IngestSourceInSerializer = {
     return {
       type: self.type,
       config: config,
+      metadata: self.metadata,
       name: self.name,
       uid: self.uid,
     };

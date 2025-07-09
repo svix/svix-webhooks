@@ -4837,6 +4837,13 @@
                     }
                 ],
                 "properties": {
+                    "metadata": {
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "default": {},
+                        "type": "object"
+                    },
                     "name": {
                         "maxLength": 256,
                         "minLength": 2,
@@ -5486,6 +5493,12 @@
                         "nullable": true,
                         "type": "string"
                     },
+                    "metadata": {
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "type": "object"
+                    },
                     "name": {
                         "type": "string"
                     },
@@ -5506,6 +5519,7 @@
                 "required": [
                     "createdAt",
                     "id",
+                    "metadata",
                     "name",
                     "updatedAt"
                 ],
@@ -8275,6 +8289,120 @@
                 },
                 "type": "object"
             },
+            "SettingsInternalPatch": {
+                "properties": {
+                    "colorPaletteDark": {
+                        "$ref": "#/components/schemas/CustomColorPalette",
+                        "nullable": true
+                    },
+                    "colorPaletteLight": {
+                        "$ref": "#/components/schemas/CustomColorPalette",
+                        "nullable": true
+                    },
+                    "customBaseFontSize": {
+                        "format": "int",
+                        "nullable": true,
+                        "type": "integer"
+                    },
+                    "customColor": {
+                        "format": "color",
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "customFontFamily": {
+                        "example": "Open Sans",
+                        "nullable": true,
+                        "pattern": "^[a-zA-Z0-9\\-_ ]+$",
+                        "type": "string"
+                    },
+                    "customFontFamilyUrl": {
+                        "format": "uri",
+                        "maxLength": 65536,
+                        "minLength": 1,
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "customLogoUrl": {
+                        "format": "uri",
+                        "maxLength": 65536,
+                        "minLength": 1,
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "customStringsOverride": {
+                        "$ref": "#/components/schemas/CustomStringsOverride",
+                        "nullable": true
+                    },
+                    "customThemeOverride": {
+                        "$ref": "#/components/schemas/CustomThemeOverride",
+                        "nullable": true
+                    },
+                    "disableEndpointOnFailure": {
+                        "type": "boolean"
+                    },
+                    "displayName": {
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "enableChannels": {
+                        "type": "boolean"
+                    },
+                    "enableEndpointMtlsConfig": {
+                        "type": "boolean"
+                    },
+                    "enableEndpointOauthConfig": {
+                        "type": "boolean"
+                    },
+                    "enableIntegrationManagement": {
+                        "type": "boolean"
+                    },
+                    "enableMessageStream": {
+                        "type": "boolean"
+                    },
+                    "enableMsgAtmptLog": {
+                        "type": "boolean"
+                    },
+                    "enableOtlp": {
+                        "type": "boolean"
+                    },
+                    "enableTransformations": {
+                        "type": "boolean"
+                    },
+                    "enforceHttps": {
+                        "type": "boolean"
+                    },
+                    "eventCatalogPublished": {
+                        "type": "boolean"
+                    },
+                    "readOnly": {
+                        "type": "boolean"
+                    },
+                    "requireEndpointChannel": {
+                        "type": "boolean"
+                    },
+                    "requireEndpointFilterTypes": {
+                        "type": "boolean"
+                    },
+                    "retryPolicy": {
+                        "items": {
+                            "format": "int32",
+                            "type": "integer"
+                        },
+                        "nullable": true,
+                        "type": "array"
+                    },
+                    "showUseSvixPlay": {
+                        "type": "boolean"
+                    },
+                    "whitelabelHeaders": {
+                        "type": "boolean"
+                    },
+                    "wipeSuccessfulPayload": {
+                        "type": "boolean"
+                    }
+                },
+                "type": "object"
+            },
             "SettingsInternalUpdateOut": {
                 "properties": {
                     "colorPaletteDark": {
@@ -9846,7 +9974,7 @@
     "info": {
         "description": "Welcome to the Svix API documentation!\n\nUseful links: [Homepage](https://www.svix.com) | [Support email](mailto:support+docs@svix.com) | [Blog](https://www.svix.com/blog/) | [Slack Community](https://www.svix.com/slack/)\n\n# Introduction\n\nThis is the reference documentation and schemas for the [Svix webhook service](https://www.svix.com) API. For tutorials and other documentation please refer to [the documentation](https://docs.svix.com).\n\n## Main concepts\n\nIn Svix you have four important entities you will be interacting with:\n\n- `messages`: these are the webhooks being sent. They can have contents and a few other properties.\n- `application`: this is where `messages` are sent to. Usually you want to create one application for each user on your platform.\n- `endpoint`: endpoints are the URLs messages will be sent to. Each application can have multiple `endpoints` and each message sent to that application will be sent to all of them (unless they are not subscribed to the sent event type).\n- `event-type`: event types are identifiers denoting the type of the message being sent. Event types are primarily used to decide which events are sent to which endpoint.\n\n\n## Authentication\n\nGet your authentication token (`AUTH_TOKEN`) from the [Svix dashboard](https://dashboard.svix.com) and use it as part of the `Authorization` header as such: `Authorization: Bearer ${AUTH_TOKEN}`. For more information on authentication, please refer to the [authentication token docs](https://docs.svix.com/api-keys).\n\n<SecurityDefinitions />\n\n\n## Code samples\n\nThe code samples assume you already have the respective libraries installed and you know how to use them. For the latest information on how to do that, please refer to [the documentation](https://docs.svix.com/).\n\n\n## Idempotency\n\nSvix supports [idempotency](https://en.wikipedia.org/wiki/Idempotence) for safely retrying requests without accidentally performing the same operation twice. This is useful when an API call is disrupted in transit and you do not receive a response.\n\nTo perform an idempotent request, pass the idempotency key in the `Idempotency-Key` header to the request. The idempotency key should be a unique value generated by the client. You can create the key in however way you like, though we suggest using UUID v4, or any other string with enough entropy to avoid collisions.\n\nSvix's idempotency works by saving the resulting status code and body of the first request made for any given idempotency key for any successful request. Subsequent requests with the same key return the same result for a period of up to 12 hours.\n\nPlease note that idempotency is only supported for `POST` requests.\n\n\n## Cross-Origin Resource Sharing\n\nThis API features Cross-Origin Resource Sharing (CORS) implemented in compliance with [W3C spec](https://www.w3.org/TR/cors/). And that allows cross-domain communication from the browser. All responses have a wildcard same-origin which makes them completely public and accessible to everyone, including any code on any site.\n",
         "title": "Svix API",
-        "version": "1.66.0",
+        "version": "1.68.0",
         "x-logo": {
             "altText": "Svix Logo",
             "url": "https://www.svix.com/static/img/brand-padded.svg"
@@ -23454,6 +23582,2387 @@
                 "x-hidden": true
             }
         },
+        "/api/v1/app/{app_id}/stream/sink": {
+            "get": {
+                "description": "List of all the stream's sinks.",
+                "operationId": "v1.app.stream.sink.list",
+                "parameters": [
+                    {
+                        "description": "The Application's ID or UID.",
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The Application's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "Limit the number of returned items",
+                        "in": "query",
+                        "name": "limit",
+                        "schema": {
+                            "description": "Limit the number of returned items",
+                            "format": "uint64",
+                            "maximum": 250,
+                            "minimum": 1,
+                            "type": "integer"
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "description": "The iterator returned from a prior invocation",
+                        "in": "query",
+                        "name": "iterator",
+                        "schema": {
+                            "description": "The iterator returned from a prior invocation",
+                            "example": "sink_2yZwUhtgs5Ai8T9yRQJXA",
+                            "maxLength": 27,
+                            "minLength": 27,
+                            "nullable": true,
+                            "pattern": "^sink_[A-Za-z0-9]{22}$",
+                            "type": "string"
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "description": "The sorting order of the returned items",
+                        "in": "query",
+                        "name": "order",
+                        "schema": {
+                            "$ref": "#/components/schemas/Ordering",
+                            "description": "The sorting order of the returned items",
+                            "nullable": true
+                        },
+                        "style": "form"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ListResponse_StreamSinkOut_"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "List Sinks",
+                "tags": [
+                    "Sink"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const listResponseStreamSinkOut = await svix.app.stream.sink.list(\"app_id\");"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const listResponseStreamSinkOut = await svix.app.stream.sink.list(\"app_id\");"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "list_response_stream_sink_out = svix.app.stream.sink.list(\"app_id\", options=...)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "list_response_stream_sink_out = await svix.app.stream.sink.list(\"app_id\", options=...)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "listResponseStreamSinkOut, err := svixClient.App.Stream.Sink.List(ctx, \"app_id\", nil)"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val listResponseStreamSinkOut = svix.app.stream.sink.list(\"app_id\")"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "ListResponseStreamSinkOut listResponseStreamSinkOut = svix.getApp().getStream().getSink().list(\"app_id\");"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "list_response_stream_sink_out = svix.app.stream.sink.list(\"app_id\")"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let list_response_stream_sink_out = svix.app().stream().sink().list(\"app_id\", None).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var listResponseStreamSinkOut = await svix.App.Stream.Sink.ListAsync(\"app_id\");"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix app stream sink list \"app_id\""
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/stream/sink' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ],
+                "x-hidden": true
+            },
+            "post": {
+                "description": "Creates a new sink.",
+                "operationId": "v1.app.stream.sink.create",
+                "parameters": [
+                    {
+                        "description": "The Application's ID or UID.",
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The Application's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StreamSinkIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StreamSinkOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Create Sink",
+                "tags": [
+                    "Sink"
+                ],
+                "x-hidden": true
+            }
+        },
+        "/api/v1/app/{app_id}/stream/sink/{sink_id}": {
+            "delete": {
+                "description": "Delete a sink.",
+                "operationId": "v1.app.stream.sink.delete",
+                "parameters": [
+                    {
+                        "description": "The Application's ID or UID.",
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The Application's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The StreamSink's ID or UID.",
+                        "in": "path",
+                        "name": "sink_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The StreamSink's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 60,
+                            "minLength": 1,
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "no content"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Delete Sink",
+                "tags": [
+                    "Sink"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "await svix.app.stream.sink.delete(\"app_id\", \"sink_id\");"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "await svix.app.stream.sink.delete(\"app_id\", \"sink_id\");"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "svix.app.stream.sink.delete(\"app_id\", \"sink_id\")"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "await svix.app.stream.sink.delete(\"app_id\", \"sink_id\")"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "err := svixClient.App.Stream.Sink.Delete(ctx, \"app_id\", \"sink_id\")"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "svix.app.stream.sink.delete(\"app_id\", \"sink_id\")"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "svix.getApp().getStream().getSink().delete(\"app_id\", \"sink_id\");"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "svix.app.stream.sink.delete(\"app_id\", \"sink_id\")"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "svix.app().stream().sink().delete(\"app_id\", \"sink_id\").await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "await svix.App.Stream.Sink.DeleteAsync(\"app_id\", \"sink_id\");"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix app stream sink delete \"app_id\" \"sink_id\""
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/stream/sink/{sink_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ],
+                "x-hidden": true
+            },
+            "get": {
+                "description": "Get a sink by id or uid.",
+                "operationId": "v1.app.stream.sink.get",
+                "parameters": [
+                    {
+                        "description": "The Application's ID or UID.",
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The Application's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The StreamSink's ID or UID.",
+                        "in": "path",
+                        "name": "sink_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The StreamSink's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 60,
+                            "minLength": 1,
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StreamSinkOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Get Sink",
+                "tags": [
+                    "Sink"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const streamSinkOut = await svix.app.stream.sink.get(\"app_id\", \"sink_id\");"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const streamSinkOut = await svix.app.stream.sink.get(\"app_id\", \"sink_id\");"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "stream_sink_out = svix.app.stream.sink.get(\"app_id\", \"sink_id\")"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "stream_sink_out = await svix.app.stream.sink.get(\"app_id\", \"sink_id\")"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "streamSinkOut, err := svixClient.App.Stream.Sink.Get(ctx, \"app_id\", \"sink_id\")"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val streamSinkOut = svix.app.stream.sink.get(\"app_id\", \"sink_id\")"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "StreamSinkOut streamSinkOut = svix.getApp().getStream().getSink().get(\"app_id\", \"sink_id\");"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "stream_sink_out = svix.app.stream.sink.get(\"app_id\", \"sink_id\")"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let stream_sink_out = svix.app().stream().sink().get(\"app_id\", \"sink_id\").await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var streamSinkOut = await svix.App.Stream.Sink.GetAsync(\"app_id\", \"sink_id\");"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix app stream sink get \"app_id\" \"sink_id\""
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/stream/sink/{sink_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ],
+                "x-hidden": true
+            },
+            "patch": {
+                "description": "Partially update a sink.",
+                "operationId": "v1.app.stream.sink.patch",
+                "parameters": [
+                    {
+                        "description": "The Application's ID or UID.",
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The Application's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The StreamSink's ID or UID.",
+                        "in": "path",
+                        "name": "sink_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The StreamSink's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 60,
+                            "minLength": 1,
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StreamSinkPatch"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StreamSinkOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Patch Sink",
+                "tags": [
+                    "Sink"
+                ],
+                "x-hidden": true
+            },
+            "put": {
+                "description": "Update a sink.",
+                "operationId": "v1.app.stream.sink.update",
+                "parameters": [
+                    {
+                        "description": "The Application's ID or UID.",
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The Application's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The StreamSink's ID or UID.",
+                        "in": "path",
+                        "name": "sink_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The StreamSink's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 60,
+                            "minLength": 1,
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StreamSinkIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StreamSinkOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StreamSinkOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Update Sink",
+                "tags": [
+                    "Sink"
+                ],
+                "x-hidden": true
+            }
+        },
+        "/api/v1/app/{app_id}/stream/sink/{sink_id}/force-retry": {
+            "post": {
+                "description": "Forces a Sink to retry immediately (if dispatch is paused)",
+                "operationId": "v1.app.stream.sink.force-retry",
+                "parameters": [
+                    {
+                        "description": "The Application's ID or UID.",
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The Application's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The StreamSink's ID or UID.",
+                        "in": "path",
+                        "name": "sink_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The StreamSink's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 60,
+                            "minLength": 1,
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "no content"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Force Retry Sink",
+                "tags": [
+                    "Sink"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "await svix.app.stream.sink.forceRetry(\"app_id\", \"sink_id\");"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "await svix.app.stream.sink.forceRetry(\"app_id\", \"sink_id\");"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "svix.app.stream.sink.force_retry(\"app_id\", \"sink_id\", options=...)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "await svix.app.stream.sink.force_retry(\"app_id\", \"sink_id\", options=...)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "err := svixClient.App.Stream.Sink.ForceRetry(ctx, \"app_id\", \"sink_id\")"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "svix.app.stream.sink.forceRetry(\"app_id\", \"sink_id\")"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "svix.getApp().getStream().getSink().forceRetry(\"app_id\", \"sink_id\");"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "svix.app.stream.sink.force_retry(\"app_id\", \"sink_id\")"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "svix.app().stream().sink().force_retry(\"app_id\", \"sink_id\", None).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "await svix.App.Stream.Sink.ForceRetryAsync(\"app_id\", \"sink_id\");"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix app stream sink force-retry \"app_id\" \"sink_id\""
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/stream/sink/{sink_id}/force-retry' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ],
+                "x-hidden": true
+            }
+        },
+        "/api/v1/app/{app_id}/stream/sink/{sink_id}/headers": {
+            "patch": {
+                "description": "Patch the HTTP sink headers",
+                "operationId": "v1.app.stream.sink.headers-patch",
+                "parameters": [
+                    {
+                        "description": "The Application's ID or UID.",
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The Application's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The StreamSink's ID or UID.",
+                        "in": "path",
+                        "name": "sink_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The StreamSink's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 60,
+                            "minLength": 1,
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/HttpSinkHeadersPatchIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EndpointHeadersOut"
+                                }
+                            }
+                        },
+                        "description": "The value of the headers is returned in the `headers` field.\n\nSensitive headers that have been redacted are returned in the sensitive field."
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Patch Sink Headers",
+                "tags": [
+                    "Sink"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const endpointHeadersOut = await svix.app.stream.sink.headersPatch(\"app_id\", \"sink_id\", {\n    headers: {\"X-Example\":\"123\",\"X-Foobar\":\"Bar\"}\n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const endpointHeadersOut = await svix.app.stream.sink.headersPatch(\"app_id\", \"sink_id\", {\n    headers: {\"X-Example\":\"123\",\"X-Foobar\":\"Bar\"}\n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "endpoint_headers_out = svix.app.stream.sink.headers_patch(\"app_id\", \"sink_id\", HttpSinkHeadersPatchIn(\n    headers={\"X-Example\": \"123\", \"X-Foobar\": \"Bar\"}\n))"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "endpoint_headers_out = await svix.app.stream.sink.headers_patch(\"app_id\", \"sink_id\", HttpSinkHeadersPatchIn(\n    headers={\"X-Example\": \"123\", \"X-Foobar\": \"Bar\"}\n))"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "endpointHeadersOut, err := svixClient.App.Stream.Sink.HeadersPatch(ctx, \"app_id\", \"sink_id\", &HttpSinkHeadersPatchIn{\n    Headers: map[string]interface{}{\"X-Example\": \"123\", \"X-Foobar\": \"Bar\"},\n})"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val endpointHeadersOut = svix.app.stream.sink.headersPatch(\"app_id\", \"sink_id\", HttpSinkHeadersPatchIn()\n    .headers(/* ... */)\n)"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "EndpointHeadersOut endpointHeadersOut = svix.getApp().getStream().getSink().headersPatch(\"app_id\", \"sink_id\", new HttpSinkHeadersPatchIn()\n    .headers(/* ... */)\n);"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "endpoint_headers_out = svix.app.stream.sink.headers_patch(\"app_id\", \"sink_id\", Svix::HttpSinkHeadersPatchIn.new({\n    \"headers\": {\"X-Example\":\"123\",\"X-Foobar\":\"Bar\"}\n}))"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let endpoint_headers_out = svix.app().stream().sink().headers_patch(\"app_id\", \"sink_id\", HttpSinkHeadersPatchIn {\n    headers: json!({\"X-Example\":\"123\",\"X-Foobar\":\"Bar\"}),\n}).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var endpointHeadersOut = await svix.App.Stream.Sink.HeadersPatchAsync(\"app_id\", \"sink_id\", new HttpSinkHeadersPatchIn{\n    headers: /* ... */\n});"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix app stream sink headers-patch \"app_id\" \"sink_id\" '{\n    \"headers\": {\"X-Example\":\"123\",\"X-Foobar\":\"Bar\"}\n}'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/stream/sink/{sink_id}/headers' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"headers\": {\"X-Example\":\"123\",\"X-Foobar\":\"Bar\"}\n    }'"
+                    }
+                ],
+                "x-hidden": true
+            }
+        },
+        "/api/v1/app/{app_id}/stream/sink/{sink_id}/last-acked-event": {
+            "get": {
+                "description": "Get the latest event acked from the stream",
+                "operationId": "v1.app.stream.sink.get-last-acked-event",
+                "parameters": [
+                    {
+                        "description": "The Application's ID or UID.",
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The Application's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The StreamSink's ID or UID.",
+                        "in": "path",
+                        "name": "sink_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The StreamSink's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 60,
+                            "minLength": 1,
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EventOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Get Last Acked Event",
+                "tags": [
+                    "Sink"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const eventOut = await svix.app.stream.sink.getLastAckedEvent(\"app_id\", \"sink_id\");"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const eventOut = await svix.app.stream.sink.getLastAckedEvent(\"app_id\", \"sink_id\");"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "event_out = svix.app.stream.sink.get_last_acked_event(\"app_id\", \"sink_id\")"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "event_out = await svix.app.stream.sink.get_last_acked_event(\"app_id\", \"sink_id\")"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "eventOut, err := svixClient.App.Stream.Sink.GetLastAckedEvent(ctx, \"app_id\", \"sink_id\")"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val eventOut = svix.app.stream.sink.getLastAckedEvent(\"app_id\", \"sink_id\")"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "EventOut eventOut = svix.getApp().getStream().getSink().getLastAckedEvent(\"app_id\", \"sink_id\");"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "event_out = svix.app.stream.sink.get_last_acked_event(\"app_id\", \"sink_id\")"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let event_out = svix.app().stream().sink().get_last_acked_event(\"app_id\", \"sink_id\").await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var eventOut = await svix.App.Stream.Sink.GetLastAckedEventAsync(\"app_id\", \"sink_id\");"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix app stream sink get-last-acked-event \"app_id\" \"sink_id\""
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/stream/sink/{sink_id}/last-acked-event' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ],
+                "x-hidden": true
+            }
+        },
+        "/api/v1/app/{app_id}/stream/sink/{sink_id}/secret": {
+            "get": {
+                "description": "Get the sink's signing secret (only supported for http sinks)\n\nThis is used to verify the authenticity of the delivery\nFor more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).",
+                "operationId": "v1.app.stream.sink.get-secret",
+                "parameters": [
+                    {
+                        "description": "The Application's ID or UID.",
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The Application's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The StreamSink's ID or UID.",
+                        "in": "path",
+                        "name": "sink_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The StreamSink's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 60,
+                            "minLength": 1,
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SinkSecretOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Get Sink Secret",
+                "tags": [
+                    "Sink"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const sinkSecretOut = await svix.app.stream.sink.getSecret(\"app_id\", \"sink_id\");"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const sinkSecretOut = await svix.app.stream.sink.getSecret(\"app_id\", \"sink_id\");"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "sink_secret_out = svix.app.stream.sink.get_secret(\"app_id\", \"sink_id\")"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "sink_secret_out = await svix.app.stream.sink.get_secret(\"app_id\", \"sink_id\")"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "sinkSecretOut, err := svixClient.App.Stream.Sink.GetSecret(ctx, \"app_id\", \"sink_id\")"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val sinkSecretOut = svix.app.stream.sink.getSecret(\"app_id\", \"sink_id\")"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "SinkSecretOut sinkSecretOut = svix.getApp().getStream().getSink().getSecret(\"app_id\", \"sink_id\");"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "sink_secret_out = svix.app.stream.sink.get_secret(\"app_id\", \"sink_id\")"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let sink_secret_out = svix.app().stream().sink().get_secret(\"app_id\", \"sink_id\").await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var sinkSecretOut = await svix.App.Stream.Sink.GetSecretAsync(\"app_id\", \"sink_id\");"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix app stream sink get-secret \"app_id\" \"sink_id\""
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/stream/sink/{sink_id}/secret' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ],
+                "x-hidden": true
+            }
+        },
+        "/api/v1/app/{app_id}/stream/sink/{sink_id}/secret/rotate": {
+            "post": {
+                "description": "Rotates the signing secret (only supported for http sinks).",
+                "operationId": "v1.app.stream.sink.rotate-secret",
+                "parameters": [
+                    {
+                        "description": "The Application's ID or UID.",
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The Application's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The StreamSink's ID or UID.",
+                        "in": "path",
+                        "name": "sink_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The StreamSink's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 60,
+                            "minLength": 1,
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EndpointSecretRotateIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EmptyResponse"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Rotate Sink Secret",
+                "tags": [
+                    "Sink"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const emptyResponse = await svix.app.stream.sink.rotateSecret(\"app_id\", \"sink_id\", {\n    key: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const emptyResponse = await svix.app.stream.sink.rotateSecret(\"app_id\", \"sink_id\", {\n    key: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "empty_response = svix.app.stream.sink.rotate_secret(\"app_id\", \"sink_id\", EndpointSecretRotateIn(\n    key=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n), options=...)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "empty_response = await svix.app.stream.sink.rotate_secret(\"app_id\", \"sink_id\", EndpointSecretRotateIn(\n    key=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n), options=...)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "emptyResponse, err := svixClient.App.Stream.Sink.RotateSecret(ctx, \"app_id\", \"sink_id\", &EndpointSecretRotateIn{\n    Key: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n})"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val emptyResponse = svix.app.stream.sink.rotateSecret(\"app_id\", \"sink_id\", EndpointSecretRotateIn()\n    .key(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n)"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "EmptyResponse emptyResponse = svix.getApp().getStream().getSink().rotateSecret(\"app_id\", \"sink_id\", new EndpointSecretRotateIn()\n    .key(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n);"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "empty_response = svix.app.stream.sink.rotate_secret(\"app_id\", \"sink_id\", Svix::EndpointSecretRotateIn.new({\n    \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n}))"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let empty_response = svix.app().stream().sink().rotate_secret(\"app_id\", \"sink_id\", EndpointSecretRotateIn {\n    key: Some(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\".to_string()),\n}, None).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var emptyResponse = await svix.App.Stream.Sink.RotateSecretAsync(\"app_id\", \"sink_id\", new EndpointSecretRotateIn{\n    key: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n});"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix app stream sink rotate-secret \"app_id\" \"sink_id\" '{\n    \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n}'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/stream/sink/{sink_id}/secret/rotate' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n    }'"
+                    }
+                ],
+                "x-hidden": true
+            }
+        },
+        "/api/v1/app/{app_id}/stream/sink/{sink_id}/transformation": {
+            "get": {
+                "description": "Get the transformation code associated with this endpoint.",
+                "operationId": "v1.app.stream.sink-transformation-get",
+                "parameters": [
+                    {
+                        "description": "The Application's ID or UID.",
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The Application's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The StreamSink's ID or UID.",
+                        "in": "path",
+                        "name": "sink_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The StreamSink's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 60,
+                            "minLength": 1,
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SinkTransformationOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Get Sink Transformation",
+                "tags": [
+                    "Sink"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const sinkTransformationOut = await svix.app.stream.sinkTransformationGet(\"app_id\", \"sink_id\");"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const sinkTransformationOut = await svix.app.stream.sinkTransformationGet(\"app_id\", \"sink_id\");"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "sink_transformation_out = svix.app.stream.sink_transformation_get(\"app_id\", \"sink_id\")"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "sink_transformation_out = await svix.app.stream.sink_transformation_get(\"app_id\", \"sink_id\")"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "sinkTransformationOut, err := svixClient.App.Stream.SinkTransformationGet(ctx, \"app_id\", \"sink_id\")"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val sinkTransformationOut = svix.app.stream.sinkTransformationGet(\"app_id\", \"sink_id\")"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "SinkTransformationOut sinkTransformationOut = svix.getApp().getStream().sinkTransformationGet(\"app_id\", \"sink_id\");"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "sink_transformation_out = svix.app.stream.sink_transformation_get(\"app_id\", \"sink_id\")"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let sink_transformation_out = svix.app().stream().sink_transformation_get(\"app_id\", \"sink_id\").await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var sinkTransformationOut = await svix.App.Stream.SinkTransformationGetAsync(\"app_id\", \"sink_id\");"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix app stream sink-transformation-get \"app_id\" \"sink_id\""
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/stream/sink/{sink_id}/transformation' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ],
+                "x-hidden": true
+            },
+            "patch": {
+                "description": "Set or unset the transformation code associated with this sink.",
+                "operationId": "v1.app.stream.sink.transformation-partial-update",
+                "parameters": [
+                    {
+                        "description": "The Application's ID or UID.",
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The Application's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The StreamSink's ID or UID.",
+                        "in": "path",
+                        "name": "sink_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The StreamSink's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 60,
+                            "minLength": 1,
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SinkTransformIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EmptyResponse"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Set Sink Transformation",
+                "tags": [
+                    "Sink"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const emptyResponse = await svix.app.stream.sink.transformationPartialUpdate(\"app_id\", \"sink_id\", {\n    code: null\n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const emptyResponse = await svix.app.stream.sink.transformationPartialUpdate(\"app_id\", \"sink_id\", {\n    code: null\n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "empty_response = svix.app.stream.sink.transformation_partial_update(\"app_id\", \"sink_id\", SinkTransformIn(\n    code=None\n))"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "empty_response = await svix.app.stream.sink.transformation_partial_update(\"app_id\", \"sink_id\", SinkTransformIn(\n    code=None\n))"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "emptyResponse, err := svixClient.App.Stream.Sink.TransformationPartialUpdate(ctx, \"app_id\", \"sink_id\", &SinkTransformIn{\n    Code: nil,\n})"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val emptyResponse = svix.app.stream.sink.transformationPartialUpdate(\"app_id\", \"sink_id\", SinkTransformIn()\n    .code(null)\n)"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "EmptyResponse emptyResponse = svix.getApp().getStream().getSink().transformationPartialUpdate(\"app_id\", \"sink_id\", new SinkTransformIn()\n    .code(null)\n);"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "empty_response = svix.app.stream.sink.transformation_partial_update(\"app_id\", \"sink_id\", Svix::SinkTransformIn.new({\n    \"code\": nil\n}))"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let empty_response = svix.app().stream().sink().transformation_partial_update(\"app_id\", \"sink_id\", SinkTransformIn {\n    code: None,\n}).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var emptyResponse = await svix.App.Stream.Sink.TransformationPartialUpdateAsync(\"app_id\", \"sink_id\", new SinkTransformIn{\n    code: null\n});"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix app stream sink transformation-partial-update \"app_id\" \"sink_id\" '{\n    \"code\": null\n}'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/stream/sink/{sink_id}/transformation' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"code\": null\n    }'"
+                    }
+                ],
+                "x-hidden": true
+            }
+        },
         "/api/v1/auth/app-portal-access/{app_id}": {
             "post": {
                 "description": "Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal.",
@@ -30026,6 +32535,174 @@
                         "label": "cURL",
                         "lang": "Shell",
                         "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/management/environment-settings' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ],
+                "x-hidden": true
+            },
+            "patch": {
+                "description": "Patch environment settings",
+                "operationId": "v1.management.environment-settings.patch",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SettingsInternalPatch"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SettingsInternalOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Patch Environment Settings",
+                "tags": [
+                    "Environment-Settings"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const settingsInternalOut = await svix.management.environmentSettings.patch({\n    customColor: null,\n    customLogoUrl: null,\n    customThemeOverride: null,\n    customStringsOverride: null,\n    customBaseFontSize: null,\n    customFontFamily: \"Open Sans\",\n    customFontFamilyUrl: null,\n    displayName: null,\n    retryPolicy: null,\n    colorPaletteLight: null,\n    colorPaletteDark: null\n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const settingsInternalOut = await svix.management.environmentSettings.patch({\n    customColor: null,\n    customLogoUrl: null,\n    customThemeOverride: null,\n    customStringsOverride: null,\n    customBaseFontSize: null,\n    customFontFamily: \"Open Sans\",\n    customFontFamilyUrl: null,\n    displayName: null,\n    retryPolicy: null,\n    colorPaletteLight: null,\n    colorPaletteDark: null\n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "settings_internal_out = svix.management.environment_settings.patch(SettingsInternalPatch(\n    custom_color=None,\n    custom_logo_url=None,\n    custom_theme_override=None,\n    custom_strings_override=None,\n    custom_base_font_size=None,\n    custom_font_family=\"Open Sans\",\n    custom_font_family_url=None,\n    display_name=None,\n    retry_policy=None,\n    color_palette_light=None,\n    color_palette_dark=None\n))"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "settings_internal_out = await svix.management.environment_settings.patch(SettingsInternalPatch(\n    custom_color=None,\n    custom_logo_url=None,\n    custom_theme_override=None,\n    custom_strings_override=None,\n    custom_base_font_size=None,\n    custom_font_family=\"Open Sans\",\n    custom_font_family_url=None,\n    display_name=None,\n    retry_policy=None,\n    color_palette_light=None,\n    color_palette_dark=None\n))"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "settingsInternalOut, err := svixClient.Management.EnvironmentSettings.Patch(ctx, &SettingsInternalPatch{\n    CustomColor: nil,\n    CustomLogoUrl: nil,\n    CustomThemeOverride: nil,\n    CustomStringsOverride: nil,\n    CustomBaseFontSize: nil,\n    CustomFontFamily: \"Open Sans\",\n    CustomFontFamilyUrl: nil,\n    DisplayName: nil,\n    RetryPolicy: nil,\n    ColorPaletteLight: nil,\n    ColorPaletteDark: nil,\n})"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val settingsInternalOut = svix.management.environmentSettings.patch(SettingsInternalPatch()\n    .customColor(null)\n    .customLogoUrl(null)\n    .customThemeOverride(null)\n    .customStringsOverride(null)\n    .customBaseFontSize(null)\n    .customFontFamily(\"Open Sans\")\n    .customFontFamilyUrl(null)\n    .displayName(null)\n    .retryPolicy(null)\n    .colorPaletteLight(null)\n    .colorPaletteDark(null)\n)"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "SettingsInternalOut settingsInternalOut = svix.getManagement().getEnvironmentSettings().patch(new SettingsInternalPatch()\n    .customColor(null)\n    .customLogoUrl(null)\n    .customThemeOverride(null)\n    .customStringsOverride(null)\n    .customBaseFontSize(null)\n    .customFontFamily(\"Open Sans\")\n    .customFontFamilyUrl(null)\n    .displayName(null)\n    .retryPolicy(null)\n    .colorPaletteLight(null)\n    .colorPaletteDark(null)\n);"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "settings_internal_out = svix.management.environment_settings.patch(Svix::SettingsInternalPatch.new({\n    \"custom_color\": nil,\n    \"custom_logo_url\": nil,\n    \"custom_theme_override\": nil,\n    \"custom_strings_override\": nil,\n    \"custom_base_font_size\": nil,\n    \"custom_font_family\": \"Open Sans\",\n    \"custom_font_family_url\": nil,\n    \"display_name\": nil,\n    \"retry_policy\": nil,\n    \"color_palette_light\": nil,\n    \"color_palette_dark\": nil\n}))"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let settings_internal_out = svix.management().environment_settings().patch(SettingsInternalPatch {\n    custom_color: None,\n    custom_logo_url: None,\n    custom_theme_override: None,\n    custom_strings_override: None,\n    custom_base_font_size: None,\n    custom_font_family: Some(\"Open Sans\".to_string()),\n    custom_font_family_url: None,\n    display_name: None,\n    retry_policy: None,\n    color_palette_light: None,\n    color_palette_dark: None,\n}).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var settingsInternalOut = await svix.Management.EnvironmentSettings.PatchAsync(new SettingsInternalPatch{\n    customColor: null,\n    customLogoUrl: null,\n    customThemeOverride: null,\n    customStringsOverride: null,\n    customBaseFontSize: null,\n    customFontFamily: \"Open Sans\",\n    customFontFamilyUrl: null,\n    displayName: null,\n    retryPolicy: null,\n    colorPaletteLight: null,\n    colorPaletteDark: null\n});"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix management environment-settings patch '{\n    \"customColor\": null,\n    \"customLogoUrl\": null,\n    \"customThemeOverride\": null,\n    \"customStringsOverride\": null,\n    \"customBaseFontSize\": null,\n    \"customFontFamily\": \"Open Sans\",\n    \"customFontFamilyUrl\": null,\n    \"displayName\": null,\n    \"retryPolicy\": null,\n    \"colorPaletteLight\": null,\n    \"colorPaletteDark\": null\n}'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/management/environment-settings' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"customColor\": null,\n        \"customLogoUrl\": null,\n        \"customThemeOverride\": null,\n        \"customStringsOverride\": null,\n        \"customBaseFontSize\": null,\n        \"customFontFamily\": \"Open Sans\",\n        \"customFontFamilyUrl\": null,\n        \"displayName\": null,\n        \"retryPolicy\": null,\n        \"colorPaletteLight\": null,\n        \"colorPaletteDark\": null\n    }'"
                     }
                 ],
                 "x-hidden": true
