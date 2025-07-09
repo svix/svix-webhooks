@@ -1,4 +1,4 @@
-use std::fmt::Debug;
+use std::{collections::HashMap, fmt::Debug};
 
 use serde::de::DeserializeOwned;
 use serde_json::json;
@@ -43,10 +43,12 @@ fn test_ingest_source_in() {
             name: "foo".to_owned(),
             uid: None,
             config: IngestSourceInConfig::GenericWebhook,
+            metadata: Some(HashMap::new())
         }),
         json!({
             "name": "foo",
             "type": "generic-webhook",
+            "metadata": {}
         }),
     );
 
@@ -57,11 +59,13 @@ fn test_ingest_source_in() {
             config: IngestSourceInConfig::Svix(SvixConfig {
                 secret: "xxx".to_owned()
             }),
+            metadata: Some(HashMap::new())
         }),
         json!({
             "name": "foo",
             "type": "svix",
             "config": { "secret": "xxx" },
+            "metadata": {}
         }),
     );
 
@@ -69,12 +73,14 @@ fn test_ingest_source_in() {
         json!(IngestSourceIn {
             name: "foo".to_owned(),
             uid: None,
-            config: IngestSourceInConfig::Segment(SegmentConfig { secret: None })
+            config: IngestSourceInConfig::Segment(SegmentConfig { secret: None }),
+            metadata: Some(HashMap::new())
         }),
         json!({
             "name": "foo",
             "type": "segment",
             "config": {},
+            "metadata": {}
         }),
     );
 
@@ -86,7 +92,8 @@ fn test_ingest_source_in() {
                 content_type: None,
                 payload: "💣".to_owned(),
                 schedule: "* * * * *".to_owned(),
-            })
+            }),
+            metadata: Some(HashMap::new())
         }),
         json!({
             "name": "foo",
@@ -95,6 +102,7 @@ fn test_ingest_source_in() {
                 "payload": "💣",
                 "schedule": "* * * * *",
             },
+            "metadata": {}
         }),
     );
 }
@@ -109,6 +117,7 @@ fn test_ingest_source_out() {
             "name": "foo",
             "ingestUrl": "https://in.example.invalid/xyz",
             "type": "generic-webhook",
+            "metadata": {}
         }),
         IngestSourceOut {
             created_at: "2006-01-02T15:04:05Z".to_owned(),
@@ -118,6 +127,7 @@ fn test_ingest_source_out() {
             uid: None,
             updated_at: "2006-01-02T15:04:05Z".to_owned(),
             config: IngestSourceOutConfig::GenericWebhook,
+            metadata: HashMap::new(),
         },
     );
 
@@ -130,6 +140,7 @@ fn test_ingest_source_out() {
             "ingestUrl": "https://in.example.invalid/xyz",
             "type": "svix",
             "config": { "secret": "xxx" },
+            "metadata": {}
         }),
         IngestSourceOut {
             created_at: "2006-01-02T15:04:05Z".to_owned(),
@@ -139,6 +150,7 @@ fn test_ingest_source_out() {
             uid: None,
             updated_at: "2006-01-02T15:04:05Z".to_owned(),
             config: IngestSourceOutConfig::Svix(SvixConfigOut {}),
+            metadata: HashMap::new(),
         },
     );
 
@@ -151,6 +163,7 @@ fn test_ingest_source_out() {
             "ingestUrl": "https://in.example.invalid/xyz",
             "type": "segment",
             "config": {},
+            "metadata": {}
         }),
         IngestSourceOut {
             created_at: "2006-01-02T15:04:05Z".to_owned(),
@@ -160,6 +173,7 @@ fn test_ingest_source_out() {
             uid: None,
             updated_at: "2006-01-02T15:04:05Z".to_owned(),
             config: IngestSourceOutConfig::Segment(SegmentConfigOut::default()),
+            metadata: HashMap::new(),
         },
     );
 
@@ -174,6 +188,7 @@ fn test_ingest_source_out() {
                 "payload": "💣",
                 "schedule": "* * * * *",
             },
+            "metadata": {}
         }),
         IngestSourceOut {
             created_at: "2006-01-02T15:04:05Z".to_owned(),
@@ -187,6 +202,7 @@ fn test_ingest_source_out() {
                 payload: "💣".to_owned(),
                 schedule: "* * * * *".to_owned(),
             }),
+            metadata: HashMap::new(),
         },
     );
 }

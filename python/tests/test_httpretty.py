@@ -21,7 +21,7 @@ def test_struct_enum_with_fields():
     httpretty.register_uri(
         httpretty.POST,
         "http://test.example/ingest/api/v1/source",
-        body='{"type":"cron","config":{"content_type":"mendy/tired","payload":"@hello there","schedule":"* * * * *"},"id":"src_2yZwUhtgs5Ai8T9yRQJXA","uid":"unique-identifier","name":"string","ingestUrl":"http://example.com","createdAt":"2019-08-24T14:15:22Z","updatedAt":"2019-08-24T14:15:22Z"}',
+        body='{"type":"cron","config":{"content_type":"mendy/tired","payload":"@hello there","schedule":"* * * * *"},"id":"src_2yZwUhtgs5Ai8T9yRQJXA","uid":"unique-identifier","name":"string","ingestUrl":"http://example.com","createdAt":"2019-08-24T14:15:22Z","updatedAt":"2019-08-24T14:15:22Z","metadata":{ }}',
     )
     source_in = IngestSourceIn(
         name="name",
@@ -43,7 +43,7 @@ def test_struct_enum_without_fields():
     httpretty.register_uri(
         httpretty.POST,
         "http://test.example/ingest/api/v1/source",
-        body='{"type":"generic-webhook","config":{},"id":"src_2yZwUhtgs5Ai8T9yRQJXA","uid":"unique-identifier","name":"string","ingestUrl":"http://example.com","createdAt":"2019-08-24T14:15:22Z","updatedAt":"2019-08-24T14:15:22Z"}',
+        body='{"type":"generic-webhook","config":{},"id":"src_2yZwUhtgs5Ai8T9yRQJXA","uid":"unique-identifier","name":"string","ingestUrl":"http://example.com","createdAt":"2019-08-24T14:15:22Z","updatedAt":"2019-08-24T14:15:22Z","metadata":{ }}',
     )
     source_in = IngestSourceIn(name="name", type="generic-webhook", config={})
 

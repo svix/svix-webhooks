@@ -18,6 +18,9 @@ namespace Svix.Models
         [JsonProperty("ingestUrl")]
         public string? IngestUrl { get; set; } = null;
 
+        [JsonProperty("metadata", Required = Required.Always)]
+        public required Dictionary<string, string> Metadata { get; set; }
+
         [JsonProperty("name", Required = Required.Always)]
         public required string Name { get; set; }
 
@@ -48,6 +51,7 @@ namespace Svix.Models
             sb.Append("  CreatedAt: ").Append(CreatedAt).Append('\n');
             sb.Append("  Id: ").Append(Id).Append('\n');
             sb.Append("  IngestUrl: ").Append(IngestUrl).Append('\n');
+            sb.Append("  Metadata: ").Append(Metadata).Append('\n');
             sb.Append("  Name: ").Append(Name).Append('\n');
             sb.Append("  Uid: ").Append(Uid).Append('\n');
             sb.Append("  UpdatedAt: ").Append(UpdatedAt).Append('\n');
@@ -532,6 +536,9 @@ namespace Svix.Models
         [JsonProperty("ingestUrl")]
         public string? IngestUrl { get; set; } = null;
 
+        [JsonProperty("metadata", Required = Required.Always)]
+        public required Dictionary<string, string> Metadata { get; set; }
+
         [JsonProperty("name", Required = Required.Always)]
         public required string Name { get; set; }
 
@@ -597,6 +604,7 @@ namespace Svix.Models
                 CreatedAt = surrogate.CreatedAt,
                 Id = surrogate.Id,
                 IngestUrl = surrogate.IngestUrl,
+                Metadata = surrogate.Metadata,
                 Name = surrogate.Name,
                 Uid = surrogate.Uid,
                 UpdatedAt = surrogate.UpdatedAt,

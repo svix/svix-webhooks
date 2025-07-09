@@ -18,6 +18,7 @@ data class IngestSourceOut(
     /** The Source's ID. */
     val id: String,
     val ingestUrl: String? = null,
+    val metadata: Map<String, String>,
     val name: String,
     /** The Source's UID. */
     val uid: String? = null,
@@ -377,6 +378,7 @@ class IngestSourceOutSerializer : KSerializer<IngestSourceOut> {
         /** The Source's ID. */
         val id: String,
         val ingestUrl: String? = null,
+        val metadata: Map<String, String>,
         val name: String,
         /** The Source's UID. */
         val uid: String? = null,
@@ -393,6 +395,7 @@ class IngestSourceOutSerializer : KSerializer<IngestSourceOut> {
                 createdAt = value.createdAt,
                 id = value.id,
                 ingestUrl = value.ingestUrl,
+                metadata = value.metadata,
                 name = value.name,
                 uid = value.uid,
                 updatedAt = value.updatedAt,
@@ -408,6 +411,7 @@ class IngestSourceOutSerializer : KSerializer<IngestSourceOut> {
             createdAt = surrogate.createdAt,
             id = surrogate.id,
             ingestUrl = surrogate.ingestUrl,
+            metadata = surrogate.metadata,
             name = surrogate.name,
             uid = surrogate.uid,
             updatedAt = surrogate.updatedAt,

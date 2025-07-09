@@ -22,6 +22,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.io.IOException;
+import java.util.Map;
 
 @Setter
 @Getter
@@ -32,9 +33,15 @@ import java.io.IOException;
 @JsonSerialize(using = IngestSourceInSerializer.class)
 @JsonDeserialize(using = IngestSourceInDeserializer.class)
 public class IngestSourceIn {
+    private Map<String, String> metadata;
     private String name;
     private String uid;
     private IngestSourceInConfig config;
+
+    public IngestSourceIn metadata(Map<String, String> metadata) {
+        this.metadata = metadata;
+        return this;
+    }
 
     public IngestSourceIn name(String name) {
         this.name = name;
@@ -63,6 +70,9 @@ public class IngestSourceIn {
 @Getter
 @NoArgsConstructor
 class IngestSourceInSurrogate {
+    @JsonProperty("metadata")
+    Map<String, String> metadata;
+
     @JsonProperty("name")
     String name;
 
@@ -76,6 +86,7 @@ class IngestSourceInSurrogate {
     JsonNode config;
 
     IngestSourceInSurrogate(IngestSourceIn o, String type, JsonNode config) {
+        this.metadata = o.getMetadata();
         this.name = o.getName();
         this.uid = o.getUid();
         this.type = type;
@@ -116,11 +127,12 @@ class IngestSourceInDeserializer extends StdDeserializer<IngestSourceIn> {
             throws IOException {
         IngestSourceInSurrogate surrogate =
                 p.getCodec().readValue(p, IngestSourceInSurrogate.class);
+        Map<String, String> metadata = surrogate.getMetadata();
         String name = surrogate.getName();
         String uid = surrogate.getUid();
         String type = surrogate.getType();
         JsonNode config = surrogate.getConfig();
         IngestSourceInConfig sourceType = IngestSourceInConfig.fromTypeAndConfig(type, config);
-        return new IngestSourceIn(name, uid, sourceType);
+        return new IngestSourceIn(metadata, name, uid, sourceType);
     }
 }

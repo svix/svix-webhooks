@@ -27,10 +27,11 @@ import (
 //   - "veriff": Use VeriffConfig
 //   - "zoom": Use ZoomConfig
 type IngestSourceIn struct {
-	Name   string               `json:"name"`
-	Uid    *string              `json:"uid,omitempty"` // The Source's UID.
-	Type   IngestSourceInType   `json:"type"`
-	Config IngestSourceInConfig `json:"config"`
+	Metadata *map[string]string   `json:"metadata,omitempty"`
+	Name     string               `json:"name"`
+	Uid      *string              `json:"uid,omitempty"` // The Source's UID.
+	Type     IngestSourceInType   `json:"type"`
+	Config   IngestSourceInConfig `json:"config"`
 }
 
 type IngestSourceInType string

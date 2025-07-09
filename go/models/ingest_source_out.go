@@ -31,6 +31,7 @@ type IngestSourceOut struct {
 	CreatedAt time.Time             `json:"createdAt"`
 	Id        string                `json:"id"` // The Source's ID.
 	IngestUrl *string               `json:"ingestUrl,omitempty"`
+	Metadata  map[string]string     `json:"metadata"`
 	Name      string                `json:"name"`
 	Uid       *string               `json:"uid,omitempty"` // The Source's UID.
 	UpdatedAt time.Time             `json:"updatedAt"`

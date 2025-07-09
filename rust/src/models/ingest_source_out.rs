@@ -25,6 +25,8 @@ pub struct IngestSourceOut {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ingest_url: Option<String>,
 
+    pub metadata: std::collections::HashMap<String, String>,
+
     pub name: String,
 
     /// The Source's UID.

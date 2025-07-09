@@ -26,6 +26,8 @@ from .zoom_config import ZoomConfig
 
 
 class IngestSourceIn(BaseModel):
+    metadata: t.Optional[t.Dict[str, str]] = None
+
     name: str
 
     uid: t.Optional[str] = None

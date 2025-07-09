@@ -6,12 +6,14 @@ import (
 )
 
 type Management struct {
+	Authentication      *ManagementAuthentication
 	Environment         *ManagementEnvironment
 	EnvironmentSettings *ManagementEnvironmentSettings
 }
 
 func newManagement(client *internal.SvixHttpClient) *Management {
 	return &Management{
+		Authentication:      newManagementAuthentication(client),
 		Environment:         newManagementEnvironment(client),
 		EnvironmentSettings: newManagementEnvironmentSettings(client),
 	}

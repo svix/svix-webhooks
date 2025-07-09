@@ -23,6 +23,7 @@ interface _IngestSourceOutFields {
   /** The Source's ID. */
   id: string;
   ingestUrl?: string | null;
+  metadata: { [key: string]: string };
   name: string;
   /** The Source's UID. */
   uid?: string | null;
@@ -320,6 +321,7 @@ export const IngestSourceOutSerializer = {
       createdAt: new Date(object["createdAt"]),
       id: object["id"],
       ingestUrl: object["ingestUrl"],
+      metadata: object["metadata"],
       name: object["name"],
       uid: object["uid"],
       updatedAt: new Date(object["updatedAt"]),
@@ -439,6 +441,7 @@ export const IngestSourceOutSerializer = {
       createdAt: self.createdAt,
       id: self.id,
       ingestUrl: self.ingestUrl,
+      metadata: self.metadata,
       name: self.name,
       uid: self.uid,
       updatedAt: self.updatedAt,
