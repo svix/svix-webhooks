@@ -11,6 +11,8 @@ license = "MIT"
 keywords = ["svix", "webhooks", "diahook"]
 categories = ["development-tools", "asynchronous", "network-programming", "web-programming"]
 include = ["src/**/*", "README.md"]
+# bump .github/workflows/rust-link.yml when changing this
+rust-version = "1.85"
 
 [features]
 # openssl-sys keeps showing up in the CLI dep graph, breaking the build, even when

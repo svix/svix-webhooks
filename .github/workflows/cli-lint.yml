@@ -46,7 +46,8 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        rust: [stable, beta]
+        # keep this in sync with svix-cli/Cargo.toml MSRV
+        rust: ["1.85.0", stable, beta]
     steps:
     - uses: actions/checkout@v4
 
