@@ -5,6 +5,8 @@ publish = false
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+# bump .github/workflows/server-ci.yml when changing this
+rust-version = "1.83"
 
 [package.metadata.cargo-machete]
 ignored = [

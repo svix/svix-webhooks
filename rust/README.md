@@ -55,4 +55,3 @@ By default reqwest uses rust-native-tls, which will use the operating system TLS
 ```
 svix = { version = "N", features = ["rustls-tls"], default-features = false  }
 ```
-
