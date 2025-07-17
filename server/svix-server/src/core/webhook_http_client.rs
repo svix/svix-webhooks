@@ -638,7 +638,7 @@ async fn new_resolver() -> Result<Arc<TokioAsyncResolver>, ResolveError> {
 }
 
 fn is_allowed(addr: IpAddr) -> bool {
-    match addr {
+    match addr.to_canonical() {
         IpAddr::V4(addr) => {
             !addr.is_private()
                 && !addr.is_loopback()
@@ -732,6 +732,12 @@ mod tests {
         assert!(!is_allowed(IpAddr::from([0, 0, 0, 0, 0, 0, 0, 0x1])));
 
         assert!(is_allowed(IpAddr::from([0, 0, 0, 0xffff, 0, 0, 0, 0x1])));
+        assert!(is_allowed(
+            "2001:4860:4860::8888".parse::<IpAddr>().unwrap()
+        ));
+        assert!(is_allowed("::ffff:8.8.8.8".parse::<IpAddr>().unwrap()));
+        assert!(!is_allowed("::ffff:127.0.0.1".parse::<IpAddr>().unwrap()));
+        assert!(!is_allowed("::ffff:0.0.0.1".parse::<IpAddr>().unwrap()));
     }
 
     #[test]
