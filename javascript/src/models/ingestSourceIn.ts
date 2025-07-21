@@ -25,8 +25,12 @@ interface _IngestSourceInFields {
   uid?: string | null;
 }
 
+/* eslint @typescript-eslint/no-empty-object-type: 0 */
+interface IngestSourceInGenericWebhookConfig {}
+
 interface IngestSourceInGenericWebhook {
   type: "generic-webhook";
+  config?: IngestSourceInGenericWebhookConfig;
 }
 
 interface IngestSourceInCron {

@@ -30,8 +30,12 @@ interface _IngestSourceOutFields {
   updatedAt: Date;
 }
 
+/* eslint @typescript-eslint/no-empty-object-type: 0 */
+interface IngestSourceOutGenericWebhookConfig {}
+
 interface IngestSourceOutGenericWebhook {
   type: "generic-webhook";
+  config?: IngestSourceOutGenericWebhookConfig;
 }
 
 interface IngestSourceOutCron {
