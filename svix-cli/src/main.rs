@@ -15,6 +15,7 @@ use self::{
         },
         listen::ListenArgs,
         open::OpenArgs,
+        seed::SeedArgs,
         signature::SignatureArgs,
     },
     config::Config,
@@ -83,6 +84,8 @@ enum RootCommands {
     Open(OpenArgs),
     /// List, create & modify operational webhook endpoints
     OperationalWebhook(OperationalWebhookArgs),
+    /// Generate a test application with sample endpoints and event types
+    Seed(SeedArgs),
     /// Verifying and signing webhooks with the Svix signature scheme
     Signature(SignatureArgs),
     /// Get the version of the Svix CLI
@@ -149,6 +152,10 @@ async fn main() -> Result<()> {
         RootCommands::Listen(args) => args.exec(&cfg?).await?,
         RootCommands::Login => cmds::login::prompt(&cfg?).await?,
         RootCommands::Completion { shell } => cmds::completion::generate(&shell)?,
+        RootCommands::Seed(args) => {
+            let client = get_client(&cfg?)?;
+            cmds::seed::exec(&client, args, color_mode).await?;
+        }
     }
 
     Ok(())
