@@ -4,7 +4,7 @@ members = ["cargo:svix-cli"]
 # Config for 'dist'
 [dist]
 # The preferred dist version to use in CI (Cargo.toml SemVer syntax)
-cargo-dist-version = "0.28.0"
+cargo-dist-version = "0.28.1"
 # CI backends to support
 ci = "github"
 # The installers to generate for each app
@@ -23,12 +23,5 @@ dispatch-releases = true
 tap = "svix/homebrew-svix"
 # Publish jobs to run in CI
 publish-jobs = ["homebrew"]
-
+# Skip checking whether the specified configuration files are up to date
 allow-dirty = ["ci"]
-
-[dist.github-custom-runners]
-x86_64-unknown-linux-musl = "ubuntu-22.04"
-x86_64-unknown-linux-gnu = "ubuntu-22.04"
-x86_64-pc-windows-msvc = "windows-2022"
-aarch64-unknown-linux-gnu = "ubuntu-22.04"
-global = "ubuntu-22.04"
