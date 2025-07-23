@@ -1,6 +1,8 @@
 use anyhow::Context;
 use clap::Args;
+use rand::{rngs::StdRng, seq::SliceRandom, SeedableRng};
 use serde::{Deserialize, Serialize};
+use serde_json::json;
 use svix::api::*;
 
 #[derive(Args)]
@@ -12,6 +14,10 @@ struct SeedOptions {
     /// The number of endpoints to create (0-10)
     #[arg(long, value_parser = clap::value_parser!(u8).range(..=10) , default_value = "2")]
     pub endpoint_count: u8,
+
+    /// The number of messages to create (0-10)
+    #[arg(long, value_parser = clap::value_parser!(u8).range(..=100) , default_value = "10")]
+    pub message_count: u8,
 }
 
 #[derive(Args)]
@@ -26,6 +32,7 @@ struct SeedOut {
     application: ApplicationOut,
     endpoints: Vec<String>,
     event_types: Vec<String>,
+    messages: Vec<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -77,7 +84,7 @@ pub async fn exec(
         let app_id = app_id.clone();
 
         handles.push(tokio::spawn(async move {
-            create_endpoint(client, app_id.clone()).await
+            create_endpoint(client, app_id).await
         }))
     }
 
@@ -97,11 +104,27 @@ pub async fn exec(
         };
         seed_out.event_types.push(event_type_out.name);
     }
+    let mut handles = Vec::new();
+
+    for _ in 0..args.options.message_count {
+        let client = client.clone();
+        let app_id = app_id.clone();
+
+        handles.push(tokio::spawn(
+            async move { create_message(client, app_id).await },
+        ))
+    }
+
+    for h in handles {
+        let message_out = h.await??;
+        seed_out.messages.push(message_out.id);
+    }
 
     let summary = format!(
-        "Seeded {} endpoints, {} event types to application \"{}\"",
+        "Seeded {} endpoints, {} event types, {} messages to application \"{}\"",
         seed_out.endpoints.len(),
         seed_out.event_types.len(),
+        seed_out.messages.len(),
         seed_out.application.name
     );
 
@@ -128,6 +151,23 @@ async fn create_endpoint(client: Svix, app_id: String) -> anyhow::Result<Endpoin
     };
     let endpoint_out = client.endpoint().create(app_id, endpoint_in, None).await?;
     Ok(endpoint_out)
+}
+
+async fn create_message(client: Svix, app_id: String) -> anyhow::Result<MessageOut> {
+    let mut rng = StdRng::from_entropy();
+
+    let event_type = USER_EVENT_TYPES
+        .choose(&mut rng)
+        .context("Couldn't pick a random event type while creating a message")?;
+
+    let message_in = MessageIn {
+        event_type: event_type.to_string(),
+        payload: json!({}),
+        ..Default::default()
+    };
+
+    let message_out = client.message().create(app_id, message_in, None).await?;
+    Ok(message_out)
 }
 
 async fn reset_application(client: &Svix) -> anyhow::Result<()> {
