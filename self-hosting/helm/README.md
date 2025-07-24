@@ -205,6 +205,7 @@ We welcome contributions to improve this Helm chart! Please:
 
 
 # Validate against Kubernetes
+```
 helm template my-svix . | kubectl apply --dry-run=client -f -
 ```
 
@@ -220,7 +221,6 @@ For issues and questions:
 
 - **Documentation**: Check the [Svix documentation](https://docs.svix.com/)
 - **GitHub Issues**: Report bugs in the [GitHub repository](https://github.com/svix/svix-webhooks/issues)
-- **Community**: Join the [Svix Discord community](https://discord.gg/svix)
+- **Community**: Join the [Svix Slack community](https://www.svix.com/slack/)
 - **Support**: Contact Svix support at support@svix.com
-- **Enterprise**: For enterprise support and custom deployments, contact contact@svix.com
 
