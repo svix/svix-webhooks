@@ -71,7 +71,7 @@ impl Svix {
     /// This can be used to change the token without incurring
     /// the cost of TLS initialization.
     pub fn with_token(&self, token: String) -> Self {
-        let base_path = self.server_url.clone().unwrap_or_else(|| {
+        let mut base_path = self.server_url.clone().unwrap_or_else(|| {
             match token.split('.').next_back() {
                 Some("us") => "https://api.us.svix.com",
                 Some("eu") => "https://api.eu.svix.com",
@@ -82,6 +82,10 @@ impl Svix {
             }
             .to_string()
         });
+        // Remove trailing slashes
+        while base_path.ends_with('/') {
+            base_path.pop();
+        }
         let cfg = Arc::new(Configuration {
             base_path,
             user_agent: self.cfg.user_agent.clone(),
