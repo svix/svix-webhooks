@@ -1,8 +1,5 @@
-// Simple test for trailing slash logic without accessing private fields
-
 #[test]
 fn test_trailing_slash_removal_logic() {
-    // Test the core logic we implemented
     let test_cases = vec![
         ("https://api.svix.com/", "https://api.svix.com"),
         ("https://api.svix.com///", "https://api.svix.com"),
@@ -13,7 +10,6 @@ fn test_trailing_slash_removal_logic() {
 
     for (input, expected) in test_cases {
         let mut result = input.to_string();
-        // This is our actual implementation logic
         while result.ends_with('/') {
             result.pop();
         }
