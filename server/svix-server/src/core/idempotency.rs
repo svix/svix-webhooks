@@ -299,7 +299,7 @@ async fn lock_loop(
     }
 }
 
-/// Resolves the service and cache the result assuming the response is successful
+/// Resolve the service and cache the result assuming the response is successful
 async fn resolve_and_cache_response<S>(
     cache: &Cache,
     key: &IdempotencyKey,
