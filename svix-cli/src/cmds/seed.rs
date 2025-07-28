@@ -68,7 +68,7 @@ pub async fn exec(
     }
 
     let application_in = ApplicationIn {
-        name: format!("Test application"),
+        name: "Test application".to_string(),
         ..Default::default()
     };
     let application_out = client.application().create(application_in, None).await?;
@@ -93,16 +93,24 @@ pub async fn exec(
         seed_out.endpoints.push(eo.url);
     }
 
-    for uet in USER_EVENT_TYPES {
+    for typ in USER_EVENT_TYPES {
         let event_type_in = EventTypeIn {
-            name: format!("user.{}", uet),
+            name: format!("user.{typ}"),
             description: "".to_string(),
+            schemas: Some(json!(schema_example())),
             ..Default::default()
         };
-        let Ok(event_type_out) = client.event_type().create(event_type_in, None).await else {
-            continue;
-        };
-        seed_out.event_types.push(event_type_out.name);
+        let res = client.event_type().create(event_type_in, None).await;
+
+        match res {
+            Ok(event_type_out) => {
+                seed_out.event_types.push(event_type_out.name);
+            }
+            Err(err) => {
+                eprintln!("Failed to create event type: {err}");
+                continue;
+            }
+        }
     }
     let mut handles = Vec::new();
 
@@ -162,7 +170,11 @@ async fn create_message(client: Svix, app_id: String) -> anyhow::Result<MessageO
 
     let message_in = MessageIn {
         event_type: event_type.to_string(),
-        payload: json!({}),
+        payload: json!({
+            "userId": "41376126-35bf-4eda-81ef-83d741b0e026",
+            "firstName": "John",
+            "lastName": "Doe",
+        }),
         ..Default::default()
     };
 
@@ -217,4 +229,33 @@ async fn reset_event_type(client: &Svix) -> anyhow::Result<()> {
     }
 
     Ok(())
+}
+
+pub fn schema_example() -> serde_json::Value {
+    serde_json::json!({
+        "1": {
+            "description": "A user signed up",
+            "properties": {
+                "userId": {
+                    "description": "The user id",
+                    "type": "string"
+                },
+                "firstName": {
+                    "description": "User first name",
+                    "type": "string"
+                },
+                "lastName": {
+                    "description": "User last name",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "userId",
+                "firstName",
+                "lastName",
+            ],
+            "title": "User signed up Event",
+            "type": "object",
+        }
+    })
 }
