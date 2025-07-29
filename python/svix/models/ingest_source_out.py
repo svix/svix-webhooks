@@ -11,10 +11,12 @@ from .checkbook_config_out import CheckbookConfigOut
 from .common import BaseModel
 from .cron_config import CronConfig
 from .docusign_config_out import DocusignConfigOut
+from .easypost_config_out import EasypostConfigOut
 from .github_config_out import GithubConfigOut
 from .hubspot_config_out import HubspotConfigOut
 from .orum_io_config_out import OrumIoConfigOut
 from .panda_doc_config_out import PandaDocConfigOut
+from .port_io_config_out import PortIoConfigOut
 from .rutter_config_out import RutterConfigOut
 from .segment_config_out import SegmentConfigOut
 from .shopify_config_out import ShopifyConfigOut
@@ -22,6 +24,7 @@ from .slack_config_out import SlackConfigOut
 from .stripe_config_out import StripeConfigOut
 from .svix_config_out import SvixConfigOut
 from .telnyx_config_out import TelnyxConfigOut
+from .vapi_config_out import VapiConfigOut
 from .veriff_config_out import VeriffConfigOut
 from .zoom_config_out import ZoomConfigOut
 
@@ -52,6 +55,7 @@ class IngestSourceOut(BaseModel):
         t.Literal["checkbook"],
         t.Literal["clerk"],
         t.Literal["docusign"],
+        t.Literal["easypost"],
         t.Literal["github"],
         t.Literal["guesty"],
         t.Literal["hubspot"],
@@ -60,6 +64,7 @@ class IngestSourceOut(BaseModel):
         t.Literal["nash"],
         t.Literal["orum-io"],
         t.Literal["panda-doc"],
+        t.Literal["port-io"],
         t.Literal["pleo"],
         t.Literal["replicate"],
         t.Literal["resend"],
@@ -74,6 +79,7 @@ class IngestSourceOut(BaseModel):
         t.Literal["svix"],
         t.Literal["zoom"],
         t.Literal["telnyx"],
+        t.Literal["vapi"],
         t.Literal["open-ai"],
         t.Literal["render"],
         t.Literal["veriff"],
@@ -86,10 +92,12 @@ class IngestSourceOut(BaseModel):
         SvixConfigOut,
         CheckbookConfigOut,
         DocusignConfigOut,
+        EasypostConfigOut,
         GithubConfigOut,
         HubspotConfigOut,
         OrumIoConfigOut,
         PandaDocConfigOut,
+        PortIoConfigOut,
         RutterConfigOut,
         SegmentConfigOut,
         ShopifyConfigOut,
@@ -97,6 +105,7 @@ class IngestSourceOut(BaseModel):
         StripeConfigOut,
         ZoomConfigOut,
         TelnyxConfigOut,
+        VapiConfigOut,
         VeriffConfigOut,
         AirwallexConfigOut,
     ]
@@ -123,6 +132,8 @@ class IngestSourceOut(BaseModel):
             output.config = SvixConfigOut.model_validate(data.get("config", {}))
         elif output.type == "docusign":
             output.config = DocusignConfigOut.model_validate(data.get("config", {}))
+        elif output.type == "easypost":
+            output.config = EasypostConfigOut.model_validate(data.get("config", {}))
         elif output.type == "github":
             output.config = GithubConfigOut.model_validate(data.get("config", {}))
         elif output.type == "guesty":
@@ -139,6 +150,8 @@ class IngestSourceOut(BaseModel):
             output.config = OrumIoConfigOut.model_validate(data.get("config", {}))
         elif output.type == "panda-doc":
             output.config = PandaDocConfigOut.model_validate(data.get("config", {}))
+        elif output.type == "port-io":
+            output.config = PortIoConfigOut.model_validate(data.get("config", {}))
         elif output.type == "pleo":
             output.config = SvixConfigOut.model_validate(data.get("config", {}))
         elif output.type == "replicate":
@@ -167,6 +180,8 @@ class IngestSourceOut(BaseModel):
             output.config = ZoomConfigOut.model_validate(data.get("config", {}))
         elif output.type == "telnyx":
             output.config = TelnyxConfigOut.model_validate(data.get("config", {}))
+        elif output.type == "vapi":
+            output.config = VapiConfigOut.model_validate(data.get("config", {}))
         elif output.type == "open-ai":
             output.config = SvixConfigOut.model_validate(data.get("config", {}))
         elif output.type == "render":

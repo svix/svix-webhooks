@@ -29,9 +29,13 @@ type ManagementAuthenticationExpireApiTokenOptions struct {
 // Create a new API Token.
 func (managementAuthentication *ManagementAuthentication) CreateApiToken(
 	ctx context.Context,
+	envId string,
 	apiTokenIn models.ApiTokenIn,
 	o *ManagementAuthenticationCreateApiTokenOptions,
 ) (*models.ApiTokenOut, error) {
+	pathMap := map[string]string{
+		"env_id": envId,
+	}
 	headerMap := map[string]string{}
 	var err error
 	if o != nil {
@@ -44,8 +48,8 @@ func (managementAuthentication *ManagementAuthentication) CreateApiToken(
 		ctx,
 		managementAuthentication.client,
 		"POST",
-		"/api/v1/management/authentication/api-token",
-		nil,
+		"/api/v1/management/authentication/{env_id}/api-token",
+		pathMap,
 		nil,
 		headerMap,
 		&apiTokenIn,
@@ -55,11 +59,13 @@ func (managementAuthentication *ManagementAuthentication) CreateApiToken(
 // Expire the selected API Token.
 func (managementAuthentication *ManagementAuthentication) ExpireApiToken(
 	ctx context.Context,
+	envId string,
 	keyId string,
 	apiTokenExpireIn models.ApiTokenExpireIn,
 	o *ManagementAuthenticationExpireApiTokenOptions,
 ) error {
 	pathMap := map[string]string{
+		"env_id": envId,
 		"key_id": keyId,
 	}
 	headerMap := map[string]string{}
@@ -74,7 +80,7 @@ func (managementAuthentication *ManagementAuthentication) ExpireApiToken(
 		ctx,
 		managementAuthentication.client,
 		"POST",
-		"/api/v1/management/authentication/api-token/{key_id}/expire",
+		"/api/v1/management/authentication/{env_id}/api-token/{key_id}/expire",
 		pathMap,
 		nil,
 		headerMap,

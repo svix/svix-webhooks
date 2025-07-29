@@ -70,6 +70,12 @@ sealed class IngestSourceInConfig {
             Json.encodeToJsonElement(DocusignConfig.serializer(), docusign)
     }
 
+    @VariantName("easypost")
+    data class Easypost(val easypost: EasypostConfig) : IngestSourceInConfig() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement(EasypostConfig.serializer(), easypost)
+    }
+
     @VariantName("github")
     data class Github(val github: GithubConfig) : IngestSourceInConfig() {
         override fun toJsonElement() = Json.encodeToJsonElement(GithubConfig.serializer(), github)
@@ -109,6 +115,11 @@ sealed class IngestSourceInConfig {
     data class PandaDoc(val pandaDoc: PandaDocConfig) : IngestSourceInConfig() {
         override fun toJsonElement() =
             Json.encodeToJsonElement(PandaDocConfig.serializer(), pandaDoc)
+    }
+
+    @VariantName("port-io")
+    data class PortIo(val portIo: PortIoConfig) : IngestSourceInConfig() {
+        override fun toJsonElement() = Json.encodeToJsonElement(PortIoConfig.serializer(), portIo)
     }
 
     @VariantName("pleo")
@@ -181,6 +192,11 @@ sealed class IngestSourceInConfig {
         override fun toJsonElement() = Json.encodeToJsonElement(TelnyxConfig.serializer(), telnyx)
     }
 
+    @VariantName("vapi")
+    data class Vapi(val vapi: VapiConfig) : IngestSourceInConfig() {
+        override fun toJsonElement() = Json.encodeToJsonElement(VapiConfig.serializer(), vapi)
+    }
+
     @VariantName("open-ai")
     data class OpenAi(val openAi: SvixConfig) : IngestSourceInConfig() {
         override fun toJsonElement() = Json.encodeToJsonElement(SvixConfig.serializer(), openAi)
@@ -234,6 +250,10 @@ sealed class IngestSourceInConfig {
                     { config ->
                         Docusign(Json.decodeFromJsonElement(DocusignConfig.serializer(), config))
                     },
+                "easypost" to
+                    { config ->
+                        Easypost(Json.decodeFromJsonElement(EasypostConfig.serializer(), config))
+                    },
                 "github" to
                     { config ->
                         Github(Json.decodeFromJsonElement(GithubConfig.serializer(), config))
@@ -265,6 +285,10 @@ sealed class IngestSourceInConfig {
                 "panda-doc" to
                     { config ->
                         PandaDoc(Json.decodeFromJsonElement(PandaDocConfig.serializer(), config))
+                    },
+                "port-io" to
+                    { config ->
+                        PortIo(Json.decodeFromJsonElement(PortIoConfig.serializer(), config))
                     },
                 "pleo" to
                     { config ->
@@ -321,6 +345,10 @@ sealed class IngestSourceInConfig {
                 "telnyx" to
                     { config ->
                         Telnyx(Json.decodeFromJsonElement(TelnyxConfig.serializer(), config))
+                    },
+                "vapi" to
+                    { config ->
+                        Vapi(Json.decodeFromJsonElement(VapiConfig.serializer(), config))
                     },
                 "open-ai" to
                     { config ->
