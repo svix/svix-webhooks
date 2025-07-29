@@ -142,6 +142,21 @@ public abstract class IngestSourceInConfig {
     @AllArgsConstructor
     @ToString
     @EqualsAndHashCode(callSuper = false)
+    @VariantName("easypost")
+    public static class Easypost extends IngestSourceInConfig {
+        private final EasypostConfig easypost;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(easypost);
+        }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
     @VariantName("github")
     public static class Github extends IngestSourceInConfig {
         private final GithubConfig github;
@@ -254,6 +269,21 @@ public abstract class IngestSourceInConfig {
         @Override
         public JsonNode toJsonNode() {
             return Utils.getObjectMapper().valueToTree(pandaDoc);
+        }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
+    @VariantName("port-io")
+    public static class PortIo extends IngestSourceInConfig {
+        private final PortIoConfig portIo;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(portIo);
         }
     }
 
@@ -472,6 +502,21 @@ public abstract class IngestSourceInConfig {
     @AllArgsConstructor
     @ToString
     @EqualsAndHashCode(callSuper = false)
+    @VariantName("vapi")
+    public static class Vapi extends IngestSourceInConfig {
+        private final VapiConfig vapi;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(vapi);
+        }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
     @VariantName("open-ai")
     public static class OpenAi extends IngestSourceInConfig {
         private final SvixConfig openAi;
@@ -544,6 +589,7 @@ public abstract class IngestSourceInConfig {
         TY_M.put("checkbook", c -> new Checkbook(m.convertValue(c, CheckbookConfig.class)));
         TY_M.put("clerk", c -> new Clerk(m.convertValue(c, SvixConfig.class)));
         TY_M.put("docusign", c -> new Docusign(m.convertValue(c, DocusignConfig.class)));
+        TY_M.put("easypost", c -> new Easypost(m.convertValue(c, EasypostConfig.class)));
         TY_M.put("github", c -> new Github(m.convertValue(c, GithubConfig.class)));
         TY_M.put("guesty", c -> new Guesty(m.convertValue(c, SvixConfig.class)));
         TY_M.put("hubspot", c -> new Hubspot(m.convertValue(c, HubspotConfig.class)));
@@ -552,6 +598,7 @@ public abstract class IngestSourceInConfig {
         TY_M.put("nash", c -> new Nash(m.convertValue(c, SvixConfig.class)));
         TY_M.put("orum-io", c -> new OrumIo(m.convertValue(c, OrumIoConfig.class)));
         TY_M.put("panda-doc", c -> new PandaDoc(m.convertValue(c, PandaDocConfig.class)));
+        TY_M.put("port-io", c -> new PortIo(m.convertValue(c, PortIoConfig.class)));
         TY_M.put("pleo", c -> new Pleo(m.convertValue(c, SvixConfig.class)));
         TY_M.put("replicate", c -> new Replicate(m.convertValue(c, SvixConfig.class)));
         TY_M.put("resend", c -> new Resend(m.convertValue(c, SvixConfig.class)));
@@ -566,6 +613,7 @@ public abstract class IngestSourceInConfig {
         TY_M.put("svix", c -> new Svix(m.convertValue(c, SvixConfig.class)));
         TY_M.put("zoom", c -> new Zoom(m.convertValue(c, ZoomConfig.class)));
         TY_M.put("telnyx", c -> new Telnyx(m.convertValue(c, TelnyxConfig.class)));
+        TY_M.put("vapi", c -> new Vapi(m.convertValue(c, VapiConfig.class)));
         TY_M.put("open-ai", c -> new OpenAi(m.convertValue(c, SvixConfig.class)));
         TY_M.put("render", c -> new Render(m.convertValue(c, SvixConfig.class)));
         TY_M.put("veriff", c -> new Veriff(m.convertValue(c, VeriffConfig.class)));

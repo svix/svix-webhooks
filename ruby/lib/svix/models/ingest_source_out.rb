@@ -7,10 +7,12 @@ require_relative "./airwallex_config_out"
 require_relative "./checkbook_config_out"
 require_relative "./cron_config"
 require_relative "./docusign_config_out"
+require_relative "./easypost_config_out"
 require_relative "./github_config_out"
 require_relative "./hubspot_config_out"
 require_relative "./orum_io_config_out"
 require_relative "./panda_doc_config_out"
+require_relative "./port_io_config_out"
 require_relative "./rutter_config_out"
 require_relative "./segment_config_out"
 require_relative "./shopify_config_out"
@@ -18,6 +20,7 @@ require_relative "./slack_config_out"
 require_relative "./stripe_config_out"
 require_relative "./svix_config_out"
 require_relative "./telnyx_config_out"
+require_relative "./vapi_config_out"
 require_relative "./veriff_config_out"
 require_relative "./zoom_config_out"
 
@@ -60,6 +63,9 @@ module Svix
     class Docusign < DocusignConfigOut
     end
 
+    class Easypost < EasypostConfigOut
+    end
+
     class Github < GithubConfigOut
     end
 
@@ -82,6 +88,9 @@ module Svix
     end
 
     class PandaDoc < PandaDocConfigOut
+    end
+
+    class PortIo < PortIoConfigOut
     end
 
     class Pleo < SvixConfigOut
@@ -126,6 +135,9 @@ module Svix
     class Telnyx < TelnyxConfigOut
     end
 
+    class Vapi < VapiConfigOut
+    end
+
     class OpenAi < SvixConfigOut
     end
 
@@ -162,6 +174,7 @@ module Svix
       IngestSourceOutConfig::Checkbook => "checkbook",
       IngestSourceOutConfig::Clerk => "clerk",
       IngestSourceOutConfig::Docusign => "docusign",
+      IngestSourceOutConfig::Easypost => "easypost",
       IngestSourceOutConfig::Github => "github",
       IngestSourceOutConfig::Guesty => "guesty",
       IngestSourceOutConfig::Hubspot => "hubspot",
@@ -170,6 +183,7 @@ module Svix
       IngestSourceOutConfig::Nash => "nash",
       IngestSourceOutConfig::OrumIo => "orum-io",
       IngestSourceOutConfig::PandaDoc => "panda-doc",
+      IngestSourceOutConfig::PortIo => "port-io",
       IngestSourceOutConfig::Pleo => "pleo",
       IngestSourceOutConfig::Replicate => "replicate",
       IngestSourceOutConfig::Resend => "resend",
@@ -184,6 +198,7 @@ module Svix
       IngestSourceOutConfig::Svix => "svix",
       IngestSourceOutConfig::Zoom => "zoom",
       IngestSourceOutConfig::Telnyx => "telnyx",
+      IngestSourceOutConfig::Vapi => "vapi",
       IngestSourceOutConfig::OpenAi => "open-ai",
       IngestSourceOutConfig::Render => "render",
       IngestSourceOutConfig::Veriff => "veriff",

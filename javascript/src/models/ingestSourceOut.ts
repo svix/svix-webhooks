@@ -5,10 +5,12 @@ import { AirwallexConfigOut, AirwallexConfigOutSerializer } from "./airwallexCon
 import { CheckbookConfigOut, CheckbookConfigOutSerializer } from "./checkbookConfigOut";
 import { CronConfig, CronConfigSerializer } from "./cronConfig";
 import { DocusignConfigOut, DocusignConfigOutSerializer } from "./docusignConfigOut";
+import { EasypostConfigOut, EasypostConfigOutSerializer } from "./easypostConfigOut";
 import { GithubConfigOut, GithubConfigOutSerializer } from "./githubConfigOut";
 import { HubspotConfigOut, HubspotConfigOutSerializer } from "./hubspotConfigOut";
 import { OrumIoConfigOut, OrumIoConfigOutSerializer } from "./orumIoConfigOut";
 import { PandaDocConfigOut, PandaDocConfigOutSerializer } from "./pandaDocConfigOut";
+import { PortIoConfigOut, PortIoConfigOutSerializer } from "./portIoConfigOut";
 import { RutterConfigOut, RutterConfigOutSerializer } from "./rutterConfigOut";
 import { SegmentConfigOut, SegmentConfigOutSerializer } from "./segmentConfigOut";
 import { ShopifyConfigOut, ShopifyConfigOutSerializer } from "./shopifyConfigOut";
@@ -16,6 +18,7 @@ import { SlackConfigOut, SlackConfigOutSerializer } from "./slackConfigOut";
 import { StripeConfigOut, StripeConfigOutSerializer } from "./stripeConfigOut";
 import { SvixConfigOut, SvixConfigOutSerializer } from "./svixConfigOut";
 import { TelnyxConfigOut, TelnyxConfigOutSerializer } from "./telnyxConfigOut";
+import { VapiConfigOut, VapiConfigOutSerializer } from "./vapiConfigOut";
 import { VeriffConfigOut, VeriffConfigOutSerializer } from "./veriffConfigOut";
 import { ZoomConfigOut, ZoomConfigOutSerializer } from "./zoomConfigOut";
 interface _IngestSourceOutFields {
@@ -73,6 +76,11 @@ interface IngestSourceOutDocusign {
   config: DocusignConfigOut;
 }
 
+interface IngestSourceOutEasypost {
+  type: "easypost";
+  config: EasypostConfigOut;
+}
+
 interface IngestSourceOutGithub {
   type: "github";
   config: GithubConfigOut;
@@ -111,6 +119,11 @@ interface IngestSourceOutOrumIo {
 interface IngestSourceOutPandaDoc {
   type: "panda-doc";
   config: PandaDocConfigOut;
+}
+
+interface IngestSourceOutPortIo {
+  type: "port-io";
+  config: PortIoConfigOut;
 }
 
 interface IngestSourceOutPleo {
@@ -183,6 +196,11 @@ interface IngestSourceOutTelnyx {
   config: TelnyxConfigOut;
 }
 
+interface IngestSourceOutVapi {
+  type: "vapi";
+  config: VapiConfigOut;
+}
+
 interface IngestSourceOutOpenAi {
   type: "open-ai";
   config: SvixConfigOut;
@@ -213,6 +231,7 @@ export type IngestSourceOut = _IngestSourceOutFields &
     | IngestSourceOutCheckbook
     | IngestSourceOutClerk
     | IngestSourceOutDocusign
+    | IngestSourceOutEasypost
     | IngestSourceOutGithub
     | IngestSourceOutGuesty
     | IngestSourceOutHubspot
@@ -221,6 +240,7 @@ export type IngestSourceOut = _IngestSourceOutFields &
     | IngestSourceOutNash
     | IngestSourceOutOrumIo
     | IngestSourceOutPandaDoc
+    | IngestSourceOutPortIo
     | IngestSourceOutPleo
     | IngestSourceOutReplicate
     | IngestSourceOutResend
@@ -235,6 +255,7 @@ export type IngestSourceOut = _IngestSourceOutFields &
     | IngestSourceOutSvix
     | IngestSourceOutZoom
     | IngestSourceOutTelnyx
+    | IngestSourceOutVapi
     | IngestSourceOutOpenAi
     | IngestSourceOutRender
     | IngestSourceOutVeriff
@@ -263,6 +284,8 @@ export const IngestSourceOutSerializer = {
           return SvixConfigOutSerializer._fromJsonObject(object["config"]);
         case "docusign":
           return DocusignConfigOutSerializer._fromJsonObject(object["config"]);
+        case "easypost":
+          return EasypostConfigOutSerializer._fromJsonObject(object["config"]);
         case "github":
           return GithubConfigOutSerializer._fromJsonObject(object["config"]);
         case "guesty":
@@ -279,6 +302,8 @@ export const IngestSourceOutSerializer = {
           return OrumIoConfigOutSerializer._fromJsonObject(object["config"]);
         case "panda-doc":
           return PandaDocConfigOutSerializer._fromJsonObject(object["config"]);
+        case "port-io":
+          return PortIoConfigOutSerializer._fromJsonObject(object["config"]);
         case "pleo":
           return SvixConfigOutSerializer._fromJsonObject(object["config"]);
         case "replicate":
@@ -307,6 +332,8 @@ export const IngestSourceOutSerializer = {
           return ZoomConfigOutSerializer._fromJsonObject(object["config"]);
         case "telnyx":
           return TelnyxConfigOutSerializer._fromJsonObject(object["config"]);
+        case "vapi":
+          return VapiConfigOutSerializer._fromJsonObject(object["config"]);
         case "open-ai":
           return SvixConfigOutSerializer._fromJsonObject(object["config"]);
         case "render":
@@ -359,6 +386,9 @@ export const IngestSourceOutSerializer = {
       case "docusign":
         config = DocusignConfigOutSerializer._toJsonObject(self.config);
         break;
+      case "easypost":
+        config = EasypostConfigOutSerializer._toJsonObject(self.config);
+        break;
       case "github":
         config = GithubConfigOutSerializer._toJsonObject(self.config);
         break;
@@ -382,6 +412,9 @@ export const IngestSourceOutSerializer = {
         break;
       case "panda-doc":
         config = PandaDocConfigOutSerializer._toJsonObject(self.config);
+        break;
+      case "port-io":
+        config = PortIoConfigOutSerializer._toJsonObject(self.config);
         break;
       case "pleo":
         config = SvixConfigOutSerializer._toJsonObject(self.config);
@@ -424,6 +457,9 @@ export const IngestSourceOutSerializer = {
         break;
       case "telnyx":
         config = TelnyxConfigOutSerializer._toJsonObject(self.config);
+        break;
+      case "vapi":
+        config = VapiConfigOutSerializer._toJsonObject(self.config);
         break;
       case "open-ai":
         config = SvixConfigOutSerializer._toJsonObject(self.config);

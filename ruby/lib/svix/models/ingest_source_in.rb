@@ -7,10 +7,12 @@ require_relative "./airwallex_config"
 require_relative "./checkbook_config"
 require_relative "./cron_config"
 require_relative "./docusign_config"
+require_relative "./easypost_config"
 require_relative "./github_config"
 require_relative "./hubspot_config"
 require_relative "./orum_io_config"
 require_relative "./panda_doc_config"
+require_relative "./port_io_config"
 require_relative "./rutter_config"
 require_relative "./segment_config"
 require_relative "./shopify_config"
@@ -18,6 +20,7 @@ require_relative "./slack_config"
 require_relative "./stripe_config"
 require_relative "./svix_config"
 require_relative "./telnyx_config"
+require_relative "./vapi_config"
 require_relative "./veriff_config"
 require_relative "./zoom_config"
 
@@ -60,6 +63,9 @@ module Svix
     class Docusign < DocusignConfig
     end
 
+    class Easypost < EasypostConfig
+    end
+
     class Github < GithubConfig
     end
 
@@ -82,6 +88,9 @@ module Svix
     end
 
     class PandaDoc < PandaDocConfig
+    end
+
+    class PortIo < PortIoConfig
     end
 
     class Pleo < SvixConfig
@@ -126,6 +135,9 @@ module Svix
     class Telnyx < TelnyxConfig
     end
 
+    class Vapi < VapiConfig
+    end
+
     class OpenAi < SvixConfig
     end
 
@@ -157,6 +169,7 @@ module Svix
       IngestSourceInConfig::Checkbook => "checkbook",
       IngestSourceInConfig::Clerk => "clerk",
       IngestSourceInConfig::Docusign => "docusign",
+      IngestSourceInConfig::Easypost => "easypost",
       IngestSourceInConfig::Github => "github",
       IngestSourceInConfig::Guesty => "guesty",
       IngestSourceInConfig::Hubspot => "hubspot",
@@ -165,6 +178,7 @@ module Svix
       IngestSourceInConfig::Nash => "nash",
       IngestSourceInConfig::OrumIo => "orum-io",
       IngestSourceInConfig::PandaDoc => "panda-doc",
+      IngestSourceInConfig::PortIo => "port-io",
       IngestSourceInConfig::Pleo => "pleo",
       IngestSourceInConfig::Replicate => "replicate",
       IngestSourceInConfig::Resend => "resend",
@@ -179,6 +193,7 @@ module Svix
       IngestSourceInConfig::Svix => "svix",
       IngestSourceInConfig::Zoom => "zoom",
       IngestSourceInConfig::Telnyx => "telnyx",
+      IngestSourceInConfig::Vapi => "vapi",
       IngestSourceInConfig::OpenAi => "open-ai",
       IngestSourceInConfig::Render => "render",
       IngestSourceInConfig::Veriff => "veriff",
