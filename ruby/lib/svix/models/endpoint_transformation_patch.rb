@@ -3,7 +3,7 @@
 require "json"
 
 module Svix
-  class EndpointTransformationIn
+  class EndpointTransformationPatch
     attr_accessor :code
     attr_accessor :enabled
 
@@ -14,13 +14,13 @@ module Svix
       unless attributes.is_a?(Hash)
         fail(
           ArgumentError,
-          "The input argument (attributes) must be a hash in `Svix::EndpointTransformationIn` new method"
+          "The input argument (attributes) must be a hash in `Svix::EndpointTransformationPatch` new method"
         )
       end
 
       attributes.each do |k, v|
         unless ALL_FIELD.include?(k.to_s)
-          fail(ArgumentError, "The field #{k} is not part of Svix::EndpointTransformationIn")
+          fail(ArgumentError, "The field #{k} is not part of Svix::EndpointTransformationPatch")
         end
 
         instance_variable_set("@#{k}", v)
@@ -38,7 +38,7 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["code"] = Svix::serialize_primitive(@code) if @code
+      out["code"] = Svix::serialize_primitive(@code) if @__code_is_defined
       out["enabled"] = Svix::serialize_primitive(@enabled) if @enabled
       out
     end

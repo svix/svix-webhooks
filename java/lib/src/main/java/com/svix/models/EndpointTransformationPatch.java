@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.svix.MaybeUnset;
 import com.svix.Utils;
 
 import lombok.EqualsAndHashCode;
@@ -15,14 +16,14 @@ import lombok.ToString;
 @EqualsAndHashCode
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
-public class EndpointTransformationIn {
-    @JsonProperty private String code;
+public class EndpointTransformationPatch {
+    @JsonProperty private MaybeUnset<String> code;
     @JsonProperty private Boolean enabled;
 
-    public EndpointTransformationIn() {}
+    public EndpointTransformationPatch() {}
 
-    public EndpointTransformationIn code(String code) {
-        this.code = code;
+    public EndpointTransformationPatch code(String code) {
+        this.code = new MaybeUnset<>(code);
         return this;
     }
 
@@ -33,14 +34,17 @@ public class EndpointTransformationIn {
      */
     @javax.annotation.Nullable
     public String getCode() {
-        return code;
+        if (code == null) {
+            return null;
+        }
+        return code.getValue();
     }
 
     public void setCode(String code) {
-        this.code = code;
+        this.code = new MaybeUnset<>(code);
     }
 
-    public EndpointTransformationIn enabled(Boolean enabled) {
+    public EndpointTransformationPatch enabled(Boolean enabled) {
         this.enabled = enabled;
         return this;
     }
@@ -60,20 +64,20 @@ public class EndpointTransformationIn {
     }
 
     /**
-     * Create an instance of EndpointTransformationIn given an JSON string
+     * Create an instance of EndpointTransformationPatch given an JSON string
      *
      * @param jsonString JSON string
-     * @return An instance of EndpointTransformationIn
+     * @return An instance of EndpointTransformationPatch
      * @throws JsonProcessingException if the JSON string is invalid with respect to
-     *     EndpointTransformationIn
+     *     EndpointTransformationPatch
      */
-    public static EndpointTransformationIn fromJson(String jsonString)
+    public static EndpointTransformationPatch fromJson(String jsonString)
             throws JsonProcessingException {
-        return Utils.getObjectMapper().readValue(jsonString, EndpointTransformationIn.class);
+        return Utils.getObjectMapper().readValue(jsonString, EndpointTransformationPatch.class);
     }
 
     /**
-     * Convert an instance of EndpointTransformationIn to an JSON string
+     * Convert an instance of EndpointTransformationPatch to an JSON string
      *
      * @return JSON string
      */
