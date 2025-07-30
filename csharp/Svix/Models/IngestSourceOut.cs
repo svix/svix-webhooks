@@ -116,6 +116,9 @@ namespace Svix.Models
         public static IngestSourceOutConfig Docusign(DocusignConfigOut docusignConfigOut) =>
             new(docusignConfigOut, ConfigType.Docusign);
 
+        public static IngestSourceOutConfig Easypost(EasypostConfigOut easypostConfigOut) =>
+            new(easypostConfigOut, ConfigType.Easypost);
+
         public static IngestSourceOutConfig Github(GithubConfigOut githubConfigOut) =>
             new(githubConfigOut, ConfigType.Github);
 
@@ -139,6 +142,9 @@ namespace Svix.Models
 
         public static IngestSourceOutConfig PandaDoc(PandaDocConfigOut pandaDocConfigOut) =>
             new(pandaDocConfigOut, ConfigType.PandaDoc);
+
+        public static IngestSourceOutConfig PortIo(PortIoConfigOut portIoConfigOut) =>
+            new(portIoConfigOut, ConfigType.PortIo);
 
         public static IngestSourceOutConfig Pleo(SvixConfigOut svixConfigOut) =>
             new(svixConfigOut, ConfigType.Pleo);
@@ -182,6 +188,9 @@ namespace Svix.Models
         public static IngestSourceOutConfig Telnyx(TelnyxConfigOut telnyxConfigOut) =>
             new(telnyxConfigOut, ConfigType.Telnyx);
 
+        public static IngestSourceOutConfig Vapi(VapiConfigOut vapiConfigOut) =>
+            new(vapiConfigOut, ConfigType.Vapi);
+
         public static IngestSourceOutConfig OpenAi(SvixConfigOut svixConfigOut) =>
             new(svixConfigOut, ConfigType.OpenAi);
 
@@ -220,6 +229,9 @@ namespace Svix.Models
             [EnumMember(Value = "docusign")]
             Docusign,
 
+            [EnumMember(Value = "easypost")]
+            Easypost,
+
             [EnumMember(Value = "github")]
             Github,
 
@@ -243,6 +255,9 @@ namespace Svix.Models
 
             [EnumMember(Value = "panda-doc")]
             PandaDoc,
+
+            [EnumMember(Value = "port-io")]
+            PortIo,
 
             [EnumMember(Value = "pleo")]
             Pleo,
@@ -286,6 +301,9 @@ namespace Svix.Models
             [EnumMember(Value = "telnyx")]
             Telnyx,
 
+            [EnumMember(Value = "vapi")]
+            Vapi,
+
             [EnumMember(Value = "open-ai")]
             OpenAi,
 
@@ -308,6 +326,7 @@ namespace Svix.Models
             Func<CheckbookConfigOut, TResult> onCheckbook,
             Func<SvixConfigOut, TResult> onClerk,
             Func<DocusignConfigOut, TResult> onDocusign,
+            Func<EasypostConfigOut, TResult> onEasypost,
             Func<GithubConfigOut, TResult> onGithub,
             Func<SvixConfigOut, TResult> onGuesty,
             Func<HubspotConfigOut, TResult> onHubspot,
@@ -316,6 +335,7 @@ namespace Svix.Models
             Func<SvixConfigOut, TResult> onNash,
             Func<OrumIoConfigOut, TResult> onOrumIo,
             Func<PandaDocConfigOut, TResult> onPandaDoc,
+            Func<PortIoConfigOut, TResult> onPortIo,
             Func<SvixConfigOut, TResult> onPleo,
             Func<SvixConfigOut, TResult> onReplicate,
             Func<SvixConfigOut, TResult> onResend,
@@ -330,6 +350,7 @@ namespace Svix.Models
             Func<SvixConfigOut, TResult> onSvix,
             Func<ZoomConfigOut, TResult> onZoom,
             Func<TelnyxConfigOut, TResult> onTelnyx,
+            Func<VapiConfigOut, TResult> onVapi,
             Func<SvixConfigOut, TResult> onOpenAi,
             Func<SvixConfigOut, TResult> onRender,
             Func<VeriffConfigOut, TResult> onVeriff,
@@ -346,6 +367,7 @@ namespace Svix.Models
                 ConfigType.Checkbook => onCheckbook((CheckbookConfigOut)_value),
                 ConfigType.Clerk => onClerk((SvixConfigOut)_value),
                 ConfigType.Docusign => onDocusign((DocusignConfigOut)_value),
+                ConfigType.Easypost => onEasypost((EasypostConfigOut)_value),
                 ConfigType.Github => onGithub((GithubConfigOut)_value),
                 ConfigType.Guesty => onGuesty((SvixConfigOut)_value),
                 ConfigType.Hubspot => onHubspot((HubspotConfigOut)_value),
@@ -354,6 +376,7 @@ namespace Svix.Models
                 ConfigType.Nash => onNash((SvixConfigOut)_value),
                 ConfigType.OrumIo => onOrumIo((OrumIoConfigOut)_value),
                 ConfigType.PandaDoc => onPandaDoc((PandaDocConfigOut)_value),
+                ConfigType.PortIo => onPortIo((PortIoConfigOut)_value),
                 ConfigType.Pleo => onPleo((SvixConfigOut)_value),
                 ConfigType.Replicate => onReplicate((SvixConfigOut)_value),
                 ConfigType.Resend => onResend((SvixConfigOut)_value),
@@ -368,6 +391,7 @@ namespace Svix.Models
                 ConfigType.Svix => onSvix((SvixConfigOut)_value),
                 ConfigType.Zoom => onZoom((ZoomConfigOut)_value),
                 ConfigType.Telnyx => onTelnyx((TelnyxConfigOut)_value),
+                ConfigType.Vapi => onVapi((VapiConfigOut)_value),
                 ConfigType.OpenAi => onOpenAi((SvixConfigOut)_value),
                 ConfigType.Render => onRender((SvixConfigOut)_value),
                 ConfigType.Veriff => onVeriff((VeriffConfigOut)_value),
@@ -386,6 +410,7 @@ namespace Svix.Models
             Action<CheckbookConfigOut> onCheckbook,
             Action<SvixConfigOut> onClerk,
             Action<DocusignConfigOut> onDocusign,
+            Action<EasypostConfigOut> onEasypost,
             Action<GithubConfigOut> onGithub,
             Action<SvixConfigOut> onGuesty,
             Action<HubspotConfigOut> onHubspot,
@@ -394,6 +419,7 @@ namespace Svix.Models
             Action<SvixConfigOut> onNash,
             Action<OrumIoConfigOut> onOrumIo,
             Action<PandaDocConfigOut> onPandaDoc,
+            Action<PortIoConfigOut> onPortIo,
             Action<SvixConfigOut> onPleo,
             Action<SvixConfigOut> onReplicate,
             Action<SvixConfigOut> onResend,
@@ -408,6 +434,7 @@ namespace Svix.Models
             Action<SvixConfigOut> onSvix,
             Action<ZoomConfigOut> onZoom,
             Action<TelnyxConfigOut> onTelnyx,
+            Action<VapiConfigOut> onVapi,
             Action<SvixConfigOut> onOpenAi,
             Action<SvixConfigOut> onRender,
             Action<VeriffConfigOut> onVeriff,
@@ -440,6 +467,9 @@ namespace Svix.Models
                 case ConfigType.Docusign:
                     onDocusign((DocusignConfigOut)_value);
                     break;
+                case ConfigType.Easypost:
+                    onEasypost((EasypostConfigOut)_value);
+                    break;
                 case ConfigType.Github:
                     onGithub((GithubConfigOut)_value);
                     break;
@@ -463,6 +493,9 @@ namespace Svix.Models
                     break;
                 case ConfigType.PandaDoc:
                     onPandaDoc((PandaDocConfigOut)_value);
+                    break;
+                case ConfigType.PortIo:
+                    onPortIo((PortIoConfigOut)_value);
                     break;
                 case ConfigType.Pleo:
                     onPleo((SvixConfigOut)_value);
@@ -505,6 +538,9 @@ namespace Svix.Models
                     break;
                 case ConfigType.Telnyx:
                     onTelnyx((TelnyxConfigOut)_value);
+                    break;
+                case ConfigType.Vapi:
+                    onVapi((VapiConfigOut)_value);
                     break;
                 case ConfigType.OpenAi:
                     onOpenAi((SvixConfigOut)_value);
@@ -635,6 +671,7 @@ namespace Svix.Models
             ["checkbook"] = c => IngestSourceOutConfig.Checkbook(ToObj<CheckbookConfigOut>(c)),
             ["clerk"] = c => IngestSourceOutConfig.Clerk(ToObj<SvixConfigOut>(c)),
             ["docusign"] = c => IngestSourceOutConfig.Docusign(ToObj<DocusignConfigOut>(c)),
+            ["easypost"] = c => IngestSourceOutConfig.Easypost(ToObj<EasypostConfigOut>(c)),
             ["github"] = c => IngestSourceOutConfig.Github(ToObj<GithubConfigOut>(c)),
             ["guesty"] = c => IngestSourceOutConfig.Guesty(ToObj<SvixConfigOut>(c)),
             ["hubspot"] = c => IngestSourceOutConfig.Hubspot(ToObj<HubspotConfigOut>(c)),
@@ -643,6 +680,7 @@ namespace Svix.Models
             ["nash"] = c => IngestSourceOutConfig.Nash(ToObj<SvixConfigOut>(c)),
             ["orum-io"] = c => IngestSourceOutConfig.OrumIo(ToObj<OrumIoConfigOut>(c)),
             ["panda-doc"] = c => IngestSourceOutConfig.PandaDoc(ToObj<PandaDocConfigOut>(c)),
+            ["port-io"] = c => IngestSourceOutConfig.PortIo(ToObj<PortIoConfigOut>(c)),
             ["pleo"] = c => IngestSourceOutConfig.Pleo(ToObj<SvixConfigOut>(c)),
             ["replicate"] = c => IngestSourceOutConfig.Replicate(ToObj<SvixConfigOut>(c)),
             ["resend"] = c => IngestSourceOutConfig.Resend(ToObj<SvixConfigOut>(c)),
@@ -657,6 +695,7 @@ namespace Svix.Models
             ["svix"] = c => IngestSourceOutConfig.Svix(ToObj<SvixConfigOut>(c)),
             ["zoom"] = c => IngestSourceOutConfig.Zoom(ToObj<ZoomConfigOut>(c)),
             ["telnyx"] = c => IngestSourceOutConfig.Telnyx(ToObj<TelnyxConfigOut>(c)),
+            ["vapi"] = c => IngestSourceOutConfig.Vapi(ToObj<VapiConfigOut>(c)),
             ["open-ai"] = c => IngestSourceOutConfig.OpenAi(ToObj<SvixConfigOut>(c)),
             ["render"] = c => IngestSourceOutConfig.Render(ToObj<SvixConfigOut>(c)),
             ["veriff"] = c => IngestSourceOutConfig.Veriff(ToObj<VeriffConfigOut>(c)),
