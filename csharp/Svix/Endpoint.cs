@@ -1154,16 +1154,16 @@ namespace Svix
         /// <summary>
         /// Set or unset the transformation code associated with this endpoint.
         /// </summary>
-        public async Task<bool> TransformationPartialUpdateAsync(
+        public async Task<bool> PatchTransformationAsync(
             string appId,
             string endpointId,
-            EndpointTransformationIn endpointTransformationIn,
+            EndpointTransformationPatch endpointTransformationPatch,
             CancellationToken cancellationToken = default
         )
         {
-            endpointTransformationIn =
-                endpointTransformationIn
-                ?? throw new ArgumentNullException(nameof(endpointTransformationIn));
+            endpointTransformationPatch =
+                endpointTransformationPatch
+                ?? throw new ArgumentNullException(nameof(endpointTransformationPatch));
             try
             {
                 var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
@@ -1174,14 +1174,14 @@ namespace Svix
                         { "app_id", appId },
                         { "endpoint_id", endpointId },
                     },
-                    content: endpointTransformationIn,
+                    content: endpointTransformationPatch,
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(TransformationPartialUpdateAsync)} failed");
+                _client.Logger?.LogError(e, $"{nameof(PatchTransformationAsync)} failed");
 
                 throw;
             }
@@ -1190,15 +1190,15 @@ namespace Svix
         /// <summary>
         /// Set or unset the transformation code associated with this endpoint.
         /// </summary>
-        public bool TransformationPartialUpdate(
+        public bool PatchTransformation(
             string appId,
             string endpointId,
-            EndpointTransformationIn endpointTransformationIn
+            EndpointTransformationPatch endpointTransformationPatch
         )
         {
-            endpointTransformationIn =
-                endpointTransformationIn
-                ?? throw new ArgumentNullException(nameof(endpointTransformationIn));
+            endpointTransformationPatch =
+                endpointTransformationPatch
+                ?? throw new ArgumentNullException(nameof(endpointTransformationPatch));
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<bool>(
@@ -1209,13 +1209,13 @@ namespace Svix
                         { "app_id", appId },
                         { "endpoint_id", endpointId },
                     },
-                    content: endpointTransformationIn
+                    content: endpointTransformationPatch
                 );
                 return response.Data;
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(TransformationPartialUpdate)} failed");
+                _client.Logger?.LogError(e, $"{nameof(PatchTransformation)} failed");
 
                 throw;
             }

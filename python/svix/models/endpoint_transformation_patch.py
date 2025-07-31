@@ -4,7 +4,7 @@ import typing as t
 from .common import BaseModel
 
 
-class EndpointTransformationIn(BaseModel):
+class EndpointTransformationPatch(BaseModel):
     code: t.Optional[str] = None
 
     enabled: t.Optional[bool] = None

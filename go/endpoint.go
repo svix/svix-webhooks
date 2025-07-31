@@ -496,17 +496,17 @@ func (endpoint *Endpoint) TransformationGet(
 }
 
 // Set or unset the transformation code associated with this endpoint.
-func (endpoint *Endpoint) TransformationPartialUpdate(
+func (endpoint *Endpoint) PatchTransformation(
 	ctx context.Context,
 	appId string,
 	endpointId string,
-	endpointTransformationIn models.EndpointTransformationIn,
+	endpointTransformationPatch models.EndpointTransformationPatch,
 ) error {
 	pathMap := map[string]string{
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
-	_, err := internal.ExecuteRequest[models.EndpointTransformationIn, any](
+	_, err := internal.ExecuteRequest[models.EndpointTransformationPatch, any](
 		ctx,
 		endpoint.client,
 		"PATCH",
@@ -514,7 +514,7 @@ func (endpoint *Endpoint) TransformationPartialUpdate(
 		pathMap,
 		nil,
 		nil,
-		&endpointTransformationIn,
+		&endpointTransformationPatch,
 	)
 	return err
 }

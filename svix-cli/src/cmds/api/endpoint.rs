@@ -225,10 +225,10 @@ pub enum EndpointCommands {
     /// Get the transformation code associated with this endpoint.
     TransformationGet { app_id: String, id: String },
     /// Set or unset the transformation code associated with this endpoint.
-    TransformationPartialUpdate {
+    PatchTransformation {
         app_id: String,
         id: String,
-        endpoint_transformation_in: Option<JsonOf<EndpointTransformationIn>>,
+        endpoint_transformation_patch: Option<JsonOf<EndpointTransformationPatch>>,
     },
 }
 
@@ -383,17 +383,19 @@ impl EndpointCommands {
                 let resp = client.endpoint().transformation_get(app_id, id).await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
-            Self::TransformationPartialUpdate {
+            Self::PatchTransformation {
                 app_id,
                 id,
-                endpoint_transformation_in,
+                endpoint_transformation_patch,
             } => {
                 client
                     .endpoint()
-                    .transformation_partial_update(
+                    .patch_transformation(
                         app_id,
                         id,
-                        endpoint_transformation_in.unwrap_or_default().into_inner(),
+                        endpoint_transformation_patch
+                            .unwrap_or_default()
+                            .into_inner(),
                     )
                     .await?;
             }
