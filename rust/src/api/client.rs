@@ -28,7 +28,6 @@ pub struct SvixOptions {
     ///
     /// List of delays (in milliseconds) to wait before each retry attempt.
     /// Takes precedence over numRetries.
-    ///
     pub retry_schedule_in_ms: Option<Vec<u64>>,
 }
 
