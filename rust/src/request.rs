@@ -90,7 +90,7 @@ impl Request {
     }
 
     pub async fn execute<T: DeserializeOwned>(self, conf: &Configuration) -> Result<T, Error> {
-        match self.execute_with_backoff(conf, conf.num_retries).await? {
+        match self.execute_with_backoff(conf).await? {
             // This is a hack; if there's no_ret_type, T is (), but serde_json gives an
             // error when deserializing "" into (), so deserialize 'null' into it
             // instead.
@@ -102,17 +102,19 @@ impl Request {
         }
     }
 
-    async fn execute_with_backoff(
-        mut self,
-        conf: &Configuration,
-        mut retries: u32,
-    ) -> Result<Option<Bytes>, Error> {
+    async fn execute_with_backoff(mut self, conf: &Configuration) -> Result<Option<Bytes>, Error> {
         let no_return_type = self.no_return_type;
         if self.method == http1::Method::POST && !self.header_params.contains_key("idempotency-key")
         {
             self.header_params
                 .insert("idempotency-key", format!("auto_{}", uuid::Uuid::new_v4()));
         }
+
+        let mut retries: u32 = conf
+            .retry_schedule_in_ms
+            .as_ref()
+            .map(|v| v.len() as u32 + 1)
+            .unwrap_or(conf.num_retries);
 
         let mut request = self.build_request(conf)?;
         request
@@ -121,7 +123,13 @@ impl Request {
 
         let mut retry_count = 0;
         const MAX_BACKOFF: Duration = Duration::from_secs(5);
-        let mut backoff = Duration::from_millis(20);
+        let mut backoff = Duration::from_millis(
+            conf.retry_schedule_in_ms
+                .as_deref()
+                .and_then(|v| v.first())
+                .cloned()
+                .unwrap_or(20),
+        );
 
         let execute_request = async |request| {
             let response = conf.client.request(request).await.map_err(Error::generic)?;
@@ -169,7 +177,13 @@ impl Request {
             request
                 .headers_mut()
                 .insert("svix-retry-count", retry_count.into());
-            backoff = MAX_BACKOFF.min(backoff * 2);
+            backoff = Duration::from_millis(
+                conf.retry_schedule_in_ms
+                    .as_deref()
+                    .and_then(|v| v.get(retry_count))
+                    .cloned()
+                    .unwrap_or(MAX_BACKOFF.min(backoff * 2).as_millis() as u64),
+            );
         }
     }
 
