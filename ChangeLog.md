@@ -1,5 +1,15 @@
 # Changelog
 
+## Version 1.70.0
+* CLI: Add `svix seed` command to create testing resources (thanks @KranzAklilu)
+* Libs/Go: Fix request retries not working (thanks @mixnblend!)
+* Libs/All: Revert accidental addition of some authentication APIs
+* Libs/All: Fix name and input structure for rarely used set-transformation route
+  * Rename `endpoint.transformationPartialUpdate` to `endpoint.patchTransformation`
+  * Replace `EndpointTransformationIn` with `EndpointTransformationPatch`
+    * In some but not all the SDKs, these have slightly different field types
+  * This is a breaking change, but based on server statistics this method is barely used by anybody
+
 ## Version 1.69.0
 * Server: Reduce allocations (thanks @fluiderson!)
 * Server: Add healthcheck command (thanks @y-nk!)
