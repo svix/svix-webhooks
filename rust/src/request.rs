@@ -115,7 +115,7 @@ impl Request {
         let mut retries = conf
             .retry_schedule_in_ms
             .clone()
-            .map(|s| box_retry_iterator(s.into_iter().map(|s| Duration::from_millis(s)).collect()))
+            .map(|s| box_retry_iterator(s.into_iter().map(Duration::from_millis).collect()))
             .unwrap_or(box_retry_iterator(
                 std::iter::successors(Some(Duration::from_millis(20)), |last_backoff| {
                     Some(MAX_BACKOFF.min(*last_backoff * 2))
