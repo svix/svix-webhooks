@@ -143,7 +143,7 @@ pub fn permissions_from_jwt(claims: JWTClaims<CustomClaim>) -> Result<Permission
         org_id.validate().map_err(|_| {
             HttpError::bad_request(
                 Some("bad_token".to_string()),
-                Some("`sub' is not a valid organization id.".to_string()),
+                Some("`sub` is not a valid organization id.".to_string()),
             )
         })?;
         Ok(Permissions {
