@@ -160,20 +160,20 @@ impl Request {
                 request_fut.await
             };
 
-            let delay = retries.next();
+            let next_backoff = retries.next();
 
             match res {
                 Ok(result) => return Ok(result),
                 e @ Err(Error::Validation(_)) => return e,
                 Err(Error::Http(err)) if err.status.as_u16() < 500 => return Err(Error::Http(err)),
                 e @ Err(_) => {
-                    if delay.is_none() {
+                    if next_backoff.is_none() {
                         return e;
                     }
                 }
             }
 
-            tokio::time::sleep(delay.expect("delay is always Some")).await;
+            tokio::time::sleep(next_backoff.expect("next_backoff is always Some")).await;
             retry_count += 1;
 
             request
