@@ -2541,20 +2541,6 @@
                 ],
                 "type": "object"
             },
-            "EndpointTransformationIn": {
-                "properties": {
-                    "code": {
-                        "maxLength": 51200,
-                        "minLength": 10,
-                        "nullable": true,
-                        "type": "string"
-                    },
-                    "enabled": {
-                        "type": "boolean"
-                    }
-                },
-                "type": "object"
-            },
             "EndpointTransformationOut": {
                 "properties": {
                     "code": {
@@ -2565,6 +2551,21 @@
                     },
                     "enabled": {
                         "default": false,
+                        "type": "boolean"
+                    }
+                },
+                "type": "object"
+            },
+            "EndpointTransformationPatch": {
+                "properties": {
+                    "code": {
+                        "example": "function handler(webhook) {\n    if (webhook.payload.customUrl) {\n        webhook.url = webhook.payload.customUrl;\n    }\n    return webhook;\n}\n",
+                        "maxLength": 51200,
+                        "minLength": 10,
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "enabled": {
                         "type": "boolean"
                     }
                 },
@@ -9862,7 +9863,18 @@
                     {
                         "properties": {
                             "config": {
-                                "$ref": "#/components/schemas/AzureBlobStorageConfig"
+                                "properties": {
+                                    "accessKey": {
+                                        "type": "string"
+                                    },
+                                    "account": {
+                                        "type": "string"
+                                    },
+                                    "container": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
                             },
                             "type": {
                                 "enum": [
@@ -9880,7 +9892,13 @@
                     {
                         "properties": {
                             "config": {
-                                "$ref": "#/components/schemas/SinkOtelV1Config"
+                                "properties": {
+                                    "url": {
+                                        "format": "uri",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
                             },
                             "type": {
                                 "enum": [
@@ -9898,7 +9916,13 @@
                     {
                         "properties": {
                             "config": {
-                                "$ref": "#/components/schemas/SinkHttpConfig"
+                                "properties": {
+                                    "url": {
+                                        "format": "uri",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
                             },
                             "type": {
                                 "enum": [
@@ -9916,7 +9940,21 @@
                     {
                         "properties": {
                             "config": {
-                                "$ref": "#/components/schemas/S3Config"
+                                "properties": {
+                                    "accessKeyId": {
+                                        "type": "string"
+                                    },
+                                    "bucket": {
+                                        "type": "string"
+                                    },
+                                    "region": {
+                                        "type": "string"
+                                    },
+                                    "secretAccessKey": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
                             },
                             "type": {
                                 "enum": [
@@ -9934,7 +9972,15 @@
                     {
                         "properties": {
                             "config": {
-                                "$ref": "#/components/schemas/GoogleCloudStorageConfig"
+                                "properties": {
+                                    "bucket": {
+                                        "type": "string"
+                                    },
+                                    "credentials": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
                             },
                             "type": {
                                 "enum": [
@@ -10319,7 +10365,7 @@
     "info": {
         "description": "Welcome to the Svix API documentation!\n\nUseful links: [Homepage](https://www.svix.com) | [Support email](mailto:support+docs@svix.com) | [Blog](https://www.svix.com/blog/) | [Slack Community](https://www.svix.com/slack/)\n\n# Introduction\n\nThis is the reference documentation and schemas for the [Svix webhook service](https://www.svix.com) API. For tutorials and other documentation please refer to [the documentation](https://docs.svix.com).\n\n## Main concepts\n\nIn Svix you have four important entities you will be interacting with:\n\n- `messages`: these are the webhooks being sent. They can have contents and a few other properties.\n- `application`: this is where `messages` are sent to. Usually you want to create one application for each user on your platform.\n- `endpoint`: endpoints are the URLs messages will be sent to. Each application can have multiple `endpoints` and each message sent to that application will be sent to all of them (unless they are not subscribed to the sent event type).\n- `event-type`: event types are identifiers denoting the type of the message being sent. Event types are primarily used to decide which events are sent to which endpoint.\n\n\n## Authentication\n\nGet your authentication token (`AUTH_TOKEN`) from the [Svix dashboard](https://dashboard.svix.com) and use it as part of the `Authorization` header as such: `Authorization: Bearer ${AUTH_TOKEN}`. For more information on authentication, please refer to the [authentication token docs](https://docs.svix.com/api-keys).\n\n<SecurityDefinitions />\n\n\n## Code samples\n\nThe code samples assume you already have the respective libraries installed and you know how to use them. For the latest information on how to do that, please refer to [the documentation](https://docs.svix.com/).\n\n\n## Idempotency\n\nSvix supports [idempotency](https://en.wikipedia.org/wiki/Idempotence) for safely retrying requests without accidentally performing the same operation twice. This is useful when an API call is disrupted in transit and you do not receive a response.\n\nTo perform an idempotent request, pass the idempotency key in the `Idempotency-Key` header to the request. The idempotency key should be a unique value generated by the client. You can create the key in however way you like, though we suggest using UUID v4, or any other string with enough entropy to avoid collisions.\n\nSvix's idempotency works by saving the resulting status code and body of the first request made for any given idempotency key for any successful request. Subsequent requests with the same key return the same result for a period of up to 12 hours.\n\nPlease note that idempotency is only supported for `POST` requests.\n\n\n## Cross-Origin Resource Sharing\n\nThis API features Cross-Origin Resource Sharing (CORS) implemented in compliance with [W3C spec](https://www.w3.org/TR/cors/). And that allows cross-domain communication from the browser. All responses have a wildcard same-origin which makes them completely public and accessible to everyone, including any code on any site.\n",
         "title": "Svix API",
-        "version": "1.68.0",
+        "version": "1.70.0",
         "x-logo": {
             "altText": "Svix Logo",
             "url": "https://www.svix.com/static/img/brand-padded.svg"
@@ -17562,7 +17608,7 @@
             },
             "patch": {
                 "description": "Set or unset the transformation code associated with this endpoint.",
-                "operationId": "v1.endpoint.transformation-partial-update",
+                "operationId": "v1.endpoint.patch-transformation",
                 "parameters": [
                     {
                         "description": "The Application's ID or UID.",
@@ -17599,7 +17645,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/EndpointTransformationIn"
+                                "$ref": "#/components/schemas/EndpointTransformationPatch"
                             }
                         }
                     },
@@ -17685,7 +17731,7 @@
                         "HTTPBearer": []
                     }
                 ],
-                "summary": "Set Endpoint Transformation",
+                "summary": "Patch Endpoint Transformation",
                 "tags": [
                     "Endpoint"
                 ],
@@ -17693,62 +17739,62 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "await svix.endpoint.transformationPartialUpdate(\"app_id\", \"endpoint_id\", {\n    code: null\n});"
+                        "source": "await svix.endpoint.patchTransformation(\"app_id\", \"endpoint_id\", {\n    code: \"function handler(webhook) {\n    if (webhook.payload.customUrl) {\n        webhook.url = webhook.payload.customUrl;\n    }\n    return webhook;\n}\n\"\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "await svix.endpoint.transformationPartialUpdate(\"app_id\", \"endpoint_id\", {\n    code: null\n});"
+                        "source": "await svix.endpoint.patchTransformation(\"app_id\", \"endpoint_id\", {\n    code: \"function handler(webhook) {\n    if (webhook.payload.customUrl) {\n        webhook.url = webhook.payload.customUrl;\n    }\n    return webhook;\n}\n\"\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "svix.endpoint.transformation_partial_update(\"app_id\", \"endpoint_id\", EndpointTransformationIn(\n    code=None\n))"
+                        "source": "svix.endpoint.patch_transformation(\"app_id\", \"endpoint_id\", EndpointTransformationPatch(\n    code=\"function handler(webhook) {\n    if (webhook.payload.customUrl) {\n        webhook.url = webhook.payload.customUrl;\n    }\n    return webhook;\n}\n\"\n))"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "await svix.endpoint.transformation_partial_update(\"app_id\", \"endpoint_id\", EndpointTransformationIn(\n    code=None\n))"
+                        "source": "await svix.endpoint.patch_transformation(\"app_id\", \"endpoint_id\", EndpointTransformationPatch(\n    code=\"function handler(webhook) {\n    if (webhook.payload.customUrl) {\n        webhook.url = webhook.payload.customUrl;\n    }\n    return webhook;\n}\n\"\n))"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "err := svixClient.Endpoint.TransformationPartialUpdate(ctx, \"app_id\", \"endpoint_id\", &EndpointTransformationIn{\n    Code: nil,\n})"
+                        "source": "err := svixClient.Endpoint.PatchTransformation(ctx, \"app_id\", \"endpoint_id\", &EndpointTransformationPatch{\n    Code: \"function handler(webhook) {\n    if (webhook.payload.customUrl) {\n        webhook.url = webhook.payload.customUrl;\n    }\n    return webhook;\n}\n\",\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "svix.endpoint.transformationPartialUpdate(\"app_id\", \"endpoint_id\", EndpointTransformationIn()\n    .code(null)\n)"
+                        "source": "svix.endpoint.patchTransformation(\"app_id\", \"endpoint_id\", EndpointTransformationPatch()\n    .code(\"function handler(webhook) {\n    if (webhook.payload.customUrl) {\n        webhook.url = webhook.payload.customUrl;\n    }\n    return webhook;\n}\n\")\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "svix.getEndpoint().transformationPartialUpdate(\"app_id\", \"endpoint_id\", new EndpointTransformationIn()\n    .code(null)\n);"
+                        "source": "svix.getEndpoint().patchTransformation(\"app_id\", \"endpoint_id\", new EndpointTransformationPatch()\n    .code(\"function handler(webhook) {\n    if (webhook.payload.customUrl) {\n        webhook.url = webhook.payload.customUrl;\n    }\n    return webhook;\n}\n\")\n);"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "svix.endpoint.transformation_partial_update(\"app_id\", \"endpoint_id\", Svix::EndpointTransformationIn.new({\n    \"code\": nil\n}))"
+                        "source": "svix.endpoint.patch_transformation(\"app_id\", \"endpoint_id\", Svix::EndpointTransformationPatch.new({\n    \"code\": \"function handler(webhook) {\n    if (webhook.payload.customUrl) {\n        webhook.url = webhook.payload.customUrl;\n    }\n    return webhook;\n}\n\"\n}))"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "svix.endpoint().transformation_partial_update(\"app_id\", \"endpoint_id\", EndpointTransformationIn {\n    code: None,\n}).await?;"
+                        "source": "svix.endpoint().patch_transformation(\"app_id\", \"endpoint_id\", EndpointTransformationPatch {\n    code: Some(\"function handler(webhook) {\n    if (webhook.payload.customUrl) {\n        webhook.url = webhook.payload.customUrl;\n    }\n    return webhook;\n}\n\".to_string()),\n}).await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "await svix.Endpoint.TransformationPartialUpdateAsync(\"app_id\", \"endpoint_id\", new EndpointTransformationIn{\n    code: null\n});"
+                        "source": "await svix.Endpoint.PatchTransformationAsync(\"app_id\", \"endpoint_id\", new EndpointTransformationPatch{\n    code: \"function handler(webhook) {\n    if (webhook.payload.customUrl) {\n        webhook.url = webhook.payload.customUrl;\n    }\n    return webhook;\n}\n\"\n});"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix endpoint transformation-partial-update \"app_id\" \"endpoint_id\" '{\n    \"code\": null\n}'"
+                        "source": "svix endpoint patch-transformation \"app_id\" \"endpoint_id\" '{\n    \"code\": \"function handler(webhook) {\n    if (webhook.payload.customUrl) {\n        webhook.url = webhook.payload.customUrl;\n    }\n    return webhook;\n}\n\"\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"code\": null\n    }'"
+                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"code\": \"function handler(webhook) {\n        if (webhook.payload.customUrl) {\n            webhook.url = webhook.payload.customUrl;\n        }\n        return webhook;\n    }\n    \"\n    }'"
                     }
                 ]
             }
@@ -26294,6 +26340,211 @@
                         "label": "cURL",
                         "lang": "Shell",
                         "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/stream/sink/{sink_id}/secret/rotate' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n    }'"
+                    }
+                ],
+                "x-hidden": true
+            }
+        },
+        "/api/v1/app/{app_id}/stream/sink/{sink_id}/skip": {
+            "post": {
+                "description": "Skip the last n events from the sink",
+                "operationId": "v1.app.stream.sink.skip",
+                "parameters": [
+                    {
+                        "description": "The Application's ID or UID.",
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The Application's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The StreamSink's ID or UID.",
+                        "in": "path",
+                        "name": "sink_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The StreamSink's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 60,
+                            "minLength": 1,
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "in": "query",
+                        "name": "n",
+                        "schema": {
+                            "default": 1,
+                            "format": "uint64",
+                            "maximum": 1000,
+                            "minimum": 1,
+                            "type": "integer"
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "no content"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Skip N Events",
+                "tags": [
+                    "Sink"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "await svix.app.stream.sink.skip(\"app_id\", \"sink_id\");"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "await svix.app.stream.sink.skip(\"app_id\", \"sink_id\");"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "svix.app.stream.sink.skip(\"app_id\", \"sink_id\", options=...)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "await svix.app.stream.sink.skip(\"app_id\", \"sink_id\", options=...)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "err := svixClient.App.Stream.Sink.Skip(ctx, \"app_id\", \"sink_id\")"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "svix.app.stream.sink.skip(\"app_id\", \"sink_id\")"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "svix.getApp().getStream().getSink().skip(\"app_id\", \"sink_id\");"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "svix.app.stream.sink.skip(\"app_id\", \"sink_id\")"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "svix.app().stream().sink().skip(\"app_id\", \"sink_id\", None).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "await svix.App.Stream.Sink.SkipAsync(\"app_id\", \"sink_id\");"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix app stream sink skip \"app_id\" \"sink_id\""
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/stream/sink/{sink_id}/skip' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ],
                 "x-hidden": true

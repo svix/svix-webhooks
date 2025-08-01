@@ -369,11 +369,11 @@ impl<'a> Endpoint<'a> {
     }
 
     /// Set or unset the transformation code associated with this endpoint.
-    pub async fn transformation_partial_update(
+    pub async fn patch_transformation(
         &self,
         app_id: String,
         endpoint_id: String,
-        endpoint_transformation_in: EndpointTransformationIn,
+        endpoint_transformation_patch: EndpointTransformationPatch,
     ) -> Result<()> {
         crate::request::Request::new(
             http1::Method::PATCH,
@@ -381,7 +381,7 @@ impl<'a> Endpoint<'a> {
         )
         .with_path_param("app_id", app_id)
         .with_path_param("endpoint_id", endpoint_id)
-        .with_body_param(endpoint_transformation_in)
+        .with_body_param(endpoint_transformation_patch)
         .returns_nothing()
         .execute(self.cfg)
         .await

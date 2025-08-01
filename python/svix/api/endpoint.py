@@ -14,8 +14,8 @@ from ..models import (
     EndpointSecretOut,
     EndpointSecretRotateIn,
     EndpointStats,
-    EndpointTransformationIn,
     EndpointTransformationOut,
+    EndpointTransformationPatch,
     EndpointUpdate,
     EventExampleIn,
     ListResponseEndpointOut,
@@ -404,11 +404,11 @@ class EndpointAsync(ApiBase):
         )
         return EndpointTransformationOut.model_validate(response.json())
 
-    async def transformation_partial_update(
+    async def patch_transformation(
         self,
         app_id: str,
         endpoint_id: str,
-        endpoint_transformation_in: EndpointTransformationIn,
+        endpoint_transformation_patch: EndpointTransformationPatch,
     ) -> None:
         """Set or unset the transformation code associated with this endpoint."""
         await self._request_asyncio(
@@ -418,7 +418,7 @@ class EndpointAsync(ApiBase):
                 "app_id": app_id,
                 "endpoint_id": endpoint_id,
             },
-            json_body=endpoint_transformation_in.model_dump_json(
+            json_body=endpoint_transformation_patch.model_dump_json(
                 exclude_unset=True, by_alias=True
             ),
         )
@@ -705,11 +705,11 @@ class Endpoint(ApiBase):
         )
         return EndpointTransformationOut.model_validate(response.json())
 
-    def transformation_partial_update(
+    def patch_transformation(
         self,
         app_id: str,
         endpoint_id: str,
-        endpoint_transformation_in: EndpointTransformationIn,
+        endpoint_transformation_patch: EndpointTransformationPatch,
     ) -> None:
         """Set or unset the transformation code associated with this endpoint."""
         self._request_sync(
@@ -719,7 +719,7 @@ class Endpoint(ApiBase):
                 "app_id": app_id,
                 "endpoint_id": endpoint_id,
             },
-            json_body=endpoint_transformation_in.model_dump_json(
+            json_body=endpoint_transformation_patch.model_dump_json(
                 exclude_unset=True, by_alias=True
             ),
         )

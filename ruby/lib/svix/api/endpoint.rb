@@ -173,11 +173,11 @@ module Svix
       EndpointTransformationOut.deserialize(res)
     end
 
-    def transformation_partial_update(app_id, endpoint_id, endpoint_transformation_in)
+    def patch_transformation(app_id, endpoint_id, endpoint_transformation_patch)
       @client.execute_request(
         "PATCH",
         "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/transformation",
-        body: endpoint_transformation_in
+        body: endpoint_transformation_patch
       )
     end
 
