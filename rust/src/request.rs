@@ -110,11 +110,19 @@ impl Request {
                 .insert("idempotency-key", format!("auto_{}", uuid::Uuid::new_v4()));
         }
 
-        let mut retries: u32 = conf
+        const MAX_BACKOFF: Duration = Duration::from_secs(5);
+
+        let mut retries = conf
             .retry_schedule_in_ms
-            .as_ref()
-            .map(|v| v.len() as u32 + 1)
-            .unwrap_or(conf.num_retries);
+            .clone()
+            .map(|s| box_retry_iterator(s.into_iter().map(|s| Duration::from_millis(s)).collect()))
+            .unwrap_or(box_retry_iterator(
+                std::iter::successors(Some(Duration::from_millis(20)), |last_backoff| {
+                    Some(MAX_BACKOFF.min(*last_backoff * 2))
+                })
+                .take(conf.num_retries as usize)
+                .collect(),
+            ));
 
         let mut request = self.build_request(conf)?;
         request
@@ -122,14 +130,6 @@ impl Request {
             .insert("svix-req-id", rand::rng().random::<u32>().into());
 
         let mut retry_count = 0;
-        const MAX_BACKOFF: Duration = Duration::from_secs(5);
-        let mut backoff = Duration::from_millis(
-            conf.retry_schedule_in_ms
-                .as_deref()
-                .and_then(|v| v.first())
-                .cloned()
-                .unwrap_or(20),
-        );
 
         let execute_request = async |request| {
             let response = conf.client.request(request).await.map_err(Error::generic)?;
@@ -160,30 +160,25 @@ impl Request {
                 request_fut.await
             };
 
+            let delay = retries.next();
+
             match res {
                 Ok(result) => return Ok(result),
                 e @ Err(Error::Validation(_)) => return e,
                 Err(Error::Http(err)) if err.status.as_u16() < 500 => return Err(Error::Http(err)),
                 e @ Err(_) => {
-                    if retries == 0 {
+                    if delay.is_none() {
                         return e;
                     }
                 }
             }
 
-            tokio::time::sleep(backoff).await;
+            tokio::time::sleep(delay.expect("delay is always Some")).await;
             retry_count += 1;
-            retries -= 1;
+
             request
                 .headers_mut()
                 .insert("svix-retry-count", retry_count.into());
-            backoff = Duration::from_millis(
-                conf.retry_schedule_in_ms
-                    .as_deref()
-                    .and_then(|v| v.get(retry_count))
-                    .cloned()
-                    .unwrap_or(MAX_BACKOFF.min(backoff * 2).as_millis() as u64),
-            );
         }
     }
 
@@ -286,4 +281,8 @@ impl QueryParamValue for Vec<String> {
     fn encode(&self) -> String {
         self.iter().format(",").to_string()
     }
+}
+
+fn box_retry_iterator(v: Vec<Duration>) -> Box<dyn Iterator<Item = Duration> + Send + Sync> {
+    Box::new(v.into_iter())
 }

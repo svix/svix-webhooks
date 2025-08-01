@@ -201,7 +201,7 @@ async fn test_custom_retries() {
         .mount(&mock_server)
         .await;
 
-    for i in 1..=(num_retries + 1) {
+    for i in 1..=num_retries {
         Mock::given(wiremock::matchers::method("POST"))
             .and(wiremock::matchers::path("/api/v1/app"))
             .and(wiremock::matchers::header("svix-retry-count", i))
@@ -233,7 +233,7 @@ async fn test_custom_retries() {
     assert!(app.is_err());
 
     let diff = std::time::Instant::now() - t0;
-    let expected: u32 = (1..=num_retries + 1).map(|x| 20 * x).sum();
+    let expected: u32 = (1..=num_retries).map(|x| 20 * x).sum();
     assert!(diff.as_millis() >= u128::from(expected));
 
     mock_server.verify().await;
@@ -252,7 +252,7 @@ async fn test_custom_retry_schedule() {
         .mount(&mock_server)
         .await;
 
-    for i in 1..=retry_schedule_in_ms.len() + 1 {
+    for i in 1..=retry_schedule_in_ms.len() {
         Mock::given(wiremock::matchers::method("POST"))
             .and(wiremock::matchers::path("/api/v1/app"))
             .and(wiremock::matchers::header("svix-retry-count", i))

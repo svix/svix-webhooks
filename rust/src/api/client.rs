@@ -61,8 +61,7 @@ impl Svix {
             // These fields will be set by `with_token` below
             base_path: String::new(),
             bearer_access_token: None,
-            // number of retries shouldn't include the initial request
-            num_retries: options.num_retries.unwrap_or(3) + 1,
+            num_retries: options.num_retries.unwrap_or(2),
             retry_schedule_in_ms: options.retry_schedule_in_ms,
         });
         let svix = Self {
