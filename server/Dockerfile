@@ -48,7 +48,7 @@ RUN set -ex ; \
         chown -R appuser: /home/appuser
 
 RUN apt-get update && apt-get install -y \
-        ca-certificates=20230311 \
+        ca-certificates=20230311+deb12u1 \
         libssl3=3.* \
         --no-install-recommends && \
         update-ca-certificates && \
