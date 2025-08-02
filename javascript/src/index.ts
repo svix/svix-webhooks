@@ -34,6 +34,15 @@ export interface SvixOptions {
   serverUrl?: string;
   /** Time in milliseconds to wait for requests to get a response. */
   requestTimeout?: number;
+  /** List of delays (in milliseconds) to wait before each retry attempt.
+   *  Takes precedence over numRetries.
+   */
+  retryScheduleInMs?: number[];
+  /** The number of times the client will retry if a server-side error
+   *  or timeout is received.
+   *  Default: 2
+   */
+  numRetries?: number;
 }
 
 const REGIONS = [
@@ -51,7 +60,13 @@ export class Svix {
     const regionalUrl = REGIONS.find((x) => x.region === token.split(".")[1])?.url;
     const baseUrl: string = options.serverUrl ?? regionalUrl ?? "https://api.svix.com";
 
-    this.requestCtx = { baseUrl, token, timeout: options.requestTimeout };
+    this.requestCtx = {
+      baseUrl,
+      token,
+      timeout: options.requestTimeout,
+      retryScheduleInMs: options.retryScheduleInMs,
+      numRetries: options.numRetries,
+    };
   }
 
   public get application() {
