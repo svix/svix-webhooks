@@ -109,7 +109,10 @@ export class SvixRequest {
   }
 
   private async sendInner(ctx: SvixRequestContext): Promise<Response> {
-    const url = new URL(ctx.baseUrl + this.path);
+    // Ensure path always starts with a single slash
+    const normalizedPath = this.path.replace(/^\/+/, "/");
+    // Combine normalized base URL and path
+    const url = new URL(ctx.baseUrl + normalizedPath);
     for (const [name, value] of Object.entries(this.queryParams)) {
       url.searchParams.set(name, value);
     }
