@@ -2,41 +2,41 @@
 openapi = "lib-openapi.json"
 
 [rust]
-template_dir = "codegen-templates/rust"
+template_dir = "templates/rust"
 extra_mounts = { "rust/.rustfmt.toml" = "/app/.rustfmt.toml" }
 extra_shell_commands = ["rm rust/src/api/health.rs"]
 [[rust.task]]
-template = "codegen-templates/rust/api_resource.rs.jinja"
+template = "templates/rust/api_resource.rs.jinja"
 output_dir = "rust/src/api"
 [[rust.task]]
-template = "codegen-templates/rust/api_summary.rs.jinja"
+template = "templates/rust/api_summary.rs.jinja"
 output_dir = "rust/src/api"
 [[rust.task]]
-template = "codegen-templates/rust/component_type_summary.rs.jinja"
+template = "templates/rust/component_type_summary.rs.jinja"
 output_dir = "rust/src/models"
 [[rust.task]]
-template = "codegen-templates/rust/component_type.rs.jinja"
+template = "templates/rust/component_type.rs.jinja"
 output_dir = "rust/src/models"
 
 
 [javascript]
-template_dir = "codegen-templates/javascript"
+template_dir = "templates/javascript"
 [[javascript.task]]
-template = "codegen-templates/javascript/api_resource.ts.jinja"
+template = "templates/javascript/api_resource.ts.jinja"
 output_dir = "javascript/src/api"
 [[javascript.task]]
-template = "codegen-templates/javascript/component_type_summary.ts.jinja"
+template = "templates/javascript/component_type_summary.ts.jinja"
 output_dir = "javascript/src/models"
 [[javascript.task]]
-template = "codegen-templates/javascript/component_type.ts.jinja"
+template = "templates/javascript/component_type.ts.jinja"
 output_dir = "javascript/src/models"
 [[javascript.task]]
-template = "codegen-templates/javascript/summary.ts.jinja"
+template = "templates/javascript/summary.ts.jinja"
 output_dir = "javascript/src"
 
 
 [cli]
-template_dir = "codegen-templates/svix-cli"
+template_dir = "templates/svix-cli"
 extra_mounts = { "svix-cli/.rustfmt.toml" = "/app/.rustfmt.toml" }
 extra_shell_commands = [
    "cargo fix --all-targets --all-features --manifest-path svix-cli/Cargo.toml --allow-dirty --allow-staged",
@@ -44,83 +44,83 @@ extra_shell_commands = [
    "rm svix-cli/src/cmds/api/{background_task,health,statistics}.rs",
 ]
 [[cli.task]]
-template = "codegen-templates/svix-cli/api_resource.rs.jinja"
+template = "templates/svix-cli/api_resource.rs.jinja"
 output_dir = "svix-cli/src/cmds/api"
 
 
 [python]
-template_dir = "codegen-templates/python"
+template_dir = "templates/python"
 extra_shell_commands = [
    "rm python/svix/api/health.py",
 ]
 [[python.task]]
-template = "codegen-templates/python/api_resource.py.jinja"
+template = "templates/python/api_resource.py.jinja"
 output_dir = "python/svix/api"
 [[python.task]]
-template = "codegen-templates/python/component_type_summary.py.jinja"
+template = "templates/python/component_type_summary.py.jinja"
 output_dir = "python/svix/models"
 [[python.task]]
-template = "codegen-templates/python/component_type.py.jinja"
+template = "templates/python/component_type.py.jinja"
 output_dir = "python/svix/models"
 [[python.task]]
-template = "codegen-templates/python/summary.py.jinja"
+template = "templates/python/summary.py.jinja"
 output_dir = "python/svix/api"
 
 
 [ruby]
-template_dir = "codegen-templates/ruby"
+template_dir = "templates/ruby"
 [[ruby.task]]
-template = "codegen-templates/ruby/api_resource.rb.jinja"
+template = "templates/ruby/api_resource.rb.jinja"
 output_dir = "ruby/lib/svix/api"
 [[ruby.task]]
-template = "codegen-templates/ruby/summary.rb.jinja"
+template = "templates/ruby/summary.rb.jinja"
 output_dir = "ruby/lib"
 [[ruby.task]]
-template = "codegen-templates/ruby/component_type.rb.jinja"
+template = "templates/ruby/component_type.rb.jinja"
 output_dir = "ruby/lib/svix/models"
 
 
 [csharp]
-template_dir = "codegen-templates/csharp"
+template_dir = "templates/csharp"
 [[csharp.task]]
-template = "codegen-templates/csharp/api_resource.cs.jinja"
+template = "templates/csharp/api_resource.cs.jinja"
 output_dir = "csharp/Svix"
 [[csharp.task]]
-template = "codegen-templates/csharp/component_type.cs.jinja"
+template = "templates/csharp/component_type.cs.jinja"
 output_dir = "csharp/Svix/Models"
 
 
 [java]
-template_dir = "codegen-templates/java"
+template_dir = "templates/java"
 [[java.task]]
-template = "codegen-templates/java/api_resource.java.jinja"
+template = "templates/java/api_resource.java.jinja"
 output_dir = "java/lib/src/main/java/com/svix/api"
 [[java.task]]
-template = "codegen-templates/java/operation_options.java.jinja"
+template = "templates/java/operation_options.java.jinja"
 output_dir = "java/lib/src/main/java/com/svix/api"
 [[java.task]]
-template = "codegen-templates/java/component_type.java.jinja"
+template = "templates/java/component_type.java.jinja"
 output_dir = "java/lib/src/main/java/com/svix/models"
 
 
 [go]
-template_dir = "codegen-templates/go"
+template_dir = "templates/go"
 extra_shell_commands = [
    "rm go/health.go",
    "sed -i.bak 's/package svix/package internalapi/g' go/internalapi/management* && rm go/internalapi/management*.bak"
 
 ]
 [[go.task]]
-template = "codegen-templates/go/api_resource.go.jinja"
+template = "templates/go/api_resource.go.jinja"
 output_dir = "go"
 [[go.task]]
-template = "codegen-templates/go/component_type_summary.go.jinja"
+template = "templates/go/component_type_summary.go.jinja"
 output_dir = "go"
 [[go.task]]
-template = "codegen-templates/go/component_type.go.jinja"
+template = "templates/go/component_type.go.jinja"
 output_dir = "go/models"
 [[go.task]]
-template = "codegen-templates/go/api_resource.go.jinja"
+template = "templates/go/api_resource.go.jinja"
 output_dir = "go/internalapi"
 extra_codegen_args = [
    # This is a limited list of operations required by terraform
@@ -137,7 +137,7 @@ extra_codegen_args = [
    "--include-op-id=v1.management.authentication.expire-api-token"
 ]
 [[go.task]]
-template = "codegen-templates/go/component_type.go.jinja"
+template = "templates/go/component_type.go.jinja"
 output_dir = "go/models"
 extra_codegen_args = [
    # This is a limited list of operations required by terraform
@@ -156,11 +156,11 @@ extra_codegen_args = [
 
 
 [kotlin]
-template_dir = "codegen-templates/kotlin"
+template_dir = "templates/kotlin"
 [[kotlin.task]]
-template = "codegen-templates/kotlin/component_type.kt.jinja"
+template = "templates/kotlin/component_type.kt.jinja"
 output_dir = "kotlin/lib/src/main/kotlin/models"
 
 [[kotlin.task]]
-template = "codegen-templates/kotlin/api_resource.kt.jinja"
+template = "templates/kotlin/api_resource.kt.jinja"
 output_dir = "kotlin/lib/src/main/kotlin"
