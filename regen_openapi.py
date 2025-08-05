@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import json
 import os
-import pathlib
 import random
 import shutil
 import string
@@ -15,8 +14,7 @@ except ImportError:
     print("Python 3.11 or greater is required to run the codegen")
     exit(1)
 
-OPENAPI_CODEGEN_IMAGE = "ghcr.io/svix/openapi-codegen:20250804-308"
-REPO_ROOT = pathlib.Path(__file__).parent.resolve()
+OPENAPI_CODEGEN_IMAGE = "ghcr.io/svix/openapi-codegen:20250805-316"
 DEBUG = os.getenv("DEBUG") is not None
 GREEN = "\033[92m"
 BLUE = "\033[94m"
@@ -72,11 +70,14 @@ def docker_container_cp(prefix, container_id, task):
 
 
 def docker_container_create(prefix, task) -> str:
+    codegen_dir = Path("codegen")
     container_name = "codegen-{}-{}-{}".format(
         task["language"],
         task["language_task_index"] + 1,
         "".join(random.choice(string.ascii_lowercase) for _ in range(10)),
     )
+    template_path = codegen_dir.joinpath(task["template"])
+    template_dir = template_path.parent
     cmd = [
         get_docker_binary(),
         "container",
@@ -87,9 +88,9 @@ def docker_container_create(prefix, task) -> str:
         "--workdir",
         "/app",
         "--mount",
-        f"type=bind,src={Path(task['openapi']).absolute()},dst=/app/lib-openapi.json,ro",
+        f"type=bind,src={codegen_dir.joinpath(task['openapi']).absolute()},dst=/app/{task['openapi']},ro",
         "--mount",
-        f"type=bind,src={Path(task['template_dir']).absolute()},dst=/app/{task['template_dir']},ro",
+        f"type=bind,src={template_dir.absolute()},dst=/app/{template_dir},ro",
     ]
 
     for extra_mount_src, extra_mount_dst in task["extra_mounts"].items():
@@ -103,12 +104,9 @@ def docker_container_create(prefix, task) -> str:
             "openapi-codegen",
             "generate",
             *task["extra_codegen_args"],
-            "--template",
-            task["template"],
-            "--input-file",
-            task["openapi"],
-            "--output-dir",
-            task["output_dir"],
+            f"--template={template_path}",
+            f"--input-file={task['openapi']}",
+            f"--output-dir={task['output_dir']}",
         ]
     )
     run_cmd(prefix, cmd)
@@ -118,9 +116,7 @@ def docker_container_create(prefix, task) -> str:
 def run_cmd(prefix, cmd, dont_dbg=False) -> subprocess.CompletedProcess[bytes]:
     dbg_cmd = [cmd[0], *[f'"{i}"' for i in cmd[1:]]]
     dbg(prefix, f"{BLUE}Running command{ENDC} {' '.join(dbg_cmd)}")
-    result = subprocess.run(
-        cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=REPO_ROOT
-    )
+    result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     if result.returncode != 0:
         print_cmd_result(result, prefix)
         prefix_print(
@@ -217,7 +213,7 @@ def run_codegen_for_language(language, language_config):
 
 
 def parse_config():
-    with open(REPO_ROOT.joinpath("codegen.toml"), "rb") as f:
+    with open(Path("codegen").joinpath("codegen.toml"), "rb") as f:
         data = tomllib.load(f)
     openapi = data.pop("global")["openapi"]
     config = {}
@@ -239,7 +235,6 @@ def parse_config():
                     "output_dir": task["output_dir"],
                     "extra_mounts": language_config.get("extra_mounts", {}),
                     "extra_codegen_args": task.get("extra_codegen_args", []),
-                    "template_dir": language_config["template_dir"],
                 }
             )
     # the cli step depends on generated rust code.
@@ -283,6 +278,9 @@ def pull_image():
 
 
 def main():
+    repo_root = Path(__file__).parent.resolve()
+    os.chdir(repo_root)
+
     pull_image()
     config = parse_config()
     all_tasks = sum([i["tasks_count"] for i in config.values()])
