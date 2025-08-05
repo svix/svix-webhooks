@@ -1,5 +1,5 @@
 # this file is @generated
-{% for type in types -%}
+{% for type in api.types -%}
 from .{{ type | to_snake_case }} import {{ type | to_upper_camel_case }}
 {% endfor %}
 {# hardcode this import until we fix empty openapi structs #}
@@ -9,7 +9,7 @@ from .background_task_data import BackgroundTaskData
 __all__ = [
 {# hardcode this until we fix empty openapi structs #}
     "BackgroundTaskData",
-{% for type in types -%}
+{% for type in api.types -%}
     "{{ type | to_upper_camel_case }}",
 {% endfor -%}
 ]
