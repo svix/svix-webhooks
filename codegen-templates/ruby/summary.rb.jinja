@@ -21,7 +21,7 @@ require "svix/api/{{ resource.name | to_snake_case }}"
 {% endfor -%}
 
 # Models
-{% for type in types -%}
+{% for type in api.types -%}
 require "svix/models/{{ type | to_snake_case }}"
 {% endfor -%}
 

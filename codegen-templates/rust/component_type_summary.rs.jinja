@@ -1,7 +1,7 @@
 // this file is @generated
 #![allow(clippy::too_many_arguments)]
 
-{% for _, type in types | items -%}
+{% for _, type in api.types | items -%}
     pub mod {{ type.name | to_snake_case }};
 {% endfor -%}
 
@@ -14,7 +14,7 @@ pub mod http_validation_error;
 pub mod validation_error;
 
 pub use self::{
-    {% for _, type in types | items -%}
+    {% for _, type in api.types | items -%}
         {% set type_name = type.name | to_upper_camel_case -%}
         {{ type.name | to_snake_case }}::{
             {{ type_name }},
