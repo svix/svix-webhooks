@@ -2,7 +2,6 @@
 openapi = "lib-openapi.json"
 
 [rust]
-template_dir = "templates/rust"
 extra_mounts = { "rust/.rustfmt.toml" = "/app/.rustfmt.toml" }
 extra_shell_commands = ["rm rust/src/api/health.rs"]
 [[rust.task]]
@@ -20,7 +19,6 @@ output_dir = "rust/src/models"
 
 
 [javascript]
-template_dir = "templates/javascript"
 [[javascript.task]]
 template = "templates/javascript/api_resource.ts.jinja"
 output_dir = "javascript/src/api"
@@ -36,7 +34,6 @@ output_dir = "javascript/src"
 
 
 [cli]
-template_dir = "templates/svix-cli"
 extra_mounts = { "svix-cli/.rustfmt.toml" = "/app/.rustfmt.toml" }
 extra_shell_commands = [
    "cargo fix --all-targets --all-features --manifest-path svix-cli/Cargo.toml --allow-dirty --allow-staged",
@@ -49,7 +46,6 @@ output_dir = "svix-cli/src/cmds/api"
 
 
 [python]
-template_dir = "templates/python"
 extra_shell_commands = [
    "rm python/svix/api/health.py",
 ]
@@ -68,7 +64,6 @@ output_dir = "python/svix/api"
 
 
 [ruby]
-template_dir = "templates/ruby"
 [[ruby.task]]
 template = "templates/ruby/api_resource.rb.jinja"
 output_dir = "ruby/lib/svix/api"
@@ -81,7 +76,6 @@ output_dir = "ruby/lib/svix/models"
 
 
 [csharp]
-template_dir = "templates/csharp"
 [[csharp.task]]
 template = "templates/csharp/api_resource.cs.jinja"
 output_dir = "csharp/Svix"
@@ -91,7 +85,6 @@ output_dir = "csharp/Svix/Models"
 
 
 [java]
-template_dir = "templates/java"
 [[java.task]]
 template = "templates/java/api_resource.java.jinja"
 output_dir = "java/lib/src/main/java/com/svix/api"
@@ -104,7 +97,6 @@ output_dir = "java/lib/src/main/java/com/svix/models"
 
 
 [go]
-template_dir = "templates/go"
 extra_shell_commands = [
    "rm go/health.go",
    "sed -i.bak 's/package svix/package internalapi/g' go/internalapi/management* && rm go/internalapi/management*.bak"
@@ -156,7 +148,6 @@ extra_codegen_args = [
 
 
 [kotlin]
-template_dir = "templates/kotlin"
 [[kotlin.task]]
 template = "templates/kotlin/component_type.kt.jinja"
 output_dir = "kotlin/lib/src/main/kotlin/models"

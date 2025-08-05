@@ -76,7 +76,8 @@ def docker_container_create(prefix, task) -> str:
         task["language_task_index"] + 1,
         "".join(random.choice(string.ascii_lowercase) for _ in range(10)),
     )
-    template_dir = codegen_dir.joinpath(task["template_dir"])
+    template_path = codegen_dir.joinpath(task["template"])
+    template_dir = template_path.parent
     cmd = [
         get_docker_binary(),
         "container",
@@ -97,7 +98,6 @@ def docker_container_create(prefix, task) -> str:
         cmd.append(
             f"type=bind,src={Path(extra_mount_src).absolute()},dst={extra_mount_dst},ro"
         )
-    template_path = codegen_dir.joinpath(task["template"])
     cmd.extend(
         [
             OPENAPI_CODEGEN_IMAGE,
@@ -235,7 +235,6 @@ def parse_config():
                     "output_dir": task["output_dir"],
                     "extra_mounts": language_config.get("extra_mounts", {}),
                     "extra_codegen_args": task.get("extra_codegen_args", []),
-                    "template_dir": language_config["template_dir"],
                 }
             )
     # the cli step depends on generated rust code.
