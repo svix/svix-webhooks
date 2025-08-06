@@ -10,6 +10,7 @@ import com.svix.kotlin.models.EndpointPatch
 import com.svix.kotlin.models.EndpointSecretOut
 import com.svix.kotlin.models.EndpointSecretRotateIn
 import com.svix.kotlin.models.EndpointStats
+import com.svix.kotlin.models.EndpointTransformationIn
 import com.svix.kotlin.models.EndpointTransformationOut
 import com.svix.kotlin.models.EndpointTransformationPatch
 import com.svix.kotlin.models.EndpointUpdate
@@ -314,6 +315,29 @@ class Endpoint(private val client: SvixHttpClient) {
             "PATCH",
             url.build(),
             reqBody = endpointTransformationPatch,
+        )
+    }
+
+    /**
+     * This operation was renamed to `set-transformation`.
+     *
+     * @deprecated
+     */
+    @Deprecated("")
+    suspend fun transformationPartialUpdate(
+        appId: String,
+        endpointId: String,
+        endpointTransformationIn: EndpointTransformationIn,
+    ) {
+        val url =
+            client
+                .newUrlBuilder()
+                .encodedPath("/api/v1/app/$appId/endpoint/$endpointId/transformation")
+
+        client.executeRequest<EndpointTransformationIn, Boolean>(
+            "PATCH",
+            url.build(),
+            reqBody = endpointTransformationIn,
         )
     }
 }

@@ -518,3 +518,29 @@ func (endpoint *Endpoint) PatchTransformation(
 	)
 	return err
 }
+
+// This operation was renamed to `set-transformation`.
+//
+// Deprecated: TransformationPartialUpdate is deprecated.
+func (endpoint *Endpoint) TransformationPartialUpdate(
+	ctx context.Context,
+	appId string,
+	endpointId string,
+	endpointTransformationIn models.EndpointTransformationIn,
+) error {
+	pathMap := map[string]string{
+		"app_id":      appId,
+		"endpoint_id": endpointId,
+	}
+	_, err := internal.ExecuteRequest[models.EndpointTransformationIn, any](
+		ctx,
+		endpoint.client,
+		"PATCH",
+		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
+		pathMap,
+		nil,
+		nil,
+		&endpointTransformationIn,
+	)
+	return err
+}

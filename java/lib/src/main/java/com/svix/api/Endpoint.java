@@ -13,6 +13,7 @@ import com.svix.models.EndpointPatch;
 import com.svix.models.EndpointSecretOut;
 import com.svix.models.EndpointSecretRotateIn;
 import com.svix.models.EndpointStats;
+import com.svix.models.EndpointTransformationIn;
 import com.svix.models.EndpointTransformationOut;
 import com.svix.models.EndpointTransformationPatch;
 import com.svix.models.EndpointUpdate;
@@ -396,5 +397,26 @@ public class Endpoint {
                                         "/api/v1/app/%s/endpoint/%s/transformation",
                                         appId, endpointId));
         this.client.executeRequest("PATCH", url.build(), null, endpointTransformationPatch, null);
+    }
+
+    /**
+     * This operation was renamed to `set-transformation`.
+     *
+     * @deprecated
+     */
+    @Deprecated
+    public void transformationPartialUpdate(
+            final String appId,
+            final String endpointId,
+            final EndpointTransformationIn endpointTransformationIn)
+            throws IOException, ApiException {
+        HttpUrl.Builder url =
+                this.client
+                        .newUrlBuilder()
+                        .encodedPath(
+                                String.format(
+                                        "/api/v1/app/%s/endpoint/%s/transformation",
+                                        appId, endpointId));
+        this.client.executeRequest("PATCH", url.build(), null, endpointTransformationIn, null);
     }
 }
