@@ -1,5 +1,5 @@
 [global]
-openapi = "lib-openapi.json"
+input_files = ["lib-openapi.json"]
 
 [rust]
 extra_mounts = { "rust/.rustfmt.toml" = "/app/.rustfmt.toml" }
