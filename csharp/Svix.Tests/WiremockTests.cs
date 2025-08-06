@@ -362,7 +362,6 @@ namespace Svix.Tests
             Assert.Equal(1, stub.LogEntries.Count);
         }
 
-
         // enable this test when we publish stream
         // [Fact]
         // public void InlineFieldStructEnumSerializesCorrectly()
