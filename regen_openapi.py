@@ -14,7 +14,8 @@ except ImportError:
     print("Python 3.11 or greater is required to run the codegen")
     exit(1)
 
-OPENAPI_CODEGEN_IMAGE = "ghcr.io/svix/openapi-codegen:20250805-316"
+# TODO(before merging): use the official image, for now using my fork.
+OPENAPI_CODEGEN_IMAGE = "ghcr.io/svix-mman/dev-openapi-codegen:20250806-318"
 DEBUG = os.getenv("DEBUG") is not None
 GREEN = "\033[92m"
 BLUE = "\033[94m"

@@ -10,7 +10,9 @@ import {
 
 {{ doc_comment }}
 export interface {{ type_name }} {
+    {% with fields = type.fields -%}
     {% include "types/struct_fields.ts.jinja" -%}
+    {% endwith -%}
 }
 
 export const {{ type_name }}Serializer = {
