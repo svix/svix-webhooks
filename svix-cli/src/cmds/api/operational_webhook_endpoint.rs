@@ -1,8 +1,6 @@
 use clap::{Args, Subcommand};
 use svix::api::*;
 
-use crate::json::JsonOf;
-
 #[derive(Args, Clone)]
 pub struct OperationalWebhookEndpointListOptions {
     /// Limit the number of returned items
@@ -79,7 +77,7 @@ pub enum OperationalWebhookEndpointCommands {
     },
     /// Create an operational webhook endpoint.
     Create {
-        operational_webhook_endpoint_in: JsonOf<OperationalWebhookEndpointIn>,
+        operational_webhook_endpoint_in: crate::json::JsonOf<OperationalWebhookEndpointIn>,
         #[clap(flatten)]
         options: OperationalWebhookEndpointCreateOptions,
     },
@@ -88,7 +86,7 @@ pub enum OperationalWebhookEndpointCommands {
     /// Update an operational webhook endpoint.
     Update {
         endpoint_id: String,
-        operational_webhook_endpoint_update: JsonOf<OperationalWebhookEndpointUpdate>,
+        operational_webhook_endpoint_update: crate::json::JsonOf<OperationalWebhookEndpointUpdate>,
     },
     /// Delete an operational webhook endpoint.
     Delete { endpoint_id: String },
@@ -97,7 +95,8 @@ pub enum OperationalWebhookEndpointCommands {
     /// Set the additional headers to be sent with the operational webhook.
     UpdateHeaders {
         endpoint_id: String,
-        operational_webhook_endpoint_headers_in: JsonOf<OperationalWebhookEndpointHeadersIn>,
+        operational_webhook_endpoint_headers_in:
+            crate::json::JsonOf<OperationalWebhookEndpointHeadersIn>,
     },
     /// Get an operational webhook endpoint's signing secret.
     ///
@@ -109,7 +108,8 @@ pub enum OperationalWebhookEndpointCommands {
     /// The previous secret will remain valid for the next 24 hours.
     RotateSecret {
         endpoint_id: String,
-        operational_webhook_endpoint_secret_in: Option<JsonOf<OperationalWebhookEndpointSecretIn>>,
+        operational_webhook_endpoint_secret_in:
+            Option<crate::json::JsonOf<OperationalWebhookEndpointSecretIn>>,
         #[clap(flatten)]
         options: OperationalWebhookEndpointRotateSecretOptions,
     },

@@ -1,8 +1,6 @@
 use clap::{Args, Subcommand};
 use svix::api::*;
 
-use crate::json::JsonOf;
-
 #[derive(Args, Clone)]
 pub struct AuthenticationAppPortalAccessOptions {
     #[arg(long)]
@@ -56,14 +54,14 @@ pub enum AuthenticationCommands {
     /// Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal.
     AppPortalAccess {
         app_id: String,
-        app_portal_access_in: Option<JsonOf<AppPortalAccessIn>>,
+        app_portal_access_in: Option<crate::json::JsonOf<AppPortalAccessIn>>,
         #[clap(flatten)]
         options: AuthenticationAppPortalAccessOptions,
     },
     /// Expire all of the tokens associated with a specific application.
     ExpireAll {
         app_id: String,
-        application_token_expire_in: Option<JsonOf<ApplicationTokenExpireIn>>,
+        application_token_expire_in: Option<crate::json::JsonOf<ApplicationTokenExpireIn>>,
         #[clap(flatten)]
         options: AuthenticationExpireAllOptions,
     },

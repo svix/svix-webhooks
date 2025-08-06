@@ -1,8 +1,6 @@
 use clap::{Args, Subcommand};
 use svix::api::*;
 
-use crate::json::JsonOf;
-
 #[derive(Args, Clone)]
 pub struct IntegrationListOptions {
     /// Limit the number of returned items
@@ -75,7 +73,7 @@ pub enum IntegrationCommands {
     /// Create an integration.
     Create {
         app_id: String,
-        integration_in: JsonOf<IntegrationIn>,
+        integration_in: crate::json::JsonOf<IntegrationIn>,
         #[clap(flatten)]
         options: IntegrationCreateOptions,
     },
@@ -85,7 +83,7 @@ pub enum IntegrationCommands {
     Update {
         app_id: String,
         id: String,
-        integration_update: JsonOf<IntegrationUpdate>,
+        integration_update: crate::json::JsonOf<IntegrationUpdate>,
     },
     /// Delete an integration.
     Delete { app_id: String, id: String },

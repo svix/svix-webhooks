@@ -1,8 +1,5 @@
-use chrono::{DateTime, Utc};
 use clap::{Args, Subcommand};
 use svix::api::*;
-
-use crate::json::JsonOf;
 
 #[derive(Args, Clone)]
 pub struct EndpointListOptions {
@@ -101,10 +98,10 @@ impl From<EndpointSendExampleOptions> for svix::api::EndpointSendExampleOptions 
 pub struct EndpointGetStatsOptions {
     /// Filter the range to data starting from this date.
     #[arg(long)]
-    pub since: Option<DateTime<Utc>>,
+    pub since: Option<chrono::DateTime<chrono::Utc>>,
     /// Filter the range to data ending by this date.
     #[arg(long)]
-    pub until: Option<DateTime<Utc>>,
+    pub until: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 impl From<EndpointGetStatsOptions> for svix::api::EndpointGetStatsOptions {
@@ -137,7 +134,7 @@ pub enum EndpointCommands {
     /// When `secret` is `null` the secret is automatically generated (recommended).
     Create {
         app_id: String,
-        endpoint_in: JsonOf<EndpointIn>,
+        endpoint_in: crate::json::JsonOf<EndpointIn>,
         #[clap(flatten)]
         options: EndpointCreateOptions,
     },
@@ -147,7 +144,7 @@ pub enum EndpointCommands {
     Update {
         app_id: String,
         id: String,
-        endpoint_update: JsonOf<EndpointUpdate>,
+        endpoint_update: crate::json::JsonOf<EndpointUpdate>,
     },
     /// Delete an endpoint.
     Delete { app_id: String, id: String },
@@ -155,7 +152,7 @@ pub enum EndpointCommands {
     Patch {
         app_id: String,
         id: String,
-        endpoint_patch: Option<JsonOf<EndpointPatch>>,
+        endpoint_patch: Option<crate::json::JsonOf<EndpointPatch>>,
     },
     /// Get the additional headers to be sent with the webhook.
     GetHeaders { app_id: String, id: String },
@@ -163,13 +160,13 @@ pub enum EndpointCommands {
     UpdateHeaders {
         app_id: String,
         id: String,
-        endpoint_headers_in: JsonOf<EndpointHeadersIn>,
+        endpoint_headers_in: crate::json::JsonOf<EndpointHeadersIn>,
     },
     /// Partially set the additional headers to be sent with the webhook.
     PatchHeaders {
         app_id: String,
         id: String,
-        endpoint_headers_patch_in: JsonOf<EndpointHeadersPatchIn>,
+        endpoint_headers_patch_in: crate::json::JsonOf<EndpointHeadersPatchIn>,
     },
     /// Resend all failed messages since a given time.
     ///
@@ -177,7 +174,7 @@ pub enum EndpointCommands {
     Recover {
         app_id: String,
         id: String,
-        recover_in: JsonOf<RecoverIn>,
+        recover_in: crate::json::JsonOf<RecoverIn>,
         #[clap(flatten)]
         options: EndpointRecoverOptions,
     },
@@ -188,7 +185,7 @@ pub enum EndpointCommands {
     ReplayMissing {
         app_id: String,
         id: String,
-        replay_in: JsonOf<ReplayIn>,
+        replay_in: crate::json::JsonOf<ReplayIn>,
         #[clap(flatten)]
         options: EndpointReplayMissingOptions,
     },
@@ -203,7 +200,7 @@ pub enum EndpointCommands {
     RotateSecret {
         app_id: String,
         id: String,
-        endpoint_secret_rotate_in: Option<JsonOf<EndpointSecretRotateIn>>,
+        endpoint_secret_rotate_in: Option<crate::json::JsonOf<EndpointSecretRotateIn>>,
         #[clap(flatten)]
         options: EndpointRotateSecretOptions,
     },
@@ -211,7 +208,7 @@ pub enum EndpointCommands {
     SendExample {
         app_id: String,
         id: String,
-        event_example_in: JsonOf<EventExampleIn>,
+        event_example_in: crate::json::JsonOf<EventExampleIn>,
         #[clap(flatten)]
         options: EndpointSendExampleOptions,
     },
@@ -228,7 +225,7 @@ pub enum EndpointCommands {
     PatchTransformation {
         app_id: String,
         id: String,
-        endpoint_transformation_patch: Option<JsonOf<EndpointTransformationPatch>>,
+        endpoint_transformation_patch: Option<crate::json::JsonOf<EndpointTransformationPatch>>,
     },
 }
 

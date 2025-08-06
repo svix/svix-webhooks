@@ -1,8 +1,6 @@
 use clap::{Args, Subcommand};
 use svix::api::*;
 
-use crate::json::JsonOf;
-
 #[derive(Args, Clone)]
 pub struct ApplicationListOptions {
     /// Limit the number of returned items
@@ -60,7 +58,7 @@ pub enum ApplicationCommands {
     },
     /// Create a new application.
     Create {
-        application_in: JsonOf<ApplicationIn>,
+        application_in: crate::json::JsonOf<ApplicationIn>,
         #[clap(flatten)]
         options: ApplicationCreateOptions,
     },
@@ -69,14 +67,14 @@ pub enum ApplicationCommands {
     /// Update an application.
     Update {
         id: String,
-        application_in: JsonOf<ApplicationIn>,
+        application_in: crate::json::JsonOf<ApplicationIn>,
     },
     /// Delete an application.
     Delete { id: String },
     /// Partially update an application.
     Patch {
         id: String,
-        application_patch: Option<JsonOf<ApplicationPatch>>,
+        application_patch: Option<crate::json::JsonOf<ApplicationPatch>>,
     },
 }
 

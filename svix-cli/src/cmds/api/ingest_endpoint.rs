@@ -1,8 +1,6 @@
 use clap::{Args, Subcommand};
 use svix::api::*;
 
-use crate::json::JsonOf;
-
 #[derive(Args, Clone)]
 pub struct IngestEndpointListOptions {
     /// Limit the number of returned items
@@ -75,7 +73,7 @@ pub enum IngestEndpointCommands {
     /// Create an ingest endpoint.
     Create {
         source_id: String,
-        ingest_endpoint_in: JsonOf<IngestEndpointIn>,
+        ingest_endpoint_in: crate::json::JsonOf<IngestEndpointIn>,
         #[clap(flatten)]
         options: IngestEndpointCreateOptions,
     },
@@ -88,7 +86,7 @@ pub enum IngestEndpointCommands {
     Update {
         source_id: String,
         endpoint_id: String,
-        ingest_endpoint_update: JsonOf<IngestEndpointUpdate>,
+        ingest_endpoint_update: crate::json::JsonOf<IngestEndpointUpdate>,
     },
     /// Delete an ingest endpoint.
     Delete {
@@ -104,7 +102,7 @@ pub enum IngestEndpointCommands {
     UpdateHeaders {
         source_id: String,
         endpoint_id: String,
-        ingest_endpoint_headers_in: JsonOf<IngestEndpointHeadersIn>,
+        ingest_endpoint_headers_in: crate::json::JsonOf<IngestEndpointHeadersIn>,
     },
     /// Get an ingest endpoint's signing secret.
     ///
@@ -120,7 +118,7 @@ pub enum IngestEndpointCommands {
     RotateSecret {
         source_id: String,
         endpoint_id: String,
-        ingest_endpoint_secret_in: Option<JsonOf<IngestEndpointSecretIn>>,
+        ingest_endpoint_secret_in: Option<crate::json::JsonOf<IngestEndpointSecretIn>>,
         #[clap(flatten)]
         options: IngestEndpointRotateSecretOptions,
     },

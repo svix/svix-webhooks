@@ -2,7 +2,6 @@ use clap::{Args, Subcommand};
 use svix::api::*;
 
 use super::{ingest_endpoint::IngestEndpointArgs, ingest_source::IngestSourceArgs};
-use crate::json::JsonOf;
 
 #[derive(Args, Clone)]
 pub struct IngestDashboardOptions {
@@ -31,7 +30,8 @@ pub enum IngestCommands {
     /// Get access to the Ingest Source Consumer Portal.
     Dashboard {
         source_id: String,
-        ingest_source_consumer_portal_access_in: Option<JsonOf<IngestSourceConsumerPortalAccessIn>>,
+        ingest_source_consumer_portal_access_in:
+            Option<crate::json::JsonOf<IngestSourceConsumerPortalAccessIn>>,
         #[clap(flatten)]
         options: IngestDashboardOptions,
     },

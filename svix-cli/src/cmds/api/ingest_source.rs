@@ -1,8 +1,6 @@
 use clap::{Args, Subcommand};
 use svix::api::*;
 
-use crate::json::JsonOf;
-
 #[derive(Args, Clone)]
 pub struct IngestSourceListOptions {
     /// Limit the number of returned items
@@ -73,7 +71,7 @@ pub enum IngestSourceCommands {
     },
     /// Create Ingest Source.
     Create {
-        ingest_source_in: JsonOf<IngestSourceIn>,
+        ingest_source_in: crate::json::JsonOf<IngestSourceIn>,
         #[clap(flatten)]
         options: IngestSourceCreateOptions,
     },
@@ -82,7 +80,7 @@ pub enum IngestSourceCommands {
     /// Update an Ingest Source.
     Update {
         source_id: String,
-        ingest_source_in: JsonOf<IngestSourceIn>,
+        ingest_source_in: crate::json::JsonOf<IngestSourceIn>,
     },
     /// Delete an Ingest Source.
     Delete { source_id: String },
