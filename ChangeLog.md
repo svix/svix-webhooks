@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.71.0
+## Version 1.70.1
 * Libs/All: Re-add `endpoint.transformationPartialUpdate` as a deprecated operation
   * It was removed through a rename in the previous version, which should not have happened
 
