@@ -13,8 +13,9 @@ import (
 {% if type.description is defined -%}
 {{ type.description | to_doc_comment(style="go")}}
 {% endif -%}
+{# Generate the usage comments -#}
 // When creating an {{ ty_name }}, use the appropriate {{ type.content_field }} structure based on the Type:
-{% for schema_ref, vars in type.variants | groupby("schema_ref") -%}
+{% for schema_ref, vars in type.variants | struct_enum_ref_variants | groupby("schema_ref") -%}
 	{% set use_type -%}
 		{% if schema_ref is defined -%}
 		Use {{ schema_ref | to_upper_camel_case }}
@@ -24,11 +25,24 @@ import (
 	{% endset -%}
 //   - {% for v in vars %}"{{ v.name }}"{% if not loop.last %},{% endif %}{% endfor %}: {{ use_type }}
 {%- endfor -%}
+{% for v in type.variants | struct_enum_struct_variants -%}
+//   - "{{ v.name }}": Use {{ ty_name }}{{ content_field }}{{ v.name | to_upper_camel_case }}
+{% endfor -%}
 type {{ ty_name }} struct {
-    {% include "types/struct_fields.go.jinja" -%}	
+	{% with fields = type.fields, type_name = type.name -%}
+    	{% include "types/struct_fields.go.jinja" -%}
+	{% endwith -%}
 	{{ discriminator_field }} {{ ty_name }}{{ discriminator_field }} `json:"{{ type.discriminator_field }}"`
 	{{ content_field }} {{ ty_name }}{{ content_field }} `json:"{{ type.content_field }}"`
 }
+
+{% for v in type.variants | struct_enum_struct_variants -%}
+type {{ ty_name }}{{ content_field }}{{ v.name | to_upper_camel_case }} struct {
+	{% with fields = v.fields, type_name = "n/a" -%}
+    	{% include "types/struct_fields.go.jinja" -%}
+	{% endwith -%}
+}
+{% endfor -%}
 
 type {{ ty_name }}{{ discriminator_field }} string
 
@@ -49,6 +63,9 @@ func ({{ schema_ref | to_upper_camel_case }}) is{{ ty_name }}{{ content_field }}
 	{% else -%}
 func (emptyMap) is{{ ty_name }}{{ content_field }}(){}
 	{% endif -%}
+{% endfor -%}
+{% for v in type.variants | struct_enum_struct_variants -%}
+func ({{ ty_name }}{{ content_field }}{{ v.name | to_upper_camel_case }}) is{{ ty_name }}{{ content_field }}(){}
 {% endfor %}
 
 func (i *{{ ty_name }}) UnmarshalJSON(data []byte) error {
@@ -64,13 +81,19 @@ func (i *{{ ty_name }}) UnmarshalJSON(data []byte) error {
 
 	var err error
 	switch i.Type {
-	{% for schema_ref, vars in type.variants | groupby("schema_ref") -%}
+	{% for schema_ref, vars in type.variants | struct_enum_ref_variants | groupby("schema_ref") -%}
 		case {% for v in vars %}"{{ v.name }}"{%if not loop.last%},{% endif %}{% endfor %}:
 			{% if schema_ref is defined -%}
 			var c {{ schema_ref | to_upper_camel_case }}
 			err = json.Unmarshal(aux.{{ content_field }}, &c)
 			i.{{ content_field }} = c
 			{% endif -%}
+	{% endfor -%}
+	{% for v in type.variants | struct_enum_struct_variants -%}
+		case "{{ v.name }}":
+			var c {{ ty_name }}{{ content_field }}{{ v.name | to_upper_camel_case }}
+			err = json.Unmarshal(aux.{{ content_field }}, &c)
+			i.{{ content_field }} = c
 	{% endfor -%}
 	default:
 		// should be unreachable
@@ -82,7 +105,7 @@ func (i *{{ ty_name }}) UnmarshalJSON(data []byte) error {
 {% if has_variant_with_no_schema_ref -%}
 var {{ ty_name }}{{ discriminator_field }}WithNo{{ content_field }} = map[string]bool{
 	{% for v in type.variants -%}
-		{% if v.schema_ref is not defined -%}
+		{% if v.type == "ref" and v.schema_ref is not defined -%}
     "{{ v.name }}": true,
 		{% endif -%}
 	{% endfor -%}
@@ -90,13 +113,32 @@ var {{ ty_name }}{{ discriminator_field }}WithNo{{ content_field }} = map[string
 {% endif -%}
 
 func (i {{ ty_name }}) MarshalJSON() ([]byte, error) {
-	type Alias {{ ty_name }}
-	{% if has_variant_with_no_schema_ref -%}
-	if _, found := {{ ty_name }}{{ discriminator_field }}WithNo{{ content_field }}[string(i.{{ discriminator_field }})]; found {
- 	   i.{{ content_field }} = emptyMap{}
-	}
+	{% if type.name is endingwith "Patch" -%}
+		toSerialize := map[string]any{
+			"{{ type.discriminator_field }}": string(i.{{ discriminator_field }}),
+			"{{ type.content_field }}": i.{{ content_field }},
+		}
+		{% for field in type.fields -%}
+			{% if field.nullable -%}
+		if i.{{ field.name | to_upper_camel_case }}.IsSet() {
+			toSerialize["{{ field.name }}"] = i.{{ field.name | to_upper_camel_case }}
+		}
+			{% else -%}
+		if i.{{ field.name | to_upper_camel_case }} != nil {
+			toSerialize["{{ field.name }}"] = i.{{ field.name | to_upper_camel_case }}
+		}
+			{% endif -%}
+		{% endfor -%}
+		return json.Marshal(toSerialize)
+	{% else -%}
+		type Alias {{ ty_name }}
+		{% if has_variant_with_no_schema_ref -%}
+		if _, found := {{ ty_name }}{{ discriminator_field }}WithNo{{ content_field }}[string(i.{{ discriminator_field }})]; found {
+		i.{{ content_field }} = emptyMap{}
+		}
+		{% endif -%}
+		return json.Marshal(&struct {Alias}{Alias: (Alias)(i)})
 	{% endif -%}
-	return json.Marshal(&struct {Alias}{Alias: (Alias)(i)})
 }
 
 var {{ ty_name }}{{ discriminator_field }}FromString = map[string]{{ ty_name }}{{ discriminator_field }}{

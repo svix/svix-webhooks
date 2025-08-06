@@ -749,3 +749,55 @@ func TestReadStructEnumField(t *testing.T) {
 	}
 
 }
+
+// Uncomment these tests once we release stream
+
+// func TestStructEnumInlineFieldsSerialize(t *testing.T) {
+// 	patchIn := models.StreamSinkPatch{
+// 		BatchSize: utils.NewNullable[uint16](123),
+// 		Type:      models.StreamSinkPatchTypeAmazonS3,
+// 		Config: models.StreamSinkPatchConfigAmazonS3{
+// 			AccessKeyId:     ptr("x"),
+// 			Bucket:          ptr("x"),
+// 			Region:          ptr("x"),
+// 			SecretAccessKey: ptr("x"),
+// 		},
+// 	}
+
+// 	encodedPatchIn, err := json.Marshal(patchIn)
+// 	if err != nil {
+// 		t.Fatal(err)
+// 	}
+// 	expectedJson := `{"batchSize":123,"config":{"accessKeyId":"x","bucket":"x","region":"x","secretAccessKey":"x"},"type":"amazonS3"}`
+// 	if string(encodedPatchIn) != expectedJson {
+// 		t.Errorf("Expected dumped json to match")
+// 	}
+// }
+
+// func TestStructEnumInlineFieldsDeserialize(t *testing.T) {
+// 	jsonIn := `{"batchSize":123,"config":{"accessKeyId":"x","bucket":"x","region":"x","secretAccessKey":"x"},"type":"amazonS3"}`
+
+// 	var loadedModel models.StreamSinkPatch
+// 	err := json.Unmarshal([]byte(jsonIn), &loadedModel)
+// 	if err != nil {
+// 		t.Fatal(err)
+// 	}
+
+// 	expectedPatchIn := models.StreamSinkPatch{
+// 		BatchSize: utils.NewNullable[uint16](123),
+// 		Type:      models.StreamSinkPatchTypeAmazonS3,
+// 		Config: models.StreamSinkPatchConfigAmazonS3{
+// 			AccessKeyId:     ptr("x"),
+// 			Bucket:          ptr("x"),
+// 			Region:          ptr("x"),
+// 			SecretAccessKey: ptr("x"),
+// 		},
+// 	}
+// 	if !reflect.DeepEqual(expectedPatchIn, loadedModel) {
+// 		t.Errorf("Expected loaded json to match")
+// 	}
+// }
+
+// func ptr[T any](value T) *T {
+// 	return &value
+// }

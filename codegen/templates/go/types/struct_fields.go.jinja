@@ -1,7 +1,7 @@
-{% for field in type.fields -%}
+{% for field in fields -%}
     {% set f_name = field.name | to_upper_camel_case -%}
     {% set f_type = field.type.to_go() -%}
-    {% set use_nullable = type.name is endingwith "Patch" and field.nullable -%}
+    {% set use_nullable = type_name is endingwith "Patch" and field.nullable -%}
     {% set json_annotation = "" -%}
     {% if use_nullable -%}
         {% set f_type %}utils.Nullable[{{ f_type }}]{% endset -%}
