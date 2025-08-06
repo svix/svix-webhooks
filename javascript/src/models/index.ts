@@ -47,6 +47,7 @@ export { EndpointPatch } from "./endpointPatch";
 export { EndpointSecretOut } from "./endpointSecretOut";
 export { EndpointSecretRotateIn } from "./endpointSecretRotateIn";
 export { EndpointStats } from "./endpointStats";
+export { EndpointTransformationIn } from "./endpointTransformationIn";
 export { EndpointTransformationOut } from "./endpointTransformationOut";
 export { EndpointTransformationPatch } from "./endpointTransformationPatch";
 export { EndpointUpdate } from "./endpointUpdate";

@@ -228,6 +228,12 @@ pub enum EndpointCommands {
         id: String,
         endpoint_transformation_patch: Option<crate::json::JsonOf<EndpointTransformationPatch>>,
     },
+    /// This operation was renamed to `set-transformation`.
+    TransformationPartialUpdate {
+        app_id: String,
+        id: String,
+        endpoint_transformation_in: Option<crate::json::JsonOf<EndpointTransformationIn>>,
+    },
 }
 
 impl EndpointCommands {
@@ -394,6 +400,21 @@ impl EndpointCommands {
                         endpoint_transformation_patch
                             .unwrap_or_default()
                             .into_inner(),
+                    )
+                    .await?;
+            }
+            Self::TransformationPartialUpdate {
+                app_id,
+                id,
+                endpoint_transformation_in,
+            } => {
+                #[allow(deprecated)]
+                client
+                    .endpoint()
+                    .transformation_partial_update(
+                        app_id,
+                        id,
+                        endpoint_transformation_in.unwrap_or_default().into_inner(),
                     )
                     .await?;
             }

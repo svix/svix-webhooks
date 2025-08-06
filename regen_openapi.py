@@ -15,7 +15,7 @@ except ImportError:
     print("Python 3.11 or greater is required to run the codegen")
     exit(1)
 
-OPENAPI_CODEGEN_IMAGE = "ghcr.io/svix/openapi-codegen:20250805-316"
+OPENAPI_CODEGEN_IMAGE = "ghcr.io/svix/openapi-codegen:20250806-318"
 DEBUG = os.getenv("DEBUG") is not None
 GREEN = "\033[92m"
 BLUE = "\033[94m"
@@ -79,6 +79,11 @@ def docker_container_create(prefix, task) -> str:
     )
     template_path = codegen_dir.joinpath(task["template"])
     template_dir = template_path.parent
+
+    input_file_mounts = [
+        f"--mount=type=bind,src={codegen_dir.joinpath(f).absolute()},dst=/app/{f},ro"
+        for f in task["input_files"]
+    ]
     cmd = [
         get_docker_binary(),
         "container",
@@ -88,8 +93,7 @@ def docker_container_create(prefix, task) -> str:
         container_name,
         "--workdir",
         "/app",
-        "--mount",
-        f"type=bind,src={codegen_dir.joinpath(task['openapi']).absolute()},dst=/app/{task['openapi']},ro",
+        *input_file_mounts,
         "--mount",
         f"type=bind,src={template_dir.absolute()},dst=/app/{template_dir},ro",
     ]
@@ -99,6 +103,7 @@ def docker_container_create(prefix, task) -> str:
         cmd.append(
             f"type=bind,src={Path(extra_mount_src).absolute()},dst={extra_mount_dst},ro"
         )
+    input_file_args = [f"--input-file={f}" for f in task["input_files"]]
     cmd.extend(
         [
             OPENAPI_CODEGEN_IMAGE,
@@ -106,7 +111,7 @@ def docker_container_create(prefix, task) -> str:
             "generate",
             *task["extra_codegen_args"],
             f"--template={template_path}",
-            f"--input-file={task['openapi']}",
+            *input_file_args,
             f"--output-dir={task['output_dir']}",
         ]
     )
@@ -216,7 +221,7 @@ def run_codegen_for_language(language, language_config):
 def parse_config():
     with open(Path("codegen").joinpath("codegen.toml"), "rb") as f:
         data = tomllib.load(f)
-    openapi = data.pop("global")["openapi"]
+    input_files = data.pop("global")["input_files"]
     config = {}
     for language, language_config in data.items():
         config[language] = {"tasks": [], "tasks_count": len(language_config["task"])}
@@ -229,8 +234,8 @@ def parse_config():
                     "language": language,
                     "language_task_index": language_task_index,
                     "language_total": len(language_config.get("task", [])),
-                    "openapi": task.get(
-                        "openapi", language_config.get("openapi", openapi)
+                    "input_files": task.get(
+                        "input_files", language_config.get("input_files", input_files)
                     ),
                     "template": task["template"],
                     "output_dir": task["output_dir"],

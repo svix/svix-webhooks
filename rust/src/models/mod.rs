@@ -49,6 +49,7 @@ pub mod endpoint_patch;
 pub mod endpoint_secret_out;
 pub mod endpoint_secret_rotate_in;
 pub mod endpoint_stats;
+pub mod endpoint_transformation_in;
 pub mod endpoint_transformation_out;
 pub mod endpoint_transformation_patch;
 pub mod endpoint_update;
@@ -210,6 +211,7 @@ pub use self::{
     endpoint_secret_out::EndpointSecretOut,
     endpoint_secret_rotate_in::EndpointSecretRotateIn,
     endpoint_stats::EndpointStats,
+    endpoint_transformation_in::EndpointTransformationIn,
     endpoint_transformation_out::EndpointTransformationOut,
     endpoint_transformation_patch::EndpointTransformationPatch,
     endpoint_update::EndpointUpdate,

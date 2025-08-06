@@ -1,5 +1,5 @@
 [global]
-openapi = "lib-openapi.json"
+input_files = ["lib-openapi.json", "api_extra.ron"]
 
 [rust]
 extra_mounts = { "rust/.rustfmt.toml" = "/app/.rustfmt.toml" }
@@ -97,8 +97,7 @@ output_dir = "java/lib/src/main/java/com/svix/models"
 [go]
 extra_shell_commands = [
    "rm go/health.go",
-   "sed -i.bak 's/package svix/package internalapi/g' go/internalapi/management* && rm go/internalapi/management*.bak"
-
+   "sed -i.bak 's/package svix/package internalapi/g' go/internalapi/management* && rm go/internalapi/management*.bak",
 ]
 [[go.task]]
 template = "templates/go/api_resource.go.jinja"
@@ -112,6 +111,7 @@ output_dir = "go/models"
 [[go.task]]
 template = "templates/go/api_resource.go.jinja"
 output_dir = "go/internalapi"
+input_files = ["lib-openapi.json"]
 extra_codegen_args = [
    # This is a limited list of operations required by terraform
    "--include-mode=only-specified",
