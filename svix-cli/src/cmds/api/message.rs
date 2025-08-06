@@ -1,9 +1,8 @@
-use chrono::{DateTime, Utc};
+// this file is @generated
 use clap::{Args, Subcommand};
 use svix::api::*;
 
 use super::message_poller::MessagePollerArgs;
-use crate::json::JsonOf;
 
 #[derive(Args, Clone)]
 pub struct MessageListOptions {
@@ -18,10 +17,10 @@ pub struct MessageListOptions {
     pub channel: Option<String>,
     /// Only include items created before a certain date.
     #[arg(long)]
-    pub before: Option<DateTime<Utc>>,
+    pub before: Option<chrono::DateTime<chrono::Utc>>,
     /// Only include items created after a certain date.
     #[arg(long)]
-    pub after: Option<DateTime<Utc>>,
+    pub after: Option<chrono::DateTime<chrono::Utc>>,
     /// When `true` message payloads are included in the response.
     #[arg(long)]
     pub with_content: Option<bool>,
@@ -143,7 +142,7 @@ pub enum MessageCommands {
     /// The `payload` property is the webhook's body (the actual webhook message). Svix supports payload sizes of up to 1MiB, though it's generally a good idea to keep webhook payloads small, probably no larger than 40kb.
     Create {
         app_id: String,
-        message_in: JsonOf<MessageIn>,
+        message_in: crate::json::JsonOf<MessageIn>,
         #[clap(flatten)]
         options: MessageCreateOptions,
     },

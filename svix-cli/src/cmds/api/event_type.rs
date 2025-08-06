@@ -1,7 +1,6 @@
+// this file is @generated
 use clap::{Args, Subcommand};
 use svix::api::*;
-
-use crate::json::JsonOf;
 
 #[derive(Args, Clone)]
 pub struct EventTypeListOptions {
@@ -101,7 +100,7 @@ pub enum EventTypeCommands {
     /// Endpoints filtering on the event type before archival will continue to filter on it.
     /// This operation does not preserve the description and schemas.
     Create {
-        event_type_in: JsonOf<EventTypeIn>,
+        event_type_in: crate::json::JsonOf<EventTypeIn>,
         #[clap(flatten)]
         options: EventTypeCreateOptions,
     },
@@ -111,7 +110,7 @@ pub enum EventTypeCommands {
     /// The importer will convert all webhooks found in the either the `webhooks` or `x-webhooks`
     /// top-level.
     ImportOpenapi {
-        event_type_import_open_api_in: Option<JsonOf<EventTypeImportOpenApiIn>>,
+        event_type_import_open_api_in: Option<crate::json::JsonOf<EventTypeImportOpenApiIn>>,
         #[clap(flatten)]
         options: EventTypeImportOpenapiOptions,
     },
@@ -120,7 +119,7 @@ pub enum EventTypeCommands {
     /// Update an event type.
     Update {
         event_type_name: String,
-        event_type_update: JsonOf<EventTypeUpdate>,
+        event_type_update: crate::json::JsonOf<EventTypeUpdate>,
     },
     /// Archive an event type.
     ///
@@ -136,7 +135,7 @@ pub enum EventTypeCommands {
     /// Partially update an event type.
     Patch {
         event_type_name: String,
-        event_type_patch: Option<JsonOf<EventTypePatch>>,
+        event_type_patch: Option<crate::json::JsonOf<EventTypePatch>>,
     },
 }
 

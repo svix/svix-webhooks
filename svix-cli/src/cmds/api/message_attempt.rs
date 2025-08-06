@@ -1,4 +1,4 @@
-use chrono::{DateTime, Utc};
+// this file is @generated
 use clap::{Args, Subcommand};
 use svix::api::*;
 
@@ -24,10 +24,10 @@ pub struct MessageAttemptListByEndpointOptions {
     pub tag: Option<String>,
     /// Only include items created before a certain date
     #[arg(long)]
-    pub before: Option<DateTime<Utc>>,
+    pub before: Option<chrono::DateTime<chrono::Utc>>,
     /// Only include items created after a certain date
     #[arg(long)]
-    pub after: Option<DateTime<Utc>>,
+    pub after: Option<chrono::DateTime<chrono::Utc>>,
     /// When `true` attempt content is included in the response
     #[arg(long)]
     pub with_content: Option<bool>,
@@ -95,10 +95,10 @@ pub struct MessageAttemptListByMsgOptions {
     pub endpoint_id: Option<String>,
     /// Only include items created before a certain date
     #[arg(long)]
-    pub before: Option<DateTime<Utc>>,
+    pub before: Option<chrono::DateTime<chrono::Utc>>,
     /// Only include items created after a certain date
     #[arg(long)]
-    pub after: Option<DateTime<Utc>>,
+    pub after: Option<chrono::DateTime<chrono::Utc>>,
     /// When `true` attempt content is included in the response
     #[arg(long)]
     pub with_content: Option<bool>,
@@ -157,10 +157,10 @@ pub struct MessageAttemptListAttemptedMessagesOptions {
     pub status: Option<MessageStatus>,
     /// Only include items created before a certain date
     #[arg(long)]
-    pub before: Option<DateTime<Utc>>,
+    pub before: Option<chrono::DateTime<chrono::Utc>>,
     /// Only include items created after a certain date
     #[arg(long)]
-    pub after: Option<DateTime<Utc>>,
+    pub after: Option<chrono::DateTime<chrono::Utc>>,
     /// When `true` message payloads are included in the response
     #[arg(long)]
     pub with_content: Option<bool>,

@@ -1,7 +1,6 @@
+// this file is @generated
 use clap::{Args, Subcommand};
 use svix::api::*;
-
-use crate::json::JsonOf;
 
 #[derive(Args, Clone)]
 pub struct EnvironmentExportOptions {
@@ -47,7 +46,7 @@ pub enum EnvironmentCommands {
     ///
     /// It doesn't delete anything, only adds / updates what was passed to it.
     Import {
-        environment_in: Option<JsonOf<EnvironmentIn>>,
+        environment_in: Option<crate::json::JsonOf<EnvironmentIn>>,
         #[clap(flatten)]
         options: EnvironmentImportOptions,
     },

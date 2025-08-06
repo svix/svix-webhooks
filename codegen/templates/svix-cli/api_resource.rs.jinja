@@ -1,14 +1,13 @@
+// this file is @generated
 {% set resource_type_name = resource.name | to_upper_camel_case -%}
 {% set resource_id_name %}{{ resource.name | to_snake_case }}_id{% endset -%}
 {% if resource.name == "application" %}{% set resource_id_name = "app_id" %}{% endif -%}
 {% if resource.name == "message" %}{% set resource_id_name = "msg_id" %}{% endif -%}
 {% if resource.name == "integration" %}{% set resource_id_name = "integ_id" %}{% endif -%}
 
-use chrono::{DateTime, Utc};
 use clap::{Args, Subcommand};
 use svix::api::*;
 
-use crate::json::JsonOf;
 {% for _, sub in resource.subresources | items -%}
 use super::{{ sub.name | to_snake_case }}::{{ sub.name | to_upper_camel_case }}Args;
 {% endfor %}
@@ -23,6 +22,9 @@ use super::{{ sub.name | to_snake_case }}::{{ sub.name | to_upper_camel_case }}A
         pub struct {{ param_struct_type_name }} {
             {% for p in op.query_params -%}
                 {% set ty = p.type.to_rust() -%}
+                {% if ty == "DateTime<Utc>" -%}
+                    {% set ty = "chrono::DateTime<chrono::Utc>" -%}
+                {% endif -%}
                 {% if not p.required %}{% set ty %}Option<{{ ty }}>{% endset %}{% endif -%}
                 {% if p.description is defined -%}
                     {{ p.description | to_doc_comment(style="rust") }}
@@ -108,9 +110,9 @@ pub enum {{ resource_type_name }}Commands {
             {% if op.request_body_schema_name is defined -%}
                 {{ op.request_body_schema_name | to_snake_case }}:
                 {% if op.request_body_all_optional %}
-                Option<JsonOf<{{ op.request_body_schema_name }}>>
+                Option<crate::json::JsonOf<{{ op.request_body_schema_name }}>>
                 {% else %}
-                JsonOf<{{ op.request_body_schema_name }}>
+                crate::json::JsonOf<{{ op.request_body_schema_name }}>
                 {% endif %}
                 ,
             {% endif -%}
