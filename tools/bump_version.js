@@ -37,7 +37,7 @@ const filesPaths = [
     "ruby/Gemfile.lock",
     "ruby/lib/svix/version.rb",
     // Cloud OpenAPI spec - not necessary but any other time of updating seems weirder
-    "lib-openapi.json",
+    "codegen/lib-openapi.json",
 ];
 
 const rootDir = join(__dirname, "..");
