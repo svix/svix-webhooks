@@ -1,4 +1,4 @@
-{% for field in type.fields -%}
+{% for field in fields -%}
     {% if field.description is defined -%}
         {{ field.description | with_javadoc_deprecation(field.deprecated) | to_doc_comment(style="js") }}
     {% endif -%}

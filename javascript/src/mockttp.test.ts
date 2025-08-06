@@ -450,4 +450,23 @@ describe("mockttp tests", () => {
     expect(requests.length).toBe(1);
     expect(requests[0].headers["idempotency-key"]).toBe(clientProvidedKey);
   });
+
+  // uncomment when we release stream
+
+  // test("test serialize struct with inline fields", async () => {
+  //   const endpointMock = await mockServer
+  //     .forPatch("/api/v1/stream/stream_id/sink/sink_id")
+  //     // placeholder response
+  //     .thenReply(200, `{"type": "poller"}`);
+  //   const svx = new Svix("token", { serverUrl: mockServer.url });
+  //   await svx.stream.sink.patch("stream_id", "sink_id", {
+  //     type: "amazonS3",
+  //     batchSize: 123,
+  //     config: { accessKeyId: "x", bucket: "x", region: "x", secretAccessKey: "x" },
+  //   });
+  //   const requests = await endpointMock.getSeenRequests();
+  //   expect(requests.length).toBe(1);
+  //   const expectedBody = `{"type":"amazonS3","config":{"accessKeyId":"x","bucket":"x","region":"x","secretAccessKey":"x"},"batchSize":123}`;
+  //   expect(await requests[0].body.getText()).toBe(expectedBody);
+  // });
 });

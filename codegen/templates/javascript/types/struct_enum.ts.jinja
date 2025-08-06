@@ -11,25 +11,35 @@ import {
 {% set content_field_name = type.content_field | to_lower_camel_case -%}
 
 interface _{{ type_name }}Fields {
+    {% with fields = type.fields -%}
     {% include "types/struct_fields.ts.jinja" -%}
+    {% endwith -%}
 }
 
 {# export the types for enum variants without a config -#}
-{% for variant in type.variants %}
-    {% if variant.schema_ref is not defined %}
+{% for variant in type.variants -%}
+    {% if variant.type == "ref" and variant.schema_ref is not defined -%}
 /* eslint @typescript-eslint/no-empty-object-type: 0 */
 interface {{ type_name }}{{ variant.name | to_upper_camel_case }}{{ type.content_field | to_upper_camel_case }} {}
-    {% endif %}
-{% endfor %}
+    {% endif -%}
+{% endfor -%}
 
 {% for variant in type.variants %}
 interface {{ type_name }}{{ variant.name | to_upper_camel_case }} {
     {{ disc_field_name }}: '{{ variant.name }}';
-    {% if variant.schema_ref is defined -%}
-    {{ content_field_name }}: {{ variant.schema_ref | to_upper_camel_case }};
-    {% else -%}
-    {{ content_field_name }}?: {{ type_name }}{{ variant.name | to_upper_camel_case }}{{ type.content_field | to_upper_camel_case }}
-    {%- endif %}
+    {% if variant.type == "ref" -%}
+        {% if variant.schema_ref is not defined -%}
+            {{ content_field_name }}?:  {{ type_name }}{{ variant.name | to_upper_camel_case }}{{ type.content_field | to_upper_camel_case }}
+        {% else -%}
+            {{ content_field_name }}: {{ variant.schema_ref | to_upper_camel_case }}
+        {% endif -%}
+    {%- elif variant.type == "struct" -%}
+        {{ content_field_name }}: {
+            {% with fields = variant.fields -%}
+            {% include "types/struct_fields.ts.jinja" -%}
+            {% endwith -%}
+        }
+    {% endif -%}
 }
 {% endfor %}
 
@@ -42,19 +52,32 @@ export type {{ type_name }} = _{{ type_name }}Fields & (
 
 export const {{ type.name | to_upper_camel_case }}Serializer = {
     _fromJsonObject(object: any): {{ type.name | to_upper_camel_case }} {
-        const {{ disc_field_name }} = object['{{ type.discriminator_field }}'];
+        const discriminator = object["{{ type.discriminator_field }}"];
+        {% if type.variants | has_non_ref_struct_enum_variants -%}
+        const content = object["{{ type.content_field }}"];
+        {% endif -%}
 
-        function get{{ content_field_name | to_upper_camel_case }}({{ disc_field_name }}: string): any {
+        function getContent({{ disc_field_name }}: string): any {
             switch ({{ disc_field_name }}) {
             {%- for variant in type.variants %}
-                {% if variant.schema_ref is defined -%}
-                case '{{ variant.name }}':
-                    return {{ variant.schema_ref | to_upper_camel_case }}Serializer._fromJsonObject(
-                            object['{{ type.content_field }}']
-                        );
-                {%- else %}
-                case '{{ variant.name }}':
-                    return {}
+                {% if variant.type == "ref" -%}
+                    {% if variant.schema_ref is defined -%}
+                    case '{{ variant.name }}':
+                        return {{ variant.schema_ref | to_upper_camel_case }}Serializer._fromJsonObject(
+                                object['{{ type.content_field }}']
+                            );
+                    {%- else -%}
+                    case '{{ variant.name }}':
+                        return {}
+                    {% endif -%}
+                {% else -%}
+                    case "{{ variant.name }}":
+                        return { 
+                            {%- for field  in variant.fields -%}
+                                {%- set field_expr %}content['{{ field.name }}']{% endset -%}
+                                {{ field.name | to_lower_camel_case }}: {{ field_from_json(field_expr, field.type, field.required) }},
+                            {%- endfor -%}
+                        };
                 {%- endif -%}
             {%- endfor -%}
                 default:
@@ -63,8 +86,8 @@ export const {{ type.name | to_upper_camel_case }}Serializer = {
 
         }
         return {
-            {{ disc_field_name }},
-            {{ content_field_name }}:get{{ content_field_name | to_upper_camel_case }}({{ disc_field_name }}),
+            "{{ disc_field_name }}": discriminator,
+            {{ content_field_name }}:getContent(discriminator),
             {% for field in type.fields -%}
                 {% set field_expr %}object['{{ field.name }}']{% endset -%}
                 {{ field.name | to_lower_camel_case }}: {{ field_from_json(field_expr, field.type, field.required) }},
@@ -76,18 +99,28 @@ export const {{ type.name | to_upper_camel_case }}Serializer = {
         let {{ content_field_name }};
         switch (self.{{ disc_field_name }}) {
         {%- for variant in type.variants %}
-            {%- if variant.schema_ref is defined %}
-            case '{{ variant.name }}':
-                {{ content_field_name }} =
-                    {{ variant.schema_ref | to_upper_camel_case }}Serializer._toJsonObject(
-                        self.{{ content_field_name }}
-                    );
-                break;
-            {%- else %}
-            case '{{ variant.name }}':
-                {{ content_field_name }} = {}
-                break;
-            {%- endif %}
+            {%- if variant.type == "ref" -%}
+                {%- if variant.schema_ref is defined %}
+                case '{{ variant.name }}':
+                    {{ content_field_name }} =
+                        {{ variant.schema_ref | to_upper_camel_case }}Serializer._toJsonObject(
+                            self.{{ content_field_name }}
+                        );
+                    break;
+                {%- else -%}
+                case '{{ variant.name }}':
+                    {{ content_field_name }} = {}
+                    break;
+                {%- endif %}
+            {%- else -%}
+                case '{{ variant.name }}':
+                    {{ content_field_name }} = {
+                        {%- for field in variant.fields -%}
+                            {% set field_expr %}self.{{ content_field_name }}.{{ field.name | to_lower_camel_case }}{% endset -%}
+                            '{{ field.name }}': {{ field_to_json(field_expr, field.type, field.required) }},
+                        {%- endfor -%} }
+                    break;
+            {%- endif -%}
         {%- endfor -%}
         }
 
