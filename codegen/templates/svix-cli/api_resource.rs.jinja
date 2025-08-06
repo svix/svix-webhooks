@@ -1,3 +1,4 @@
+// this file is @generated
 {% set resource_type_name = resource.name | to_upper_camel_case -%}
 {% set resource_id_name %}{{ resource.name | to_snake_case }}_id{% endset -%}
 {% if resource.name == "application" %}{% set resource_id_name = "app_id" %}{% endif -%}

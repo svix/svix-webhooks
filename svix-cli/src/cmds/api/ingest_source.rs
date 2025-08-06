@@ -1,3 +1,4 @@
+// this file is @generated
 use clap::{Args, Subcommand};
 use svix::api::*;
 
