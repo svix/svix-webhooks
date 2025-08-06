@@ -17,8 +17,9 @@ namespace Svix.Models {
     [JsonConverter(typeof({{ type_name }}Converter))]
     public class {{ type_name }}
     {
-        {% include "types/struct_fields.cs.jinja" %}
-        [JsonIgnore]
+        {% with fields = type.fields, type_name = type.name -%}
+            {% include "types/struct_fields.cs.jinja" %}
+        {% endwith -%}        [JsonIgnore]
         public required {{ enum_type_name }} {{ content_field_name }} { get; set; }
 
         [JsonProperty("{{ type.discriminator_field }}")]
@@ -77,14 +78,25 @@ namespace Svix.Models {
         }
 
         {% for v in type.variants -%}
+        {% if v.type == "struct" -%}
+        public class {{ v.name | to_upper_camel_case }}{{ content_field_name }}{
+            {% with fields = v.fields, type_name = v.name | to_upper_camel_case -%}
+                {% include "types/struct_fields.cs.jinja" %}
+            {% endwith -%}
+        }
+        {% endif -%}
         public static {{ enum_type_name }} {{ v.name | to_upper_camel_case }}(
             {%- if v.schema_ref is defined -%}
                 {{ v.schema_ref | to_upper_camel_case }} {{ v.schema_ref | to_lower_camel_case }}
+            {%- elif v.type == "struct" -%}
+                {{ v.name | to_upper_camel_case }}{{ content_field_name }} content
             {%- endif -%}
         ) =>
             new(
                 {% if v.schema_ref is defined -%}
                 {{ v.schema_ref | to_lower_camel_case }},
+                {% elif v.type == "struct" -%}
+                content,
                 {% else -%}
                 new Dictionary<string, string>(),
                 {% endif -%}
@@ -105,6 +117,8 @@ namespace Svix.Models {
                 {%- for v in type.variants -%}
                     {%- if v.schema_ref is defined -%}
                     Func<{{ v.schema_ref | to_upper_camel_case }},TResult> on{{ v.name | to_upper_camel_case }},
+                    {%- elif v.type == "struct" -%}
+                    Func<{{ v.name | to_upper_camel_case }}{{ content_field_name }},TResult> on{{ v.name | to_upper_camel_case }},
                     {%- else -%}
                     Func<TResult> on{{ v.name | to_upper_camel_case }},
                     {%- endif -%}
@@ -119,6 +133,8 @@ namespace Svix.Models {
                     {{ content_field_name }}Type.{{ v.name | to_upper_camel_case }} => on{{ v.name | to_upper_camel_case }}(
                         {%- if v.schema_ref is defined -%}
                         ({{ v.schema_ref | to_upper_camel_case }})_value
+                        {%- elif v.type == "struct" -%}
+                        ({{ v.name | to_upper_camel_case }}{{ content_field_name }})_value
                         {%- endif -%}
                     ),
                 {% endfor -%}
@@ -132,6 +148,8 @@ namespace Svix.Models {
                 {%- for v in type.variants -%}
                     {%- if v.schema_ref is defined -%}
                     Action<{{ v.schema_ref | to_upper_camel_case }}> on{{ v.name | to_upper_camel_case }},
+                    {%- elif v.type == "struct" -%}
+                    Action<{{ v.name | to_upper_camel_case }}{{ content_field_name }}> on{{ v.name | to_upper_camel_case }},
                     {%- else -%}
                     Action on{{ v.name | to_upper_camel_case }},
                     {%- endif -%}
@@ -147,6 +165,8 @@ namespace Svix.Models {
                     on{{ v.name | to_upper_camel_case }}(
                         {%- if v.schema_ref is defined -%}
                         ({{ v.schema_ref | to_upper_camel_case }})_value
+                        {%- elif v.type == "struct" -%}
+                        ({{ v.name | to_upper_camel_case }}{{ content_field_name }})_value
                         {%- endif -%}
                     );
                     break;
@@ -162,7 +182,9 @@ namespace Svix.Models {
 
     internal class {{ type_name }}Surrogate
     {
-        {% include "types/struct_fields.cs.jinja" %}
+        {% with fields = type.fields, type_name = type.name -%}
+            {% include "types/struct_fields.cs.jinja" %}
+        {% endwith -%}
         [JsonProperty("{{ type.discriminator_field }}", Required = Required.Always)]
         public required string {{ discriminator_field_name }} { get; set; }
 
@@ -216,6 +238,8 @@ namespace Svix.Models {
             ["{{ v.name }}"] = c => {{ enum_type_name }}.{{ v.name | to_upper_camel_case }}(
                 {%- if v.schema_ref is defined -%}
                 ToObj<{{ v.schema_ref | to_upper_camel_case }}>(c)
+                {%- elif v.type == "struct" -%}
+                ToObj<{{ enum_type_name }}.{{ v.name | to_upper_camel_case }}{{ content_field_name }}>(c)
                 {%- endif -%}
             ),
             {% endfor -%}

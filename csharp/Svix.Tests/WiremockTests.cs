@@ -361,5 +361,43 @@ namespace Svix.Tests
             );
             Assert.Equal(1, stub.LogEntries.Count);
         }
+
+
+        // enable this test when we publish stream
+        // [Fact]
+        // public void InlineFieldStructEnumSerializesCorrectly()
+        // {
+        //     var jsonString =
+        //         """{"batchSize":1,"maxWaitSecs":123,"status":"disabled","type":"amazonS3","config":{"accessKeyId":"x","bucket":"x","region":"x","secretAccessKey":"x"}}""";
+        //     var patchIn = new StreamSinkPatch
+        //     {
+        //         BatchSize = 1,
+        //         MaxWaitSecs = 123,
+        //         Status = SinkStatusIn.Disabled,
+        //         Config = StreamSinkPatchConfig.AmazonS3(
+        //             new StreamSinkPatchConfig.AmazonS3Config
+        //             {
+        //                 AccessKeyId = "x",
+        //                 Bucket = "x",
+        //                 Region = "x",
+        //                 SecretAccessKey = "x"
+        //             }
+        //         )
+        //     };
+        //     Assert.Equal(JsonConvert.SerializeObject(patchIn), jsonString);
+
+        //     var loadedFromJson = JsonConvert.DeserializeObject<StreamSinkPatch>(jsonString);
+        //     Assert.Equal(patchIn.BatchSize, loadedFromJson.BatchSize);
+        //     Assert.Equal(patchIn.MaxWaitSecs, loadedFromJson.MaxWaitSecs);
+
+        //     var loadedFromJsonConfig = (StreamSinkPatchConfig.AmazonS3Config)loadedFromJson.Config.GetContent();
+        //     var patchInConfig = (StreamSinkPatchConfig.AmazonS3Config)patchIn.Config.GetContent();
+
+        //     Assert.Equal(loadedFromJsonConfig.AccessKeyId, patchInConfig.AccessKeyId);
+        //     Assert.Equal(loadedFromJsonConfig.Bucket, patchInConfig.Bucket);
+        //     Assert.Equal(loadedFromJsonConfig.Region, patchInConfig.Region);
+        //     Assert.Equal(loadedFromJsonConfig.SecretAccessKey, patchInConfig.SecretAccessKey);
+
+        // }
     }
 }
