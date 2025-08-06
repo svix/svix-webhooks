@@ -5,6 +5,7 @@ import random
 import shutil
 import string
 import subprocess
+import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
@@ -269,12 +270,16 @@ def pull_image():
     )
     # if it does not exist, pull image
     if check.returncode != 0:
+        start = time.perf_counter()
         print("Pulling docker image", flush=True)
         pull = subprocess.run(
             [get_docker_binary(), "image", "pull", OPENAPI_CODEGEN_IMAGE]
         )
+        end = time.perf_counter()
+        length = end - start
         if pull.returncode != 0:
             exit(pull.returncode)
+        print(f"Pulled docker image in {round(length, 4)} seconds")
 
 
 def main():
@@ -286,6 +291,7 @@ def main():
     all_tasks = sum([i["tasks_count"] for i in config.values()])
     print(f"Running {all_tasks} codegen tasks")
 
+    start = time.perf_counter()
     # there may be more then 1 subprocess that exited
     exit_with_error = False
     with ThreadPoolExecutor() as pool:
@@ -305,6 +311,10 @@ def main():
     print()
     if exit_with_error:
         exit(1)
+    else:
+        end = time.perf_counter()
+        length = end - start
+        print(f"Ran {all_tasks} codegen tasks in {round(length, 4)} seconds")
 
 
 if __name__ == "__main__":
