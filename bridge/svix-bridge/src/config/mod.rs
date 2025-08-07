@@ -227,7 +227,7 @@ pub enum ReceiverOutputOpts {
 impl WebhookReceiverConfig {
     pub async fn into_receiver_output(self) -> anyhow::Result<Box<dyn ReceiverOutput>> {
         match self.output {
-            ReceiverOutputOpts::Http(opts) => Ok(opts.into_receiver_output(self.name)),
+            ReceiverOutputOpts::Http(opts) => opts.into_receiver_output(self.name),
             #[cfg(feature = "kafka")]
             ReceiverOutputOpts::Kafka(opts) => {
                 svix_bridge_plugin_kafka::into_receiver_output(self.name, opts).map_err(Into::into)
@@ -291,7 +291,7 @@ impl PollerReceiverConfig {
     // FIXME: duplicate from WebhookReceiverConfig. Extract/refactor as TryFrom ReceiverOutputOpts?
     pub async fn into_receiver_output(self) -> anyhow::Result<Box<dyn ReceiverOutput>> {
         match self.output {
-            ReceiverOutputOpts::Http(opts) => Ok(opts.into_receiver_output(self.name)),
+            ReceiverOutputOpts::Http(opts) => opts.into_receiver_output(self.name),
             #[cfg(feature = "kafka")]
             ReceiverOutputOpts::Kafka(opts) => {
                 svix_bridge_plugin_kafka::into_receiver_output(self.name, opts).map_err(Into::into)

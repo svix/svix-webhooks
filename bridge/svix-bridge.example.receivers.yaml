@@ -154,3 +154,5 @@ receivers:
     output:
       type: "http"
       url: "http://example.local"
+      headers:
+        x-custom-header: "custom header value"
