@@ -37,4 +37,4 @@ __all__ = [
     "WebhookVerificationError",
 ]
 
-__version__ = "1.70.1"
+__version__ = "1.71.0"
