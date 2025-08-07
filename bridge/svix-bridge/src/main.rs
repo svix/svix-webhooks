@@ -23,6 +23,7 @@ use self::config::Config;
 
 mod allocator;
 mod config;
+mod http_output;
 mod metrics;
 mod runtime;
 mod webhook_receiver;
