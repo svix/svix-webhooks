@@ -1322,9 +1322,9 @@ dependencies = [
 
 [[package]]
 name = "deadpool"
-version = "0.12.1"
+version = "0.12.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6541a3916932fe57768d4be0b1ffb5ec7cbf74ca8c903fdfd5c0fe8aa958f0ed"
+checksum = "5ed5957ff93768adf7a65ab167a17835c3d2c3c50d084fe305174c112f468e2f"
 dependencies = [
  "deadpool-runtime",
  "num_cpus",
@@ -4485,7 +4485,7 @@ dependencies = [
  "axum",
  "chrono",
  "clap",
- "deadpool 0.12.1",
+ "deadpool 0.12.2",
  "deno_ast",
  "deno_core",
  "enum_dispatch",
