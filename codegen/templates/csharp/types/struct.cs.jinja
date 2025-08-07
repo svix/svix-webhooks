@@ -10,7 +10,9 @@ namespace Svix.Models {
     {% endif %}
     public class {{ type.name | to_upper_camel_case }}
     {
-        {% include "types/struct_fields.cs.jinja" %}
+        {% with fields = type.fields, type_name = type.name -%}
+            {% include "types/struct_fields.cs.jinja" %}
+        {% endwith -%}
         public override string ToString(){
             StringBuilder sb = new StringBuilder();
 
