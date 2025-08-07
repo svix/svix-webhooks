@@ -5,8 +5,8 @@
 
 use std::time::Duration;
 
-use google_cloud_googleapis::pubsub::v1::{DeadLetterPolicy, PubsubMessage};
-use google_cloud_pubsub::{
+use gcloud_googleapis::pubsub::v1::{DeadLetterPolicy, PubsubMessage};
+use gcloud_pubsub::{
     client::{Client, ClientConfig},
     subscription::{Subscription, SubscriptionConfig},
     topic::Topic,

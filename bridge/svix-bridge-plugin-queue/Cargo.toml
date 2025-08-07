@@ -17,7 +17,7 @@ tracing = "0.1"
 
 [dependencies.omniqueue]
 git = "https://github.com/svix/omniqueue-rs"
-rev = "e953ce07621a33708a4c28d9a5cfe431ede45dee"
+rev = "e7e328a576f921ca58d0bdb56b8df69fd996172d"
 default-features = false
 features = ["gcp_pubsub", "rabbitmq", "redis", "sqs"]
 
@@ -25,10 +25,10 @@ features = ["gcp_pubsub", "rabbitmq", "redis", "sqs"]
 aws-config = "1.1.5"
 aws-sdk-sqs = "1.13.0"
 fastrand = "2.0.1"
-google-cloud-googleapis = "0.15.0"
-google-cloud-pubsub = "0.29.1"
-lapin = "2"
-redis = { version = "0.27.2", features = ["tokio-comp", "streams"] }
+gcloud-googleapis = "1.2.0"
+gcloud-pubsub = "1.3.0"
+lapin = "2.5.4"
+redis = { version = "0.32.4", features = ["tokio-comp", "streams"] }
 tracing-subscriber.workspace = true
 wiremock.workspace = true
 
