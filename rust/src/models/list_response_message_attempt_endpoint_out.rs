@@ -1,4 +1,3 @@
-// this file is @generated
 use serde::{Deserialize, Serialize};
 
 use super::message_attempt_endpoint_out::MessageAttemptEndpointOut;
