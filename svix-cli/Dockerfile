@@ -1,10 +1,10 @@
 # Base build
-FROM rust:1.86-slim-bookworm AS build
+FROM rust:1.89-slim-trixie AS build
 
 RUN apt-get update && apt-get install -y \
     build-essential=12.* \
     checkinstall=1.* \
-    curl=7.* \
+    curl=8.* \
     libssl-dev=* \
     pkg-config=1.8.* \
     zlib1g-dev=1:* \
@@ -37,7 +37,7 @@ RUN touch src/main.rs
 RUN cargo build --release --frozen
 
 # Production
-FROM debian:bookworm-slim AS prod
+FROM debian:trixie-slim AS prod
 
 RUN set -ex ; \
         mkdir -p /app ;\
