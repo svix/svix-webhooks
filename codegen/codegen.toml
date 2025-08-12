@@ -3,7 +3,7 @@ input_files = ["lib-openapi.json", "api_extra.ron"]
 
 [rust]
 extra_mounts = { "rust/.rustfmt.toml" = "/app/.rustfmt.toml" }
-extra_shell_commands = ["rm rust/src/api/health.rs"]
+extra_codegen_args = ["-e=v1.health.get"]
 [[rust.task]]
 template = "templates/rust/api_resource.rs.jinja"
 output_dir = "rust/src/api"
@@ -35,8 +35,12 @@ output_dir = "javascript/src"
 
 [cli]
 extra_mounts = { "svix-cli/.rustfmt.toml" = "/app/.rustfmt.toml" }
-extra_shell_commands = [
-   "rm svix-cli/src/cmds/api/{background_task,health,statistics}.rs",
+extra_codegen_args = [
+   "-e=v1.background-task.list",
+   "-e=v1.background-task.get",
+   "-e=v1.health.get",
+   "-e=v1.statistics.aggregate-event-types",
+   "-e=v1.statistics.aggregate-app-stats",
 ]
 [[cli.task]]
 template = "templates/svix-cli/api_resource.rs.jinja"
@@ -44,9 +48,7 @@ output_dir = "svix-cli/src/cmds/api"
 
 
 [python]
-extra_shell_commands = [
-   "rm python/svix/api/health.py",
-]
+extra_codegen_args = ["-e=v1.health.get"]
 [[python.task]]
 template = "templates/python/api_resource.py.jinja"
 output_dir = "python/svix/api"
@@ -96,9 +98,9 @@ output_dir = "java/lib/src/main/java/com/svix/models"
 
 [go]
 extra_shell_commands = [
-   "rm go/health.go",
    "sed -i.bak 's/package svix/package internalapi/g' go/internalapi/management* && rm go/internalapi/management*.bak",
 ]
+extra_codegen_args = ["-e=v1.health.get"]
 [[go.task]]
 template = "templates/go/api_resource.go.jinja"
 output_dir = "go"
@@ -124,7 +126,7 @@ extra_codegen_args = [
    "--include-op-id=v1.management.environment-settings.update",
    "--include-op-id=v1.management.environment-settings.patch",
    "--include-op-id=v1.management.authentication.create-api-token",
-   "--include-op-id=v1.management.authentication.expire-api-token"
+   "--include-op-id=v1.management.authentication.expire-api-token",
 ]
 [[go.task]]
 template = "templates/go/component_type.go.jinja"
@@ -141,7 +143,7 @@ extra_codegen_args = [
    "--include-op-id=v1.management.environment-settings.update",
    "--include-op-id=v1.management.environment-settings.patch",
    "--include-op-id=v1.management.authentication.create-api-token",
-   "--include-op-id=v1.management.authentication.expire-api-token"
+   "--include-op-id=v1.management.authentication.expire-api-token",
 ]
 
 

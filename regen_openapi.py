@@ -240,7 +240,10 @@ def parse_config():
                     "template": task["template"],
                     "output_dir": task["output_dir"],
                     "extra_mounts": language_config.get("extra_mounts", {}),
-                    "extra_codegen_args": task.get("extra_codegen_args", []),
+                    "extra_codegen_args": task.get(
+                        "extra_codegen_args",
+                        language_config.get("extra_codegen_args", []),
+                    ),
                 }
             )
     # the cli step depends on generated rust code.
