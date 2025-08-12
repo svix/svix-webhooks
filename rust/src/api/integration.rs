@@ -1,3 +1,4 @@
+// this file is @generated
 use crate::{error::Result, models::*, Configuration};
 
 #[derive(Default)]

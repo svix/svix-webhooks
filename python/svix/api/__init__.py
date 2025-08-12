@@ -1,3 +1,5 @@
+# this file is @generated
+
 from ..models import (
     AdobeSignConfig,
     AdobeSignConfigOut,
