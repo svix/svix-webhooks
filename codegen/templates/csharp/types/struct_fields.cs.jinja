@@ -1,5 +1,5 @@
-{% for field in type.fields -%}
-    {% set is_patch = type.name is endingwith "Patch" -%}
+{% for field in fields -%}
+    {% set is_patch = type_name is endingwith "Patch" -%}
     [JsonProperty("{{ field.name }}"{% if field.required and not field.nullable %},Required = Required.Always{% endif %})]
     {% set f_ty = field.type.to_csharp() -%}
     {% set modifier = "public"-%}

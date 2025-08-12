@@ -259,12 +259,12 @@ export type IngestSourceIn = _IngestSourceInFields &
 
 export const IngestSourceInSerializer = {
   _fromJsonObject(object: any): IngestSourceIn {
-    const type = object["type"];
-
-    function getConfig(type: string): any {
+    const discriminator = object["type"];
+    function getContent(type: string): any {
       switch (type) {
         case "generic-webhook":
           return {};
+
         case "cron":
           return CronConfigSerializer._fromJsonObject(object["config"]);
         case "adobe-sign":
@@ -342,8 +342,8 @@ export const IngestSourceInSerializer = {
       }
     }
     return {
-      type,
-      config: getConfig(type),
+      type: discriminator,
+      config: getContent(discriminator),
       metadata: object["metadata"],
       name: object["name"],
       uid: object["uid"],

@@ -6,7 +6,9 @@ import "github.com/svix/svix-webhooks/go/utils"
 {{ type.description | to_doc_comment(style="go")}}
 {% endif -%}
 type {{ type.name | to_upper_camel_case }} struct {
-	{% include "types/struct_fields.go.jinja" -%}
+	{% with fields = type.fields, type_name = type.name -%}
+    	{% include "types/struct_fields.go.jinja" -%}
+	{% endwith -%}
 }
 {% if type.name is endingwith "Patch" -%}
 func (o {{ type.name | to_upper_camel_case }}) MarshalJSON() ([]byte, error) {
