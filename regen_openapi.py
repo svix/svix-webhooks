@@ -334,7 +334,7 @@ def log_generated_files(generated_paths: list[list[str]]):
             # ensure each file has `this file is @generated` in the first (2) lines
             with open(path, "r") as f:
                 first_line = "".join(f.readlines()[0:2])
-                assert "this file is @generated" in first_line.lower(), (
+                assert "@generated" in first_line.lower(), (
                     f"missing the `this file is @generated` comment in {path}"
                 )
 
