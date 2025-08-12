@@ -1,4 +1,5 @@
 // this file is @generated
+
 import { IntegrationIn, IntegrationInSerializer } from "../models/integrationIn";
 import {
   IntegrationKeyOut,

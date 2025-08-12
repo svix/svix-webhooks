@@ -1,3 +1,4 @@
+// this file is @generated
 use super::OperationalWebhookEndpoint;
 use crate::Configuration;
 
