@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+* Libs/JavaScript: Use native `fetch` API
+
 ## Version 1.71.0
 * Bridge: Add `http` output to `receivers`
   * See [`bridge/svix-bridge.example.receivers.yaml`](./bridge/svix-bridge.example.receivers.yaml) for a usage example
