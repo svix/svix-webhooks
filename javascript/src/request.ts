@@ -1,4 +1,3 @@
-import "svix-fetch";
 import { ApiException } from "./util";
 import { HttpErrorOut, HTTPValidationError } from "./HttpErrors";
 import { v4 as uuidv4 } from "uuid";
