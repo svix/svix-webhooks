@@ -433,4 +433,18 @@ describe "API Client" do
     request = WebMock::RequestRegistry.instance.requested_signatures.hash.first[0]
     expect(request.headers["Idempotency-Key"]).to(eq(client_provided_key))
   end
+
+  it "test unknown keys are ignored" do
+    stub_request(:get, "#{host}/api/v1/app")
+      .to_return(
+        status: 200,
+        body: '{"data":[],"done":true,"iterator":null,"prevIterator":null,"extra-key":"ignored"}'
+      )
+
+    svx.application.list()
+
+    expect(WebMock).to(
+      have_requested(:get, "#{host}/api/v1/app")
+    )
+  end
 end
