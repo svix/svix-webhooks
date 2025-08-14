@@ -12,7 +12,7 @@ const filesPaths = [
     // Rust Server
     "server/Cargo.toml",
     // Bridge Server
-    "bridge/svix-bridge/Cargo.toml",
+    "bridge/Cargo.toml",
     // Rust Client
     "rust/Cargo.toml",
     // CSharp

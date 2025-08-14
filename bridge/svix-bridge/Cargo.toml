@@ -1,6 +1,6 @@
 [package]
 name = "svix-bridge"
-version = "1.71.0"
+version.workspace = true
 edition = "2021"
 rust-version = "1.85"
 publish = false
