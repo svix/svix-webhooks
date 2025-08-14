@@ -2,7 +2,9 @@
 
 ## Version 1.72.0
 * Libs/JavaScript: Use native `fetch` API
+* Server: Upgrade Docker base image to Debian Trixie
 * Bridge: Add a default `user-agent` to requests made by the new `http` output
+* Bridge: Upgrade Docker base image to Debian Trixie
 
 ## Version 1.71.0
 * Bridge: Add `http` output to `receivers`
