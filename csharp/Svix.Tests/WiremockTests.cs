@@ -361,5 +361,16 @@ namespace Svix.Tests
             );
             Assert.Equal(1, stub.LogEntries.Count);
         }
+
+        [Fact]
+        public void UnknownKeysAreIgnored()
+        {
+            var res =
+                """{"data": [],"iterator": "iterator","prevIterator": "-iterator","done": true,"extra-field": "ignored"}""";
+            stub.Given(Request.Create().WithPath("/api/v1/app"))
+                .RespondWith(Response.Create().WithStatusCode(200).WithBody(res));
+
+            client.Application.List();
+        }
     }
 }

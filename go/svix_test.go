@@ -749,3 +749,20 @@ func TestReadStructEnumField(t *testing.T) {
 	}
 
 }
+
+func TestUnknownKeysAreIgnored(t *testing.T) {
+	ctx := context.Background()
+	svx := newMockClient()
+	httpmock.Activate()
+	defer httpmock.DeactivateAndReset()
+	httpmock.RegisterResponder("GET", "http://testapi.test/api/v1/app",
+		func(r *http.Request) (*http.Response, error) {
+			return httpmock.NewStringResponse(200, `{"data":[],"done":true,"iterator":null,"prevIterator":null,"extra-key":"ignored"}`), nil
+		},
+	)
+	_, err := svx.Application.List(ctx, nil)
+	if err != nil {
+		t.Error(err)
+	}
+
+}
