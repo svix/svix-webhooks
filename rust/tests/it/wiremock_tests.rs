@@ -141,6 +141,7 @@ async fn test_unknown_keys_are_ignored() {
     Mock::given(method("GET"))
         .and(path("/api/v1/app"))
         .respond_with(ResponseTemplate::new(200).set_body_string(json_body))
+        .expect(1)
         .mount(&mock_server)
         .await;
 
@@ -154,10 +155,5 @@ async fn test_unknown_keys_are_ignored() {
 
     svx.application().list(None).await.unwrap();
 
-    let requests = mock_server
-        .received_requests()
-        .await
-        .expect("we should have sent a request");
-
-    assert_eq!(1, requests.len());
+    mock_server.verify().await;
 }
