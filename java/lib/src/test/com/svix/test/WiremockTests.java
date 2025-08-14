@@ -544,4 +544,17 @@ public class WiremockTests {
                         .withHeader("idempotency-key", equalTo(clientProvidedKey)));
     }
 
+    @Test
+    public void testUnknownKeysAreIgnored() throws Exception {
+        String res = "{\"data\": [],\"iterator\": \"iterator\",\"prevIterator\": \"-iterator\",\"done\": true,\"extra-field\": \"ignored\"}";
+        Svix svx = testClient();
+        wireMockRule.stubFor(
+                WireMock.get(urlEqualTo("/api/v1/app"))
+                        .willReturn(WireMock.ok().withBody(res)));
+
+        svx.getApplication().list();
+
+        wireMockRule.verify(1, getRequestedFor(urlEqualTo("/api/v1/app")));
+    }
+
 }
