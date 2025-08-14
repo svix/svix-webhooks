@@ -2,6 +2,7 @@
 
 ## Unreleased
 * Libs/JavaScript: Use native `fetch` API
+* Bridge: Add a default `user-agent` to requests made by the new `http` output
 
 ## Version 1.71.0
 * Bridge: Add `http` output to `receivers`

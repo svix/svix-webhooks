@@ -1,9 +1,12 @@
 use anyhow::Context;
-use axum::http::{HeaderMap, HeaderName, HeaderValue};
+use axum::http::{header, HeaderMap, HeaderName, HeaderValue};
 use indexmap::IndexMap;
 use serde::Deserialize;
 use svix_bridge_types::{async_trait, BoxError, ForwardRequest, ReceiverOutput};
 use url::Url;
+
+const BRIDGE_USER_AGENT: HeaderValue =
+    HeaderValue::from_static(concat!("Svix-Bridge/", env!("CARGO_PKG_VERSION")));
 
 #[derive(Deserialize)]
 #[serde(tag = "type")]
@@ -30,7 +33,7 @@ impl HttpOutputOpts {
         name: String,
     ) -> anyhow::Result<Box<dyn ReceiverOutput>> {
         let Self::Inner { url, headers } = self;
-        let headers = headers
+        let mut headers: HeaderMap = headers
             .into_iter()
             .map(|(k, v)| {
                 Ok((
@@ -41,6 +44,9 @@ impl HttpOutputOpts {
                 ))
             })
             .collect::<anyhow::Result<_>>()?;
+        headers
+            .entry(header::USER_AGENT)
+            .or_insert(BRIDGE_USER_AGENT);
 
         let client = reqwest::Client::new();
         Ok(Box::new(HttpOutput {
