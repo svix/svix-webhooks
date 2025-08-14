@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## Version 1.72.0
 * Libs/JavaScript: Use native `fetch` API
 * Bridge: Add a default `user-agent` to requests made by the new `http` output
 
