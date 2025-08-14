@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 1.73.0
+* Libs/(Java and Kotlin): Fix bug causing runtime exceptions when unknown fields were sent from the server
+
 ## Version 1.72.0
 * Libs/JavaScript: Use native `fetch` API
 * Server: Upgrade Docker base image to Debian Trixie
