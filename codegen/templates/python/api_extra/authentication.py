@@ -9,4 +9,3 @@ class AuthenticationDashboardAccessOptions(BaseOptions):
                 "idempotency-key": self.idempotency_key,
             }
         )
-

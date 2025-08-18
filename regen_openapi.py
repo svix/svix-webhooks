@@ -357,6 +357,7 @@ def log_generated_files(generated_paths: list[list[str]]):
     generated_paths.sort()
     with open(Path("codegen").joinpath("generated_files.json"), "w") as f:
         json.dump(generated_paths, f, indent=4)
+        f.write("\n")
 
 
 def main():

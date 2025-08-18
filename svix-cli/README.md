@@ -154,4 +154,3 @@ For detailed instructions on configuring completions for your shell run `svix co
 ## Documentation
 
 For a more information, checkout our [API reference](https://docs.svix.com).
-

@@ -40,7 +40,7 @@ nexusPublishing {
         sonatype {
             nexusUrl.set(uri(getReleaseRepositoryUrl()))
             snapshotRepositoryUrl.set(uri(getSnapshotRepositoryUrl()))
-            
+
             username = getRepositoryUsername()
             password = getRepositoryPassword()
         }

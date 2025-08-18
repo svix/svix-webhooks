@@ -270,7 +270,7 @@ This version contains a big overhaul of the client libraries, with improved typi
 * Libs: Upgrade `openapi-generator` to 7.9.0, with dependency upgrades and internal changes in the SDKs.
 * Server: Add Redis sentinel support
 * Server: Add OTEL metrics for Redis queues
-* Server: Add Redis DLQ support 
+* Server: Add Redis DLQ support
 * Server: Several dependency upgrades and CI improvements
 
 ## Version 1.38.0
@@ -343,7 +343,7 @@ This version contains a big overhaul of the client libraries, with improved typi
 * Libs/Rust: Add `Svix::with_token` to allow changing API token
 * Libs/PHP: Replace ctype_digit for PHP 8.1 deprecation of non-string arguments
 
-## Version 1.24.0 
+## Version 1.24.0
 * Server: Update redis health check
 * Server: Clean up tracing spans for HTTP requests
 * Libs: Update OpenAPI
@@ -377,17 +377,17 @@ This version contains a big overhaul of the client libraries, with improved typi
 * Libs/Rust: Make request timeout configurable
 
 ## Version 1.18.0
-* Server: upgrade dependencies 
+* Server: upgrade dependencies
 * Server: adopt omniqueue as a queue backend
 * Libs/C#: **[Breaking]** Return iterator information in list endpoints. Changes the return type of list endpoints.
 * Libs/Java: don't serialize nulls in PATCH endpoint methods
-* Libs/Rust: upgrade and clean up dependencies 
+* Libs/Rust: upgrade and clean up dependencies
 * Libs/Rust: switch from reqwest to hyper 1.0
 
 ## Version 1.17.0
 * Server: Upgrade hyper to 0.14.28
 * Libs/Rust: **[Important]** Fix a bug in the webhook signature verification method where certain signatures could bypass the verification.
-* Libs/Java: **[Breaking]** Use Java time instead of threetenbp. This removes the need to import threetenbp to use the library. Depending on how the lib is used, it might require migrating uses of threetenbp to Java 8 Date-Time APIs. 
+* Libs/Java: **[Breaking]** Use Java time instead of threetenbp. This removes the need to import threetenbp to use the library. Depending on how the lib is used, it might require migrating uses of threetenbp to Java 8 Date-Time APIs.
 
 ## Version 1.16.0
 * Server: Add `tag` parameter to list-message for Go, JavaScript, and Python.

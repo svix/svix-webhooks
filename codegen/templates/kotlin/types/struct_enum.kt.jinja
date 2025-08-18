@@ -29,7 +29,7 @@ sealed  class {{ enum_type_name }} {
     val variantName: String get() = this::class.annotations.filterIsInstance<VariantName>().first().name
     abstract fun toJsonElement(): JsonElement
 
-{% for variant in type.variants %} 
+{% for variant in type.variants %}
     {% set val_name %}{{ variant.name | to_lower_camel_case }}{% endset -%}
     @VariantName("{{ variant.name }}")
     {% if variant.schema_ref is defined -%}

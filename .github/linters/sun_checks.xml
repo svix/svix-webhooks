@@ -154,7 +154,7 @@
 
     <!-- Checks for class design                         -->
     <!-- See https://checkstyle.org/config_design.html -->
-    <!-- TODO re-enable once we Javadoc <module name="DesignForExtension"/> --> 
+    <!-- TODO re-enable once we Javadoc <module name="DesignForExtension"/> -->
     <module name="FinalClass"/>
     <module name="HideUtilityClassConstructor"/>
     <module name="InterfaceIsType"/>
