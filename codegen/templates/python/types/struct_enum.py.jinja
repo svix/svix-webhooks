@@ -18,7 +18,7 @@ class {{ type_name }}(BaseModel):
     ]
     {{ type.content_field }}: t.Union[
         {% set content_field_types = [] %}
-        {{ type.variants| map(attribute="schema_ref", default="t.Dict[str,t.Any]") | unique | join(",") }}        
+        {{ type.variants| map(attribute="schema_ref", default="t.Dict[str,t.Any]") | unique | join(",") }}
     ]
 
     @model_validator(mode="wrap")
@@ -29,7 +29,7 @@ class {{ type_name }}(BaseModel):
         output = handler(data)
         {% for v in type.variants -%}
 
-        
+
         {% if loop.first -%}if{% else %}elif{% endif %} output.type == "{{ v.name }}":
             {%- if v.schema_ref is defined %}
             output.{{ type.content_field | to_snake_case }} = {{ v.schema_ref | to_upper_camel_case }}.model_validate(data.get("{{ type.content_field }}", {}))
@@ -40,4 +40,3 @@ class {{ type_name }}(BaseModel):
         else:
             raise ValueError(f"Unexpected type `{output.type}`")
         return output
-

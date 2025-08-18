@@ -91,4 +91,3 @@ Simply run:
 ```sh
 ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository
 ```
-

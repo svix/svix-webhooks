@@ -25,7 +25,7 @@ import (
 //   - {% for v in vars %}"{{ v.name }}"{% if not loop.last %},{% endif %}{% endfor %}: {{ use_type }}
 {%- endfor -%}
 type {{ ty_name }} struct {
-    {% include "types/struct_fields.go.jinja" -%}	
+	{% include "types/struct_fields.go.jinja" -%}
 	{{ discriminator_field }} {{ ty_name }}{{ discriminator_field }} `json:"{{ type.discriminator_field }}"`
 	{{ content_field }} {{ ty_name }}{{ content_field }} `json:"{{ type.content_field }}"`
 }
@@ -33,9 +33,9 @@ type {{ ty_name }} struct {
 type {{ ty_name }}{{ discriminator_field }} string
 
 const (
-    {% for v in type.variants -%}
+	{% for v in type.variants -%}
 	{{ ty_name }}{{ discriminator_field }}{{ v.name | to_upper_camel_case }} {{ ty_name }}{{ discriminator_field }} = "{{ v.name }}"
-    {% endfor -%}
+	{% endfor -%}
 )
 
 
@@ -83,7 +83,7 @@ func (i *{{ ty_name }}) UnmarshalJSON(data []byte) error {
 var {{ ty_name }}{{ discriminator_field }}WithNo{{ content_field }} = map[string]bool{
 	{% for v in type.variants -%}
 		{% if v.schema_ref is not defined -%}
-    "{{ v.name }}": true,
+	"{{ v.name }}": true,
 		{% endif -%}
 	{% endfor -%}
 }
@@ -93,7 +93,7 @@ func (i {{ ty_name }}) MarshalJSON() ([]byte, error) {
 	type Alias {{ ty_name }}
 	{% if has_variant_with_no_schema_ref -%}
 	if _, found := {{ ty_name }}{{ discriminator_field }}WithNo{{ content_field }}[string(i.{{ discriminator_field }})]; found {
- 	   i.{{ content_field }} = emptyMap{}
+ 		i.{{ content_field }} = emptyMap{}
 	}
 	{% endif -%}
 	return json.Marshal(&struct {Alias}{Alias: (Alias)(i)})
