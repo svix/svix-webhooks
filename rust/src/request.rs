@@ -90,7 +90,7 @@ impl Request {
     }
 
     pub async fn execute<T: DeserializeOwned>(self, conf: &Configuration) -> Result<T, Error> {
-        match self.execute_with_backoff(conf, conf.num_retries).await? {
+        match self.execute_with_backoff(conf).await? {
             // This is a hack; if there's no_ret_type, T is (), but serde_json gives an
             // error when deserializing "" into (), so deserialize 'null' into it
             // instead.
@@ -102,11 +102,7 @@ impl Request {
         }
     }
 
-    async fn execute_with_backoff(
-        mut self,
-        conf: &Configuration,
-        mut retries: u32,
-    ) -> Result<Option<Bytes>, Error> {
+    async fn execute_with_backoff(mut self, conf: &Configuration) -> Result<Option<Bytes>, Error> {
         let no_return_type = self.no_return_type;
         if self.method == http1::Method::POST && !self.header_params.contains_key("idempotency-key")
         {
@@ -114,14 +110,26 @@ impl Request {
                 .insert("idempotency-key", format!("auto_{}", uuid::Uuid::new_v4()));
         }
 
+        const MAX_BACKOFF: Duration = Duration::from_secs(5);
+
+        let mut retries = conf
+            .retry_schedule_in_ms
+            .clone()
+            .map(|s| box_retry_iterator(s.into_iter().map(Duration::from_millis).collect()))
+            .unwrap_or(box_retry_iterator(
+                std::iter::successors(Some(Duration::from_millis(20)), |last_backoff| {
+                    Some(MAX_BACKOFF.min(*last_backoff * 2))
+                })
+                .take(conf.num_retries as usize)
+                .collect(),
+            ));
+
         let mut request = self.build_request(conf)?;
         request
             .headers_mut()
             .insert("svix-req-id", rand::rng().random::<u32>().into());
 
         let mut retry_count = 0;
-        const MAX_BACKOFF: Duration = Duration::from_secs(5);
-        let mut backoff = Duration::from_millis(20);
 
         let execute_request = async |request| {
             let response = conf.client.request(request).await.map_err(Error::generic)?;
@@ -152,24 +160,25 @@ impl Request {
                 request_fut.await
             };
 
+            let next_backoff = retries.next();
+
             match res {
                 Ok(result) => return Ok(result),
                 e @ Err(Error::Validation(_)) => return e,
                 Err(Error::Http(err)) if err.status.as_u16() < 500 => return Err(Error::Http(err)),
                 e @ Err(_) => {
-                    if retries == 0 {
+                    if next_backoff.is_none() {
                         return e;
                     }
                 }
             }
 
-            tokio::time::sleep(backoff).await;
+            tokio::time::sleep(next_backoff.expect("next_backoff is always Some")).await;
             retry_count += 1;
-            retries -= 1;
+
             request
                 .headers_mut()
                 .insert("svix-retry-count", retry_count.into());
-            backoff = MAX_BACKOFF.min(backoff * 2);
         }
     }
 
@@ -272,4 +281,8 @@ impl QueryParamValue for Vec<String> {
     fn encode(&self) -> String {
         self.iter().format(",").to_string()
     }
+}
+
+fn box_retry_iterator(v: Vec<Duration>) -> Box<dyn Iterator<Item = Duration> + Send + Sync> {
+    Box::new(v.into_iter())
 }

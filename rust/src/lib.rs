@@ -27,6 +27,7 @@ pub struct Configuration {
     pub bearer_access_token: Option<String>,
     pub timeout: Option<Duration>,
     pub num_retries: u32,
+    pub retry_schedule_in_ms: Option<Vec<u64>>,
 }
 
 // If no TLS backend is enabled, use plain http connector.

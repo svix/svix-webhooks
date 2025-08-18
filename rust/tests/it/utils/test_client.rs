@@ -8,6 +8,7 @@ pub struct TestClientBuilder {
     token: Option<String>,
     url: Option<String>,
     retries: Option<u32>,
+    retry_schedule_in_ms: Option<Vec<u64>>,
 }
 
 impl TestClientBuilder {
@@ -16,6 +17,7 @@ impl TestClientBuilder {
             token: None,
             url: None,
             retries: None,
+            retry_schedule_in_ms: None,
         }
     }
 
@@ -35,6 +37,11 @@ impl TestClientBuilder {
         self
     }
 
+    pub fn retry_schedule_in_ms(mut self, retry_schedule_in_ms: Vec<u64>) -> Self {
+        self.retry_schedule_in_ms = Some(retry_schedule_in_ms);
+        self
+    }
+
     pub fn build(self) -> TestClient {
         let token = self.token.unwrap_or_else(|| {
             std::env::var("SVIX_TOKEN").expect("SVIX_TOKEN is required to run this test")
@@ -47,6 +54,7 @@ impl TestClientBuilder {
             Some(SvixOptions {
                 server_url: Some(url.clone()),
                 num_retries: self.retries,
+                retry_schedule_in_ms: self.retry_schedule_in_ms,
                 ..Default::default()
             }),
         );
