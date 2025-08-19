@@ -30,12 +30,8 @@ idna==3.10
     #   requests
 iniconfig==2.0.0
     # via pytest
-jinja2==3.1.4
-    # via -r requirements.in/development.txt
 markupsafe==2.1.5
-    # via
-    #   jinja2
-    #   werkzeug
+    # via werkzeug
 mypy==1.11.2
     # via -r requirements.in/development.txt
 mypy-extensions==1.0.0
