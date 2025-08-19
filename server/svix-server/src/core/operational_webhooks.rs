@@ -6,7 +6,6 @@
 use std::sync::Arc;
 
 use chrono::{DateTime, Utc};
-use http::StatusCode;
 use schemars::JsonSchema;
 use serde::Serialize;
 use svix::api::{MessageIn, Svix, SvixOptions};
@@ -181,7 +180,7 @@ impl OperationalWebhookSenderInner {
                 Ok(_) => {}
                 // Ignore 404s because not every org will have an associated application
                 Err(svix::error::Error::Http(svix::error::HttpErrorContent {
-                    status: StatusCode::NOT_FOUND,
+                    status: http02::StatusCode::NOT_FOUND,
                     ..
                 })) => {
                     tracing::warn!(

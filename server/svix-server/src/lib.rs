@@ -15,6 +15,7 @@ use std::{
 
 use aide::axum::ApiRouter;
 use cfg::ConfigurationInner;
+use opentelemetry::trace::TracerProvider as _;
 use opentelemetry_otlp::WithExportConfig;
 use opentelemetry_sdk::{metrics::SdkMeterProvider, runtime::Tokio};
 use queue::TaskQueueProducer;
@@ -181,7 +182,7 @@ pub async fn run_with_prefix(
     let with_worker = cfg.worker_enabled;
     let listen_address = cfg.listen_address;
 
-    let (server, worker_loop, expired_message_cleaner_loop) = tokio::join!(
+    let ((), worker_loop, expired_message_cleaner_loop) = tokio::join!(
         async {
             if with_api {
                 let listener = match listener {
@@ -192,15 +193,13 @@ pub async fn run_with_prefix(
                 };
                 tracing::debug!("API: Listening on {}", listener.local_addr().unwrap());
 
-                let incoming = hyper::server::conn::AddrIncoming::from_listener(listener)?;
-                axum::Server::builder(incoming)
-                    .serve(svc)
+                axum::serve(listener, svc)
                     .with_graceful_shutdown(graceful_shutdown_handler())
                     .await
+                    .unwrap();
             } else {
                 tracing::debug!("API: off");
                 graceful_shutdown_handler().await;
-                Ok(())
             }
         },
         async {
@@ -231,7 +230,6 @@ pub async fn run_with_prefix(
         }
     );
 
-    server.expect("Error initializing server");
     worker_loop.expect("Error initializing worker");
     expired_message_cleaner_loop.expect("Error initializing expired message cleaner")
 }
@@ -268,7 +266,7 @@ pub fn setup_tracing(
             .tonic()
             .with_endpoint(addr);
 
-        let tracer = opentelemetry_otlp::new_pipeline()
+        let provider = opentelemetry_otlp::new_pipeline()
             .tracing()
             .with_exporter(exporter)
             .with_trace_config(
@@ -287,6 +285,13 @@ pub fn setup_tracing(
             )
             .install_batch(Tokio)
             .unwrap();
+
+        // Based on the private `build_batch_with_exporter` method from opentelemetry-otlp
+        let tracer = provider
+            .tracer_builder("opentelemetry-otlp")
+            .with_schema_url(opentelemetry_semantic_conventions::SCHEMA_URL)
+            .build();
+
         tracing_opentelemetry::layer().with_tracer(tracer)
     });
 

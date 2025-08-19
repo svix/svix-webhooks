@@ -16,16 +16,14 @@ use aide::{
 };
 use axum::{
     async_trait,
-    body::HttpBody,
     extract::{
         rejection::{BytesRejection, FailedToBufferBody},
-        FromRequest, FromRequestParts, Query,
+        FromRequest, FromRequestParts, Query, Request,
     },
     response::IntoResponse,
-    BoxError,
 };
 use chrono::{DateTime, Utc};
-use http::{request::Parts, Request, StatusCode};
+use http::{request::Parts, StatusCode};
 use regex::Regex;
 use schemars::JsonSchema;
 use sea_orm::{ColumnTrait, QueryFilter, QueryOrder, QuerySelect};
@@ -547,17 +545,14 @@ fn validation_errors(
 pub struct ValidatedJson<T>(pub T);
 
 #[async_trait]
-impl<T, S, B> FromRequest<S, B> for ValidatedJson<T>
+impl<T, S> FromRequest<S> for ValidatedJson<T>
 where
     T: DeserializeOwned + Validate,
     S: Send + Sync,
-    B: HttpBody + Send + 'static,
-    B::Data: Send,
-    B::Error: Into<BoxError>,
 {
     type Rejection = Error;
 
-    async fn from_request(req: Request<B>, state: &S) -> Result<Self> {
+    async fn from_request(req: Request, state: &S) -> Result<Self> {
         let b = bytes::Bytes::from_request(req, state).await.map_err(|e| {
             tracing::error!("Error reading body as bytes: {}", e);
 

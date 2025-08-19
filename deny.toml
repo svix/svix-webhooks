@@ -24,6 +24,7 @@ allow = [
     "Apache-2.0",
     "BSD-2-Clause",
     "BSD-3-Clause",
+    "CDLA-Permissive-2.0",
     "ISC",
     "MIT",
     "MPL-2.0",
@@ -68,7 +69,8 @@ allow = []
 deny = [
     # Versions containing the binary blob
     # See: https://github.com/serde-rs/serde/issues/2538
-    { name = "serde_derive", version = ">1.0.171, <1.0.184"}
+    { name = "serde_derive", version = ">1.0.171, <1.0.184"},
+    { name = "axum", version = "<0.7" },
 ]
 skip = []
 skip-tree = []
