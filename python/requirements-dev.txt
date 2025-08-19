@@ -64,7 +64,7 @@ pytest-docker==3.1.1
     # via -r requirements.in/development.txt
 pytest-httpserver==1.1.0
     # via -r requirements.in/development.txt
-requests==2.32.3
+requests==2.32.5
     # via -r requirements.in/development.txt
 ruff==0.6.8
     # via -r requirements.in/development.txt
@@ -77,7 +77,7 @@ types-requests==2.32.0.20241016
     # via -r requirements.in/development.txt
 typing-extensions==4.12.2
     # via mypy
-urllib3==2.2.3
+urllib3==2.5.0
     # via
     #   requests
     #   types-requests
