@@ -112,17 +112,15 @@ impl Request {
 
         const MAX_BACKOFF: Duration = Duration::from_secs(5);
 
-        let mut retries = conf
-            .retry_schedule_in_ms
-            .clone()
-            .map(|s| box_retry_iterator(s.into_iter().map(Duration::from_millis).collect()))
-            .unwrap_or(box_retry_iterator(
-                std::iter::successors(Some(Duration::from_millis(20)), |last_backoff| {
-                    Some(MAX_BACKOFF.min(*last_backoff * 2))
-                })
-                .take(conf.num_retries as usize)
-                .collect(),
-            ));
+        let retry_schedule = match &conf.retry_schedule {
+            Some(schedule) => schedule,
+            None => &std::iter::successors(Some(Duration::from_millis(20)), |last_backoff| {
+                Some(MAX_BACKOFF.min(*last_backoff * 2))
+            })
+            .take(conf.num_retries as usize)
+            .collect(),
+        };
+        let mut retries = retry_schedule.iter();
 
         let mut request = self.build_request(conf)?;
         request
@@ -160,7 +158,7 @@ impl Request {
                 request_fut.await
             };
 
-            let next_backoff = retries.next();
+            let next_backoff = retries.next().copied();
 
             match res {
                 Ok(result) => return Ok(result),
@@ -281,8 +279,4 @@ impl QueryParamValue for Vec<String> {
     fn encode(&self) -> String {
         self.iter().format(",").to_string()
     }
-}
-
-fn box_retry_iterator(v: Vec<Duration>) -> Box<dyn Iterator<Item = Duration> + Send + Sync> {
-    Box::new(v.into_iter())
 }
