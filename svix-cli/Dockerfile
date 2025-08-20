@@ -1,5 +1,5 @@
 # Base build
-FROM rust:1.89-slim-trixie AS build
+FROM docker.io/rust:1.89-slim-trixie AS build
 
 RUN apt-get update && apt-get install -y \
     build-essential=12.* \
@@ -37,7 +37,7 @@ RUN touch src/main.rs
 RUN cargo build --release --frozen
 
 # Production
-FROM debian:trixie-slim AS prod
+FROM docker.io/debian:trixie-slim AS prod
 
 RUN set -ex && \
         mkdir -p /app && \
