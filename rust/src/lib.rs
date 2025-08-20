@@ -11,59 +11,27 @@
 use std::time::Duration;
 
 use hyper::body::Bytes;
-use hyper_util::client::legacy::{connect::HttpConnector, Client as HyperClient};
+use hyper_util::client::legacy::Client as HyperClient;
 
 pub mod api;
+mod connector;
 pub mod error;
 mod model_ext;
 mod models;
 mod request;
 pub mod webhooks;
 
+pub(crate) use connector::{make_connector, Connector};
+
 pub struct Configuration {
     pub base_path: String,
     pub user_agent: Option<String>,
-    pub client: HyperClient<Connector, http_body_util::Full<Bytes>>,
     pub bearer_access_token: Option<String>,
     pub timeout: Option<Duration>,
     pub num_retries: u32,
     pub retry_schedule_in_ms: Option<Vec<u64>>,
-}
 
-// If no TLS backend is enabled, use plain http connector.
-#[cfg(not(any(feature = "native-tls", feature = "rustls-tls")))]
-type Connector = HttpConnector;
-
-// If only native TLS is enabled, use that.
-#[cfg(all(feature = "native-tls", not(feature = "rustls-tls")))]
-type Connector = hyper_tls::HttpsConnector<HttpConnector>;
-
-// If rustls is enabled, use that.
-#[cfg(feature = "rustls-tls")]
-type Connector = hyper_rustls::HttpsConnector<HttpConnector>;
-
-fn default_connector() -> Connector {
-    #[cfg(not(any(feature = "native-tls", feature = "rustls-tls")))]
-    return hyper_util::client::legacy::connect::HttpConnector::new();
-
-    #[cfg(all(feature = "native-tls", not(feature = "rustls-tls")))]
-    return hyper_tls::HttpsConnector::new();
-
-    #[cfg(feature = "rustls-tls")]
-    {
-        let builder = hyper_rustls::HttpsConnectorBuilder::new()
-            .with_native_roots()
-            .unwrap()
-            .https_or_http();
-
-        #[cfg(feature = "http1")]
-        let builder = builder.enable_http1();
-
-        #[cfg(feature = "http2")]
-        let builder = builder.enable_http2();
-
-        builder.build()
-    }
+    client: HyperClient<Connector, http_body_util::Full<Bytes>>,
 }
 
 /// Convert a `StatusCode` from the http crate v1 to one from the http crate

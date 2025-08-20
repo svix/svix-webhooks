@@ -4461,6 +4461,8 @@ dependencies = [
  "thiserror 2.0.11",
  "time",
  "tokio",
+ "tower-service",
+ "tracing",
  "url",
  "uuid",
 ]

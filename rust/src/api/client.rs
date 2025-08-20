@@ -8,7 +8,9 @@ const CRATE_VERSION: &str = env!("CARGO_PKG_VERSION");
 
 pub struct SvixOptions {
     pub debug: bool,
+
     pub server_url: Option<String>,
+
     /// Timeout for HTTP requests.
     ///
     /// The timeout is applied from when the request starts connecting until
@@ -17,6 +19,7 @@ pub struct SvixOptions {
     ///
     /// Default: 15 seconds.
     pub timeout: Option<std::time::Duration>,
+
     /// Number of retries
     ///
     /// The number of times the client will retry if a server-side error
@@ -24,11 +27,20 @@ pub struct SvixOptions {
     ///
     /// Default: 2
     pub num_retries: Option<u32>,
+
     /// Retry Schedule in milliseconds
     ///
     /// List of delays (in milliseconds) to wait before each retry attempt.
     /// Takes precedence over numRetries.
     pub retry_schedule_in_ms: Option<Vec<u64>>,
+
+    /// Proxy address.
+    ///
+    /// Currently `http://` and `https://` proxies using `HTTP CONNECT`, as well
+    /// as `socks5://` and `socks5h://` URLs are supported. The difference
+    /// between the last two is that DNS resolution also goes through the proxy
+    /// for `socks5h`, but not for `socks5`.
+    pub proxy_address: Option<String>,
 }
 
 impl Default for SvixOptions {
@@ -39,6 +51,7 @@ impl Default for SvixOptions {
             timeout: Some(std::time::Duration::from_secs(15)),
             num_retries: None,
             retry_schedule_in_ms: None,
+            proxy_address: None,
         }
     }
 }
@@ -56,7 +69,8 @@ impl Svix {
 
         let cfg = Arc::new(Configuration {
             user_agent: Some(format!("svix-libs/{CRATE_VERSION}/rust")),
-            client: HyperClient::builder(TokioExecutor::new()).build(crate::default_connector()),
+            client: HyperClient::builder(TokioExecutor::new())
+                .build(crate::make_connector(options.proxy_address)),
             timeout: options.timeout,
             // These fields will be set by `with_token` below
             base_path: String::new(),
