@@ -151,6 +151,13 @@ receivers:
       app_id: "my-app-uid"
       sink_id: "poll_XXXX"
       token: "${POLLING_ENDPOINT_TOKEN}"
+      # Optional Svix Rust SDK configuration
+      #svix_options:
+      #  server_url: "<custom server URL>"
+      #  timeout_secs: 15
+      #  num_retries: 3
+      #  retry_schedule_in_ms: [100, 200, 400]
+      #  proxy_address: "http://proxy.local:1234"
     output:
       type: "http"
       url: "http://example.local"
