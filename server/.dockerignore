@@ -17,3 +17,4 @@ tmp/
 
 ## Docker-specific ignores
 Dockerfile
+.dockerignore

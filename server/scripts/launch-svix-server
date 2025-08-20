@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# this is a helper file for launching the server in the Docker image
+
+set -xeuo pipefail
+
+args=("--run-migrations")
+if [[ -n "${WAIT_FOR:-}" ]]; then
+    args+=("--wait-for" "15")
+fi
+
+exec svix-server "${args[@]}"
