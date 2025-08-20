@@ -1,4 +1,5 @@
 // this file is @generated
+
 import {
   EndpointHeadersIn,
   EndpointHeadersInSerializer,
@@ -31,6 +32,10 @@ import {
   EndpointTransformationOut,
   EndpointTransformationOutSerializer,
 } from "../models/endpointTransformationOut";
+import {
+  EndpointTransformationPatch,
+  EndpointTransformationPatchSerializer,
+} from "../models/endpointTransformationPatch";
 import { EndpointUpdate, EndpointUpdateSerializer } from "../models/endpointUpdate";
 import { EventExampleIn, EventExampleInSerializer } from "../models/eventExampleIn";
 import {
@@ -402,6 +407,30 @@ export class Endpoint {
   }
 
   /** Set or unset the transformation code associated with this endpoint. */
+  public patchTransformation(
+    appId: string,
+    endpointId: string,
+    endpointTransformationPatch: EndpointTransformationPatch
+  ): Promise<void> {
+    const request = new SvixRequest(
+      HttpMethod.PATCH,
+      "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("endpoint_id", endpointId);
+    request.setBody(
+      EndpointTransformationPatchSerializer._toJsonObject(endpointTransformationPatch)
+    );
+
+    return request.sendNoResponseBody(this.requestCtx);
+  }
+
+  /**
+   * This operation was renamed to `set-transformation`.
+   *
+   * @deprecated
+   */
   public transformationPartialUpdate(
     appId: string,
     endpointId: string,

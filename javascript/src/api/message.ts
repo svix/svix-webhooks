@@ -1,4 +1,5 @@
 // this file is @generated
+
 import {
   ExpungeAllContentsOut,
   ExpungeAllContentsOutSerializer,
@@ -7,10 +8,10 @@ import {
   ListResponseMessageOut,
   ListResponseMessageOutSerializer,
 } from "../models/listResponseMessageOut";
-import { MessageIn, MessageInSerializer } from "../models/messageIn";
 import { MessageOut, MessageOutSerializer } from "../models/messageOut";
-import { HttpMethod, SvixRequest, SvixRequestContext } from "../request";
 import { MessagePoller } from "./messagePoller";
+import { HttpMethod, SvixRequest, SvixRequestContext } from "../request";
+import { MessageIn, MessageInSerializer } from "../models/messageIn";
 
 export interface MessageListOptions {
   /** Limit the number of returned items */

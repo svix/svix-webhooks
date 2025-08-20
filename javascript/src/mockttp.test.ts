@@ -479,4 +479,19 @@ describe("mockttp tests", () => {
     expect(requests.length).toBe(1);
     expect(requests[0].headers["idempotency-key"]).toBe(clientProvidedKey);
   });
+
+  test("test unknown keys are ignored", async () => {
+    const endpointMock = await mockServer
+      .forGet("/api/v1/app")
+      .thenReply(
+        200,
+        `{"data":[],"done":true,"iterator":null,"prevIterator":null,"extra-key":"ignored"}`
+      );
+    const svx = new Svix("token", { serverUrl: mockServer.url });
+
+    await svx.application.list();
+
+    const requests = await endpointMock.getSeenRequests();
+    expect(requests.length).toBe(1);
+  });
 });

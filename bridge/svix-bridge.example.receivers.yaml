@@ -142,3 +142,17 @@ receivers:
       uri: "${QUEUE_URI}"
       exchange: ""
       routing_key: "my_queue"
+
+  - name: "msg-poller-to-http-example"
+    input:
+      type: "svix-message-poller"
+      consumer_id: "example-consumer"
+      # The app and sink ids can be seen in the URL for the corresponding Polling Endpoint.
+      app_id: "my-app-uid"
+      sink_id: "poll_XXXX"
+      token: "${POLLING_ENDPOINT_TOKEN}"
+    output:
+      type: "http"
+      url: "http://example.local"
+      headers:
+        x-custom-header: "custom header value"

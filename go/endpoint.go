@@ -496,6 +496,32 @@ func (endpoint *Endpoint) TransformationGet(
 }
 
 // Set or unset the transformation code associated with this endpoint.
+func (endpoint *Endpoint) PatchTransformation(
+	ctx context.Context,
+	appId string,
+	endpointId string,
+	endpointTransformationPatch models.EndpointTransformationPatch,
+) error {
+	pathMap := map[string]string{
+		"app_id":      appId,
+		"endpoint_id": endpointId,
+	}
+	_, err := internal.ExecuteRequest[models.EndpointTransformationPatch, any](
+		ctx,
+		endpoint.client,
+		"PATCH",
+		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
+		pathMap,
+		nil,
+		nil,
+		&endpointTransformationPatch,
+	)
+	return err
+}
+
+// This operation was renamed to `set-transformation`.
+//
+// Deprecated: TransformationPartialUpdate is deprecated.
 func (endpoint *Endpoint) TransformationPartialUpdate(
 	ctx context.Context,
 	appId string,

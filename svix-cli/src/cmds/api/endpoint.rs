@@ -1,8 +1,6 @@
-use chrono::{DateTime, Utc};
+// this file is @generated
 use clap::{Args, Subcommand};
 use svix::api::*;
-
-use crate::json::JsonOf;
 
 #[derive(Args, Clone)]
 pub struct EndpointListOptions {
@@ -101,10 +99,10 @@ impl From<EndpointSendExampleOptions> for svix::api::EndpointSendExampleOptions 
 pub struct EndpointGetStatsOptions {
     /// Filter the range to data starting from this date.
     #[arg(long)]
-    pub since: Option<DateTime<Utc>>,
+    pub since: Option<chrono::DateTime<chrono::Utc>>,
     /// Filter the range to data ending by this date.
     #[arg(long)]
-    pub until: Option<DateTime<Utc>>,
+    pub until: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 impl From<EndpointGetStatsOptions> for svix::api::EndpointGetStatsOptions {
@@ -137,7 +135,7 @@ pub enum EndpointCommands {
     /// When `secret` is `null` the secret is automatically generated (recommended).
     Create {
         app_id: String,
-        endpoint_in: JsonOf<EndpointIn>,
+        endpoint_in: crate::json::JsonOf<EndpointIn>,
         #[clap(flatten)]
         options: EndpointCreateOptions,
     },
@@ -147,7 +145,7 @@ pub enum EndpointCommands {
     Update {
         app_id: String,
         id: String,
-        endpoint_update: JsonOf<EndpointUpdate>,
+        endpoint_update: crate::json::JsonOf<EndpointUpdate>,
     },
     /// Delete an endpoint.
     Delete { app_id: String, id: String },
@@ -155,7 +153,7 @@ pub enum EndpointCommands {
     Patch {
         app_id: String,
         id: String,
-        endpoint_patch: Option<JsonOf<EndpointPatch>>,
+        endpoint_patch: Option<crate::json::JsonOf<EndpointPatch>>,
     },
     /// Get the additional headers to be sent with the webhook.
     GetHeaders { app_id: String, id: String },
@@ -163,13 +161,13 @@ pub enum EndpointCommands {
     UpdateHeaders {
         app_id: String,
         id: String,
-        endpoint_headers_in: JsonOf<EndpointHeadersIn>,
+        endpoint_headers_in: crate::json::JsonOf<EndpointHeadersIn>,
     },
     /// Partially set the additional headers to be sent with the webhook.
     PatchHeaders {
         app_id: String,
         id: String,
-        endpoint_headers_patch_in: JsonOf<EndpointHeadersPatchIn>,
+        endpoint_headers_patch_in: crate::json::JsonOf<EndpointHeadersPatchIn>,
     },
     /// Resend all failed messages since a given time.
     ///
@@ -177,7 +175,7 @@ pub enum EndpointCommands {
     Recover {
         app_id: String,
         id: String,
-        recover_in: JsonOf<RecoverIn>,
+        recover_in: crate::json::JsonOf<RecoverIn>,
         #[clap(flatten)]
         options: EndpointRecoverOptions,
     },
@@ -188,7 +186,7 @@ pub enum EndpointCommands {
     ReplayMissing {
         app_id: String,
         id: String,
-        replay_in: JsonOf<ReplayIn>,
+        replay_in: crate::json::JsonOf<ReplayIn>,
         #[clap(flatten)]
         options: EndpointReplayMissingOptions,
     },
@@ -203,7 +201,7 @@ pub enum EndpointCommands {
     RotateSecret {
         app_id: String,
         id: String,
-        endpoint_secret_rotate_in: Option<JsonOf<EndpointSecretRotateIn>>,
+        endpoint_secret_rotate_in: Option<crate::json::JsonOf<EndpointSecretRotateIn>>,
         #[clap(flatten)]
         options: EndpointRotateSecretOptions,
     },
@@ -211,7 +209,7 @@ pub enum EndpointCommands {
     SendExample {
         app_id: String,
         id: String,
-        event_example_in: JsonOf<EventExampleIn>,
+        event_example_in: crate::json::JsonOf<EventExampleIn>,
         #[clap(flatten)]
         options: EndpointSendExampleOptions,
     },
@@ -225,10 +223,16 @@ pub enum EndpointCommands {
     /// Get the transformation code associated with this endpoint.
     TransformationGet { app_id: String, id: String },
     /// Set or unset the transformation code associated with this endpoint.
+    PatchTransformation {
+        app_id: String,
+        id: String,
+        endpoint_transformation_patch: Option<crate::json::JsonOf<EndpointTransformationPatch>>,
+    },
+    /// This operation was renamed to `set-transformation`.
     TransformationPartialUpdate {
         app_id: String,
         id: String,
-        endpoint_transformation_in: Option<JsonOf<EndpointTransformationIn>>,
+        endpoint_transformation_in: Option<crate::json::JsonOf<EndpointTransformationIn>>,
     },
 }
 
@@ -383,11 +387,28 @@ impl EndpointCommands {
                 let resp = client.endpoint().transformation_get(app_id, id).await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
+            Self::PatchTransformation {
+                app_id,
+                id,
+                endpoint_transformation_patch,
+            } => {
+                client
+                    .endpoint()
+                    .patch_transformation(
+                        app_id,
+                        id,
+                        endpoint_transformation_patch
+                            .unwrap_or_default()
+                            .into_inner(),
+                    )
+                    .await?;
+            }
             Self::TransformationPartialUpdate {
                 app_id,
                 id,
                 endpoint_transformation_in,
             } => {
+                #[allow(deprecated)]
                 client
                     .endpoint()
                     .transformation_partial_update(

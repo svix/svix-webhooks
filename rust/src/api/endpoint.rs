@@ -1,3 +1,4 @@
+// this file is @generated
 use crate::{error::Result, models::*, Configuration};
 
 #[derive(Default)]
@@ -369,6 +370,26 @@ impl<'a> Endpoint<'a> {
     }
 
     /// Set or unset the transformation code associated with this endpoint.
+    pub async fn patch_transformation(
+        &self,
+        app_id: String,
+        endpoint_id: String,
+        endpoint_transformation_patch: EndpointTransformationPatch,
+    ) -> Result<()> {
+        crate::request::Request::new(
+            http1::Method::PATCH,
+            "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
+        )
+        .with_path_param("app_id", app_id)
+        .with_path_param("endpoint_id", endpoint_id)
+        .with_body_param(endpoint_transformation_patch)
+        .returns_nothing()
+        .execute(self.cfg)
+        .await
+    }
+
+    /// This operation was renamed to `set-transformation`.
+    #[deprecated]
     pub async fn transformation_partial_update(
         &self,
         app_id: String,

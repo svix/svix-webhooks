@@ -1,4 +1,5 @@
 // this file is @generated
+
 import {
   ListResponseEndpointMessageOut,
   ListResponseEndpointMessageOutSerializer,

@@ -12,6 +12,7 @@ import com.svix.kotlin.models.EndpointSecretRotateIn
 import com.svix.kotlin.models.EndpointStats
 import com.svix.kotlin.models.EndpointTransformationIn
 import com.svix.kotlin.models.EndpointTransformationOut
+import com.svix.kotlin.models.EndpointTransformationPatch
 import com.svix.kotlin.models.EndpointUpdate
 import com.svix.kotlin.models.EventExampleIn
 import com.svix.kotlin.models.ListResponseEndpointOut
@@ -300,6 +301,29 @@ class Endpoint(private val client: SvixHttpClient) {
     }
 
     /** Set or unset the transformation code associated with this endpoint. */
+    suspend fun patchTransformation(
+        appId: String,
+        endpointId: String,
+        endpointTransformationPatch: EndpointTransformationPatch,
+    ) {
+        val url =
+            client
+                .newUrlBuilder()
+                .encodedPath("/api/v1/app/$appId/endpoint/$endpointId/transformation")
+
+        client.executeRequest<EndpointTransformationPatch, Boolean>(
+            "PATCH",
+            url.build(),
+            reqBody = endpointTransformationPatch,
+        )
+    }
+
+    /**
+     * This operation was renamed to `set-transformation`.
+     *
+     * @deprecated
+     */
+    @Deprecated("")
     suspend fun transformationPartialUpdate(
         appId: String,
         endpointId: String,

@@ -1,0 +1,157 @@
+[global]
+input_files = ["lib-openapi.json", "api_extra.ron"]
+
+[rust]
+extra_mounts = { "rust/.rustfmt.toml" = "/app/.rustfmt.toml" }
+extra_codegen_args = ["-e=v1.health.get"]
+[[rust.task]]
+template = "templates/rust/api_resource.rs.jinja"
+output_dir = "rust/src/api"
+[[rust.task]]
+template = "templates/rust/api_summary.rs.jinja"
+output_dir = "rust/src/api"
+[[rust.task]]
+template = "templates/rust/component_type_summary.rs.jinja"
+output_dir = "rust/src/models"
+[[rust.task]]
+template = "templates/rust/component_type.rs.jinja"
+output_dir = "rust/src/models"
+
+
+[javascript]
+[[javascript.task]]
+template = "templates/javascript/api_resource.ts.jinja"
+output_dir = "javascript/src/api"
+[[javascript.task]]
+template = "templates/javascript/component_type_summary.ts.jinja"
+output_dir = "javascript/src/models"
+[[javascript.task]]
+template = "templates/javascript/component_type.ts.jinja"
+output_dir = "javascript/src/models"
+[[javascript.task]]
+template = "templates/javascript/summary.ts.jinja"
+output_dir = "javascript/src"
+
+
+[cli]
+extra_mounts = { "svix-cli/.rustfmt.toml" = "/app/.rustfmt.toml" }
+extra_codegen_args = [
+   "-e=v1.background-task.list",
+   "-e=v1.background-task.get",
+   "-e=v1.health.get",
+   "-e=v1.statistics.aggregate-event-types",
+   "-e=v1.statistics.aggregate-app-stats",
+]
+[[cli.task]]
+template = "templates/svix-cli/api_resource.rs.jinja"
+output_dir = "svix-cli/src/cmds/api"
+
+
+[python]
+extra_codegen_args = ["-e=v1.health.get"]
+[[python.task]]
+template = "templates/python/api_resource.py.jinja"
+output_dir = "python/svix/api"
+[[python.task]]
+template = "templates/python/component_type_summary.py.jinja"
+output_dir = "python/svix/models"
+[[python.task]]
+template = "templates/python/component_type.py.jinja"
+output_dir = "python/svix/models"
+[[python.task]]
+template = "templates/python/summary.py.jinja"
+output_dir = "python/svix/api"
+
+
+[ruby]
+[[ruby.task]]
+template = "templates/ruby/api_resource.rb.jinja"
+output_dir = "ruby/lib/svix/api"
+[[ruby.task]]
+template = "templates/ruby/summary.rb.jinja"
+output_dir = "ruby/lib"
+[[ruby.task]]
+template = "templates/ruby/component_type.rb.jinja"
+output_dir = "ruby/lib/svix/models"
+
+
+[csharp]
+[[csharp.task]]
+template = "templates/csharp/api_resource.cs.jinja"
+output_dir = "csharp/Svix"
+[[csharp.task]]
+template = "templates/csharp/component_type.cs.jinja"
+output_dir = "csharp/Svix/Models"
+
+
+[java]
+[[java.task]]
+template = "templates/java/api_resource.java.jinja"
+output_dir = "java/lib/src/main/java/com/svix/api"
+[[java.task]]
+template = "templates/java/operation_options.java.jinja"
+output_dir = "java/lib/src/main/java/com/svix/api"
+[[java.task]]
+template = "templates/java/component_type.java.jinja"
+output_dir = "java/lib/src/main/java/com/svix/models"
+
+
+[go]
+extra_shell_commands = [
+   "sed -i.bak 's/package svix/package internalapi/g' go/internalapi/management* && rm go/internalapi/management*.bak",
+]
+extra_codegen_args = ["-e=v1.health.get"]
+[[go.task]]
+template = "templates/go/api_resource.go.jinja"
+output_dir = "go"
+[[go.task]]
+template = "templates/go/component_type_summary.go.jinja"
+output_dir = "go"
+[[go.task]]
+template = "templates/go/component_type.go.jinja"
+output_dir = "go/models"
+[[go.task]]
+template = "templates/go/api_resource.go.jinja"
+output_dir = "go/internalapi"
+input_files = ["lib-openapi.json"]
+extra_codegen_args = [
+   # This is a limited list of operations required by terraform
+   "--include-mode=only-specified",
+   "--include-op-id=v1.management.environment.list",
+   "--include-op-id=v1.management.environment.create",
+   "--include-op-id=v1.management.environment.get",
+   "--include-op-id=v1.management.environment.update",
+   "--include-op-id=v1.management.environment.delete",
+   "--include-op-id=v1.management.environment-settings.get",
+   "--include-op-id=v1.management.environment-settings.update",
+   "--include-op-id=v1.management.environment-settings.patch",
+   "--include-op-id=v1.management.authentication.create-api-token",
+   "--include-op-id=v1.management.authentication.expire-api-token",
+]
+[[go.task]]
+template = "templates/go/component_type.go.jinja"
+output_dir = "go/models"
+extra_codegen_args = [
+   # This is a limited list of operations required by terraform
+   "--include-mode=only-specified",
+   "--include-op-id=v1.management.environment.list",
+   "--include-op-id=v1.management.environment.create",
+   "--include-op-id=v1.management.environment.get",
+   "--include-op-id=v1.management.environment.update",
+   "--include-op-id=v1.management.environment.delete",
+   "--include-op-id=v1.management.environment-settings.get",
+   "--include-op-id=v1.management.environment-settings.update",
+   "--include-op-id=v1.management.environment-settings.patch",
+   "--include-op-id=v1.management.authentication.create-api-token",
+   "--include-op-id=v1.management.authentication.expire-api-token",
+]
+
+
+[kotlin]
+[[kotlin.task]]
+template = "templates/kotlin/component_type.kt.jinja"
+output_dir = "kotlin/lib/src/main/kotlin/models"
+
+[[kotlin.task]]
+template = "templates/kotlin/api_resource.kt.jinja"
+output_dir = "kotlin/lib/src/main/kotlin"

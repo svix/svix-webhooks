@@ -1,0 +1,4 @@
+// this file is @generated
+{% for type in api.types -%}
+export { {{ type | to_upper_camel_case }} } from "./{{ type | to_lower_camel_case }}";
+{% endfor %}

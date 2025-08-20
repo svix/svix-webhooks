@@ -50,6 +50,7 @@ from .endpoint_secret_rotate_in import EndpointSecretRotateIn
 from .endpoint_stats import EndpointStats
 from .endpoint_transformation_in import EndpointTransformationIn
 from .endpoint_transformation_out import EndpointTransformationOut
+from .endpoint_transformation_patch import EndpointTransformationPatch
 from .endpoint_update import EndpointUpdate
 from .endpoint_updated_event import EndpointUpdatedEvent
 from .endpoint_updated_event_data import EndpointUpdatedEventData
@@ -209,6 +210,7 @@ __all__ = [
     "EndpointStats",
     "EndpointTransformationIn",
     "EndpointTransformationOut",
+    "EndpointTransformationPatch",
     "EndpointUpdate",
     "EndpointUpdatedEvent",
     "EndpointUpdatedEventData",

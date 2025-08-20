@@ -131,3 +131,29 @@ async fn test_client_provided_idempotency_key_is_not_overridden() {
         "client provided idempotency key should not be overridden"
     );
 }
+
+#[tokio::test]
+async fn test_unknown_keys_are_ignored() {
+    let mock_server = MockServer::start().await;
+
+    let json_body =
+        r#"{"data":[],"done":true,"iterator":null,"prevIterator":null,"extra-key":"ignored"}"#;
+    Mock::given(method("GET"))
+        .and(path("/api/v1/app"))
+        .respond_with(ResponseTemplate::new(200).set_body_string(json_body))
+        .expect(1)
+        .mount(&mock_server)
+        .await;
+
+    let svx = Svix::new(
+        "token".to_string(),
+        Some(SvixOptions {
+            server_url: Some(mock_server.uri()),
+            ..Default::default()
+        }),
+    );
+
+    svx.application().list(None).await.unwrap();
+
+    mock_server.verify().await;
+}

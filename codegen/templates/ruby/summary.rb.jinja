@@ -1,0 +1,39 @@
+# frozen_string_literal: true
+# This file is @generated
+
+require "json"
+require "openssl"
+require "base64"
+require "uri"
+require "logger"
+
+{% macro require_api(resource) -%}
+require "svix/api/{{ resource.name | to_snake_case }}"
+{% endmacro -%}
+
+
+# API
+{% for resource in api.resources -%}
+{{ require_api(resource) -}}
+    {% for _resource_name, resource in resource.subresources | items -%}
+{{ require_api(resource) -}}
+    {% endfor -%}
+{% endfor -%}
+
+# Models
+{% for type in api.types -%}
+require "svix/models/{{ type | to_snake_case }}"
+{% endfor -%}
+
+# Core
+require "svix/api_error"
+require "svix/errors"
+require "svix/svix"
+require "svix/util"
+require "svix/version"
+require "svix/webhook"
+require "svix/http_error_out"
+require "svix/http_validation_error"
+require "svix/validation_error"
+require "svix/svix_http_client.rb"
+require "svix/internal"

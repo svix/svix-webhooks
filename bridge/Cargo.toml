@@ -12,6 +12,9 @@ members = [
     "svix-bridge-plugin-kafka",
 ]
 
+[workspace.package]
+version = "1.73.0"
+
 [workspace.lints.rust]
 rust_2018_idioms = { level = "warn", priority = -1 }
 trivial_numeric_casts = "warn"

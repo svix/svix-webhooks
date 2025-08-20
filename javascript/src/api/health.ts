@@ -1,4 +1,5 @@
 // this file is @generated
+
 import { HttpMethod, SvixRequest, SvixRequestContext } from "../request";
 
 export class Health {

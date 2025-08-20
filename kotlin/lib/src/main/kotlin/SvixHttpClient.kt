@@ -14,6 +14,7 @@ internal constructor(
     private val baseUrl: HttpUrl,
     private val defaultHeaders: Map<String, String>,
     private val retrySchedule: List<Long>,
+    private val jsonDeserializer: Json = Json { ignoreUnknownKeys = true }
 ) {
     private val client: OkHttpClient = OkHttpClient()
 
@@ -44,8 +45,8 @@ internal constructor(
         }
 
         if (headers?.get("idempotency-key") == null && method == "POST") {
-                val uuid = UUID.randomUUID().toString()
-                reqBuilder.addHeader("idempotency-key", "auto_" + uuid)
+            val uuid = UUID.randomUUID().toString()
+            reqBuilder.addHeader("idempotency-key", "auto_" + uuid)
         }
 
         reqBuilder.addHeader("svix-req-id", Random.nextULong().toString())
@@ -59,10 +60,10 @@ internal constructor(
         }
         val bodyString = res.body!!.string()
         if (res.code == 204) {
-            return Json.decodeFromString<Res>("true")
+            return jsonDeserializer.decodeFromString<Res>("true")
         }
         if (res.code in 200..299) {
-            return Json.decodeFromString<Res>(bodyString)
+            return jsonDeserializer.decodeFromString<Res>(bodyString)
         }
         throw ApiException("Non 200 status code ${res.code}", res.code, bodyString)
     }

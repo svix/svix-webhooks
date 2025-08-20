@@ -1,3 +1,4 @@
+// this file is @generated
 use super::{IngestEndpoint, IngestSource};
 use crate::{error::Result, models::*, Configuration};
 

@@ -9,21 +9,28 @@ use std::{
     time::{Duration, Instant},
 };
 
-use axum::headers::{authorization::Credentials, Authorization};
+use axum::{body::Body, response::Response};
+use axum_extra::headers::{authorization::Credentials, Authorization};
 use bytes::Bytes;
 use futures::{future::BoxFuture, FutureExt};
 use hickory_resolver::{
     error::ResolveError, lookup_ip::LookupIpIntoIter, AsyncResolver, TokioAsyncResolver,
 };
-use http::{header::HeaderName, HeaderMap, HeaderValue, Method, Response, StatusCode, Version};
-use hyper::{
-    client::connect::{dns::Name, HttpConnector},
-    ext::HeaderCaseMap,
-    Body, Client, Uri,
+use http::{header::HeaderName, HeaderMap, HeaderValue, Method, StatusCode, Version};
+use http_body_util::Full;
+use hyper::{body::Incoming, ext::HeaderCaseMap, Uri};
+use hyper_openssl::client::legacy::{HttpsConnector, MaybeHttpsStream};
+use hyper_util::{
+    client::legacy::{
+        connect::{
+            dns::Name,
+            proxy::{SocksV5, Tunnel},
+            HttpConnector,
+        },
+        Client,
+    },
+    rt::{TokioExecutor, TokioIo},
 };
-use hyper_openssl::{HttpsConnector, MaybeHttpsStream};
-use hyper_proxy::{Intercept, Proxy, ProxyConnector as HttpProxyConnector, ProxyStream};
-use hyper_socks2::SocksConnector;
 use ipnet::IpNet;
 use openssl::ssl::{SslConnector, SslConnectorBuilder, SslMethod, SslVerifyMode};
 use serde::Serialize;
@@ -51,12 +58,31 @@ pub enum Error {
     #[error("error forming request: {0}")]
     InvalidHttpRequest(http::Error),
     #[error("error making request: {0}")]
-    FailedRequest(hyper::Error),
+    FailedRequest(hyper_util::client::legacy::Error),
+}
+
+impl From<hyper_util::client::legacy::Error> for Error {
+    fn from(e: hyper_util::client::legacy::Error) -> Self {
+        let mut dyn_e = &e as &dyn std::error::Error;
+        loop {
+            if dyn_e
+                .to_string()
+                .contains("requests to this IP range are blocked")
+            {
+                return Error::BlockedIp;
+            }
+
+            match dyn_e.source() {
+                Some(source) => dyn_e = source,
+                None => return Error::FailedRequest(e),
+            }
+        }
+    }
 }
 
 #[derive(Clone)]
 pub struct WebhookClient {
-    client: Client<SvixHttpsConnector, Body>,
+    client: Client<SvixHttpsConnector, Full<Bytes>>,
     whitelist_nets: Arc<Vec<IpNet>>,
 }
 
@@ -85,7 +111,7 @@ impl WebhookClient {
         let https = SvixHttpsConnector::new(http, proxy_config, ssl)
             .expect("SvixHttpsConnector build failed");
 
-        let client: Client<_, hyper::Body> = Client::builder()
+        let client = hyper_util::client::legacy::Client::builder(TokioExecutor::new())
             .http1_ignore_invalid_headers_in_responses(true)
             .http1_title_case_headers(true)
             .build(https);
@@ -96,15 +122,16 @@ impl WebhookClient {
         }
     }
 
-    pub async fn execute(&self, request: Request) -> Result<Response<Body>, Error> {
-        self.execute_inner(request, true).await
+    pub async fn execute(&self, request: Request) -> Result<Response, Error> {
+        let resp = self.execute_inner(request, true).await?;
+        Ok(resp.map(Body::new))
     }
 
     pub fn execute_inner(
         &self,
         request: Request,
         retry: bool,
-    ) -> BoxFuture<'_, Result<Response<Body>, Error>> {
+    ) -> BoxFuture<'_, Result<Response<Incoming>, Error>> {
         async move {
             let org_req = request.clone();
             if let Some(auth) = request.uri.authority() {
@@ -125,14 +152,14 @@ impl WebhookClient {
                     .method(request.method)
                     .uri(request.uri)
                     .version(request.version)
-                    .body(Body::from(body))
+                    .body(Full::from(body))
                     .map_err(Error::InvalidHttpRequest)?
             } else {
                 hyper::Request::builder()
                     .method(request.method)
                     .uri(request.uri)
                     .version(request.version)
-                    .body(Body::empty())
+                    .body(Full::default())
                     .map_err(Error::InvalidHttpRequest)?
             };
 
@@ -146,27 +173,11 @@ impl WebhookClient {
             let res = if let Some(timeout) = request.timeout {
                 match tokio::time::timeout(timeout, self.client.request(req)).await {
                     Ok(Ok(resp)) => Ok(resp),
-                    Ok(Err(e)) => Err({
-                        if e.to_string()
-                            .contains("requests to this IP range are blocked")
-                        {
-                            Error::BlockedIp
-                        } else {
-                            Error::FailedRequest(e)
-                        }
-                    }),
+                    Ok(Err(e)) => Err(e.into()),
                     Err(_to) => Err(Error::TimedOut),
                 }
             } else {
-                self.client.request(req).await.map_err(|e| {
-                    if e.to_string()
-                        .contains("requests to this IP range are blocked")
-                    {
-                        Error::BlockedIp
-                    } else {
-                        Error::FailedRequest(e)
-                    }
-                })
+                self.client.request(req).await.map_err(Into::into)
             };
 
             if !retry {
@@ -174,13 +185,10 @@ impl WebhookClient {
             }
 
             match res {
-                Err(ref e) => match e {
-                    Error::FailedRequest(e) if start.elapsed() < Duration::from_millis(1000) => {
-                        tracing::info!("Insta-retrying: {}", e);
-                        self.execute_inner(org_req, false).await
-                    }
-                    _ => res,
-                },
+                Err(Error::FailedRequest(e)) if start.elapsed() < Duration::from_millis(1000) => {
+                    tracing::info!("Insta-retrying: {e}");
+                    self.execute_inner(org_req, false).await
+                }
                 res => res,
             }
         }
@@ -440,8 +448,8 @@ impl RequestBuilder {
 #[derive(Clone)]
 enum SvixHttpsConnector {
     Regular(HttpsConnector<NonLocalHttpConnector>),
-    Socks5Proxy(HttpsConnector<SocksConnector<NonLocalHttpConnector>>),
-    HttpProxy(HttpProxyConnector<HttpConnector<NonLocalDnsResolver>>),
+    Socks5Proxy(HttpsConnector<SocksV5<NonLocalHttpConnector>>),
+    HttpProxy(HttpsConnector<Tunnel<NonLocalHttpConnector>>),
 }
 
 impl SvixHttpsConnector {
@@ -452,23 +460,15 @@ impl SvixHttpsConnector {
     ) -> Result<Self, Box<dyn std::error::Error>> {
         match proxy_cfg {
             Some(proxy_cfg) => match proxy_cfg.addr.clone() {
-                // In the SOCKS5 case, TLS is handled inside of the proxy
-                // TcpStream, by the same code that would do it without a proxy
                 ProxyAddr::Socks5(proxy_addr) => {
-                    let socks = SocksConnector {
-                        proxy_addr,
-                        auth: None,
-                        connector: inner,
-                    };
+                    let socks = SocksV5::new(proxy_addr, inner).local_dns(true);
                     let socks_https = HttpsConnector::with_connector(socks, ssl)?;
                     Ok(Self::Socks5Proxy(socks_https))
                 }
-                // In the HTTP proxy case, TLS is handled by the proxy connector
                 ProxyAddr::Http(proxy_addr) => {
-                    let proxy = Proxy::new(Intercept::All, proxy_addr);
-                    Ok(Self::HttpProxy(HttpProxyConnector::from_proxy(
-                        inner, proxy,
-                    )?))
+                    let tunnel = Tunnel::new(proxy_addr, inner);
+                    let tunnel_https = HttpsConnector::with_connector(tunnel, ssl)?;
+                    Ok(Self::HttpProxy(tunnel_https))
                 }
             },
             None => {
@@ -480,7 +480,7 @@ impl SvixHttpsConnector {
 }
 
 impl Service<Uri> for SvixHttpsConnector {
-    type Response = ProxyStream<TcpStream>;
+    type Response = MaybeHttpsStream<TokioIo<TcpStream>>;
     type Error = Box<dyn std::error::Error + Send + Sync>;
     type Future = Pin<Box<dyn Future<Output = Result<Self::Response, Self::Error>> + Send>>;
 
@@ -491,38 +491,20 @@ impl Service<Uri> for SvixHttpsConnector {
         match self {
             Self::Regular(inner) => inner.poll_ready(cx),
             Self::Socks5Proxy(inner) => inner.poll_ready(cx),
-            Self::HttpProxy(inner) => inner.poll_ready(cx).map_err(Into::into),
+            Self::HttpProxy(inner) => inner.poll_ready(cx),
         }
     }
 
     fn call(&mut self, req: Uri) -> Self::Future {
-        fn convert_stream(maybe_https: MaybeHttpsStream<TcpStream>) -> ProxyStream<TcpStream> {
-            match maybe_https {
-                MaybeHttpsStream::Http(stream) => ProxyStream::NoProxy(stream),
-                MaybeHttpsStream::Https(stream) => ProxyStream::Secured(stream),
-            }
-        }
-
         match self {
-            Self::Regular(inner) => {
-                let fut = inner.call(req);
-                Box::pin(async move { Ok(convert_stream(fut.await?)) })
-            }
-            Self::Socks5Proxy(inner) => {
-                let fut = inner.call(req);
-                Box::pin(async move { Ok(convert_stream(fut.await?)) })
-            }
-            Self::HttpProxy(inner) => {
-                let fut = inner.call(req);
-                Box::pin(async move { fut.await.map_err(Into::into) })
-            }
+            Self::Regular(inner) => Box::pin(inner.call(req)),
+            Self::Socks5Proxy(inner) => Box::pin(inner.call(req)),
+            Self::HttpProxy(inner) => Box::pin(inner.call(req)),
         }
     }
 }
 
 /// A plain-HTTP connector that blocks outgoing requests to private IPs.
-///
-/// Used as a building block for [`SvixHttpConnector`].
 type NonLocalHttpConnector = HttpConnector<NonLocalDnsResolver>;
 
 /// A DNS resolver that produces an error for names that resolve to private IPs.

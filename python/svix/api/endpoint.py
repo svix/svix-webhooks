@@ -3,6 +3,8 @@ import typing as t
 from dataclasses import dataclass
 from datetime import datetime
 
+from deprecated import deprecated
+
 from .. import models
 from ..models import (
     EndpointHeadersIn,
@@ -16,6 +18,7 @@ from ..models import (
     EndpointStats,
     EndpointTransformationIn,
     EndpointTransformationOut,
+    EndpointTransformationPatch,
     EndpointUpdate,
     EventExampleIn,
     ListResponseEndpointOut,
@@ -404,13 +407,33 @@ class EndpointAsync(ApiBase):
         )
         return EndpointTransformationOut.model_validate(response.json())
 
+    async def patch_transformation(
+        self,
+        app_id: str,
+        endpoint_id: str,
+        endpoint_transformation_patch: EndpointTransformationPatch,
+    ) -> None:
+        """Set or unset the transformation code associated with this endpoint."""
+        await self._request_asyncio(
+            method="patch",
+            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
+            path_params={
+                "app_id": app_id,
+                "endpoint_id": endpoint_id,
+            },
+            json_body=endpoint_transformation_patch.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
+        )
+
+    @deprecated
     async def transformation_partial_update(
         self,
         app_id: str,
         endpoint_id: str,
         endpoint_transformation_in: EndpointTransformationIn,
     ) -> None:
-        """Set or unset the transformation code associated with this endpoint."""
+        """This operation was renamed to `set-transformation`."""
         await self._request_asyncio(
             method="patch",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
@@ -705,13 +728,33 @@ class Endpoint(ApiBase):
         )
         return EndpointTransformationOut.model_validate(response.json())
 
+    def patch_transformation(
+        self,
+        app_id: str,
+        endpoint_id: str,
+        endpoint_transformation_patch: EndpointTransformationPatch,
+    ) -> None:
+        """Set or unset the transformation code associated with this endpoint."""
+        self._request_sync(
+            method="patch",
+            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
+            path_params={
+                "app_id": app_id,
+                "endpoint_id": endpoint_id,
+            },
+            json_body=endpoint_transformation_patch.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
+        )
+
+    @deprecated
     def transformation_partial_update(
         self,
         app_id: str,
         endpoint_id: str,
         endpoint_transformation_in: EndpointTransformationIn,
     ) -> None:
-        """Set or unset the transformation code associated with this endpoint."""
+        """This operation was renamed to `set-transformation`."""
         self._request_sync(
             method="patch",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",

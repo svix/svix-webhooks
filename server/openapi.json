@@ -2153,6 +2153,13 @@
                 ],
                 "type": "object"
             }
+        },
+        "securitySchemes": {
+            "HTTPBearer": {
+                "description": "HTTP Bearer token passed in the `Authorization` header",
+                "scheme": "bearer",
+                "type": "http"
+            }
         }
     },
     "info": {

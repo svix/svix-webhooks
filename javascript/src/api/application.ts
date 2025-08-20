@@ -1,4 +1,5 @@
 // this file is @generated
+
 import { ApplicationIn, ApplicationInSerializer } from "../models/applicationIn";
 import { ApplicationOut, ApplicationOutSerializer } from "../models/applicationOut";
 import { ApplicationPatch, ApplicationPatchSerializer } from "../models/applicationPatch";

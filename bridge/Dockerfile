@@ -1,10 +1,10 @@
 # Base build
-FROM rust:1.86-slim-bookworm AS build
+FROM rust:1.89-slim-trixie AS build
 
 RUN apt-get update && apt-get install -y \
     build-essential=12.* \
     checkinstall=1.* \
-    curl=7.* \
+    curl=8.* \
     libssl-dev=* \
     pkg-config=1.8.* \
     zlib1g-dev=1:* \
@@ -49,7 +49,7 @@ RUN touch */src/lib.rs && touch */src/main.rs
 RUN cargo build --release --frozen
 
 # Production
-FROM debian:bookworm-slim AS prod
+FROM debian:trixie-slim AS prod
 
 RUN set -ex ; \
         mkdir -p /app ;\
@@ -59,7 +59,7 @@ RUN set -ex ; \
         chown -R appuser: /home/appuser
 
 RUN apt-get update ;\
-    apt-get install --no-install-recommends -y ca-certificates=20230311; \
+    apt-get install --no-install-recommends -y ca-certificates=20230311+deb12u1; \
     update-ca-certificates; \
     rm -rf /var/lib/apt/lists/*
 

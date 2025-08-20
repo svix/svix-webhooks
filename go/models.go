@@ -54,6 +54,7 @@ type (
 	EndpointStats                             = models.EndpointStats
 	EndpointTransformationIn                  = models.EndpointTransformationIn
 	EndpointTransformationOut                 = models.EndpointTransformationOut
+	EndpointTransformationPatch               = models.EndpointTransformationPatch
 	EndpointUpdate                            = models.EndpointUpdate
 	EndpointUpdatedEvent                      = models.EndpointUpdatedEvent
 	EndpointUpdatedEventData                  = models.EndpointUpdatedEventData

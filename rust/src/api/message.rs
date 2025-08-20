@@ -1,3 +1,4 @@
+// this file is @generated
 use super::MessagePoller;
 use crate::{error::Result, models::*, Configuration};
 

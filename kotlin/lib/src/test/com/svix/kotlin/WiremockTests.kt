@@ -481,4 +481,19 @@ class WiremockTests {
             .withHeader("idempotency-key", equalTo(clientProvidedKey)),
     )
   }
+
+  @Test
+  fun testUnknownKeysAreIgnored() {
+    val res =
+        """{"data": [],"iterator": "iterator","prevIterator": "-iterator","done": true,"extra-field": "ignored"}"""
+    val svx = testClient()
+    wireMockServer.stubFor(get(urlEqualTo("/api/v1/app")).willReturn(ok().withBody(res)))
+
+    runBlocking { svx.application.list() }
+
+    wireMockServer.verify(
+        1,
+        getRequestedFor(urlEqualTo("/api/v1/app")),
+    )
+  }
 }

@@ -1,7 +1,7 @@
 # Using https://github.com/LukeMathWalker/cargo-chef for better layer caching
 
 # Base image for planner and build - keep in sync with .github/workflows/server-ci.yml
-FROM docker.io/rust:1.86-slim-bookworm AS chef
+FROM docker.io/rust:1.89-slim-trixie AS chef
 RUN cargo install cargo-chef
 WORKDIR /app
 
@@ -38,7 +38,7 @@ COPY . .
 RUN cargo build --release --package svix-server --bin svix-server --frozen
 
 # Production
-FROM docker.io/debian:bookworm-slim AS prod
+FROM docker.io/debian:trixie-slim AS prod
 
 RUN set -ex ; \
         mkdir -p /app ;\
@@ -48,8 +48,8 @@ RUN set -ex ; \
         chown -R appuser: /home/appuser
 
 RUN apt-get update && apt-get install -y \
-        ca-certificates=20230311 \
-        libssl3=3.* \
+        ca-certificates=20250419 \
+        libssl3t64=3.* \
         --no-install-recommends && \
         update-ca-certificates && \
         rm -rf /var/lib/apt/lists/*

@@ -1154,6 +1154,77 @@ namespace Svix
         /// <summary>
         /// Set or unset the transformation code associated with this endpoint.
         /// </summary>
+        public async Task<bool> PatchTransformationAsync(
+            string appId,
+            string endpointId,
+            EndpointTransformationPatch endpointTransformationPatch,
+            CancellationToken cancellationToken = default
+        )
+        {
+            endpointTransformationPatch =
+                endpointTransformationPatch
+                ?? throw new ArgumentNullException(nameof(endpointTransformationPatch));
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
+                    method: HttpMethod.Patch,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    content: endpointTransformationPatch,
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(PatchTransformationAsync)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Set or unset the transformation code associated with this endpoint.
+        /// </summary>
+        public bool PatchTransformation(
+            string appId,
+            string endpointId,
+            EndpointTransformationPatch endpointTransformationPatch
+        )
+        {
+            endpointTransformationPatch =
+                endpointTransformationPatch
+                ?? throw new ArgumentNullException(nameof(endpointTransformationPatch));
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<bool>(
+                    method: HttpMethod.Patch,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    content: endpointTransformationPatch
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(PatchTransformation)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// This operation was renamed to `set-transformation`.
+        /// </summary>
+        [Obsolete]
         public async Task<bool> TransformationPartialUpdateAsync(
             string appId,
             string endpointId,
@@ -1188,8 +1259,9 @@ namespace Svix
         }
 
         /// <summary>
-        /// Set or unset the transformation code associated with this endpoint.
+        /// This operation was renamed to `set-transformation`.
         /// </summary>
+        [Obsolete]
         public bool TransformationPartialUpdate(
             string appId,
             string endpointId,

@@ -393,6 +393,9 @@ impl TestReceiver {
         T: IntoResponse + Clone + Send + Sync + 'static,
     {
         let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        listener.set_nonblocking(true).unwrap();
+        let listener = tokio::net::TcpListener::from_std(listener).unwrap();
+
         let endpoint = format!("http://{}/", listener.local_addr().unwrap());
 
         let (tx, data_recv) = mpsc::channel(32);
@@ -416,11 +419,7 @@ impl TestReceiver {
             .into_make_service();
 
         let jh = tokio::spawn(async move {
-            axum::Server::from_tcp(listener)
-                .unwrap()
-                .serve(routes)
-                .await
-                .unwrap();
+            axum::serve(listener, routes).await.unwrap();
         });
 
         TestReceiver {

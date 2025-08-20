@@ -3,9 +3,10 @@
 
 use std::fmt::{Debug, Formatter};
 
-use axum::{
-    extract::{FromRequestParts, TypedHeader},
+use axum::extract::FromRequestParts;
+use axum_extra::{
     headers::{authorization::Bearer, Authorization},
+    TypedHeader,
 };
 use http::request::Parts;
 use jwt_simple::prelude::*;
@@ -143,7 +144,7 @@ pub fn permissions_from_jwt(claims: JWTClaims<CustomClaim>) -> Result<Permission
         org_id.validate().map_err(|_| {
             HttpError::bad_request(
                 Some("bad_token".to_string()),
-                Some("`sub' is not a valid organization id.".to_string()),
+                Some("`sub` is not a valid organization id.".to_string()),
             )
         })?;
         Ok(Permissions {

@@ -33,6 +33,9 @@ struct RedirectionVisitReportingState {
 impl RedirectionVisitReportingReceiver {
     pub fn start(resp_with: axum::http::StatusCode) -> Self {
         let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        listener.set_nonblocking(true).unwrap();
+        let listener = tokio::net::TcpListener::from_std(listener).unwrap();
+
         let base_uri = format!("http://{}", listener.local_addr().unwrap());
 
         let has_been_visited = Arc::new(Mutex::new(false));
@@ -54,11 +57,7 @@ impl RedirectionVisitReportingReceiver {
             .into_make_service();
 
         let jh = tokio::spawn(async move {
-            axum::Server::from_tcp(listener)
-                .unwrap()
-                .serve(routes)
-                .await
-                .unwrap();
+            axum::serve(listener, routes).await.unwrap();
         });
 
         RedirectionVisitReportingReceiver {
@@ -241,6 +240,9 @@ struct SporadicallyFailingState {
 impl SporadicallyFailingReceiver {
     pub fn start(resp_with: (http::StatusCode, http::StatusCode)) -> Self {
         let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        listener.set_nonblocking(true).unwrap();
+        let listener = tokio::net::TcpListener::from_std(listener).unwrap();
+
         let base_uri = format!("http://{}", listener.local_addr().unwrap());
 
         let count = Arc::new(Mutex::new(0u8));
@@ -254,11 +256,7 @@ impl SporadicallyFailingReceiver {
             .into_make_service();
 
         let jh = tokio::spawn(async move {
-            axum::Server::from_tcp(listener)
-                .unwrap()
-                .serve(routes)
-                .await
-                .unwrap();
+            axum::serve(listener, routes).await.unwrap();
         });
 
         SporadicallyFailingReceiver { base_uri, jh }

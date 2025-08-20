@@ -10,11 +10,11 @@ use std::{
     time::Duration,
 };
 
-use axum::body::HttpBody as _;
 use base64::{engine::general_purpose::STANDARD, Engine};
 use chrono::Utc;
 use futures::future;
 use http::{HeaderValue, StatusCode, Version};
+use http_body_util::BodyExt as _;
 use itertools::Itertools;
 use rand::Rng;
 use sea_orm::{

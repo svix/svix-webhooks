@@ -1301,9 +1301,9 @@ macro_rules! jsonschema_for_repr_enum {
                     })),
                     instance_type: Some(SingleOrVec::Single(Box::new(InstanceType::Integer))),
                     enum_values: Some(values),
-                    extensions: indexmap::indexmap!{
-                        "x-enum-varnames".to_string() => serde_json::Value::Array(variant_names),
-                    },
+                    extensions: FromIterator::from_iter([
+                        ("x-enum-varnames".to_string(), serde_json::Value::Array(variant_names)),
+                    ]),
                     ..Default::default()
                 })
             }

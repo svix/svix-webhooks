@@ -1,5 +1,32 @@
 # Changelog
 
+## Version 1.73.0
+* Libs/(Java and Kotlin): Fix bug causing runtime exceptions when unknown fields were sent from the server
+
+## Version 1.72.0
+* Libs/JavaScript: Use native `fetch` API
+* Server: Upgrade Docker base image to Debian Trixie
+* Bridge: Add a default `user-agent` to requests made by the new `http` output
+* Bridge: Upgrade Docker base image to Debian Trixie
+
+## Version 1.71.0
+* Bridge: Add `http` output to `receivers`
+  * See [`bridge/svix-bridge.example.receivers.yaml`](./bridge/svix-bridge.example.receivers.yaml) for a usage example
+
+## Version 1.70.1
+* Libs/All: Re-add `endpoint.transformationPartialUpdate` as a deprecated operation
+  * It was removed through a rename in the previous version, which should not have happened
+
+## Version 1.70.0
+* CLI: Add `svix seed` command to create testing resources (thanks @KranzAklilu)
+* Libs/Go: Fix request retries not working (thanks @mixnblend!)
+* Libs/All: Revert accidental addition of some authentication APIs
+* Libs/All: Fix name and input structure for rarely used set-transformation route
+  * Rename `endpoint.transformationPartialUpdate` to `endpoint.patchTransformation`
+  * Replace `EndpointTransformationIn` with `EndpointTransformationPatch`
+    * In some but not all the SDKs, these have slightly different field types
+  * This is a breaking change, but based on server statistics this method is barely used by anybody
+
 ## Version 1.69.0
 * Server: Reduce allocations (thanks @fluiderson!)
 * Server: Add healthcheck command (thanks @y-nk!)
@@ -243,7 +270,7 @@ This version contains a big overhaul of the client libraries, with improved typi
 * Libs: Upgrade `openapi-generator` to 7.9.0, with dependency upgrades and internal changes in the SDKs.
 * Server: Add Redis sentinel support
 * Server: Add OTEL metrics for Redis queues
-* Server: Add Redis DLQ support 
+* Server: Add Redis DLQ support
 * Server: Several dependency upgrades and CI improvements
 
 ## Version 1.38.0
@@ -316,7 +343,7 @@ This version contains a big overhaul of the client libraries, with improved typi
 * Libs/Rust: Add `Svix::with_token` to allow changing API token
 * Libs/PHP: Replace ctype_digit for PHP 8.1 deprecation of non-string arguments
 
-## Version 1.24.0 
+## Version 1.24.0
 * Server: Update redis health check
 * Server: Clean up tracing spans for HTTP requests
 * Libs: Update OpenAPI
@@ -350,17 +377,17 @@ This version contains a big overhaul of the client libraries, with improved typi
 * Libs/Rust: Make request timeout configurable
 
 ## Version 1.18.0
-* Server: upgrade dependencies 
+* Server: upgrade dependencies
 * Server: adopt omniqueue as a queue backend
 * Libs/C#: **[Breaking]** Return iterator information in list endpoints. Changes the return type of list endpoints.
 * Libs/Java: don't serialize nulls in PATCH endpoint methods
-* Libs/Rust: upgrade and clean up dependencies 
+* Libs/Rust: upgrade and clean up dependencies
 * Libs/Rust: switch from reqwest to hyper 1.0
 
 ## Version 1.17.0
 * Server: Upgrade hyper to 0.14.28
 * Libs/Rust: **[Important]** Fix a bug in the webhook signature verification method where certain signatures could bypass the verification.
-* Libs/Java: **[Breaking]** Use Java time instead of threetenbp. This removes the need to import threetenbp to use the library. Depending on how the lib is used, it might require migrating uses of threetenbp to Java 8 Date-Time APIs. 
+* Libs/Java: **[Breaking]** Use Java time instead of threetenbp. This removes the need to import threetenbp to use the library. Depending on how the lib is used, it might require migrating uses of threetenbp to Java 8 Date-Time APIs.
 
 ## Version 1.16.0
 * Server: Add `tag` parameter to list-message for Go, JavaScript, and Python.

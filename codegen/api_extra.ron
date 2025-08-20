@@ -1,0 +1,53 @@
+(
+    resources: [
+        (
+            name: "endpoint",
+            operations: [
+                (
+                    id: "v1.endpoint.transformation-partial-update",
+                    name: "transformation-partial-update",
+                    description: Some("This operation was renamed to `set-transformation`."),
+                    deprecated: true,
+                    method: "patch",
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
+                    path_params: [
+                        "app_id",
+                        "endpoint_id",
+                    ],
+                    header_params: [],
+                    query_params: [],
+                    request_body_schema_name: Some("EndpointTransformationIn"),
+                    request_body_all_optional: true,
+                ),
+            ],
+            subresources: {},
+        ),
+    ],
+    types: {
+        "EndpointTransformationIn": {
+            "name": "EndpointTransformationIn",
+            "deprecated": true,
+            "kind": "struct",
+            "fields": [
+                (
+                    name: "code",
+                    type: (
+                        id: "String",
+                    ),
+                    required: false,
+                    nullable: true,
+                    deprecated: false,
+                ),
+                (
+                    name: "enabled",
+                    type: (
+                        id: "Bool",
+                    ),
+                    required: false,
+                    nullable: false,
+                    deprecated: false,
+                ),
+            ],
+        },
+    },
+)

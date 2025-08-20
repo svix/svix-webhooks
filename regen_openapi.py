@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 import json
 import os
-import pathlib
+import io
+import tarfile
 import random
 import shutil
 import string
 import subprocess
+import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
@@ -15,8 +17,7 @@ except ImportError:
     print("Python 3.11 or greater is required to run the codegen")
     exit(1)
 
-OPENAPI_CODEGEN_IMAGE = "ghcr.io/svix/openapi-codegen:20250506-297"
-REPO_ROOT = pathlib.Path(__file__).parent.resolve()
+OPENAPI_CODEGEN_IMAGE = "ghcr.io/svix/openapi-codegen:20250812-321"
 DEBUG = os.getenv("DEBUG") is not None
 GREEN = "\033[92m"
 BLUE = "\033[94m"
@@ -71,12 +72,34 @@ def docker_container_cp(prefix, container_id, task):
     run_cmd(prefix, cmd)
 
 
+def get_generated_paths(prefix, container_id, task) -> list[str]:
+    cmd = [
+        get_docker_binary(),
+        "container",
+        "cp",
+        f"{container_id}:/app/.generated_paths.json",
+        "-",
+    ]
+    result = run_cmd(prefix, cmd)
+    with tarfile.open(fileobj=io.BytesIO(result.stdout), mode="r:*") as tar:
+        generated_paths = json.loads(tar.extractfile(".generated_paths.json").read())
+    return generated_paths
+
+
 def docker_container_create(prefix, task) -> str:
+    codegen_dir = Path("codegen")
     container_name = "codegen-{}-{}-{}".format(
         task["language"],
         task["language_task_index"] + 1,
         "".join(random.choice(string.ascii_lowercase) for _ in range(10)),
     )
+    template_path = codegen_dir.joinpath(task["template"])
+    template_dir = template_path.parent
+
+    input_file_mounts = [
+        f"--mount=type=bind,src={codegen_dir.joinpath(f).absolute()},dst=/app/{f},ro"
+        for f in task["input_files"]
+    ]
     cmd = [
         get_docker_binary(),
         "container",
@@ -86,10 +109,9 @@ def docker_container_create(prefix, task) -> str:
         container_name,
         "--workdir",
         "/app",
+        *input_file_mounts,
         "--mount",
-        f"type=bind,src={Path(task['openapi']).absolute()},dst=/app/lib-openapi.json,ro",
-        "--mount",
-        f"type=bind,src={Path(task['template_dir']).absolute()},dst=/app/{task['template_dir']},ro",
+        f"type=bind,src={template_dir.absolute()},dst=/app/{template_dir},ro",
     ]
 
     for extra_mount_src, extra_mount_dst in task["extra_mounts"].items():
@@ -97,18 +119,16 @@ def docker_container_create(prefix, task) -> str:
         cmd.append(
             f"type=bind,src={Path(extra_mount_src).absolute()},dst={extra_mount_dst},ro"
         )
+    input_file_args = [f"--input-file={f}" for f in task["input_files"]]
     cmd.extend(
         [
             OPENAPI_CODEGEN_IMAGE,
             "openapi-codegen",
             "generate",
             *task["extra_codegen_args"],
-            "--template",
-            task["template"],
-            "--input-file",
-            task["openapi"],
-            "--output-dir",
-            task["output_dir"],
+            f"--template={template_path}",
+            *input_file_args,
+            f"--output-dir={task['output_dir']}",
         ]
     )
     run_cmd(prefix, cmd)
@@ -118,9 +138,7 @@ def docker_container_create(prefix, task) -> str:
 def run_cmd(prefix, cmd, dont_dbg=False) -> subprocess.CompletedProcess[bytes]:
     dbg_cmd = [cmd[0], *[f'"{i}"' for i in cmd[1:]]]
     dbg(prefix, f"{BLUE}Running command{ENDC} {' '.join(dbg_cmd)}")
-    result = subprocess.run(
-        cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=REPO_ROOT
-    )
+    result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     if result.returncode != 0:
         print_cmd_result(result, prefix)
         prefix_print(
@@ -160,7 +178,7 @@ def prefix_print(prefix, msg):
     )
 
 
-def execute_codegen_task(task):
+def execute_codegen_task(task) -> list[str]:
     prefix = "{}{} ({}/{}){} | ".format(
         GREEN,
         task["language"],
@@ -193,12 +211,17 @@ def execute_codegen_task(task):
 
     docker_container_cp(prefix, container_name, task)
 
+    generated_paths = get_generated_paths(prefix, container_name, task)
+
     docker_container_rm(prefix, container_name)
 
     print(f"{GREEN}#{ENDC}", flush=True, end="")
 
+    return generated_paths
 
-def run_codegen_for_language(language, language_config):
+
+def run_codegen_for_language(language, language_config) -> list[str]:
+    tasks_results = []
     with ThreadPoolExecutor() as pool:
         futures = []
         for t in language_config["tasks"]:
@@ -206,6 +229,8 @@ def run_codegen_for_language(language, language_config):
         for future in as_completed(futures):
             if future.exception() is not None:
                 raise future.exception()
+            else:
+                tasks_results.append(future.result())
 
     extra_shell_commands = language_config.get("extra_shell_commands", [])
     for index, shell_command in enumerate(extra_shell_commands):
@@ -214,12 +239,13 @@ def run_codegen_for_language(language, language_config):
             f"{GREEN}{language}[extra shell commands] ({index + 1}/{len(extra_shell_commands)}){ENDC} | ",
             cmd,
         )
+    return tasks_results
 
 
 def parse_config():
-    with open(REPO_ROOT.joinpath("codegen.toml"), "rb") as f:
+    with open(Path("codegen").joinpath("codegen.toml"), "rb") as f:
         data = tomllib.load(f)
-    openapi = data.pop("global")["openapi"]
+    input_files = data.pop("global")["input_files"]
     config = {}
     for language, language_config in data.items():
         config[language] = {"tasks": [], "tasks_count": len(language_config["task"])}
@@ -232,14 +258,16 @@ def parse_config():
                     "language": language,
                     "language_task_index": language_task_index,
                     "language_total": len(language_config.get("task", [])),
-                    "openapi": task.get(
-                        "openapi", language_config.get("openapi", openapi)
+                    "input_files": task.get(
+                        "input_files", language_config.get("input_files", input_files)
                     ),
                     "template": task["template"],
                     "output_dir": task["output_dir"],
                     "extra_mounts": language_config.get("extra_mounts", {}),
-                    "extra_codegen_args": task.get("extra_codegen_args", []),
-                    "template_dir": language_config["template_dir"],
+                    "extra_codegen_args": task.get(
+                        "extra_codegen_args",
+                        language_config.get("extra_codegen_args", []),
+                    ),
                 }
             )
     # the cli step depends on generated rust code.
@@ -274,22 +302,77 @@ def pull_image():
     )
     # if it does not exist, pull image
     if check.returncode != 0:
+        start = time.perf_counter()
         print("Pulling docker image", flush=True)
         pull = subprocess.run(
             [get_docker_binary(), "image", "pull", OPENAPI_CODEGEN_IMAGE]
         )
+        end = time.perf_counter()
+        length = end - start
         if pull.returncode != 0:
             exit(pull.returncode)
+        print(f"Pulled docker image in {round(length, 4)} seconds")
+
+
+def log_generated_files(generated_paths: list[list[str]]):
+    # these files are allowed to be generated twice
+    # TODO(mendy): fix this hack once the go internal lib is not needed anymore
+    allowed_to_be_generated_twice = [
+        "go/models/endpoint_transformation_in.go",
+        "go/models/ordering.go",
+    ]
+    processed_files = set()
+
+    for files_generated_in_a_single_task in generated_paths:
+        for path in files_generated_in_a_single_task:
+            if path in processed_files and path not in allowed_to_be_generated_twice:
+                raise Exception(
+                    f"Unexpected. same file `{path}` was generated twice, in 2 different codegen tasks"
+                )
+            processed_files.add(path)
+
+            # ensure each file has `this file is @generated` in the first (2) lines
+            with open(path, "r") as f:
+                first_line = "".join(f.readlines()[0:2])
+                assert "@generated" in first_line.lower(), (
+                    f"missing the `this file is @generated` comment in {path}"
+                )
+
+    files_not_part_of_codegen = []
+    cmd = ["git", "grep", "-i", "-l", "this file is @generated", "--", ":!codegen/*"]
+    result = run_cmd("check-for-missing-files", cmd)
+    matched_files = result.stdout.decode("utf-8").splitlines()
+    for m in matched_files:
+        if m not in processed_files and m != "regen_openapi.py":
+            files_not_part_of_codegen.append(m)
+
+    if len(files_not_part_of_codegen) != 0:
+        print(files_not_part_of_codegen)
+        raise Exception(
+            f"Found {len(files_not_part_of_codegen)} files on disk that were not generated by the codegen"
+        )
+
+    for i in generated_paths:
+        i.sort()
+    generated_paths.sort()
+    with open(Path("codegen").joinpath("generated_files.json"), "w") as f:
+        json.dump(generated_paths, f, indent=4)
+        f.write("\n")
 
 
 def main():
+    repo_root = Path(__file__).parent.resolve()
+    os.chdir(repo_root)
+
     pull_image()
     config = parse_config()
     all_tasks = sum([i["tasks_count"] for i in config.values()])
     print(f"Running {all_tasks} codegen tasks")
 
+    start = time.perf_counter()
     # there may be more then 1 subprocess that exited
     exit_with_error = False
+    tasks_results = []
     with ThreadPoolExecutor() as pool:
         futures = []
         for language, language_config in config.items():
@@ -302,11 +385,18 @@ def main():
                     exit_with_error = True
                 else:
                     raise future.exception()
+            else:
+                tasks_results.extend(future.result())
 
     # final newline
     print()
     if exit_with_error:
         exit(1)
+    else:
+        log_generated_files(tasks_results)
+        end = time.perf_counter()
+        length = end - start
+        print(f"Ran {all_tasks} codegen tasks in {round(length, 4)} seconds")
 
 
 if __name__ == "__main__":

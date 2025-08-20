@@ -1,8 +1,6 @@
-use chrono::{DateTime, Utc};
+// this file is @generated
 use clap::{Args, Subcommand};
 use svix::api::*;
-
-use crate::json::JsonOf;
 
 #[derive(Args, Clone)]
 pub struct MessagePollerPollOptions {
@@ -19,7 +17,7 @@ pub struct MessagePollerPollOptions {
     #[arg(long)]
     pub channel: Option<String>,
     #[arg(long)]
-    pub after: Option<DateTime<Utc>>,
+    pub after: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 impl From<MessagePollerPollOptions> for svix::api::MessagePollerPollOptions {
@@ -101,7 +99,7 @@ pub enum MessagePollerCommands {
         app_id: String,
         sink_id: String,
         consumer_id: String,
-        polling_endpoint_consumer_seek_in: JsonOf<PollingEndpointConsumerSeekIn>,
+        polling_endpoint_consumer_seek_in: crate::json::JsonOf<PollingEndpointConsumerSeekIn>,
         #[clap(flatten)]
         options: MessagePollerConsumerSeekOptions,
     },

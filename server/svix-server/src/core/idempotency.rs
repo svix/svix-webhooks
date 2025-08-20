@@ -13,13 +13,15 @@
 use std::{collections::HashMap, convert::Infallible, future::Future, pin::Pin, time::Duration};
 
 use axum::{
-    body::{Body, HttpBody},
-    http::{Request, StatusCode},
+    body::Body,
+    extract::Request,
+    http::StatusCode,
     response::{IntoResponse, Response},
 };
 use base64::{engine::general_purpose::STANDARD, Engine};
 use blake2::{Blake2b512, Digest};
 use http::request::Parts;
+use http_body_util::BodyExt as _;
 use serde::{Deserialize, Serialize};
 use tower::Service;
 
@@ -106,9 +108,9 @@ fn finished_serialized_response_to_response(
     Ok(out)
 }
 
-async fn resolve_service<S>(mut service: S, req: Request<Body>) -> Response
+async fn resolve_service<S>(mut service: S, req: Request) -> Response
 where
-    S: Service<Request<Body>, Error = Infallible> + Clone + Send + 'static,
+    S: Service<Request, Error = Infallible> + Clone + Send + 'static,
     S::Response: IntoResponse,
     S::Future: Send + 'static,
 {
@@ -125,9 +127,9 @@ pub struct IdempotencyService<S: Clone> {
     pub service: S,
 }
 
-impl<S> Service<Request<Body>> for IdempotencyService<S>
+impl<S> Service<Request> for IdempotencyService<S>
 where
-    S: Service<Request<Body>, Error = Infallible> + Clone + Send + 'static,
+    S: Service<Request, Error = Infallible> + Clone + Send + 'static,
     S::Response: IntoResponse,
     S::Future: Send + 'static,
 {
@@ -142,7 +144,7 @@ where
         self.service.poll_ready(cx)
     }
 
-    fn call(&mut self, req: Request<Body>) -> Self::Future {
+    fn call(&mut self, req: Request) -> Self::Future {
         let mut service = self.service.clone();
         let cache = self.cache.clone();
 
@@ -299,15 +301,15 @@ async fn lock_loop(
     }
 }
 
-/// Resolves the service and chaches the result assuming the response is successful
+/// Resolve the service and cache the result assuming the response is successful
 async fn resolve_and_cache_response<S>(
     cache: &Cache,
     key: &IdempotencyKey,
     service: S,
-    request: Request<Body>,
+    request: Request,
 ) -> Response
 where
-    S: Service<Request<Body>, Error = Infallible> + Clone + Send + 'static,
+    S: Service<Request, Error = Infallible> + Clone + Send + 'static,
     S::Response: IntoResponse,
     S::Future: Send + 'static,
 {
@@ -350,12 +352,12 @@ where
 
 #[cfg(test)]
 mod tests {
-    use std::{net::TcpListener, sync::Arc};
+    use std::sync::Arc;
 
-    use axum::{extract::State, routing::post, Router, Server};
+    use axum::{extract::State, routing::post, serve, Router};
     use http::StatusCode;
     use reqwest::Client;
-    use tokio::{sync::Mutex, task::JoinHandle};
+    use tokio::{net::TcpListener, sync::Mutex, task::JoinHandle};
     use tower::ServiceBuilder;
 
     use super::IdempotencyService;
@@ -389,28 +391,23 @@ mod tests {
 
         let count = Arc::new(Mutex::new(0));
 
-        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
         let endpoint = format!("http://{}/", listener.local_addr().unwrap());
 
         let jh = tokio::spawn({
             let count = count.clone();
             async move {
-                Server::from_tcp(listener)
-                    .unwrap()
-                    .serve(
-                        Router::new()
-                            .route("/", post(service_endpoint).get(service_endpoint))
-                            .layer(ServiceBuilder::new().layer_fn(move |service| {
-                                IdempotencyService {
-                                    cache: cache.clone(),
-                                    service,
-                                }
-                            }))
-                            .with_state(TestAppState { count, wait })
-                            .into_make_service(),
+                let svc = Router::new()
+                    .route("/", post(service_endpoint).get(service_endpoint))
+                    .layer(
+                        ServiceBuilder::new().layer_fn(move |service| IdempotencyService {
+                            cache: cache.clone(),
+                            service,
+                        }),
                     )
-                    .await
-                    .unwrap();
+                    .with_state(TestAppState { count, wait })
+                    .into_make_service();
+                serve(listener, svc).await.unwrap();
             }
         });
 
@@ -588,28 +585,23 @@ mod tests {
 
         let count = Arc::new(Mutex::new(199));
 
-        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
         let endpoint = format!("http://{}/", listener.local_addr().unwrap());
 
         let jh = tokio::spawn({
             let count = count.clone();
             async move {
-                Server::from_tcp(listener)
-                    .unwrap()
-                    .serve(
-                        Router::new()
-                            .route("/", post(empty_service_endpoint))
-                            .layer(ServiceBuilder::new().layer_fn(move |service| {
-                                IdempotencyService {
-                                    cache: cache.clone(),
-                                    service,
-                                }
-                            }))
-                            .with_state(TestAppState { count, wait: None })
-                            .into_make_service(),
+                let svc = Router::new()
+                    .route("/", post(empty_service_endpoint))
+                    .layer(
+                        ServiceBuilder::new().layer_fn(move |service| IdempotencyService {
+                            cache: cache.clone(),
+                            service,
+                        }),
                     )
-                    .await
-                    .unwrap();
+                    .with_state(TestAppState { count, wait: None })
+                    .into_make_service();
+                serve(listener, svc).await.unwrap();
             }
         });
 

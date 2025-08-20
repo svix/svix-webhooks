@@ -11,8 +11,8 @@ import { Integration } from "./api/integration";
 import { Message } from "./api/message";
 import { MessageAttempt } from "./api/messageAttempt";
 import { OperationalWebhook } from "./api/operationalWebhook";
-import { OperationalWebhookEndpoint } from "./api/operationalWebhookEndpoint";
 import { Statistics } from "./api/statistics";
+import { OperationalWebhookEndpoint } from "./api/operationalWebhookEndpoint";
 import { SvixRequestContext } from "./request";
 
 export { PostOptions, ApiException } from "./util";
