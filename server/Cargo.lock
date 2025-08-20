@@ -575,9 +575,9 @@ dependencies = [
 
 [[package]]
 name = "backon"
-version = "1.4.0"
+version = "1.5.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "49fef586913a57ff189f25c9b3d034356a5bf6b3fa9a7f067588fe1698ba1f5d"
+checksum = "592277618714fbcecda9a02ba7a8781f319d26532a88553bbacc77ba5d2b3a8d"
 dependencies = [
  "fastrand 2.3.0",
 ]
@@ -646,9 +646,9 @@ dependencies = [
 
 [[package]]
 name = "bb8-redis"
-version = "0.20.0"
+version = "0.24.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3428672918816ef7533c206902630ccaceebf69ca8831a30c18eacf5cb619070"
+checksum = "5143936af5e1eea1a881e3e3d21b6777da6315e5e307bc3d0c2301c44fa37da9"
 dependencies = [
  "bb8",
  "redis",
@@ -776,9 +776,9 @@ checksum = "d71b6127be86fdcfddb610f7182ac57211d4b18a3e9c82eb2d17662f2227ad6a"
 
 [[package]]
 name = "bytesize"
-version = "1.3.2"
+version = "2.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2d2c12f985c78475a6b8d629afd0c360260ef34cfef52efccdcfd31972f81c2e"
+checksum = "a3c8f83209414aacf0eeae3cf730b18d6981697fba62f200fcfb92b9f082acba"
 
 [[package]]
 name = "cbc"
@@ -2811,7 +2811,7 @@ dependencies = [
 [[package]]
 name = "omniqueue"
 version = "0.2.1"
-source = "git+https://github.com/svix/omniqueue-rs?rev=63fe1f303c547e218f44890245a6dada6054931f#63fe1f303c547e218f44890245a6dada6054931f"
+source = "git+https://github.com/svix/omniqueue-rs?rev=e7e328a576f921ca58d0bdb56b8df69fd996172d#e7e328a576f921ca58d0bdb56b8df69fd996172d"
 dependencies = [
  "bb8",
  "bb8-redis",
@@ -3611,13 +3611,14 @@ dependencies = [
 
 [[package]]
 name = "redis"
-version = "0.28.2"
+version = "0.32.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e37ec3fd44bea2ec947ba6cc7634d7999a6590aca7c35827c250bc0de502bda6"
+checksum = "7cd3650deebc68526b304898b192fa4102a4ef0b9ada24da096559cb60e0eef8"
 dependencies = [
  "arc-swap",
  "backon",
  "bytes",
+ "cfg-if",
  "combine",
  "crc16",
  "futures-channel",
@@ -3629,10 +3630,10 @@ dependencies = [
  "num-bigint",
  "percent-encoding",
  "pin-project-lite",
- "rand 0.8.5",
+ "rand 0.9.0",
  "ryu",
  "sha1_smol",
- "socket2 0.5.8",
+ "socket2 0.6.0",
  "tokio",
  "tokio-native-tls",
  "tokio-util",
