@@ -46,9 +46,9 @@ RUN set -ex ; \
         mkdir -p /home/appuser ;\
         chown -R appuser: /home/appuser
 
-RUN apt-get update ;\
-    apt-get install --no-install-recommends -y ca-certificates=20230311+deb12u1; \
-    update-ca-certificates; \
+RUN apt-get update && \
+    apt-get install --no-install-recommends -y ca-certificates=20250419 && \
+    update-ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
 USER appuser
