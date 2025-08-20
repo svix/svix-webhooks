@@ -14,93 +14,91 @@ ignored = [
     "idna_adapter",
 ]
 
-[dependencies]
-svix-server_derive = { path = "../svix-server_derive" }
+[features]
+default = ["jemalloc"]
+jemalloc = ["dep:tikv-jemallocator"]
 
-svix = "1.17.0"
-svix-ksuid = "^0.5.1"
-dotenvy = "0.15.7"
-hmac-sha256 = "1"
-clap = { version = "4.1.8", features = ["derive"] }
+[dependencies]
+aide = { version = "0.13.4", features = ["axum", "redoc", "macros", "axum-headers"] }
+anyhow = "1.0.56"
 axum = "0.7.9"
 axum-extra = { version = "0.9.3", features = ["typed-header"] }
 base64 = "0.22"
+bb8 = "0.9.0"
+bb8-redis = "0.24.0"
+blake2 = "0.10.4"
+bytes = "1.1.0"
+chacha20poly1305 = "0.10.1"
+chrono = { version = "0.4.26", features = ["serde"] }
+clap = { version = "4.1.8", features = ["derive"] }
+dotenvy = "0.15.7"
+ed25519-compact = "2.1.1"
+enum_dispatch = "0.3.8"
+figment = { version = "0.10", features = ["toml", "env", "test"] }
+form_urlencoded = "1.1.0"
+futures = "0.3"
+hex = "0.4.3"
+hickory-resolver = "0.25.2"
+hmac-sha256 = "1"
+http = "1.1.0"
+http-body-util = "0.1.2"
+http02 = { package = "http", version = "0.2.12" }
 hyper = { version = "=1.7.0", features = ["full"] }
 hyper-openssl = { version = "0.10.2", features = ["client-legacy", "tokio"] }
 hyper-util = { version = "0.1.16", features = ["client-legacy", "client-proxy", "tokio"] }
 # Reduce compile times for idna (we don't need the fastest possible impl of UTS 46)
 # As per https://github.com/hsivonen/idna_adapter?tab=readme-ov-file#opting-to-use-unicode-rs
 idna_adapter = "=1.1.0"
-openssl = "0.10.72"
-tokio = { version = "1.24.2", features = ["full"] }
-tower = "0.5.1"
-tower-http = { version = "0.6.1", features = ["trace", "cors", "normalize-path", "request-id"] }
-serde = { version = "1.0.184", features = ["derive"] }
-serde_json = { version = "1.0.74", features = ["arbitrary_precision", "raw_value"] }
-serde_path_to_error = "0.1.7"
+indexmap = "2.6.0"
+ipnet = { version = "2.5", features = ["serde"] }
+itertools = "0.14"
+jsonschema = "0.17.1"
+jwt-simple = "0.11.6"
+lapin = "2.1.1"
 num_enum = "0.7.2"
-enum_dispatch = "0.3.8"
-regex = "1.5.5"
-figment = { version = "0.10", features = ["toml", "env", "test"] }
-tracing = "0.1.35"
-tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
-tracing-opentelemetry = "0.27.0"
+omniqueue = { git = "https://github.com/svix/omniqueue-rs", rev = "e7e328a576f921ca58d0bdb56b8df69fd996172d", default-features = false, features = ["in_memory", "rabbitmq-with-message-ids", "redis_cluster", "redis_sentinel", "beta"] }
+openssl = "0.10.72"
 opentelemetry = { version = "0.26.0", features = ["metrics"] }
-opentelemetry_sdk = { version = "0.26.0", features = ["rt-tokio"] }
 opentelemetry-http = "0.26.0"
 opentelemetry-otlp = { version = "0.26.0", features = ["metrics"] }
 opentelemetry-semantic-conventions = "0.26.0"
+opentelemetry_sdk = { version = "0.26.0", features = ["rt-tokio"] }
+rand = "0.8.5"
+redis = { version = "0.32.5", features = ["tokio-comp", "tokio-native-tls-comp", "streams", "cluster-async", "tcp_nodelay", "connection-manager", "sentinel"] }
+regex = "1.5.5"
+reqwest = { version = "0.12.23", default-features = false, features = ["json", "rustls-tls", "hickory-dns"] }
+schemars = { version = "0.8.11", features = ["chrono", "url", "preserve_order"] }
+sea-orm = { version = "1.1.1", features = [ "sqlx-postgres", "runtime-tokio-rustls", "macros", "with-chrono", "with-json" ], default-features = false }
+sentry = { version = "0.34.0", features = ["tracing"] }
+serde = { version = "1.0.184", features = ["derive"] }
+serde_json = { version = "1.0.74", features = ["arbitrary_precision", "raw_value"] }
+serde_path_to_error = "0.1.7"
+sqlx = { version = "0.8.2", features = [ "runtime-tokio-rustls", "postgres", "migrate" ] }
+svix = "1.17.0"
+svix-ksuid = "^0.5.1"
+svix-server_derive = { path = "../svix-server_derive" }
+thiserror = "2.0.11"
+time = { version = "0.3.9", features = [ "std" ] }
+tokio = { version = "1.24.2", features = ["full"] }
+tower = "0.5.1"
+tower-http = { version = "0.6.1", features = ["trace", "cors", "normalize-path", "request-id"] }
+tracing = "0.1.35"
+tracing-opentelemetry = "0.27.0"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+url = { version = "2.2.2", features = ["serde"] }
+urlencoding = "2.1.2"
 # Forked version of 0.16 with a small fix and dependency upgrades, since we
 # haven't gotten around to doing a proper upgrade yet (0.17 is a large
 # rewrite with a barely-useful changelog)
 validator = { git = "https://github.com/svix/validator.git", rev = "aebdc34a4ed72524902ff6d63397b9c435b0578f", features = ["derive"] }
-jwt-simple = "0.11.6"
-ed25519-compact = "2.1.1"
-chrono = { version="0.4.26", features = ["serde"] }
-reqwest = { version = "0.12.7", default-features = false, features = ["json", "rustls-tls", "hickory-dns"] }
-bb8 = "0.9.0"
-bb8-redis = "0.20.0"
-redis = { version = "0.28.2", features = ["tokio-comp", "tokio-native-tls-comp", "streams", "cluster-async", "tcp_nodelay", "connection-manager", "sentinel"] }
-thiserror = "2.0.11"
-bytes = "1.1.0"
-blake2 = "0.10.4"
-chacha20poly1305 = "0.10.1"
-# sea orm
-sea-orm = { version = "1.1.1", features = [ "sqlx-postgres", "runtime-tokio-rustls", "macros", "with-chrono", "with-json" ], default-features = false }
-sqlx = { version = "0.8.2", features = [ "runtime-tokio-rustls", "postgres", "migrate" ] }
-http = "1.1.0"
-http02 = { package = "http", version = "0.2.12" }
-http-body-util = "0.1.2"
-time = { version = "0.3.9", features = [ "std" ]}
-futures = "0.3"
-url = { version = "2.2.2", features = ["serde"] }
-rand = "0.8.5"
-jsonschema = "0.17.1"
-aide = { version = "0.13.4", features = ["axum", "redoc", "macros", "axum-headers"] }
-schemars = { version = "0.8.11", features = ["chrono", "url", "preserve_order"] }
-indexmap = "2.6.0"
-hickory-resolver = "0.24.0"
-ipnet = { version = "2.5", features = ["serde"] }
-urlencoding = "2.1.2"
-form_urlencoded = "1.1.0"
-lapin = "2.1.1"
-sentry = { version = "0.34.0", features = ["tracing"] }
-omniqueue = { git = "https://github.com/svix/omniqueue-rs", rev = "63fe1f303c547e218f44890245a6dada6054931f", default-features = false, features = ["in_memory", "rabbitmq-with-message-ids", "redis_cluster", "redis_sentinel", "beta"] }
-hex = "0.4.3"
-anyhow = "1.0.56"
-itertools = "0.14"
 
 [target.'cfg(not(target_env = "msvc"))'.dependencies]
-tikv-jemallocator = { version = "0.5", optional = true }
+tikv-jemallocator = { version = "0.6", optional = true }
 
 [dev-dependencies]
 assert_matches = "1.5.0"
 axum-server = { version = "0.7.1", features = ["tls-openssl"] }
 ctor = "0.2.7"
-
-[features]
-default = ["jemalloc"]
-jemalloc = ["dep:tikv-jemallocator"]
 
 [lints]
 workspace = true
