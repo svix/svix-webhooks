@@ -151,8 +151,6 @@ describe("mockttp tests", () => {
     const before = new Date().getTime();
     const svx = new Svix("token", {
       serverUrl: mockServer.url,
-      // should be ignored because retryScheduleInMs is set
-      numRetries: 5,
       retryScheduleInMs,
     });
 
