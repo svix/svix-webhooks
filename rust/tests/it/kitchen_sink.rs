@@ -1,5 +1,5 @@
 use js_option::JsOption;
-use std::collections::HashSet;
+use std::{collections::HashSet, time::Duration};
 use svix::{
     api::{ApplicationIn, EndpointIn, EndpointPatch, EventTypeIn},
     error::Error,
@@ -242,7 +242,8 @@ async fn test_custom_retries() {
 #[tokio::test]
 async fn test_custom_retry_schedule() {
     let mock_server: MockServer = MockServer::start().await;
-    let retry_schedule_in_ms = vec![50, 100, 200, 400];
+    let retry_schedule_in_ms = [50, 100, 200, 400];
+    let retry_schedule = retry_schedule_in_ms.map(Duration::from_millis).into();
 
     Mock::given(wiremock::matchers::method("POST"))
         .and(wiremock::matchers::path("/api/v1/app"))
@@ -267,7 +268,7 @@ async fn test_custom_retry_schedule() {
     let client = TestClientBuilder::new()
         .url(mock_server.uri())
         .token("test".to_string())
-        .retry_schedule_in_ms(retry_schedule_in_ms.clone())
+        .retry_schedule(retry_schedule)
         .build()
         .client;
 

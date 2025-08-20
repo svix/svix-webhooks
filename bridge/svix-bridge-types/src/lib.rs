@@ -202,7 +202,7 @@ pub struct SvixOptions {
     pub server_url: Option<String>,
     pub timeout_secs: Option<u64>,
     pub num_retries: Option<u32>,
-    pub retry_schedule_in_ms: Option<Vec<u64>>,
+    pub retry_schedule_ms: Option<Vec<u64>>,
     pub proxy_address: Option<String>,
 }
 
@@ -213,7 +213,7 @@ impl From<SvixOptions> for _SvixOptions {
             server_url,
             timeout_secs,
             num_retries,
-            retry_schedule_in_ms,
+            retry_schedule_ms,
             proxy_address,
         }: SvixOptions,
     ) -> Self {
@@ -222,7 +222,8 @@ impl From<SvixOptions> for _SvixOptions {
             server_url,
             timeout: timeout_secs.map(Duration::from_secs),
             num_retries,
-            retry_schedule_in_ms,
+            retry_schedule: retry_schedule_ms
+                .map(|sched| sched.into_iter().map(Duration::from_millis).collect()),
             proxy_address,
         }
     }

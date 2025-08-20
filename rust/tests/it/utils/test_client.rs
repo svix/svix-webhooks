@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use svix::api::{Svix, SvixOptions};
 
 pub struct TestClient {
@@ -8,7 +10,7 @@ pub struct TestClientBuilder {
     token: Option<String>,
     url: Option<String>,
     retries: Option<u32>,
-    retry_schedule_in_ms: Option<Vec<u64>>,
+    retry_schedule: Option<Vec<Duration>>,
 }
 
 impl TestClientBuilder {
@@ -17,7 +19,7 @@ impl TestClientBuilder {
             token: None,
             url: None,
             retries: None,
-            retry_schedule_in_ms: None,
+            retry_schedule: None,
         }
     }
 
@@ -37,8 +39,8 @@ impl TestClientBuilder {
         self
     }
 
-    pub fn retry_schedule_in_ms(mut self, retry_schedule_in_ms: Vec<u64>) -> Self {
-        self.retry_schedule_in_ms = Some(retry_schedule_in_ms);
+    pub fn retry_schedule(mut self, retry_schedule: Vec<Duration>) -> Self {
+        self.retry_schedule = Some(retry_schedule);
         self
     }
 
@@ -54,7 +56,7 @@ impl TestClientBuilder {
             Some(SvixOptions {
                 server_url: Some(url.clone()),
                 num_retries: self.retries,
-                retry_schedule_in_ms: self.retry_schedule_in_ms,
+                retry_schedule: self.retry_schedule,
                 ..Default::default()
             }),
         );

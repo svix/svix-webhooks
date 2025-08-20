@@ -29,7 +29,7 @@ pub struct Configuration {
     pub bearer_access_token: Option<String>,
     pub timeout: Option<Duration>,
     pub num_retries: u32,
-    pub retry_schedule_in_ms: Option<Vec<u64>>,
+    pub retry_schedule: Option<Vec<Duration>>,
 
     client: HyperClient<Connector, http_body_util::Full<Bytes>>,
 }

@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{sync::Arc, time::Duration};
 
 use hyper_util::{client::legacy::Client as HyperClient, rt::TokioExecutor};
 
@@ -18,7 +18,7 @@ pub struct SvixOptions {
     /// out.
     ///
     /// Default: 15 seconds.
-    pub timeout: Option<std::time::Duration>,
+    pub timeout: Option<Duration>,
 
     /// Number of retries
     ///
@@ -30,9 +30,9 @@ pub struct SvixOptions {
 
     /// Retry Schedule in milliseconds
     ///
-    /// List of delays (in milliseconds) to wait before each retry attempt.
-    /// Takes precedence over numRetries.
-    pub retry_schedule_in_ms: Option<Vec<u64>>,
+    /// List of delays to wait before each retry attempt.
+    /// Takes precedence over `num_retries`.
+    pub retry_schedule: Option<Vec<Duration>>,
 
     /// Proxy address.
     ///
@@ -48,9 +48,9 @@ impl Default for SvixOptions {
         Self {
             debug: false,
             server_url: None,
-            timeout: Some(std::time::Duration::from_secs(15)),
+            timeout: Some(Duration::from_secs(15)),
             num_retries: None,
-            retry_schedule_in_ms: None,
+            retry_schedule: None,
             proxy_address: None,
         }
     }
@@ -76,7 +76,7 @@ impl Svix {
             base_path: String::new(),
             bearer_access_token: None,
             num_retries: options.num_retries.unwrap_or(2),
-            retry_schedule_in_ms: options.retry_schedule_in_ms,
+            retry_schedule: options.retry_schedule,
         });
         let svix = Self {
             cfg,
@@ -110,7 +110,7 @@ impl Svix {
             client: self.cfg.client.clone(),
             timeout: self.cfg.timeout,
             num_retries: self.cfg.num_retries,
-            retry_schedule_in_ms: self.cfg.retry_schedule_in_ms.clone(),
+            retry_schedule: self.cfg.retry_schedule.clone(),
         });
 
         Self {
