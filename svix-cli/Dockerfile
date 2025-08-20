@@ -11,11 +11,11 @@ RUN apt-get update && apt-get install -y \
     cmake=3.* \
     --no-install-recommends
 
-RUN set -ex ; \
-        mkdir -p /app ;\
-        useradd appuser ;\
-        chown -R appuser: /app ;\
-        mkdir -p /home/appuser ;\
+RUN set -ex && \
+        mkdir -p /app && \
+        useradd appuser && \
+        chown -R appuser: /app && \
+        mkdir -p /home/appuser && \
         chown -R appuser: /home/appuser
 
 WORKDIR /app/svix-cli
@@ -25,10 +25,10 @@ COPY rust /app/rust
 COPY svix-cli/Cargo.toml .
 COPY svix-cli/Cargo.lock .
 
-RUN set -ex ;\
-        mkdir src ;\
-        echo 'fn main() { println!("Dummy!"); }' > src/main.rs ;\
-        cargo build --release ;\
+RUN set -ex && \
+        mkdir src && \
+        echo 'fn main() { println!("Dummy!"); }' > src/main.rs && \
+        cargo build --release && \
         rm -rf \
           src
 
@@ -39,11 +39,11 @@ RUN cargo build --release --frozen
 # Production
 FROM debian:trixie-slim AS prod
 
-RUN set -ex ; \
-        mkdir -p /app ;\
-        useradd appuser ;\
-        chown -R appuser: /app ;\
-        mkdir -p /home/appuser ;\
+RUN set -ex && \
+        mkdir -p /app && \
+        useradd appuser && \
+        chown -R appuser: /app && \
+        mkdir -p /home/appuser && \
         chown -R appuser: /home/appuser
 
 RUN apt-get update && \

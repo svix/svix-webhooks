@@ -21,11 +21,11 @@ RUN apt-get update && apt-get install -y \
         libssl-dev=* \
         --no-install-recommends
 
-RUN set -ex ; \
-        mkdir -p /app ;\
-        useradd appuser ;\
-        chown -R appuser: /app ;\
-        mkdir -p /home/appuser ;\
+RUN set -ex && \
+        mkdir -p /app && \
+        useradd appuser && \
+        chown -R appuser: /app && \
+        mkdir -p /home/appuser && \
         chown -R appuser: /home/appuser
 
 COPY --from=planner /app/recipe.json recipe.json
@@ -40,11 +40,11 @@ RUN cargo build --release --package svix-server --bin svix-server --frozen
 # Production
 FROM docker.io/debian:trixie-slim AS prod
 
-RUN set -ex ; \
-        mkdir -p /app ;\
-        useradd appuser ;\
-        chown -R appuser: /app ;\
-        mkdir -p /home/appuser ;\
+RUN set -ex && \
+        mkdir -p /app && \
+        useradd appuser && \
+        chown -R appuser: /app && \
+        mkdir -p /home/appuser && \
         chown -R appuser: /home/appuser
 
 RUN apt-get update && apt-get install -y \

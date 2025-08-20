@@ -11,11 +11,11 @@ RUN apt-get update && apt-get install -y \
     cmake=3.* \
     --no-install-recommends
 
-RUN set -ex ; \
-        mkdir -p /app ;\
-        useradd appuser ;\
-        chown -R appuser: /app ;\
-        mkdir -p /home/appuser ;\
+RUN set -ex && \
+        mkdir -p /app && \
+        useradd appuser && \
+        chown -R appuser: /app && \
+        mkdir -p /home/appuser && \
         chown -R appuser: /home/appuser
 
 WORKDIR /app/bridge
@@ -28,16 +28,16 @@ COPY bridge/svix-bridge-types/Cargo.toml svix-bridge-types/
 COPY bridge/svix-bridge-plugin-kafka/Cargo.toml svix-bridge-plugin-kafka/
 COPY bridge/svix-bridge-plugin-queue/Cargo.toml svix-bridge-plugin-queue/
 COPY bridge/svix-bridge/Cargo.toml svix-bridge/
-RUN set -ex ;\
-        mkdir svix-bridge-plugin-kafka/src ;\
-        mkdir svix-bridge-plugin-queue/src ;\
-        mkdir svix-bridge-types/src ;\
-        mkdir svix-bridge/src ;\
-        echo '' > svix-bridge-plugin-kafka/src/lib.rs ;\
-        echo '' > svix-bridge-plugin-queue/src/lib.rs ;\
-        echo '' > svix-bridge-types/src/lib.rs ;\
-        echo 'fn main() { println!("Dummy!"); }' > svix-bridge/src/main.rs ;\
-        cargo build --release ;\
+RUN set -ex && \
+        mkdir svix-bridge-plugin-kafka/src && \
+        mkdir svix-bridge-plugin-queue/src && \
+        mkdir svix-bridge-types/src && \
+        mkdir svix-bridge/src && \
+        echo '' > svix-bridge-plugin-kafka/src/lib.rs && \
+        echo '' > svix-bridge-plugin-queue/src/lib.rs && \
+        echo '' > svix-bridge-types/src/lib.rs && \
+        echo 'fn main() { println!("Dummy!"); }' > svix-bridge/src/main.rs && \
+        cargo build --release && \
         rm -rf \
           svix-bridge-plugin-queue/src \
           svix-bridge-types/src \
@@ -51,11 +51,11 @@ RUN cargo build --release --frozen
 # Production
 FROM debian:trixie-slim AS prod
 
-RUN set -ex ; \
-        mkdir -p /app ;\
-        useradd appuser ;\
-        chown -R appuser: /app ;\
-        mkdir -p /home/appuser ;\
+RUN set -ex && \
+        mkdir -p /app && \
+        useradd appuser && \
+        chown -R appuser: /app && \
+        mkdir -p /home/appuser && \
         chown -R appuser: /home/appuser
 
 RUN apt-get update && \
