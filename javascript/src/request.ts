@@ -2,7 +2,7 @@ import { ApiException } from "./util";
 import { HttpErrorOut, HTTPValidationError } from "./HttpErrors";
 import { v4 as uuidv4 } from "uuid";
 
-export const LIB_VERSION = "1.73.0";
+export const LIB_VERSION = "1.74.0";
 const USER_AGENT = `svix-libs/${LIB_VERSION}/javascript`;
 
 export enum HttpMethod {

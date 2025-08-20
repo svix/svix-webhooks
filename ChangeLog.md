@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 1.74.0
+* Libs/Rust: Add support for custom retry schedule (thanks @KranzAklilu)
+* Libs/Rust: Add support for connecting to the API through a proxy
+* Server: Upgrade some core dependencies
+* Bridge: Add support for connecting to the Svix API through a proxy
+
 ## Version 1.73.0
 * Libs/(Java and Kotlin): Fix bug causing runtime exceptions when unknown fields were sent from the server
 
