@@ -38,7 +38,7 @@ figment = { version = "0.10", features = ["toml", "env", "test"] }
 form_urlencoded = "1.1.0"
 futures = "0.3"
 hex = "0.4.3"
-hickory-resolver = "0.24.0"
+hickory-resolver = "0.25.2"
 hmac-sha256 = "1"
 http = "1.1.0"
 http-body-util = "0.1.2"
@@ -66,7 +66,7 @@ opentelemetry_sdk = { version = "0.26.0", features = ["rt-tokio"] }
 rand = "0.8.5"
 redis = { version = "0.32.5", features = ["tokio-comp", "tokio-native-tls-comp", "streams", "cluster-async", "tcp_nodelay", "connection-manager", "sentinel"] }
 regex = "1.5.5"
-reqwest = { version = "0.12.7", default-features = false, features = ["json", "rustls-tls", "hickory-dns"] }
+reqwest = { version = "0.12.23", default-features = false, features = ["json", "rustls-tls", "hickory-dns"] }
 schemars = { version = "0.8.11", features = ["chrono", "url", "preserve_order"] }
 sea-orm = { version = "1.1.1", features = [ "sqlx-postgres", "runtime-tokio-rustls", "macros", "with-chrono", "with-json" ], default-features = false }
 sentry = { version = "0.34.0", features = ["tracing"] }

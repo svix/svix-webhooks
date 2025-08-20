@@ -13,9 +13,7 @@ use axum::{body::Body, response::Response};
 use axum_extra::headers::{authorization::Credentials, Authorization};
 use bytes::Bytes;
 use futures::{future::BoxFuture, FutureExt};
-use hickory_resolver::{
-    error::ResolveError, lookup_ip::LookupIpIntoIter, AsyncResolver, TokioAsyncResolver,
-};
+use hickory_resolver::{lookup_ip::LookupIpIntoIter, ResolveError, Resolver, TokioResolver};
 use http::{header::HeaderName, HeaderMap, HeaderValue, Method, StatusCode, Version};
 use http_body_util::Full;
 use hyper::{body::Incoming, ext::HeaderCaseMap, Uri};
@@ -520,7 +518,7 @@ struct NonLocalDnsResolver {
 #[derive(Clone, Debug)]
 enum DnsState {
     Init,
-    Ready(Arc<TokioAsyncResolver>),
+    Ready(Arc<TokioResolver>),
 }
 
 impl NonLocalDnsResolver {
@@ -615,8 +613,8 @@ impl Iterator for SocketAddrs {
     }
 }
 
-async fn new_resolver() -> Result<Arc<TokioAsyncResolver>, ResolveError> {
-    Ok(Arc::new(AsyncResolver::tokio_from_system_conf()?))
+async fn new_resolver() -> Result<Arc<TokioResolver>, ResolveError> {
+    Ok(Arc::new(Resolver::builder_tokio()?.build()))
 }
 
 fn is_allowed(addr: IpAddr) -> bool {
