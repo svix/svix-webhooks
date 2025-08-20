@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 1.74.1
+* Bridge, CLI: Fix installation of ca-certificates in Docker images
+  * These images were broken as of v1.72.0
+
 ## Version 1.74.0
 * Libs/Rust: Add support for custom retry schedule (thanks @KranzAklilu)
 * Libs/Rust: Add support for connecting to the API through a proxy
