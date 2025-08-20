@@ -1,4 +1,4 @@
-import { ApiException } from "./util";
+import { ApiException, XOR } from "./util";
 import { HttpErrorOut, HTTPValidationError } from "./HttpErrors";
 import { v4 as uuidv4 } from "uuid";
 
@@ -17,20 +17,26 @@ export enum HttpMethod {
   PATCH = "PATCH",
 }
 
-export interface SvixRequestContext {
+export type SvixRequestContext = {
   /** The API base URL, like "https://api.svix.com" */
   baseUrl: string;
   /** The 'bearer' scheme access token */
   token: string;
   /** Time in milliseconds to wait for requests to get a response. */
   timeout?: number;
-  /** List of delays (in milliseconds) to wait before each retry attempt.
-   *  Takes precedence over numRetries. */
-  retryScheduleInMs?: number[];
-  /** The number of times the client will retry if a server-side error
-   *  or timeout is received. Default: 2 */
-  numRetries?: number;
-}
+} & XOR<
+  {
+    /** List of delays (in milliseconds) to wait before each retry attempt.*/
+    retryScheduleInMs?: number[];
+  },
+  {
+    /** The number of times the client will retry if a server-side error
+     *  or timeout is received.
+     *  Default: 2
+     */
+    numRetries?: number;
+  }
+>;
 
 type QueryParameter = string | boolean | number | Date | string[] | null | undefined;
 
