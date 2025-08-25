@@ -114,15 +114,19 @@ describe("mockttp tests", () => {
   });
 
   test("test retry for status => 500", async () => {
+    const numRetries = 5;
     const endpointMock = await mockServer
       .forGet("/api/v1/app")
       .thenReply(500, `{"code":"500","detail":"asd"}`);
-    const svx = new Svix("token", { serverUrl: mockServer.url });
+    const svx = new Svix("token", {
+      serverUrl: mockServer.url,
+      numRetries,
+    });
 
     await expect(svx.application.list()).rejects.toThrow(ApiException);
 
     const requests = await endpointMock.getSeenRequests();
-    expect(requests.length).toBe(3);
+    expect(requests.length).toBe(numRetries + 1);
 
     // same svix-req-id for each retry
     const req_id = requests[0].headers["svix-req-id"];
@@ -137,6 +141,29 @@ describe("mockttp tests", () => {
         expect(requests[i].headers["svix-retry-count"]).toBe(i.toString());
       }
     }
+  });
+
+  test("test retry schedule for status => 500", async () => {
+    const retryScheduleInMs = [60, 120, 240];
+    const endpointMock = await mockServer
+      .forGet("/api/v1/app")
+      .thenReply(500, `{"code":"500","detail":"asd"}`);
+    const before = new Date().getTime();
+    const svx = new Svix("token", {
+      serverUrl: mockServer.url,
+      retryScheduleInMs,
+    });
+
+    await expect(svx.application.list()).rejects.toThrow(ApiException);
+
+    const requests = await endpointMock.getSeenRequests();
+    expect(requests.length).toBe(retryScheduleInMs.length + 1);
+
+    const after = new Date().getTime();
+
+    expect(after - before).toBeGreaterThanOrEqual(
+      retryScheduleInMs.reduce((prev, curr) => prev + curr, 0)
+    );
   });
 
   test("no body in response does not return anything", async () => {

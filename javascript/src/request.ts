@@ -1,4 +1,4 @@
-import { ApiException } from "./util";
+import { ApiException, XOR } from "./util";
 import { HttpErrorOut, HTTPValidationError } from "./HttpErrors";
 import { v4 as uuidv4 } from "uuid";
 
@@ -17,14 +17,26 @@ export enum HttpMethod {
   PATCH = "PATCH",
 }
 
-export interface SvixRequestContext {
+export type SvixRequestContext = {
   /** The API base URL, like "https://api.svix.com" */
   baseUrl: string;
   /** The 'bearer' scheme access token */
   token: string;
   /** Time in milliseconds to wait for requests to get a response. */
   timeout?: number;
-}
+} & XOR<
+  {
+    /** List of delays (in milliseconds) to wait before each retry attempt.*/
+    retryScheduleInMs?: number[];
+  },
+  {
+    /** The number of times the client will retry if a server-side error
+     *  or timeout is received.
+     *  Default: 2
+     */
+    numRetries?: number;
+  }
+>;
 
 type QueryParameter = string | boolean | number | Date | string[] | null | undefined;
 
@@ -130,19 +142,25 @@ export class SvixRequest {
     // https://github.com/cloudflare/workers-sdk/issues/2514#issuecomment-2178070014
     const isCredentialsSupported = "credentials" in Request.prototype;
 
-    const response = await sendWithRetry(url, {
-      method: this.method.toString(),
-      body: this.body,
-      headers: {
-        accept: "application/json, */*;q=0.8",
-        authorization: `Bearer ${ctx.token}`,
-        "user-agent": USER_AGENT,
-        "svix-req-id": randomId.toString(),
-        ...this.headerParams,
+    const response = await sendWithRetry(
+      url,
+      {
+        method: this.method.toString(),
+        body: this.body,
+        headers: {
+          accept: "application/json, */*;q=0.8",
+          authorization: `Bearer ${ctx.token}`,
+          "user-agent": USER_AGENT,
+          "svix-req-id": randomId.toString(),
+          ...this.headerParams,
+        },
+        credentials: isCredentialsSupported ? "same-origin" : undefined,
+        signal: ctx.timeout !== undefined ? AbortSignal.timeout(ctx.timeout) : undefined,
       },
-      credentials: isCredentialsSupported ? "same-origin" : undefined,
-      signal: ctx.timeout !== undefined ? AbortSignal.timeout(ctx.timeout) : undefined,
-    });
+      ctx.retryScheduleInMs,
+      ctx.retryScheduleInMs?.[0],
+      ctx.retryScheduleInMs?.length || ctx.numRetries
+    );
     return filterResponseForErrors(response);
   }
 }
@@ -179,8 +197,9 @@ type SvixRequestInit = RequestInit & {
 async function sendWithRetry(
   url: URL,
   init: SvixRequestInit,
-  triesLeft = 2,
+  retryScheduleInMs?: number[],
   nextInterval = 50,
+  triesLeft = 2,
   retryCount = 1
 ): Promise<Response> {
   const sleep = (interval: number) =>
@@ -199,5 +218,13 @@ async function sendWithRetry(
 
   await sleep(nextInterval);
   init.headers["svix-retry-count"] = retryCount.toString();
-  return await sendWithRetry(url, init, --triesLeft, nextInterval * 2, ++retryCount);
+  nextInterval = retryScheduleInMs?.[retryCount] || nextInterval * 2;
+  return await sendWithRetry(
+    url,
+    init,
+    retryScheduleInMs,
+    nextInterval,
+    --triesLeft,
+    ++retryCount
+  );
 }
