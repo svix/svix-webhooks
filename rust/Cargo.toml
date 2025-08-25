@@ -53,7 +53,7 @@ uuid = { version = "1", features = ["v4"] }
 
 [dev-dependencies]
 tokio = { version = "1.41.0", features = ["macros"] }
-wiremock = "0.6.2"
+wiremock = "0.6.2, <0.6.5"
 
 [package.metadata.cargo-public-api-crates]
 allowed = [
