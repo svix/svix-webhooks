@@ -4881,7 +4881,7 @@ dependencies = [
 
 [[package]]
 name = "svix-server"
-version = "1.74.1"
+version = "1.75.0"
 dependencies = [
  "aide",
  "anyhow",
@@ -4958,7 +4958,7 @@ dependencies = [
 
 [[package]]
 name = "svix-server_derive"
-version = "1.74.1"
+version = "1.75.0"
 dependencies = [
  "proc-macro2",
  "quote",

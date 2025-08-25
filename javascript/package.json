@@ -1,6 +1,6 @@
 {
   "name": "svix",
-  "version": "1.74.1",
+  "version": "1.75.0",
   "description": "Svix webhooks API client and webhook verification library",
   "author": "svix",
   "repository": "https://github.com/svix/svix-libs",

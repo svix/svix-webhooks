@@ -4441,7 +4441,7 @@ checksum = "13c2bddecc57b384dee18652358fb23172facb8a2c51ccc10d74c157bdea3292"
 
 [[package]]
 name = "svix"
-version = "1.74.1"
+version = "1.75.0"
 dependencies = [
  "base64 0.13.1",
  "hmac-sha256",
@@ -4469,7 +4469,7 @@ dependencies = [
 
 [[package]]
 name = "svix-bridge"
-version = "1.74.1"
+version = "1.75.0"
 dependencies = [
  "anyhow",
  "axum",
@@ -4506,7 +4506,7 @@ dependencies = [
 
 [[package]]
 name = "svix-bridge-plugin-kafka"
-version = "1.74.1"
+version = "1.75.0"
 dependencies = [
  "ctor",
  "rdkafka",
@@ -4522,7 +4522,7 @@ dependencies = [
 
 [[package]]
 name = "svix-bridge-plugin-queue"
-version = "1.74.1"
+version = "1.75.0"
 dependencies = [
  "aws-config",
  "aws-sdk-sqs",
@@ -4546,7 +4546,7 @@ dependencies = [
 
 [[package]]
 name = "svix-bridge-types"
-version = "1.74.1"
+version = "1.75.0"
 dependencies = [
  "async-trait",
  "serde",

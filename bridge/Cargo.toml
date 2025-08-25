@@ -13,7 +13,7 @@ members = [
 ]
 
 [workspace.package]
-version = "1.74.1"
+version = "1.75.0"
 
 [workspace.lints.rust]
 rust_2018_idioms = { level = "warn", priority = -1 }
