@@ -6,7 +6,6 @@ use axum::{
     extract::{Path, State},
     Json,
 };
-use base64::{engine::general_purpose::STANDARD, Engine};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use svix_server_derive::aide_annotate;
@@ -14,7 +13,7 @@ use validator::Validate;
 
 use crate::{
     core::{permissions, security::generate_app_token, types::FeatureFlagSet},
-    error::{HttpError, Result},
+    error::Result,
     v1::utils::{api_not_implemented, openapi_tag, ApplicationPath, ValidatedJson},
     AppState,
 };
@@ -75,20 +74,8 @@ async fn app_portal_access(
         data.feature_flags,
     )?;
 
-    let login_key = serde_json::to_vec(&serde_json::json!({
-        "appId": app.id,
-        "token": token,
-        "region": &cfg.internal.region,
-    }))
-    .map_err(|_| HttpError::internal_server_error(None, None))?;
-
-    let login_key = STANDARD.encode(login_key);
-
-    // Included for API compatibility, but this URL will not be useful
-    let url = format!("{}/login#key={login_key}", &cfg.internal.app_portal_url);
-
     Ok(Json(AppPortalAccessOut::from(DashboardAccessOut {
-        url,
+        url: "https://docs.svix.com/app-portal/oss".to_owned(),
         token,
     })))
 }
