@@ -4,7 +4,7 @@
 use std::collections::HashMap;
 
 use chrono::Utc;
-use jsonschema::{Draft, JSONSchema};
+use jsonschema::Draft;
 use schemars::JsonSchema;
 use sea_orm::{entity::prelude::*, ActiveValue::Set};
 use serde::{Deserialize, Serialize};
@@ -153,14 +153,8 @@ impl<'de> Deserialize<'de> for Schema {
         // JSONSchema doesn't implement (De)Serialize, so we have to
         // manually enforce the values are valid JSON schemas
 
-        let mut opts = JSONSchema::options();
-        opts.with_draft(Draft::Draft7);
-
-        if let Some(error) = inner
-            .values()
-            .filter_map(|schema| opts.compile(schema).err())
-            .next()
-        {
+        let opts = jsonschema::Validator::options().with_draft(Draft::Draft7);
+        if let Some(error) = inner.values().find_map(|schema| opts.build(schema).err()) {
             return Err(serde::de::Error::custom(error));
         }
 
