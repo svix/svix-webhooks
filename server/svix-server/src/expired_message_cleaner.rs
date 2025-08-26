@@ -1,10 +1,7 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use std::{
-    sync::atomic::Ordering,
-    time::{Duration, Instant},
-};
+use std::time::{Duration, Instant};
 
 use sea_orm::{
     ConnectionTrait, DatabaseConnection, DbErr, ExecResult, QueryResult, Statement,
@@ -131,24 +128,14 @@ pub async fn expired_message_cleaner_loop(pool: &DatabaseConnection) -> Result<(
     const ON_ERROR: Duration = Duration::from_secs(10);
     const BATCH_SIZE: u32 = 5_000;
     let mut sleep_time = None;
-    loop {
+    while !crate::is_shutting_down() {
         if let Some(duration) = sleep_time {
-            let sleep_start = Instant::now();
-            let mut interval = tokio::time::interval(Duration::from_secs(10));
-            interval.tick().await;
-            // Doing a plain sleep() was fine when the polling frequency was mere seconds, but since we're doing wider
-            // periods now (hours, not seconds), we need to be a little more careful about not preventing the process
-            // from shutting down.
-            // Using `interval()` so we can track how long we've been sleeping for, while still checking for the
-            // shutdown signal.
-            'inner: loop {
-                if crate::SHUTTING_DOWN.load(Ordering::SeqCst) {
-                    return Ok(());
-                }
-                interval.tick().await;
-                if sleep_start.elapsed() > duration {
-                    break 'inner;
-                }
+            if crate::shutting_down_token()
+                .run_until_cancelled_owned(tokio::time::sleep(duration))
+                .await
+                .is_none()
+            {
+                return Ok(());
             }
         }
 
@@ -170,10 +157,6 @@ pub async fn expired_message_cleaner_loop(pool: &DatabaseConnection) -> Result<(
                     None
                 };
             }
-        }
-
-        if crate::SHUTTING_DOWN.load(Ordering::SeqCst) {
-            break;
         }
     }
 

@@ -4,14 +4,7 @@
 #![warn(clippy::all)]
 #![forbid(unsafe_code)]
 
-use std::{
-    borrow::Cow,
-    sync::{
-        atomic::{AtomicBool, Ordering},
-        LazyLock,
-    },
-    time::Duration,
-};
+use std::{borrow::Cow, sync::LazyLock, time::Duration};
 
 use aide::axum::ApiRouter;
 use cfg::ConfigurationInner;
@@ -24,6 +17,7 @@ use sea_orm::DatabaseConnection;
 use sentry::integrations::tracing::EventFilter;
 use svix_ksuid::{KsuidLike, KsuidMs};
 use tokio::net::TcpListener;
+use tokio_util::sync::CancellationToken;
 use tower::layer::layer_fn;
 use tower_http::{
     cors::{AllowHeaders, Any, CorsLayer},
@@ -58,7 +52,22 @@ pub mod worker;
 
 const CRATE_NAME: &str = env!("CARGO_CRATE_NAME");
 
-pub static SHUTTING_DOWN: AtomicBool = AtomicBool::new(false);
+static SHUTTING_DOWN_TOKEN: LazyLock<CancellationToken> = LazyLock::new(CancellationToken::new);
+
+/// Has someone requested shutdown?
+pub fn is_shutting_down() -> bool {
+    SHUTTING_DOWN_TOKEN.is_cancelled()
+}
+
+/// Request a CancellationToken for the application shut down
+pub fn shutting_down_token() -> CancellationToken {
+    SHUTTING_DOWN_TOKEN.clone()
+}
+
+/// Shut down the application
+pub fn start_shut_down() {
+    SHUTTING_DOWN_TOKEN.cancel();
+}
 
 pub static INSTANCE_ID: LazyLock<String> =
     LazyLock::new(|| hex::encode(KsuidMs::new(None, None).to_string()));
@@ -87,7 +96,7 @@ async fn graceful_shutdown_handler() {
     }
 
     tracing::info!("Received shutdown signal. Shutting down gracefully...");
-    SHUTTING_DOWN.store(true, Ordering::SeqCst)
+    start_shut_down();
 }
 
 pub async fn run(cfg: Configuration) {
