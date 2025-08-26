@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 1.75.0
+* Bridge, CLI, Server: Modify Dockerfiles to use cache mounts for improved build time; these now require Docker 1.2 or later to build
+* Libs/JS: Add support for custom retry schedule (thanks @KranzAklilu)
+
 ## Version 1.74.1
 * Bridge, CLI: Fix installation of ca-certificates in Docker images
   * These images were broken as of v1.72.0

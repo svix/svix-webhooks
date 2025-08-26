@@ -24,13 +24,13 @@ A CLI to interact with the Svix API.
 Pre-built binaries are available for Linux, macOS via shell script installers.
 
 ```
-curl --proto '=https' --tlsv1.2 -LsSf https://github.com/svix/svix-webhooks/releases/download/v1.74.1/svix-cli-installer.sh | sh
+curl --proto '=https' --tlsv1.2 -LsSf https://github.com/svix/svix-webhooks/releases/download/v1.75.0/svix-cli-installer.sh | sh
 ```
 
 For Windows users, installation can be done via powershell:
 
 ```
-powershell -ExecutionPolicy ByPass -c "irm https://github.com/svix-onelson/svix-webhooks/releases/download/v1.74.1/svix-cli-installer.ps1 | iex"
+powershell -ExecutionPolicy ByPass -c "irm https://github.com/svix-onelson/svix-webhooks/releases/download/v1.75.0/svix-cli-installer.ps1 | iex"
 ```
 
 These scripts will install the binaries to `~/.svix/bin` and also add this directory to your `PATH` by default.
