@@ -80,6 +80,7 @@ svix-server_derive = { path = "../svix-server_derive" }
 thiserror = "2.0.11"
 time = { version = "0.3.9", features = [ "std" ] }
 tokio = { version = "1.24.2", features = ["full"] }
+tokio-util = "0.7"
 tower = "0.5.1"
 tower-http = { version = "0.6.1", features = ["trace", "cors", "normalize-path", "request-id"] }
 tracing = "0.1.35"

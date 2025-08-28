@@ -991,7 +991,7 @@ pub async fn queue_handler(
             }
         }
 
-        if crate::SHUTTING_DOWN.load(Ordering::SeqCst) {
+        if crate::is_shutting_down() {
             tokio::join!(async move {
                 let mut interval = tokio::time::interval(Duration::from_millis(500));
                 loop {

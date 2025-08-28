@@ -16,10 +16,15 @@ pub async fn wait_for_dsn(
         .ok_or_else(|| format!("Expected {dependency_name} host"))?;
     let port = dsn.port().unwrap_or(default_port);
 
-    tokio::time::timeout(Duration::from_secs(wait_for_seconds), async {
+    let future = tokio::time::timeout(Duration::from_secs(wait_for_seconds), async {
         loop {
             // Attempt the connection with a timeout
-            match tokio::time::timeout(ATTEMPT_TIMEOUT, tokio::net::TcpStream::connect((host.to_string(), port))).await {
+            match tokio::time::timeout(
+                ATTEMPT_TIMEOUT,
+                tokio::net::TcpStream::connect((host.to_string(), port)),
+            )
+            .await
+            {
                 // Connection attempt succeeded
                 Ok(Ok(_)) => break,
                 // Connection failed before the timeout was reached _or_ timed out
@@ -30,9 +35,17 @@ pub async fn wait_for_dsn(
                 }
             }
         }
-    })
-        .await
-        .map_err(|_| format!("Waiting for service {dependency_name} host={host} port={port} timed out"))?;
+    });
 
-    Ok(())
+    match svix_server::shutting_down_token()
+        .run_until_cancelled_owned(future)
+        .await
+    {
+        Some(Ok(_)) => Ok(()),
+        Some(Err(_)) => Err(format!(
+            "Waiting for service {dependency_name} host={host} port={port} timed out"
+        )
+        .into()),
+        None => Err(format!("Shutdown requested while waiting for {dependency_name}").into()),
+    }
 }
