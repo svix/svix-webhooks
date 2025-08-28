@@ -59,49 +59,49 @@ jobs:
       matrix:
         rust: ["1.85.0", stable, beta]
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - uses: dtolnay/rust-toolchain@master
-      with:
-        toolchain: ${{ matrix.rust }}
-        components: clippy
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ matrix.rust }}
+          components: clippy
 
-    - uses: Swatinem/rust-cache@v2
-      with:
-        workspaces: "bridge -> target"
-        # only save the cache on the main branch
-        # cf https://github.com/Swatinem/rust-cache/issues/95
-        save-if: ${{ github.ref == 'refs/heads/main' }}
-        # include relevant information in the cache name
-        prefix-key: "bridge-${{ matrix.rust }}"
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "bridge -> target"
+          # only save the cache on the main branch
+          # cf https://github.com/Swatinem/rust-cache/issues/95
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+          # include relevant information in the cache name
+          prefix-key: "bridge-${{ matrix.rust }}"
 
-    - uses: taiki-e/install-action@nextest
+      - uses: taiki-e/install-action@nextest
 
-    - name: Clippy
-      run: cargo clippy --locked --all-targets --all-features -- -D warnings
-      working-directory: bridge
+      - name: Clippy
+        run: cargo clippy --locked --all-targets --all-features -- -D warnings
+        working-directory: bridge
 
-    - name: Install system dependencies
-      # Packages should align with whatever is in the bridge/Dockerfile
-      run: |
-        sudo apt-get install -y \
-          build-essential=12.* \
-          checkinstall=1.* \
-          curl \
-          libssl-dev=* \
-          pkg-config=1.8.* \
-          zlib1g-dev=1:*
+      - name: Install system dependencies
+        # Packages should align with whatever is in the bridge/Dockerfile
+        run: |
+          sudo apt-get install -y \
+            build-essential=12.* \
+            checkinstall=1.* \
+            curl \
+            libssl-dev=* \
+            pkg-config=1.8.* \
+            zlib1g-dev=1:*
 
-    - name: Start required services
-      run: docker compose -f "bridge/testing-docker-compose.yml" up -d
+      - name: Start required services
+        run: docker compose -f "bridge/testing-docker-compose.yml" up -d
 
-    - name: Run tests
-      working-directory: bridge
-      run: ./run-tests.sh
+      - name: Run tests
+        working-directory: bridge
+        run: ./run-tests.sh
 
-    - name: Stop required services
-      run: docker compose -f "bridge/testing-docker-compose.yml" down
+      - name: Stop required services
+        run: docker compose -f "bridge/testing-docker-compose.yml" down
 
-    - name: Idle Test
-      working-directory: bridge
-      run: ./run-idle-test.sh
+      - name: Idle Test
+        working-directory: bridge
+        run: ./run-idle-test.sh

@@ -1,16 +1,20 @@
 repos:
--   repo: https://github.com/pre-commit/pre-commit-hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: 582b9c66e0791980685c8b80bb11e6a3df1a06ef
     hooks:
-    - id: end-of-file-fixer
-      exclude: "(^.yarn/)|(.svg$)|(-openapi.json)|(java/lib/src/test/resources/__files/)|(kotlin/lib/src/test/resources/__files/)|(server/svix-server/migrations/202[234])"
-    - id: trailing-whitespace
-      exclude: "(^.yarn/)|(.svg$)|(-openapi.json)|(java/lib/src/test/resources/__files/)|(kotlin/lib/src/test/resources/__files/)|(svix-cli/wix/main.wxs)|(server/svix-server/migrations/202[234])"
-    - id: check-case-conflict
-    - id: check-illegal-windows-names
-    - id: check-merge-conflict
-    - id: check-symlinks
-    - id: check-toml
-    - id: check-yaml
-    - id: check-json
-      exclude: "(kotlin/lib/src/test/resources/__files/ExpectedMsgCreateBodyWithHeaders.json)|(tsconfig.json)"
+      - id: end-of-file-fixer
+        exclude: "(^.yarn/)|(.svg$)|(-openapi.json)|(java/lib/src/test/resources/__files/)|(kotlin/lib/src/test/resources/__files/)|(server/svix-server/migrations/202[234])"
+      - id: trailing-whitespace
+        exclude: "(^.yarn/)|(.svg$)|(-openapi.json)|(java/lib/src/test/resources/__files/)|(kotlin/lib/src/test/resources/__files/)|(svix-cli/wix/main.wxs)|(server/svix-server/migrations/202[234])"
+      - id: check-case-conflict
+      - id: check-illegal-windows-names
+      - id: check-merge-conflict
+      - id: check-symlinks
+      - id: check-toml
+      - id: check-yaml
+      - id: check-json
+        exclude: "(kotlin/lib/src/test/resources/__files/ExpectedMsgCreateBodyWithHeaders.json)|(tsconfig.json)"
+  - repo: https://github.com/google/yamlfmt
+    rev: v0.17.2
+    hooks:
+      - id: yamlfmt

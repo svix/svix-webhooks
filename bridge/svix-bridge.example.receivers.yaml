@@ -13,7 +13,6 @@ opentelemetry:
   # Optional: default "svix-bridge"
   service_name: "my-bridge"
 
-
 # The host/port to bind to for incoming HTTP requests.
 # Optional: default "0.0.0.0:5000"
 # http_listen_address: "0.0.0.0:5000"

@@ -6,7 +6,7 @@ env:
 on:
   push:
     branches:
-    - main
+      - main
     paths:
       - 'bridge/**/Cargo.toml'
       - 'bridge/**/Cargo.lock'

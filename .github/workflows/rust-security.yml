@@ -3,7 +3,7 @@ name: Rust Lib Security
 on:
   push:
     branches:
-    - main
+      - main
     paths:
       - 'rust/**/Cargo.toml'
       - 'rust/**/Cargo.lock'

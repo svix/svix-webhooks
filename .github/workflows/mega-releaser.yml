@@ -2,7 +2,6 @@ name: Mega Releaser
 
 on: workflow_dispatch
 
-
 jobs:
   kick-off:
     name: Kick-off Releases

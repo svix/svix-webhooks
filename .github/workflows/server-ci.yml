@@ -57,55 +57,55 @@ jobs:
         # bump this when bumping the MSRV
         rust: ["1.85.0", stable, beta]
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - uses: dtolnay/rust-toolchain@master
-      with:
-        toolchain: ${{ matrix.rust }}
-        components: clippy
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ matrix.rust }}
+          components: clippy
 
-    - uses: Swatinem/rust-cache@v2
-      with:
-        workspaces: "server -> target"
-        # only save the cache on the main branch
-        # cf https://github.com/Swatinem/rust-cache/issues/95
-        save-if: ${{ github.ref == 'refs/heads/main' }}
-        # include relevant information in the cache name
-        prefix-key: "server-${{ matrix.rust }}"
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "server -> target"
+          # only save the cache on the main branch
+          # cf https://github.com/Swatinem/rust-cache/issues/95
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+          # include relevant information in the cache name
+          prefix-key: "server-${{ matrix.rust }}"
 
-    - uses: taiki-e/install-action@nextest
+      - uses: taiki-e/install-action@nextest
 
-    - name: Build
-      run: cargo test --all-features --no-run --locked
-      working-directory: server
+      - name: Build
+        run: cargo test --all-features --no-run --locked
+        working-directory: server
 
-    - name: Install dependencies
-      run: sudo apt-get install -y jq
+      - name: Install dependencies
+        run: sudo apt-get install -y jq
 
-    - name: Check for uncommited OpenAPI changes
-      working-directory: ./server
-      run: ./generate-openapi.sh --check
+      - name: Check for uncommited OpenAPI changes
+        working-directory: ./server
+        run: ./generate-openapi.sh --check
 
-    - name: Start dependencies
-      run: docker compose -f "server/testing-docker-compose.yml" up -d
+      - name: Start dependencies
+        run: docker compose -f "server/testing-docker-compose.yml" up -d
 
-    - name: Clippy
-      run: cargo clippy --all-targets --all-features -- -D warnings
-      working-directory: server
+      - name: Clippy
+        run: cargo clippy --all-targets --all-features -- -D warnings
+        working-directory: server
 
-    - name: Run migrations
-      env:
-        DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/postgres"
-        SVIX_REDIS_DSN: "redis://localhost:6379"
-        SVIX_QUEUE_TYPE: "redis"
-        SVIX_JWT_SECRET: "test value"
-        SVIX_CACHE_TYPE: "memory"
-      run: cargo run -- --wait-for 15 migrate
-      working-directory: server
+      - name: Run migrations
+        env:
+          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/postgres"
+          SVIX_REDIS_DSN: "redis://localhost:6379"
+          SVIX_QUEUE_TYPE: "redis"
+          SVIX_JWT_SECRET: "test value"
+          SVIX_CACHE_TYPE: "memory"
+        run: cargo run -- --wait-for 15 migrate
+        working-directory: server
 
-    - name: Run tests
-      working-directory: ./server
-      run: ./run-tests.sh
+      - name: Run tests
+        working-directory: ./server
+        run: ./run-tests.sh
 
-    - name: Stop dependencies
-      run: docker compose -f "server/testing-docker-compose.yml" down
+      - name: Stop dependencies
+        run: docker compose -f "server/testing-docker-compose.yml" down

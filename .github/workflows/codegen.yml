@@ -23,18 +23,18 @@ jobs:
     name: Check for uncommitted changes
     runs-on: ubuntu-24.04
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Regen openapi libs
-      run: ./regen_openapi.py
+      - name: Regen openapi libs
+        run: ./regen_openapi.py
 
-    - name: Check for uncommitted changes
-      run: |
-        gs=$(git status -s)
-        if [[ -n "$gs" ]]; then
-          echo 'there are uncommitted changes!'
-          git status
-          exit 1
-        else
-          echo 'all good.'
-        fi
+      - name: Check for uncommitted changes
+        run: |
+          gs=$(git status -s)
+          if [[ -n "$gs" ]]; then
+            echo 'there are uncommitted changes!'
+            git status
+            exit 1
+          else
+            echo 'all good.'
+          fi
