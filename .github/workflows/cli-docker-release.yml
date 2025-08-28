@@ -43,7 +43,7 @@ jobs:
           echo "Generated Tags: ${DOCKER_TAGS}"
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v6
         with:
           context: ./
           file: ./svix-cli/Dockerfile
