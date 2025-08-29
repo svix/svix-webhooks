@@ -35,7 +35,7 @@ svix-bridge-types = { path = "svix-bridge-types" }
 thiserror = "1.0.61"
 tokio = { version = "1.38.0", features = ["macros", "time", "rt-multi-thread", "sync"] }
 tracing = "0.1.40"
-tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
+tracing-subscriber = { version = "0.3.20", features = ["env-filter"] }
 wiremock = "0.6.0"
 
 [profile.dev.package]
