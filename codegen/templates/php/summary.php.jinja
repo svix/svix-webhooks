@@ -1,0 +1,83 @@
+<?php
+
+// this file is @generated
+declare(strict_types=1);
+
+namespace Svix;
+
+use GuzzleHttp\Client;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Middleware;
+use Svix\Request\SvixHttpClient;
+{% for r in api.resources -%}
+use Svix\Api\{{ r.name | to_upper_camel_case }};
+{% endfor -%}
+
+class Svix
+{
+    {% for r in api.resources -%}
+    public {{ r.name | to_upper_camel_case }} ${{ r.name | to_lower_camel_case }};
+    {% endfor %}
+
+
+    public function __construct(
+        string $apiKey,
+        ?SvixOptions $options = null,
+        ?Client $httpClient = null
+    ) {
+        $baseUrl = $options?->serverUrl ?? \Svix\Utils::getServerUrlFromToken($apiKey);
+
+        $svixHttpClient = new SvixHttpClient(
+            token: $apiKey,
+            baseUrl: $baseUrl,
+            guzzleClient: $httpClient ?? $this->createHttpClient(),
+        );
+
+        {% for r in api.resources -%}
+        $this-> {{ r.name | to_lower_camel_case }} = new {{ r.name | to_upper_camel_case }}($svixHttpClient);
+        {% endfor %}
+    }
+
+    /**
+     * Create and configure the HTTP client with retry logic
+     */
+    private function createHttpClient(): Client
+    {
+        $stack = HandlerStack::create();
+
+        // Add retry middleware
+        $stack->push(Middleware::retry(
+            $this->retryDecider(),
+            $this->retryDelay()
+        ));
+
+        $defaultOptions = [
+            'handler' => $stack,
+            'timeout' => 30,
+        ];
+
+        return new Client(array_merge($defaultOptions));
+    }
+
+    private function retryDecider(): callable
+    {
+        return function (
+            int $retries,
+            \Psr\Http\Message\RequestInterface $request,
+            ?\Psr\Http\Message\ResponseInterface $response = null,
+            ?\Exception $exception = null
+        ): bool {
+            if ($retries >= 2) return false;
+            if ($exception && !$response) return true;
+            if ($response && $response->getStatusCode() >= 500) return true;
+            return false;
+        };
+    }
+
+    private function retryDelay(): callable
+    {
+        return function (int $retries): int {
+            return (int)(50 * pow(2, $retries));
+        };
+    }
+}

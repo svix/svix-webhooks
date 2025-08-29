@@ -17,7 +17,7 @@ except ImportError:
     print("Python 3.11 or greater is required to run the codegen")
     exit(1)
 
-OPENAPI_CODEGEN_IMAGE = "ghcr.io/svix/openapi-codegen:20250812-321"
+OPENAPI_CODEGEN_IMAGE = "ghcr.io/svix/openapi-codegen:20250827-325"
 DEBUG = os.getenv("DEBUG") is not None
 GREEN = "\033[92m"
 BLUE = "\033[94m"
@@ -331,9 +331,9 @@ def log_generated_files(generated_paths: list[list[str]]):
                 )
             processed_files.add(path)
 
-            # ensure each file has `this file is @generated` in the first (2) lines
+            # ensure each file has `this file is @generated` in the first (3) lines
             with open(path, "r") as f:
-                first_line = "".join(f.readlines()[0:2])
+                first_line = "".join(f.readlines()[0:3])
                 assert "@generated" in first_line.lower(), (
                     f"missing the `this file is @generated` comment in {path}"
                 )

@@ -155,3 +155,26 @@ output_dir = "kotlin/lib/src/main/kotlin/models"
 [[kotlin.task]]
 template = "templates/kotlin/api_resource.kt.jinja"
 output_dir = "kotlin/lib/src/main/kotlin"
+
+
+[php]
+extra_codegen_args = [
+   # ingest requires struct enums and is excluded from initial release
+   "--exclude-op-id=v1.ingest.source.list",
+   "--exclude-op-id=v1.ingest.source.create",
+   "--exclude-op-id=v1.ingest.source.get",
+   "--exclude-op-id=v1.ingest.source.update",
+   "--exclude-op-id=v1.ingest.source.delete",
+]
+[[php.task]]
+template = "templates/php/component_type.php.jinja"
+output_dir = "php/src/Models"
+[[php.task]]
+template = "templates/php/api_resource.php.jinja"
+output_dir = "php/src/Api"
+[[php.task]]
+template = "templates/php/operation_options.php.jinja"
+output_dir = "php/src/Api"
+[[php.task]]
+template = "templates/php/summary.php.jinja"
+output_dir = "php/src"
