@@ -33,7 +33,7 @@ services:
       - "0.0.0.0:8085"
 
   kafka:
-    image: "ghcr.io/svix-mman/bitnami-kafka:3.5.1"
+    image: "ghcr.io/svix-mman/docker.io/bitnami/kafka:3.5.1"
     ports:
       - "9092:9092"
       - "9094:9094"
