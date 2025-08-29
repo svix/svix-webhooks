@@ -1,6 +1,6 @@
 <?php
 
-namespace Svix;
+namespace Svix\Tests;
 
 final class TestPayload
 {

@@ -1,0 +1,11 @@
+<?php
+// this file is @generated
+declare(strict_types=1);
+
+{% if type.kind == "struct" -%}
+    {% include "types/struct.php.jinja" -%}
+{% elif type.kind == "string_enum" -%}
+    {% include "types/string_enum.php.jinja" -%}
+{% elif type.kind == "integer_enum" -%}
+    {% include "types/integer_enum.php.jinja" -%}
+{% endif -%}
