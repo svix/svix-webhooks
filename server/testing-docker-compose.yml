@@ -95,18 +95,16 @@ services:
     ports:
       - "6388:6379"
     command:
-      [
-        "redis-server",
-        "--appendonly",
-        "yes",
-        "--replicaof",
-        "redis-master-0",
-        "6379",
-        "--repl-diskless-load",
-        "on-empty-db",
-        "--protected-mode",
-        "no"
-      ]
+      - "redis-server"
+      - "--appendonly"
+      - "yes"
+      - "--replicaof"
+      - "redis-master-0"
+      - "6379"
+      - "--repl-diskless-load"
+      - "on-empty-db"
+      - "--protected-mode"
+      - "no"
 
   rabbitmq:
     image: "docker.io/rabbitmq:3.11.13-management-alpine"

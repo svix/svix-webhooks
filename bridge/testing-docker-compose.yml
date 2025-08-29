@@ -21,11 +21,16 @@ services:
     image: "gcr.io/google.com/cloudsdktool/google-cloud-cli:emulators"
     ports:
       - "8085:8085"
-    command: [
-      "gcloud", "beta", "emulators", "pubsub", "start",
-      "--project", "local-project",
-      "--host-port", "0.0.0.0:8085"
-    ]
+    command:
+      - "gcloud"
+      - "beta"
+      - "emulators"
+      - "pubsub"
+      - "start"
+      - "--project"
+      - "local-project"
+      - "--host-port"
+      - "0.0.0.0:8085"
 
   kafka:
     image: "ghcr.io/svix-mman/bitnami-kafka:3.5.1"

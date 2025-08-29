@@ -49,31 +49,31 @@ jobs:
         # keep this in sync with svix-cli/Cargo.toml MSRV
         rust: ["1.85.0", stable, beta]
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Regen openapi libs
-      run: ./regen_openapi.py
+      - name: Regen openapi libs
+        run: ./regen_openapi.py
 
-    - uses: dtolnay/rust-toolchain@master
-      with:
-        toolchain: ${{ matrix.rust }}
-        components: clippy
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ matrix.rust }}
+          components: clippy
 
-    - uses: Swatinem/rust-cache@v2
-      with:
-        workspaces: "svix-cli -> target"
-        # only save the cache on the main branch
-        # cf https://github.com/Swatinem/rust-cache/issues/95
-        save-if: ${{ github.ref == 'refs/heads/main' }}
-        # include relevant information in the cache name
-        prefix-key: "cli-${{ matrix.rust }}"
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "svix-cli -> target"
+          # only save the cache on the main branch
+          # cf https://github.com/Swatinem/rust-cache/issues/95
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+          # include relevant information in the cache name
+          prefix-key: "cli-${{ matrix.rust }}"
 
-    - uses: taiki-e/install-action@nextest
+      - uses: taiki-e/install-action@nextest
 
-    - name: Clippy
-      run: cargo clippy --all-targets --all-features -- -D warnings
-      working-directory: svix-cli
+      - name: Clippy
+        run: cargo clippy --all-targets --all-features -- -D warnings
+        working-directory: svix-cli
 
-    - name: Run tests
-      run: cargo nextest run
-      working-directory: svix-cli
+      - name: Run tests
+        run: cargo nextest run
+        working-directory: svix-cli
