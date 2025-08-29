@@ -2015,6 +2015,14 @@
             },
             "EndpointHeadersPatchIn": {
                 "properties": {
+                    "deleteHeaders": {
+                        "default": [],
+                        "description": "A list of headers be be removed",
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array"
+                    },
                     "headers": {
                         "additionalProperties": {
                             "nullable": true,

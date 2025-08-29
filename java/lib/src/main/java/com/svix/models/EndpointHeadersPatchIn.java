@@ -11,7 +11,9 @@ import com.svix.Utils;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @ToString
@@ -19,9 +21,38 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class EndpointHeadersPatchIn {
+    @JsonProperty private List<String> deleteHeaders;
     @JsonProperty private Map<String, String> headers;
 
     public EndpointHeadersPatchIn() {}
+
+    public EndpointHeadersPatchIn deleteHeaders(List<String> deleteHeaders) {
+        this.deleteHeaders = deleteHeaders;
+        return this;
+    }
+
+    public EndpointHeadersPatchIn addDeleteHeadersItem(String deleteHeadersItem) {
+        if (this.deleteHeaders == null) {
+            this.deleteHeaders = new ArrayList<>();
+        }
+        this.deleteHeaders.add(deleteHeadersItem);
+
+        return this;
+    }
+
+    /**
+     * A list of headers be be removed
+     *
+     * @return deleteHeaders
+     */
+    @javax.annotation.Nullable
+    public List<String> getDeleteHeaders() {
+        return deleteHeaders;
+    }
+
+    public void setDeleteHeaders(List<String> deleteHeaders) {
+        this.deleteHeaders = deleteHeaders;
+    }
 
     public EndpointHeadersPatchIn headers(Map<String, String> headers) {
         this.headers = headers;
