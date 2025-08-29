@@ -8,6 +8,22 @@ module Svix
     #
     # If the application id or uid that is used in the path already exists, this argument is ignored.
     attr_accessor :application
+    # Custom capabilities attached to the token, You can combine as many capabilities as necessary.
+    #
+    # The `ViewBase` capability is always required
+    #
+    # - `ViewBase`: Basic read only permissions, does not allow the user to see the endpoint secret.
+    #
+    # - `ViewEndpointSecret`: Allows user to view the endpoint secret.
+    #
+    # - `ManageEndpointSecret`: Allows user to rotate and view the endpoint secret.
+    #
+    # - `ManageTransformations`: Allows user to modify the endpoint transformations.
+    #
+    # - `CreateAttempts`: Allows user to replay missing messages and send example messages.
+    #
+    # - `ManageEndpoint`: Allows user to read/modify any field or configuration of an endpoint (including secrets)
+    attr_accessor :capabilities
     # How long the token will be valid for, in seconds.
     #
     # Valid values are between 1 hour and 7 days. The default is 7 days.
@@ -21,7 +37,7 @@ module Svix
     # When expiring tokens with "Expire All", you can include the session ID to only expire tokens that were created with that session ID.
     attr_accessor :session_id
 
-    ALL_FIELD ||= ["application", "expiry", "feature_flags", "read_only", "session_id"].freeze
+    ALL_FIELD ||= ["application", "capabilities", "expiry", "feature_flags", "read_only", "session_id"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -43,6 +59,10 @@ module Svix
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
       attrs["application"] = Svix::ApplicationIn.deserialize(attributes["application"]) if attributes["application"]
+      if attributes["capabilities"]
+        attrs["capabilities"] = attributes["capabilities"].map { |v| Svix::AppPortalCapability.deserialize(v) }
+      end
+
       attrs["expiry"] = attributes["expiry"]
       attrs["feature_flags"] = attributes["featureFlags"]
       attrs["read_only"] = attributes["readOnly"]
@@ -53,6 +73,7 @@ module Svix
     def serialize
       out = Hash.new
       out["application"] = Svix::serialize_schema_ref(@application) if @application
+      out["capabilities"] = @capabilities.map { |v| v.serialize } if @capabilities
       out["expiry"] = Svix::serialize_primitive(@expiry) if @expiry
       out["featureFlags"] = Svix::serialize_primitive(@feature_flags) if @feature_flags
       out["readOnly"] = Svix::serialize_primitive(@read_only) if @read_only

@@ -12,6 +12,7 @@ type MessageAttemptOut struct {
 	ResponseDurationMs int64                     `json:"responseDurationMs"` // Response duration in milliseconds.
 	ResponseStatusCode int16                     `json:"responseStatusCode"`
 	Status             MessageStatus             `json:"status"`
+	StatusText         MessageStatusText         `json:"statusText"`
 	Timestamp          time.Time                 `json:"timestamp"`
 	TriggerType        MessageAttemptTriggerType `json:"triggerType"`
 	Url                string                    `json:"url"`

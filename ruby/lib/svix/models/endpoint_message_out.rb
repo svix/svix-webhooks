@@ -16,10 +16,22 @@ module Svix
     attr_accessor :next_attempt
     attr_accessor :payload
     attr_accessor :status
+    attr_accessor :status_text
     attr_accessor :tags
     attr_accessor :timestamp
 
-    ALL_FIELD ||= ["channels", "event_id", "event_type", "id", "next_attempt", "payload", "status", "tags", "timestamp"].freeze
+    ALL_FIELD ||= [
+      "channels",
+      "event_id",
+      "event_type",
+      "id",
+      "next_attempt",
+      "payload",
+      "status",
+      "status_text",
+      "tags",
+      "timestamp"
+    ].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -47,6 +59,7 @@ module Svix
       attrs["next_attempt"] = DateTime.rfc3339(attributes["nextAttempt"]).to_time if attributes["nextAttempt"]
       attrs["payload"] = attributes["payload"]
       attrs["status"] = Svix::MessageStatus.deserialize(attributes["status"])
+      attrs["status_text"] = Svix::MessageStatusText.deserialize(attributes["statusText"])
       attrs["tags"] = attributes["tags"]
       attrs["timestamp"] = DateTime.rfc3339(attributes["timestamp"]).to_time
       new(attrs)
@@ -61,6 +74,7 @@ module Svix
       out["nextAttempt"] = Svix::serialize_primitive(@next_attempt) if @next_attempt
       out["payload"] = Svix::serialize_primitive(@payload) if @payload
       out["status"] = Svix::serialize_schema_ref(@status) if @status
+      out["statusText"] = Svix::serialize_schema_ref(@status_text) if @status_text
       out["tags"] = Svix::serialize_primitive(@tags) if @tags
       out["timestamp"] = Svix::serialize_primitive(@timestamp) if @timestamp
       out

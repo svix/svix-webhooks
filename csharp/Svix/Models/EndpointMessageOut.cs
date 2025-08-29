@@ -30,6 +30,9 @@ namespace Svix.Models
         [JsonProperty("status", Required = Required.Always)]
         public required MessageStatus Status { get; set; }
 
+        [JsonProperty("statusText", Required = Required.Always)]
+        public required MessageStatusText StatusText { get; set; }
+
         [JsonProperty("tags")]
         public List<string>? Tags { get; set; } = null;
 
@@ -48,6 +51,7 @@ namespace Svix.Models
             sb.Append("  NextAttempt: ").Append(NextAttempt).Append('\n');
             sb.Append("  Payload: ").Append(Payload).Append('\n');
             sb.Append("  Status: ").Append(Status).Append('\n');
+            sb.Append("  StatusText: ").Append(StatusText).Append('\n');
             sb.Append("  Tags: ").Append(Tags).Append('\n');
             sb.Append("  Timestamp: ").Append(Timestamp).Append('\n');
             sb.Append("}\n");

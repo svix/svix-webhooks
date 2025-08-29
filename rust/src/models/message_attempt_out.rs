@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use super::{
     message_attempt_trigger_type::MessageAttemptTriggerType, message_out::MessageOut,
-    message_status::MessageStatus,
+    message_status::MessageStatus, message_status_text::MessageStatusText,
 };
 
 #[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
@@ -33,6 +33,9 @@ pub struct MessageAttemptOut {
 
     pub status: MessageStatus,
 
+    #[serde(rename = "statusText")]
+    pub status_text: MessageStatusText,
+
     pub timestamp: String,
 
     #[serde(rename = "triggerType")]
@@ -50,6 +53,7 @@ impl MessageAttemptOut {
         response_duration_ms: i32,
         response_status_code: i16,
         status: MessageStatus,
+        status_text: MessageStatusText,
         timestamp: String,
         trigger_type: MessageAttemptTriggerType,
         url: String,
@@ -63,6 +67,7 @@ impl MessageAttemptOut {
             response_duration_ms,
             response_status_code,
             status,
+            status_text,
             timestamp,
             trigger_type,
             url,

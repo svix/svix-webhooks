@@ -7,6 +7,8 @@ import com.svix.kotlin.models.IngestEndpointIn
 import com.svix.kotlin.models.IngestEndpointOut
 import com.svix.kotlin.models.IngestEndpointSecretIn
 import com.svix.kotlin.models.IngestEndpointSecretOut
+import com.svix.kotlin.models.IngestEndpointTransformationOut
+import com.svix.kotlin.models.IngestEndpointTransformationPatch
 import com.svix.kotlin.models.IngestEndpointUpdate
 import com.svix.kotlin.models.ListResponseIngestEndpointOut
 import com.svix.kotlin.models.Ordering
@@ -156,6 +158,36 @@ class IngestEndpoint(private val client: SvixHttpClient) {
             url.build(),
             headers = headers.build(),
             reqBody = ingestEndpointSecretIn,
+        )
+    }
+
+    /** Get the transformation code associated with this ingest endpoint. */
+    suspend fun getTransformation(
+        sourceId: String,
+        endpointId: String,
+    ): IngestEndpointTransformationOut {
+        val url =
+            client
+                .newUrlBuilder()
+                .encodedPath("/ingest/api/v1/source/$sourceId/endpoint/$endpointId/transformation")
+        return client.executeRequest<Any, IngestEndpointTransformationOut>("GET", url.build())
+    }
+
+    /** Set or unset the transformation code associated with this ingest endpoint. */
+    suspend fun setTransformation(
+        sourceId: String,
+        endpointId: String,
+        ingestEndpointTransformationPatch: IngestEndpointTransformationPatch,
+    ) {
+        val url =
+            client
+                .newUrlBuilder()
+                .encodedPath("/ingest/api/v1/source/$sourceId/endpoint/$endpointId/transformation")
+
+        client.executeRequest<IngestEndpointTransformationPatch, Boolean>(
+            "PATCH",
+            url.build(),
+            reqBody = ingestEndpointTransformationPatch,
         )
     }
 }

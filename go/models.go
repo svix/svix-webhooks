@@ -11,6 +11,7 @@ type (
 	AirwallexConfigOut                        = models.AirwallexConfigOut
 	AppPortalAccessIn                         = models.AppPortalAccessIn
 	AppPortalAccessOut                        = models.AppPortalAccessOut
+	AppPortalCapability                       = models.AppPortalCapability
 	AppUsageStatsIn                           = models.AppUsageStatsIn
 	AppUsageStatsOut                          = models.AppUsageStatsOut
 	ApplicationIn                             = models.ApplicationIn
@@ -80,6 +81,8 @@ type (
 	IngestEndpointOut                         = models.IngestEndpointOut
 	IngestEndpointSecretIn                    = models.IngestEndpointSecretIn
 	IngestEndpointSecretOut                   = models.IngestEndpointSecretOut
+	IngestEndpointTransformationOut           = models.IngestEndpointTransformationOut
+	IngestEndpointTransformationPatch         = models.IngestEndpointTransformationPatch
 	IngestEndpointUpdate                      = models.IngestEndpointUpdate
 	IngestSourceConsumerPortalAccessIn        = models.IngestSourceConsumerPortalAccessIn
 	IngestSourceIn                            = models.IngestSourceIn
@@ -113,6 +116,7 @@ type (
 	MessageIn                                 = models.MessageIn
 	MessageOut                                = models.MessageOut
 	MessageStatus                             = models.MessageStatus
+	MessageStatusText                         = models.MessageStatusText
 	OperationalWebhookEndpointHeadersIn       = models.OperationalWebhookEndpointHeadersIn
 	OperationalWebhookEndpointHeadersOut      = models.OperationalWebhookEndpointHeadersOut
 	OperationalWebhookEndpointIn              = models.OperationalWebhookEndpointIn

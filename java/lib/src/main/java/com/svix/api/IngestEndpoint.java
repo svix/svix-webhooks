@@ -10,6 +10,8 @@ import com.svix.models.IngestEndpointIn;
 import com.svix.models.IngestEndpointOut;
 import com.svix.models.IngestEndpointSecretIn;
 import com.svix.models.IngestEndpointSecretOut;
+import com.svix.models.IngestEndpointTransformationOut;
+import com.svix.models.IngestEndpointTransformationPatch;
 import com.svix.models.IngestEndpointUpdate;
 import com.svix.models.ListResponseIngestEndpointOut;
 
@@ -215,5 +217,36 @@ public class IngestEndpoint {
         }
         this.client.executeRequest(
                 "POST", url.build(), Headers.of(headers), ingestEndpointSecretIn, null);
+    }
+
+    /** Get the transformation code associated with this ingest endpoint. */
+    public IngestEndpointTransformationOut getTransformation(
+            final String sourceId, final String endpointId) throws IOException, ApiException {
+        HttpUrl.Builder url =
+                this.client
+                        .newUrlBuilder()
+                        .encodedPath(
+                                String.format(
+                                        "/ingest/api/v1/source/%s/endpoint/%s/transformation",
+                                        sourceId, endpointId));
+        return this.client.executeRequest(
+                "GET", url.build(), null, null, IngestEndpointTransformationOut.class);
+    }
+
+    /** Set or unset the transformation code associated with this ingest endpoint. */
+    public void setTransformation(
+            final String sourceId,
+            final String endpointId,
+            final IngestEndpointTransformationPatch ingestEndpointTransformationPatch)
+            throws IOException, ApiException {
+        HttpUrl.Builder url =
+                this.client
+                        .newUrlBuilder()
+                        .encodedPath(
+                                String.format(
+                                        "/ingest/api/v1/source/%s/endpoint/%s/transformation",
+                                        sourceId, endpointId));
+        this.client.executeRequest(
+                "PATCH", url.build(), null, ingestEndpointTransformationPatch, null);
     }
 }

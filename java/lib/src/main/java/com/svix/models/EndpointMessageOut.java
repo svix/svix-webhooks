@@ -27,6 +27,7 @@ public class EndpointMessageOut {
     @JsonProperty private OffsetDateTime nextAttempt;
     @JsonProperty private Object payload;
     @JsonProperty private MessageStatus status;
+    @JsonProperty private MessageStatusText statusText;
     @JsonProperty private Set<String> tags;
     @JsonProperty private OffsetDateTime timestamp;
 
@@ -172,6 +173,25 @@ public class EndpointMessageOut {
 
     public void setStatus(MessageStatus status) {
         this.status = status;
+    }
+
+    public EndpointMessageOut statusText(MessageStatusText statusText) {
+        this.statusText = statusText;
+        return this;
+    }
+
+    /**
+     * Get statusText
+     *
+     * @return statusText
+     */
+    @javax.annotation.Nonnull
+    public MessageStatusText getStatusText() {
+        return statusText;
+    }
+
+    public void setStatusText(MessageStatusText statusText) {
+        this.statusText = statusText;
     }
 
     public EndpointMessageOut tags(Set<String> tags) {

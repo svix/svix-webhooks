@@ -1,7 +1,7 @@
 // this file is @generated
 use serde::{Deserialize, Serialize};
 
-use super::message_status::MessageStatus;
+use super::{message_status::MessageStatus, message_status_text::MessageStatusText};
 
 #[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
 pub struct MessageEndpointOut {
@@ -35,6 +35,9 @@ pub struct MessageEndpointOut {
 
     pub status: MessageStatus,
 
+    #[serde(rename = "statusText")]
+    pub status_text: MessageStatusText,
+
     /// Optional unique identifier for the endpoint.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub uid: Option<String>,
@@ -54,6 +57,7 @@ impl MessageEndpointOut {
         description: String,
         id: String,
         status: MessageStatus,
+        status_text: MessageStatusText,
         updated_at: String,
         url: String,
         version: i32,
@@ -69,6 +73,7 @@ impl MessageEndpointOut {
             next_attempt: None,
             rate_limit: None,
             status,
+            status_text,
             uid: None,
             updated_at,
             url,

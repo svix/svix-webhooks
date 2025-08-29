@@ -270,3 +270,49 @@ func (ingestEndpoint *IngestEndpoint) RotateSecret(
 	)
 	return err
 }
+
+// Get the transformation code associated with this ingest endpoint.
+func (ingestEndpoint *IngestEndpoint) GetTransformation(
+	ctx context.Context,
+	sourceId string,
+	endpointId string,
+) (*models.IngestEndpointTransformationOut, error) {
+	pathMap := map[string]string{
+		"source_id":   sourceId,
+		"endpoint_id": endpointId,
+	}
+	return internal.ExecuteRequest[any, models.IngestEndpointTransformationOut](
+		ctx,
+		ingestEndpoint.client,
+		"GET",
+		"/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/transformation",
+		pathMap,
+		nil,
+		nil,
+		nil,
+	)
+}
+
+// Set or unset the transformation code associated with this ingest endpoint.
+func (ingestEndpoint *IngestEndpoint) SetTransformation(
+	ctx context.Context,
+	sourceId string,
+	endpointId string,
+	ingestEndpointTransformationPatch models.IngestEndpointTransformationPatch,
+) error {
+	pathMap := map[string]string{
+		"source_id":   sourceId,
+		"endpoint_id": endpointId,
+	}
+	_, err := internal.ExecuteRequest[models.IngestEndpointTransformationPatch, any](
+		ctx,
+		ingestEndpoint.client,
+		"PATCH",
+		"/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/transformation",
+		pathMap,
+		nil,
+		nil,
+		&ingestEndpointTransformationPatch,
+	)
+	return err
+}

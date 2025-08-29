@@ -18,6 +18,7 @@ data class MessageEndpointOut(
     val nextAttempt: Instant? = null,
     val rateLimit: UShort? = null,
     val status: MessageStatus,
+    val statusText: MessageStatusText,
     /** Optional unique identifier for the endpoint. */
     val uid: String? = null,
     val updatedAt: Instant,

@@ -18,6 +18,7 @@ data class EndpointMessageOut(
     val nextAttempt: Instant? = null,
     @Serializable(with = StringAnyMapSerializer::class) val payload: Map<String, Any>,
     val status: MessageStatus,
+    val statusText: MessageStatusText,
     val tags: Set<String>? = null,
     val timestamp: Instant,
 )

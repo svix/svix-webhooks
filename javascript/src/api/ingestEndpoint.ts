@@ -22,6 +22,14 @@ import {
   IngestEndpointSecretOutSerializer,
 } from "../models/ingestEndpointSecretOut";
 import {
+  IngestEndpointTransformationOut,
+  IngestEndpointTransformationOutSerializer,
+} from "../models/ingestEndpointTransformationOut";
+import {
+  IngestEndpointTransformationPatch,
+  IngestEndpointTransformationPatchSerializer,
+} from "../models/ingestEndpointTransformationPatch";
+import {
   IngestEndpointUpdate,
   IngestEndpointUpdateSerializer,
 } from "../models/ingestEndpointUpdate";
@@ -219,6 +227,47 @@ export class IngestEndpoint {
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
     request.setBody(
       IngestEndpointSecretInSerializer._toJsonObject(ingestEndpointSecretIn)
+    );
+
+    return request.sendNoResponseBody(this.requestCtx);
+  }
+
+  /** Get the transformation code associated with this ingest endpoint. */
+  public getTransformation(
+    sourceId: string,
+    endpointId: string
+  ): Promise<IngestEndpointTransformationOut> {
+    const request = new SvixRequest(
+      HttpMethod.GET,
+      "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/transformation"
+    );
+
+    request.setPathParam("source_id", sourceId);
+    request.setPathParam("endpoint_id", endpointId);
+
+    return request.send(
+      this.requestCtx,
+      IngestEndpointTransformationOutSerializer._fromJsonObject
+    );
+  }
+
+  /** Set or unset the transformation code associated with this ingest endpoint. */
+  public setTransformation(
+    sourceId: string,
+    endpointId: string,
+    ingestEndpointTransformationPatch: IngestEndpointTransformationPatch
+  ): Promise<void> {
+    const request = new SvixRequest(
+      HttpMethod.PATCH,
+      "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/transformation"
+    );
+
+    request.setPathParam("source_id", sourceId);
+    request.setPathParam("endpoint_id", endpointId);
+    request.setBody(
+      IngestEndpointTransformationPatchSerializer._toJsonObject(
+        ingestEndpointTransformationPatch
+      )
     );
 
     return request.sendNoResponseBody(this.requestCtx);

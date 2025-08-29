@@ -4,6 +4,7 @@ from datetime import datetime
 
 from .common import BaseModel
 from .message_status import MessageStatus
+from .message_status_text import MessageStatusText
 
 
 class MessageEndpointOut(BaseModel):
@@ -27,6 +28,8 @@ class MessageEndpointOut(BaseModel):
     rate_limit: t.Optional[int] = None
 
     status: MessageStatus
+
+    status_text: MessageStatusText
 
     uid: t.Optional[str] = None
     """Optional unique identifier for the endpoint."""

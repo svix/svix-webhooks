@@ -1,6 +1,7 @@
 // this file is @generated
 /* eslint @typescript-eslint/no-explicit-any: 0 */
 import { MessageStatus, MessageStatusSerializer } from "./messageStatus";
+import { MessageStatusText, MessageStatusTextSerializer } from "./messageStatusText";
 
 export interface MessageEndpointOut {
   /** List of message channels this endpoint listens to (omit for all). */
@@ -15,6 +16,7 @@ export interface MessageEndpointOut {
   nextAttempt?: Date | null;
   rateLimit?: number | null;
   status: MessageStatus;
+  statusText: MessageStatusText;
   /** Optional unique identifier for the endpoint. */
   uid?: string | null;
   updatedAt: Date;
@@ -34,6 +36,7 @@ export const MessageEndpointOutSerializer = {
       nextAttempt: object["nextAttempt"] ? new Date(object["nextAttempt"]) : null,
       rateLimit: object["rateLimit"],
       status: MessageStatusSerializer._fromJsonObject(object["status"]),
+      statusText: MessageStatusTextSerializer._fromJsonObject(object["statusText"]),
       uid: object["uid"],
       updatedAt: new Date(object["updatedAt"]),
       url: object["url"],
@@ -52,6 +55,7 @@ export const MessageEndpointOutSerializer = {
       nextAttempt: self.nextAttempt,
       rateLimit: self.rateLimit,
       status: MessageStatusSerializer._toJsonObject(self.status),
+      statusText: MessageStatusTextSerializer._toJsonObject(self.statusText),
       uid: self.uid,
       updatedAt: self.updatedAt,
       url: self.url,
