@@ -30,6 +30,7 @@ public class MessageEndpointOut {
     @JsonProperty private OffsetDateTime nextAttempt;
     @JsonProperty private Long rateLimit;
     @JsonProperty private MessageStatus status;
+    @JsonProperty private MessageStatusText statusText;
     @JsonProperty private String uid;
     @JsonProperty private OffsetDateTime updatedAt;
     @JsonProperty private URI url;
@@ -224,6 +225,25 @@ public class MessageEndpointOut {
 
     public void setStatus(MessageStatus status) {
         this.status = status;
+    }
+
+    public MessageEndpointOut statusText(MessageStatusText statusText) {
+        this.statusText = statusText;
+        return this;
+    }
+
+    /**
+     * Get statusText
+     *
+     * @return statusText
+     */
+    @javax.annotation.Nonnull
+    public MessageStatusText getStatusText() {
+        return statusText;
+    }
+
+    public void setStatusText(MessageStatusText statusText) {
+        this.statusText = statusText;
     }
 
     public MessageEndpointOut uid(String uid) {

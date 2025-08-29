@@ -6,6 +6,7 @@ from .common import BaseModel
 from .message_attempt_trigger_type import MessageAttemptTriggerType
 from .message_out import MessageOut
 from .message_status import MessageStatus
+from .message_status_text import MessageStatusText
 
 
 class MessageAttemptOut(BaseModel):
@@ -28,6 +29,8 @@ class MessageAttemptOut(BaseModel):
     response_status_code: int
 
     status: MessageStatus
+
+    status_text: MessageStatusText
 
     timestamp: datetime
 

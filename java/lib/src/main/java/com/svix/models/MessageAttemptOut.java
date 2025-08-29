@@ -27,6 +27,7 @@ public class MessageAttemptOut {
     @JsonProperty private Long responseDurationMs;
     @JsonProperty private Short responseStatusCode;
     @JsonProperty private MessageStatus status;
+    @JsonProperty private MessageStatusText statusText;
     @JsonProperty private OffsetDateTime timestamp;
     @JsonProperty private MessageAttemptTriggerType triggerType;
     @JsonProperty private URI url;
@@ -183,6 +184,25 @@ public class MessageAttemptOut {
 
     public void setStatus(MessageStatus status) {
         this.status = status;
+    }
+
+    public MessageAttemptOut statusText(MessageStatusText statusText) {
+        this.statusText = statusText;
+        return this;
+    }
+
+    /**
+     * Get statusText
+     *
+     * @return statusText
+     */
+    @javax.annotation.Nonnull
+    public MessageStatusText getStatusText() {
+        return statusText;
+    }
+
+    public void setStatusText(MessageStatusText statusText) {
+        this.statusText = statusText;
     }
 
     public MessageAttemptOut timestamp(OffsetDateTime timestamp) {

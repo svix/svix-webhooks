@@ -20,6 +20,7 @@ import java.util.Set;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class AppPortalAccessIn {
     @JsonProperty private ApplicationIn application;
+    @JsonProperty private Set<AppPortalCapability> capabilities;
     @JsonProperty private Long expiry;
     @JsonProperty private Set<String> featureFlags;
     @JsonProperty private Boolean readOnly;
@@ -47,6 +48,50 @@ public class AppPortalAccessIn {
 
     public void setApplication(ApplicationIn application) {
         this.application = application;
+    }
+
+    public AppPortalAccessIn capabilities(Set<AppPortalCapability> capabilities) {
+        this.capabilities = capabilities;
+        return this;
+    }
+
+    public AppPortalAccessIn addCapabilitiesItem(AppPortalCapability capabilitiesItem) {
+        if (this.capabilities == null) {
+            this.capabilities = new LinkedHashSet<>();
+        }
+        this.capabilities.add(capabilitiesItem);
+
+        return this;
+    }
+
+    /**
+     * Custom capabilities attached to the token, You can combine as many capabilities as necessary.
+     *
+     * <p>The `ViewBase` capability is always required
+     *
+     * <p>- `ViewBase`: Basic read only permissions, does not allow the user to see the endpoint
+     * secret.
+     *
+     * <p>- `ViewEndpointSecret`: Allows user to view the endpoint secret.
+     *
+     * <p>- `ManageEndpointSecret`: Allows user to rotate and view the endpoint secret.
+     *
+     * <p>- `ManageTransformations`: Allows user to modify the endpoint transformations.
+     *
+     * <p>- `CreateAttempts`: Allows user to replay missing messages and send example messages.
+     *
+     * <p>- `ManageEndpoint`: Allows user to read/modify any field or configuration of an endpoint
+     * (including secrets)
+     *
+     * @return capabilities
+     */
+    @javax.annotation.Nullable
+    public Set<AppPortalCapability> getCapabilities() {
+        return capabilities;
+    }
+
+    public void setCapabilities(Set<AppPortalCapability> capabilities) {
+        this.capabilities = capabilities;
     }
 
     public AppPortalAccessIn expiry(Long expiry) {
@@ -98,6 +143,7 @@ public class AppPortalAccessIn {
         this.featureFlags = featureFlags;
     }
 
+    @Deprecated
     public AppPortalAccessIn readOnly(Boolean readOnly) {
         this.readOnly = readOnly;
         return this;
@@ -109,10 +155,12 @@ public class AppPortalAccessIn {
      * @return readOnly
      */
     @javax.annotation.Nullable
+    @Deprecated
     public Boolean getReadOnly() {
         return readOnly;
     }
 
+    @Deprecated
     public void setReadOnly(Boolean readOnly) {
         this.readOnly = readOnly;
     }

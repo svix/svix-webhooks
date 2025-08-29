@@ -30,6 +30,9 @@ namespace Svix.Models
         [JsonProperty("status", Required = Required.Always)]
         public required MessageStatus Status { get; set; }
 
+        [JsonProperty("statusText", Required = Required.Always)]
+        public required MessageStatusText StatusText { get; set; }
+
         [JsonProperty("timestamp", Required = Required.Always)]
         public required DateTime Timestamp { get; set; }
 
@@ -52,6 +55,7 @@ namespace Svix.Models
             sb.Append("  ResponseDurationMs: ").Append(ResponseDurationMs).Append('\n');
             sb.Append("  ResponseStatusCode: ").Append(ResponseStatusCode).Append('\n');
             sb.Append("  Status: ").Append(Status).Append('\n');
+            sb.Append("  StatusText: ").Append(StatusText).Append('\n');
             sb.Append("  Timestamp: ").Append(Timestamp).Append('\n');
             sb.Append("  TriggerType: ").Append(TriggerType).Append('\n');
             sb.Append("  Url: ").Append(Url).Append('\n');

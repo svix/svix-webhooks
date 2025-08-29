@@ -16,6 +16,7 @@ module Svix
     attr_accessor :response_duration_ms
     attr_accessor :response_status_code
     attr_accessor :status
+    attr_accessor :status_text
     attr_accessor :timestamp
     attr_accessor :trigger_type
     attr_accessor :url
@@ -29,6 +30,7 @@ module Svix
       "response_duration_ms",
       "response_status_code",
       "status",
+      "status_text",
       "timestamp",
       "trigger_type",
       "url"
@@ -61,6 +63,7 @@ module Svix
       attrs["response_duration_ms"] = attributes["responseDurationMs"]
       attrs["response_status_code"] = attributes["responseStatusCode"]
       attrs["status"] = Svix::MessageStatus.deserialize(attributes["status"])
+      attrs["status_text"] = Svix::MessageStatusText.deserialize(attributes["statusText"])
       attrs["timestamp"] = DateTime.rfc3339(attributes["timestamp"]).to_time
       attrs["trigger_type"] = Svix::MessageAttemptTriggerType.deserialize(attributes["triggerType"])
       attrs["url"] = attributes["url"]
@@ -77,6 +80,7 @@ module Svix
       out["responseDurationMs"] = Svix::serialize_primitive(@response_duration_ms) if @response_duration_ms
       out["responseStatusCode"] = Svix::serialize_primitive(@response_status_code) if @response_status_code
       out["status"] = Svix::serialize_schema_ref(@status) if @status
+      out["statusText"] = Svix::serialize_schema_ref(@status_text) if @status_text
       out["timestamp"] = Svix::serialize_primitive(@timestamp) if @timestamp
       out["triggerType"] = Svix::serialize_schema_ref(@trigger_type) if @trigger_type
       out["url"] = Svix::serialize_primitive(@url) if @url

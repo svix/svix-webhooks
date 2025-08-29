@@ -6,6 +6,7 @@ from .airwallex_config import AirwallexConfig
 from .airwallex_config_out import AirwallexConfigOut
 from .app_portal_access_in import AppPortalAccessIn
 from .app_portal_access_out import AppPortalAccessOut
+from .app_portal_capability import AppPortalCapability
 from .app_usage_stats_in import AppUsageStatsIn
 from .app_usage_stats_out import AppUsageStatsOut
 from .application_in import ApplicationIn
@@ -76,6 +77,8 @@ from .ingest_endpoint_in import IngestEndpointIn
 from .ingest_endpoint_out import IngestEndpointOut
 from .ingest_endpoint_secret_in import IngestEndpointSecretIn
 from .ingest_endpoint_secret_out import IngestEndpointSecretOut
+from .ingest_endpoint_transformation_out import IngestEndpointTransformationOut
+from .ingest_endpoint_transformation_patch import IngestEndpointTransformationPatch
 from .ingest_endpoint_update import IngestEndpointUpdate
 from .ingest_source_consumer_portal_access_in import IngestSourceConsumerPortalAccessIn
 from .ingest_source_in import IngestSourceIn
@@ -111,6 +114,7 @@ from .message_endpoint_out import MessageEndpointOut
 from .message_in import MessageIn
 from .message_out import MessageOut
 from .message_status import MessageStatus
+from .message_status_text import MessageStatusText
 from .operational_webhook_endpoint_headers_in import OperationalWebhookEndpointHeadersIn
 from .operational_webhook_endpoint_headers_out import (
     OperationalWebhookEndpointHeadersOut,
@@ -167,6 +171,7 @@ __all__ = [
     "AirwallexConfigOut",
     "AppPortalAccessIn",
     "AppPortalAccessOut",
+    "AppPortalCapability",
     "AppUsageStatsIn",
     "AppUsageStatsOut",
     "ApplicationIn",
@@ -236,6 +241,8 @@ __all__ = [
     "IngestEndpointOut",
     "IngestEndpointSecretIn",
     "IngestEndpointSecretOut",
+    "IngestEndpointTransformationOut",
+    "IngestEndpointTransformationPatch",
     "IngestEndpointUpdate",
     "IngestSourceConsumerPortalAccessIn",
     "IngestSourceIn",
@@ -269,6 +276,7 @@ __all__ = [
     "MessageIn",
     "MessageOut",
     "MessageStatus",
+    "MessageStatusText",
     "OperationalWebhookEndpointHeadersIn",
     "OperationalWebhookEndpointHeadersOut",
     "OperationalWebhookEndpointIn",

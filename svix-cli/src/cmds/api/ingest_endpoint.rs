@@ -123,6 +123,18 @@ pub enum IngestEndpointCommands {
         #[clap(flatten)]
         options: IngestEndpointRotateSecretOptions,
     },
+    /// Get the transformation code associated with this ingest endpoint.
+    GetTransformation {
+        source_id: String,
+        endpoint_id: String,
+    },
+    /// Set or unset the transformation code associated with this ingest endpoint.
+    SetTransformation {
+        source_id: String,
+        endpoint_id: String,
+        ingest_endpoint_transformation_patch:
+            Option<crate::json::JsonOf<IngestEndpointTransformationPatch>>,
+    },
 }
 
 impl IngestEndpointCommands {
@@ -240,6 +252,34 @@ impl IngestEndpointCommands {
                         endpoint_id,
                         ingest_endpoint_secret_in.unwrap_or_default().into_inner(),
                         Some(options.into()),
+                    )
+                    .await?;
+            }
+            Self::GetTransformation {
+                source_id,
+                endpoint_id,
+            } => {
+                let resp = client
+                    .ingest()
+                    .endpoint()
+                    .get_transformation(source_id, endpoint_id)
+                    .await?;
+                crate::json::print_json_output(&resp, color_mode)?;
+            }
+            Self::SetTransformation {
+                source_id,
+                endpoint_id,
+                ingest_endpoint_transformation_patch,
+            } => {
+                client
+                    .ingest()
+                    .endpoint()
+                    .set_transformation(
+                        source_id,
+                        endpoint_id,
+                        ingest_endpoint_transformation_patch
+                            .unwrap_or_default()
+                            .into_inner(),
                     )
                     .await?;
             }

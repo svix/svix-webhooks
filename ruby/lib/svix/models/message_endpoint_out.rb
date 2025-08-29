@@ -16,6 +16,7 @@ module Svix
     attr_accessor :next_attempt
     attr_accessor :rate_limit
     attr_accessor :status
+    attr_accessor :status_text
     # Optional unique identifier for the endpoint.
     attr_accessor :uid
     attr_accessor :updated_at
@@ -32,6 +33,7 @@ module Svix
       "next_attempt",
       "rate_limit",
       "status",
+      "status_text",
       "uid",
       "updated_at",
       "url",
@@ -66,6 +68,7 @@ module Svix
       attrs["next_attempt"] = DateTime.rfc3339(attributes["nextAttempt"]).to_time if attributes["nextAttempt"]
       attrs["rate_limit"] = attributes["rateLimit"]
       attrs["status"] = Svix::MessageStatus.deserialize(attributes["status"])
+      attrs["status_text"] = Svix::MessageStatusText.deserialize(attributes["statusText"])
       attrs["uid"] = attributes["uid"]
       attrs["updated_at"] = DateTime.rfc3339(attributes["updatedAt"]).to_time
       attrs["url"] = attributes["url"]
@@ -84,6 +87,7 @@ module Svix
       out["nextAttempt"] = Svix::serialize_primitive(@next_attempt) if @next_attempt
       out["rateLimit"] = Svix::serialize_primitive(@rate_limit) if @rate_limit
       out["status"] = Svix::serialize_schema_ref(@status) if @status
+      out["statusText"] = Svix::serialize_schema_ref(@status_text) if @status_text
       out["uid"] = Svix::serialize_primitive(@uid) if @uid
       out["updatedAt"] = Svix::serialize_primitive(@updated_at) if @updated_at
       out["url"] = Svix::serialize_primitive(@url) if @url

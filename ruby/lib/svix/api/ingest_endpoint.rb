@@ -96,5 +96,21 @@ module Svix
       )
     end
 
+    def get_transformation(source_id, endpoint_id)
+      res = @client.execute_request(
+        "GET",
+        "/ingest/api/v1/source/#{source_id}/endpoint/#{endpoint_id}/transformation"
+      )
+      IngestEndpointTransformationOut.deserialize(res)
+    end
+
+    def set_transformation(source_id, endpoint_id, ingest_endpoint_transformation_patch)
+      @client.execute_request(
+        "PATCH",
+        "/ingest/api/v1/source/#{source_id}/endpoint/#{endpoint_id}/transformation",
+        body: ingest_endpoint_transformation_patch
+      )
+    end
+
   end
 end

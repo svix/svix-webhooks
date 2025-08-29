@@ -1,6 +1,7 @@
 // this file is @generated
 /* eslint @typescript-eslint/no-explicit-any: 0 */
 import { MessageStatus, MessageStatusSerializer } from "./messageStatus";
+import { MessageStatusText, MessageStatusTextSerializer } from "./messageStatusText";
 
 /** A model containing information on a given message plus additional fields on the last attempt for that message. */
 export interface EndpointMessageOut {
@@ -15,6 +16,7 @@ export interface EndpointMessageOut {
   nextAttempt?: Date | null;
   payload: any;
   status: MessageStatus;
+  statusText: MessageStatusText;
   tags?: string[] | null;
   timestamp: Date;
 }
@@ -29,6 +31,7 @@ export const EndpointMessageOutSerializer = {
       nextAttempt: object["nextAttempt"] ? new Date(object["nextAttempt"]) : null,
       payload: object["payload"],
       status: MessageStatusSerializer._fromJsonObject(object["status"]),
+      statusText: MessageStatusTextSerializer._fromJsonObject(object["statusText"]),
       tags: object["tags"],
       timestamp: new Date(object["timestamp"]),
     };
@@ -43,6 +46,7 @@ export const EndpointMessageOutSerializer = {
       nextAttempt: self.nextAttempt,
       payload: self.payload,
       status: MessageStatusSerializer._toJsonObject(self.status),
+      statusText: MessageStatusTextSerializer._toJsonObject(self.statusText),
       tags: self.tags,
       timestamp: self.timestamp,
     };

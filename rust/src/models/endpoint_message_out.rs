@@ -1,7 +1,7 @@
 // this file is @generated
 use serde::{Deserialize, Serialize};
 
-use super::message_status::MessageStatus;
+use super::{message_status::MessageStatus, message_status_text::MessageStatusText};
 
 /// A model containing information on a given message plus additional fields on
 /// the last attempt for that message.
@@ -31,6 +31,9 @@ pub struct EndpointMessageOut {
 
     pub status: MessageStatus,
 
+    #[serde(rename = "statusText")]
+    pub status_text: MessageStatusText,
+
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tags: Option<Vec<String>>,
 
@@ -43,6 +46,7 @@ impl EndpointMessageOut {
         id: String,
         payload: serde_json::Value,
         status: MessageStatus,
+        status_text: MessageStatusText,
         timestamp: String,
     ) -> Self {
         Self {
@@ -53,6 +57,7 @@ impl EndpointMessageOut {
             next_attempt: None,
             payload,
             status,
+            status_text,
             tags: None,
             timestamp,
         }

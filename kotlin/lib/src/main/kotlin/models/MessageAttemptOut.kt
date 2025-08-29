@@ -18,6 +18,7 @@ data class MessageAttemptOut(
     val responseDurationMs: Long,
     val responseStatusCode: Short,
     val status: MessageStatus,
+    val statusText: MessageStatusText,
     val timestamp: Instant,
     val triggerType: MessageAttemptTriggerType,
     val url: String,

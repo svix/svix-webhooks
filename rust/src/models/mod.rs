@@ -8,6 +8,7 @@ pub mod airwallex_config;
 pub mod airwallex_config_out;
 pub mod app_portal_access_in;
 pub mod app_portal_access_out;
+pub mod app_portal_capability;
 pub mod app_usage_stats_in;
 pub mod app_usage_stats_out;
 pub mod application_in;
@@ -77,6 +78,8 @@ pub mod ingest_endpoint_in;
 pub mod ingest_endpoint_out;
 pub mod ingest_endpoint_secret_in;
 pub mod ingest_endpoint_secret_out;
+pub mod ingest_endpoint_transformation_out;
+pub mod ingest_endpoint_transformation_patch;
 pub mod ingest_endpoint_update;
 pub mod ingest_source_consumer_portal_access_in;
 pub mod ingest_source_in;
@@ -110,6 +113,7 @@ pub mod message_endpoint_out;
 pub mod message_in;
 pub mod message_out;
 pub mod message_status;
+pub mod message_status_text;
 pub mod operational_webhook_endpoint_headers_in;
 pub mod operational_webhook_endpoint_headers_out;
 pub mod operational_webhook_endpoint_in;
@@ -170,6 +174,7 @@ pub use self::{
     airwallex_config_out::AirwallexConfigOut,
     app_portal_access_in::AppPortalAccessIn,
     app_portal_access_out::AppPortalAccessOut,
+    app_portal_capability::AppPortalCapability,
     app_usage_stats_in::AppUsageStatsIn,
     app_usage_stats_out::AppUsageStatsOut,
     application_in::ApplicationIn,
@@ -239,6 +244,8 @@ pub use self::{
     ingest_endpoint_out::IngestEndpointOut,
     ingest_endpoint_secret_in::IngestEndpointSecretIn,
     ingest_endpoint_secret_out::IngestEndpointSecretOut,
+    ingest_endpoint_transformation_out::IngestEndpointTransformationOut,
+    ingest_endpoint_transformation_patch::IngestEndpointTransformationPatch,
     ingest_endpoint_update::IngestEndpointUpdate,
     ingest_source_consumer_portal_access_in::IngestSourceConsumerPortalAccessIn,
     ingest_source_in::{IngestSourceIn, IngestSourceInConfig},
@@ -272,6 +279,7 @@ pub use self::{
     message_in::MessageIn,
     message_out::MessageOut,
     message_status::MessageStatus,
+    message_status_text::MessageStatusText,
     operational_webhook_endpoint_headers_in::OperationalWebhookEndpointHeadersIn,
     operational_webhook_endpoint_headers_out::OperationalWebhookEndpointHeadersOut,
     operational_webhook_endpoint_in::OperationalWebhookEndpointIn,

@@ -4,6 +4,7 @@ from datetime import datetime
 
 from .common import BaseModel
 from .message_status import MessageStatus
+from .message_status_text import MessageStatusText
 
 
 class EndpointMessageOut(BaseModel):
@@ -26,6 +27,8 @@ class EndpointMessageOut(BaseModel):
     payload: t.Dict[str, t.Any]
 
     status: MessageStatus
+
+    status_text: MessageStatusText
 
     tags: t.Optional[t.List[str]] = None
 
