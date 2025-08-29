@@ -69,7 +69,7 @@ class ClientBase:
         elif region == "au":
             regional_url = "https://api.au.svix.com"
 
-        host = options.server_url or regional_url or DEFAULT_SERVER_URL
+        host = (options.server_url or regional_url or DEFAULT_SERVER_URL).rstrip('/')
         client = AuthenticatedClient(
             base_url=host,
             token=auth_token,
