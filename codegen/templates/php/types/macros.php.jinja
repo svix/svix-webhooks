@@ -1,0 +1,27 @@
+{% macro field_from_json(field_name, type, field_required, struct_name) -%}
+    {%- if type.is_string() -%}
+        \Svix\Utils::deserializeString($data, "{{ field_name }}", {{ field_required }}, "{{ struct_name }}")
+    {%- elif type.is_datetime() -%}
+        \Svix\Utils::deserializeDt($data, "{{ field_name }}", {{ field_required }}, "{{ struct_name }}")
+    {%- elif type.is_int_or_uint() -%}
+        \Svix\Utils::deserializeInt($data, "{{ field_name }}", {{ field_required }}, "{{ struct_name }}")
+    {%- elif type.is_bool() -%}
+        \Svix\Utils::deserializeBool($data, "{{ field_name }}", {{ field_required }}, "{{ struct_name }}")
+    {%- elif type.is_schema_ref() -%}
+        \Svix\Utils::deserializeObject($data, "{{ field_name }}", {{ field_required }}, "{{ struct_name }}", [{{ type.to_php() | to_upper_camel_case }}::class, 'fromMixed'])
+    {%- elif type.is_list() and type.inner_type().is_schema_ref() -%}
+        \Svix\Utils::deserializeObjectArray($data, "{{ field_name }}", true, "{{ struct_name }}", [{{ type.inner_type().to_php() | to_upper_camel_case }}::class, 'fromMixed'])
+    {%- else -%}
+        \Svix\Utils::getValFromJson($data, "{{ field_name }}", {{ field_required }}, "{{ struct_name }}")
+    {%- endif -%}
+
+{%- endmacro %}
+
+
+{%- macro field_to_json(field_expr, type, field_required, struct_name) -%}
+    {%- if type.is_datetime() -%}
+        {{ field_expr }}->format('c')
+    {%- else -%}
+        {{ field_expr }}
+    {%- endif -%}
+{%- endmacro -%}
