@@ -261,7 +261,14 @@ func serializeQueryOrHeaderParam(val interface{}, key string) (string, error) {
 			serializedValues[i] = serializedVal
 		}
 		value = strings.Join(serializedValues, ",")
+	case reflect.Struct:
+		// if it's a time.time
+		if t, ok := v.Interface().(time.Time); ok {
+			return t.Format(time.RFC3339), nil
+		}
 
+		// else fallthrough
+		fallthrough
 	default:
 		return "", fmt.Errorf("can't serialize %s as a query param, key: %s", v.Kind().String(), key)
 
