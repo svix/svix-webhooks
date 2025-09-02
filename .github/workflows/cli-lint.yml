@@ -71,7 +71,7 @@ jobs:
       - uses: taiki-e/install-action@nextest
 
       - name: Clippy
-        run: cargo clippy --all-targets --all-features -- -D warnings
+        run: cargo clippy --locked --all-targets --all-features -- -D warnings
         working-directory: svix-cli
 
       - name: Run tests
