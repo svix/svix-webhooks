@@ -1,7 +1,7 @@
 # Changelog
 
 ## Version 1.76.0
-* Libs/PHP: Added support for the full svix SDK!
+* Libs/PHP: Added support for the full Svix SDK!
 
 ## Version 1.75.1
 * Libs/Go: Fix bug preventing `time.time` query params from serializing correctly
