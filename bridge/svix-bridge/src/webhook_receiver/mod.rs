@@ -92,39 +92,27 @@ async fn route(
         transformer_tx,
     }): State<InternalState>,
     req: SerializableRequest<Unvalidated>,
-) -> http::StatusCode {
-    if let Some(IntegrationState {
+) -> Result<http::StatusCode, http::StatusCode> {
+    let IntegrationState {
         verifier,
         output,
         transformation,
-    }) = routes.get(&integration_id)
-    {
-        match req.validate(verifier).await {
-            Ok(req) => {
-                let payload = match parse_payload(
-                    req.payload(),
-                    transformation.as_ref(),
-                    transformer_tx.clone(),
-                )
-                .await
-                {
-                    Err(e) => return e,
-                    Ok(p) => p,
-                };
-                match handle(payload, output.clone()).await {
-                    Ok(value) => value,
-                    Err(value) => return value,
-                }
-            }
-            Err(code) => {
-                tracing::warn!("validation failed: {code}");
-                code
-            }
-        }
-    } else {
-        tracing::trace!("integration not found");
-        http::StatusCode::NOT_FOUND
-    }
+    } = routes
+        .get(&integration_id)
+        .ok_or(http::StatusCode::NOT_FOUND)?;
+
+    let req = req.validate(verifier).await.inspect_err(|code| {
+        tracing::warn!("validation failed: {code}");
+    })?;
+
+    let payload = parse_payload(
+        req.payload(),
+        transformation.as_ref(),
+        transformer_tx.clone(),
+    )
+    .await?;
+
+    handle(payload, output.clone()).await
 }
 
 // FIXME: Really odd return type - artifact of being extracted from the HTTP server
