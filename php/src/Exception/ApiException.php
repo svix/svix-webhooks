@@ -48,7 +48,7 @@ class ApiException extends \Exception
      */
     public function getStatusCode(): int
     {
-        return $this->code;
+        return $this->status_code;
     }
 
     /**
