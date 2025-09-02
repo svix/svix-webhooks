@@ -4,14 +4,14 @@ on:
   pull_request:
     paths:
       - "ruby/**"
-      - "lib-openapi.json"
+      - "codegen/lib-openapi.json"
       - '.github/workflows/ruby-lint.yml'
   push:
     branches:
       - main
     paths:
       - "ruby/**"
-      - "lib-openapi.json"
+      - "codegen/lib-openapi.json"
       - '.github/workflows/ruby-lint.yml'
 
 jobs:

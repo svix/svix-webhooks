@@ -3,13 +3,13 @@ on:
   pull_request:
     paths:
       - "java/**"
-      - "lib-openapi.json"
+      - "codegen/lib-openapi.json"
   push:
     branches:
       - main
     paths:
       - "java/**"
-      - "lib-openapi.json"
+      - "codegen/lib-openapi.json"
 
 jobs:
   dotnet:
