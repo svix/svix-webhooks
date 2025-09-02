@@ -38,6 +38,8 @@ const filesPaths = [
     "ruby/lib/svix/version.rb",
     // Cloud OpenAPI spec - not necessary but any other time of updating seems weirder
     "codegen/lib-openapi.json",
+    // PHP
+    "php/src/Version.php"
 ];
 
 const rootDir = join(__dirname, "..");
