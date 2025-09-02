@@ -1,0 +1,79 @@
+{% set resource_type_name = resource.name | to_upper_camel_case -%}
+<?php
+// this file is @generated
+declare(strict_types=1);
+
+namespace Svix\Api;
+
+use Svix\Request\SvixHttpClient;
+{% for c in referenced_components -%}
+use Svix\Models\{{ c | to_upper_camel_case }};
+{% endfor -%}
+
+
+
+class {{ resource_type_name }}
+{
+    {% for name, sub in resource.subresources | items -%}
+    public {{ sub.name | to_upper_camel_case }} ${{ name | to_lower_camel_case }};
+    {% endfor -%}
+
+    public function __construct(
+        private readonly SvixHttpClient $client,
+    ) {
+        {% for name, sub in resource.subresources | items -%}
+        $this->{{ name | to_lower_camel_case }} = new {{ sub.name | to_upper_camel_case }}($client);
+        {% endfor -%}
+    }
+
+
+    {% for op in resource.operations -%}
+    {% if op.description is defined %}
+    {{ op.description | to_doc_comment(style="php_class") }}
+    {% endif -%}
+    public function {{ op.name | to_lower_camel_case }}(
+        {% for p in op.path_params -%}
+        string ${{ p | to_lower_camel_case }},
+        {% endfor -%}
+
+        {% if op.request_body_schema_name is defined -%}
+        {{ op.request_body_schema_name | to_upper_camel_case}} ${{ op.request_body_schema_name | to_lower_camel_case }},
+        {% endif -%}
+
+        {% if op | has_query_or_header_params -%}
+        ?{{ resource_type_name }}{{ op.name | to_upper_camel_case }}Options $options = null,
+        {% endif -%}
+    )
+    {%- if op.response_body_schema_name is defined -%}
+        : {{ op.response_body_schema_name | to_upper_camel_case }}
+    {%- else -%}
+        : void
+    {%- endif -%}
+    {
+        $request = $this->client->newReq('{{ op.method | upper }}', "{{ op.path | generate_php_path_str(op.path_params) }}");
+        {# query/header params -#}
+        {% if op | has_query_or_header_params -%}
+        if (null !== $options) {
+            {% for p in op.query_params -%}
+            $request->setQueryParam('{{ p.name }}', $options->{{ p.name | to_lower_camel_case }});
+            {% endfor -%}
+
+            {% for p in op.header_params -%}
+            $request->setHeaderParam('{{ p.name }}', $options->{{ p.name | to_lower_camel_case }});
+            {% endfor -%}
+
+        }
+        {% endif -%}
+        {% if op.request_body_schema_name is defined -%}
+        $request->setBody(json_encode(${{ op.request_body_schema_name | to_lower_camel_case }}));
+        {% endif -%}
+        {% if op.response_body_schema_name is defined -%}
+        $res = $this->client->send($request);
+        return {{ op.response_body_schema_name | to_upper_camel_case }}::fromJson($res);
+        {% else -%}
+        $res = $this->client->sendNoResponseBody($request);
+        {% endif -%}
+    }
+
+    {% endfor -%}
+}

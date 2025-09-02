@@ -6,20 +6,31 @@ on:
       - main
     paths:
       - 'php/**'
+      - 'composer.json'
       - '.github/workflows/php-ci.yml'
   pull_request:
     paths:
+      - 'composer.json'
       - 'php/**'
       - '.github/workflows/php-ci.yml'
 jobs:
   build-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        php-versions: ['8.1', '8.2', '8.3', '8.4']
     runs-on: ubuntu-24.04
-
     steps:
       - uses: actions/checkout@v4
-      - name: PHPUnit Tests
-        uses: php-actions/phpunit@v4
+
+      - name: Install php
+        uses: shivammathur/setup-php@ec406be512d7077f68eed36e63f4d91bc006edc4 # 2.35.4
         with:
-          version: latest
-          configuration: "php/phpunit.xml"
-          test_suffix: "Test.php"
+          php-version: ${{ matrix.php-versions }}
+          tools: composer
+
+      - name: Install deps
+        run: composer install
+
+      - name: Run unit tests
+        run: vendor/bin/phpunit --configuration phpunit.xml

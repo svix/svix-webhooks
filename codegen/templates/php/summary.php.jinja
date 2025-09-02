@@ -1,0 +1,41 @@
+<?php
+
+// this file is @generated
+declare(strict_types=1);
+
+namespace Svix;
+
+use GuzzleHttp\Client;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Middleware;
+use Svix\Request\SvixHttpClient;
+{% for r in api.resources -%}
+use Svix\Api\{{ r.name | to_upper_camel_case }};
+{% endfor -%}
+
+class Svix
+{
+    {% for r in api.resources -%}
+    public {{ r.name | to_upper_camel_case }} ${{ r.name | to_lower_camel_case }};
+    {% endfor %}
+
+
+    public function __construct(
+        string $token,
+        ?SvixOptions $options = null,
+        ?Client $httpClient = null
+    ) {
+        $baseUrl = $options?->serverUrl ?? Utils::getServerUrlFromToken($token);
+
+        $svixHttpClient = new SvixHttpClient(
+            token: $token,
+            baseUrl: $baseUrl,
+            guzzleClient: $httpClient ?? new Client(),
+            opts: $options ?? SvixOptions::newDefault($token),
+        );
+
+        {% for r in api.resources -%}
+        $this-> {{ r.name | to_lower_camel_case }} = new {{ r.name | to_upper_camel_case }}($svixHttpClient);
+        {% endfor %}
+    }
+}

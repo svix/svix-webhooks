@@ -1,0 +1,27 @@
+namespace Svix\Models;
+
+enum {{ type.name | to_upper_camel_case }}: string implements \JsonSerializable {
+    {% for value in type.values -%}
+    case {{ value | to_upper_snake_case }} = '{{ value }}';
+    {% endfor -%}
+
+
+    /**
+     * Create an instance from a mixed obj
+     *
+     * @param mixed $data
+     * @return self
+     */
+    public static function fromMixed(mixed $data): self
+    {
+        return self::from($data);
+    }
+
+   /**
+     * @inheritDoc
+     */
+    public function jsonSerialize(): mixed
+    {
+        return $this->value;
+    }
+}

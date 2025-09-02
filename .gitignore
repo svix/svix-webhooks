@@ -4,6 +4,7 @@
 # PHP
 /vendor/
 composer.lock
+.phpunit.result.cache
 
 # IDE
 .vscode

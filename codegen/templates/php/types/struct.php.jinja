@@ -1,0 +1,149 @@
+{% from "types/macros.php.jinja" import field_from_json, field_to_json -%}
+{% set type_name %}{{ type.name | to_upper_camel_case }}{% endset -%}
+namespace Svix\Models;
+
+
+{% if type.description is defined -%}
+{{ type.description | to_doc_comment(style="php_class") }}
+{% endif -%}
+class {{ type.name | to_upper_camel_case }} implements \JsonSerializable
+{
+    private array $setFields = [];
+    {# doc comment -#}
+    /**
+    {% for field in type.fields -%}
+        {%- set optional_prefix -%}{% if not field.required %}|null{% endif %}{%- endset -%}
+
+     * @param {{ field.type.to_phpdoc() }}{{ optional_prefix }} ${{ field.name | to_lower_camel_case }} {{ field.description | to_doc_comment(style="php_field") }}
+    {% endfor -%}
+     */
+    {# constructor -#}
+    private function __construct(
+        {# first loop required fields -#}
+        {% for field in type.fields -%}
+            {% if field.required -%}
+        public readonly {{ field.type.to_php() }} ${{ field.name | to_lower_camel_case }},
+            {% endif -%}
+        {% endfor -%}
+        {# second loop un-required fields -#}
+        {% for field in type.fields -%}
+            {% if not field.required -%}
+        public readonly ?{{ field.type.to_php() }} ${{ field.name | to_lower_camel_case }} = null,
+            {% endif -%}
+        {% endfor -%}
+        array $setFields = []
+    ) {
+        $this->setFields = $setFields;
+    }
+
+    /**
+     * Create an instance of {{ type_name }} with required fields
+     */
+    public static function create(
+        {% for field in type.fields -%}
+            {% if field.required -%}
+        {{ field.type.to_php() }} ${{ field.name | to_lower_camel_case }},
+            {% endif -%}
+        {% endfor -%}
+    ): self
+    {
+        return new self(
+            {% for field in type.fields -%}
+                {% if field.required -%}
+            {{ field.name | to_lower_camel_case }}: ${{ field.name | to_lower_camel_case }},
+                {% else -%}
+            {{ field.name | to_lower_camel_case }}: null,
+                {% endif -%}
+
+            {% endfor -%}
+
+            setFields: [
+            {%- for field in type.fields -%}
+                {%- if field.required -%}
+            '{{ field.name | to_lower_camel_case }}' => true,
+                {%- endif -%}
+            {%- endfor -%} ]
+        );
+    }
+
+    {% for field in type.fields -%}
+        {% if not field.required -%}
+    public function with{{ field.name | to_upper_camel_case }}(?{{ field.type.to_php() }} ${{ field.name | to_lower_camel_case }}): self
+        {
+            $setFields = $this->setFields;
+            $setFields['{{  field.name | to_lower_camel_case }}'] = true;
+            return new self(
+                {% for inner_field in type.fields -%}
+                    {% if field.name != inner_field.name -%}
+                {{ inner_field.name | to_lower_camel_case }}: $this->{{ inner_field.name | to_lower_camel_case }},
+                    {% else -%}
+                {{ field.name | to_lower_camel_case }}: ${{ field.name | to_lower_camel_case }},
+                    {% endif -%}
+                {% endfor -%}
+                setFields: $setFields
+            );
+        }
+
+
+        {% endif -%}
+    {% endfor -%}
+
+    /**
+     * @inheritDoc
+     */
+    public function jsonSerialize(): mixed
+    {
+        $data = [
+        {% set serialized_data -%}
+            {%- for field in type.fields -%}
+                {%- if field.required and not field.nullable -%}
+                    {% set field_expr %}$this->{{ field.name | to_lower_camel_case }}{% endset -%}
+                    '{{ field.name }}' => {{ field_to_json(field_expr, field.type, field.required, type_name) }},
+                {% endif -%}
+            {%- endfor -%}
+        {%- endset -%}
+        {{ serialized_data | strip_trailing_comma }}];
+
+
+        {% for field in type.fields -%}
+            {% if not field.required and field.nullable -%}
+        if (isset($this->setFields['{{ field.name | to_lower_camel_case }}'])) {
+            {% set field_expr %}$this->{{ field.name | to_lower_camel_case }}{% endset -%}
+            $data['{{ field.name }}'] = {{ field_to_json(field_expr, field.type, field.required, type_name) }};
+        }
+            {% elif not field.required and not field.nullable -%}
+        if ($this->{{ field.name | to_lower_camel_case }} !== null) {
+            {% set field_expr %}$this->{{ field.name | to_lower_camel_case }}{% endset -%}
+            $data['{{ field.name }}'] = {{ field_to_json(field_expr, field.type, field.required, type_name) }};
+        }
+            {% endif -%}
+        {% endfor -%}
+
+        return $data;
+    }
+
+    /**
+     * Create an instance from a mixed obj
+     */
+    public static function fromMixed(mixed $data): self
+    {
+        return new self(
+            {% for field in type.fields -%}
+                {% set trailing_comma %}{% if not loop.last %},{% endif %}{% endset -%}
+                {% set field_expr %}$data['{{ field.name }}']{% endset -%}
+                {{ field.name | to_lower_camel_case }}: {{ field_from_json(field.name, field.type, field.required, type_name) }} {{ trailing_comma }}
+            {% endfor -%}
+        );
+    }
+
+
+    /**
+     * Create an instance from a json string
+     */
+    public static function fromJson(string $json): self
+    {
+        $data = json_decode(json: $json, associative:true, depth:512, flags:JSON_THROW_ON_ERROR);
+        return self::fromMixed($data);
+    }
+
+}
