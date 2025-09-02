@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 1.76.0
+* Libs/PHP: Added support for the full Svix SDK!
+
 ## Version 1.75.1
 * Libs/Go: Fix bug preventing `time.time` query params from serializing correctly
 * Libs/All: Allow deleting endpoint headers through new `deleteHeaders` field in `EndpointHeadersPatchIn`
