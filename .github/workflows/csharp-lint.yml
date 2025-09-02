@@ -4,14 +4,14 @@ on:
   pull_request:
     paths:
       - "csharp/**"
-      - "lib-openapi.json"
+      - "codegen/lib-openapi.json"
       - '.github/workflows/csharp-lint.yml'
   push:
     branches:
       - main
     paths:
       - "csharp/**"
-      - "lib-openapi.json"
+      - "codegen/lib-openapi.json"
       - '.github/workflows/csharp-lint.yml'
 
 jobs:

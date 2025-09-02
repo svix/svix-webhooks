@@ -4,14 +4,14 @@ on:
   pull_request:
     paths:
       - "javascript/**"
-      - "lib-openapi.json"
+      - "codegen/lib-openapi.json"
       - '.github/workflows/javascript-lint.yml'
   push:
     branches:
       - main
     paths:
       - "javascript/**"
-      - "lib-openapi.json"
+      - "codegen/lib-openapi.json"
       - '.github/workflows/javascript-lint.yml'
 
 jobs:

@@ -5,12 +5,12 @@ on:
       - main
     paths:
       - "python/**"
-      - "lib-openapi.json"
+      - "codegen/lib-openapi.json"
       - ".github/workflows/python-lint.yml"
   pull_request:
     paths:
       - "python/**"
-      - "lib-openapi.json"
+      - "codegen/lib-openapi.json"
       - ".github/workflows/python-lint.yml"
 jobs:
   build:
