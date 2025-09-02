@@ -1,7 +1,8 @@
 # Changelog
 
-## Unreleased
+## Version 1.75.1
 * Libs/Go: Fix bug preventing `time.time` query params from serializing correctly
+* Libs/All: Allow deleting endpoint headers through new `deleteHeaders` field in `EndpointHeadersPatchIn`
 
 ## Version 1.75.0
 * Bridge, CLI, Server: Modify Dockerfiles to use cache mounts for improved build time; these now require Docker 1.2 or later to build
