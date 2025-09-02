@@ -33,6 +33,7 @@ use Svix\Models\Ordering;
 use Svix\Models\ReplayIn;
 use Svix\Models\StatusCodeClass;
 use Svix\SvixClient;
+use Svix\SvixOptions;
 use Svix\Version;
 
 
@@ -373,20 +374,6 @@ class MockTest extends TestCase
         $this->assertStringContainsString('tag=test%23test', $query);
     }
 
-
-    // test list as query param
-    // test header param sent
-    // test retry for status => 500
-    // no body in response does not return anything
-    // 422 returns validation error
-    // 400 returns ApiException
-    // sub-resource works
-    // non-camelCase field name
-    // arbitrary json object body
-    // token/user-agent is sent
-    // MessageAttemptOut without msg
-    // test unknown keys are ignored
-
     public function testServerUrlAutoDetection(): void
     {
         $this->mockHandler->append(new Response(200, [], ListResAppOut));
@@ -416,5 +403,38 @@ class MockTest extends TestCase
         $svxCustom->application->list();
         $customRequest = $this->requestHistory[0]['request'];
         $this->assertEquals('https://custom.svix.com/api/v1/app', $customRequest->getUri()->__toString());
+    }
+
+    public function testRetryOn500Response(): void
+    {
+        // Queue 3 x 500 responses to trigger retries, then a final 500 that should throw
+        $this->mockHandler->append(
+            new Response(500, [], '{"error": "Internal Server Error"}'),
+            new Response(500, [], '{"error": "Internal Server Error"}'),
+            new Response(500, [], '{"error": "Internal Server Error"}')
+        );
+
+        $svx = new \Svix\Svix("super_secret", new SvixOptions(debug: true),  httpClient: $this->httpClient);
+
+        // Expect an ApiException to be thrown after all retries are exhausted
+        $this->expectException(\Svix\Exception\ApiException::class);
+        $this->expectExceptionCode(500);
+
+        try {
+            $svx->application->list();
+        } catch (\Svix\Exception\ApiException $e) {
+            // Verify that exactly 3 requests were made (1 initial + 2 retries)
+            $this->assertCount(3, $this->requestHistory, 'Expected exactly 3 requests (1 initial + 2 retries)');
+
+            // Verify all requests were to the same endpoint
+            foreach ($this->requestHistory as $index => $transaction) {
+                $request = $transaction['request'];
+                $this->assertEquals('GET', $request->getMethod(), "Request $index should be GET");
+                $this->assertStringContainsString('/api/v1/app', $request->getUri()->getPath(), "Request $index should be to /api/v1/app");
+            }
+
+            // Re-throw the exception to satisfy the expectException assertion
+            throw $e;
+        }
     }
 }

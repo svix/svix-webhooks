@@ -8,16 +8,20 @@ use GuzzleHttp\Exception\RequestException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Svix\Exception\ApiException;
+use Svix\SvixOptions;
 use Svix\Utils;
 use Svix\Version;
 
 class SvixHttpClient
 {
+    /** @var int[] Retry schedule in milliseconds - defines sleep time before each retry attempt */
+    private array $retryScheduleMs = [50, 100];
+
     public function __construct(
         private string $baseUrl,
         private string $token,
         private \GuzzleHttp\Client $guzzleClient,
-        private ?int $timeout = null
+        private SvixOptions $opts
     ) {}
 
     public function newReq(
@@ -42,61 +46,45 @@ class SvixHttpClient
 
     private function sendInner(SvixRequest $req): array
     {
-
         // Set idempotency key for POST requests
         if (!isset($req->headerParams['idempotency-key']) && $req->method === 'POST') {
             $req->headerParams['idempotency-key'] = 'auto_' . Utils::uuid4();
         }
 
-        $randomId = random_int(0, PHP_INT_MAX);
+        $maxRetries = count($this->retryScheduleMs);
+        $attempt = 0;
+        $lastException = null;
 
-        // Build headers
-        $headers = array_merge([
-            'Authorization' => 'Bearer ' . $this->token,
-            'User-Agent' => 'svix-libs/' . Version::VERSION . '/php',
-            'svix-req-id' => (string)$randomId,
-        ], $req->headerParams);
+        while ($attempt <= $maxRetries) {
 
-        if ($req->body !== null) {
-            $headers['Content-Type'] = 'application/json';
-        }
+            // Build headers
+            $headers = array_merge([
+                'Authorization' => 'Bearer ' . $this->token,
+                'User-Agent' => 'svix-libs/' . Version::VERSION . '/php',
+                'svix-req-id' => (string)random_int(0, PHP_INT_MAX),
+            ], $req->headerParams);
 
-        // Build request options
-        $options = [
-            'headers' => $headers,
-            'timeout' => $this->timeout ? $this->timeout / 1000 : 30, // Convert ms to seconds
-        ];
+            if ($req->body !== null) {
+                $headers['Content-Type'] = 'application/json';
+            }
 
-        $query = '';
-        if (!empty($req->queryParams)) {
-            $options['query'] = $req->queryParams;
-            $query .= '?' . \http_build_query($req->queryParams, '', '&', \PHP_QUERY_RFC3986);
-        }
-        $uri = $req->url . $query;
+            $query = '';
+            if (!empty($req->queryParams)) {
+                $query .= '?' . \http_build_query($req->queryParams, '', '&', \PHP_QUERY_RFC3986);
+            }
+            $uri = $req->url . $query;
 
-        $request = new \GuzzleHttp\Psr7\Request($req->method, $uri,  $headers, $req->body, '1.1');
+            $request = new \GuzzleHttp\Psr7\Request($req->method, $uri, $headers, $req->body, '1.1');
 
+            $timeoutSeconds = $this->opts->timeoutMs !== null ? $this->opts->timeoutMs / 1000.0 : 30.0;
+            $options = ["timeout" => $timeoutSeconds];
 
-        try {
-            $response = $this->guzzleClient->send($request);
-            logHttpRequestResponse($request, $response);
+            try {
+                $response = $this->guzzleClient->send($request, $options);
+                if ($this->opts->debug) {
+                    logHttpRequestResponse($request, $response);
+                }
 
-            $statusCode = $response->getStatusCode();
-            $body = $response->getBody()->getContents();
-            $responseHeaders = $this->formatHeaders($response->getHeaders());
-
-            $result = [
-                'status' => $statusCode,
-                'body' => $body,
-                'headers' => $responseHeaders
-            ];
-
-            return $this->filterResponseForErrors($result);
-        } catch (RequestException $e) {
-            $response = $e->getResponse();
-            logHttpRequestResponse($request, $response);
-
-            if ($response) {
                 $statusCode = $response->getStatusCode();
                 $body = $response->getBody()->getContents();
                 $responseHeaders = $this->formatHeaders($response->getHeaders());
@@ -107,10 +95,69 @@ class SvixHttpClient
                     'headers' => $responseHeaders
                 ];
 
-                return $this->filterResponseForErrors($result);
-            }
+                // Check if we should retry based on status code
+                if ($statusCode >= 500 && $attempt < $maxRetries) {
+                    $this->sleepFromSchedule($attempt);
+                    $attempt++;
+                    continue;
+                }
 
-            throw new ApiException(0, $e->getMessage(), []);
+                return $this->filterResponseForErrors($result);
+            } catch (RequestException $e) {
+                $response = $e->getResponse();
+                if ($this->opts->debug) {
+                    logHttpRequestResponse($request, $response);
+                }
+                if ($response) {
+                    $statusCode = $response->getStatusCode();
+                    $body = $response->getBody()->getContents();
+                    $responseHeaders = $this->formatHeaders($response->getHeaders());
+
+                    $result = [
+                        'status' => $statusCode,
+                        'body' => $body,
+                        'headers' => $responseHeaders
+                    ];
+
+                    // Check if we should retry based on status code
+                    if ($statusCode >= 500 && $attempt < $maxRetries) {
+                        $this->sleepFromSchedule($attempt);
+                        $attempt++;
+                        continue;
+                    }
+
+                    return $this->filterResponseForErrors($result);
+                }
+
+                // For connection errors, retry if we haven't exceeded max attempts
+                if ($attempt < $maxRetries) {
+                    $lastException = $e;
+                    $this->sleepFromSchedule($attempt);
+                    $attempt++;
+                    continue;
+                }
+
+                throw new ApiException(0, $e->getMessage(), []);
+            }
+        }
+
+        // If we get here, all retries were exhausted due to connection errors
+        if ($lastException) {
+            throw new ApiException(0, $lastException->getMessage(), []);
+        }
+
+        // This should never be reached, but just in case
+        throw new ApiException(0, 'Max retries exceeded', []);
+    }
+
+    /**
+     * Sleep based on the retry schedule
+     */
+    private function sleepFromSchedule(int $attemptIndex): void
+    {
+        if (isset($this->retryScheduleMs[$attemptIndex])) {
+            $delayMs = $this->retryScheduleMs[$attemptIndex];
+            usleep($delayMs * 1000); // usleep takes microseconds
         }
     }
 

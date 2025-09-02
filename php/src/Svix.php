@@ -6,8 +6,6 @@ declare(strict_types=1);
 namespace Svix;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Middleware;
 use Svix\Api\Application;
 use Svix\Api\Authentication;
 use Svix\Api\BackgroundTask;
@@ -40,16 +38,17 @@ class Svix
     public Statistics $statistics;
 
     public function __construct(
-        string $apiKey,
+        string $token,
         ?SvixOptions $options = null,
         ?Client $httpClient = null,
     ) {
-        $baseUrl = $options?->serverUrl ?? Utils::getServerUrlFromToken($apiKey);
+        $baseUrl = $options?->serverUrl ?? Utils::getServerUrlFromToken($token);
 
         $svixHttpClient = new SvixHttpClient(
-            token: $apiKey,
+            token: $token,
             baseUrl: $baseUrl,
-            guzzleClient: $httpClient ?? $this->createHttpClient(),
+            guzzleClient: $httpClient ?? new Client(),
+            opts: $options ?? SvixOptions::newDefault($token),
         );
 
         $this->application = new Application($svixHttpClient);
@@ -65,55 +64,5 @@ class Svix
         $this->messageAttempt = new MessageAttempt($svixHttpClient);
         $this->operationalWebhook = new OperationalWebhook($svixHttpClient);
         $this->statistics = new Statistics($svixHttpClient);
-    }
-
-    /**
-     * Create and configure the HTTP client with retry logic.
-     */
-    private function createHttpClient(): Client
-    {
-        $stack = HandlerStack::create();
-
-        // Add retry middleware
-        $stack->push(Middleware::retry(
-            $this->retryDecider(),
-            $this->retryDelay()
-        ));
-
-        $defaultOptions = [
-            'handler' => $stack,
-            'timeout' => 30,
-        ];
-
-        return new Client(array_merge($defaultOptions));
-    }
-
-    private function retryDecider(): callable
-    {
-        return function (
-            int $retries,
-            \Psr\Http\Message\RequestInterface $request,
-            ?\Psr\Http\Message\ResponseInterface $response = null,
-            ?\Exception $exception = null,
-        ): bool {
-            if ($retries >= 2) {
-                return false;
-            }
-            if ($exception && !$response) {
-                return true;
-            }
-            if ($response && $response->getStatusCode() >= 500) {
-                return true;
-            }
-
-            return false;
-        };
-    }
-
-    private function retryDelay(): callable
-    {
-        return function (int $retries): int {
-            return (int) (50 * pow(2, $retries));
-        };
     }
 }

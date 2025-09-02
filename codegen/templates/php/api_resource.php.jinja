@@ -55,8 +55,6 @@ class {{ resource_type_name }}
         {% if op | has_query_or_header_params -%}
         if (null !== $options) {
             {% for p in op.query_params -%}
-                {% if p.type.schema_ref is defined -%}
-                {% endif -%}
             $request->setQueryParam('{{ p.name }}', $options->{{ p.name | to_lower_camel_case }});
             {% endfor -%}
 
