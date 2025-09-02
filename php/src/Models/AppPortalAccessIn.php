@@ -163,7 +163,8 @@ class AppPortalAccessIn implements \JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        $data = [];
+        $data = [
+        ];
 
         if (isset($this->setFields['application'])) {
             $data['application'] = $this->application;

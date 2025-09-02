@@ -164,7 +164,8 @@ class EventTypePatch implements \JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        $data = [];
+        $data = [
+        ];
 
         if (null !== $this->archived) {
             $data['archived'] = $this->archived;

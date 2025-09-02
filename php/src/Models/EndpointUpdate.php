@@ -204,7 +204,8 @@ class EndpointUpdate implements \JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        $data = ['url' => $this->url];
+        $data = [
+            'url' => $this->url];
 
         if (isset($this->setFields['channels'])) {
             $data['channels'] = $this->channels;

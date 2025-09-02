@@ -53,7 +53,8 @@ class AppUsageStatsIn implements \JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        $data = ['since' => $this->since->format('c'),
+        $data = [
+            'since' => $this->since->format('c'),
             'until' => $this->until->format('c')];
 
         if (isset($this->setFields['appIds'])) {

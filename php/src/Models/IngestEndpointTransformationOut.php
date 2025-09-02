@@ -55,7 +55,8 @@ class IngestEndpointTransformationOut implements \JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        $data = [];
+        $data = [
+        ];
 
         if (isset($this->setFields['code'])) {
             $data['code'] = $this->code;

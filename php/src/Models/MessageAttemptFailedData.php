@@ -39,7 +39,8 @@ class MessageAttemptFailedData implements \JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        $data = ['id' => $this->id,
+        $data = [
+            'id' => $this->id,
             'responseStatusCode' => $this->responseStatusCode,
             'timestamp' => $this->timestamp->format('c')];
 

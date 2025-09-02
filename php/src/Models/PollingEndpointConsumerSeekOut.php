@@ -30,7 +30,8 @@ class PollingEndpointConsumerSeekOut implements \JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        $data = ['iterator' => $this->iterator];
+        $data = [
+            'iterator' => $this->iterator];
 
         return $data;
     }

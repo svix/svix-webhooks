@@ -85,7 +85,8 @@ class ApplicationOut implements \JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        $data = ['createdAt' => $this->createdAt->format('c'),
+        $data = [
+            'createdAt' => $this->createdAt->format('c'),
             'id' => $this->id,
             'metadata' => $this->metadata,
             'name' => $this->name,

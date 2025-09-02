@@ -42,7 +42,8 @@ class BackgroundTaskOut implements \JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        $data = ['data' => $this->data,
+        $data = [
+            'data' => $this->data,
             'id' => $this->id,
             'status' => $this->status,
             'task' => $this->task];

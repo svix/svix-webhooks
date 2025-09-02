@@ -60,7 +60,8 @@ class IntegrationOut implements \JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        $data = ['createdAt' => $this->createdAt->format('c'),
+        $data = [
+            'createdAt' => $this->createdAt->format('c'),
             'id' => $this->id,
             'name' => $this->name,
             'updatedAt' => $this->updatedAt->format('c')];

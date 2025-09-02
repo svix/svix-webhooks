@@ -33,7 +33,8 @@ class AppPortalAccessOut implements \JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        $data = ['token' => $this->token,
+        $data = [
+            'token' => $this->token,
             'url' => $this->url];
 
         return $data;

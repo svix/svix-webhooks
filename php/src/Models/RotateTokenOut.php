@@ -30,7 +30,8 @@ class RotateTokenOut implements \JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        $data = ['ingestUrl' => $this->ingestUrl];
+        $data = [
+            'ingestUrl' => $this->ingestUrl];
 
         return $data;
     }

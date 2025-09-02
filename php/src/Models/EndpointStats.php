@@ -39,7 +39,8 @@ class EndpointStats implements \JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        $data = ['fail' => $this->fail,
+        $data = [
+            'fail' => $this->fail,
             'pending' => $this->pending,
             'sending' => $this->sending,
             'success' => $this->success];

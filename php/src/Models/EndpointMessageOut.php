@@ -141,7 +141,8 @@ class EndpointMessageOut implements \JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        $data = ['eventType' => $this->eventType,
+        $data = [
+            'eventType' => $this->eventType,
             'id' => $this->id,
             'payload' => $this->payload,
             'status' => $this->status,

@@ -195,7 +195,8 @@ class MessageIn implements \JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        $data = ['eventType' => $this->eventType,
+        $data = [
+            'eventType' => $this->eventType,
             'payload' => $this->payload];
 
         if (isset($this->setFields['application'])) {

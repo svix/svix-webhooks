@@ -30,7 +30,8 @@ class PollingEndpointConsumerSeekIn implements \JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        $data = ['after' => $this->after->format('c')];
+        $data = [
+            'after' => $this->after->format('c')];
 
         return $data;
     }

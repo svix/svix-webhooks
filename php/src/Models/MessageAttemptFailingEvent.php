@@ -37,7 +37,8 @@ class MessageAttemptFailingEvent implements \JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        $data = ['data' => $this->data,
+        $data = [
+            'data' => $this->data,
             'type' => $this->type];
 
         return $data;

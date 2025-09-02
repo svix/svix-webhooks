@@ -60,7 +60,8 @@ class EnvironmentOut implements \JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        $data = ['createdAt' => $this->createdAt->format('c'),
+        $data = [
+            'createdAt' => $this->createdAt->format('c'),
             'eventTypes' => $this->eventTypes,
             'transformationTemplates' => $this->transformationTemplates];
 

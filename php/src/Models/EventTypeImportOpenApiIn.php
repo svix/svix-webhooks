@@ -102,7 +102,8 @@ class EventTypeImportOpenApiIn implements \JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        $data = [];
+        $data = [
+        ];
 
         if (null !== $this->dryRun) {
             $data['dryRun'] = $this->dryRun;

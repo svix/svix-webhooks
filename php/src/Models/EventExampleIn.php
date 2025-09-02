@@ -50,7 +50,8 @@ class EventExampleIn implements \JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        $data = ['eventType' => $this->eventType];
+        $data = [
+            'eventType' => $this->eventType];
 
         if (null !== $this->exampleIndex) {
             $data['exampleIndex'] = $this->exampleIndex;

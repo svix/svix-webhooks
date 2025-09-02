@@ -47,7 +47,8 @@ class IntegrationIn implements \JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        $data = ['name' => $this->name];
+        $data = [
+            'name' => $this->name];
 
         if (null !== $this->featureFlags) {
             $data['featureFlags'] = $this->featureFlags;

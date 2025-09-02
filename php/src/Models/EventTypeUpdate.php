@@ -149,7 +149,8 @@ class EventTypeUpdate implements \JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        $data = ['description' => $this->description];
+        $data = [
+            'description' => $this->description];
 
         if (null !== $this->archived) {
             $data['archived'] = $this->archived;

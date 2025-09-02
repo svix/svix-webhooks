@@ -214,7 +214,8 @@ class MessageEndpointOut implements \JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        $data = ['createdAt' => $this->createdAt->format('c'),
+        $data = [
+            'createdAt' => $this->createdAt->format('c'),
             'description' => $this->description,
             'id' => $this->id,
             'status' => $this->status,

@@ -72,7 +72,8 @@ class EndpointUpdatedEventData implements \JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        $data = ['appId' => $this->appId,
+        $data = [
+            'appId' => $this->appId,
             'endpointId' => $this->endpointId];
 
         if (isset($this->setFields['appUid'])) {

@@ -48,7 +48,8 @@ class EndpointHeadersPatchIn implements \JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        $data = ['headers' => $this->headers];
+        $data = [
+            'headers' => $this->headers];
 
         if (null !== $this->deleteHeaders) {
             $data['deleteHeaders'] = $this->deleteHeaders;

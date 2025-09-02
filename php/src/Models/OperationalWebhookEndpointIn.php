@@ -179,7 +179,8 @@ class OperationalWebhookEndpointIn implements \JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        $data = ['url' => $this->url];
+        $data = [
+            'url' => $this->url];
 
         if (null !== $this->description) {
             $data['description'] = $this->description;

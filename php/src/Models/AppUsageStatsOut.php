@@ -45,7 +45,8 @@ class AppUsageStatsOut implements \JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        $data = ['id' => $this->id,
+        $data = [
+            'id' => $this->id,
             'status' => $this->status,
             'task' => $this->task,
             'unresolvedAppIds' => $this->unresolvedAppIds];

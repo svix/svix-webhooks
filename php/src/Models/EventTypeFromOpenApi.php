@@ -117,7 +117,8 @@ class EventTypeFromOpenApi implements \JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        $data = ['deprecated' => $this->deprecated,
+        $data = [
+            'deprecated' => $this->deprecated,
             'description' => $this->description,
             'name' => $this->name];
 

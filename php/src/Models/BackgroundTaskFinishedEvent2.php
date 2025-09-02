@@ -42,7 +42,8 @@ class BackgroundTaskFinishedEvent2 implements \JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        $data = ['data' => $this->data,
+        $data = [
+            'data' => $this->data,
             'status' => $this->status,
             'task' => $this->task,
             'taskId' => $this->taskId];

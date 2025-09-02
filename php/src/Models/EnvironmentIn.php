@@ -76,7 +76,8 @@ class EnvironmentIn implements \JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        $data = [];
+        $data = [
+        ];
 
         if (isset($this->setFields['connectors'])) {
             $data['connectors'] = $this->connectors;

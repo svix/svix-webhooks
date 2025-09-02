@@ -36,7 +36,8 @@ class IngestEndpointSecretOut implements \JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        $data = ['key' => $this->key];
+        $data = [
+            'key' => $this->key];
 
         return $data;
     }

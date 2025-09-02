@@ -158,7 +158,8 @@ class EventTypeOut implements \JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        $data = ['createdAt' => $this->createdAt->format('c'),
+        $data = [
+            'createdAt' => $this->createdAt->format('c'),
             'deprecated' => $this->deprecated,
             'description' => $this->description,
             'name' => $this->name,

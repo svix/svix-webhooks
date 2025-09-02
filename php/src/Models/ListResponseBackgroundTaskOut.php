@@ -55,7 +55,8 @@ class ListResponseBackgroundTaskOut implements \JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        $data = ['data' => $this->data,
+        $data = [
+            'data' => $this->data,
             'done' => $this->done];
 
         if (isset($this->setFields['prevIterator'])) {

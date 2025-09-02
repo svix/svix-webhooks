@@ -83,7 +83,8 @@ class MessageAttemptFailingEventData implements \JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        $data = ['appId' => $this->appId,
+        $data = [
+            'appId' => $this->appId,
             'endpointId' => $this->endpointId,
             'lastAttempt' => $this->lastAttempt,
             'msgId' => $this->msgId];

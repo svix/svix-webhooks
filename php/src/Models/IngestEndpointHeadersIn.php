@@ -33,7 +33,8 @@ class IngestEndpointHeadersIn implements \JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        $data = ['headers' => $this->headers];
+        $data = [
+            'headers' => $this->headers];
 
         return $data;
     }

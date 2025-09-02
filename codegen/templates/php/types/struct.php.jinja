@@ -94,7 +94,7 @@ class {{ type.name | to_upper_camel_case }} implements \JsonSerializable
     public function jsonSerialize(): mixed
     {
         $data = [
-        {%- set serialized_data -%}
+        {% set serialized_data -%}
             {%- for field in type.fields -%}
                 {%- if field.required and not field.nullable -%}
                     {% set field_expr %}$this->{{ field.name | to_lower_camel_case }}{% endset -%}

@@ -48,7 +48,8 @@ class EventTypeImportOpenApiOutData implements \JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        $data = ['modified' => $this->modified];
+        $data = [
+            'modified' => $this->modified];
 
         if (isset($this->setFields['toModify'])) {
             $data['to_modify'] = $this->toModify;

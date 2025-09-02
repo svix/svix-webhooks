@@ -95,7 +95,8 @@ class ApplicationPatch implements \JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        $data = [];
+        $data = [
+        ];
 
         if (null !== $this->metadata) {
             $data['metadata'] = $this->metadata;

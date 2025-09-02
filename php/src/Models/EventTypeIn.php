@@ -160,7 +160,8 @@ class EventTypeIn implements \JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        $data = ['description' => $this->description,
+        $data = [
+            'description' => $this->description,
             'name' => $this->name];
 
         if (null !== $this->archived) {

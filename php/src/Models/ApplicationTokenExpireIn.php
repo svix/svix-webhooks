@@ -61,7 +61,8 @@ class ApplicationTokenExpireIn implements \JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        $data = [];
+        $data = [
+        ];
 
         if (isset($this->setFields['expiry'])) {
             $data['expiry'] = $this->expiry;

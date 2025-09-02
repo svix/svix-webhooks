@@ -82,7 +82,8 @@ class ApplicationIn implements \JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        $data = ['name' => $this->name];
+        $data = [
+            'name' => $this->name];
 
         if (null !== $this->metadata) {
             $data['metadata'] = $this->metadata;

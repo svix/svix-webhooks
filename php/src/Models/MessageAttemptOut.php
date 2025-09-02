@@ -90,7 +90,8 @@ class MessageAttemptOut implements \JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        $data = ['endpointId' => $this->endpointId,
+        $data = [
+            'endpointId' => $this->endpointId,
             'id' => $this->id,
             'msgId' => $this->msgId,
             'response' => $this->response,

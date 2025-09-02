@@ -195,7 +195,8 @@ class ConnectorIn implements \JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        $data = ['logo' => $this->logo,
+        $data = [
+            'logo' => $this->logo,
             'name' => $this->name,
             'transformation' => $this->transformation];
 
