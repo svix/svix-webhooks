@@ -20,7 +20,10 @@ func NewMessageInRaw(
 	payload string,
 	contentType *string,
 ) *models.MessageIn {
-	msgIn := models.MessageIn{}
+	msgIn := models.MessageIn{
+		EventType: eventType,
+		Payload:   map[string]any{},
+	}
 
 	transformationsParams := map[string]interface{}{
 		"rawPayload": payload,
