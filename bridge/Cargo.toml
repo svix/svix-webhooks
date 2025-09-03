@@ -20,6 +20,7 @@ rust_2018_idioms = { level = "warn", priority = -1 }
 trivial_numeric_casts = "warn"
 
 [workspace.lints.clippy]
+clone_on_ref_ptr = "warn"
 cloned_instead_of_copied = "warn"
 dbg_macro = "warn"
 inefficient_to_string = "warn"

@@ -289,8 +289,7 @@ async fn main() -> Result<()> {
                 loop {
                     interval.tick().await;
 
-                    if let Ok(Some((allocated, resident))) = get_allocator_stats(true, mibs.clone())
-                    {
+                    if let Ok(Some((allocated, resident))) = get_allocator_stats(true, &mibs) {
                         metrics.record_mem_allocated(allocated as _);
                         metrics.record_mem_resident(resident as _);
                     }
