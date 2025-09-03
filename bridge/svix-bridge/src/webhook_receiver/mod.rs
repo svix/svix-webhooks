@@ -1,8 +1,8 @@
-use std::{net::SocketAddr, sync::Arc, time::Duration};
+use std::{convert::Infallible, net::SocketAddr, sync::Arc, time::Duration};
 
 use axum::{
-    extract::{Path, State},
-    http,
+    extract::{FromRequestParts, Path, State},
+    http::{self, request},
     routing::{get, post},
     Router,
 };
@@ -78,15 +78,37 @@ pub async fn run(
         .map_err(std::io::Error::other)
 }
 
+struct WebhookIdHeader(Option<String>);
+
+#[async_trait]
+impl<S> FromRequestParts<S> for WebhookIdHeader {
+    type Rejection = Infallible;
+
+    async fn from_request_parts(
+        parts: &mut request::Parts,
+        _: &S,
+    ) -> Result<Self, Self::Rejection> {
+        Ok(Self(
+            parts
+                .headers
+                .get("svix-id")
+                .or_else(|| parts.headers.get("webhook-id"))
+                .and_then(|val| Some(val.to_str().ok()?.to_owned())),
+        ))
+    }
+}
+
 #[instrument(
     skip_all,
     level = "error",
     fields(
+        msg_id = _msg_id,
         integration_id = integration_id.as_ref(),
     )
 )]
 async fn route(
     Path(integration_id): Path<IntegrationId>,
+    WebhookIdHeader(_msg_id): WebhookIdHeader,
     State(InternalState {
         routes,
         transformer_tx,
