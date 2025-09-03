@@ -6,7 +6,7 @@ rust-version = "1.85"
 publish = false
 
 [dependencies]
-rdkafka = { version = "0.36.2", features = ["cmake-build", "ssl", "tracing"] }
+rdkafka = { version = "0.37.0", features = ["cmake-build", "ssl", "tracing"] }
 serde.workspace = true
 serde_json.workspace = true
 svix-bridge-types.workspace = true
