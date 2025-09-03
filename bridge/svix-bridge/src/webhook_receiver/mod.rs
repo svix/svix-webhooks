@@ -298,8 +298,9 @@ async fn run_inner(poller: &SvixEventsPoller) -> ! {
                 let mut has_failure = false;
                 tracing::trace!(count = resp.data.len(), "got messages");
                 for msg in resp.data {
+                    let msg_id = msg.id.clone();
                     if let Err((status, message)) = handle_poller_msg(msg, poller).await {
-                        tracing::error!(status, message);
+                        tracing::error!(msg_id, status, message);
                         has_failure = true;
                     }
                 }
@@ -364,6 +365,7 @@ async fn run_inner(poller: &SvixEventsPoller) -> ! {
     }
 }
 
+#[tracing::instrument(skip_all, fields(msg_id = msg.id))]
 async fn handle_poller_msg(
     msg: PollingEndpointMessageOut,
     poller: &SvixEventsPoller,
