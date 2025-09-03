@@ -85,6 +85,32 @@ var listAttemptOut = `{
   "prevIterator": "-iterator",
   "done": true
 }`
+var MsgOut = `{
+  "eventId": "unique-identifier",
+  "eventType": "user.signup",
+  "payload": {
+    "email": "test@example.com",
+    "type": "user.created",
+    "username": "test_user"
+  },
+  "channels": [
+    "project_123",
+    "group_2"
+  ],
+  "application": {
+    "name": "My first application",
+    "rateLimit": 1,
+    "uid": "unique-identifier",
+    "metadata": {}
+  },
+  "tags": [
+    "my_tag",
+    "other"
+  ],
+  "transformationsParams": {},
+  "payloadRetentionPeriod": 90,
+  "payloadRetentionHours": null
+}`
 
 // Builds an API client for testing against an arbitrary API server with an arbitrary token.
 //
@@ -829,6 +855,35 @@ func TestDatetimeInQueryParam(t *testing.T) {
 		Before: &expectedTime,
 	}
 	_, err := svx.MessageAttempt.ListByEndpoint(ctx, "app1", "endp", &opts)
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+func TestMsgInRaw(t *testing.T) {
+
+	ctx := context.Background()
+	svx := newMockClient()
+	httpmock.Activate()
+	defer httpmock.DeactivateAndReset()
+
+	httpmock.RegisterResponder("POST", "http://testapi.test/api/v1/app/app1/msg", func(r *http.Request) (*http.Response, error) {
+		defer r.Body.Close()
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			t.Error(err)
+		}
+		bodyStr := string(body)
+		expectedBody := `{"eventType":"ev-ty","payload":{},"transformationsParams":{"headers":{"content-type":"custom/non-standard"},"rawPayload":"raw payload"}}`
+		if bodyStr != expectedBody {
+			t.Errorf("Unexpected body %s", bodyStr)
+		}
+		return httpmock.NewStringResponse(200, MsgOut), nil
+
+	})
+
+	contentType := "custom/non-standard"
+	_, err := svx.Message.Create(ctx, "app1", *svix.NewMessageInRaw("ev-ty", "raw payload", &contentType), nil)
 	if err != nil {
 		t.Error(err)
 	}

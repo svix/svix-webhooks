@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+* Libs/Go: Fix bug causing 422 errors on `message.create` with messages created using the `NewMessageInRaw` helper
+
 ## Version 1.76.0
 * Libs/PHP: Added support for the full Svix SDK!
 
