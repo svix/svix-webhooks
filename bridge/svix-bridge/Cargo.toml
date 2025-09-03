@@ -11,7 +11,7 @@ clap = { version = "4.2.4", features = ["env", "derive"] }
 axum = { version = "0.7.7", features = ["macros"] }
 enum_dispatch = "0.3"
 indexmap = { version = "2.10.0", features = ["serde"] }
-itertools = "0.13.0"
+itertools = "0.14.0"
 once_cell = "1.18.0"
 opentelemetry = "0.26.0"
 opentelemetry_sdk = { version = "0.26.0", features = ["metrics", "rt-tokio"] }

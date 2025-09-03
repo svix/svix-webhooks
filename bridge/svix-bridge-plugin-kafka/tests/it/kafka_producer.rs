@@ -11,7 +11,7 @@ use svix_bridge_types::{ForwardRequest, ReceiverOutput as _};
 use crate::{create_topic, delete_topic, kafka_admin_client, BROKER_HOST};
 
 /// Time to wait for the consumer to be properly listening.
-const LISTEN_WAIT_TIME: Duration = Duration::from_secs(5);
+const LISTEN_WAIT_TIME: Duration = Duration::from_secs(8);
 
 #[tokio::test]
 async fn test_produce_ok() {
