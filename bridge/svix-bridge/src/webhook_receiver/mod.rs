@@ -9,7 +9,7 @@ use axum::{
 use svix_bridge_types::{
     async_trait,
     svix::{
-        api::{MessagePollerConsumerPollOptions, Svix},
+        api::{MessagePollerConsumerPollOptions, PollingEndpointMessageOut, Svix},
         error::Error,
     },
     ForwardRequest, PollerInput, ReceiverOutput, TransformationConfig, TransformerInput,
@@ -319,40 +319,11 @@ async fn run_inner(poller: &SvixEventsPoller) -> ! {
             Ok(resp) => {
                 let mut has_failure = false;
                 tracing::trace!(count = resp.data.len(), "got messages");
-                'inner: for msg in resp.data.into_iter() {
-                    let payload = match parse_payload(
-                        &SerializablePayload::Standard(
-                            // FIXME: for svix-event pollers we already know the payload is json so
-                            //   there's some wasted ser/deser/ser cycles.
-                            serde_json::to_vec(&msg)
-                                .expect("just fetched as json, must be serializable"),
-                        ),
-                        poller.transformation.as_ref(),
-                        poller
-                            .transformer_tx
-                            .clone()
-                            .expect("transformer tx is required"),
-                    )
-                    .await
-                    {
-                        Err(status) => {
-                            tracing::error!(
-                                status = status.as_u16(),
-                                "error while parsing polled message"
-                            );
-                            has_failure = true;
-                            break 'inner;
-                        }
-                        Ok(p) => p,
-                    };
-                    if let Err(status) = handle(payload, poller.output.clone()).await {
-                        // FIXME: need to refactor handle to not give http status codes so we can report what happened here.
-                        tracing::error!(
-                            status = status.as_u16(),
-                            "error while handling polled message"
-                        );
+                for msg in resp.data {
+                    let msg_id = msg.id.clone();
+                    if let Err((status, message)) = handle_poller_msg(msg, poller).await {
+                        tracing::error!(msg_id, status, message);
                         has_failure = true;
-                        break 'inner;
                     }
                 }
 
@@ -414,6 +385,34 @@ async fn run_inner(poller: &SvixEventsPoller) -> ! {
             tokio::time::sleep(sleep_time).await;
         }
     }
+}
+
+#[tracing::instrument(skip_all, fields(msg_id = msg.id))]
+async fn handle_poller_msg(
+    msg: PollingEndpointMessageOut,
+    poller: &SvixEventsPoller,
+) -> Result<(), (u16, &'static str)> {
+    let payload = parse_payload(
+        &SerializablePayload::Standard(
+            // FIXME: for svix-event pollers we already know the payload is json so
+            //   there's some wasted ser/deser/ser cycles.
+            serde_json::to_vec(&msg).expect("just fetched as json, must be serializable"),
+        ),
+        poller.transformation.as_ref(),
+        poller
+            .transformer_tx
+            .clone()
+            .expect("transformer tx is required"),
+    )
+    .await
+    .map_err(|status| (status.as_u16(), "error while parsing polled message"))?;
+
+    handle(payload, poller.output.clone())
+        .await
+        // FIXME: need to refactor handle to not give http status codes so we can report what happened here.
+        .map_err(|status| (status.as_u16(), "error while handling polled message"))?;
+
+    Ok(())
 }
 
 #[cfg(test)]
