@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## Version 1.76.1
 * Libs/Go: Fix bug causing 422 errors on `message.create` with messages created using the `NewMessageInRaw` helper
 
 ## Version 1.76.0
