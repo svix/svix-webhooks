@@ -30,7 +30,7 @@ async fn test_produce_ok() {
 
     let consumer = Arc::new(consumer);
     let recv_join_hdl = tokio::spawn({
-        let consumer = consumer.clone();
+        let consumer = Arc::clone(&consumer);
         async move { consumer.recv().await.unwrap().detach() }
     });
     tokio::time::sleep(LISTEN_WAIT_TIME).await;

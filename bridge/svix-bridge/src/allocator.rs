@@ -25,7 +25,7 @@ mod supported {
 
     pub fn get_allocator_stats(
         bust_cache: bool,
-        mibs: Arc<AllocatorStatMibs>,
+        mibs: &AllocatorStatMibs,
     ) -> anyhow::Result<Option<(usize, usize)>> {
         if bust_cache {
             // Stats are cached internally and advancing the epoch is a way to invalidate those caches.

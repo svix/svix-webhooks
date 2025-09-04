@@ -134,7 +134,7 @@ async fn route(
     )
     .await?;
 
-    handle(payload, output.clone()).await
+    handle(payload, Arc::clone(output)).await
 }
 
 // FIXME: Really odd return type - artifact of being extracted from the HTTP server
@@ -407,7 +407,7 @@ async fn handle_poller_msg(
     .await
     .map_err(|status| (status.as_u16(), "error while parsing polled message"))?;
 
-    handle(payload, poller.output.clone())
+    handle(payload, Arc::clone(&poller.output))
         .await
         // FIXME: need to refactor handle to not give http status codes so we can report what happened here.
         .map_err(|status| (status.as_u16(), "error while handling polled message"))?;
