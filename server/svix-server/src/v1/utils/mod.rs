@@ -55,7 +55,7 @@ static FUTURE_QUERY_LIMIT: LazyLock<chrono::Duration> =
 static LIMITED_QUERY_DURATION: LazyLock<chrono::Duration> =
     LazyLock::new(|| chrono::Duration::days(90));
 
-#[derive(Debug, Deserialize, Validate, JsonSchema)]
+#[derive(Clone, Debug, Deserialize, Validate, JsonSchema)]
 pub struct PaginationDescending<T: Validate + JsonSchema> {
     /// Limit the number of returned items
     #[validate]
@@ -66,7 +66,7 @@ pub struct PaginationDescending<T: Validate + JsonSchema> {
     pub iterator: Option<T>,
 }
 
-#[derive(Debug, Deserialize, Validate, JsonSchema)]
+#[derive(Clone, Debug, Deserialize, Validate, JsonSchema)]
 pub struct Pagination<T: Validate + JsonSchema> {
     /// Limit the number of returned items
     #[validate]
@@ -79,7 +79,7 @@ pub struct Pagination<T: Validate + JsonSchema> {
     pub order: Option<Ordering>,
 }
 
-#[derive(Debug, JsonSchema)]
+#[derive(Clone, Debug, JsonSchema)]
 #[schemars(transparent)]
 pub struct PaginationLimit(pub u64);
 
@@ -118,7 +118,7 @@ impl Validate for PaginationLimit {
     }
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub enum ReversibleIterator<T: Validate> {
     /// Regular iteration - backwards in time.
     Normal(T),
@@ -373,6 +373,17 @@ pub struct ListResponse<T> {
     pub done: bool,
 }
 
+impl<T> ListResponse<T> {
+    pub fn empty() -> Self {
+        Self {
+            data: Vec::new(),
+            iterator: None,
+            prev_iterator: None,
+            done: true,
+        }
+    }
+}
+
 // This custom impl is needed because we want to customize the name of the
 // schema that goes into the spec, but that can only be done by having a custom
 // `JsonSchema` implementation.
@@ -475,10 +486,6 @@ pub(crate) trait ModelOut: Sized {
         direction: IteratorDirection,
     ) -> ListResponse<Self> {
         list_response_inner(data, limit, direction, true)
-    }
-
-    fn list_response_no_prev(data: Vec<Self>, limit: usize) -> ListResponse<Self> {
-        list_response_inner(data, limit, IteratorDirection::Normal, false)
     }
 }
 

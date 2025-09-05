@@ -35,10 +35,10 @@ pub enum Relation {
         on_delete = "Cascade"
     )]
     Application,
-    #[sea_orm(has_many = "super::messagedestination::Entity")]
-    Messagedestination,
     #[sea_orm(has_one = "super::messagecontent::Entity")]
     Messagecontent,
+    #[sea_orm(has_many = "super::messageattempt::Entity")]
+    Messageattempt,
 }
 
 impl Related<super::application::Entity> for Entity {
@@ -47,15 +47,15 @@ impl Related<super::application::Entity> for Entity {
     }
 }
 
-impl Related<super::messagedestination::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Messagedestination.def()
-    }
-}
-
 impl Related<super::messagecontent::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Messagecontent.def()
+    }
+}
+
+impl Related<super::messageattempt::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Messageattempt.def()
     }
 }
 

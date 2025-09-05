@@ -1,7 +1,7 @@
 use axum::extract::{Path, State};
 use chrono::{DateTime, Duration, Utc};
 use schemars::JsonSchema;
-use sea_orm::{entity::prelude::*, QueryOrder, QuerySelect};
+use sea_orm::{entity::prelude::*, QueryOrder, QuerySelect, QueryTrait};
 use serde::{Deserialize, Serialize};
 use svix_server_derive::aide_annotate;
 
@@ -10,11 +10,11 @@ use crate::{
     core::{
         permissions,
         types::{
-            BaseId, MessageAttemptTriggerType, MessageEndpointId, MessageStatus,
+            BaseId, MessageAttemptId, MessageAttemptTriggerType, MessageStatus,
             QueueBackgroundTaskId,
         },
     },
-    db::models::{application, endpoint, messagedestination},
+    db::models::{application, endpoint, messageattempt},
     error::{HttpError, Result, ValidationErrorItem},
     queue::{MessageTask, TaskQueueProducer},
     v1::utils::{ApplicationEndpointPath, JsonStatus, ValidatedJson},
@@ -31,19 +31,32 @@ async fn bulk_recover_failed_messages(
 ) -> Result<()> {
     const RECOVER_LIMIT: u64 = 10_000;
     const BATCH_SIZE: u64 = 100;
-    let mut iterator: Option<MessageEndpointId> = None;
+    let mut iterator: Option<MessageAttemptId> = None;
     let mut num_done: u64 = 0;
 
     loop {
-        let mut query = messagedestination::Entity::secure_find_by_endpoint(endp.id.clone())
-            .filter(messagedestination::Column::Id.gte(MessageEndpointId::start_id(since)))
-            .filter(messagedestination::Column::Id.lt(MessageEndpointId::start_id(until)))
-            .filter(messagedestination::Column::Status.eq(MessageStatus::Fail))
-            .order_by_asc(messagedestination::Column::Id)
+        let mut query = messageattempt::Entity::secure_find_by_endpoint(endp.id.clone())
+            .filter(messageattempt::Column::Id.gte(MessageAttemptId::start_id(since)))
+            .filter(messageattempt::Column::Id.lt(MessageAttemptId::start_id(until)))
+            .filter(messageattempt::Column::Status.eq(MessageStatus::Fail))
+            .distinct_on([messageattempt::Column::MsgId])
+            .order_by_asc(messageattempt::Column::MsgId)
+            .filter(
+                messageattempt::Column::MsgId.not_in_subquery(
+                    <messageattempt::Entity as EntityTrait>::find()
+                        .select_only()
+                        .column(messageattempt::Column::MsgId)
+                        .filter(messageattempt::Column::EndpId.eq(endp.id.clone()))
+                        .filter(messageattempt::Column::Status.eq(MessageStatus::Success))
+                        .filter(messageattempt::Column::Id.gte(MessageAttemptId::start_id(since)))
+                        .filter(messageattempt::Column::Id.lt(MessageAttemptId::start_id(until)))
+                        .into_query(),
+                ),
+            )
             .limit(BATCH_SIZE);
 
         if let Some(iterator) = iterator {
-            query = query.filter(messagedestination::Column::Id.gt(iterator))
+            query = query.filter(messageattempt::Column::Id.gt(iterator))
         }
 
         let items = query.all(&db).await?;
@@ -128,7 +141,9 @@ pub(super) async fn recover_failed_webhooks(
     let db = db.clone();
     let queue_tx = queue_tx.clone();
     tokio::spawn(async move {
-        bulk_recover_failed_messages(db, queue_tx, app, endp, since, until).await
+        if let Err(e) = bulk_recover_failed_messages(db, queue_tx, app, endp, since, until).await {
+            tracing::error!("Error recovering failed messages: {}", e);
+        }
     });
 
     Ok(JsonStatus(RecoverOut {

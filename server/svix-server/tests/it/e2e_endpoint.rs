@@ -26,11 +26,11 @@ use svix_server::{
         types::{
             ApplicationId, BaseId, EndpointHeaders, EndpointHeadersPatch, EndpointId,
             EndpointSecret, EndpointSecretInternal, EndpointUid, EventChannel, EventChannelSet,
-            EventTypeName, EventTypeNameSet, ExpiringSigningKeys, MessageEndpointId, MessageId,
-            MessageStatus, OrganizationId,
+            EventTypeName, EventTypeNameSet, ExpiringSigningKeys, MessageAttemptId,
+            MessageAttemptTriggerType, MessageId, MessageStatus, OrganizationId,
         },
     },
-    db::models::{message, messagedestination},
+    db::models::{message, messageattempt},
     v1::{
         endpoints::{
             endpoint::{
@@ -1430,19 +1430,24 @@ async fn test_invalid_endpoint_secret() {
     }
 }
 
-fn new_message_dest_at_time(
+fn new_message_attempt_at_time(
     timestamp: DateTime<Utc>,
     status: MessageStatus,
     endp_id: &EndpointId,
     msg_id: &MessageId,
-) -> messagedestination::ActiveModel {
-    messagedestination::ActiveModel {
+) -> messageattempt::ActiveModel {
+    messageattempt::ActiveModel {
         endp_id: Set(endp_id.clone()),
         msg_id: Set(msg_id.clone()),
-        id: Set(MessageEndpointId::new(timestamp.into(), None)),
+        id: Set(MessageAttemptId::new(timestamp.into(), None)),
         status: Set(status),
         created_at: Set(timestamp.into()),
-        updated_at: Set(timestamp.into()),
+        url: Set("http://www.example.com".into()),
+        response_status_code: Set(200),
+        response_duration_ms: Set(1000),
+        response: Set("{}".into()),
+        trigger_type: Set(MessageAttemptTriggerType::Scheduled),
+
         ..ActiveModelTrait::default()
     }
 }
@@ -1497,7 +1502,7 @@ async fn test_endpoint_stats() {
         .await
         .unwrap();
 
-        new_message_dest_at_time(
+        new_message_attempt_at_time(
             now - chrono::Duration::minutes(60),
             MessageStatus::Pending,
             &endp_id,
@@ -1507,7 +1512,7 @@ async fn test_endpoint_stats() {
         .await
         .unwrap();
 
-        new_message_dest_at_time(
+        new_message_attempt_at_time(
             now - chrono::Duration::minutes(45),
             MessageStatus::Pending,
             &endp_id,
@@ -1517,7 +1522,7 @@ async fn test_endpoint_stats() {
         .await
         .unwrap();
 
-        new_message_dest_at_time(
+        new_message_attempt_at_time(
             now - chrono::Duration::minutes(30),
             MessageStatus::Sending,
             &endp_id,

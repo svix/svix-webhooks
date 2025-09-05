@@ -198,37 +198,34 @@ pub struct MessageOut {
 }
 
 impl MessageOut {
-    pub fn from_msg_and_payload(model: message::Model, content: Option<Vec<u8>>) -> Self {
-        let payload = content
-            .and_then(|p| match serde_json::from_slice(&p) {
-                Ok(v) => Some(v),
-                Err(e) => {
-                    tracing::error!("Failed to parse content: {e}");
-                    None
-                }
+    pub fn from_msg_and_payload(
+        model: message::Model,
+        content: Option<Vec<u8>>,
+        with_content: bool,
+    ) -> Self {
+        let payload = if with_content {
+            let payload = content
+                .and_then(|p| match serde_json::from_slice(&p) {
+                    Ok(v) => Some(v),
+                    Err(e) => {
+                        tracing::error!("Failed to parse content: {e}");
+                        None
+                    }
+                })
+                .or(model.legacy_payload);
+            RawPayload::from_string(match payload {
+                Some(payload) => serde_json::to_string(&payload).expect("Can never fail"),
+                None => r#"{"expired":true}"#.to_string(),
             })
-            .or(model.legacy_payload);
-        let payload = RawPayload::from_string(match payload {
-            Some(payload) => serde_json::to_string(&payload).expect("Can never fail"),
-            None => r#"{"expired":true}"#.to_string(),
-        })
-        .expect("Can never fail");
+            .expect("Can never fail")
+        } else {
+            RawPayload::from_string("{}".to_string()).expect("Can never fail")
+        };
 
         Self {
             uid: model.uid,
             event_type: model.event_type,
             payload,
-            channels: model.channels,
-            id: model.id,
-            created_at: model.created_at.into(),
-        }
-    }
-
-    pub fn without_payload(model: message::Model) -> Self {
-        Self {
-            uid: model.uid,
-            event_type: model.event_type,
-            payload: RawPayload::from_string("{}".to_string()).expect("Can never fail"),
             channels: model.channels,
             id: model.id,
             created_at: model.created_at.into(),
@@ -301,11 +298,7 @@ async fn list_messages(
     let msgs_and_content: Vec<(message::Model, Option<messagecontent::Model>)> =
         query.all(db).await?.into_iter().collect();
     let into = |(msg, content): (message::Model, Option<messagecontent::Model>)| {
-        if with_content {
-            MessageOut::from_msg_and_payload(msg, content.map(|c| c.payload))
-        } else {
-            MessageOut::without_payload(msg)
-        }
+        MessageOut::from_msg_and_payload(msg, content.map(|c| c.payload), with_content)
     };
 
     Ok(Json(MessageOut::list_response(
@@ -409,11 +402,7 @@ pub(crate) async fn create_message_inner(
             .await?;
     }
 
-    let msg_out = if with_content {
-        MessageOut::from_msg_and_payload(msg, Some(msg_content.payload))
-    } else {
-        MessageOut::without_payload(msg)
-    };
+    let msg_out = MessageOut::from_msg_and_payload(msg, Some(msg_content.payload), with_content);
 
     Ok(msg_out)
 }
@@ -438,11 +427,8 @@ async fn get_message(
         .one(db)
         .await?
         .ok_or_else(|| HttpError::not_found(None, None))?;
-    let msg_out = if with_content {
-        MessageOut::from_msg_and_payload(msg, msg_content.map(|c| c.payload))
-    } else {
-        MessageOut::without_payload(msg)
-    };
+    let msg_out =
+        MessageOut::from_msg_and_payload(msg, msg_content.map(|c| c.payload), with_content);
     Ok(Json(msg_out))
 }
 
