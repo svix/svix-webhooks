@@ -48,7 +48,7 @@ class BackgroundTaskFinishedEvent2 implements \JsonSerializable
             'task' => $this->task,
             'taskId' => $this->taskId];
 
-        return $data;
+        return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
 
     /**

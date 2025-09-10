@@ -54,7 +54,7 @@ class IntegrationUpdate implements \JsonSerializable
             $data['featureFlags'] = $this->featureFlags;
         }
 
-        return $data;
+        return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
 
     /**

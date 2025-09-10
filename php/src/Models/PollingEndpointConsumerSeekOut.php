@@ -33,7 +33,7 @@ class PollingEndpointConsumerSeekOut implements \JsonSerializable
         $data = [
             'iterator' => $this->iterator];
 
-        return $data;
+        return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
 
     /**

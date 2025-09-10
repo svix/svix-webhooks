@@ -36,7 +36,7 @@ class EndpointHeadersIn implements \JsonSerializable
         $data = [
             'headers' => $this->headers];
 
-        return $data;
+        return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
 
     /**

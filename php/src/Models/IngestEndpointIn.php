@@ -174,7 +174,7 @@ class IngestEndpointIn implements \JsonSerializable
             $data['uid'] = $this->uid;
         }
 
-        return $data;
+        return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
 
     /**

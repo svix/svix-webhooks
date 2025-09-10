@@ -51,7 +51,7 @@ class RecoverIn implements \JsonSerializable
             $data['until'] = $this->until->format('c');
         }
 
-        return $data;
+        return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
 
     /**

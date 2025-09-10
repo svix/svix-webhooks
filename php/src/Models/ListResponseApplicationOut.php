@@ -63,7 +63,7 @@ class ListResponseApplicationOut implements \JsonSerializable
             $data['prevIterator'] = $this->prevIterator;
         }
 
-        return $data;
+        return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
 
     /**

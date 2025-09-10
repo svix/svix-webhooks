@@ -51,7 +51,7 @@ class AppUsageStatsOut implements \JsonSerializable
             'task' => $this->task,
             'unresolvedAppIds' => $this->unresolvedAppIds];
 
-        return $data;
+        return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
 
     /**

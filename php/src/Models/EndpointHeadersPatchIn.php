@@ -55,7 +55,7 @@ class EndpointHeadersPatchIn implements \JsonSerializable
             $data['deleteHeaders'] = $this->deleteHeaders;
         }
 
-        return $data;
+        return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
 
     /**

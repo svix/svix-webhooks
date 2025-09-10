@@ -39,7 +39,7 @@ class IngestEndpointSecretOut implements \JsonSerializable
         $data = [
             'key' => $this->key];
 
-        return $data;
+        return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
 
     /**

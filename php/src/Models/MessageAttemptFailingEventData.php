@@ -96,7 +96,7 @@ class MessageAttemptFailingEventData implements \JsonSerializable
             $data['msgEventId'] = $this->msgEventId;
         }
 
-        return $data;
+        return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
 
     /**

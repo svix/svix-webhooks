@@ -107,7 +107,7 @@ class MessageAttemptOut implements \JsonSerializable
             $data['msg'] = $this->msg;
         }
 
-        return $data;
+        return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
 
     /**

@@ -57,7 +57,7 @@ class EventExampleIn implements \JsonSerializable
             $data['exampleIndex'] = $this->exampleIndex;
         }
 
-        return $data;
+        return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
 
     /**

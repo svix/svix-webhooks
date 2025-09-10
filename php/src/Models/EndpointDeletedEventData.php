@@ -83,7 +83,7 @@ class EndpointDeletedEventData implements \JsonSerializable
             $data['endpointUid'] = $this->endpointUid;
         }
 
-        return $data;
+        return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
 
     /**
