@@ -18,8 +18,9 @@ class WebhookVerificationError(Exception):
 class Webhook:
     _SECRET_PREFIX: str = "whsec_"
     _whsecret: bytes
+    _whtolerance: timedelta
 
-    def __init__(self, whsecret: t.Union[str, bytes]):
+    def __init__(self, whsecret: t.Union[str, bytes], whtolerance: timedelta = timedelta(minutes=5)):
         if not whsecret:
             raise RuntimeError("Secret can't be empty.")
 
@@ -30,6 +31,8 @@ class Webhook:
 
         if isinstance(whsecret, bytes):
             self._whsecret = whsecret
+        
+        self._whtolerance = whtolerance
 
     def verify(self, data: t.Union[bytes, str], headers: t.Dict[str, str]) -> t.Any:
         data = data if isinstance(data, str) else data.decode()
@@ -67,15 +70,14 @@ class Webhook:
         return f"v1,{base64.b64encode(signature).decode('utf-8')}"
 
     def __verify_timestamp(self, timestamp_header: str) -> datetime:
-        webhook_tolerance = timedelta(minutes=5)
         now = datetime.now(tz=timezone.utc)
         try:
             timestamp = datetime.fromtimestamp(float(timestamp_header), tz=timezone.utc)
         except Exception:
             raise WebhookVerificationError("Invalid Signature Headers")
 
-        if timestamp < (now - webhook_tolerance):
+        if timestamp < (now - self._whtolerance):
             raise WebhookVerificationError("Message timestamp too old")
-        if timestamp > (now + webhook_tolerance):
+        if timestamp > (now + self._whtolerance):
             raise WebhookVerificationError("Message timestamp too new")
         return timestamp
