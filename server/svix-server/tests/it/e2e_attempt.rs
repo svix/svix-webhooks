@@ -1,7 +1,10 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use std::time::Duration;
+use std::{
+    sync::{Arc, Mutex},
+    time::Duration,
+};
 
 use reqwest::StatusCode;
 use serde_json::json;
@@ -15,6 +18,7 @@ use svix_server::{
         utils::ListResponse,
     },
 };
+use wiremock::{matchers, Mock, MockServer, Respond, ResponseTemplate};
 
 use crate::utils::{
     common_calls::{
@@ -282,6 +286,17 @@ async fn test_list_attempted_messages_failed() {
     })
     .await
     .unwrap();
+
+    // No messages should still be listed as `sending`
+    let l: ListResponse<EndpointMessageOut> = client
+        .get(
+            &format!("api/v1/app/{app_id}/endpoint/{endp_id}/msg/?status=3"),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(l.data.len(), 0);
 }
 
 #[tokio::test]
@@ -349,6 +364,79 @@ async fn test_list_attempted_messages_sending() {
     })
     .await
     .unwrap();
+}
+
+struct FailFirstSucceedSecond {
+    first_done: Arc<Mutex<bool>>,
+}
+
+impl FailFirstSucceedSecond {
+    fn new() -> Self {
+        Self {
+            first_done: Arc::new(Mutex::new(false)),
+        }
+    }
+}
+
+impl Respond for FailFirstSucceedSecond {
+    fn respond(&self, _request: &wiremock::Request) -> ResponseTemplate {
+        if *self.first_done.lock().unwrap() {
+            return ResponseTemplate::new(200);
+        }
+        let mut first_done = self.first_done.lock().unwrap();
+        *first_done = true;
+        ResponseTemplate::new(500)
+    }
+}
+
+#[tokio::test]
+async fn test_list_attempted_messages_success_are_not_sending() {
+    let mut cfg = get_default_test_config();
+    cfg.retry_schedule = vec![Duration::from_millis(1)];
+    let (client, _jh) = start_svix_server_with_cfg(&cfg).await;
+
+    let app_id = create_test_app(&client, "app1").await.unwrap().id;
+
+    let mock_server = MockServer::start().await;
+    let responder = FailFirstSucceedSecond::new();
+    Mock::given(matchers::method("POST"))
+        .respond_with(responder)
+        .mount(&mock_server)
+        .await;
+
+    let endp_id = create_test_endpoint(&client, &app_id, &mock_server.uri())
+        .await
+        .unwrap()
+        .id;
+
+    let _msg_1 = create_test_message(&client, &app_id, json!({ "test": "data1" }))
+        .await
+        .unwrap();
+
+    run_with_retries(async || {
+        let l: ListResponse<EndpointMessageOut> = client
+            .get(
+                &format!("api/v1/app/{app_id}/endpoint/{endp_id}/msg/?status=0"),
+                StatusCode::OK,
+            )
+            .await?;
+
+        anyhow::ensure!(l.data.len() == 1);
+        Ok(())
+    })
+    .await
+    .unwrap();
+
+    // Message should not still be listed as `sending`
+    let l: ListResponse<EndpointMessageOut> = client
+        .get(
+            &format!("api/v1/app/{app_id}/endpoint/{endp_id}/msg/?status=3"),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(l.data.len(), 0);
 }
 
 #[tokio::test]
