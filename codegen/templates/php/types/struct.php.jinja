@@ -119,7 +119,7 @@ class {{ type.name | to_upper_camel_case }} implements \JsonSerializable
             {% endif -%}
         {% endfor -%}
 
-        return $data;
+        return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
 
     /**

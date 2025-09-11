@@ -44,7 +44,7 @@ class MessageAttemptFailedData implements \JsonSerializable
             'responseStatusCode' => $this->responseStatusCode,
             'timestamp' => $this->timestamp->format('c')];
 
-        return $data;
+        return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
 
     /**

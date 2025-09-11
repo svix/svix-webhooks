@@ -119,7 +119,7 @@ class MessageOut implements \JsonSerializable
             $data['tags'] = $this->tags;
         }
 
-        return $data;
+        return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
 
     /**

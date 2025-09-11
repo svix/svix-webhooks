@@ -33,7 +33,7 @@ class RotateTokenOut implements \JsonSerializable
         $data = [
             'ingestUrl' => $this->ingestUrl];
 
-        return $data;
+        return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
 
     /**

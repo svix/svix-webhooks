@@ -181,7 +181,7 @@ class EventTypeOut implements \JsonSerializable
             $data['schemas'] = $this->schemas;
         }
 
-        return $data;
+        return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
 
     /**

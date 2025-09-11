@@ -55,7 +55,7 @@ class EventTypeImportOpenApiOutData implements \JsonSerializable
             $data['to_modify'] = $this->toModify;
         }
 
-        return $data;
+        return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
 
     /**

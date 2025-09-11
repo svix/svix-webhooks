@@ -129,7 +129,7 @@ class EndpointDisabledEventData implements \JsonSerializable
             $data['trigger'] = $this->trigger;
         }
 
-        return $data;
+        return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
 
     /**

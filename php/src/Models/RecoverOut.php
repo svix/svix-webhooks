@@ -44,7 +44,7 @@ class RecoverOut implements \JsonSerializable
             'status' => $this->status,
             'task' => $this->task];
 
-        return $data;
+        return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
 
     /**

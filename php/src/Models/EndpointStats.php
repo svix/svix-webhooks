@@ -45,7 +45,7 @@ class EndpointStats implements \JsonSerializable
             'sending' => $this->sending,
             'success' => $this->success];
 
-        return $data;
+        return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
 
     /**

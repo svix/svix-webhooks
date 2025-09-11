@@ -185,7 +185,7 @@ class AppPortalAccessIn implements \JsonSerializable
             $data['sessionId'] = $this->sessionId;
         }
 
-        return $data;
+        return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
 
     /**

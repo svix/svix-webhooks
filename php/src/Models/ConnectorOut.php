@@ -192,7 +192,7 @@ class ConnectorOut implements \JsonSerializable
             $data['instructionsLink'] = $this->instructionsLink;
         }
 
-        return $data;
+        return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
 
     /**

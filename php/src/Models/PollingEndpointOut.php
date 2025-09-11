@@ -44,7 +44,7 @@ class PollingEndpointOut implements \JsonSerializable
             'done' => $this->done,
             'iterator' => $this->iterator];
 
-        return $data;
+        return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
 
     /**

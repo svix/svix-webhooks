@@ -18,6 +18,7 @@ use Svix\Api\MessageAttemptListByEndpointOptions;
 use Svix\Api\MessageListOptions;
 use Svix\Models\ApplicationIn;
 use Svix\Models\ApplicationPatch;
+use Svix\Models\AppPortalAccessIn;
 use Svix\Models\BackgroundTaskOut;
 use Svix\Models\BackgroundTaskStatus;
 use Svix\Models\BackgroundTaskType;
@@ -49,6 +50,7 @@ const ConnectorOut = '{"id":"conn_1srOrx2ZWZBpBUvZwXKQmoEYga2","name":"Test Conn
 const IntegrationOut = '{"id":"integ_1srOrx2ZWZBpBUvZwXKQmoEYga2","name":"Test Integration"}';
 const MessageOut = '{"eventId":"unique-identifier","eventType":"user.signup","payload":{"email":"test@example.com","type":"user.created","username":"test_user"},"channels":["project_123","group_2"],"id":"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2","timestamp":"2019-08-24T14:15:22Z","tags":["project_1337"]}';
 const ReplayOut = '{"id":"qtask_1srOrx2ZWZBpBUvZwXKQmoEYga2","status":"running","task":"endpoint.replay"}';
+const AppPortalAccessOut = '{"url": "https://app.svix.com/login#key=eyJhcHBJZCI6ICJhcHBfMXRSdFl","token": "appsk_kV3ts5tKPNJN4Dl25cMTfUNdmabxbX0O"}';
 
 
 class MockTest extends TestCase
@@ -436,5 +438,21 @@ class MockTest extends TestCase
             // Re-throw the exception to satisfy the expectException assertion
             throw $e;
         }
+    }
+
+    public function testEmptyAppPortalAccessInBody(): void
+    {
+        $this->mockHandler->append(new Response(200, [], AppPortalAccessOut));
+
+        $svx = new \Svix\Svix("super_secret", httpClient: $this->httpClient);
+
+        $emptyAppPortalAccess = AppPortalAccessIn::create();
+
+        $svx->authentication->appPortalAccess('app_123', $emptyAppPortalAccess);
+
+        $req = $this->requestHistory[0]['request'];
+        $rawBody = $req->getBody()->getContents();
+
+        $this->assertEquals('{}', $rawBody);
     }
 }

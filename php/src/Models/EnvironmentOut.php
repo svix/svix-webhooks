@@ -69,7 +69,7 @@ class EnvironmentOut implements \JsonSerializable
             $data['version'] = $this->version;
         }
 
-        return $data;
+        return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
 
     /**

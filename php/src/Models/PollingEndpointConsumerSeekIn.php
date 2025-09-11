@@ -33,7 +33,7 @@ class PollingEndpointConsumerSeekIn implements \JsonSerializable
         $data = [
             'after' => $this->after->format('c')];
 
-        return $data;
+        return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
 
     /**

@@ -63,7 +63,7 @@ class ListResponseEventTypeOut implements \JsonSerializable
             $data['prevIterator'] = $this->prevIterator;
         }
 
-        return $data;
+        return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
 
     /**
