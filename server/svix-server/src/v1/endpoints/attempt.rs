@@ -282,13 +282,36 @@ async fn list_attempted_messages(
                 MessageStatus::Sending => {
                     // Avoid looking back past 7 days since messages are very unlikely to be Pending/Sending beyond
                     // that window
-                    let one_week_ago_id: MessageAttemptId =
-                        MessageAttemptId::start_id(Utc::now() - Duration::days(7));
+                    let one_week_ago = Utc::now() - Duration::days(7);
                     // 'MessageStatus::Sending' is never set on a messageattempt - instead, we check 'next_attempt'
                     // on the returned row
                     query
-                        .filter(messageattempt::Column::Id.gte(one_week_ago_id))
+                        .filter(
+                            messageattempt::Column::Id
+                                .gte(MessageAttemptId::start_id(one_week_ago)),
+                        )
                         .filter(messageattempt::Column::NextAttempt.is_not_null())
+                        .filter(
+                            // Ensure that we don't include messages that also had a success or failure
+                            // in same time period.
+                            messageattempt::Column::MsgId.not_in_subquery(
+                                limit_messageattempt_join(
+                                    <messageattempt::Entity as EntityTrait>::find()
+                                        .select_only()
+                                        .column(messageattempt::Column::MsgId)
+                                        .filter(messageattempt::Column::EndpId.eq(endp_id))
+                                        .filter(messageattempt::Column::NextAttempt.is_null())
+                                        .filter(messageattempt::Column::Status.is_in(vec![
+                                            MessageStatus::Success,
+                                            MessageStatus::Fail,
+                                        ])),
+                                    Some(one_week_ago),
+                                    after,
+                                    now,
+                                )
+                                .into_query(),
+                            ),
+                        )
                 }
                 // An message with any successful attempts is considered successful - regardless of whether
                 // or not there were failed attempts before or after.
