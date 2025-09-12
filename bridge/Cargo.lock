@@ -4556,6 +4556,7 @@ version = "1.76.1"
 dependencies = [
  "ctor",
  "rdkafka",
+ "rustls 0.23.23",
  "serde",
  "serde_json",
  "svix-bridge-types",
