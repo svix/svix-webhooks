@@ -142,7 +142,7 @@ pub(super) async fn recover_failed_webhooks(
     let queue_tx = queue_tx.clone();
     tokio::spawn(async move {
         if let Err(e) = bulk_recover_failed_messages(db, queue_tx, app, endp, since, until).await {
-            tracing::error!("Error recovering failed messages: {}", e);
+            tracing::error!("Error recovering failed messages: {e}");
         }
     });
 
