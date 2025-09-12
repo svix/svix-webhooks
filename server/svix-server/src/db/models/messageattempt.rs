@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 use chrono::Utc;
-use sea_orm::{entity::prelude::*, ActiveValue::Set};
+use sea_orm::{entity::prelude::*, ActiveValue::Set, Order, QueryOrder, QuerySelect};
 
 use crate::core::types::{
     BaseId, EndpointId, MessageAttemptId, MessageAttemptTriggerType, MessageEndpointId, MessageId,
@@ -16,7 +16,7 @@ pub struct Model {
     pub id: MessageAttemptId,
     pub created_at: DateTimeWithTimeZone,
     pub msg_id: MessageId,
-    pub msg_dest_id: MessageEndpointId,
+    pub msg_dest_id: Option<MessageEndpointId>,
     pub endp_id: EndpointId,
     pub url: String,
     pub status: MessageStatus,
@@ -27,23 +27,25 @@ pub struct Model {
     pub trigger_type: MessageAttemptTriggerType,
     /// Response duration in milliseconds
     pub response_duration_ms: i64,
+    pub next_attempt: Option<DateTimeWithTimeZone>,
+    pub attempt_number: i16,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
     #[sea_orm(
-        belongs_to = "super::messagedestination::Entity",
-        from = "Column::MsgDestId",
-        to = "super::messagedestination::Column::Id",
+        belongs_to = "super::message::Entity",
+        from = "Column::MsgId",
+        to = "super::message::Column::Id",
         on_update = "NoAction",
-        on_delete = "Cascade"
+        on_delete = "Restrict"
     )]
-    Messagedestination,
+    Message,
 }
 
-impl Related<super::messagedestination::Entity> for Entity {
+impl Related<super::message::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::Messagedestination.def()
+        Relation::Message.def()
     }
 }
 
@@ -67,3 +69,42 @@ impl Entity {
         Self::find().filter(Column::EndpId.eq(endp_id))
     }
 }
+
+pub trait Query: QuerySelect + QueryFilter + QueryOrder + Sized {
+    fn after_id(self, id: MessageAttemptId) -> Self {
+        self.filter(Column::Id.gte(id))
+    }
+
+    fn after_id_exclusive(self, id: MessageAttemptId) -> Self {
+        self.filter(Column::Id.gt(id))
+    }
+
+    fn before_id(self, id: MessageAttemptId) -> Self {
+        self.filter(Column::Id.lte(id))
+    }
+
+    fn after(self, t: DateTimeUtc) -> Self {
+        self.after_id(MessageAttemptId::start_id(t))
+    }
+
+    fn before(self, t: DateTimeUtc) -> Self {
+        self.before_id(MessageAttemptId::start_id(t))
+    }
+
+    fn with_status(self, status: MessageStatus) -> Self {
+        self.filter(Column::Status.eq(status))
+    }
+
+    fn oldest_first(self) -> Self {
+        self.order_by(Column::Id, Order::Asc)
+    }
+
+    /// Only return the last attempt per message (every attempt will be part of a separate message)
+    fn latest_per_msg(self) -> Self {
+        self.distinct_on([Column::MsgId])
+            .order_by_desc(Column::MsgId)
+            .order_by_desc(Column::Id)
+    }
+}
+
+impl Query for Select<Entity> {}

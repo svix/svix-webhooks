@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 use chrono::Utc;
-use sea_orm::{entity::prelude::*, ActiveValue::Set, Condition, IntoActiveModel};
+use sea_orm::{entity::prelude::*, ActiveValue::Set, Condition, IntoActiveModel, QuerySelect};
 
 use super::endpointmetadata;
 use crate::{
@@ -47,8 +47,6 @@ pub enum Relation {
         on_delete = "Cascade"
     )]
     Application,
-    #[sea_orm(has_many = "super::messagedestination::Entity")]
-    Messagedestination,
     #[sea_orm(has_one = "super::endpointmetadata::Entity")]
     Metadata,
 }
@@ -56,12 +54,6 @@ pub enum Relation {
 impl Related<super::application::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Application.def()
-    }
-}
-
-impl Related<super::messagedestination::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Messagedestination.def()
     }
 }
 
@@ -137,5 +129,21 @@ impl Entity {
                 .add(Column::Id.eq(id_or_uid.to_owned()))
                 .add(Column::Uid.eq(id_or_uid)),
         )
+    }
+
+    pub fn secure_find_by_ids(
+        app_id: ApplicationId,
+        ids: impl IntoIterator<Item = EndpointId>,
+        want_deleted: bool,
+    ) -> Select<Entity> {
+        let mut q = Self::find()
+            .filter(Column::AppId.eq(app_id))
+            .filter(Column::Id.is_in(ids));
+
+        if !want_deleted {
+            q = q.filter(Column::Deleted.eq(false))
+        }
+
+        q.distinct()
     }
 }

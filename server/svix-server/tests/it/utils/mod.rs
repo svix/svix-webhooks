@@ -5,6 +5,7 @@ use std::{
     future::Future,
     net::TcpListener,
     sync::{Arc, Mutex},
+    time::Duration,
 };
 
 use anyhow::{Context, Result};
@@ -429,6 +430,24 @@ impl TestReceiver {
             header_recv,
             response_status_code,
         }
+    }
+
+    pub(crate) fn try_recv_body_value(
+        &mut self,
+    ) -> Result<serde_json::Value, mpsc::error::TryRecvError> {
+        let payload = self.data_recv.try_recv()?;
+        Ok(serde_json::from_value(payload).unwrap())
+    }
+
+    pub(crate) async fn recv_body(&mut self) -> Option<serde_json::Value> {
+        self.data_recv.recv().await
+    }
+
+    pub(crate) async fn recv_body_value(&mut self) -> Option<serde_json::Value> {
+        let payload = tokio::time::timeout(Duration::from_secs(30), self.data_recv.recv())
+            .await
+            .expect("timed out")?;
+        Some(serde_json::from_value(payload).unwrap())
     }
 
     pub fn set_response_status_code(&self, resp_with: axum::http::StatusCode) {
