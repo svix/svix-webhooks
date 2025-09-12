@@ -27,10 +27,8 @@ tokio.workspace = true
 tracing.workspace = true
 tracing-opentelemetry = "0.27.0"
 tracing-subscriber = { workspace = true, features = ["fmt", "json"] }
-# N.b. for newer deno versions (like this) the runtimes must be retained and reused since they will leak memory if you
-# create/drop them.
-deno_core = "0.308.0"
-deno_ast = "0.44.0"
+deno_core = "0.352.1"
+deno_ast = "0.48.2"
 deadpool = { version = "0.12.1", features = ["unmanaged", "rt_tokio_1"] }
 shellexpand = { version = "3.1.0", default-features = false, features = ["base-0"] }
 url = "2.5.4"
