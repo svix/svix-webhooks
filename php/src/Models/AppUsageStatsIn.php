@@ -61,7 +61,7 @@ class AppUsageStatsIn implements \JsonSerializable
             $data['appIds'] = $this->appIds;
         }
 
-        return $data;
+        return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
 
     /**

@@ -222,7 +222,7 @@ class ConnectorIn implements \JsonSerializable
             $data['kind'] = $this->kind;
         }
 
-        return $data;
+        return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
 
     /**

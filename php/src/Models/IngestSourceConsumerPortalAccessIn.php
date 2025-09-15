@@ -71,7 +71,7 @@ class IngestSourceConsumerPortalAccessIn implements \JsonSerializable
             $data['readOnly'] = $this->readOnly;
         }
 
-        return $data;
+        return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
 
     /**

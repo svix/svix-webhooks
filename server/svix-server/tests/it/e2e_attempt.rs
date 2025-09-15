@@ -1,9 +1,13 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use std::time::Duration;
+use std::{
+    sync::{Arc, Mutex},
+    time::Duration,
+};
 
 use reqwest::StatusCode;
+use serde_json::json;
 use svix_server::{
     core::types::{EndpointUid, MessageStatus},
     v1::{
@@ -14,6 +18,7 @@ use svix_server::{
         utils::ListResponse,
     },
 };
+use wiremock::{matchers, Mock, MockServer, Respond, ResponseTemplate};
 
 use crate::utils::{
     common_calls::{
@@ -214,6 +219,368 @@ async fn test_list_attempted_messages() {
     assert!(list_both_event_types.data.iter().any(|x| x.msg == msg_1));
     assert!(list_both_event_types.data.iter().any(|x| x.msg == msg_2));
     assert!(list_both_event_types.data.iter().any(|x| x.msg == msg_3));
+}
+
+#[tokio::test]
+async fn test_list_attempted_messages_failed() {
+    let mut cfg = get_default_test_config();
+    cfg.retry_schedule = vec![Duration::from_millis(1)];
+    let (client, _jh) = start_svix_server_with_cfg(&cfg).await;
+
+    let app_id = create_test_app(&client, "app1").await.unwrap().id;
+
+    let receiver = TestReceiver::start(StatusCode::OK);
+    let endp_id = create_test_endpoint(&client, &app_id, &receiver.endpoint)
+        .await
+        .unwrap()
+        .id;
+
+    let msg_1 = create_test_message(&client, &app_id, json!({ "test": "data1" }))
+        .await
+        .unwrap();
+    let msg_2 = create_test_message(&client, &app_id, json!({ "test": "data2" }))
+        .await
+        .unwrap();
+
+    run_with_retries(async || {
+        for status in ["0"] {
+            let list_success: ListResponse<EndpointMessageOut> = client
+                .get(
+                    &format!("api/v1/app/{app_id}/endpoint/{endp_id}/msg/?status={status}"),
+                    StatusCode::OK,
+                )
+                .await?;
+
+            anyhow::ensure!(list_success.data.len() == 2);
+            anyhow::ensure!(list_success.data.iter().any(|x| x.msg == msg_1));
+            anyhow::ensure!(list_success.data.iter().any(|x| x.msg == msg_2));
+        }
+        Ok(())
+    })
+    .await
+    .unwrap();
+
+    receiver.set_response_status_code(StatusCode::INTERNAL_SERVER_ERROR);
+
+    let msg_3 = create_test_message(&client, &app_id, json!({ "test": "data3" }))
+        .await
+        .unwrap();
+    let msg_4 = create_test_message(&client, &app_id, json!({ "test": "data4" }))
+        .await
+        .unwrap();
+
+    run_with_retries(async || {
+        for status in ["2"] {
+            let list_failed: ListResponse<EndpointMessageOut> = client
+                .get(
+                    &format!("api/v1/app/{app_id}/endpoint/{endp_id}/msg/?status={status}"),
+                    StatusCode::OK,
+                )
+                .await?;
+
+            anyhow::ensure!(list_failed.data.len() == 2);
+            anyhow::ensure!(list_failed.data.iter().any(|x| x.msg == msg_3));
+            anyhow::ensure!(list_failed.data.iter().any(|x| x.msg == msg_4));
+        }
+        Ok(())
+    })
+    .await
+    .unwrap();
+
+    // No messages should still be listed as `sending`
+    let l: ListResponse<EndpointMessageOut> = client
+        .get(
+            &format!("api/v1/app/{app_id}/endpoint/{endp_id}/msg/?status=3"),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(l.data.len(), 0);
+}
+
+#[tokio::test]
+async fn test_list_attempted_messages_sending() {
+    let (client, _jh) = start_svix_server().await;
+
+    let app_id = create_test_app(&client, "app1").await.unwrap().id;
+
+    let receiver = TestReceiver::start(StatusCode::OK);
+    let endp_id = create_test_endpoint(&client, &app_id, &receiver.endpoint)
+        .await
+        .unwrap()
+        .id;
+
+    let msg_1 = create_test_message(&client, &app_id, json!({ "test": "data1" }))
+        .await
+        .unwrap();
+    let msg_2 = create_test_message(&client, &app_id, json!({ "test": "data2" }))
+        .await
+        .unwrap();
+
+    run_with_retries(async || {
+        for status in ["0"] {
+            let list_success: ListResponse<EndpointMessageOut> = client
+                .get(
+                    &format!("api/v1/app/{app_id}/endpoint/{endp_id}/msg/?status={status}"),
+                    StatusCode::OK,
+                )
+                .await?;
+
+            anyhow::ensure!(list_success.data.len() == 2);
+            anyhow::ensure!(list_success.data.iter().any(|x| x.msg == msg_1));
+            anyhow::ensure!(list_success.data.iter().any(|x| x.msg == msg_2));
+        }
+
+        Ok(())
+    })
+    .await
+    .unwrap();
+
+    receiver.set_response_status_code(StatusCode::INTERNAL_SERVER_ERROR);
+
+    let msg_3 = create_test_message(&client, &app_id, json!({ "test": "data3" }))
+        .await
+        .unwrap();
+    let msg_4 = create_test_message(&client, &app_id, json!({ "test": "data4" }))
+        .await
+        .unwrap();
+
+    run_with_retries(async || {
+        for status in ["3"] {
+            let list_sending: ListResponse<EndpointMessageOut> = client
+                .get(
+                    &format!("api/v1/app/{app_id}/endpoint/{endp_id}/msg/?status={status}"),
+                    StatusCode::OK,
+                )
+                .await?;
+
+            anyhow::ensure!(list_sending.data.len() == 2);
+            anyhow::ensure!(list_sending.data.iter().any(|x| x.msg == msg_3));
+            anyhow::ensure!(list_sending.data.iter().any(|x| x.msg == msg_4));
+        }
+
+        Ok(())
+    })
+    .await
+    .unwrap();
+}
+
+struct FailFirstSucceedSecond {
+    first_done: Arc<Mutex<bool>>,
+}
+
+impl FailFirstSucceedSecond {
+    fn new() -> Self {
+        Self {
+            first_done: Arc::new(Mutex::new(false)),
+        }
+    }
+}
+
+impl Respond for FailFirstSucceedSecond {
+    fn respond(&self, _request: &wiremock::Request) -> ResponseTemplate {
+        if *self.first_done.lock().unwrap() {
+            return ResponseTemplate::new(200);
+        }
+        let mut first_done = self.first_done.lock().unwrap();
+        *first_done = true;
+        ResponseTemplate::new(500)
+    }
+}
+
+#[tokio::test]
+async fn test_list_attempted_messages_success_are_not_sending() {
+    let mut cfg = get_default_test_config();
+    cfg.retry_schedule = vec![Duration::from_millis(1)];
+    let (client, _jh) = start_svix_server_with_cfg(&cfg).await;
+
+    let app_id = create_test_app(&client, "app1").await.unwrap().id;
+
+    let mock_server = MockServer::start().await;
+    let responder = FailFirstSucceedSecond::new();
+    Mock::given(matchers::method("POST"))
+        .respond_with(responder)
+        .mount(&mock_server)
+        .await;
+
+    let endp_id = create_test_endpoint(&client, &app_id, &mock_server.uri())
+        .await
+        .unwrap()
+        .id;
+
+    let _msg_1 = create_test_message(&client, &app_id, json!({ "test": "data1" }))
+        .await
+        .unwrap();
+
+    run_with_retries(async || {
+        let l: ListResponse<EndpointMessageOut> = client
+            .get(
+                &format!("api/v1/app/{app_id}/endpoint/{endp_id}/msg/?status=0"),
+                StatusCode::OK,
+            )
+            .await?;
+
+        anyhow::ensure!(l.data.len() == 1);
+        Ok(())
+    })
+    .await
+    .unwrap();
+
+    // Message should not still be listed as `sending`
+    let l: ListResponse<EndpointMessageOut> = client
+        .get(
+            &format!("api/v1/app/{app_id}/endpoint/{endp_id}/msg/?status=3"),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(l.data.len(), 0);
+}
+
+#[tokio::test]
+async fn test_list_attempted_destinations() {
+    use svix_server::v1::endpoints::attempt::MessageEndpointOut;
+
+    let (client, _jh) = start_svix_server().await;
+
+    let app_id = create_test_app(&client, "testListAttemptedDestinations")
+        .await
+        .unwrap()
+        .id;
+
+    let mut receiver_1 =
+        TestReceiver::start_with_body(StatusCode::OK, axum::Json(json!({ "ok": true })));
+    let endp_1 = create_test_endpoint(&client, &app_id, &receiver_1.endpoint)
+        .await
+        .unwrap();
+
+    let mut receiver_2 =
+        TestReceiver::start_with_body(StatusCode::OK, axum::Json(json!({ "ok": true })));
+    let endp_2 = create_test_endpoint(&client, &app_id, &receiver_2.endpoint)
+        .await
+        .unwrap();
+
+    let mut receiver_3 =
+        TestReceiver::start_with_body(StatusCode::OK, axum::Json(json!({ "ok": true })));
+    let endp_3 = create_test_endpoint(&client, &app_id, &receiver_3.endpoint)
+        .await
+        .unwrap();
+
+    let msg_id = create_test_message(&client, &app_id, json!({ "test": "data" }))
+        .await
+        .unwrap()
+        .id;
+
+    receiver_1.recv_body_value().await;
+    receiver_2.recv_body_value().await;
+    receiver_3.recv_body_value().await;
+
+    let destinations = run_with_retries(async || {
+        let list: ListResponse<MessageEndpointOut> = client
+            .get(
+                &format!("api/v1/app/{app_id}/msg/{msg_id}/endpoint/"),
+                StatusCode::OK,
+            )
+            .await?;
+        anyhow::ensure!(list.data.len() == 3);
+
+        Ok(list)
+    })
+    .await
+    .unwrap();
+
+    let endpoint_ids: Vec<_> = destinations.data.iter().map(|d| d.id.clone()).collect();
+    assert_eq!(
+        endpoint_ids,
+        vec![endp_1.id.clone(), endp_2.id.clone(), endp_3.id.clone()]
+    );
+
+    // Delete one endpoint
+    client
+        .delete(
+            &format!("api/v1/app/{app_id}/endpoint/{}/", endp_2.id),
+            StatusCode::NO_CONTENT,
+        )
+        .await
+        .unwrap();
+
+    // Should still see all 3 endpoints (including deleted)
+    let destinations_after_delete: ListResponse<MessageEndpointOut> = client
+        .get(
+            &format!("api/v1/app/{app_id}/msg/{msg_id}/endpoint/"),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(destinations_after_delete.data.len(), 3);
+
+    let first_page: ListResponse<MessageEndpointOut> = client
+        .get(
+            &format!("api/v1/app/{app_id}/msg/{msg_id}/endpoint/?limit=2"),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(first_page.data.len(), 2);
+    let endpoint_ids: Vec<_> = first_page.data.iter().map(|d| d.id.clone()).collect();
+    assert_eq!(endpoint_ids, vec![endp_1.id.clone(), endp_2.id.clone()]);
+
+    let next_iter = first_page.iterator.unwrap().clone();
+    let second_page: ListResponse<MessageEndpointOut> = client
+        .get(
+            &format!("api/v1/app/{app_id}/msg/{msg_id}/endpoint/?limit=2&iterator={next_iter}"),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(second_page.data.len(), 1);
+    let endpoint_ids: Vec<_> = second_page.data.iter().map(|d| d.id.clone()).collect();
+    assert_eq!(endpoint_ids, vec![endp_3.id.clone()]);
+
+    // Test backward pagination
+    let all_destinations: ListResponse<MessageEndpointOut> = client
+        .get(
+            &format!("api/v1/app/{app_id}/msg/{msg_id}/endpoint/"),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    let last_id = &all_destinations.data.last().unwrap().id;
+
+    let prev_page: ListResponse<MessageEndpointOut> = client
+        .get(
+            &format!("api/v1/app/{app_id}/msg/{msg_id}/endpoint/?limit=1&iterator=-{last_id}"),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(prev_page.data.len(), 1);
+    let endpoint_ids: Vec<_> = prev_page.data.iter().map(|d| &d.id).collect();
+    assert_eq!(endpoint_ids, vec![&endp_2.id]);
+
+    let prev_iter = prev_page.prev_iterator.unwrap();
+    let prev_page: ListResponse<MessageEndpointOut> = client
+        .get(
+            &format!("api/v1/app/{app_id}/msg/{msg_id}/endpoint/?limit=1&iterator={prev_iter}"),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(prev_page.data.len(), 1);
+    let endpoint_ids: Vec<_> = prev_page.data.iter().map(|d| &d.id).collect();
+    assert_eq!(endpoint_ids, vec![&endp_1.id]);
+
+    receiver_1.jh.abort();
+    receiver_2.jh.abort();
+    receiver_3.jh.abort();
 }
 
 #[tokio::test]

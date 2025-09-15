@@ -71,7 +71,7 @@ class ApplicationTokenExpireIn implements \JsonSerializable
             $data['sessionIds'] = $this->sessionIds;
         }
 
-        return $data;
+        return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
 
     /**

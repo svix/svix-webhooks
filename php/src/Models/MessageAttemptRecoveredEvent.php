@@ -38,7 +38,7 @@ class MessageAttemptRecoveredEvent implements \JsonSerializable
             'data' => $this->data,
             'type' => $this->type];
 
-        return $data;
+        return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
 
     /**

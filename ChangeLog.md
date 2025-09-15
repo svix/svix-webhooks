@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+* Libs/PHP: Fix bug causing empty objects to be serialized as `[]` instead of `{}`
+
 ## Version 1.76.1
 * Libs/Go: Fix bug causing 422 errors on `message.create` with messages created using the `NewMessageInRaw` helper
 

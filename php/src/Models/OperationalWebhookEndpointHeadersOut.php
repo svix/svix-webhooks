@@ -41,7 +41,7 @@ class OperationalWebhookEndpointHeadersOut implements \JsonSerializable
             'headers' => $this->headers,
             'sensitive' => $this->sensitive];
 
-        return $data;
+        return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
 
     /**

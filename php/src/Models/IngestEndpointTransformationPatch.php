@@ -65,7 +65,7 @@ class IngestEndpointTransformationPatch implements \JsonSerializable
             $data['enabled'] = $this->enabled;
         }
 
-        return $data;
+        return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
 
     /**

@@ -118,7 +118,7 @@ class EventTypeImportOpenApiIn implements \JsonSerializable
             $data['specRaw'] = $this->specRaw;
         }
 
-        return $data;
+        return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
 
     /**

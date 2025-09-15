@@ -18,8 +18,8 @@ use http_body_util::BodyExt as _;
 use itertools::Itertools;
 use rand::Rng;
 use sea_orm::{
-    prelude::DateTimeUtc, ActiveModelBehavior, ActiveModelTrait, ColumnTrait, DatabaseConnection,
-    EntityTrait, QueryFilter, Set, TryIntoModel,
+    prelude::DateTimeUtc, ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait,
+    QueryFilter, QueryOrder, Set,
 };
 use serde::{Deserialize, Serialize};
 use tokio::time::sleep;
@@ -322,7 +322,12 @@ async fn prepare_dispatch(
 
 #[tracing::instrument(skip_all)]
 async fn make_http_call(
-    DispatchContext { msg_task, endp, .. }: DispatchContext<'_>,
+    DispatchContext {
+        msg_task,
+        endp,
+        db_attempt_number,
+        ..
+    }: DispatchContext<'_>,
     PendingDispatch {
         method,
         url,
@@ -331,7 +336,6 @@ async fn make_http_call(
         request_timeout,
         created_at,
     }: PendingDispatch,
-    msg_dest: &messagedestination::Model,
     client: &WebhookClient,
 ) -> Result<CompletedDispatch> {
     let req = RequestBuilder::new()
@@ -351,11 +355,12 @@ async fn make_http_call(
         created_at: Set(created_at.into()),
         msg_id: Set(msg_task.msg_id.clone()),
         endp_id: Set(endp.id.clone()),
-        msg_dest_id: Set(msg_dest.id.clone()),
+        msg_dest_id: Set(None),
         url: Set(endp.url.clone()),
         ended_at: Set(Some(Utc::now().into())),
         trigger_type: Set(msg_task.trigger_type),
         response_duration_ms: Set(0), // Default to 0, will be updated after the request
+        attempt_number: Set(db_attempt_number),
         ..Default::default()
     };
 
@@ -423,7 +428,7 @@ async fn make_http_call(
     }
 }
 
-#[tracing::instrument(skip_all, fields(response_code, msg_dest_id = msg_dest.id.0))]
+#[tracing::instrument(skip_all, fields(response_code))]
 async fn handle_successful_dispatch(
     WorkerContext {
         cache,
@@ -441,17 +446,10 @@ async fn handle_successful_dispatch(
         ..
     }: DispatchContext<'_>,
     SuccessfulDispatch(mut attempt): SuccessfulDispatch,
-    msg_dest: messagedestination::Model,
 ) -> Result<()> {
     attempt.ended_at = Set(Some(Utc::now().into()));
+    attempt.next_attempt = Set(None);
     let attempt = attempt.insert(*db).await?;
-
-    let msg_dest = messagedestination::ActiveModel {
-        status: Set(MessageStatus::Success),
-        next_attempt: Set(None),
-        ..msg_dest.into()
-    };
-    let _msg_dest = msg_dest.update(*db).await?;
 
     process_endpoint_success(cache, app_id, org_id, endp).await?;
 
@@ -483,7 +481,7 @@ async fn handle_successful_dispatch(
     Ok(())
 }
 
-fn calculate_retry_delay(duration: Duration, err: Error) -> Duration {
+fn calculate_retry_delay(duration: Duration, err: &Error) -> Duration {
     let duration = if matches!(err.typ, ErrorType::Timeout(_))
         || matches!(err.typ, ErrorType::Http(HttpError { status, .. }) if status == StatusCode::TOO_MANY_REQUESTS)
     {
@@ -496,7 +494,7 @@ fn calculate_retry_delay(duration: Duration, err: Error) -> Duration {
         .gen_range(duration.mul_f32(1.0 - JITTER_DELTA)..=duration.mul_f32(1.0 + JITTER_DELTA))
 }
 
-#[tracing::instrument(skip_all, fields(response_code, msg_dest_id = msg_dest.id.0))]
+#[tracing::instrument(skip_all, fields(response_code))]
 async fn handle_failed_dispatch(
     WorkerContext {
         db,
@@ -516,12 +514,10 @@ async fn handle_failed_dispatch(
         ..
     }: DispatchContext<'_>,
     FailedDispatch(mut attempt, err): FailedDispatch,
-    msg_dest: messagedestination::Model,
 ) -> Result<()> {
     attempt.ended_at = Set(Some(Utc::now().into()));
-    let attempt = attempt.insert(*db).await?;
 
-    tracing::Span::current().record("response_code", attempt.response_status_code);
+    tracing::Span::current().record("response_code", attempt.response_status_code.try_as_ref());
     tracing::info!("Webhook failure.");
 
     let retry_schedule = &cfg.retry_schedule;
@@ -529,24 +525,25 @@ async fn handle_failed_dispatch(
     let attempt_count = msg_task.attempt_count as usize;
     if msg_task.trigger_type == MessageAttemptTriggerType::Manual {
         tracing::debug!("Manual retry failed");
+        attempt.next_attempt = Set(None);
+        attempt.insert(*db).await?;
         Ok(())
     } else if attempt_count < retry_schedule.len() {
+        let retry_delay = calculate_retry_delay(retry_schedule[attempt_count], &err);
+        let next_attempt_time =
+            Utc::now() + chrono::Duration::from_std(retry_delay).expect("Error parsing duration");
+
+        attempt.next_attempt = Set(Some(next_attempt_time.into()));
+        let attempt = attempt.insert(*db).await?;
+
         tracing::debug!(
+            retry_delay = retry_delay.as_secs(),
             "Worker failure retrying for attempt {}: {} {} {}",
             attempt_count,
             err,
-            &msg_dest.id,
+            &attempt.id,
             &endp.id
         );
-
-        let retry_delay = calculate_retry_delay(retry_schedule[attempt_count], err);
-        let next_attempt_time =
-            Utc::now() + chrono::Duration::from_std(retry_delay).expect("Error parsing duration");
-        let msg_dest = messagedestination::ActiveModel {
-            next_attempt: Set(Some(next_attempt_time.into())),
-            ..msg_dest.into()
-        };
-        let _msg_dest = msg_dest.update(*db).await?;
 
         if attempt_count == (OP_WEBHOOKS_SEND_FAILING_EVENT_AFTER - 1) {
             if let Err(e) = op_webhook_sender
@@ -581,19 +578,15 @@ async fn handle_failed_dispatch(
 
         Ok(())
     } else {
+        attempt.next_attempt = Set(None);
+        let attempt = attempt.insert(*db).await?;
+
         tracing::debug!(
             "Worker failure attempts exhausted: {} {} {}",
             err,
-            &msg_dest.id,
+            &attempt.id,
             &endp.id
         );
-
-        let msg_dest = messagedestination::ActiveModel {
-            status: Set(MessageStatus::Fail),
-            next_attempt: Set(None),
-            ..msg_dest.into()
-        };
-        let _msg_dest = msg_dest.update(*db).await?;
 
         // Send common operational webhook
         op_webhook_sender
@@ -670,6 +663,8 @@ struct DispatchContext<'a> {
     app_id: &'a ApplicationId,
     app_uid: Option<&'a ApplicationUid>,
     msg_uid: Option<&'a MessageUid>,
+    // Like 'attempt_number' from the task, but adjusted to -1 for `MessageAttemptTriggerType::Manual`.
+    db_attempt_number: i16,
 }
 
 /// Dispatches one webhook
@@ -687,23 +682,28 @@ async fn dispatch_message_task(
     msg_task: MessageTask,
     payload: &str,
     endp: CreateMessageEndpoint,
-    msg_dest: messagedestination::Model,
+    status: MessageStatus,
 ) -> Result<()> {
     let WorkerContext { webhook_client, .. } = worker_context;
 
     tracing::trace!("Dispatch start");
 
-    if (msg_dest.status != MessageStatus::Pending && msg_dest.status != MessageStatus::Sending)
+    if (status != MessageStatus::Pending && status != MessageStatus::Sending)
         && (msg_task.trigger_type != MessageAttemptTriggerType::Manual)
     {
         // TODO: it happens when this message destination is "resent". This leads to 2 queue tasks with the same message destination
-        tracing::warn!(
-            "MessageDestination {} is not pending (it's {:?}).",
-            msg_dest.id,
-            msg_dest.status
+        tracing::debug!(
+            id = msg_task.msg_id.0,
+            "MessageDestination is not pending (it's {:?}).",
+            status,
         );
         return Ok(());
     }
+
+    let db_attempt_number = match msg_task.trigger_type {
+        MessageAttemptTriggerType::Manual => -1,
+        MessageAttemptTriggerType::Scheduled => msg_task.attempt_count as _,
+    };
 
     let dispatch_context = DispatchContext {
         msg_task: &msg_task,
@@ -713,22 +713,23 @@ async fn dispatch_message_task(
         app_id: &app.id,
         app_uid: app.uid.as_ref(),
         msg_uid: msg.uid.as_ref(),
+        db_attempt_number,
     };
 
     let dispatch = prepare_dispatch(worker_context, dispatch_context.clone()).await?;
     let completed = match dispatch {
         IncompleteDispatch::Pending(pending) => {
-            make_http_call(dispatch_context.clone(), pending, &msg_dest, webhook_client).await?
+            make_http_call(dispatch_context.clone(), pending, webhook_client).await?
         }
         IncompleteDispatch::Failed(failed) => CompletedDispatch::Failed(failed),
     };
 
     match completed {
         CompletedDispatch::Successful(success) => {
-            handle_successful_dispatch(worker_context, dispatch_context, success, msg_dest).await
+            handle_successful_dispatch(worker_context, dispatch_context, success).await
         }
         CompletedDispatch::Failed(failed) => {
-            handle_failed_dispatch(worker_context, dispatch_context, failed, msg_dest).await
+            handle_failed_dispatch(worker_context, dispatch_context, failed).await
         }
     }
 }
@@ -766,7 +767,7 @@ async fn process_queue_task_inner(
     let WorkerContext { db, cache, .. }: WorkerContext<'_> = worker_context;
     let span = tracing::Span::current();
 
-    let (mut msg, msg_content, force_endpoint, destination, trigger_type, attempt_count) =
+    let (mut msg, msg_content, force_endpoint, trigger_type, attempt_count, status) =
         match queue_task {
             QueueTask::HealthCheck => return Ok(()),
             QueueTask::MessageV1(task) => {
@@ -781,25 +782,47 @@ async fn process_queue_task_inner(
                         ))
                     })?;
 
-                let destination =
-                    messagedestination::Entity::secure_find_by_msg(task.msg_id.clone())
-                        .filter(messagedestination::Column::EndpId.eq(task.endpoint_id.clone()))
-                        .one(db)
-                        .await?
-                        .ok_or_else(|| {
-                            Error::generic(format_args!(
-                                "MessageDestination not found for message {}",
-                                &task.msg_id
-                            ))
-                        })?;
+                let latest_attempt = messageattempt::Entity::secure_find_by_msg(msg.id.clone())
+                    .filter(messageattempt::Column::EndpId.eq(task.endpoint_id.clone()))
+                    .order_by_desc(messageattempt::Column::Id)
+                    .one(db)
+                    .await?;
+
+                let status = match latest_attempt {
+                    Some(attempt) => {
+                        match attempt.next_attempt {
+                            Some(_) => MessageStatus::Sending,
+                            // If here then we're processing old tasks from before
+                            // messagedest was removed, so we'll need to query messagedestination
+                            None if attempt.msg_dest_id.is_some() => {
+                                messagedestination::Entity::secure_find_by_msg(task.msg_id.clone())
+                                    .filter(
+                                        messagedestination::Column::EndpId
+                                            .eq(task.endpoint_id.clone()),
+                                    )
+                                    .one(db)
+                                    .await?
+                                    .ok_or_else(|| {
+                                        Error::generic(format!(
+                                            "MessageDestination not found for message {}",
+                                            &task.msg_id
+                                        ))
+                                    })?
+                                    .status
+                            }
+                            None => MessageStatus::Fail,
+                        }
+                    }
+                    None => MessageStatus::Sending,
+                };
 
                 (
                     msg,
                     msg_content,
                     Some(task.endpoint_id),
-                    Some(destination),
                     task.trigger_type,
                     task.attempt_count,
+                    status,
                 )
             }
             QueueTask::MessageBatch(task) => {
@@ -817,9 +840,9 @@ async fn process_queue_task_inner(
                     msg,
                     msg_content,
                     task.force_endpoint,
-                    None,
                     task.trigger_type,
                     0,
+                    MessageStatus::Sending,
                 )
             }
         };
@@ -867,59 +890,25 @@ async fn process_queue_task_inner(
         .cloned()
         .collect();
 
-    let destinations = match destination {
-        Some(d) => vec![d],
-        None => {
-            let destinations: Vec<_> = endpoints
-                .iter()
-                .map(|endpoint| messagedestination::ActiveModel {
-                    msg_id: Set(msg.id.clone()),
-                    endp_id: Set(endpoint.id.clone()),
-                    next_attempt: Set(Some(Utc::now().into())),
-                    status: Set(MessageStatus::Sending),
-                    ..messagedestination::ActiveModel::new()
-                })
-                .collect();
+    let futures = endpoints.into_iter().map(|endpoint| {
+        let task = MessageTask {
+            msg_id: msg.id.clone(),
+            app_id: create_message_app.id.clone(),
+            endpoint_id: endpoint.id.clone(),
+            attempt_count,
+            trigger_type,
+        };
 
-            if destinations.is_empty() {
-                tracing::debug!("No destinations for message. Returning");
-                return Ok(());
-            }
-
-            messagedestination::Entity::insert_many(destinations.clone())
-                .exec(db)
-                .await?;
-
-            let dests: Result<_, _> = destinations
-                .into_iter()
-                .map(|d| d.try_into_model())
-                .collect();
-            dests?
-        }
-    };
-
-    let futures = endpoints
-        .into_iter()
-        .zip(destinations)
-        .map(|(endpoint, destination)| {
-            let task = MessageTask {
-                msg_id: msg.id.clone(),
-                app_id: create_message_app.id.clone(),
-                endpoint_id: endpoint.id.clone(),
-                attempt_count,
-                trigger_type,
-            };
-
-            dispatch_message_task(
-                &worker_context,
-                &msg,
-                &create_message_app,
-                task,
-                &payload,
-                endpoint,
-                destination,
-            )
-        });
+        dispatch_message_task(
+            &worker_context,
+            &msg,
+            &create_message_app,
+            task,
+            &payload,
+            endpoint,
+            status,
+        )
+    });
 
     let join = future::join_all(futures).await;
 

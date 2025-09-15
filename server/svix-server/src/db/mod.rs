@@ -10,7 +10,7 @@ use sqlx::postgres::PgPoolOptions;
 use crate::{cfg::Configuration, core::types::OrganizationId};
 
 pub mod models;
-use models::{application, endpoint, eventtype, message, messageattempt, messagedestination};
+use models::{application, endpoint, eventtype, message, messageattempt};
 
 static MIGRATIONS: sqlx::migrate::Migrator = sqlx::migrate!();
 
@@ -65,17 +65,6 @@ pub async fn wipe_org(cfg: &Configuration, org_id: OrganizationId) {
                 .unwrap_or_else(|_| {
                     panic!(
                         "Error deleting messageattempts associated with endpoint ID {}",
-                        endpoint.id
-                    )
-                });
-
-            let _: DeleteResult = messagedestination::Entity::delete_many()
-                .filter(messagedestination::Column::EndpId.eq(endpoint.id.clone()))
-                .exec(&db)
-                .await
-                .unwrap_or_else(|_| {
-                    panic!(
-                        "Error deleting messagedestinations associated with endpoint ID {}",
                         endpoint.id
                     )
                 });

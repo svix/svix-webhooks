@@ -89,7 +89,7 @@ class EnvironmentIn implements \JsonSerializable
             $data['settings'] = $this->settings;
         }
 
-        return $data;
+        return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
 
     /**

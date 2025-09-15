@@ -11,10 +11,10 @@ use axum::{
     extract::{Path, State},
     Json,
 };
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, Duration, Utc};
 use hyper::StatusCode;
 use schemars::JsonSchema;
-use sea_orm::{entity::prelude::*, IntoActiveModel, QueryOrder, QuerySelect};
+use sea_orm::{entity::prelude::*, IntoActiveModel, QueryOrder, QuerySelect, QueryTrait};
 use serde::{Deserialize, Deserializer, Serialize};
 use serde_json::value::RawValue;
 use svix_server_derive::{aide_annotate, ModelOut};
@@ -24,12 +24,15 @@ use crate::{
     core::{
         permissions,
         types::{
-            EndpointId, EndpointIdOrUid, EventChannel, EventTypeNameSet, MessageAttemptId,
-            MessageAttemptTriggerType, MessageEndpointId, MessageId, MessageStatus,
-            StatusCodeClass,
+            BaseId, EndpointId, EndpointIdOrUid, EventChannel, EventTypeNameSet, MessageAttemptId,
+            MessageAttemptTriggerType, MessageId, MessageStatus, StatusCodeClass,
         },
     },
-    db::models::{endpoint, message, messageattempt, messagecontent, messagedestination},
+    db::models::{
+        endpoint, message,
+        messageattempt::{self, Query},
+        messagecontent,
+    },
     error::{Error, HttpError, Result},
     queue::MessageTask,
     v1::{
@@ -37,8 +40,8 @@ use crate::{
         utils::{
             filter_and_paginate_time_limited, openapi_tag, ApplicationEndpointPath,
             ApplicationMsgAttemptPath, ApplicationMsgEndpointPath, ApplicationMsgPath,
-            EventTypesQueryParams, ListResponse, ModelOut, NoContentWithCode, PaginationDescending,
-            PaginationLimit, ReversibleIterator, ValidatedQuery,
+            EventTypesQueryParams, IteratorDirection, ListResponse, ModelOut, NoContentWithCode,
+            PaginationDescending, PaginationLimit, ReversibleIterator, ValidatedQuery,
         },
     },
     AppState,
@@ -116,20 +119,21 @@ impl ModelOut for EndpointMessageOut {
 }
 
 impl EndpointMessageOut {
-    pub fn from_dest_and_msg(
-        dest: messagedestination::Model,
+    pub fn from_attempt_and_msg(
+        attempt: messageattempt::Model,
         msg: message::Model,
+        msg_content: Option<Vec<u8>>,
         with_content: bool,
-        msg_payload: Option<Vec<u8>>,
     ) -> EndpointMessageOut {
+        let status = if attempt.next_attempt.is_some() {
+            MessageStatus::Sending
+        } else {
+            attempt.status
+        };
         EndpointMessageOut {
-            msg: if with_content {
-                MessageOut::from_msg_and_payload(msg, msg_payload)
-            } else {
-                MessageOut::without_payload(msg)
-            },
-            status: dest.status,
-            next_attempt: dest.next_attempt,
+            msg: MessageOut::from_msg_and_payload(msg, msg_content, with_content),
+            status,
+            next_attempt: attempt.next_attempt,
         }
     }
 }
@@ -174,6 +178,59 @@ fn default_true() -> bool {
     true
 }
 
+pub const FUTURE_QUERY_LIMIT: chrono::Duration = chrono::Duration::hours(1);
+pub const LIMITED_QUERY_DURATION: chrono::Duration = chrono::Duration::days(90);
+
+pub fn limit_messageattempt_join<Q: QuerySelect + QueryOrder + QueryFilter>(
+    mut query: Q,
+    before: Option<DateTime<Utc>>,
+    after: Option<DateTime<Utc>>,
+    now: DateTime<Utc>,
+) -> Q {
+    const SORT_COLUMN: messageattempt::Column = messageattempt::Column::Id;
+    if let Some(before) = before {
+        query = query
+            .filter(SORT_COLUMN.gt(MessageAttemptId::start_id(before - LIMITED_QUERY_DURATION)));
+        query = query
+            .filter(SORT_COLUMN.lt(MessageAttemptId::start_id(before + LIMITED_QUERY_DURATION)));
+    } else {
+        query =
+            query.filter(SORT_COLUMN.gt(MessageAttemptId::start_id(now - LIMITED_QUERY_DURATION)));
+    }
+    if let Some(after) = after {
+        query = query.filter(SORT_COLUMN.gt(MessageAttemptId::start_id(after)));
+        query =
+            query.filter(SORT_COLUMN.lt(MessageAttemptId::end_id(after + LIMITED_QUERY_DURATION)));
+    }
+
+    // blanket limit on future
+    query.filter(SORT_COLUMN.lt(MessageAttemptId::start_id(now + FUTURE_QUERY_LIMIT)))
+}
+
+fn limit_message_join<Q: QuerySelect + QueryOrder + QueryFilter>(
+    mut query: Q,
+    before: Option<DateTime<Utc>>,
+    after: Option<DateTime<Utc>>,
+    now: DateTime<Utc>,
+) -> Q {
+    const SORT_COLUMN: message::Column = message::Column::Id;
+    if let Some(before) = before {
+        query = query
+            .filter(SORT_COLUMN.gt(MessageId::start_id(before - LIMITED_QUERY_DURATION)))
+            .filter(SORT_COLUMN.lt(MessageId::end_id(before)));
+    } else {
+        query = query.filter(SORT_COLUMN.gt(MessageId::start_id(now - LIMITED_QUERY_DURATION)));
+    }
+    if let Some(after) = after {
+        query = query
+            .filter(SORT_COLUMN.lt(MessageId::end_id(after + LIMITED_QUERY_DURATION)))
+            .filter(SORT_COLUMN.gt(MessageId::start_id(after)));
+    }
+
+    // blanket limit on future
+    query.filter(SORT_COLUMN.lt(MessageId::start_id(now + FUTURE_QUERY_LIMIT)))
+}
+
 /// List messages for a particular endpoint. Additionally includes metadata about the latest message attempt.
 ///
 /// The `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.
@@ -198,85 +255,179 @@ async fn list_attempted_messages(
         .await?
         .ok_or_else(|| HttpError::not_found(None, None))?;
 
-    let mut dests_and_msgs = messagedestination::Entity::secure_find_by_endpoint(endp.id)
-        .find_also_related(message::Entity);
+    // Get only a single attempt per message. Later, we'll do a separate query to retrieve
+    // just the latest attempt for each id in our (small) list of message ids
+    let mut msgs_and_dests = message::Entity::secure_find(endp.app_id.clone())
+        .inner_join(messageattempt::Entity)
+        .filter(messageattempt::Column::EndpId.eq(endp.id.clone()))
+        .distinct_on([message::Column::Id.as_column_ref()]);
 
     if let Some(channel) = channel {
-        dests_and_msgs =
-            dests_and_msgs.filter(Expr::cust_with_values("channels @> $1", [channel.jsonb()]));
+        msgs_and_dests =
+            msgs_and_dests.filter(Expr::cust_with_values("channels @> $1", [channel.jsonb()]));
+    }
+
+    let now = chrono::Utc::now();
+
+    fn apply_status_filter<E: EntityTrait>(
+        query: Select<E>,
+        endp_id: EndpointId,
+        status: Option<MessageStatus>,
+        before: Option<DateTime<Utc>>,
+        after: Option<DateTime<Utc>>,
+        now: DateTime<Utc>,
+    ) -> Select<E> {
+        if let Some(status) = status {
+            match status {
+                MessageStatus::Sending => {
+                    // Avoid looking back past 7 days since messages are very unlikely to be Pending/Sending beyond
+                    // that window
+                    let one_week_ago = Utc::now() - Duration::days(7);
+                    // 'MessageStatus::Sending' is never set on a messageattempt - instead, we check 'next_attempt'
+                    // on the returned row
+                    query
+                        .filter(
+                            messageattempt::Column::Id
+                                .gte(MessageAttemptId::start_id(one_week_ago)),
+                        )
+                        .filter(messageattempt::Column::NextAttempt.is_not_null())
+                        .filter(
+                            // Ensure that we don't include messages that also had a success or failure
+                            // in same time period.
+                            messageattempt::Column::MsgId.not_in_subquery(
+                                limit_messageattempt_join(
+                                    <messageattempt::Entity as EntityTrait>::find()
+                                        .select_only()
+                                        .column(messageattempt::Column::MsgId)
+                                        .filter(messageattempt::Column::EndpId.eq(endp_id))
+                                        .filter(messageattempt::Column::NextAttempt.is_null())
+                                        .filter(messageattempt::Column::Status.is_in(vec![
+                                            MessageStatus::Success,
+                                            MessageStatus::Fail,
+                                        ])),
+                                    Some(one_week_ago),
+                                    after,
+                                    now,
+                                )
+                                .into_query(),
+                            ),
+                        )
+                }
+                // An message with any successful attempts is considered successful - regardless of whether
+                // or not there were failed attempts before or after.
+                MessageStatus::Success => query.filter(messageattempt::Column::Status.eq(status)),
+                // A message with a 'final' failed attempt (and zero successful attempts) is considered failed.
+                // This failed attempt could either be the last scheduled attempt, or a manual attempt.
+                MessageStatus::Fail => {
+                    query
+                        .filter(messageattempt::Column::Status.eq(status))
+                        .filter(messageattempt::Column::NextAttempt.is_null())
+                        .filter(
+                            // If there were any successful attempts for this messages, then treat the message as success (even if we also have failed attempts)
+                            messageattempt::Column::MsgId.not_in_subquery(
+                                limit_messageattempt_join(
+                                    <messageattempt::Entity as EntityTrait>::find()
+                                        .select_only()
+                                        .column(messageattempt::Column::MsgId)
+                                        .filter(messageattempt::Column::EndpId.eq(endp_id))
+                                        .filter(
+                                            messageattempt::Column::Status
+                                                .eq(MessageStatus::Success),
+                                        ),
+                                    before,
+                                    after,
+                                    now,
+                                )
+                                .into_query(),
+                            ),
+                        )
+                }
+                MessageStatus::Pending => {
+                    unreachable!("MessageStatus::Pending should have already been handled")
+                }
+            }
+        } else {
+            query
+        }
     }
 
     if let Some(status) = status {
-        dests_and_msgs = dests_and_msgs.filter(messagedestination::Column::Status.eq(status));
+        // We no longer use this status, so we'll never look up anything with it
+        if status == MessageStatus::Pending {
+            return Ok(Json(ListResponse::empty()));
+        }
     }
 
-    if let Some(EventTypeNameSet(event_types)) = event_types {
-        dests_and_msgs = dests_and_msgs.filter(message::Column::EventType.is_in(event_types));
+    msgs_and_dests =
+        apply_status_filter(msgs_and_dests, endp.id.clone(), status, before, after, now);
+
+    if let Some(EventTypeNameSet(event_types)) = event_types.clone() {
+        msgs_and_dests = msgs_and_dests.filter(message::Column::EventType.is_in(event_types));
     }
 
-    async fn _get_msg_dest_id(
-        db: &DatabaseConnection,
-        msg_id: MessageId,
-    ) -> Result<MessageEndpointId> {
-        Ok(messagedestination::Entity::secure_find_by_msg(msg_id)
-            .one(db)
-            .await?
-            .ok_or_else(|| HttpError::bad_request(None, Some("Invalid iterator".to_owned())))?
-            .id)
-    }
-
-    let msg_dest_iterator = match pagination.iterator {
-        Some(ReversibleIterator::Normal(msg_id)) => Some(ReversibleIterator::Normal(
-            _get_msg_dest_id(db, msg_id).await?,
-        )),
-        Some(ReversibleIterator::Prev(msg_id)) => Some(ReversibleIterator::Prev(
-            _get_msg_dest_id(db, msg_id).await?,
-        )),
-        None => None,
-    };
-    let (dests_and_msgs, iter_direction) = filter_and_paginate_time_limited(
-        dests_and_msgs,
-        messagedestination::Column::Id,
+    let (msgs_and_attempts, iter_direction) = filter_and_paginate_time_limited(
+        msgs_and_dests,
+        message::Column::Id,
         limit,
-        msg_dest_iterator,
+        pagination.iterator.clone(),
         before,
         after,
     );
 
-    let dests_and_msgs = dests_and_msgs.all(db).await?;
+    let msgs_and_dests = limit_messageattempt_join(msgs_and_attempts, before, after, now);
+    let msgs_and_dests = limit_message_join(msgs_and_dests, before, after, now);
 
-    let msg_ids = dests_and_msgs
-        .iter()
-        .filter_map(|(_, msg)| msg.as_ref())
-        .map(|msg| msg.id.clone())
-        .collect::<Vec<MessageId>>();
+    // We've found messages that have at least one matching 'messageattempt' row. Now, lookup the *latest*
+    // matching messageattempt row for each messages.
+    let results = msgs_and_dests.all(db).await?;
+    let mut latest_attempts = messageattempt::Entity::secure_find_by_endpoint(endp.id.clone())
+        .filter(messageattempt::Column::MsgId.is_in(results.iter().map(|msg| msg.id.clone())))
+        .latest_per_msg();
 
-    // `find_also_related` can't be used multiple times in a query, so rather
-    // than build a complicated custom query, just query all the content
-    // data separately. Hopefully this isn't too painful:
-    let mut msg_content_map = messagecontent::Entity::secure_find_by_id_in(msg_ids)
+    // Make sure we apply the 'status' filter (if it exists), so that we get the latest attempt matching
+    // the query parameters. All of our other filters only apply to 'message'.
+    latest_attempts =
+        apply_status_filter(latest_attempts, endp.id.clone(), status, before, after, now);
+    latest_attempts = limit_messageattempt_join(latest_attempts, before, after, now);
+
+    let mut latest_attempts: HashMap<_, _> = latest_attempts
         .all(db)
         .await?
         .into_iter()
-        .map(|content| (content.id, content.payload))
-        .collect::<HashMap<MessageId, Vec<u8>>>();
+        .map(|attempt| (attempt.msg_id.clone(), attempt))
+        .collect();
 
-    let into = |(dest, msg): (messagedestination::Model, Option<message::Model>)| {
-        let msg =
-            msg.ok_or_else(|| Error::database("No associated message with messagedestination"))?;
-        let payload = msg_content_map.remove(&msg.id);
-        Ok(EndpointMessageOut::from_dest_and_msg(
-            dest,
-            msg,
-            with_content,
-            payload,
-        ))
+    let mut out = Vec::with_capacity(results.len());
+    let mut msg_content_map: Option<HashMap<_, _>> = if with_content {
+        let msg_ids = results.iter().map(|msg| msg.id.clone());
+        Some(
+            messagecontent::Entity::secure_find_by_id_in(msg_ids.collect())
+                .all(db)
+                .await?
+                .into_iter()
+                .map(|m| (m.id, m.payload))
+                .collect(),
+        )
+    } else {
+        None
     };
 
-    let out = dests_and_msgs
-        .into_iter()
-        .map(into)
-        .collect::<Result<_>>()?;
+    for msg in results {
+        let msg_content = msg_content_map.as_mut().and_then(|map| map.remove(&msg.id));
+        let Some(attempt) = latest_attempts.remove(&msg.id) else {
+            tracing::warn!(
+                msg_id = msg.id.to_string(),
+                "Missing attempt for message in list_attempted_messages"
+            );
+            continue;
+        };
+        out.push(EndpointMessageOut::from_attempt_and_msg(
+            attempt,
+            msg,
+            msg_content,
+            with_content,
+        ));
+    }
 
     Ok(Json(EndpointMessageOut::list_response(
         out,
@@ -534,14 +685,14 @@ async fn list_attempts_by_msg(
     )))
 }
 
-// A type combining information from [`messagedestination::Model`]s and [`endpoint::Model`]s to
+// A type combining information from [`messageattempt::Model`]s and [`endpoint::Model`]s to
 // output information on attempted destinations
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct MessageEndpointOut {
     #[serde(flatten)]
     endpoint: super::endpoint::EndpointOutCommon,
-    id: EndpointId,
+    pub id: EndpointId,
     status: MessageStatus,
     next_attempt: Option<DateTime<Utc>>,
 }
@@ -552,27 +703,21 @@ impl ModelOut for MessageEndpointOut {
     }
 }
 
-impl MessageEndpointOut {
-    fn from_dest_and_endp(dest: messagedestination::Model, endp: endpoint::Model) -> Self {
-        MessageEndpointOut {
-            id: endp.id.clone(),
-            endpoint: endp.into(),
-            status: dest.status,
-            next_attempt: dest.next_attempt.map(Into::into),
-        }
-    }
-}
-
 /// `msg_id`: Use a message id or a message `eventId`
 #[aide_annotate(op_id = "v1.message-attempt.list-attempted-destinations")]
 async fn list_attempted_destinations(
     State(AppState { ref db, .. }): State<AppState>,
-    ValidatedQuery(mut pagination): ValidatedQuery<PaginationDescending<EndpointId>>,
+    ValidatedQuery(pagination): ValidatedQuery<
+        PaginationDescending<ReversibleIterator<EndpointId>>,
+    >,
     Path(ApplicationMsgPath { msg_id, .. }): Path<ApplicationMsgPath>,
     permissions::Application { app }: permissions::Application,
 ) -> Result<Json<ListResponse<MessageEndpointOut>>> {
     let PaginationLimit(limit) = pagination.limit;
-    let iterator = pagination.iterator.take();
+    let iterator: Option<ReversibleIterator<EndpointId>> = pagination.iterator;
+    let iter_direction = iterator
+        .as_ref()
+        .map_or(IteratorDirection::Normal, |iter| iter.direction());
 
     // Confirm message ID belongs to the given application while fetching the ID in case a UID was
     // given
@@ -586,31 +731,62 @@ async fn list_attempted_destinations(
         return Err(Error::http(HttpError::not_found(None, None)));
     };
 
-    // Fetch the [`messagedestination::Model`] and associated [`endpoint::Model`]
-    let mut query = messagedestination::Entity::secure_find_by_msg(msg_id)
-        .find_also_related(endpoint::Entity)
-        .order_by_desc(messagedestination::Column::EndpId)
-        .limit(limit + 1);
+    let q = messageattempt::Entity::secure_find_by_msg(msg_id.clone());
 
-    if let Some(iterator) = iterator {
-        query = query.filter(messagedestination::Column::EndpId.lt(iterator));
-    }
+    // Add filters for upper/lower bounds of MessageAttemptId
+    let now = chrono::Utc::now();
+    let msg_attempt_lower_limit = MessageAttemptId::start_id(msg_id.timestamp());
+    let msg_attempt_upper_limit = MessageAttemptId::start_id(now + FUTURE_QUERY_LIMIT);
 
-    Ok(Json(MessageEndpointOut::list_response_no_prev(
-        query
+    let q = q
+        .filter(messageattempt::Column::Id.gt(msg_attempt_lower_limit))
+        .filter(messageattempt::Column::Id.lt(msg_attempt_upper_limit))
+        .distinct_on([messageattempt::Column::EndpId])
+        .limit(limit);
+
+    let q = match iterator {
+        Some(ReversibleIterator::Prev(endp_id)) => q
+            .filter(messageattempt::Column::EndpId.lt(endp_id))
+            .order_by_desc(messageattempt::Column::EndpId),
+        Some(ReversibleIterator::Normal(endp_id)) => q
+            .filter(messageattempt::Column::EndpId.gt(endp_id))
+            .order_by_asc(messageattempt::Column::EndpId),
+        None => q.order_by_asc(messageattempt::Column::EndpId),
+    };
+
+    // Get the most recent attempt for each endpoint (this interacts
+    // with the 'distinct_on' clause)
+    let q = q.order_by_desc(messageattempt::Column::Id);
+
+    let msg_attempts = q.all(db).await?;
+    let endp_ids: Vec<_> = msg_attempts.iter().map(|m| m.endp_id.clone()).collect();
+
+    let want_deleted = true;
+    let endpoints: HashMap<EndpointId, endpoint::Model> =
+        endpoint::Entity::secure_find_by_ids(app.id, endp_ids, want_deleted)
             .all(db)
             .await?
             .into_iter()
-            .map(
-                |(dest, endp): (messagedestination::Model, Option<endpoint::Model>)| {
-                    let endp = endp.ok_or_else(|| {
-                        Error::database("No associated endpoint with messagedestination")
-                    })?;
-                    Ok(MessageEndpointOut::from_dest_and_endp(dest, endp))
-                },
-            )
-            .collect::<Result<_>>()?,
+            .map(|endp| (endp.id.clone(), endp))
+            .collect();
+
+    let results: Vec<MessageEndpointOut> = msg_attempts
+        .into_iter()
+        .filter_map(|msg_attempt: messageattempt::Model| {
+            let endp = endpoints.get(&msg_attempt.endp_id)?.clone();
+            Some(MessageEndpointOut {
+                id: msg_attempt.endp_id,
+                status: msg_attempt.status,
+                next_attempt: msg_attempt.next_attempt.map(Into::into),
+                endpoint: endp.into(),
+            })
+        })
+        .collect();
+
+    Ok(Json(MessageEndpointOut::list_response(
+        results,
         limit as usize,
+        iter_direction,
     )))
 }
 
@@ -829,13 +1005,6 @@ async fn resend_webhook(
     }
 
     let endp = endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endpoint_id)
-        .one(db)
-        .await?
-        .ok_or_else(|| HttpError::not_found(None, None))?;
-
-    // Fetch it to make sure it was even a combination
-    let _msg_dest = messagedestination::Entity::secure_find_by_msg(msg.id.clone())
-        .filter(messagedestination::Column::EndpId.eq(endp.id.clone()))
         .one(db)
         .await?
         .ok_or_else(|| HttpError::not_found(None, None))?;

@@ -37,7 +37,7 @@ class AppPortalAccessOut implements \JsonSerializable
             'token' => $this->token,
             'url' => $this->url];
 
-        return $data;
+        return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
 
     /**

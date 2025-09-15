@@ -8,7 +8,7 @@ use sea_orm::DatabaseConnection;
 use svix_server::{
     core::types::{ApplicationId, BaseId, EndpointId, OrganizationId},
     db::{
-        models::{application, endpoint, eventtype, message, messageattempt, messagedestination},
+        models::{application, endpoint, eventtype, message, messageattempt},
         wipe_org,
     },
     v1::endpoints::event_type::EventTypeOut,
@@ -73,14 +73,6 @@ async fn count_message_attempts(db: &DatabaseConnection, endp_id: EndpointId) ->
         .len()
 }
 
-async fn count_message_destinations(db: &DatabaseConnection, endp_id: EndpointId) -> usize {
-    messagedestination::Entity::secure_find_by_endpoint(endp_id)
-        .all(db)
-        .await
-        .unwrap()
-        .len()
-}
-
 async fn count_messages(db: &DatabaseConnection, app_id: ApplicationId) -> usize {
     message::Entity::secure_find(app_id)
         .all(db)
@@ -119,7 +111,7 @@ async fn test_wiping_organization() {
     // Make two orgs, one of which will be wiped
     let (org_id_1, app_ids_1, endp_ids_1) = test_data().await;
 
-    let (org_id_2, app_ids_2, endp_ids_2) = test_data().await;
+    let (org_id_2, app_ids_2, _) = test_data().await;
 
     // Wipe
     let cfg = svix_server::cfg::load().unwrap();
@@ -130,14 +122,6 @@ async fn test_wiping_organization() {
 
     for endp_id in endp_ids_1 {
         assert_eq!(count_message_attempts(&db, endp_id.clone()).await, 0);
-        assert_eq!(count_message_destinations(&db, endp_id).await, 0);
-    }
-
-    for endp_id in endp_ids_2 {
-        // Counting `messageattempt`s is flaky as the test worker might not ever have a chance to
-        // process tasks. As such it isn't checked that there are attempts in the non-wiped org.
-
-        assert_eq!(count_message_destinations(&db, endp_id).await, 2);
     }
 
     for app_id in app_ids_1 {

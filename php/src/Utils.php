@@ -154,4 +154,17 @@ class Utils
 
         return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
     }
+
+
+    // if we get in a array type that is empty
+    // return a new stdClass instead
+    // this will be used in the `jsonSerialize` to ensure empty objects are serialized as `{}` and not as `[]`
+    static function newStdClassIfArrayIsEmpty(mixed $val): mixed
+    {
+        if (is_array($val) && empty($val)) {
+            return new \stdClass();
+        } else {
+            return $val;
+        }
+    }
 }

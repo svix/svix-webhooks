@@ -221,7 +221,7 @@ class MessageIn implements \JsonSerializable
             $data['transformationsParams'] = $this->transformationsParams;
         }
 
-        return $data;
+        return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
 
     /**

@@ -132,7 +132,7 @@ class IngestEndpointOut implements \JsonSerializable
             $data['uid'] = $this->uid;
         }
 
-        return $data;
+        return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
 
     /**
