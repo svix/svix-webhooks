@@ -392,8 +392,12 @@ pub(crate) async fn create_message_inner(
         .await?;
 
     let trigger_type = MessageAttemptTriggerType::Scheduled;
+    // Parse payload from legacy_payload for filtering
+    let payload_json = msg.legacy_payload.as_ref()
+        .and_then(|p| serde_json::to_value(p).ok());
+    
     if !create_message_app
-        .filtered_endpoints(trigger_type, &msg.event_type, msg.channels.as_ref())
+        .filtered_endpoints(trigger_type, &msg.event_type, msg.channels.as_ref(), payload_json.as_ref())
         .is_empty()
     {
         queue_tx

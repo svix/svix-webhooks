@@ -34,3 +34,4 @@ svix-server_derive = { opt-level = 0 }
 
 [patch.crates-io]
 hyper = { git = "https://github.com/svix/hyper.git", rev = "18c04c321e1a9a4958ad14b880f7403acbe1c914" }
+antlr4rust = { git = "https://github.com/antlr4rust/antlr4.git", branch = "rust-target" }

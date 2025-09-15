@@ -855,8 +855,10 @@ async fn process_queue_task_inner(
         return Ok(());
     };
 
+    let payload_json: Option<serde_json::Value> = serde_json::from_str(&payload).ok();
+
     let endpoints: Vec<CreateMessageEndpoint> = create_message_app
-        .filtered_endpoints(trigger_type, &msg.event_type, msg.channels.as_ref())
+        .filtered_endpoints(trigger_type, &msg.event_type, msg.channels.as_ref(), payload_json.as_ref())
         .iter()
         .filter(|endpoint| match force_endpoint.as_ref() {
             Some(endp_id) => endp_id == &endpoint.id,

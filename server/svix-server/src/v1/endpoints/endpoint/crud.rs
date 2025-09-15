@@ -13,6 +13,7 @@ use super::{EndpointIn, EndpointOut, EndpointPatch, EndpointUpdate};
 use crate::{
     cfg::Configuration,
     core::{
+        message_app::validate_cel_expression,
         operational_webhooks::{EndpointEvent, OperationalWebhook, OperationalWebhookSender},
         permissions,
         types::{EndpointId, EventTypeName, EventTypeNameSet, OrganizationId},
@@ -76,6 +77,17 @@ async fn create_endp_from_data(
     app: application::Model,
     mut data: EndpointIn,
 ) -> Result<(endpoint::Model, endpointmetadata::Model)> {
+    // Validate CEL expression if provided
+    if let Some(ref filter) = data.filter {
+        if let Err(e) = validate_cel_expression(filter) {
+            return Err(HttpError::unprocessable_entity(vec![ValidationErrorItem {
+                loc: vec!["filter".to_string()],
+                msg: format!("Invalid CEL expression: {}", e),
+                ty: "value_error".to_string(),
+            }]).into());
+        }
+    }
+
     let key = data.key_take_or_generate(&cfg.encryption, &cfg.default_signature_type)?;
 
     let mut endp = endpoint::ActiveModel::new(app.id, key);
@@ -189,6 +201,17 @@ pub(super) async fn update_endpoint(
         validate_event_types(db, event_types_ids, &app.org_id).await?;
     }
     validate_endpoint_url(&data.url, cfg.endpoint_https_only)?;
+    
+    // Validate CEL expression if provided
+    if let Some(ref filter) = data.filter {
+        if let Err(e) = validate_cel_expression(filter) {
+            return Err(HttpError::unprocessable_entity(vec![ValidationErrorItem {
+                loc: vec!["filter".to_string()],
+                msg: format!("Invalid CEL expression: {}", e),
+                ty: "value_error".to_string(),
+            }]).into());
+        }
+    }
 
     let models = endpoint::ActiveModel::fetch_with_metadata(db, app.id.clone(), endpoint_id)
         .await
@@ -228,6 +251,17 @@ pub(super) async fn patch_endpoint(
     }
     if let UnrequiredField::Some(url) = &data.url {
         validate_endpoint_url(url, cfg.endpoint_https_only)?;
+    }
+    
+    // Validate CEL expression if provided
+    if let UnrequiredNullableField::Some(ref filter) = data.filter {
+        if let Err(e) = validate_cel_expression(filter) {
+            return Err(HttpError::unprocessable_entity(vec![ValidationErrorItem {
+                loc: vec!["filter".to_string()],
+                msg: format!("Invalid CEL expression: {}", e),
+                ty: "value_error".to_string(),
+            }]).into());
+        }
     }
 
     let (mut endp, mut metadata) =
