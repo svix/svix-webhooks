@@ -1,6 +1,6 @@
 export class HttpErrorOut {
-  "code": string;
-  "detail": string;
+  code!: string;
+  detail!: string;
 
   static readonly discriminator: string | undefined = undefined;
 
@@ -38,15 +38,15 @@ export class ValidationError {
   /**
    * The location as a [`Vec`] of [`String`]s -- often in the form `[\"body\", \"field_name\"]`, `[\"query\", \"field_name\"]`, etc. They may, however, be arbitrarily deep.
    */
-  "loc": Array<string>;
+  loc!: Array<string>;
   /**
    * The message accompanying the validation error item.
    */
-  "msg": string;
+  msg!: string;
   /**
    * The type of error, often \"type_error\" or \"value_error\", but sometimes with more context like as \"value_error.number.not_ge\"
    */
-  "type": string;
+  type!: string;
 
   static readonly discriminator: string | undefined = undefined;
 
@@ -84,7 +84,7 @@ export class ValidationError {
 }
 
 export class HTTPValidationError {
-  "detail": Array<ValidationError>;
+  detail!: Array<ValidationError>;
 
   static readonly discriminator: string | undefined = undefined;
 
