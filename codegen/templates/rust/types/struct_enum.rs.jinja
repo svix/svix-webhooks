@@ -44,6 +44,7 @@ pub enum {{ enum_type_name }} {
     which then carries over to the enum type
 -#}
 {% set first_variant = type.variants[0] -%}
+#[allow(clippy::derivable_impls)]
 impl Default for {{ enum_type_name }} {
     fn default() -> Self {
         Self::{{ first_variant.name | to_upper_camel_case }}

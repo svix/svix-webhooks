@@ -121,6 +121,7 @@ pub enum IngestSourceOutConfig {
     Airwallex(AirwallexConfigOut),
 }
 
+#[allow(clippy::derivable_impls)]
 impl Default for IngestSourceOutConfig {
     fn default() -> Self {
         Self::GenericWebhook
