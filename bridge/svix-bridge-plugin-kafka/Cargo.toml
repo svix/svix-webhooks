@@ -16,7 +16,6 @@ tracing.workspace = true
 
 [dev-dependencies]
 ctor = "0.5.0"
-rustls = "0.23.22"
 tracing-subscriber.workspace = true
 wiremock.workspace = true
 

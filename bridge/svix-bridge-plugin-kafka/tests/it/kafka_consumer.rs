@@ -39,9 +39,6 @@ fn test_setup() {
         )
         .with(tracing_subscriber::fmt::layer().with_test_writer())
         .init();
-
-    // Install a default provider if none exists. Ignore error if there already is one.
-    let _ = rustls::crypto::aws_lc_rs::default_provider().install_default();
 }
 
 /// Time to wait for the plugin to connect.
