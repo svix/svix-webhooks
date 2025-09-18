@@ -31,8 +31,12 @@ fn wrap_connector<H>(conn: H) -> HttpsIfAvailable<H> {
 
     #[cfg(feature = "rustls-tls")]
     {
+        let crypto_provider = rustls::crypto::CryptoProvider::get_default()
+            .map(std::sync::Arc::clone)
+            .unwrap_or_else(|| std::sync::Arc::new(rustls::crypto::aws_lc_rs::default_provider()));
+
         let builder = hyper_rustls::HttpsConnectorBuilder::new()
-            .with_native_roots()
+            .with_provider_and_native_roots(crypto_provider)
             .unwrap()
             .https_or_http();
 
