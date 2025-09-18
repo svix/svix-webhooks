@@ -1,5 +1,6 @@
 import { BackgroundTaskType, MessageAttemptTriggerType, Svix } from ".";
-import { expect, test } from "@jest/globals";
+import { test } from "node:test";
+import { strict as assert } from "node:assert/strict";
 import * as mockttp from "mockttp";
 import { ApiException } from "./util";
 import { Ordering } from "./models/ordering";
@@ -20,11 +21,11 @@ const IngestSourceOutCron = `{"type":"cron","config":{"schedule":"hello","payloa
 const IngestSourceOutGeneric = `{"type":"generic-webhook","config":{},"id":"src_2yZwUhtgs5Ai8T9yRQJXA","uid":"unique-identifier","name":"string","ingestUrl":"http://example.com","createdAt":"2019-08-24T14:15:22Z","updatedAt":"2019-08-24T14:15:22Z"}`;
 const mockServer = mockttp.getLocal();
 
-describe("mockttp tests", () => {
-  beforeEach(async () => await mockServer.start(0));
-  afterEach(async () => await mockServer.stop());
+test("mockttp tests", async (t) => {
+  t.beforeEach(async () => await mockServer.start(0));
+  t.afterEach(async () => await mockServer.stop());
 
-  test("test Date in query param", async () => {
+  await t.test("test Date in query param", async () => {
     const endpointMock = await mockServer
       .forGet(/\/api\/v1\/app\/app1\/attempt\/endpoint\/ep1.*/)
       .thenReply(200, ListResponseMessageAttemptOut);
@@ -34,11 +35,11 @@ describe("mockttp tests", () => {
       before: new Date(1739741901977),
     });
     const requests = await endpointMock.getSeenRequests();
-    expect(requests.length).toBe(1);
-    expect(requests[0].url.endsWith("before=2025-02-16T21%3A38%3A21.977Z")).toBe(true);
+    assert.equal(requests.length, 1);
+    assert(requests[0].url.endsWith("before=2025-02-16T21%3A38%3A21.977Z"));
   });
 
-  test("test Date request body", async () => {
+  await t.test("test Date request body", async () => {
     const endpointMock = await mockServer
       .forPost("/api/v1/app/app1/endpoint/ep1/replay-missing")
       .thenReply(200, ReplayOut);
@@ -46,11 +47,14 @@ describe("mockttp tests", () => {
 
     await svx.endpoint.replayMissing("app1", "ep1", { since: new Date(1739741901977) });
     const requests = await endpointMock.getSeenRequests();
-    expect(requests.length).toBe(1);
-    expect(await requests[0].body.getText()).toBe(`{"since":"2025-02-16T21:38:21.977Z"}`);
+    assert.equal(requests.length, 1);
+    assert.equal(
+      await requests[0].body.getText(),
+      `{"since":"2025-02-16T21:38:21.977Z"}`
+    );
   });
 
-  test("test Date response body", async () => {
+  await t.test("test Date response body", async () => {
     const endpointMock = await mockServer
       .forGet("/api/v1/app/app1/attempt/endpoint/ep1")
       .thenReply(200, ListResponseMessageAttemptOut);
@@ -58,11 +62,11 @@ describe("mockttp tests", () => {
 
     const res = await svx.messageAttempt.listByEndpoint("app1", "ep1");
     const requests = await endpointMock.getSeenRequests();
-    expect(requests.length).toBe(1);
-    expect(res.data[0].timestamp?.getTime()).toBe(1739741901977);
+    assert.equal(requests.length, 1);
+    assert.equal(res.data[0].timestamp?.getTime(), 1739741901977);
   });
 
-  test("test listResponseOut deserializes correctly", async () => {
+  await t.test("test listResponseOut deserializes correctly", async () => {
     const endpointMock = await mockServer
       .forGet("/api/v1/app/app1/attempt/endpoint/ep1")
       .thenReply(200, `{"data":[],"iterator":null,"prevIterator":null,"done":true}`);
@@ -70,12 +74,12 @@ describe("mockttp tests", () => {
 
     const res = await svx.messageAttempt.listByEndpoint("app1", "ep1");
     const requests = await endpointMock.getSeenRequests();
-    expect(requests.length).toBe(1);
-    expect(res.iterator).toBeNull();
-    expect(res.prevIterator).toBeNull();
+    assert.equal(requests.length, 1);
+    assert.equal(res.iterator, null);
+    assert.equal(res.prevIterator, null);
   });
 
-  test("test enum as query param", async () => {
+  await t.test("test enum as query param", async () => {
     const endpointMock = await mockServer
       .forGet(/\/api\/v1\/app.*/)
       .thenReply(200, ListResponseApplicationOut);
@@ -83,11 +87,11 @@ describe("mockttp tests", () => {
 
     await svx.application.list({ order: Ordering.Ascending });
     const requests = await endpointMock.getSeenRequests();
-    expect(requests.length).toBe(1);
-    expect(requests[0].url.endsWith("order=ascending")).toBe(true);
+    assert.equal(requests.length, 1);
+    assert(requests[0].url.endsWith("order=ascending"));
   });
 
-  test("test list as query param", async () => {
+  await t.test("test list as query param", async () => {
     const endpointMock = await mockServer
       .forGet(/\/api\/v1\/app\/app1\/msg.*/)
       .thenReply(200, ListResponseMessageOut);
@@ -95,13 +99,13 @@ describe("mockttp tests", () => {
 
     await svx.message.list("app1", { eventTypes: ["val8", "val1", "val5"] });
     const requests = await endpointMock.getSeenRequests();
-    expect(requests.length).toBe(1);
-    expect(
+    assert.equal(requests.length, 1);
+    assert(
       requests[0].url.endsWith("/api/v1/app/app1/msg?event_types=val8%2Cval1%2Cval5")
-    ).toBe(true);
+    );
   });
 
-  test("test header param sent", async () => {
+  await t.test("test header param sent", async () => {
     const endpointMock = await mockServer
       .forPost(/\/api\/v1\/app.*/)
       .thenReply(200, ApplicationOut);
@@ -109,11 +113,11 @@ describe("mockttp tests", () => {
 
     await svx.application.create({ name: "test" }, { idempotencyKey: "random-key" });
     const requests = await endpointMock.getSeenRequests();
-    expect(requests.length).toBe(1);
-    expect(requests[0].headers["idempotency-key"]).toBe("random-key");
+    assert.equal(requests.length, 1);
+    assert.equal(requests[0].headers["idempotency-key"], "random-key");
   });
 
-  test("test retry for status => 500", async () => {
+  await t.test("test retry for status => 500", async () => {
     const numRetries = 5;
     const endpointMock = await mockServer
       .forGet("/api/v1/app")
@@ -123,27 +127,27 @@ describe("mockttp tests", () => {
       numRetries,
     });
 
-    await expect(svx.application.list()).rejects.toThrow(ApiException);
+    await assert.rejects(svx.application.list(), ApiException);
 
     const requests = await endpointMock.getSeenRequests();
-    expect(requests.length).toBe(numRetries + 1);
+    assert.equal(requests.length, numRetries + 1);
 
     // same svix-req-id for each retry
     const req_id = requests[0].headers["svix-req-id"];
-    expect(req_id).toBeDefined();
-    expect(typeof req_id).toBe("string");
+    assert(req_id);
+    assert.equal(typeof req_id, "string");
     for (let i = 0; i < requests.length; i++) {
-      expect(requests[i].headers["svix-req-id"]).toBe(req_id);
+      assert.equal(requests[i].headers["svix-req-id"], req_id);
       if (i == 0) {
         // first request does not set svix-retry-count
-        expect(requests[i].headers["svix-retry-count"]).toBeUndefined();
+        assert.equal(requests[i].headers["svix-retry-count"], undefined);
       } else {
-        expect(requests[i].headers["svix-retry-count"]).toBe(i.toString());
+        assert.equal(requests[i].headers["svix-retry-count"], i.toString());
       }
     }
   });
 
-  test("test retry schedule for status => 500", async () => {
+  await t.test("test retry schedule for status => 500", async () => {
     const retryScheduleInMs = [60, 120, 240];
     const endpointMock = await mockServer
       .forGet("/api/v1/app")
@@ -154,19 +158,17 @@ describe("mockttp tests", () => {
       retryScheduleInMs,
     });
 
-    await expect(svx.application.list()).rejects.toThrow(ApiException);
+    await assert.rejects(svx.application.list(), ApiException);
 
     const requests = await endpointMock.getSeenRequests();
-    expect(requests.length).toBe(retryScheduleInMs.length + 1);
+    assert.equal(requests.length, retryScheduleInMs.length + 1);
 
     const after = new Date().getTime();
 
-    expect(after - before).toBeGreaterThanOrEqual(
-      retryScheduleInMs.reduce((prev, curr) => prev + curr, 0)
-    );
+    assert(after - before >= retryScheduleInMs.reduce((prev, curr) => prev + curr, 0));
   });
 
-  test("no body in response does not return anything", async () => {
+  await t.test("no body in response does not return anything", async () => {
     const endpointMock = await mockServer
       .forDelete("/api/v1/app/app1")
       .thenReply(204, "");
@@ -175,48 +177,50 @@ describe("mockttp tests", () => {
     await svx.application.delete("app1");
 
     const requests = await endpointMock.getSeenRequests();
-    expect(requests.length).toBe(1);
+    assert.equal(requests.length, 1);
   });
 
-  test("422 returns validation error", async () => {
+  await t.test("422 returns validation error", async () => {
     const endpointMock = await mockServer
       .forGet("/api/v1/app")
       .thenReply(422, ValidationErrorOut);
     const svx = new Svix("token", { serverUrl: mockServer.url });
 
-    await expect(svx.application.list()).rejects.toThrow(ApiException<ValidationError>);
+    await assert.rejects(svx.application.list(), ApiException<ValidationError>);
     try {
       await svx.application.list();
     } catch (e) {
-      expect(e).toHaveProperty("code", 422);
-      expect(e).toHaveProperty("body", {
+      const error = e as ApiException<ValidationError>;
+      assert.equal(error.code, 422);
+      assert.deepEqual(error.body, {
         detail: [{ loc: ["string"], msg: "string", type: "string" }],
       });
     }
 
     const requests = await endpointMock.getSeenRequests();
-    expect(requests.length).toBe(2);
+    assert.equal(requests.length, 2);
   });
 
-  test("400 returns ApiException", async () => {
+  await t.test("400 returns ApiException", async () => {
     const endpointMock = await mockServer
       .forGet("/api/v1/app")
       .thenReply(400, `{"code":"400","detail":"text"}`);
     const svx = new Svix("token", { serverUrl: mockServer.url });
 
-    await expect(svx.application.list()).rejects.toThrow(ApiException<HttpErrorOut>);
+    await assert.rejects(svx.application.list(), ApiException<HttpErrorOut>);
     try {
       await svx.application.list();
     } catch (e) {
-      expect(e).toHaveProperty("code", 400);
-      expect(e).toHaveProperty("body", { code: "400", detail: "text" });
+      const error = e as ApiException<HttpErrorOut>;
+      assert.equal(error.code, 400);
+      assert.deepEqual(error.body, { code: "400", detail: "text" });
     }
 
     const requests = await endpointMock.getSeenRequests();
-    expect(requests.length).toBe(2);
+    assert.equal(requests.length, 2);
   });
 
-  test("sub-resource works", async () => {
+  await t.test("sub-resource works", async () => {
     const endpointMock = await mockServer
       .forGet("/api/v1/operational-webhook/endpoint")
       .thenReply(200, ListResponseOperationalWebhookEndpointOut);
@@ -225,23 +229,23 @@ describe("mockttp tests", () => {
     await svx.operationalWebhookEndpoint.list();
 
     const requests = await endpointMock.getSeenRequests();
-    expect(requests.length).toBe(1);
+    assert.equal(requests.length, 1);
   });
 
-  test("integer enum serialization", async () => {
+  await t.test("integer enum serialization", async () => {
     const endpointMock = await mockServer
       .forGet("/api/v1/app/app1/attempt/endpoint/endp1")
       .thenReply(200, ListResponseMessageAttemptOut);
     const svx = new Svix("token", { serverUrl: mockServer.url });
 
     const res = await svx.messageAttempt.listByEndpoint("app1", "endp1");
-    expect(res.data[0].triggerType).toBe(MessageAttemptTriggerType.Scheduled);
+    assert.equal(res.data[0].triggerType, MessageAttemptTriggerType.Scheduled);
 
     const requests = await endpointMock.getSeenRequests();
-    expect(requests.length).toBe(1);
+    assert.equal(requests.length, 1);
   });
 
-  test("string enum de/serialization", async () => {
+  await t.test("string enum de/serialization", async () => {
     const endpointMock = await mockServer
       .forGet("/api/v1/background-task")
       .thenReply(200, ListResponseBackgroundTaskOut);
@@ -250,23 +254,21 @@ describe("mockttp tests", () => {
     const res = await svx.backgroundTask.list({
       task: BackgroundTaskType.EndpointReplay,
     });
-    expect(res.data[0].task).toBe(BackgroundTaskType.EndpointReplay);
+    assert.equal(res.data[0].task, BackgroundTaskType.EndpointReplay);
 
     const requests = await endpointMock.getSeenRequests();
-    expect(requests.length).toBe(1);
-    expect(requests[0].url.endsWith("api/v1/background-task?task=endpoint.replay")).toBe(
-      true
-    );
+    assert.equal(requests.length, 1);
+    assert(requests[0].url.endsWith("api/v1/background-task?task=endpoint.replay"));
   });
 
-  test("non-camelCase field name", async () => {
+  await t.test("non-camelCase field name", async () => {
     const endpointMock = await mockServer
       .forPost("/api/v1/event-type/import/openapi")
       .thenReply(200, EventTypeImportOpenApiOut);
     const svx = new Svix("token", { serverUrl: mockServer.url });
 
     const res = await svx.eventType.importOpenapi({ dryRun: true });
-    expect(res.data.toModify).toStrictEqual([
+    assert.deepEqual(res.data.toModify, [
       {
         name: "user.signup",
         description: "string",
@@ -279,10 +281,10 @@ describe("mockttp tests", () => {
     ]);
 
     const requests = await endpointMock.getSeenRequests();
-    expect(requests.length).toBe(1);
+    assert.equal(requests.length, 1);
   });
 
-  test("patch request body", async () => {
+  await t.test("patch request body", async () => {
     const endpointMock = await mockServer
       .forPatch("/api/v1/app/app1/endpoint/endp1")
       .thenReply(200, EndpointOut);
@@ -293,17 +295,17 @@ describe("mockttp tests", () => {
     await svx.endpoint.patch("app1", "endp1", { description: "text" });
 
     const requests = await endpointMock.getSeenRequests();
-    expect(requests.length).toBe(3);
+    assert.equal(requests.length, 3);
 
     // nullable field is sent
-    expect(await requests[0].body.getText()).toBe(`{"filterTypes":["ty1"]}`);
+    assert.equal(await requests[0].body.getText(), `{"filterTypes":["ty1"]}`);
     // nullable field is null
-    expect(await requests[1].body.getText()).toBe(`{"filterTypes":null}`);
+    assert.equal(await requests[1].body.getText(), `{"filterTypes":null}`);
     // undefined field is omitted
-    expect(await requests[2].body.getText()).toBe(`{"description":"text"}`);
+    assert.equal(await requests[2].body.getText(), `{"description":"text"}`);
   });
 
-  test("arbitrary json object body", async () => {
+  await t.test("arbitrary json object body", async () => {
     const endpointMock = await mockServer
       .forPost("/api/v1/app/app1/msg")
       .thenReply(200, EndpointOut);
@@ -315,13 +317,14 @@ describe("mockttp tests", () => {
     });
 
     const requests = await endpointMock.getSeenRequests();
-    expect(requests.length).toBe(1);
-    expect(await requests[0].body.getText()).toBe(
+    assert.equal(requests.length, 1);
+    assert.equal(
+      await requests[0].body.getText(),
       `{"eventType":"asd","payload":{"key1":"val","list":["val1"],"obj":{"key":"val2"}}}`
     );
   });
 
-  test("token/user-agent is sent", async () => {
+  await t.test("token/user-agent is sent", async () => {
     const endpointMock = await mockServer
       .forDelete("/api/v1/app/app1")
       .thenReply(200, EndpointOut);
@@ -330,12 +333,15 @@ describe("mockttp tests", () => {
     await svx.application.delete("app1");
 
     const requests = await endpointMock.getSeenRequests();
-    expect(requests.length).toBe(1);
-    expect(requests[0].headers["authorization"]).toBe("Bearer token.eu");
-    expect(requests[0].headers["user-agent"]).toBe(`svix-libs/${LIB_VERSION}/javascript`);
+    assert.equal(requests.length, 1);
+    assert.equal(requests[0].headers["authorization"], "Bearer token.eu");
+    assert.equal(
+      requests[0].headers["user-agent"],
+      `svix-libs/${LIB_VERSION}/javascript`
+    );
   });
 
-  test("MessageAttemptOut without msg", async () => {
+  await t.test("MessageAttemptOut without msg", async () => {
     const RES = `{
       "data": [
         {
@@ -364,10 +370,10 @@ describe("mockttp tests", () => {
     await svx.messageAttempt.listByEndpoint("app", "edp");
 
     const requests = await endpointMock.getSeenRequests();
-    expect(requests.length).toBe(1);
+    assert.equal(requests.length, 1);
   });
 
-  test("octothorpe in url query", async () => {
+  await t.test("octothorpe in url query", async () => {
     const endpointMock = await mockServer
       .forGet("/api/v1/app/app1/msg")
       .thenReply(200, ListResponseMessageOut);
@@ -376,11 +382,11 @@ describe("mockttp tests", () => {
     await svx.message.list("app1", { tag: "test#test" });
 
     const requests = await endpointMock.getSeenRequests();
-    expect(requests.length).toBe(1);
-    expect(requests[0].url.endsWith("api/v1/app/app1/msg?tag=test%23test")).toBe(true);
+    assert.equal(requests.length, 1);
+    assert(requests[0].url.endsWith("api/v1/app/app1/msg?tag=test%23test"));
   });
 
-  test("content-type application/json is sent on request with body", async () => {
+  await t.test("content-type application/json is sent on request with body", async () => {
     const endpointMock = await mockServer
       .forPost(/\/api\/v1\/app.*/)
       .thenReply(200, ApplicationOut);
@@ -388,11 +394,11 @@ describe("mockttp tests", () => {
 
     await svx.application.create({ name: "test" });
     const requests = await endpointMock.getSeenRequests();
-    expect(requests.length).toBe(1);
-    expect(requests[0].headers["content-type"]).toBe("application/json");
+    assert.equal(requests.length, 1);
+    assert.equal(requests[0].headers["content-type"], "application/json");
   });
 
-  test("content type not sent on request without body", async () => {
+  await t.test("content type not sent on request without body", async () => {
     const endpointMock = await mockServer
       .forGet("/api/v1/app")
       .thenReply(200, ListResponseApplicationOut);
@@ -400,11 +406,11 @@ describe("mockttp tests", () => {
 
     await svx.application.list();
     const requests = await endpointMock.getSeenRequests();
-    expect(requests.length).toBe(1);
-    expect(requests[0].headers["content-type"]).toBeUndefined();
+    assert.equal(requests.length, 1);
+    assert.equal(requests[0].headers["content-type"], undefined);
   });
 
-  test("struct enum with extra fields", async () => {
+  await t.test("struct enum with extra fields", async () => {
     const endpointMock = await mockServer
       .forPost("/ingest/api/v1/source")
       .thenReply(200, IngestSourceOutCron);
@@ -416,19 +422,20 @@ describe("mockttp tests", () => {
       config: { schedule: "hello", payload: "world" },
     });
 
-    expect(res.type).toBe("cron");
+    assert.equal(res.type, "cron");
     // this will smart cast res.config
     if (res.type === "cron") {
-      expect(res.config.schedule).toBe("hello");
-      expect(res.config.payload).toBe("world");
+      assert.equal(res.config.schedule, "hello");
+      assert.equal(res.config.payload, "world");
     }
     const requests = await endpointMock.getSeenRequests();
-    expect(await requests[0].body.getText()).toBe(
+    assert.equal(
+      await requests[0].body.getText(),
       '{"type":"cron","config":{"payload":"world","schedule":"hello"},"name":"crontab -r"}'
     );
   });
 
-  test("struct enum with no extra fields", async () => {
+  await t.test("struct enum with no extra fields", async () => {
     const endpointMock = await mockServer
       .forPost("/ingest/api/v1/source")
       .thenReply(200, IngestSourceOutGeneric);
@@ -439,15 +446,16 @@ describe("mockttp tests", () => {
       type: "generic-webhook",
     });
 
-    expect(res.type).toBe("generic-webhook");
+    assert.equal(res.type, "generic-webhook");
     const requests = await endpointMock.getSeenRequests();
     // empty config object should be sent
-    expect(await requests[0].body.getText()).toBe(
+    assert.equal(
+      await requests[0].body.getText(),
       '{"type":"generic-webhook","config":{},"name":"generic over <T>"}'
     );
   });
 
-  test("test idempotency key is sent for create request", async () => {
+  await t.test("test idempotency key is sent for create request", async () => {
     const endpointMock = await mockServer
       .forPost("/api/v1/app")
       .thenReply(200, ApplicationOut);
@@ -456,12 +464,12 @@ describe("mockttp tests", () => {
     await svx.application.create({ name: "test app" });
 
     const requests = await endpointMock.getSeenRequests();
-    expect(requests.length).toBe(1);
+    assert.equal(requests.length, 1);
     const idempotencyKey = requests[0].headers["idempotency-key"] as string;
-    expect(idempotencyKey.startsWith("auto_")).toBe(true);
+    assert(idempotencyKey.startsWith("auto_"));
   });
 
-  test("test client provided idempotency key is not overridden", async () => {
+  await t.test("test client provided idempotency key is not overridden", async () => {
     const endpointMock = await mockServer
       .forPost("/api/v1/app")
       .thenReply(200, ApplicationOut);
@@ -474,11 +482,11 @@ describe("mockttp tests", () => {
     );
 
     const requests = await endpointMock.getSeenRequests();
-    expect(requests.length).toBe(1);
-    expect(requests[0].headers["idempotency-key"]).toBe(clientProvidedKey);
+    assert.equal(requests.length, 1);
+    assert.equal(requests[0].headers["idempotency-key"], clientProvidedKey);
   });
 
-  test("test unknown keys are ignored", async () => {
+  await t.test("test unknown keys are ignored", async () => {
     const endpointMock = await mockServer
       .forGet("/api/v1/app")
       .thenReply(
@@ -490,6 +498,6 @@ describe("mockttp tests", () => {
     await svx.application.list();
 
     const requests = await endpointMock.getSeenRequests();
-    expect(requests.length).toBe(1);
+    assert.equal(requests.length, 1);
   });
 });

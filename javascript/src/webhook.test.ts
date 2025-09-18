@@ -1,6 +1,8 @@
 import * as utf8 from "@stablelib/utf8";
 import * as base64 from "@stablelib/base64";
 import * as sha256 from "fast-sha256";
+import { test } from "node:test";
+import { strict as assert } from "node:assert/strict";
 
 import { Webhook, WebhookVerificationError } from "./index";
 
@@ -37,17 +39,17 @@ class TestPayload {
 }
 
 test("empty key raises error", () => {
-  expect(() => {
+  assert.throws(() => {
     new Webhook("");
-  }).toThrowError(Error);
-  expect(() => {
+  }, Error);
+  assert.throws(() => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     new Webhook(undefined as any);
-  }).toThrowError(Error);
-  expect(() => {
+  }, Error);
+  assert.throws(() => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     new Webhook(null as any);
-  }).toThrowError(Error);
+  }, Error);
 });
 
 test("missing id raises error", () => {
@@ -56,9 +58,9 @@ test("missing id raises error", () => {
   const testPayload = new TestPayload();
   delete testPayload.header["svix-id"];
 
-  expect(() => {
+  assert.throws(() => {
     wh.verify(testPayload.payload, testPayload.header);
-  }).toThrowError(WebhookVerificationError);
+  }, WebhookVerificationError);
 });
 
 test("missing timestamp raises error", () => {
@@ -67,9 +69,9 @@ test("missing timestamp raises error", () => {
   const testPayload = new TestPayload();
   delete testPayload.header["svix-timestamp"];
 
-  expect(() => {
+  assert.throws(() => {
     wh.verify(testPayload.payload, testPayload.header);
-  }).toThrowError(WebhookVerificationError);
+  }, WebhookVerificationError);
 });
 
 test("invalid timestamp throws error", () => {
@@ -78,9 +80,9 @@ test("invalid timestamp throws error", () => {
   const testPayload = new TestPayload();
   testPayload.header["svix-timestamp"] = "hello";
 
-  expect(() => {
+  assert.throws(() => {
     wh.verify(testPayload.payload, testPayload.header);
-  }).toThrowError(WebhookVerificationError);
+  }, WebhookVerificationError);
 });
 
 test("missing signature raises error", () => {
@@ -89,9 +91,9 @@ test("missing signature raises error", () => {
   const testPayload = new TestPayload();
   delete testPayload.header["svix-signature"];
 
-  expect(() => {
+  assert.throws(() => {
     wh.verify(testPayload.payload, testPayload.header);
-  }).toThrowError(WebhookVerificationError);
+  }, WebhookVerificationError);
 });
 
 test("invalid signature throws error", () => {
@@ -100,9 +102,9 @@ test("invalid signature throws error", () => {
   const testPayload = new TestPayload();
   testPayload.header["svix-signature"] = "v1,dawfeoifkpqwoekfpqoekf";
 
-  expect(() => {
+  assert.throws(() => {
     wh.verify(testPayload.payload, testPayload.header);
-  }).toThrowError(WebhookVerificationError);
+  }, WebhookVerificationError);
 });
 
 test("partial signature throws error", () => {
@@ -111,15 +113,15 @@ test("partial signature throws error", () => {
   const testPayload = new TestPayload();
   testPayload.header["svix-signature"] = testPayload.header["svix-signature"].slice(0, 8);
 
-  expect(() => {
+  assert.throws(() => {
     wh.verify(testPayload.payload, testPayload.header);
-  }).toThrowError(WebhookVerificationError);
+  }, WebhookVerificationError);
 
   testPayload.header["svix-signature"] = "v1,";
 
-  expect(() => {
+  assert.throws(() => {
     wh.verify(testPayload.payload, testPayload.header);
-  }).toThrowError(WebhookVerificationError);
+  }, WebhookVerificationError);
 });
 
 test("valid signature is valid and returns valid json", () => {
@@ -149,9 +151,9 @@ test("old timestamp fails", () => {
 
   const testPayload = new TestPayload(Date.now() - tolerance_in_ms - 1000);
 
-  expect(() => {
+  assert.throws(() => {
     wh.verify(testPayload.payload, testPayload.header);
-  }).toThrowError(WebhookVerificationError);
+  }, WebhookVerificationError);
 });
 
 test("new timestamp fails", () => {
@@ -159,9 +161,9 @@ test("new timestamp fails", () => {
 
   const testPayload = new TestPayload(Date.now() + tolerance_in_ms + 1000);
 
-  expect(() => {
+  assert.throws(() => {
     wh.verify(testPayload.payload, testPayload.header);
-  }).toThrowError(WebhookVerificationError);
+  }, WebhookVerificationError);
 });
 
 test("multi sig payload is valid", () => {
@@ -199,5 +201,5 @@ test("sign function works", () => {
   const wh = new Webhook(key);
 
   const signature = wh.sign(msgId, timestamp, payload);
-  expect(signature).toBe(expected);
+  assert.equal(signature, expected);
 });
