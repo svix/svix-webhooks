@@ -152,7 +152,7 @@ test("mockttp tests", async (t) => {
     const endpointMock = await mockServer
       .forGet("/api/v1/app")
       .thenReply(500, `{"code":"500","detail":"asd"}`);
-    const before = new Date().getTime();
+    const before = Date.now();
     const svx = new Svix("token", {
       serverUrl: mockServer.url,
       retryScheduleInMs,
@@ -163,7 +163,7 @@ test("mockttp tests", async (t) => {
     const requests = await endpointMock.getSeenRequests();
     assert.equal(requests.length, retryScheduleInMs.length + 1);
 
-    const after = new Date().getTime();
+    const after = Date.now();
 
     assert(after - before >= retryScheduleInMs.reduce((prev, curr) => prev + curr, 0));
   });
