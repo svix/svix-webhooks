@@ -17,7 +17,6 @@ interface _{{ type_name }}Fields {
 {# export the types for enum variants without a config -#}
 {% for variant in type.variants %}
     {% if variant.schema_ref is not defined %}
-/* eslint @typescript-eslint/no-empty-object-type: 0 */
 interface {{ type_name }}{{ variant.name | to_upper_camel_case }}{{ type.content_field | to_upper_camel_case }} {}
     {% endif %}
 {% endfor %}

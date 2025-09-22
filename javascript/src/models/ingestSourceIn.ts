@@ -1,5 +1,4 @@
 // this file is @generated
-/* eslint @typescript-eslint/no-explicit-any: 0 */
 import { AdobeSignConfig, AdobeSignConfigSerializer } from "./adobeSignConfig";
 import { AirwallexConfig, AirwallexConfigSerializer } from "./airwallexConfig";
 import { CheckbookConfig, CheckbookConfigSerializer } from "./checkbookConfig";
@@ -28,7 +27,6 @@ interface _IngestSourceInFields {
   uid?: string | null;
 }
 
-/* eslint @typescript-eslint/no-empty-object-type: 0 */
 interface IngestSourceInGenericWebhookConfig {}
 
 interface IngestSourceInGenericWebhook {

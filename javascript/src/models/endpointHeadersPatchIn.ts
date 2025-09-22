@@ -1,5 +1,4 @@
 // this file is @generated
-/* eslint @typescript-eslint/no-explicit-any: 0 */
 
 export interface EndpointHeadersPatchIn {
   /** A list of headers be be removed */
