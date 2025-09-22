@@ -30,7 +30,6 @@
                 "noNonNullAssertion": "off"
             },
             "suspicious": {
-                "noGlobalIsNan": "off",
                 "noExplicitAny": "off",
                 "noEmptyInterface": "off",
                 "noDoubleEquals": "off",
