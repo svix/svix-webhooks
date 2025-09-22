@@ -18,15 +18,16 @@
         "rules": {
             "recommended": true,
             "complexity": {
+                // needs codegen fix
                 "useLiteralKeys": "off"
             },
             "correctness": {
+                // needs codegen fix
                 "noUnusedFunctionParameters": "off"
             },
             "style": {
                 "useImportType": "off",
-                "noNonNullAssertion": "off",
-                "useTemplate": "off"
+                "noNonNullAssertion": "off"
             },
             "suspicious": {
                 "noGlobalIsNan": "off",

@@ -129,7 +129,7 @@ export class SvixRequest {
       this.headerParams["idempotency-key"] === undefined &&
       this.method.toUpperCase() === "POST"
     ) {
-      this.headerParams["idempotency-key"] = "auto_" + uuidv4();
+      this.headerParams["idempotency-key"] = `auto_${uuidv4()}`;
     }
 
     const randomId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);

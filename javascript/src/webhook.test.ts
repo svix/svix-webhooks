@@ -32,7 +32,7 @@ class TestPayload {
 
     this.header = {
       "svix-id": this.id,
-      "svix-signature": "v1," + this.signature,
+      "svix-signature": `v1,${this.signature}`,
       "svix-timestamp": this.timestamp.toString(),
     };
   }
@@ -187,7 +187,7 @@ test("verification works with and without signature prefix", () => {
   let wh = new Webhook(defaultSecret);
   wh.verify(testPayload.payload, testPayload.header);
 
-  wh = new Webhook("whsec_" + defaultSecret);
+  wh = new Webhook(`whsec_${defaultSecret}`);
   wh.verify(testPayload.payload, testPayload.header);
 });
 
