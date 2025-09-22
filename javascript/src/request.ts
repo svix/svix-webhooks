@@ -107,7 +107,7 @@ export class SvixRequest {
     parseResponseBody: (jsonObject: any) => R
   ): Promise<R> {
     const response = await this.sendInner(ctx);
-    if (response.status == 204) {
+    if (response.status === 204) {
       return <R>null;
     }
     const responseBody = await response.text();

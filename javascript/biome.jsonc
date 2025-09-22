@@ -26,13 +26,13 @@
                 "noUnusedFunctionParameters": "off"
             },
             "style": {
+                // needs codegen fix
                 "useImportType": "off",
                 "noNonNullAssertion": "off"
             },
             "suspicious": {
                 "noExplicitAny": "off",
                 "noEmptyInterface": "off",
-                "noDoubleEquals": "off",
                 "noImplicitAnyLet": "off",
                 "useIsArray": "off"
             }

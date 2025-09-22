@@ -138,7 +138,7 @@ test("mockttp tests", async (t) => {
     assert.equal(typeof req_id, "string");
     for (let i = 0; i < requests.length; i++) {
       assert.equal(requests[i].headers["svix-req-id"], req_id);
-      if (i == 0) {
+      if (i === 0) {
         // first request does not set svix-retry-count
         assert.equal(requests[i].headers["svix-retry-count"], undefined);
       } else {
