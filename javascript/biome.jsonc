@@ -31,10 +31,12 @@
                 "noNonNullAssertion": "off"
             },
             "suspicious": {
+                // needs codegen fix
                 "noExplicitAny": "off",
+                // needs codegen fix
                 "noEmptyInterface": "off",
-                "noImplicitAnyLet": "off",
-                "useIsArray": "off"
+                // needs codegen fix
+                "noImplicitAnyLet": "off"
             }
         }
     },

@@ -69,7 +69,7 @@ export class SvixRequest {
       this.queryParams[name] = value.toString();
     } else if (value instanceof Date) {
       this.queryParams[name] = value.toISOString();
-    } else if (value instanceof Array) {
+    } else if (Array.isArray(value)) {
       if (value.length > 0) {
         this.queryParams[name] = value.join(",");
       }
