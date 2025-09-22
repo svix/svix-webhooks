@@ -7,7 +7,7 @@ export interface DocusignConfig {
 export const DocusignConfigSerializer = {
   _fromJsonObject(object: any): DocusignConfig {
     return {
-      secret: object["secret"],
+      secret: object.secret,
     };
   },
 

@@ -15,13 +15,13 @@ export interface EventTypeUpdate {
 export const EventTypeUpdateSerializer = {
   _fromJsonObject(object: any): EventTypeUpdate {
     return {
-      archived: object["archived"],
-      deprecated: object["deprecated"],
-      description: object["description"],
-      featureFlag: object["featureFlag"],
-      featureFlags: object["featureFlags"],
-      groupName: object["groupName"],
-      schemas: object["schemas"],
+      archived: object.archived,
+      deprecated: object.deprecated,
+      description: object.description,
+      featureFlag: object.featureFlag,
+      featureFlags: object.featureFlags,
+      groupName: object.groupName,
+      schemas: object.schemas,
     };
   },
 

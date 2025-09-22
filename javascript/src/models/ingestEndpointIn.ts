@@ -20,13 +20,13 @@ export interface IngestEndpointIn {
 export const IngestEndpointInSerializer = {
   _fromJsonObject(object: any): IngestEndpointIn {
     return {
-      description: object["description"],
-      disabled: object["disabled"],
-      metadata: object["metadata"],
-      rateLimit: object["rateLimit"],
-      secret: object["secret"],
-      uid: object["uid"],
-      url: object["url"],
+      description: object.description,
+      disabled: object.disabled,
+      metadata: object.metadata,
+      rateLimit: object.rateLimit,
+      secret: object.secret,
+      uid: object.uid,
+      url: object.url,
     };
   },
 

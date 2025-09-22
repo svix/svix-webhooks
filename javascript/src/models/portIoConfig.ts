@@ -7,7 +7,7 @@ export interface PortIoConfig {
 export const PortIoConfigSerializer = {
   _fromJsonObject(object: any): PortIoConfig {
     return {
-      secret: object["secret"],
+      secret: object.secret,
     };
   },
 

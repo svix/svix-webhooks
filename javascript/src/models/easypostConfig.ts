@@ -7,7 +7,7 @@ export interface EasypostConfig {
 export const EasypostConfigSerializer = {
   _fromJsonObject(object: any): EasypostConfig {
     return {
-      secret: object["secret"],
+      secret: object.secret,
     };
   },
 

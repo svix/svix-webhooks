@@ -19,10 +19,10 @@ export interface EventTypeImportOpenApiIn {
 export const EventTypeImportOpenApiInSerializer = {
   _fromJsonObject(object: any): EventTypeImportOpenApiIn {
     return {
-      dryRun: object["dryRun"],
-      replaceAll: object["replaceAll"],
-      spec: object["spec"],
-      specRaw: object["specRaw"],
+      dryRun: object.dryRun,
+      replaceAll: object.replaceAll,
+      spec: object.spec,
+      specRaw: object.specRaw,
     };
   },
 

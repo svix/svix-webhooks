@@ -18,15 +18,15 @@ export interface IngestEndpointOut {
 export const IngestEndpointOutSerializer = {
   _fromJsonObject(object: any): IngestEndpointOut {
     return {
-      createdAt: new Date(object["createdAt"]),
-      description: object["description"],
-      disabled: object["disabled"],
-      id: object["id"],
-      metadata: object["metadata"],
-      rateLimit: object["rateLimit"],
-      uid: object["uid"],
-      updatedAt: new Date(object["updatedAt"]),
-      url: object["url"],
+      createdAt: new Date(object.createdAt),
+      description: object.description,
+      disabled: object.disabled,
+      id: object.id,
+      metadata: object.metadata,
+      rateLimit: object.rateLimit,
+      uid: object.uid,
+      updatedAt: new Date(object.updatedAt),
+      url: object.url,
     };
   },
 

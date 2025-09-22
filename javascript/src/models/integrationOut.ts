@@ -13,11 +13,11 @@ export interface IntegrationOut {
 export const IntegrationOutSerializer = {
   _fromJsonObject(object: any): IntegrationOut {
     return {
-      createdAt: new Date(object["createdAt"]),
-      featureFlags: object["featureFlags"],
-      id: object["id"],
-      name: object["name"],
-      updatedAt: new Date(object["updatedAt"]),
+      createdAt: new Date(object.createdAt),
+      featureFlags: object.featureFlags,
+      id: object.id,
+      name: object.name,
+      updatedAt: new Date(object.updatedAt),
     };
   },
 

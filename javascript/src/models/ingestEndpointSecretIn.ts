@@ -13,7 +13,7 @@ export interface IngestEndpointSecretIn {
 export const IngestEndpointSecretInSerializer = {
   _fromJsonObject(object: any): IngestEndpointSecretIn {
     return {
-      key: object["key"],
+      key: object.key,
     };
   },
 

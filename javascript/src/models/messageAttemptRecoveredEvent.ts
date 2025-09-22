@@ -13,8 +13,8 @@ export interface MessageAttemptRecoveredEvent {
 export const MessageAttemptRecoveredEventSerializer = {
   _fromJsonObject(object: any): MessageAttemptRecoveredEvent {
     return {
-      data: MessageAttemptRecoveredEventDataSerializer._fromJsonObject(object["data"]),
-      type: object["type"],
+      data: MessageAttemptRecoveredEventDataSerializer._fromJsonObject(object.data),
+      type: object.type,
     };
   },
 

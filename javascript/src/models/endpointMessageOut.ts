@@ -23,16 +23,16 @@ export interface EndpointMessageOut {
 export const EndpointMessageOutSerializer = {
   _fromJsonObject(object: any): EndpointMessageOut {
     return {
-      channels: object["channels"],
-      eventId: object["eventId"],
-      eventType: object["eventType"],
-      id: object["id"],
-      nextAttempt: object["nextAttempt"] ? new Date(object["nextAttempt"]) : null,
-      payload: object["payload"],
-      status: MessageStatusSerializer._fromJsonObject(object["status"]),
-      statusText: MessageStatusTextSerializer._fromJsonObject(object["statusText"]),
-      tags: object["tags"],
-      timestamp: new Date(object["timestamp"]),
+      channels: object.channels,
+      eventId: object.eventId,
+      eventType: object.eventType,
+      id: object.id,
+      nextAttempt: object.nextAttempt ? new Date(object.nextAttempt) : null,
+      payload: object.payload,
+      status: MessageStatusSerializer._fromJsonObject(object.status),
+      statusText: MessageStatusTextSerializer._fromJsonObject(object.statusText),
+      tags: object.tags,
+      timestamp: new Date(object.timestamp),
     };
   },
 

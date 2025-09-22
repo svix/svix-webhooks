@@ -21,10 +21,10 @@ export interface AppUsageStatsOut {
 export const AppUsageStatsOutSerializer = {
   _fromJsonObject(object: any): AppUsageStatsOut {
     return {
-      id: object["id"],
-      status: BackgroundTaskStatusSerializer._fromJsonObject(object["status"]),
-      task: BackgroundTaskTypeSerializer._fromJsonObject(object["task"]),
-      unresolvedAppIds: object["unresolvedAppIds"],
+      id: object.id,
+      status: BackgroundTaskStatusSerializer._fromJsonObject(object.status),
+      task: BackgroundTaskTypeSerializer._fromJsonObject(object.task),
+      unresolvedAppIds: object.unresolvedAppIds,
     };
   },
 

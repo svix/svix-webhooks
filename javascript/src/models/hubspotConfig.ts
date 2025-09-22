@@ -7,7 +7,7 @@ export interface HubspotConfig {
 export const HubspotConfigSerializer = {
   _fromJsonObject(object: any): HubspotConfig {
     return {
-      secret: object["secret"],
+      secret: object.secret,
     };
   },
 

@@ -17,7 +17,7 @@ export const {{ type_name }}Serializer = {
     _fromJsonObject(object: any): {{ type_name }} {
         return {
             {% for field in type.fields -%}
-                {% set field_expr %}object['{{ field.name }}']{% endset -%}
+                {% set field_expr %}object.{{ field.name }}{% endset -%}
                 {{ field.name | to_lower_camel_case }}: {{ field_from_json(field_expr, field.type, field.required) }},
             {% endfor -%}
         };

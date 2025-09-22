@@ -13,8 +13,8 @@ export interface EndpointDisabledEvent {
 export const EndpointDisabledEventSerializer = {
   _fromJsonObject(object: any): EndpointDisabledEvent {
     return {
-      data: EndpointDisabledEventDataSerializer._fromJsonObject(object["data"]),
-      type: object["type"],
+      data: EndpointDisabledEventDataSerializer._fromJsonObject(object.data),
+      type: object.type,
     };
   },
 

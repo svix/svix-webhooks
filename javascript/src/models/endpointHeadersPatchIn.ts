@@ -9,8 +9,8 @@ export interface EndpointHeadersPatchIn {
 export const EndpointHeadersPatchInSerializer = {
   _fromJsonObject(object: any): EndpointHeadersPatchIn {
     return {
-      deleteHeaders: object["deleteHeaders"],
-      headers: object["headers"],
+      deleteHeaders: object.deleteHeaders,
+      headers: object.headers,
     };
   },
 

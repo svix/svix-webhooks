@@ -25,17 +25,17 @@ export interface EndpointIn {
 export const EndpointInSerializer = {
   _fromJsonObject(object: any): EndpointIn {
     return {
-      channels: object["channels"],
-      description: object["description"],
-      disabled: object["disabled"],
-      filterTypes: object["filterTypes"],
-      headers: object["headers"],
-      metadata: object["metadata"],
-      rateLimit: object["rateLimit"],
-      secret: object["secret"],
-      uid: object["uid"],
-      url: object["url"],
-      version: object["version"],
+      channels: object.channels,
+      description: object.description,
+      disabled: object.disabled,
+      filterTypes: object.filterTypes,
+      headers: object.headers,
+      metadata: object.metadata,
+      rateLimit: object.rateLimit,
+      secret: object.secret,
+      uid: object.uid,
+      url: object.url,
+      version: object.version,
     };
   },
 

@@ -15,9 +15,9 @@ export interface ExpungeAllContentsOut {
 export const ExpungeAllContentsOutSerializer = {
   _fromJsonObject(object: any): ExpungeAllContentsOut {
     return {
-      id: object["id"],
-      status: BackgroundTaskStatusSerializer._fromJsonObject(object["status"]),
-      task: BackgroundTaskTypeSerializer._fromJsonObject(object["task"]),
+      id: object.id,
+      status: BackgroundTaskStatusSerializer._fromJsonObject(object.status),
+      task: BackgroundTaskTypeSerializer._fromJsonObject(object.task),
     };
   },
 

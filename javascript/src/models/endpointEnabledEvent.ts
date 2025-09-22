@@ -13,8 +13,8 @@ export interface EndpointEnabledEvent {
 export const EndpointEnabledEventSerializer = {
   _fromJsonObject(object: any): EndpointEnabledEvent {
     return {
-      data: EndpointEnabledEventDataSerializer._fromJsonObject(object["data"]),
-      type: object["type"],
+      data: EndpointEnabledEventDataSerializer._fromJsonObject(object.data),
+      type: object.type,
     };
   },
 

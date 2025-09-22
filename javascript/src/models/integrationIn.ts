@@ -9,8 +9,8 @@ export interface IntegrationIn {
 export const IntegrationInSerializer = {
   _fromJsonObject(object: any): IntegrationIn {
     return {
-      featureFlags: object["featureFlags"],
-      name: object["name"],
+      featureFlags: object.featureFlags,
+      name: object.name,
     };
   },
 

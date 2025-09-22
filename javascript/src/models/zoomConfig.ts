@@ -7,7 +7,7 @@ export interface ZoomConfig {
 export const ZoomConfigSerializer = {
   _fromJsonObject(object: any): ZoomConfig {
     return {
-      secret: object["secret"],
+      secret: object.secret,
     };
   },
 

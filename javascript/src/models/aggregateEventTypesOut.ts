@@ -15,9 +15,9 @@ export interface AggregateEventTypesOut {
 export const AggregateEventTypesOutSerializer = {
   _fromJsonObject(object: any): AggregateEventTypesOut {
     return {
-      id: object["id"],
-      status: BackgroundTaskStatusSerializer._fromJsonObject(object["status"]),
-      task: BackgroundTaskTypeSerializer._fromJsonObject(object["task"]),
+      id: object.id,
+      status: BackgroundTaskStatusSerializer._fromJsonObject(object.status),
+      task: BackgroundTaskTypeSerializer._fromJsonObject(object.task),
     };
   },
 

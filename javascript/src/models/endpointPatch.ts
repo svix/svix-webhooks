@@ -23,16 +23,16 @@ export interface EndpointPatch {
 export const EndpointPatchSerializer = {
   _fromJsonObject(object: any): EndpointPatch {
     return {
-      channels: object["channels"],
-      description: object["description"],
-      disabled: object["disabled"],
-      filterTypes: object["filterTypes"],
-      metadata: object["metadata"],
-      rateLimit: object["rateLimit"],
-      secret: object["secret"],
-      uid: object["uid"],
-      url: object["url"],
-      version: object["version"],
+      channels: object.channels,
+      description: object.description,
+      disabled: object.disabled,
+      filterTypes: object.filterTypes,
+      metadata: object.metadata,
+      rateLimit: object.rateLimit,
+      secret: object.secret,
+      uid: object.uid,
+      url: object.url,
+      version: object.version,
     };
   },
 

@@ -15,9 +15,9 @@ export interface RecoverOut {
 export const RecoverOutSerializer = {
   _fromJsonObject(object: any): RecoverOut {
     return {
-      id: object["id"],
-      status: BackgroundTaskStatusSerializer._fromJsonObject(object["status"]),
-      task: BackgroundTaskTypeSerializer._fromJsonObject(object["task"]),
+      id: object.id,
+      status: BackgroundTaskStatusSerializer._fromJsonObject(object.status),
+      task: BackgroundTaskTypeSerializer._fromJsonObject(object.task),
     };
   },
 

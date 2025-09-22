@@ -16,8 +16,8 @@ export interface MessageAttemptFailingEvent {
 export const MessageAttemptFailingEventSerializer = {
   _fromJsonObject(object: any): MessageAttemptFailingEvent {
     return {
-      data: MessageAttemptFailingEventDataSerializer._fromJsonObject(object["data"]),
-      type: object["type"],
+      data: MessageAttemptFailingEventDataSerializer._fromJsonObject(object.data),
+      type: object.type,
     };
   },
 

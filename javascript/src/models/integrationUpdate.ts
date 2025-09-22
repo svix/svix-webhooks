@@ -9,8 +9,8 @@ export interface IntegrationUpdate {
 export const IntegrationUpdateSerializer = {
   _fromJsonObject(object: any): IntegrationUpdate {
     return {
-      featureFlags: object["featureFlags"],
-      name: object["name"],
+      featureFlags: object.featureFlags,
+      name: object.name,
     };
   },
 

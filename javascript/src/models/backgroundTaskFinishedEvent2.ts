@@ -16,10 +16,10 @@ export interface BackgroundTaskFinishedEvent2 {
 export const BackgroundTaskFinishedEvent2Serializer = {
   _fromJsonObject(object: any): BackgroundTaskFinishedEvent2 {
     return {
-      data: object["data"],
-      status: BackgroundTaskStatusSerializer._fromJsonObject(object["status"]),
-      task: BackgroundTaskTypeSerializer._fromJsonObject(object["task"]),
-      taskId: object["taskId"],
+      data: object.data,
+      status: BackgroundTaskStatusSerializer._fromJsonObject(object.status),
+      task: BackgroundTaskTypeSerializer._fromJsonObject(object.task),
+      taskId: object.taskId,
     };
   },
 

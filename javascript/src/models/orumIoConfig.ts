@@ -7,7 +7,7 @@ export interface OrumIoConfig {
 export const OrumIoConfigSerializer = {
   _fromJsonObject(object: any): OrumIoConfig {
     return {
-      publicKey: object["publicKey"],
+      publicKey: object.publicKey,
     };
   },
 

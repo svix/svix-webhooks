@@ -8,8 +8,8 @@ export interface IngestEndpointHeadersOut {
 export const IngestEndpointHeadersOutSerializer = {
   _fromJsonObject(object: any): IngestEndpointHeadersOut {
     return {
-      headers: object["headers"],
-      sensitive: object["sensitive"],
+      headers: object.headers,
+      sensitive: object.sensitive,
     };
   },
 

@@ -11,12 +11,12 @@ export interface ListResponseEndpointOut {
 export const ListResponseEndpointOutSerializer = {
   _fromJsonObject(object: any): ListResponseEndpointOut {
     return {
-      data: object["data"].map((item: EndpointOut) =>
+      data: object.data.map((item: EndpointOut) =>
         EndpointOutSerializer._fromJsonObject(item)
       ),
-      done: object["done"],
-      iterator: object["iterator"],
-      prevIterator: object["prevIterator"],
+      done: object.done,
+      iterator: object.iterator,
+      prevIterator: object.prevIterator,
     };
   },
 

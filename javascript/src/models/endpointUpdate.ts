@@ -17,15 +17,15 @@ export interface EndpointUpdate {
 export const EndpointUpdateSerializer = {
   _fromJsonObject(object: any): EndpointUpdate {
     return {
-      channels: object["channels"],
-      description: object["description"],
-      disabled: object["disabled"],
-      filterTypes: object["filterTypes"],
-      metadata: object["metadata"],
-      rateLimit: object["rateLimit"],
-      uid: object["uid"],
-      url: object["url"],
-      version: object["version"],
+      channels: object.channels,
+      description: object.description,
+      disabled: object.disabled,
+      filterTypes: object.filterTypes,
+      metadata: object.metadata,
+      rateLimit: object.rateLimit,
+      uid: object.uid,
+      url: object.url,
+      version: object.version,
     };
   },
 

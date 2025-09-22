@@ -7,7 +7,7 @@ export interface OperationalWebhookEndpointHeadersIn {
 export const OperationalWebhookEndpointHeadersInSerializer = {
   _fromJsonObject(object: any): OperationalWebhookEndpointHeadersIn {
     return {
-      headers: object["headers"],
+      headers: object.headers,
     };
   },
 

@@ -14,13 +14,13 @@ export interface OperationalWebhookEndpointUpdate {
 export const OperationalWebhookEndpointUpdateSerializer = {
   _fromJsonObject(object: any): OperationalWebhookEndpointUpdate {
     return {
-      description: object["description"],
-      disabled: object["disabled"],
-      filterTypes: object["filterTypes"],
-      metadata: object["metadata"],
-      rateLimit: object["rateLimit"],
-      uid: object["uid"],
-      url: object["url"],
+      description: object.description,
+      disabled: object.disabled,
+      filterTypes: object.filterTypes,
+      metadata: object.metadata,
+      rateLimit: object.rateLimit,
+      uid: object.uid,
+      url: object.url,
     };
   },
 

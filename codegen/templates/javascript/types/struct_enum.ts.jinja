@@ -41,7 +41,7 @@ export type {{ type_name }} = _{{ type_name }}Fields & (
 
 export const {{ type.name | to_upper_camel_case }}Serializer = {
     _fromJsonObject(object: any): {{ type.name | to_upper_camel_case }} {
-        const {{ disc_field_name }} = object['{{ type.discriminator_field }}'];
+        const {{ disc_field_name }} = object.{{ type.discriminator_field }};
 
         function get{{ content_field_name | to_upper_camel_case }}({{ disc_field_name }}: string): any {
             switch ({{ disc_field_name }}) {
@@ -49,7 +49,7 @@ export const {{ type.name | to_upper_camel_case }}Serializer = {
                 {% if variant.schema_ref is defined -%}
                 case '{{ variant.name }}':
                     return {{ variant.schema_ref | to_upper_camel_case }}Serializer._fromJsonObject(
-                            object['{{ type.content_field }}']
+                            object.{{ type.content_field }}
                         );
                 {%- else %}
                 case '{{ variant.name }}':
@@ -65,7 +65,7 @@ export const {{ type.name | to_upper_camel_case }}Serializer = {
             {{ disc_field_name }},
             {{ content_field_name }}:get{{ content_field_name | to_upper_camel_case }}({{ disc_field_name }}),
             {% for field in type.fields -%}
-                {% set field_expr %}object['{{ field.name }}']{% endset -%}
+                {% set field_expr %}object.{{ field.name }}{% endset -%}
                 {{ field.name | to_lower_camel_case }}: {{ field_from_json(field_expr, field.type, field.required) }},
             {% endfor -%}
         };

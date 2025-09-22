@@ -7,7 +7,7 @@ export interface TelnyxConfigOut {
 export const TelnyxConfigOutSerializer = {
   _fromJsonObject(object: any): TelnyxConfigOut {
     return {
-      publicKey: object["publicKey"],
+      publicKey: object.publicKey,
     };
   },
 

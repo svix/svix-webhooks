@@ -334,7 +334,7 @@ test("mockttp tests", async (t) => {
 
     const requests = await endpointMock.getSeenRequests();
     assert.equal(requests.length, 1);
-    assert.equal(requests[0].headers["authorization"], "Bearer token.eu");
+    assert.equal(requests[0].headers.authorization, "Bearer token.eu");
     assert.equal(
       requests[0].headers["user-agent"],
       `svix-libs/${LIB_VERSION}/javascript`

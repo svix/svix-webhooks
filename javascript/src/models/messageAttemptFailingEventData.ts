@@ -22,14 +22,12 @@ export interface MessageAttemptFailingEventData {
 export const MessageAttemptFailingEventDataSerializer = {
   _fromJsonObject(object: any): MessageAttemptFailingEventData {
     return {
-      appId: object["appId"],
-      appUid: object["appUid"],
-      endpointId: object["endpointId"],
-      lastAttempt: MessageAttemptFailedDataSerializer._fromJsonObject(
-        object["lastAttempt"]
-      ),
-      msgEventId: object["msgEventId"],
-      msgId: object["msgId"],
+      appId: object.appId,
+      appUid: object.appUid,
+      endpointId: object.endpointId,
+      lastAttempt: MessageAttemptFailedDataSerializer._fromJsonObject(object.lastAttempt),
+      msgEventId: object.msgEventId,
+      msgId: object.msgId,
     };
   },
 

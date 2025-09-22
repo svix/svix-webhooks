@@ -7,7 +7,7 @@ export interface StripeConfig {
 export const StripeConfigSerializer = {
   _fromJsonObject(object: any): StripeConfig {
     return {
-      secret: object["secret"],
+      secret: object.secret,
     };
   },
 

@@ -21,13 +21,13 @@ export interface EndpointDisabledEventData {
 export const EndpointDisabledEventDataSerializer = {
   _fromJsonObject(object: any): EndpointDisabledEventData {
     return {
-      appId: object["appId"],
-      appUid: object["appUid"],
-      endpointId: object["endpointId"],
-      endpointUid: object["endpointUid"],
-      failSince: object["failSince"] ? new Date(object["failSince"]) : null,
-      trigger: object["trigger"]
-        ? EndpointDisabledTriggerSerializer._fromJsonObject(object["trigger"])
+      appId: object.appId,
+      appUid: object.appUid,
+      endpointId: object.endpointId,
+      endpointUid: object.endpointUid,
+      failSince: object.failSince ? new Date(object.failSince) : null,
+      trigger: object.trigger
+        ? EndpointDisabledTriggerSerializer._fromJsonObject(object.trigger)
         : undefined,
     };
   },

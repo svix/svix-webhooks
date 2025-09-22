@@ -17,13 +17,13 @@ export interface MessageOut {
 export const MessageOutSerializer = {
   _fromJsonObject(object: any): MessageOut {
     return {
-      channels: object["channels"],
-      eventId: object["eventId"],
-      eventType: object["eventType"],
-      id: object["id"],
-      payload: object["payload"],
-      tags: object["tags"],
-      timestamp: new Date(object["timestamp"]),
+      channels: object.channels,
+      eventId: object.eventId,
+      eventType: object.eventType,
+      id: object.id,
+      payload: object.payload,
+      tags: object.tags,
+      timestamp: new Date(object.timestamp),
     };
   },
 

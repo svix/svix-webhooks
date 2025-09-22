@@ -8,8 +8,8 @@ export interface RecoverIn {
 export const RecoverInSerializer = {
   _fromJsonObject(object: any): RecoverIn {
     return {
-      since: new Date(object["since"]),
-      until: object["until"] ? new Date(object["until"]) : null,
+      since: new Date(object.since),
+      until: object.until ? new Date(object.until) : null,
     };
   },
 

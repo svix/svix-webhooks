@@ -14,9 +14,9 @@ export interface CronConfig {
 export const CronConfigSerializer = {
   _fromJsonObject(object: any): CronConfig {
     return {
-      contentType: object["contentType"],
-      payload: object["payload"],
-      schedule: object["schedule"],
+      contentType: object.contentType,
+      payload: object.payload,
+      schedule: object.schedule,
     };
   },
 

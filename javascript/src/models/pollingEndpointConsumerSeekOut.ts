@@ -7,7 +7,7 @@ export interface PollingEndpointConsumerSeekOut {
 export const PollingEndpointConsumerSeekOutSerializer = {
   _fromJsonObject(object: any): PollingEndpointConsumerSeekOut {
     return {
-      iterator: object["iterator"],
+      iterator: object.iterator,
     };
   },
 

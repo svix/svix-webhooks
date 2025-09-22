@@ -20,13 +20,11 @@ export interface IngestMessageAttemptExhaustedEventData {
 export const IngestMessageAttemptExhaustedEventDataSerializer = {
   _fromJsonObject(object: any): IngestMessageAttemptExhaustedEventData {
     return {
-      endpointId: object["endpointId"],
-      lastAttempt: MessageAttemptFailedDataSerializer._fromJsonObject(
-        object["lastAttempt"]
-      ),
-      msgEventId: object["msgEventId"],
-      msgId: object["msgId"],
-      sourceId: object["sourceId"],
+      endpointId: object.endpointId,
+      lastAttempt: MessageAttemptFailedDataSerializer._fromJsonObject(object.lastAttempt),
+      msgEventId: object.msgEventId,
+      msgId: object.msgId,
+      sourceId: object.sourceId,
     };
   },
 

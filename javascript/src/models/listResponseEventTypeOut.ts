@@ -11,12 +11,12 @@ export interface ListResponseEventTypeOut {
 export const ListResponseEventTypeOutSerializer = {
   _fromJsonObject(object: any): ListResponseEventTypeOut {
     return {
-      data: object["data"].map((item: EventTypeOut) =>
+      data: object.data.map((item: EventTypeOut) =>
         EventTypeOutSerializer._fromJsonObject(item)
       ),
-      done: object["done"],
-      iterator: object["iterator"],
-      prevIterator: object["prevIterator"],
+      done: object.done,
+      iterator: object.iterator,
+      prevIterator: object.prevIterator,
     };
   },
 

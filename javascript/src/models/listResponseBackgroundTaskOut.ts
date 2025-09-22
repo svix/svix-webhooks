@@ -11,12 +11,12 @@ export interface ListResponseBackgroundTaskOut {
 export const ListResponseBackgroundTaskOutSerializer = {
   _fromJsonObject(object: any): ListResponseBackgroundTaskOut {
     return {
-      data: object["data"].map((item: BackgroundTaskOut) =>
+      data: object.data.map((item: BackgroundTaskOut) =>
         BackgroundTaskOutSerializer._fromJsonObject(item)
       ),
-      done: object["done"],
-      iterator: object["iterator"],
-      prevIterator: object["prevIterator"],
+      done: object.done,
+      iterator: object.iterator,
+      prevIterator: object.prevIterator,
     };
   },
 

@@ -13,8 +13,8 @@ export interface EndpointHeadersOut {
 export const EndpointHeadersOutSerializer = {
   _fromJsonObject(object: any): EndpointHeadersOut {
     return {
-      headers: object["headers"],
-      sensitive: object["sensitive"],
+      headers: object.headers,
+      sensitive: object.sensitive,
     };
   },
 

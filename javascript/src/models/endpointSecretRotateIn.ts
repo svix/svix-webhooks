@@ -13,7 +13,7 @@ export interface EndpointSecretRotateIn {
 export const EndpointSecretRotateInSerializer = {
   _fromJsonObject(object: any): EndpointSecretRotateIn {
     return {
-      key: object["key"],
+      key: object.key,
     };
   },
 

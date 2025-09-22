@@ -14,8 +14,8 @@ export interface ApplicationTokenExpireIn {
 export const ApplicationTokenExpireInSerializer = {
   _fromJsonObject(object: any): ApplicationTokenExpireIn {
     return {
-      expiry: object["expiry"],
-      sessionIds: object["sessionIds"],
+      expiry: object.expiry,
+      sessionIds: object.sessionIds,
     };
   },
 

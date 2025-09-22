@@ -14,9 +14,9 @@ export interface AppUsageStatsIn {
 export const AppUsageStatsInSerializer = {
   _fromJsonObject(object: any): AppUsageStatsIn {
     return {
-      appIds: object["appIds"],
-      since: new Date(object["since"]),
-      until: new Date(object["until"]),
+      appIds: object.appIds,
+      since: new Date(object.since),
+      until: new Date(object.until),
     };
   },
 

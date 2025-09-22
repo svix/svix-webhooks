@@ -7,7 +7,7 @@ export interface AdobeSignConfig {
 export const AdobeSignConfigSerializer = {
   _fromJsonObject(object: any): AdobeSignConfig {
     return {
-      clientId: object["clientId"],
+      clientId: object.clientId,
     };
   },
 

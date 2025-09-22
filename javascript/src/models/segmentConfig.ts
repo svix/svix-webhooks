@@ -7,7 +7,7 @@ export interface SegmentConfig {
 export const SegmentConfigSerializer = {
   _fromJsonObject(object: any): SegmentConfig {
     return {
-      secret: object["secret"],
+      secret: object.secret,
     };
   },
 

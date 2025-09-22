@@ -13,8 +13,8 @@ export interface EndpointDeletedEvent {
 export const EndpointDeletedEventSerializer = {
   _fromJsonObject(object: any): EndpointDeletedEvent {
     return {
-      data: EndpointDeletedEventDataSerializer._fromJsonObject(object["data"]),
-      type: object["type"],
+      data: EndpointDeletedEventDataSerializer._fromJsonObject(object.data),
+      type: object.type,
     };
   },
 

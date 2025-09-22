@@ -19,14 +19,14 @@ export interface PollingEndpointMessageOut {
 export const PollingEndpointMessageOutSerializer = {
   _fromJsonObject(object: any): PollingEndpointMessageOut {
     return {
-      channels: object["channels"],
-      eventId: object["eventId"],
-      eventType: object["eventType"],
-      headers: object["headers"],
-      id: object["id"],
-      payload: object["payload"],
-      tags: object["tags"],
-      timestamp: new Date(object["timestamp"]),
+      channels: object.channels,
+      eventId: object.eventId,
+      eventType: object.eventType,
+      headers: object.headers,
+      id: object.id,
+      payload: object.payload,
+      tags: object.tags,
+      timestamp: new Date(object.timestamp),
     };
   },
 

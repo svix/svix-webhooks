@@ -8,8 +8,8 @@ export interface AppPortalAccessOut {
 export const AppPortalAccessOutSerializer = {
   _fromJsonObject(object: any): AppPortalAccessOut {
     return {
-      token: object["token"],
-      url: object["url"],
+      token: object.token,
+      url: object.url,
     };
   },
 

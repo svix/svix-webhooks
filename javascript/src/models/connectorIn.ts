@@ -22,18 +22,18 @@ export interface ConnectorIn {
 export const ConnectorInSerializer = {
   _fromJsonObject(object: any): ConnectorIn {
     return {
-      description: object["description"],
-      featureFlag: object["featureFlag"],
-      featureFlags: object["featureFlags"],
-      filterTypes: object["filterTypes"],
-      instructions: object["instructions"],
-      instructionsLink: object["instructionsLink"],
-      kind: object["kind"]
-        ? ConnectorKindSerializer._fromJsonObject(object["kind"])
+      description: object.description,
+      featureFlag: object.featureFlag,
+      featureFlags: object.featureFlags,
+      filterTypes: object.filterTypes,
+      instructions: object.instructions,
+      instructionsLink: object.instructionsLink,
+      kind: object.kind
+        ? ConnectorKindSerializer._fromJsonObject(object.kind)
         : undefined,
-      logo: object["logo"],
-      name: object["name"],
-      transformation: object["transformation"],
+      logo: object.logo,
+      name: object.name,
+      transformation: object.transformation,
     };
   },
 

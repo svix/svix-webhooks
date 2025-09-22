@@ -7,7 +7,7 @@ export interface PandaDocConfig {
 export const PandaDocConfigSerializer = {
   _fromJsonObject(object: any): PandaDocConfig {
     return {
-      secret: object["secret"],
+      secret: object.secret,
     };
   },
 

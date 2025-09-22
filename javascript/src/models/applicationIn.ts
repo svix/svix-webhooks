@@ -11,10 +11,10 @@ export interface ApplicationIn {
 export const ApplicationInSerializer = {
   _fromJsonObject(object: any): ApplicationIn {
     return {
-      metadata: object["metadata"],
-      name: object["name"],
-      rateLimit: object["rateLimit"],
-      uid: object["uid"],
+      metadata: object.metadata,
+      name: object.name,
+      rateLimit: object.rateLimit,
+      uid: object.uid,
     };
   },
 
