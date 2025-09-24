@@ -72,6 +72,8 @@ pub mod github_config;
 pub mod github_config_out;
 pub mod hubspot_config;
 pub mod hubspot_config_out;
+pub mod ingest_endpoint_disabled_event;
+pub mod ingest_endpoint_disabled_event_data;
 pub mod ingest_endpoint_headers_in;
 pub mod ingest_endpoint_headers_out;
 pub mod ingest_endpoint_in;
@@ -81,6 +83,12 @@ pub mod ingest_endpoint_secret_out;
 pub mod ingest_endpoint_transformation_out;
 pub mod ingest_endpoint_transformation_patch;
 pub mod ingest_endpoint_update;
+pub mod ingest_message_attempt_exhausted_event;
+pub mod ingest_message_attempt_exhausted_event_data;
+pub mod ingest_message_attempt_failing_event;
+pub mod ingest_message_attempt_failing_event_data;
+pub mod ingest_message_attempt_recovered_event;
+pub mod ingest_message_attempt_recovered_event_data;
 pub mod ingest_source_consumer_portal_access_in;
 pub mod ingest_source_in;
 pub mod ingest_source_out;
@@ -238,6 +246,8 @@ pub use self::{
     github_config_out::GithubConfigOut,
     hubspot_config::HubspotConfig,
     hubspot_config_out::HubspotConfigOut,
+    ingest_endpoint_disabled_event::IngestEndpointDisabledEvent,
+    ingest_endpoint_disabled_event_data::IngestEndpointDisabledEventData,
     ingest_endpoint_headers_in::IngestEndpointHeadersIn,
     ingest_endpoint_headers_out::IngestEndpointHeadersOut,
     ingest_endpoint_in::IngestEndpointIn,
@@ -247,6 +257,12 @@ pub use self::{
     ingest_endpoint_transformation_out::IngestEndpointTransformationOut,
     ingest_endpoint_transformation_patch::IngestEndpointTransformationPatch,
     ingest_endpoint_update::IngestEndpointUpdate,
+    ingest_message_attempt_exhausted_event::IngestMessageAttemptExhaustedEvent,
+    ingest_message_attempt_exhausted_event_data::IngestMessageAttemptExhaustedEventData,
+    ingest_message_attempt_failing_event::IngestMessageAttemptFailingEvent,
+    ingest_message_attempt_failing_event_data::IngestMessageAttemptFailingEventData,
+    ingest_message_attempt_recovered_event::IngestMessageAttemptRecoveredEvent,
+    ingest_message_attempt_recovered_event_data::IngestMessageAttemptRecoveredEventData,
     ingest_source_consumer_portal_access_in::IngestSourceConsumerPortalAccessIn,
     ingest_source_in::{IngestSourceIn, IngestSourceInConfig},
     ingest_source_out::{IngestSourceOut, IngestSourceOutConfig},
