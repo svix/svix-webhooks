@@ -320,6 +320,7 @@ def log_generated_files(generated_paths: list[list[str]]):
     allowed_to_be_generated_twice = [
         "go/models/endpoint_transformation_in.go",
         "go/models/ordering.go",
+        "go/models/api_token_out.go"
     ]
     processed_files = set()
 

@@ -57,8 +57,8 @@ export class Message {
   /**
    * List all of the application's messages.
    *
-   * The `before` and `after` parameters let you filter all items created before or after a certain date. These can be used alongside an iterator to paginate over results
-   * within a certain window.
+   * The `before` and `after` parameters let you filter all items created before or after a certain date. These can be
+   * used alongside an iterator to paginate over results within a certain window.
    *
    * Note that by default this endpoint is limited to retrieving 90 days' worth of data
    * relative to now or, if an iterator is provided, 90 days before/after the time indicated

@@ -75,6 +75,8 @@ type (
 	GithubConfigOut                           = models.GithubConfigOut
 	HubspotConfig                             = models.HubspotConfig
 	HubspotConfigOut                          = models.HubspotConfigOut
+	IngestEndpointDisabledEvent               = models.IngestEndpointDisabledEvent
+	IngestEndpointDisabledEventData           = models.IngestEndpointDisabledEventData
 	IngestEndpointHeadersIn                   = models.IngestEndpointHeadersIn
 	IngestEndpointHeadersOut                  = models.IngestEndpointHeadersOut
 	IngestEndpointIn                          = models.IngestEndpointIn
@@ -84,6 +86,12 @@ type (
 	IngestEndpointTransformationOut           = models.IngestEndpointTransformationOut
 	IngestEndpointTransformationPatch         = models.IngestEndpointTransformationPatch
 	IngestEndpointUpdate                      = models.IngestEndpointUpdate
+	IngestMessageAttemptExhaustedEvent        = models.IngestMessageAttemptExhaustedEvent
+	IngestMessageAttemptExhaustedEventData    = models.IngestMessageAttemptExhaustedEventData
+	IngestMessageAttemptFailingEvent          = models.IngestMessageAttemptFailingEvent
+	IngestMessageAttemptFailingEventData      = models.IngestMessageAttemptFailingEventData
+	IngestMessageAttemptRecoveredEvent        = models.IngestMessageAttemptRecoveredEvent
+	IngestMessageAttemptRecoveredEventData    = models.IngestMessageAttemptRecoveredEventData
 	IngestSourceConsumerPortalAccessIn        = models.IngestSourceConsumerPortalAccessIn
 	IngestSourceIn                            = models.IngestSourceIn
 	IngestSourceOut                           = models.IngestSourceOut

@@ -10,11 +10,13 @@ import (
 type ApplicationAlertEvent string
 
 const (
-	APPLICATIONALERTEVENT_ENDPOINT_DISABLED ApplicationAlertEvent = "endpoint.disabled"
+	APPLICATIONALERTEVENT_ENDPOINT_DISABLED         ApplicationAlertEvent = "endpoint.disabled"
+	APPLICATIONALERTEVENT_MESSAGE_ATTEMPT_EXHAUSTED ApplicationAlertEvent = "message.attempt.exhausted"
 )
 
 var allowedApplicationAlertEvent = []ApplicationAlertEvent{
 	"endpoint.disabled",
+	"message.attempt.exhausted",
 }
 
 func (v *ApplicationAlertEvent) UnmarshalJSON(src []byte) error {
@@ -33,5 +35,6 @@ func (v *ApplicationAlertEvent) UnmarshalJSON(src []byte) error {
 }
 
 var ApplicationAlertEventFromString = map[string]ApplicationAlertEvent{
-	"endpoint.disabled": APPLICATIONALERTEVENT_ENDPOINT_DISABLED,
+	"endpoint.disabled":         APPLICATIONALERTEVENT_ENDPOINT_DISABLED,
+	"message.attempt.exhausted": APPLICATIONALERTEVENT_MESSAGE_ATTEMPT_EXHAUSTED,
 }
