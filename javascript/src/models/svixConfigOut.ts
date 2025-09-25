@@ -3,11 +3,11 @@
 export interface SvixConfigOut {}
 
 export const SvixConfigOutSerializer = {
-  _fromJsonObject(object: any): SvixConfigOut {
+  _fromJsonObject(_object: any): SvixConfigOut {
     return {};
   },
 
-  _toJsonObject(self: SvixConfigOut): any {
+  _toJsonObject(_self: SvixConfigOut): any {
     return {};
   },
 };

@@ -3,11 +3,11 @@
 export interface ShopifyConfigOut {}
 
 export const ShopifyConfigOutSerializer = {
-  _fromJsonObject(object: any): ShopifyConfigOut {
+  _fromJsonObject(_object: any): ShopifyConfigOut {
     return {};
   },
 
-  _toJsonObject(self: ShopifyConfigOut): any {
+  _toJsonObject(_self: ShopifyConfigOut): any {
     return {};
   },
 };

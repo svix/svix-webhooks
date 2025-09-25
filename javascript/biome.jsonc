@@ -18,12 +18,7 @@
         "rules": {
             "recommended": true,
             "complexity": {
-                // needs codegen fix
                 "useLiteralKeys": "off"
-            },
-            "correctness": {
-                // needs codegen fix
-                "noUnusedFunctionParameters": "off"
             },
             "style": {
                 // needs codegen fix

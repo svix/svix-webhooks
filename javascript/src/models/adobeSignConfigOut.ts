@@ -3,11 +3,11 @@
 export interface AdobeSignConfigOut {}
 
 export const AdobeSignConfigOutSerializer = {
-  _fromJsonObject(object: any): AdobeSignConfigOut {
+  _fromJsonObject(_object: any): AdobeSignConfigOut {
     return {};
   },
 
-  _toJsonObject(self: AdobeSignConfigOut): any {
+  _toJsonObject(_self: AdobeSignConfigOut): any {
     return {};
   },
 };

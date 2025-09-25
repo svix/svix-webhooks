@@ -3,11 +3,11 @@
 export interface StripeConfigOut {}
 
 export const StripeConfigOutSerializer = {
-  _fromJsonObject(object: any): StripeConfigOut {
+  _fromJsonObject(_object: any): StripeConfigOut {
     return {};
   },
 
-  _toJsonObject(self: StripeConfigOut): any {
+  _toJsonObject(_self: StripeConfigOut): any {
     return {};
   },
 };
