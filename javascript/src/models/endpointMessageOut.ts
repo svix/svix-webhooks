@@ -1,5 +1,4 @@
 // this file is @generated
-/* eslint @typescript-eslint/no-explicit-any: 0 */
 import { MessageStatus, MessageStatusSerializer } from "./messageStatus";
 import { MessageStatusText, MessageStatusTextSerializer } from "./messageStatusText";
 

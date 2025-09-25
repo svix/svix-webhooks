@@ -1,5 +1,4 @@
 // this file is @generated
-/* eslint @typescript-eslint/no-explicit-any: 0 */
 
 /**
  * The value of the headers is returned in the `headers` field.

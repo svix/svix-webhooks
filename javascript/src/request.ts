@@ -69,7 +69,7 @@ export class SvixRequest {
       this.queryParams[name] = value.toString();
     } else if (value instanceof Date) {
       this.queryParams[name] = value.toISOString();
-    } else if (value instanceof Array) {
+    } else if (Array.isArray(value)) {
       if (value.length > 0) {
         this.queryParams[name] = value.join(",");
       }
@@ -107,7 +107,7 @@ export class SvixRequest {
     parseResponseBody: (jsonObject: any) => R
   ): Promise<R> {
     const response = await this.sendInner(ctx);
-    if (response.status == 204) {
+    if (response.status === 204) {
       return <R>null;
     }
     const responseBody = await response.text();
@@ -129,7 +129,7 @@ export class SvixRequest {
       this.headerParams["idempotency-key"] === undefined &&
       this.method.toUpperCase() === "POST"
     ) {
-      this.headerParams["idempotency-key"] = "auto_" + uuidv4();
+      this.headerParams["idempotency-key"] = `auto_${uuidv4()}`;
     }
 
     const randomId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);

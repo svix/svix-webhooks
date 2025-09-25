@@ -1,5 +1,4 @@
 // this file is @generated
-/* eslint @typescript-eslint/no-explicit-any: 0 */
 import { AdobeSignConfigOut, AdobeSignConfigOutSerializer } from "./adobeSignConfigOut";
 import { AirwallexConfigOut, AirwallexConfigOutSerializer } from "./airwallexConfigOut";
 import { CheckbookConfigOut, CheckbookConfigOutSerializer } from "./checkbookConfigOut";
@@ -33,7 +32,6 @@ interface _IngestSourceOutFields {
   updatedAt: Date;
 }
 
-/* eslint @typescript-eslint/no-empty-object-type: 0 */
 interface IngestSourceOutGenericWebhookConfig {}
 
 interface IngestSourceOutGenericWebhook {

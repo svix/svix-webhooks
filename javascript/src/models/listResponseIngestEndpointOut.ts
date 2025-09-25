@@ -1,5 +1,4 @@
 // this file is @generated
-/* eslint @typescript-eslint/no-explicit-any: 0 */
 import { IngestEndpointOut, IngestEndpointOutSerializer } from "./ingestEndpointOut";
 
 export interface ListResponseIngestEndpointOut {

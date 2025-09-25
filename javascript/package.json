@@ -22,11 +22,10 @@
     "build": "tsc",
     "prepare": "yarn run build",
     "test": "tsc -p tsconfig.test.json && node --enable-source-maps test_build/src/index.test.js",
-    "prepublishOnly": "yarn lint",
-    "lint:eslint": "eslint src",
-    "fmt": "biome format --write",
-    "lint": "biome format && yarn run lint:eslint --max-warnings=0",
-    "lint:fix": "yarn run lint:eslint --fix && yarn run fmt"
+    "prepublishOnly": "biome check",
+    "check": "biome check",
+    "check:fix": "biome check --write",
+    "fmt": "biome format --write"
   },
   "dependencies": {
     "@stablelib/base64": "^1.0.0",
@@ -36,13 +35,9 @@
   "devDependencies": {
     "@types/node": "^22.7.5",
     "@biomejs/biome": "2.2.4",
-    "@eslint/js": "^9.20.0",
     "@stablelib/utf8": "^2.0.0",
     "@types/uuid": "^10.0.0",
-    "eslint": "^9.20.1",
-    "globals": "^15.15.0",
     "mockttp": "^3.15.5",
-    "typescript": "^4.0",
-    "typescript-eslint": "^8.24.0"
+    "typescript": "^4.0"
   }
 }

@@ -1,5 +1,4 @@
 // this file is @generated
-/* eslint @typescript-eslint/no-explicit-any: 0 */
 import { ConnectorOut, ConnectorOutSerializer } from "./connectorOut";
 import { EventTypeOut, EventTypeOutSerializer } from "./eventTypeOut";
 

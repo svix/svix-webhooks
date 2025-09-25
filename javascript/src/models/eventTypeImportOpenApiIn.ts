@@ -1,5 +1,4 @@
 // this file is @generated
-/* eslint @typescript-eslint/no-explicit-any: 0 */
 
 /**
  * Import a list of event types from webhooks defined in an OpenAPI spec.
