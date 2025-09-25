@@ -13,7 +13,7 @@ export interface OperationalWebhookEndpointSecretOut {
 export const OperationalWebhookEndpointSecretOutSerializer = {
   _fromJsonObject(object: any): OperationalWebhookEndpointSecretOut {
     return {
-      key: object["key"],
+      key: object.key,
     };
   },
 

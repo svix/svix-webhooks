@@ -7,7 +7,7 @@ export interface GithubConfig {
 export const GithubConfigSerializer = {
   _fromJsonObject(object: any): GithubConfig {
     return {
-      secret: object["secret"],
+      secret: object.secret,
     };
   },
 

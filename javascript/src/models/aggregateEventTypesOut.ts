@@ -1,9 +1,12 @@
 // this file is @generated
 import {
-  BackgroundTaskStatus,
+  type BackgroundTaskStatus,
   BackgroundTaskStatusSerializer,
 } from "./backgroundTaskStatus";
-import { BackgroundTaskType, BackgroundTaskTypeSerializer } from "./backgroundTaskType";
+import {
+  type BackgroundTaskType,
+  BackgroundTaskTypeSerializer,
+} from "./backgroundTaskType";
 
 export interface AggregateEventTypesOut {
   /** The QueueBackgroundTask's ID. */
@@ -15,9 +18,9 @@ export interface AggregateEventTypesOut {
 export const AggregateEventTypesOutSerializer = {
   _fromJsonObject(object: any): AggregateEventTypesOut {
     return {
-      id: object["id"],
-      status: BackgroundTaskStatusSerializer._fromJsonObject(object["status"]),
-      task: BackgroundTaskTypeSerializer._fromJsonObject(object["task"]),
+      id: object.id,
+      status: BackgroundTaskStatusSerializer._fromJsonObject(object.status),
+      task: BackgroundTaskTypeSerializer._fromJsonObject(object.task),
     };
   },
 

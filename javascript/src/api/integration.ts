@@ -1,21 +1,19 @@
 // this file is @generated
 
-import { IntegrationIn, IntegrationInSerializer } from "../models/integrationIn";
-import {
+import type {
+  IntegrationIn,
   IntegrationKeyOut,
-  IntegrationKeyOutSerializer,
-} from "../models/integrationKeyOut";
-import { IntegrationOut, IntegrationOutSerializer } from "../models/integrationOut";
-import {
+  IntegrationOut,
   IntegrationUpdate,
-  IntegrationUpdateSerializer,
-} from "../models/integrationUpdate";
-import {
   ListResponseIntegrationOut,
-  ListResponseIntegrationOutSerializer,
-} from "../models/listResponseIntegrationOut";
-import { Ordering } from "../models/ordering";
-import { HttpMethod, SvixRequest, SvixRequestContext } from "../request";
+  Ordering,
+} from "../models/index";
+import { IntegrationInSerializer } from "../models/integrationIn";
+import { IntegrationKeyOutSerializer } from "../models/integrationKeyOut";
+import { IntegrationOutSerializer } from "../models/integrationOut";
+import { IntegrationUpdateSerializer } from "../models/integrationUpdate";
+import { ListResponseIntegrationOutSerializer } from "../models/listResponseIntegrationOut";
+import { HttpMethod, SvixRequest, type SvixRequestContext } from "../request";
 
 export interface IntegrationListOptions {
   /** Limit the number of returned items */

@@ -7,7 +7,7 @@ export interface RotateTokenOut {
 export const RotateTokenOutSerializer = {
   _fromJsonObject(object: any): RotateTokenOut {
     return {
-      ingestUrl: object["ingestUrl"],
+      ingestUrl: object.ingestUrl,
     };
   },
 

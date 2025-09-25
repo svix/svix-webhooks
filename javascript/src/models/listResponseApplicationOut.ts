@@ -1,5 +1,5 @@
 // this file is @generated
-import { ApplicationOut, ApplicationOutSerializer } from "./applicationOut";
+import { type ApplicationOut, ApplicationOutSerializer } from "./applicationOut";
 
 export interface ListResponseApplicationOut {
   data: ApplicationOut[];
@@ -11,12 +11,12 @@ export interface ListResponseApplicationOut {
 export const ListResponseApplicationOutSerializer = {
   _fromJsonObject(object: any): ListResponseApplicationOut {
     return {
-      data: object["data"].map((item: ApplicationOut) =>
+      data: object.data.map((item: ApplicationOut) =>
         ApplicationOutSerializer._fromJsonObject(item)
       ),
-      done: object["done"],
-      iterator: object["iterator"],
-      prevIterator: object["prevIterator"],
+      done: object.done,
+      iterator: object.iterator,
+      prevIterator: object.prevIterator,
     };
   },
 

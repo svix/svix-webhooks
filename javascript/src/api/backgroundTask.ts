@@ -1,17 +1,15 @@
 // this file is @generated
 
-import {
+import type {
   BackgroundTaskOut,
-  BackgroundTaskOutSerializer,
-} from "../models/backgroundTaskOut";
-import { BackgroundTaskStatus } from "../models/backgroundTaskStatus";
-import { BackgroundTaskType } from "../models/backgroundTaskType";
-import {
+  BackgroundTaskStatus,
+  BackgroundTaskType,
   ListResponseBackgroundTaskOut,
-  ListResponseBackgroundTaskOutSerializer,
-} from "../models/listResponseBackgroundTaskOut";
-import { Ordering } from "../models/ordering";
-import { HttpMethod, SvixRequest, SvixRequestContext } from "../request";
+  Ordering,
+} from "../models/index";
+import { BackgroundTaskOutSerializer } from "../models/backgroundTaskOut";
+import { ListResponseBackgroundTaskOutSerializer } from "../models/listResponseBackgroundTaskOut";
+import { HttpMethod, SvixRequest, type SvixRequestContext } from "../request";
 
 export interface BackgroundTaskListOptions {
   /** Filter the response based on the status. */

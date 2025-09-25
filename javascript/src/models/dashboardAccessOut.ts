@@ -8,8 +8,8 @@ export interface DashboardAccessOut {
 export const DashboardAccessOutSerializer = {
   _fromJsonObject(object: any): DashboardAccessOut {
     return {
-      token: object["token"],
-      url: object["url"],
+      token: object.token,
+      url: object.url,
     };
   },
 

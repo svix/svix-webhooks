@@ -1,25 +1,34 @@
 // this file is @generated
-import { AdobeSignConfigOut, AdobeSignConfigOutSerializer } from "./adobeSignConfigOut";
-import { AirwallexConfigOut, AirwallexConfigOutSerializer } from "./airwallexConfigOut";
-import { CheckbookConfigOut, CheckbookConfigOutSerializer } from "./checkbookConfigOut";
-import { CronConfig, CronConfigSerializer } from "./cronConfig";
-import { DocusignConfigOut, DocusignConfigOutSerializer } from "./docusignConfigOut";
-import { EasypostConfigOut, EasypostConfigOutSerializer } from "./easypostConfigOut";
-import { GithubConfigOut, GithubConfigOutSerializer } from "./githubConfigOut";
-import { HubspotConfigOut, HubspotConfigOutSerializer } from "./hubspotConfigOut";
-import { OrumIoConfigOut, OrumIoConfigOutSerializer } from "./orumIoConfigOut";
-import { PandaDocConfigOut, PandaDocConfigOutSerializer } from "./pandaDocConfigOut";
-import { PortIoConfigOut, PortIoConfigOutSerializer } from "./portIoConfigOut";
-import { RutterConfigOut, RutterConfigOutSerializer } from "./rutterConfigOut";
-import { SegmentConfigOut, SegmentConfigOutSerializer } from "./segmentConfigOut";
-import { ShopifyConfigOut, ShopifyConfigOutSerializer } from "./shopifyConfigOut";
-import { SlackConfigOut, SlackConfigOutSerializer } from "./slackConfigOut";
-import { StripeConfigOut, StripeConfigOutSerializer } from "./stripeConfigOut";
-import { SvixConfigOut, SvixConfigOutSerializer } from "./svixConfigOut";
-import { TelnyxConfigOut, TelnyxConfigOutSerializer } from "./telnyxConfigOut";
-import { VapiConfigOut, VapiConfigOutSerializer } from "./vapiConfigOut";
-import { VeriffConfigOut, VeriffConfigOutSerializer } from "./veriffConfigOut";
-import { ZoomConfigOut, ZoomConfigOutSerializer } from "./zoomConfigOut";
+import {
+  type AdobeSignConfigOut,
+  AdobeSignConfigOutSerializer,
+} from "./adobeSignConfigOut";
+import {
+  type AirwallexConfigOut,
+  AirwallexConfigOutSerializer,
+} from "./airwallexConfigOut";
+import {
+  type CheckbookConfigOut,
+  CheckbookConfigOutSerializer,
+} from "./checkbookConfigOut";
+import { type CronConfig, CronConfigSerializer } from "./cronConfig";
+import { type DocusignConfigOut, DocusignConfigOutSerializer } from "./docusignConfigOut";
+import { type EasypostConfigOut, EasypostConfigOutSerializer } from "./easypostConfigOut";
+import { type GithubConfigOut, GithubConfigOutSerializer } from "./githubConfigOut";
+import { type HubspotConfigOut, HubspotConfigOutSerializer } from "./hubspotConfigOut";
+import { type OrumIoConfigOut, OrumIoConfigOutSerializer } from "./orumIoConfigOut";
+import { type PandaDocConfigOut, PandaDocConfigOutSerializer } from "./pandaDocConfigOut";
+import { type PortIoConfigOut, PortIoConfigOutSerializer } from "./portIoConfigOut";
+import { type RutterConfigOut, RutterConfigOutSerializer } from "./rutterConfigOut";
+import { type SegmentConfigOut, SegmentConfigOutSerializer } from "./segmentConfigOut";
+import { type ShopifyConfigOut, ShopifyConfigOutSerializer } from "./shopifyConfigOut";
+import { type SlackConfigOut, SlackConfigOutSerializer } from "./slackConfigOut";
+import { type StripeConfigOut, StripeConfigOutSerializer } from "./stripeConfigOut";
+import { type SvixConfigOut, SvixConfigOutSerializer } from "./svixConfigOut";
+import { type TelnyxConfigOut, TelnyxConfigOutSerializer } from "./telnyxConfigOut";
+import { type VapiConfigOut, VapiConfigOutSerializer } from "./vapiConfigOut";
+import { type VeriffConfigOut, VeriffConfigOutSerializer } from "./veriffConfigOut";
+import { type ZoomConfigOut, ZoomConfigOutSerializer } from "./zoomConfigOut";
 interface _IngestSourceOutFields {
   createdAt: Date;
   /** The Source's ID. */
@@ -32,6 +41,7 @@ interface _IngestSourceOutFields {
   updatedAt: Date;
 }
 
+// biome-ignore lint/suspicious/noEmptyInterface: backwards compat
 interface IngestSourceOutGenericWebhookConfig {}
 
 interface IngestSourceOutGenericWebhook {
@@ -262,84 +272,84 @@ export type IngestSourceOut = _IngestSourceOutFields &
 
 export const IngestSourceOutSerializer = {
   _fromJsonObject(object: any): IngestSourceOut {
-    const type = object["type"];
+    const type = object.type;
 
     function getConfig(type: string): any {
       switch (type) {
         case "generic-webhook":
           return {};
         case "cron":
-          return CronConfigSerializer._fromJsonObject(object["config"]);
+          return CronConfigSerializer._fromJsonObject(object.config);
         case "adobe-sign":
-          return AdobeSignConfigOutSerializer._fromJsonObject(object["config"]);
+          return AdobeSignConfigOutSerializer._fromJsonObject(object.config);
         case "beehiiv":
-          return SvixConfigOutSerializer._fromJsonObject(object["config"]);
+          return SvixConfigOutSerializer._fromJsonObject(object.config);
         case "brex":
-          return SvixConfigOutSerializer._fromJsonObject(object["config"]);
+          return SvixConfigOutSerializer._fromJsonObject(object.config);
         case "checkbook":
-          return CheckbookConfigOutSerializer._fromJsonObject(object["config"]);
+          return CheckbookConfigOutSerializer._fromJsonObject(object.config);
         case "clerk":
-          return SvixConfigOutSerializer._fromJsonObject(object["config"]);
+          return SvixConfigOutSerializer._fromJsonObject(object.config);
         case "docusign":
-          return DocusignConfigOutSerializer._fromJsonObject(object["config"]);
+          return DocusignConfigOutSerializer._fromJsonObject(object.config);
         case "easypost":
-          return EasypostConfigOutSerializer._fromJsonObject(object["config"]);
+          return EasypostConfigOutSerializer._fromJsonObject(object.config);
         case "github":
-          return GithubConfigOutSerializer._fromJsonObject(object["config"]);
+          return GithubConfigOutSerializer._fromJsonObject(object.config);
         case "guesty":
-          return SvixConfigOutSerializer._fromJsonObject(object["config"]);
+          return SvixConfigOutSerializer._fromJsonObject(object.config);
         case "hubspot":
-          return HubspotConfigOutSerializer._fromJsonObject(object["config"]);
+          return HubspotConfigOutSerializer._fromJsonObject(object.config);
         case "incident-io":
-          return SvixConfigOutSerializer._fromJsonObject(object["config"]);
+          return SvixConfigOutSerializer._fromJsonObject(object.config);
         case "lithic":
-          return SvixConfigOutSerializer._fromJsonObject(object["config"]);
+          return SvixConfigOutSerializer._fromJsonObject(object.config);
         case "nash":
-          return SvixConfigOutSerializer._fromJsonObject(object["config"]);
+          return SvixConfigOutSerializer._fromJsonObject(object.config);
         case "orum-io":
-          return OrumIoConfigOutSerializer._fromJsonObject(object["config"]);
+          return OrumIoConfigOutSerializer._fromJsonObject(object.config);
         case "panda-doc":
-          return PandaDocConfigOutSerializer._fromJsonObject(object["config"]);
+          return PandaDocConfigOutSerializer._fromJsonObject(object.config);
         case "port-io":
-          return PortIoConfigOutSerializer._fromJsonObject(object["config"]);
+          return PortIoConfigOutSerializer._fromJsonObject(object.config);
         case "pleo":
-          return SvixConfigOutSerializer._fromJsonObject(object["config"]);
+          return SvixConfigOutSerializer._fromJsonObject(object.config);
         case "replicate":
-          return SvixConfigOutSerializer._fromJsonObject(object["config"]);
+          return SvixConfigOutSerializer._fromJsonObject(object.config);
         case "resend":
-          return SvixConfigOutSerializer._fromJsonObject(object["config"]);
+          return SvixConfigOutSerializer._fromJsonObject(object.config);
         case "rutter":
-          return RutterConfigOutSerializer._fromJsonObject(object["config"]);
+          return RutterConfigOutSerializer._fromJsonObject(object.config);
         case "safebase":
-          return SvixConfigOutSerializer._fromJsonObject(object["config"]);
+          return SvixConfigOutSerializer._fromJsonObject(object.config);
         case "sardine":
-          return SvixConfigOutSerializer._fromJsonObject(object["config"]);
+          return SvixConfigOutSerializer._fromJsonObject(object.config);
         case "segment":
-          return SegmentConfigOutSerializer._fromJsonObject(object["config"]);
+          return SegmentConfigOutSerializer._fromJsonObject(object.config);
         case "shopify":
-          return ShopifyConfigOutSerializer._fromJsonObject(object["config"]);
+          return ShopifyConfigOutSerializer._fromJsonObject(object.config);
         case "slack":
-          return SlackConfigOutSerializer._fromJsonObject(object["config"]);
+          return SlackConfigOutSerializer._fromJsonObject(object.config);
         case "stripe":
-          return StripeConfigOutSerializer._fromJsonObject(object["config"]);
+          return StripeConfigOutSerializer._fromJsonObject(object.config);
         case "stych":
-          return SvixConfigOutSerializer._fromJsonObject(object["config"]);
+          return SvixConfigOutSerializer._fromJsonObject(object.config);
         case "svix":
-          return SvixConfigOutSerializer._fromJsonObject(object["config"]);
+          return SvixConfigOutSerializer._fromJsonObject(object.config);
         case "zoom":
-          return ZoomConfigOutSerializer._fromJsonObject(object["config"]);
+          return ZoomConfigOutSerializer._fromJsonObject(object.config);
         case "telnyx":
-          return TelnyxConfigOutSerializer._fromJsonObject(object["config"]);
+          return TelnyxConfigOutSerializer._fromJsonObject(object.config);
         case "vapi":
-          return VapiConfigOutSerializer._fromJsonObject(object["config"]);
+          return VapiConfigOutSerializer._fromJsonObject(object.config);
         case "open-ai":
-          return SvixConfigOutSerializer._fromJsonObject(object["config"]);
+          return SvixConfigOutSerializer._fromJsonObject(object.config);
         case "render":
-          return SvixConfigOutSerializer._fromJsonObject(object["config"]);
+          return SvixConfigOutSerializer._fromJsonObject(object.config);
         case "veriff":
-          return VeriffConfigOutSerializer._fromJsonObject(object["config"]);
+          return VeriffConfigOutSerializer._fromJsonObject(object.config);
         case "airwallex":
-          return AirwallexConfigOutSerializer._fromJsonObject(object["config"]);
+          return AirwallexConfigOutSerializer._fromJsonObject(object.config);
         default:
           throw new Error(`Unexpected type: ${type}`);
       }
@@ -347,17 +357,18 @@ export const IngestSourceOutSerializer = {
     return {
       type,
       config: getConfig(type),
-      createdAt: new Date(object["createdAt"]),
-      id: object["id"],
-      ingestUrl: object["ingestUrl"],
-      metadata: object["metadata"],
-      name: object["name"],
-      uid: object["uid"],
-      updatedAt: new Date(object["updatedAt"]),
+      createdAt: new Date(object.createdAt),
+      id: object.id,
+      ingestUrl: object.ingestUrl,
+      metadata: object.metadata,
+      name: object.name,
+      uid: object.uid,
+      updatedAt: new Date(object.updatedAt),
     };
   },
 
   _toJsonObject(self: IngestSourceOut): any {
+    // biome-ignore lint/suspicious/noImplicitAnyLet: the return type needs to be any
     let config;
     switch (self.type) {
       case "generic-webhook":

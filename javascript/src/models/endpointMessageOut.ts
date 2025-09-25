@@ -1,6 +1,6 @@
 // this file is @generated
-import { MessageStatus, MessageStatusSerializer } from "./messageStatus";
-import { MessageStatusText, MessageStatusTextSerializer } from "./messageStatusText";
+import { type MessageStatus, MessageStatusSerializer } from "./messageStatus";
+import { type MessageStatusText, MessageStatusTextSerializer } from "./messageStatusText";
 
 /** A model containing information on a given message plus additional fields on the last attempt for that message. */
 export interface EndpointMessageOut {
@@ -23,16 +23,16 @@ export interface EndpointMessageOut {
 export const EndpointMessageOutSerializer = {
   _fromJsonObject(object: any): EndpointMessageOut {
     return {
-      channels: object["channels"],
-      eventId: object["eventId"],
-      eventType: object["eventType"],
-      id: object["id"],
-      nextAttempt: object["nextAttempt"] ? new Date(object["nextAttempt"]) : null,
-      payload: object["payload"],
-      status: MessageStatusSerializer._fromJsonObject(object["status"]),
-      statusText: MessageStatusTextSerializer._fromJsonObject(object["statusText"]),
-      tags: object["tags"],
-      timestamp: new Date(object["timestamp"]),
+      channels: object.channels,
+      eventId: object.eventId,
+      eventType: object.eventType,
+      id: object.id,
+      nextAttempt: object.nextAttempt ? new Date(object.nextAttempt) : null,
+      payload: object.payload,
+      status: MessageStatusSerializer._fromJsonObject(object.status),
+      statusText: MessageStatusTextSerializer._fromJsonObject(object.statusText),
+      tags: object.tags,
+      timestamp: new Date(object.timestamp),
     };
   },
 

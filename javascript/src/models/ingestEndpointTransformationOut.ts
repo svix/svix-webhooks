@@ -8,8 +8,8 @@ export interface IngestEndpointTransformationOut {
 export const IngestEndpointTransformationOutSerializer = {
   _fromJsonObject(object: any): IngestEndpointTransformationOut {
     return {
-      code: object["code"],
-      enabled: object["enabled"],
+      code: object.code,
+      enabled: object.enabled,
     };
   },
 

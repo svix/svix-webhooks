@@ -1,9 +1,9 @@
 // this file is @generated
 import {
-  AppPortalCapability,
+  type AppPortalCapability,
   AppPortalCapabilitySerializer,
 } from "./appPortalCapability";
-import { ApplicationIn, ApplicationInSerializer } from "./applicationIn";
+import { type ApplicationIn, ApplicationInSerializer } from "./applicationIn";
 
 export interface AppPortalAccessIn {
   /**
@@ -55,16 +55,16 @@ export interface AppPortalAccessIn {
 export const AppPortalAccessInSerializer = {
   _fromJsonObject(object: any): AppPortalAccessIn {
     return {
-      application: object["application"]
-        ? ApplicationInSerializer._fromJsonObject(object["application"])
+      application: object.application
+        ? ApplicationInSerializer._fromJsonObject(object.application)
         : undefined,
-      capabilities: object["capabilities"]?.map((item: AppPortalCapability) =>
+      capabilities: object.capabilities?.map((item: AppPortalCapability) =>
         AppPortalCapabilitySerializer._fromJsonObject(item)
       ),
-      expiry: object["expiry"],
-      featureFlags: object["featureFlags"],
-      readOnly: object["readOnly"],
-      sessionId: object["sessionId"],
+      expiry: object.expiry,
+      featureFlags: object.featureFlags,
+      readOnly: object.readOnly,
+      sessionId: object.sessionId,
     };
   },
 

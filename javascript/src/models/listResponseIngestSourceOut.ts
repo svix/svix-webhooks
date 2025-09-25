@@ -1,5 +1,5 @@
 // this file is @generated
-import { IngestSourceOut, IngestSourceOutSerializer } from "./ingestSourceOut";
+import { type IngestSourceOut, IngestSourceOutSerializer } from "./ingestSourceOut";
 
 export interface ListResponseIngestSourceOut {
   data: IngestSourceOut[];
@@ -11,12 +11,12 @@ export interface ListResponseIngestSourceOut {
 export const ListResponseIngestSourceOutSerializer = {
   _fromJsonObject(object: any): ListResponseIngestSourceOut {
     return {
-      data: object["data"].map((item: IngestSourceOut) =>
+      data: object.data.map((item: IngestSourceOut) =>
         IngestSourceOutSerializer._fromJsonObject(item)
       ),
-      done: object["done"],
-      iterator: object["iterator"],
-      prevIterator: object["prevIterator"],
+      done: object.done,
+      iterator: object.iterator,
+      prevIterator: object.prevIterator,
     };
   },
 

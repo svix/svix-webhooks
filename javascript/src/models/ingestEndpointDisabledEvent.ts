@@ -1,6 +1,6 @@
 // this file is @generated
 import {
-  IngestEndpointDisabledEventData,
+  type IngestEndpointDisabledEventData,
   IngestEndpointDisabledEventDataSerializer,
 } from "./ingestEndpointDisabledEventData";
 
@@ -13,8 +13,8 @@ export interface IngestEndpointDisabledEvent {
 export const IngestEndpointDisabledEventSerializer = {
   _fromJsonObject(object: any): IngestEndpointDisabledEvent {
     return {
-      data: IngestEndpointDisabledEventDataSerializer._fromJsonObject(object["data"]),
-      type: object["type"],
+      data: IngestEndpointDisabledEventDataSerializer._fromJsonObject(object.data),
+      type: object.type,
     };
   },
 

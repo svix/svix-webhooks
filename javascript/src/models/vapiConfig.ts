@@ -7,7 +7,7 @@ export interface VapiConfig {
 export const VapiConfigSerializer = {
   _fromJsonObject(object: any): VapiConfig {
     return {
-      secret: object["secret"],
+      secret: object.secret,
     };
   },
 

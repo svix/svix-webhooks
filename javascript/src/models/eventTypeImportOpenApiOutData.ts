@@ -1,6 +1,6 @@
 // this file is @generated
 import {
-  EventTypeFromOpenApi,
+  type EventTypeFromOpenApi,
   EventTypeFromOpenApiSerializer,
 } from "./eventTypeFromOpenApi";
 
@@ -12,8 +12,8 @@ export interface EventTypeImportOpenApiOutData {
 export const EventTypeImportOpenApiOutDataSerializer = {
   _fromJsonObject(object: any): EventTypeImportOpenApiOutData {
     return {
-      modified: object["modified"],
-      toModify: object["to_modify"]?.map((item: EventTypeFromOpenApi) =>
+      modified: object.modified,
+      toModify: object.to_modify?.map((item: EventTypeFromOpenApi) =>
         EventTypeFromOpenApiSerializer._fromJsonObject(item)
       ),
     };

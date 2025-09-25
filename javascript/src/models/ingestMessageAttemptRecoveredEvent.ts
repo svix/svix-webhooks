@@ -1,6 +1,6 @@
 // this file is @generated
 import {
-  IngestMessageAttemptRecoveredEventData,
+  type IngestMessageAttemptRecoveredEventData,
   IngestMessageAttemptRecoveredEventDataSerializer,
 } from "./ingestMessageAttemptRecoveredEventData";
 
@@ -13,10 +13,8 @@ export interface IngestMessageAttemptRecoveredEvent {
 export const IngestMessageAttemptRecoveredEventSerializer = {
   _fromJsonObject(object: any): IngestMessageAttemptRecoveredEvent {
     return {
-      data: IngestMessageAttemptRecoveredEventDataSerializer._fromJsonObject(
-        object["data"]
-      ),
-      type: object["type"],
+      data: IngestMessageAttemptRecoveredEventDataSerializer._fromJsonObject(object.data),
+      type: object.type,
     };
   },
 

@@ -1,12 +1,13 @@
 {% from "types/macros.ts.jinja" import field_from_json, field_to_json -%}
 {% for c in referenced_components -%}
 import {
-    {{ c | to_upper_camel_case }},
+    type {{ c | to_upper_camel_case }},
     {{ c | to_upper_camel_case }}Serializer,
 } from './{{ c | to_lower_camel_case }}';
 {% endfor -%}
-
 {% set type_name = type.name | to_upper_camel_case %}
+
+{% if type.fields | length == 0 %}// biome-ignore-all lint/suspicious/noEmptyInterface: backwards compat{% endif %}
 
 {{ doc_comment }}
 export interface {{ type_name }} {
@@ -14,16 +15,17 @@ export interface {{ type_name }} {
 }
 
 export const {{ type_name }}Serializer = {
-    _fromJsonObject(object: any): {{ type_name }} {
+    {% set underscore_prefix %}{% if type.fields | length == 0%}_{% endif %}{% endset -%}
+    _fromJsonObject({{ underscore_prefix }}object: any): {{ type_name }} {
         return {
             {% for field in type.fields -%}
-                {% set field_expr %}object['{{ field.name }}']{% endset -%}
+                {% set field_expr %}object.{{ field.name }}{% endset -%}
                 {{ field.name | to_lower_camel_case }}: {{ field_from_json(field_expr, field.type, field.required) }},
             {% endfor -%}
         };
     },
 
-    _toJsonObject(self: {{ type_name }}): any {
+    _toJsonObject({{ underscore_prefix }}self: {{ type_name }}): any {
         return {
             {% for field in type.fields -%}
                 {% set field_expr %}self.{{ field.name | to_lower_camel_case }}{% endset -%}

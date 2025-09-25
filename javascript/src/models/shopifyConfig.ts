@@ -7,7 +7,7 @@ export interface ShopifyConfig {
 export const ShopifyConfigSerializer = {
   _fromJsonObject(object: any): ShopifyConfig {
     return {
-      secret: object["secret"],
+      secret: object.secret,
     };
   },
 

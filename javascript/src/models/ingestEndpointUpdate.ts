@@ -13,12 +13,12 @@ export interface IngestEndpointUpdate {
 export const IngestEndpointUpdateSerializer = {
   _fromJsonObject(object: any): IngestEndpointUpdate {
     return {
-      description: object["description"],
-      disabled: object["disabled"],
-      metadata: object["metadata"],
-      rateLimit: object["rateLimit"],
-      uid: object["uid"],
-      url: object["url"],
+      description: object.description,
+      disabled: object.disabled,
+      metadata: object.metadata,
+      rateLimit: object.rateLimit,
+      uid: object.uid,
+      url: object.url,
     };
   },
 

@@ -15,13 +15,13 @@ export interface EventTypeFromOpenApi {
 export const EventTypeFromOpenApiSerializer = {
   _fromJsonObject(object: any): EventTypeFromOpenApi {
     return {
-      deprecated: object["deprecated"],
-      description: object["description"],
-      featureFlag: object["featureFlag"],
-      featureFlags: object["featureFlags"],
-      groupName: object["groupName"],
-      name: object["name"],
-      schemas: object["schemas"],
+      deprecated: object.deprecated,
+      description: object.description,
+      featureFlag: object.featureFlag,
+      featureFlags: object.featureFlags,
+      groupName: object.groupName,
+      name: object.name,
+      schemas: object.schemas,
     };
   },
 

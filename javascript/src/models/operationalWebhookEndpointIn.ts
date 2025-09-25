@@ -21,14 +21,14 @@ export interface OperationalWebhookEndpointIn {
 export const OperationalWebhookEndpointInSerializer = {
   _fromJsonObject(object: any): OperationalWebhookEndpointIn {
     return {
-      description: object["description"],
-      disabled: object["disabled"],
-      filterTypes: object["filterTypes"],
-      metadata: object["metadata"],
-      rateLimit: object["rateLimit"],
-      secret: object["secret"],
-      uid: object["uid"],
-      url: object["url"],
+      description: object.description,
+      disabled: object.disabled,
+      filterTypes: object.filterTypes,
+      metadata: object.metadata,
+      rateLimit: object.rateLimit,
+      secret: object.secret,
+      uid: object.uid,
+      url: object.url,
     };
   },
 

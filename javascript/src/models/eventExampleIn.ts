@@ -14,8 +14,8 @@ export interface EventExampleIn {
 export const EventExampleInSerializer = {
   _fromJsonObject(object: any): EventExampleIn {
     return {
-      eventType: object["eventType"],
-      exampleIndex: object["exampleIndex"],
+      eventType: object.eventType,
+      exampleIndex: object.exampleIndex,
     };
   },
 

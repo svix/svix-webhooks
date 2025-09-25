@@ -13,13 +13,13 @@ import { MessageAttempt } from "./api/messageAttempt";
 import { OperationalWebhook } from "./api/operationalWebhook";
 import { Statistics } from "./api/statistics";
 import { OperationalWebhookEndpoint } from "./api/operationalWebhookEndpoint";
-import { SvixRequestContext } from "./request";
+import type { SvixRequestContext } from "./request";
 
 export { PostOptions, ApiException } from "./util";
 export { HTTPValidationError, HttpErrorOut, ValidationError } from "./HttpErrors";
 export * from "./webhook";
 export * from "./models/index";
-import { XOR } from "./util";
+import type { XOR } from "./util";
 
 export { ApplicationListOptions } from "./api/application";
 export { BackgroundTaskListOptions } from "./api/backgroundTask";

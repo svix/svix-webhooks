@@ -14,13 +14,13 @@ export interface EventTypePatch {
 export const EventTypePatchSerializer = {
   _fromJsonObject(object: any): EventTypePatch {
     return {
-      archived: object["archived"],
-      deprecated: object["deprecated"],
-      description: object["description"],
-      featureFlag: object["featureFlag"],
-      featureFlags: object["featureFlags"],
-      groupName: object["groupName"],
-      schemas: object["schemas"],
+      archived: object.archived,
+      deprecated: object.deprecated,
+      description: object.description,
+      featureFlag: object.featureFlag,
+      featureFlags: object.featureFlags,
+      groupName: object.groupName,
+      schemas: object.schemas,
     };
   },
 

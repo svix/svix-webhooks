@@ -1,6 +1,6 @@
 // this file is @generated
 import {
-  BackgroundTaskFinishedEvent2,
+  type BackgroundTaskFinishedEvent2,
   BackgroundTaskFinishedEvent2Serializer,
 } from "./backgroundTaskFinishedEvent2";
 
@@ -13,8 +13,8 @@ export interface BackgroundTaskFinishedEvent {
 export const BackgroundTaskFinishedEventSerializer = {
   _fromJsonObject(object: any): BackgroundTaskFinishedEvent {
     return {
-      data: BackgroundTaskFinishedEvent2Serializer._fromJsonObject(object["data"]),
-      type: object["type"],
+      data: BackgroundTaskFinishedEvent2Serializer._fromJsonObject(object.data),
+      type: object.type,
     };
   },
 

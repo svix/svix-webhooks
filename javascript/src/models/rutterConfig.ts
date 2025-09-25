@@ -7,7 +7,7 @@ export interface RutterConfig {
 export const RutterConfigSerializer = {
   _fromJsonObject(object: any): RutterConfig {
     return {
-      secret: object["secret"],
+      secret: object.secret,
     };
   },
 

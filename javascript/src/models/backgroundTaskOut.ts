@@ -1,9 +1,12 @@
 // this file is @generated
 import {
-  BackgroundTaskStatus,
+  type BackgroundTaskStatus,
   BackgroundTaskStatusSerializer,
 } from "./backgroundTaskStatus";
-import { BackgroundTaskType, BackgroundTaskTypeSerializer } from "./backgroundTaskType";
+import {
+  type BackgroundTaskType,
+  BackgroundTaskTypeSerializer,
+} from "./backgroundTaskType";
 
 export interface BackgroundTaskOut {
   data: any;
@@ -16,10 +19,10 @@ export interface BackgroundTaskOut {
 export const BackgroundTaskOutSerializer = {
   _fromJsonObject(object: any): BackgroundTaskOut {
     return {
-      data: object["data"],
-      id: object["id"],
-      status: BackgroundTaskStatusSerializer._fromJsonObject(object["status"]),
-      task: BackgroundTaskTypeSerializer._fromJsonObject(object["task"]),
+      data: object.data,
+      id: object.id,
+      status: BackgroundTaskStatusSerializer._fromJsonObject(object.status),
+      task: BackgroundTaskTypeSerializer._fromJsonObject(object.task),
     };
   },
 

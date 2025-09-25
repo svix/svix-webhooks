@@ -22,14 +22,14 @@ export interface EventTypeIn {
 export const EventTypeInSerializer = {
   _fromJsonObject(object: any): EventTypeIn {
     return {
-      archived: object["archived"],
-      deprecated: object["deprecated"],
-      description: object["description"],
-      featureFlag: object["featureFlag"],
-      featureFlags: object["featureFlags"],
-      groupName: object["groupName"],
-      name: object["name"],
-      schemas: object["schemas"],
+      archived: object.archived,
+      deprecated: object.deprecated,
+      description: object.description,
+      featureFlag: object.featureFlag,
+      featureFlags: object.featureFlags,
+      groupName: object.groupName,
+      name: object.name,
+      schemas: object.schemas,
     };
   },
 

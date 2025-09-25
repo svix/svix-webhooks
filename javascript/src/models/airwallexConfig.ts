@@ -7,7 +7,7 @@ export interface AirwallexConfig {
 export const AirwallexConfigSerializer = {
   _fromJsonObject(object: any): AirwallexConfig {
     return {
-      secret: object["secret"],
+      secret: object.secret,
     };
   },
 

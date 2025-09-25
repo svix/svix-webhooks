@@ -19,16 +19,16 @@ export interface EventTypeOut {
 export const EventTypeOutSerializer = {
   _fromJsonObject(object: any): EventTypeOut {
     return {
-      archived: object["archived"],
-      createdAt: new Date(object["createdAt"]),
-      deprecated: object["deprecated"],
-      description: object["description"],
-      featureFlag: object["featureFlag"],
-      featureFlags: object["featureFlags"],
-      groupName: object["groupName"],
-      name: object["name"],
-      schemas: object["schemas"],
-      updatedAt: new Date(object["updatedAt"]),
+      archived: object.archived,
+      createdAt: new Date(object.createdAt),
+      deprecated: object.deprecated,
+      description: object.description,
+      featureFlag: object.featureFlag,
+      featureFlags: object.featureFlags,
+      groupName: object.groupName,
+      name: object.name,
+      schemas: object.schemas,
+      updatedAt: new Date(object.updatedAt),
     };
   },
 

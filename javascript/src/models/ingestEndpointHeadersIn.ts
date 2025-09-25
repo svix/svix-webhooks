@@ -7,7 +7,7 @@ export interface IngestEndpointHeadersIn {
 export const IngestEndpointHeadersInSerializer = {
   _fromJsonObject(object: any): IngestEndpointHeadersIn {
     return {
-      headers: object["headers"],
+      headers: object.headers,
     };
   },
 

@@ -2,11 +2,13 @@
 
 {% set resource_type_name = resource.name | to_upper_camel_case -%}
 
+import type {
 {% for c in referenced_components -%}
-import {
-    {{ c | to_upper_camel_case }},
-    {{ c | to_upper_camel_case }}Serializer,
-} from '../models/{{ c | to_lower_camel_case }}';
+  {{ c | to_upper_camel_case }},
+{% endfor -%}
+} from "../models/index";
+{% for c in referenced_components -%}
+import { {{ c | to_upper_camel_case }}Serializer } from '../models/{{ c | to_lower_camel_case }}';
 {% endfor -%}
 {# HACK: can't easily do this with api_extra files -#}
 {% if resource.name == "authentication" -%}

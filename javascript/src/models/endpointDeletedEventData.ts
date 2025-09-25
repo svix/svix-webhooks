@@ -15,10 +15,10 @@ export interface EndpointDeletedEventData {
 export const EndpointDeletedEventDataSerializer = {
   _fromJsonObject(object: any): EndpointDeletedEventData {
     return {
-      appId: object["appId"],
-      appUid: object["appUid"],
-      endpointId: object["endpointId"],
-      endpointUid: object["endpointUid"],
+      appId: object.appId,
+      appUid: object.appUid,
+      endpointId: object.endpointId,
+      endpointUid: object.endpointUid,
     };
   },
 

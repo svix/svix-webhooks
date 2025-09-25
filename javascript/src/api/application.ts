@@ -1,14 +1,17 @@
 // this file is @generated
 
-import { ApplicationIn, ApplicationInSerializer } from "../models/applicationIn";
-import { ApplicationOut, ApplicationOutSerializer } from "../models/applicationOut";
-import { ApplicationPatch, ApplicationPatchSerializer } from "../models/applicationPatch";
-import {
+import type {
+  ApplicationIn,
+  ApplicationOut,
+  ApplicationPatch,
   ListResponseApplicationOut,
-  ListResponseApplicationOutSerializer,
-} from "../models/listResponseApplicationOut";
-import { Ordering } from "../models/ordering";
-import { HttpMethod, SvixRequest, SvixRequestContext } from "../request";
+  Ordering,
+} from "../models/index";
+import { ApplicationInSerializer } from "../models/applicationIn";
+import { ApplicationOutSerializer } from "../models/applicationOut";
+import { ApplicationPatchSerializer } from "../models/applicationPatch";
+import { ListResponseApplicationOutSerializer } from "../models/listResponseApplicationOut";
+import { HttpMethod, SvixRequest, type SvixRequestContext } from "../request";
 
 export interface ApplicationListOptions {
   /** Limit the number of returned items */

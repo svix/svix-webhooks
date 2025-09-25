@@ -1,5 +1,8 @@
 // this file is @generated
-import { EndpointMessageOut, EndpointMessageOutSerializer } from "./endpointMessageOut";
+import {
+  type EndpointMessageOut,
+  EndpointMessageOutSerializer,
+} from "./endpointMessageOut";
 
 export interface ListResponseEndpointMessageOut {
   data: EndpointMessageOut[];
@@ -11,12 +14,12 @@ export interface ListResponseEndpointMessageOut {
 export const ListResponseEndpointMessageOutSerializer = {
   _fromJsonObject(object: any): ListResponseEndpointMessageOut {
     return {
-      data: object["data"].map((item: EndpointMessageOut) =>
+      data: object.data.map((item: EndpointMessageOut) =>
         EndpointMessageOutSerializer._fromJsonObject(item)
       ),
-      done: object["done"],
-      iterator: object["iterator"],
-      prevIterator: object["prevIterator"],
+      done: object.done,
+      iterator: object.iterator,
+      prevIterator: object.prevIterator,
     };
   },
 

@@ -1,25 +1,25 @@
 // this file is @generated
-import { AdobeSignConfig, AdobeSignConfigSerializer } from "./adobeSignConfig";
-import { AirwallexConfig, AirwallexConfigSerializer } from "./airwallexConfig";
-import { CheckbookConfig, CheckbookConfigSerializer } from "./checkbookConfig";
-import { CronConfig, CronConfigSerializer } from "./cronConfig";
-import { DocusignConfig, DocusignConfigSerializer } from "./docusignConfig";
-import { EasypostConfig, EasypostConfigSerializer } from "./easypostConfig";
-import { GithubConfig, GithubConfigSerializer } from "./githubConfig";
-import { HubspotConfig, HubspotConfigSerializer } from "./hubspotConfig";
-import { OrumIoConfig, OrumIoConfigSerializer } from "./orumIoConfig";
-import { PandaDocConfig, PandaDocConfigSerializer } from "./pandaDocConfig";
-import { PortIoConfig, PortIoConfigSerializer } from "./portIoConfig";
-import { RutterConfig, RutterConfigSerializer } from "./rutterConfig";
-import { SegmentConfig, SegmentConfigSerializer } from "./segmentConfig";
-import { ShopifyConfig, ShopifyConfigSerializer } from "./shopifyConfig";
-import { SlackConfig, SlackConfigSerializer } from "./slackConfig";
-import { StripeConfig, StripeConfigSerializer } from "./stripeConfig";
-import { SvixConfig, SvixConfigSerializer } from "./svixConfig";
-import { TelnyxConfig, TelnyxConfigSerializer } from "./telnyxConfig";
-import { VapiConfig, VapiConfigSerializer } from "./vapiConfig";
-import { VeriffConfig, VeriffConfigSerializer } from "./veriffConfig";
-import { ZoomConfig, ZoomConfigSerializer } from "./zoomConfig";
+import { type AdobeSignConfig, AdobeSignConfigSerializer } from "./adobeSignConfig";
+import { type AirwallexConfig, AirwallexConfigSerializer } from "./airwallexConfig";
+import { type CheckbookConfig, CheckbookConfigSerializer } from "./checkbookConfig";
+import { type CronConfig, CronConfigSerializer } from "./cronConfig";
+import { type DocusignConfig, DocusignConfigSerializer } from "./docusignConfig";
+import { type EasypostConfig, EasypostConfigSerializer } from "./easypostConfig";
+import { type GithubConfig, GithubConfigSerializer } from "./githubConfig";
+import { type HubspotConfig, HubspotConfigSerializer } from "./hubspotConfig";
+import { type OrumIoConfig, OrumIoConfigSerializer } from "./orumIoConfig";
+import { type PandaDocConfig, PandaDocConfigSerializer } from "./pandaDocConfig";
+import { type PortIoConfig, PortIoConfigSerializer } from "./portIoConfig";
+import { type RutterConfig, RutterConfigSerializer } from "./rutterConfig";
+import { type SegmentConfig, SegmentConfigSerializer } from "./segmentConfig";
+import { type ShopifyConfig, ShopifyConfigSerializer } from "./shopifyConfig";
+import { type SlackConfig, SlackConfigSerializer } from "./slackConfig";
+import { type StripeConfig, StripeConfigSerializer } from "./stripeConfig";
+import { type SvixConfig, SvixConfigSerializer } from "./svixConfig";
+import { type TelnyxConfig, TelnyxConfigSerializer } from "./telnyxConfig";
+import { type VapiConfig, VapiConfigSerializer } from "./vapiConfig";
+import { type VeriffConfig, VeriffConfigSerializer } from "./veriffConfig";
+import { type ZoomConfig, ZoomConfigSerializer } from "./zoomConfig";
 interface _IngestSourceInFields {
   metadata?: { [key: string]: string };
   name: string;
@@ -27,6 +27,7 @@ interface _IngestSourceInFields {
   uid?: string | null;
 }
 
+// biome-ignore lint/suspicious/noEmptyInterface: backwards compat
 interface IngestSourceInGenericWebhookConfig {}
 
 interface IngestSourceInGenericWebhook {
@@ -257,84 +258,84 @@ export type IngestSourceIn = _IngestSourceInFields &
 
 export const IngestSourceInSerializer = {
   _fromJsonObject(object: any): IngestSourceIn {
-    const type = object["type"];
+    const type = object.type;
 
     function getConfig(type: string): any {
       switch (type) {
         case "generic-webhook":
           return {};
         case "cron":
-          return CronConfigSerializer._fromJsonObject(object["config"]);
+          return CronConfigSerializer._fromJsonObject(object.config);
         case "adobe-sign":
-          return AdobeSignConfigSerializer._fromJsonObject(object["config"]);
+          return AdobeSignConfigSerializer._fromJsonObject(object.config);
         case "beehiiv":
-          return SvixConfigSerializer._fromJsonObject(object["config"]);
+          return SvixConfigSerializer._fromJsonObject(object.config);
         case "brex":
-          return SvixConfigSerializer._fromJsonObject(object["config"]);
+          return SvixConfigSerializer._fromJsonObject(object.config);
         case "checkbook":
-          return CheckbookConfigSerializer._fromJsonObject(object["config"]);
+          return CheckbookConfigSerializer._fromJsonObject(object.config);
         case "clerk":
-          return SvixConfigSerializer._fromJsonObject(object["config"]);
+          return SvixConfigSerializer._fromJsonObject(object.config);
         case "docusign":
-          return DocusignConfigSerializer._fromJsonObject(object["config"]);
+          return DocusignConfigSerializer._fromJsonObject(object.config);
         case "easypost":
-          return EasypostConfigSerializer._fromJsonObject(object["config"]);
+          return EasypostConfigSerializer._fromJsonObject(object.config);
         case "github":
-          return GithubConfigSerializer._fromJsonObject(object["config"]);
+          return GithubConfigSerializer._fromJsonObject(object.config);
         case "guesty":
-          return SvixConfigSerializer._fromJsonObject(object["config"]);
+          return SvixConfigSerializer._fromJsonObject(object.config);
         case "hubspot":
-          return HubspotConfigSerializer._fromJsonObject(object["config"]);
+          return HubspotConfigSerializer._fromJsonObject(object.config);
         case "incident-io":
-          return SvixConfigSerializer._fromJsonObject(object["config"]);
+          return SvixConfigSerializer._fromJsonObject(object.config);
         case "lithic":
-          return SvixConfigSerializer._fromJsonObject(object["config"]);
+          return SvixConfigSerializer._fromJsonObject(object.config);
         case "nash":
-          return SvixConfigSerializer._fromJsonObject(object["config"]);
+          return SvixConfigSerializer._fromJsonObject(object.config);
         case "orum-io":
-          return OrumIoConfigSerializer._fromJsonObject(object["config"]);
+          return OrumIoConfigSerializer._fromJsonObject(object.config);
         case "panda-doc":
-          return PandaDocConfigSerializer._fromJsonObject(object["config"]);
+          return PandaDocConfigSerializer._fromJsonObject(object.config);
         case "port-io":
-          return PortIoConfigSerializer._fromJsonObject(object["config"]);
+          return PortIoConfigSerializer._fromJsonObject(object.config);
         case "pleo":
-          return SvixConfigSerializer._fromJsonObject(object["config"]);
+          return SvixConfigSerializer._fromJsonObject(object.config);
         case "replicate":
-          return SvixConfigSerializer._fromJsonObject(object["config"]);
+          return SvixConfigSerializer._fromJsonObject(object.config);
         case "resend":
-          return SvixConfigSerializer._fromJsonObject(object["config"]);
+          return SvixConfigSerializer._fromJsonObject(object.config);
         case "rutter":
-          return RutterConfigSerializer._fromJsonObject(object["config"]);
+          return RutterConfigSerializer._fromJsonObject(object.config);
         case "safebase":
-          return SvixConfigSerializer._fromJsonObject(object["config"]);
+          return SvixConfigSerializer._fromJsonObject(object.config);
         case "sardine":
-          return SvixConfigSerializer._fromJsonObject(object["config"]);
+          return SvixConfigSerializer._fromJsonObject(object.config);
         case "segment":
-          return SegmentConfigSerializer._fromJsonObject(object["config"]);
+          return SegmentConfigSerializer._fromJsonObject(object.config);
         case "shopify":
-          return ShopifyConfigSerializer._fromJsonObject(object["config"]);
+          return ShopifyConfigSerializer._fromJsonObject(object.config);
         case "slack":
-          return SlackConfigSerializer._fromJsonObject(object["config"]);
+          return SlackConfigSerializer._fromJsonObject(object.config);
         case "stripe":
-          return StripeConfigSerializer._fromJsonObject(object["config"]);
+          return StripeConfigSerializer._fromJsonObject(object.config);
         case "stych":
-          return SvixConfigSerializer._fromJsonObject(object["config"]);
+          return SvixConfigSerializer._fromJsonObject(object.config);
         case "svix":
-          return SvixConfigSerializer._fromJsonObject(object["config"]);
+          return SvixConfigSerializer._fromJsonObject(object.config);
         case "zoom":
-          return ZoomConfigSerializer._fromJsonObject(object["config"]);
+          return ZoomConfigSerializer._fromJsonObject(object.config);
         case "telnyx":
-          return TelnyxConfigSerializer._fromJsonObject(object["config"]);
+          return TelnyxConfigSerializer._fromJsonObject(object.config);
         case "vapi":
-          return VapiConfigSerializer._fromJsonObject(object["config"]);
+          return VapiConfigSerializer._fromJsonObject(object.config);
         case "open-ai":
-          return SvixConfigSerializer._fromJsonObject(object["config"]);
+          return SvixConfigSerializer._fromJsonObject(object.config);
         case "render":
-          return SvixConfigSerializer._fromJsonObject(object["config"]);
+          return SvixConfigSerializer._fromJsonObject(object.config);
         case "veriff":
-          return VeriffConfigSerializer._fromJsonObject(object["config"]);
+          return VeriffConfigSerializer._fromJsonObject(object.config);
         case "airwallex":
-          return AirwallexConfigSerializer._fromJsonObject(object["config"]);
+          return AirwallexConfigSerializer._fromJsonObject(object.config);
         default:
           throw new Error(`Unexpected type: ${type}`);
       }
@@ -342,13 +343,14 @@ export const IngestSourceInSerializer = {
     return {
       type,
       config: getConfig(type),
-      metadata: object["metadata"],
-      name: object["name"],
-      uid: object["uid"],
+      metadata: object.metadata,
+      name: object.name,
+      uid: object.uid,
     };
   },
 
   _toJsonObject(self: IngestSourceIn): any {
+    // biome-ignore lint/suspicious/noImplicitAnyLet: the return type needs to be any
     let config;
     switch (self.type) {
       case "generic-webhook":

@@ -17,26 +17,9 @@
         "enabled": true,
         "rules": {
             "recommended": true,
-            "complexity": {
-                // needs codegen fix
-                "useLiteralKeys": "off"
-            },
-            "correctness": {
-                // needs codegen fix
-                "noUnusedFunctionParameters": "off"
-            },
-            "style": {
-                // needs codegen fix
-                "useImportType": "off",
-                "noNonNullAssertion": "off"
-            },
             "suspicious": {
                 // needs codegen fix
-                "noExplicitAny": "off",
-                // needs codegen fix
-                "noEmptyInterface": "off",
-                // needs codegen fix
-                "noImplicitAnyLet": "off"
+                "noExplicitAny": "off"
             }
         }
     },

@@ -1,6 +1,6 @@
 // this file is @generated
-import { MessageStatus, MessageStatusSerializer } from "./messageStatus";
-import { MessageStatusText, MessageStatusTextSerializer } from "./messageStatusText";
+import { type MessageStatus, MessageStatusSerializer } from "./messageStatus";
+import { type MessageStatusText, MessageStatusTextSerializer } from "./messageStatusText";
 
 export interface MessageEndpointOut {
   /** List of message channels this endpoint listens to (omit for all). */
@@ -26,20 +26,20 @@ export interface MessageEndpointOut {
 export const MessageEndpointOutSerializer = {
   _fromJsonObject(object: any): MessageEndpointOut {
     return {
-      channels: object["channels"],
-      createdAt: new Date(object["createdAt"]),
-      description: object["description"],
-      disabled: object["disabled"],
-      filterTypes: object["filterTypes"],
-      id: object["id"],
-      nextAttempt: object["nextAttempt"] ? new Date(object["nextAttempt"]) : null,
-      rateLimit: object["rateLimit"],
-      status: MessageStatusSerializer._fromJsonObject(object["status"]),
-      statusText: MessageStatusTextSerializer._fromJsonObject(object["statusText"]),
-      uid: object["uid"],
-      updatedAt: new Date(object["updatedAt"]),
-      url: object["url"],
-      version: object["version"],
+      channels: object.channels,
+      createdAt: new Date(object.createdAt),
+      description: object.description,
+      disabled: object.disabled,
+      filterTypes: object.filterTypes,
+      id: object.id,
+      nextAttempt: object.nextAttempt ? new Date(object.nextAttempt) : null,
+      rateLimit: object.rateLimit,
+      status: MessageStatusSerializer._fromJsonObject(object.status),
+      statusText: MessageStatusTextSerializer._fromJsonObject(object.statusText),
+      uid: object.uid,
+      updatedAt: new Date(object.updatedAt),
+      url: object.url,
+      version: object.version,
     };
   },
 

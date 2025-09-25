@@ -7,7 +7,7 @@ export interface VeriffConfig {
 export const VeriffConfigSerializer = {
   _fromJsonObject(object: any): VeriffConfig {
     return {
-      secret: object["secret"],
+      secret: object.secret,
     };
   },
 

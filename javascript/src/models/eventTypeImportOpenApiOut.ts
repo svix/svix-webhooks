@@ -1,6 +1,6 @@
 // this file is @generated
 import {
-  EventTypeImportOpenApiOutData,
+  type EventTypeImportOpenApiOutData,
   EventTypeImportOpenApiOutDataSerializer,
 } from "./eventTypeImportOpenApiOutData";
 
@@ -11,7 +11,7 @@ export interface EventTypeImportOpenApiOut {
 export const EventTypeImportOpenApiOutSerializer = {
   _fromJsonObject(object: any): EventTypeImportOpenApiOut {
     return {
-      data: EventTypeImportOpenApiOutDataSerializer._fromJsonObject(object["data"]),
+      data: EventTypeImportOpenApiOutDataSerializer._fromJsonObject(object.data),
     };
   },
 

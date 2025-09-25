@@ -14,8 +14,8 @@ export interface IngestSourceConsumerPortalAccessIn {
 export const IngestSourceConsumerPortalAccessInSerializer = {
   _fromJsonObject(object: any): IngestSourceConsumerPortalAccessIn {
     return {
-      expiry: object["expiry"],
-      readOnly: object["readOnly"],
+      expiry: object.expiry,
+      readOnly: object.readOnly,
     };
   },
 

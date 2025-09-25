@@ -10,9 +10,9 @@ export interface MessageAttemptFailedData {
 export const MessageAttemptFailedDataSerializer = {
   _fromJsonObject(object: any): MessageAttemptFailedData {
     return {
-      id: object["id"],
-      responseStatusCode: object["responseStatusCode"],
-      timestamp: new Date(object["timestamp"]),
+      id: object.id,
+      responseStatusCode: object.responseStatusCode,
+      timestamp: new Date(object.timestamp),
     };
   },
 

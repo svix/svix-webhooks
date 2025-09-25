@@ -13,7 +13,7 @@ export interface EndpointSecretOut {
 export const EndpointSecretOutSerializer = {
   _fromJsonObject(object: any): EndpointSecretOut {
     return {
-      key: object["key"],
+      key: object.key,
     };
   },
 

@@ -1,6 +1,6 @@
 // this file is @generated
-import { ConnectorOut, ConnectorOutSerializer } from "./connectorOut";
-import { EventTypeOut, EventTypeOutSerializer } from "./eventTypeOut";
+import { type ConnectorOut, ConnectorOutSerializer } from "./connectorOut";
+import { type EventTypeOut, EventTypeOutSerializer } from "./eventTypeOut";
 
 export interface EnvironmentOut {
   createdAt: Date;
@@ -13,15 +13,15 @@ export interface EnvironmentOut {
 export const EnvironmentOutSerializer = {
   _fromJsonObject(object: any): EnvironmentOut {
     return {
-      createdAt: new Date(object["createdAt"]),
-      eventTypes: object["eventTypes"].map((item: EventTypeOut) =>
+      createdAt: new Date(object.createdAt),
+      eventTypes: object.eventTypes.map((item: EventTypeOut) =>
         EventTypeOutSerializer._fromJsonObject(item)
       ),
-      settings: object["settings"],
-      transformationTemplates: object["transformationTemplates"].map(
-        (item: ConnectorOut) => ConnectorOutSerializer._fromJsonObject(item)
+      settings: object.settings,
+      transformationTemplates: object.transformationTemplates.map((item: ConnectorOut) =>
+        ConnectorOutSerializer._fromJsonObject(item)
       ),
-      version: object["version"],
+      version: object.version,
     };
   },
 

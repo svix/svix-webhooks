@@ -8,8 +8,8 @@ export interface EndpointTransformationOut {
 export const EndpointTransformationOutSerializer = {
   _fromJsonObject(object: any): EndpointTransformationOut {
     return {
-      code: object["code"],
-      enabled: object["enabled"],
+      code: object.code,
+      enabled: object.enabled,
     };
   },
 

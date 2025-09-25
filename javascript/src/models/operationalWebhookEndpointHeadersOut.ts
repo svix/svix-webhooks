@@ -8,8 +8,8 @@ export interface OperationalWebhookEndpointHeadersOut {
 export const OperationalWebhookEndpointHeadersOutSerializer = {
   _fromJsonObject(object: any): OperationalWebhookEndpointHeadersOut {
     return {
-      headers: object["headers"],
-      sensitive: object["sensitive"],
+      headers: object.headers,
+      sensitive: object.sensitive,
     };
   },
 

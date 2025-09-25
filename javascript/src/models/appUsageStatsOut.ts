@@ -1,9 +1,12 @@
 // this file is @generated
 import {
-  BackgroundTaskStatus,
+  type BackgroundTaskStatus,
   BackgroundTaskStatusSerializer,
 } from "./backgroundTaskStatus";
-import { BackgroundTaskType, BackgroundTaskTypeSerializer } from "./backgroundTaskType";
+import {
+  type BackgroundTaskType,
+  BackgroundTaskTypeSerializer,
+} from "./backgroundTaskType";
 
 export interface AppUsageStatsOut {
   /** The QueueBackgroundTask's ID. */
@@ -21,10 +24,10 @@ export interface AppUsageStatsOut {
 export const AppUsageStatsOutSerializer = {
   _fromJsonObject(object: any): AppUsageStatsOut {
     return {
-      id: object["id"],
-      status: BackgroundTaskStatusSerializer._fromJsonObject(object["status"]),
-      task: BackgroundTaskTypeSerializer._fromJsonObject(object["task"]),
-      unresolvedAppIds: object["unresolvedAppIds"],
+      id: object.id,
+      status: BackgroundTaskStatusSerializer._fromJsonObject(object.status),
+      task: BackgroundTaskTypeSerializer._fromJsonObject(object.task),
+      unresolvedAppIds: object.unresolvedAppIds,
     };
   },
 

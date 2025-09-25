@@ -1,6 +1,6 @@
 // this file is @generated
 import {
-  PollingEndpointMessageOut,
+  type PollingEndpointMessageOut,
   PollingEndpointMessageOutSerializer,
 } from "./pollingEndpointMessageOut";
 
@@ -13,11 +13,11 @@ export interface PollingEndpointOut {
 export const PollingEndpointOutSerializer = {
   _fromJsonObject(object: any): PollingEndpointOut {
     return {
-      data: object["data"].map((item: PollingEndpointMessageOut) =>
+      data: object.data.map((item: PollingEndpointMessageOut) =>
         PollingEndpointMessageOutSerializer._fromJsonObject(item)
       ),
-      done: object["done"],
-      iterator: object["iterator"],
+      done: object.done,
+      iterator: object.iterator,
     };
   },
 

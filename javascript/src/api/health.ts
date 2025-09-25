@@ -1,6 +1,7 @@
 // this file is @generated
 
-import { HttpMethod, SvixRequest, SvixRequestContext } from "../request";
+import type {} from "../models/index";
+import { HttpMethod, SvixRequest, type SvixRequestContext } from "../request";
 
 export class Health {
   public constructor(private readonly requestCtx: SvixRequestContext) {}

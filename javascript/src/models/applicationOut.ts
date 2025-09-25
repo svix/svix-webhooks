@@ -15,13 +15,13 @@ export interface ApplicationOut {
 export const ApplicationOutSerializer = {
   _fromJsonObject(object: any): ApplicationOut {
     return {
-      createdAt: new Date(object["createdAt"]),
-      id: object["id"],
-      metadata: object["metadata"],
-      name: object["name"],
-      rateLimit: object["rateLimit"],
-      uid: object["uid"],
-      updatedAt: new Date(object["updatedAt"]),
+      createdAt: new Date(object.createdAt),
+      id: object.id,
+      metadata: object.metadata,
+      name: object.name,
+      rateLimit: object.rateLimit,
+      uid: object.uid,
+      updatedAt: new Date(object.updatedAt),
     };
   },
 

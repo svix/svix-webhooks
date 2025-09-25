@@ -1,6 +1,6 @@
 // this file is @generated
 import {
-  EndpointDisabledTrigger,
+  type EndpointDisabledTrigger,
   EndpointDisabledTriggerSerializer,
 } from "./endpointDisabledTrigger";
 
@@ -19,12 +19,12 @@ export interface IngestEndpointDisabledEventData {
 export const IngestEndpointDisabledEventDataSerializer = {
   _fromJsonObject(object: any): IngestEndpointDisabledEventData {
     return {
-      endpointId: object["endpointId"],
-      endpointUid: object["endpointUid"],
-      failSince: object["failSince"] ? new Date(object["failSince"]) : null,
-      sourceId: object["sourceId"],
-      trigger: object["trigger"]
-        ? EndpointDisabledTriggerSerializer._fromJsonObject(object["trigger"])
+      endpointId: object.endpointId,
+      endpointUid: object.endpointUid,
+      failSince: object.failSince ? new Date(object.failSince) : null,
+      sourceId: object.sourceId,
+      trigger: object.trigger
+        ? EndpointDisabledTriggerSerializer._fromJsonObject(object.trigger)
         : undefined,
     };
   },

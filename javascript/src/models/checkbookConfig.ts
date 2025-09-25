@@ -7,7 +7,7 @@ export interface CheckbookConfig {
 export const CheckbookConfigSerializer = {
   _fromJsonObject(object: any): CheckbookConfig {
     return {
-      secret: object["secret"],
+      secret: object.secret,
     };
   },
 

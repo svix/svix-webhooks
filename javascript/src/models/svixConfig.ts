@@ -7,7 +7,7 @@ export interface SvixConfig {
 export const SvixConfigSerializer = {
   _fromJsonObject(object: any): SvixConfig {
     return {
-      secret: object["secret"],
+      secret: object.secret,
     };
   },
 

@@ -15,10 +15,10 @@ export interface EndpointEnabledEventData {
 export const EndpointEnabledEventDataSerializer = {
   _fromJsonObject(object: any): EndpointEnabledEventData {
     return {
-      appId: object["appId"],
-      appUid: object["appUid"],
-      endpointId: object["endpointId"],
-      endpointUid: object["endpointUid"],
+      appId: object.appId,
+      appUid: object.appUid,
+      endpointId: object.endpointId,
+      endpointUid: object.endpointUid,
     };
   },
 

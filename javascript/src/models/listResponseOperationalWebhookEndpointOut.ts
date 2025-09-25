@@ -1,6 +1,6 @@
 // this file is @generated
 import {
-  OperationalWebhookEndpointOut,
+  type OperationalWebhookEndpointOut,
   OperationalWebhookEndpointOutSerializer,
 } from "./operationalWebhookEndpointOut";
 
@@ -14,12 +14,12 @@ export interface ListResponseOperationalWebhookEndpointOut {
 export const ListResponseOperationalWebhookEndpointOutSerializer = {
   _fromJsonObject(object: any): ListResponseOperationalWebhookEndpointOut {
     return {
-      data: object["data"].map((item: OperationalWebhookEndpointOut) =>
+      data: object.data.map((item: OperationalWebhookEndpointOut) =>
         OperationalWebhookEndpointOutSerializer._fromJsonObject(item)
       ),
-      done: object["done"],
-      iterator: object["iterator"],
-      prevIterator: object["prevIterator"],
+      done: object.done,
+      iterator: object.iterator,
+      prevIterator: object.prevIterator,
     };
   },
 

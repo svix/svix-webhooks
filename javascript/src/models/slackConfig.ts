@@ -7,7 +7,7 @@ export interface SlackConfig {
 export const SlackConfigSerializer = {
   _fromJsonObject(object: any): SlackConfig {
     return {
-      secret: object["secret"],
+      secret: object.secret,
     };
   },
 

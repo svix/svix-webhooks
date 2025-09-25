@@ -1,5 +1,5 @@
 // this file is @generated
-import { MessageAttemptOut, MessageAttemptOutSerializer } from "./messageAttemptOut";
+import { type MessageAttemptOut, MessageAttemptOutSerializer } from "./messageAttemptOut";
 
 export interface ListResponseMessageAttemptOut {
   data: MessageAttemptOut[];
@@ -11,12 +11,12 @@ export interface ListResponseMessageAttemptOut {
 export const ListResponseMessageAttemptOutSerializer = {
   _fromJsonObject(object: any): ListResponseMessageAttemptOut {
     return {
-      data: object["data"].map((item: MessageAttemptOut) =>
+      data: object.data.map((item: MessageAttemptOut) =>
         MessageAttemptOutSerializer._fromJsonObject(item)
       ),
-      done: object["done"],
-      iterator: object["iterator"],
-      prevIterator: object["prevIterator"],
+      done: object.done,
+      iterator: object.iterator,
+      prevIterator: object.prevIterator,
     };
   },
 

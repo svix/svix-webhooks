@@ -1,23 +1,23 @@
 // this file is @generated
 
-import {
+import type {
   EventTypeImportOpenApiIn,
-  EventTypeImportOpenApiInSerializer,
-} from "../models/eventTypeImportOpenApiIn";
-import {
   EventTypeImportOpenApiOut,
-  EventTypeImportOpenApiOutSerializer,
-} from "../models/eventTypeImportOpenApiOut";
-import { EventTypeIn, EventTypeInSerializer } from "../models/eventTypeIn";
-import { EventTypeOut, EventTypeOutSerializer } from "../models/eventTypeOut";
-import { EventTypePatch, EventTypePatchSerializer } from "../models/eventTypePatch";
-import { EventTypeUpdate, EventTypeUpdateSerializer } from "../models/eventTypeUpdate";
-import {
+  EventTypeIn,
+  EventTypeOut,
+  EventTypePatch,
+  EventTypeUpdate,
   ListResponseEventTypeOut,
-  ListResponseEventTypeOutSerializer,
-} from "../models/listResponseEventTypeOut";
-import { Ordering } from "../models/ordering";
-import { HttpMethod, SvixRequest, SvixRequestContext } from "../request";
+  Ordering,
+} from "../models/index";
+import { EventTypeImportOpenApiInSerializer } from "../models/eventTypeImportOpenApiIn";
+import { EventTypeImportOpenApiOutSerializer } from "../models/eventTypeImportOpenApiOut";
+import { EventTypeInSerializer } from "../models/eventTypeIn";
+import { EventTypeOutSerializer } from "../models/eventTypeOut";
+import { EventTypePatchSerializer } from "../models/eventTypePatch";
+import { EventTypeUpdateSerializer } from "../models/eventTypeUpdate";
+import { ListResponseEventTypeOutSerializer } from "../models/listResponseEventTypeOut";
+import { HttpMethod, SvixRequest, type SvixRequestContext } from "../request";
 
 export interface EventTypeListOptions {
   /** Limit the number of returned items */

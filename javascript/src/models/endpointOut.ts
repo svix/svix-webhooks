@@ -22,18 +22,18 @@ export interface EndpointOut {
 export const EndpointOutSerializer = {
   _fromJsonObject(object: any): EndpointOut {
     return {
-      channels: object["channels"],
-      createdAt: new Date(object["createdAt"]),
-      description: object["description"],
-      disabled: object["disabled"],
-      filterTypes: object["filterTypes"],
-      id: object["id"],
-      metadata: object["metadata"],
-      rateLimit: object["rateLimit"],
-      uid: object["uid"],
-      updatedAt: new Date(object["updatedAt"]),
-      url: object["url"],
-      version: object["version"],
+      channels: object.channels,
+      createdAt: new Date(object.createdAt),
+      description: object.description,
+      disabled: object.disabled,
+      filterTypes: object.filterTypes,
+      id: object.id,
+      metadata: object.metadata,
+      rateLimit: object.rateLimit,
+      uid: object.uid,
+      updatedAt: new Date(object.updatedAt),
+      url: object.url,
+      version: object.version,
     };
   },
 

@@ -19,16 +19,16 @@ export interface OperationalWebhookEndpointOut {
 export const OperationalWebhookEndpointOutSerializer = {
   _fromJsonObject(object: any): OperationalWebhookEndpointOut {
     return {
-      createdAt: new Date(object["createdAt"]),
-      description: object["description"],
-      disabled: object["disabled"],
-      filterTypes: object["filterTypes"],
-      id: object["id"],
-      metadata: object["metadata"],
-      rateLimit: object["rateLimit"],
-      uid: object["uid"],
-      updatedAt: new Date(object["updatedAt"]),
-      url: object["url"],
+      createdAt: new Date(object.createdAt),
+      description: object.description,
+      disabled: object.disabled,
+      filterTypes: object.filterTypes,
+      id: object.id,
+      metadata: object.metadata,
+      rateLimit: object.rateLimit,
+      uid: object.uid,
+      updatedAt: new Date(object.updatedAt),
+      url: object.url,
     };
   },
 

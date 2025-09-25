@@ -7,7 +7,7 @@ export interface PollingEndpointConsumerSeekIn {
 export const PollingEndpointConsumerSeekInSerializer = {
   _fromJsonObject(object: any): PollingEndpointConsumerSeekIn {
     return {
-      after: new Date(object["after"]),
+      after: new Date(object.after),
     };
   },
 

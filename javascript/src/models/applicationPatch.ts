@@ -11,10 +11,10 @@ export interface ApplicationPatch {
 export const ApplicationPatchSerializer = {
   _fromJsonObject(object: any): ApplicationPatch {
     return {
-      metadata: object["metadata"],
-      name: object["name"],
-      rateLimit: object["rateLimit"],
-      uid: object["uid"],
+      metadata: object.metadata,
+      name: object.name,
+      rateLimit: object.rateLimit,
+      uid: object.uid,
     };
   },
 

@@ -7,7 +7,7 @@ export interface IntegrationKeyOut {
 export const IntegrationKeyOutSerializer = {
   _fromJsonObject(object: any): IntegrationKeyOut {
     return {
-      key: object["key"],
+      key: object.key,
     };
   },
 

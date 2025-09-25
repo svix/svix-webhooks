@@ -1,6 +1,6 @@
 // this file is @generated
 import {
-  MessageAttemptFailedData,
+  type MessageAttemptFailedData,
   MessageAttemptFailedDataSerializer,
 } from "./messageAttemptFailedData";
 
@@ -22,14 +22,12 @@ export interface MessageAttemptExhaustedEventData {
 export const MessageAttemptExhaustedEventDataSerializer = {
   _fromJsonObject(object: any): MessageAttemptExhaustedEventData {
     return {
-      appId: object["appId"],
-      appUid: object["appUid"],
-      endpointId: object["endpointId"],
-      lastAttempt: MessageAttemptFailedDataSerializer._fromJsonObject(
-        object["lastAttempt"]
-      ),
-      msgEventId: object["msgEventId"],
-      msgId: object["msgId"],
+      appId: object.appId,
+      appUid: object.appUid,
+      endpointId: object.endpointId,
+      lastAttempt: MessageAttemptFailedDataSerializer._fromJsonObject(object.lastAttempt),
+      msgEventId: object.msgEventId,
+      msgId: object.msgId,
     };
   },
 
