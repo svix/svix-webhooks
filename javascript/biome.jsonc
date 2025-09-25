@@ -17,10 +17,6 @@
         "enabled": true,
         "rules": {
             "recommended": true,
-            "style": {
-                // needs codegen fix
-                "noNonNullAssertion": "off"
-            },
             "suspicious": {
                 // needs codegen fix
                 "noExplicitAny": "off",
