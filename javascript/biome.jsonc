@@ -21,9 +21,7 @@
                 // needs codegen fix
                 "noExplicitAny": "off",
                 // needs codegen fix
-                "noEmptyInterface": "off",
-                // needs codegen fix
-                "noImplicitAnyLet": "off"
+                "noEmptyInterface": "off"
             }
         }
     },

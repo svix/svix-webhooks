@@ -349,6 +349,7 @@ export const IngestSourceInSerializer = {
   },
 
   _toJsonObject(self: IngestSourceIn): any {
+    // biome-ignore lint/suspicious/noImplicitAnyLet: the return type needs to be any
     let config;
     switch (self.type) {
       case "generic-webhook":

@@ -72,6 +72,7 @@ export const {{ type.name | to_upper_camel_case }}Serializer = {
     },
 
     _toJsonObject(self: {{ type.name | to_upper_camel_case }}): any {
+        // biome-ignore lint/suspicious/noImplicitAnyLet: the return type needs to be any
         let {{ content_field_name }};
         switch (self.{{ disc_field_name }}) {
         {%- for variant in type.variants %}
