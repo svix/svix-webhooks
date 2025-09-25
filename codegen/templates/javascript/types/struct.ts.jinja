@@ -5,8 +5,9 @@ import {
     {{ c | to_upper_camel_case }}Serializer,
 } from './{{ c | to_lower_camel_case }}';
 {% endfor -%}
-
 {% set type_name = type.name | to_upper_camel_case %}
+
+{% if type.fields | length == 0 %}// biome-ignore-all lint/suspicious/noEmptyInterface: backwards compat{% endif %}
 
 {{ doc_comment }}
 export interface {{ type_name }} {

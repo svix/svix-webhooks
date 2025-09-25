@@ -41,6 +41,7 @@ interface _IngestSourceOutFields {
   updatedAt: Date;
 }
 
+// biome-ignore lint/suspicious/noEmptyInterface: backwards compat
 interface IngestSourceOutGenericWebhookConfig {}
 
 interface IngestSourceOutGenericWebhook {

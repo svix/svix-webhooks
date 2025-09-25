@@ -1,5 +1,7 @@
 // this file is @generated
 
+// biome-ignore-all lint/suspicious/noEmptyInterface: backwards compat
+
 export interface PortIoConfigOut {}
 
 export const PortIoConfigOutSerializer = {

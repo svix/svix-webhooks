@@ -27,6 +27,7 @@ interface _IngestSourceInFields {
   uid?: string | null;
 }
 
+// biome-ignore lint/suspicious/noEmptyInterface: backwards compat
 interface IngestSourceInGenericWebhookConfig {}
 
 interface IngestSourceInGenericWebhook {

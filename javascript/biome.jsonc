@@ -19,9 +19,7 @@
             "recommended": true,
             "suspicious": {
                 // needs codegen fix
-                "noExplicitAny": "off",
-                // needs codegen fix
-                "noEmptyInterface": "off"
+                "noExplicitAny": "off"
             }
         }
     },
