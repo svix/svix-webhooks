@@ -17,10 +17,6 @@
         "enabled": true,
         "rules": {
             "recommended": true,
-            "correctness": {
-                // needs codegen fix
-                "noUnusedFunctionParameters": "off"
-            },
             "style": {
                 // needs codegen fix
                 "useImportType": "off",

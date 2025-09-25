@@ -3,11 +3,11 @@
 export interface EasypostConfigOut {}
 
 export const EasypostConfigOutSerializer = {
-  _fromJsonObject(object: any): EasypostConfigOut {
+  _fromJsonObject(_object: any): EasypostConfigOut {
     return {};
   },
 
-  _toJsonObject(self: EasypostConfigOut): any {
+  _toJsonObject(_self: EasypostConfigOut): any {
     return {};
   },
 };

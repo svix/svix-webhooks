@@ -3,11 +3,11 @@
 export interface HubspotConfigOut {}
 
 export const HubspotConfigOutSerializer = {
-  _fromJsonObject(object: any): HubspotConfigOut {
+  _fromJsonObject(_object: any): HubspotConfigOut {
     return {};
   },
 
-  _toJsonObject(self: HubspotConfigOut): any {
+  _toJsonObject(_self: HubspotConfigOut): any {
     return {};
   },
 };

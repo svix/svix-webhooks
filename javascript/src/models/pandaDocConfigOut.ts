@@ -3,11 +3,11 @@
 export interface PandaDocConfigOut {}
 
 export const PandaDocConfigOutSerializer = {
-  _fromJsonObject(object: any): PandaDocConfigOut {
+  _fromJsonObject(_object: any): PandaDocConfigOut {
     return {};
   },
 
-  _toJsonObject(self: PandaDocConfigOut): any {
+  _toJsonObject(_self: PandaDocConfigOut): any {
     return {};
   },
 };

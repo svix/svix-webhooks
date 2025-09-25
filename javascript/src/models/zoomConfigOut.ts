@@ -3,11 +3,11 @@
 export interface ZoomConfigOut {}
 
 export const ZoomConfigOutSerializer = {
-  _fromJsonObject(object: any): ZoomConfigOut {
+  _fromJsonObject(_object: any): ZoomConfigOut {
     return {};
   },
 
-  _toJsonObject(self: ZoomConfigOut): any {
+  _toJsonObject(_self: ZoomConfigOut): any {
     return {};
   },
 };
