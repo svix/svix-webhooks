@@ -1,54 +1,49 @@
 // this file is @generated
 
-import {
+import type {
   EndpointHeadersIn,
-  EndpointHeadersInSerializer,
-} from "../models/endpointHeadersIn";
-import {
   EndpointHeadersOut,
-  EndpointHeadersOutSerializer,
-} from "../models/endpointHeadersOut";
-import {
   EndpointHeadersPatchIn,
-  EndpointHeadersPatchInSerializer,
-} from "../models/endpointHeadersPatchIn";
-import { EndpointIn, EndpointInSerializer } from "../models/endpointIn";
-import { EndpointOut, EndpointOutSerializer } from "../models/endpointOut";
-import { EndpointPatch, EndpointPatchSerializer } from "../models/endpointPatch";
-import {
+  EndpointIn,
+  EndpointOut,
+  EndpointPatch,
   EndpointSecretOut,
-  EndpointSecretOutSerializer,
-} from "../models/endpointSecretOut";
-import {
   EndpointSecretRotateIn,
-  EndpointSecretRotateInSerializer,
-} from "../models/endpointSecretRotateIn";
-import { EndpointStats, EndpointStatsSerializer } from "../models/endpointStats";
-import {
+  EndpointStats,
   EndpointTransformationIn,
-  EndpointTransformationInSerializer,
-} from "../models/endpointTransformationIn";
-import {
   EndpointTransformationOut,
-  EndpointTransformationOutSerializer,
-} from "../models/endpointTransformationOut";
-import {
   EndpointTransformationPatch,
-  EndpointTransformationPatchSerializer,
-} from "../models/endpointTransformationPatch";
-import { EndpointUpdate, EndpointUpdateSerializer } from "../models/endpointUpdate";
-import { EventExampleIn, EventExampleInSerializer } from "../models/eventExampleIn";
-import {
+  EndpointUpdate,
+  EventExampleIn,
   ListResponseEndpointOut,
-  ListResponseEndpointOutSerializer,
-} from "../models/listResponseEndpointOut";
-import { MessageOut, MessageOutSerializer } from "../models/messageOut";
-import { Ordering } from "../models/ordering";
-import { RecoverIn, RecoverInSerializer } from "../models/recoverIn";
-import { RecoverOut, RecoverOutSerializer } from "../models/recoverOut";
-import { ReplayIn, ReplayInSerializer } from "../models/replayIn";
-import { ReplayOut, ReplayOutSerializer } from "../models/replayOut";
-import { HttpMethod, SvixRequest, SvixRequestContext } from "../request";
+  MessageOut,
+  Ordering,
+  RecoverIn,
+  RecoverOut,
+  ReplayIn,
+  ReplayOut,
+} from "../models/index";
+import { EndpointHeadersInSerializer } from "../models/endpointHeadersIn";
+import { EndpointHeadersOutSerializer } from "../models/endpointHeadersOut";
+import { EndpointHeadersPatchInSerializer } from "../models/endpointHeadersPatchIn";
+import { EndpointInSerializer } from "../models/endpointIn";
+import { EndpointOutSerializer } from "../models/endpointOut";
+import { EndpointPatchSerializer } from "../models/endpointPatch";
+import { EndpointSecretOutSerializer } from "../models/endpointSecretOut";
+import { EndpointSecretRotateInSerializer } from "../models/endpointSecretRotateIn";
+import { EndpointStatsSerializer } from "../models/endpointStats";
+import { EndpointTransformationInSerializer } from "../models/endpointTransformationIn";
+import { EndpointTransformationOutSerializer } from "../models/endpointTransformationOut";
+import { EndpointTransformationPatchSerializer } from "../models/endpointTransformationPatch";
+import { EndpointUpdateSerializer } from "../models/endpointUpdate";
+import { EventExampleInSerializer } from "../models/eventExampleIn";
+import { ListResponseEndpointOutSerializer } from "../models/listResponseEndpointOut";
+import { MessageOutSerializer } from "../models/messageOut";
+import { RecoverInSerializer } from "../models/recoverIn";
+import { RecoverOutSerializer } from "../models/recoverOut";
+import { ReplayInSerializer } from "../models/replayIn";
+import { ReplayOutSerializer } from "../models/replayOut";
+import { HttpMethod, SvixRequest, type SvixRequestContext } from "../request";
 
 export interface EndpointListOptions {
   /** Limit the number of returned items */

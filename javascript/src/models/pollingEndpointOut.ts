@@ -1,6 +1,6 @@
 // this file is @generated
 import {
-  PollingEndpointMessageOut,
+  type PollingEndpointMessageOut,
   PollingEndpointMessageOutSerializer,
 } from "./pollingEndpointMessageOut";
 

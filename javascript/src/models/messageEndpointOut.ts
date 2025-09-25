@@ -1,6 +1,6 @@
 // this file is @generated
-import { MessageStatus, MessageStatusSerializer } from "./messageStatus";
-import { MessageStatusText, MessageStatusTextSerializer } from "./messageStatusText";
+import { type MessageStatus, MessageStatusSerializer } from "./messageStatus";
+import { type MessageStatusText, MessageStatusTextSerializer } from "./messageStatusText";
 
 export interface MessageEndpointOut {
   /** List of message channels this endpoint listens to (omit for all). */

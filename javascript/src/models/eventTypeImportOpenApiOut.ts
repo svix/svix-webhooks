@@ -1,6 +1,6 @@
 // this file is @generated
 import {
-  EventTypeImportOpenApiOutData,
+  type EventTypeImportOpenApiOutData,
   EventTypeImportOpenApiOutDataSerializer,
 } from "./eventTypeImportOpenApiOutData";
 

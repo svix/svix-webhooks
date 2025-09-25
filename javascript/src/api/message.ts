@@ -1,17 +1,16 @@
 // this file is @generated
 
-import {
+import type {
   ExpungeAllContentsOut,
-  ExpungeAllContentsOutSerializer,
-} from "../models/expungeAllContentsOut";
-import {
   ListResponseMessageOut,
-  ListResponseMessageOutSerializer,
-} from "../models/listResponseMessageOut";
-import { MessageOut, MessageOutSerializer } from "../models/messageOut";
+  MessageOut,
+} from "../models/index";
+import { ExpungeAllContentsOutSerializer } from "../models/expungeAllContentsOut";
+import { ListResponseMessageOutSerializer } from "../models/listResponseMessageOut";
+import { MessageOutSerializer } from "../models/messageOut";
 import { MessagePoller } from "./messagePoller";
-import { HttpMethod, SvixRequest, SvixRequestContext } from "../request";
-import { MessageIn, MessageInSerializer } from "../models/messageIn";
+import { HttpMethod, SvixRequest, type SvixRequestContext } from "../request";
+import { type MessageIn, MessageInSerializer } from "../models/messageIn";
 
 export interface MessageListOptions {
   /** Limit the number of returned items */

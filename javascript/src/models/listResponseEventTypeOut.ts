@@ -1,5 +1,5 @@
 // this file is @generated
-import { EventTypeOut, EventTypeOutSerializer } from "./eventTypeOut";
+import { type EventTypeOut, EventTypeOutSerializer } from "./eventTypeOut";
 
 export interface ListResponseEventTypeOut {
   data: EventTypeOut[];

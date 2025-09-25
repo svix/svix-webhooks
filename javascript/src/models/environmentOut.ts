@@ -1,6 +1,6 @@
 // this file is @generated
-import { ConnectorOut, ConnectorOutSerializer } from "./connectorOut";
-import { EventTypeOut, EventTypeOutSerializer } from "./eventTypeOut";
+import { type ConnectorOut, ConnectorOutSerializer } from "./connectorOut";
+import { type EventTypeOut, EventTypeOutSerializer } from "./eventTypeOut";
 
 export interface EnvironmentOut {
   createdAt: Date;

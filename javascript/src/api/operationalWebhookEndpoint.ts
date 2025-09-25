@@ -1,39 +1,25 @@
 // this file is @generated
 
-import {
+import type {
   ListResponseOperationalWebhookEndpointOut,
-  ListResponseOperationalWebhookEndpointOutSerializer,
-} from "../models/listResponseOperationalWebhookEndpointOut";
-import {
   OperationalWebhookEndpointHeadersIn,
-  OperationalWebhookEndpointHeadersInSerializer,
-} from "../models/operationalWebhookEndpointHeadersIn";
-import {
   OperationalWebhookEndpointHeadersOut,
-  OperationalWebhookEndpointHeadersOutSerializer,
-} from "../models/operationalWebhookEndpointHeadersOut";
-import {
   OperationalWebhookEndpointIn,
-  OperationalWebhookEndpointInSerializer,
-} from "../models/operationalWebhookEndpointIn";
-import {
   OperationalWebhookEndpointOut,
-  OperationalWebhookEndpointOutSerializer,
-} from "../models/operationalWebhookEndpointOut";
-import {
   OperationalWebhookEndpointSecretIn,
-  OperationalWebhookEndpointSecretInSerializer,
-} from "../models/operationalWebhookEndpointSecretIn";
-import {
   OperationalWebhookEndpointSecretOut,
-  OperationalWebhookEndpointSecretOutSerializer,
-} from "../models/operationalWebhookEndpointSecretOut";
-import {
   OperationalWebhookEndpointUpdate,
-  OperationalWebhookEndpointUpdateSerializer,
-} from "../models/operationalWebhookEndpointUpdate";
-import { Ordering } from "../models/ordering";
-import { HttpMethod, SvixRequest, SvixRequestContext } from "../request";
+  Ordering,
+} from "../models/index";
+import { ListResponseOperationalWebhookEndpointOutSerializer } from "../models/listResponseOperationalWebhookEndpointOut";
+import { OperationalWebhookEndpointHeadersInSerializer } from "../models/operationalWebhookEndpointHeadersIn";
+import { OperationalWebhookEndpointHeadersOutSerializer } from "../models/operationalWebhookEndpointHeadersOut";
+import { OperationalWebhookEndpointInSerializer } from "../models/operationalWebhookEndpointIn";
+import { OperationalWebhookEndpointOutSerializer } from "../models/operationalWebhookEndpointOut";
+import { OperationalWebhookEndpointSecretInSerializer } from "../models/operationalWebhookEndpointSecretIn";
+import { OperationalWebhookEndpointSecretOutSerializer } from "../models/operationalWebhookEndpointSecretOut";
+import { OperationalWebhookEndpointUpdateSerializer } from "../models/operationalWebhookEndpointUpdate";
+import { HttpMethod, SvixRequest, type SvixRequestContext } from "../request";
 
 export interface OperationalWebhookEndpointListOptions {
   /** Limit the number of returned items */

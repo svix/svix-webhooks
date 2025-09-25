@@ -1,5 +1,5 @@
 // this file is @generated
-import { ApplicationOut, ApplicationOutSerializer } from "./applicationOut";
+import { type ApplicationOut, ApplicationOutSerializer } from "./applicationOut";
 
 export interface ListResponseApplicationOut {
   data: ApplicationOut[];

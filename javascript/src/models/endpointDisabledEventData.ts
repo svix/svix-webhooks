@@ -1,6 +1,6 @@
 // this file is @generated
 import {
-  EndpointDisabledTrigger,
+  type EndpointDisabledTrigger,
   EndpointDisabledTriggerSerializer,
 } from "./endpointDisabledTrigger";
 

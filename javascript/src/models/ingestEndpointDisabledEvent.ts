@@ -1,6 +1,6 @@
 // this file is @generated
 import {
-  IngestEndpointDisabledEventData,
+  type IngestEndpointDisabledEventData,
   IngestEndpointDisabledEventDataSerializer,
 } from "./ingestEndpointDisabledEventData";
 

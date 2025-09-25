@@ -1,7 +1,7 @@
 {% from "types/macros.ts.jinja" import field_from_json, field_to_json -%}
 {% for c in referenced_components -%}
 import {
-    {{ c | to_upper_camel_case }},
+    type {{ c | to_upper_camel_case }},
     {{ c | to_upper_camel_case }}Serializer,
 } from './{{ c | to_lower_camel_case }}';
 {% endfor -%}

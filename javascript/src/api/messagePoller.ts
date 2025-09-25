@@ -1,18 +1,14 @@
 // this file is @generated
 
-import {
+import type {
   PollingEndpointConsumerSeekIn,
-  PollingEndpointConsumerSeekInSerializer,
-} from "../models/pollingEndpointConsumerSeekIn";
-import {
   PollingEndpointConsumerSeekOut,
-  PollingEndpointConsumerSeekOutSerializer,
-} from "../models/pollingEndpointConsumerSeekOut";
-import {
   PollingEndpointOut,
-  PollingEndpointOutSerializer,
-} from "../models/pollingEndpointOut";
-import { HttpMethod, SvixRequest, SvixRequestContext } from "../request";
+} from "../models/index";
+import { PollingEndpointConsumerSeekInSerializer } from "../models/pollingEndpointConsumerSeekIn";
+import { PollingEndpointConsumerSeekOutSerializer } from "../models/pollingEndpointConsumerSeekOut";
+import { PollingEndpointOutSerializer } from "../models/pollingEndpointOut";
+import { HttpMethod, SvixRequest, type SvixRequestContext } from "../request";
 
 export interface MessagePollerPollOptions {
   /** Limit the number of returned items */

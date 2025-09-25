@@ -1,22 +1,18 @@
 // this file is @generated
 
-import {
+import type {
   AppPortalAccessIn,
-  AppPortalAccessInSerializer,
-} from "../models/appPortalAccessIn";
-import {
   AppPortalAccessOut,
-  AppPortalAccessOutSerializer,
-} from "../models/appPortalAccessOut";
-import {
   ApplicationTokenExpireIn,
-  ApplicationTokenExpireInSerializer,
-} from "../models/applicationTokenExpireIn";
+} from "../models/index";
+import { AppPortalAccessInSerializer } from "../models/appPortalAccessIn";
+import { AppPortalAccessOutSerializer } from "../models/appPortalAccessOut";
+import { ApplicationTokenExpireInSerializer } from "../models/applicationTokenExpireIn";
 import {
-  DashboardAccessOut,
+  type DashboardAccessOut,
   DashboardAccessOutSerializer,
 } from "../models/dashboardAccessOut";
-import { HttpMethod, SvixRequest, SvixRequestContext } from "../request";
+import { HttpMethod, SvixRequest, type SvixRequestContext } from "../request";
 
 export interface AuthenticationAppPortalAccessOptions {
   idempotencyKey?: string;

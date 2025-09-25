@@ -19,7 +19,6 @@
             "recommended": true,
             "style": {
                 // needs codegen fix
-                "useImportType": "off",
                 "noNonNullAssertion": "off"
             },
             "suspicious": {

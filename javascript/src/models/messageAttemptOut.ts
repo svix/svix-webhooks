@@ -1,11 +1,11 @@
 // this file is @generated
 import {
-  MessageAttemptTriggerType,
+  type MessageAttemptTriggerType,
   MessageAttemptTriggerTypeSerializer,
 } from "./messageAttemptTriggerType";
-import { MessageOut, MessageOutSerializer } from "./messageOut";
-import { MessageStatus, MessageStatusSerializer } from "./messageStatus";
-import { MessageStatusText, MessageStatusTextSerializer } from "./messageStatusText";
+import { type MessageOut, MessageOutSerializer } from "./messageOut";
+import { type MessageStatus, MessageStatusSerializer } from "./messageStatus";
+import { type MessageStatusText, MessageStatusTextSerializer } from "./messageStatusText";
 
 export interface MessageAttemptOut {
   /** The Endpoint's ID. */

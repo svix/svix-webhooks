@@ -1,5 +1,5 @@
 // this file is @generated
-import { ApplicationIn, ApplicationInSerializer } from "./applicationIn";
+import { type ApplicationIn, ApplicationInSerializer } from "./applicationIn";
 
 export interface MessageIn {
   /**

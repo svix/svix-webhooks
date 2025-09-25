@@ -1,6 +1,6 @@
 // this file is @generated
-import { ConnectorIn, ConnectorInSerializer } from "./connectorIn";
-import { EventTypeIn, EventTypeInSerializer } from "./eventTypeIn";
+import { type ConnectorIn, ConnectorInSerializer } from "./connectorIn";
+import { type EventTypeIn, EventTypeInSerializer } from "./eventTypeIn";
 
 export interface EnvironmentIn {
   connectors?: ConnectorIn[] | null;

@@ -1,6 +1,6 @@
 import { Svix } from ".";
-import { HttpErrorOut } from "./HttpErrors";
-import { ApiException } from "./util";
+import type { HttpErrorOut } from "./HttpErrors";
+import type { ApiException } from "./util";
 import { test } from "node:test";
 import { strict as assert } from "node:assert/strict";
 
