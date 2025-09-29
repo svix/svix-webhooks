@@ -1,5 +1,5 @@
 // this file is @generated
-import { ConnectorKind, ConnectorKindSerializer } from "./connectorKind";
+import { type ConnectorKind, ConnectorKindSerializer } from "./connectorKind";
 
 export interface ConnectorIn {
   description?: string;

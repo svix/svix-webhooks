@@ -1,5 +1,5 @@
 // this file is @generated
-import { IntegrationOut, IntegrationOutSerializer } from "./integrationOut";
+import { type IntegrationOut, IntegrationOutSerializer } from "./integrationOut";
 
 export interface ListResponseIntegrationOut {
   data: IntegrationOut[];

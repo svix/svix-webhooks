@@ -1,6 +1,6 @@
 // this file is @generated
 import {
-  OperationalWebhookEndpointOut,
+  type OperationalWebhookEndpointOut,
   OperationalWebhookEndpointOutSerializer,
 } from "./operationalWebhookEndpointOut";
 

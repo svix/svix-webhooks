@@ -1,16 +1,16 @@
 // this file is @generated
 
 import {
-  DashboardAccessOut,
+  type DashboardAccessOut,
   DashboardAccessOutSerializer,
 } from "../models/dashboardAccessOut";
 import {
-  IngestSourceConsumerPortalAccessIn,
+  type IngestSourceConsumerPortalAccessIn,
   IngestSourceConsumerPortalAccessInSerializer,
 } from "../models/ingestSourceConsumerPortalAccessIn";
 import { IngestEndpoint } from "./ingestEndpoint";
 import { IngestSource } from "./ingestSource";
-import { HttpMethod, SvixRequest, SvixRequestContext } from "../request";
+import { HttpMethod, SvixRequest, type SvixRequestContext } from "../request";
 
 export interface IngestDashboardOptions {
   idempotencyKey?: string;

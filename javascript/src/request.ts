@@ -1,5 +1,5 @@
-import { ApiException, XOR } from "./util";
-import { HttpErrorOut, HTTPValidationError } from "./HttpErrors";
+import { ApiException, type XOR } from "./util";
+import type { HttpErrorOut, HTTPValidationError } from "./HttpErrors";
 import { v4 as uuidv4 } from "uuid";
 
 export const LIB_VERSION = "1.76.1";

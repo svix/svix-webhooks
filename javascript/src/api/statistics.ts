@@ -1,12 +1,18 @@
 // this file is @generated
 
 import {
-  AggregateEventTypesOut,
+  type AggregateEventTypesOut,
   AggregateEventTypesOutSerializer,
 } from "../models/aggregateEventTypesOut";
-import { AppUsageStatsIn, AppUsageStatsInSerializer } from "../models/appUsageStatsIn";
-import { AppUsageStatsOut, AppUsageStatsOutSerializer } from "../models/appUsageStatsOut";
-import { HttpMethod, SvixRequest, SvixRequestContext } from "../request";
+import {
+  type AppUsageStatsIn,
+  AppUsageStatsInSerializer,
+} from "../models/appUsageStatsIn";
+import {
+  type AppUsageStatsOut,
+  AppUsageStatsOutSerializer,
+} from "../models/appUsageStatsOut";
+import { HttpMethod, SvixRequest, type SvixRequestContext } from "../request";
 
 export interface StatisticsAggregateAppStatsOptions {
   idempotencyKey?: string;

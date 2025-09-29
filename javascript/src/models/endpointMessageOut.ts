@@ -1,6 +1,6 @@
 // this file is @generated
-import { MessageStatus, MessageStatusSerializer } from "./messageStatus";
-import { MessageStatusText, MessageStatusTextSerializer } from "./messageStatusText";
+import { type MessageStatus, MessageStatusSerializer } from "./messageStatus";
+import { type MessageStatusText, MessageStatusTextSerializer } from "./messageStatusText";
 
 /** A model containing information on a given message plus additional fields on the last attempt for that message. */
 export interface EndpointMessageOut {

@@ -1,5 +1,8 @@
 // this file is @generated
-import { EndpointMessageOut, EndpointMessageOutSerializer } from "./endpointMessageOut";
+import {
+  type EndpointMessageOut,
+  EndpointMessageOutSerializer,
+} from "./endpointMessageOut";
 
 export interface ListResponseEndpointMessageOut {
   data: EndpointMessageOut[];

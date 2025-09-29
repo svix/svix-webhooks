@@ -1,7 +1,7 @@
 // this file is @generated
 
 import { OperationalWebhookEndpoint } from "./operationalWebhookEndpoint";
-import { SvixRequestContext } from "../request";
+import type { SvixRequestContext } from "../request";
 
 export class OperationalWebhook {
   public constructor(private readonly requestCtx: SvixRequestContext) {}

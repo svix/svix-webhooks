@@ -1,5 +1,5 @@
 // this file is @generated
-import { MessageAttemptOut, MessageAttemptOutSerializer } from "./messageAttemptOut";
+import { type MessageAttemptOut, MessageAttemptOutSerializer } from "./messageAttemptOut";
 
 export interface ListResponseMessageAttemptOut {
   data: MessageAttemptOut[];

@@ -4,7 +4,7 @@ import { strict as assert } from "node:assert/strict";
 import * as mockttp from "mockttp";
 import { ApiException } from "./util";
 import { Ordering } from "./models/ordering";
-import { ValidationError, HttpErrorOut } from "./HttpErrors";
+import type { ValidationError, HttpErrorOut } from "./HttpErrors";
 import { LIB_VERSION } from "./request";
 
 const ApplicationOut = `{"uid":"unique-identifier","name":"My first application","rateLimit":0,"id":"app_1srOrx2ZWZBpBUvZwXKQmoEYga2","createdAt":"2019-08-24T14:15:22Z","updatedAt":"2019-08-24T14:15:22Z","metadata":{"property1":"string","property2":"string"}}`;

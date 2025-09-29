@@ -1,9 +1,12 @@
 // this file is @generated
 import {
-  BackgroundTaskStatus,
+  type BackgroundTaskStatus,
   BackgroundTaskStatusSerializer,
 } from "./backgroundTaskStatus";
-import { BackgroundTaskType, BackgroundTaskTypeSerializer } from "./backgroundTaskType";
+import {
+  type BackgroundTaskType,
+  BackgroundTaskTypeSerializer,
+} from "./backgroundTaskType";
 
 export interface RecoverOut {
   /** The QueueBackgroundTask's ID. */

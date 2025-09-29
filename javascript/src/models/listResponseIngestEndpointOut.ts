@@ -1,5 +1,5 @@
 // this file is @generated
-import { IngestEndpointOut, IngestEndpointOutSerializer } from "./ingestEndpointOut";
+import { type IngestEndpointOut, IngestEndpointOutSerializer } from "./ingestEndpointOut";
 
 export interface ListResponseIngestEndpointOut {
   data: IngestEndpointOut[];
