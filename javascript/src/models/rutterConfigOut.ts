@@ -1,13 +1,15 @@
 // this file is @generated
 
+// biome-ignore-all lint/suspicious/noEmptyInterface: backwards compat
+
 export interface RutterConfigOut {}
 
 export const RutterConfigOutSerializer = {
-  _fromJsonObject(object: any): RutterConfigOut {
+  _fromJsonObject(_object: any): RutterConfigOut {
     return {};
   },
 
-  _toJsonObject(self: RutterConfigOut): any {
+  _toJsonObject(_self: RutterConfigOut): any {
     return {};
   },
 };

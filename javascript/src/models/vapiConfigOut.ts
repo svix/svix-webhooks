@@ -1,13 +1,15 @@
 // this file is @generated
 
+// biome-ignore-all lint/suspicious/noEmptyInterface: backwards compat
+
 export interface VapiConfigOut {}
 
 export const VapiConfigOutSerializer = {
-  _fromJsonObject(object: any): VapiConfigOut {
+  _fromJsonObject(_object: any): VapiConfigOut {
     return {};
   },
 
-  _toJsonObject(self: VapiConfigOut): any {
+  _toJsonObject(_self: VapiConfigOut): any {
     return {};
   },
 };

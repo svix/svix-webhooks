@@ -1,13 +1,15 @@
 // this file is @generated
 
+// biome-ignore-all lint/suspicious/noEmptyInterface: backwards compat
+
 export interface AirwallexConfigOut {}
 
 export const AirwallexConfigOutSerializer = {
-  _fromJsonObject(object: any): AirwallexConfigOut {
+  _fromJsonObject(_object: any): AirwallexConfigOut {
     return {};
   },
 
-  _toJsonObject(self: AirwallexConfigOut): any {
+  _toJsonObject(_self: AirwallexConfigOut): any {
     return {};
   },
 };

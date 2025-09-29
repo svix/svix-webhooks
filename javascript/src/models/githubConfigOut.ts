@@ -1,13 +1,15 @@
 // this file is @generated
 
+// biome-ignore-all lint/suspicious/noEmptyInterface: backwards compat
+
 export interface GithubConfigOut {}
 
 export const GithubConfigOutSerializer = {
-  _fromJsonObject(object: any): GithubConfigOut {
+  _fromJsonObject(_object: any): GithubConfigOut {
     return {};
   },
 
-  _toJsonObject(self: GithubConfigOut): any {
+  _toJsonObject(_self: GithubConfigOut): any {
     return {};
   },
 };

@@ -27,6 +27,7 @@ interface _IngestSourceInFields {
   uid?: string | null;
 }
 
+// biome-ignore lint/suspicious/noEmptyInterface: backwards compat
 interface IngestSourceInGenericWebhookConfig {}
 
 interface IngestSourceInGenericWebhook {
@@ -349,6 +350,7 @@ export const IngestSourceInSerializer = {
   },
 
   _toJsonObject(self: IngestSourceIn): any {
+    // biome-ignore lint/suspicious/noImplicitAnyLet: the return type needs to be any
     let config;
     switch (self.type) {
       case "generic-webhook":
