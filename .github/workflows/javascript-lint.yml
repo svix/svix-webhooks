@@ -33,7 +33,7 @@ jobs:
       - name: Lint
         run: |
           cd javascript
-          yarn run lint
+          yarn run check
 
       - name: Test
         run: |

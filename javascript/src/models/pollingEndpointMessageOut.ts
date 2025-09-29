@@ -1,5 +1,4 @@
 // this file is @generated
-/* eslint @typescript-eslint/no-explicit-any: 0 */
 
 /** The MessageOut equivalent of polling endpoint */
 export interface PollingEndpointMessageOut {

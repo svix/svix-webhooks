@@ -131,7 +131,7 @@ export class Webhook {
   private verifyTimestamp(timestampHeader: string): Date {
     const now = Math.floor(Date.now() / 1000);
     const timestamp = parseInt(timestampHeader, 10);
-    if (isNaN(timestamp)) {
+    if (Number.isNaN(timestamp)) {
       throw new WebhookVerificationError("Invalid Signature Headers");
     }
 

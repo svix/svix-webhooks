@@ -1,5 +1,4 @@
 // this file is @generated
-/* eslint @typescript-eslint/no-explicit-any: 0 */
 
 export interface EndpointUpdate {
   /** List of message channels this endpoint listens to (omit for all). */

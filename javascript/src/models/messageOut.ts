@@ -1,5 +1,4 @@
 // this file is @generated
-/* eslint @typescript-eslint/no-explicit-any: 0 */
 
 export interface MessageOut {
   /** List of free-form identifiers that endpoints can filter by */
