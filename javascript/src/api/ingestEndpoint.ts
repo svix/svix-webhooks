@@ -1,44 +1,47 @@
 // this file is @generated
 
 import {
-  IngestEndpointHeadersIn,
+  type IngestEndpointHeadersIn,
   IngestEndpointHeadersInSerializer,
 } from "../models/ingestEndpointHeadersIn";
 import {
-  IngestEndpointHeadersOut,
+  type IngestEndpointHeadersOut,
   IngestEndpointHeadersOutSerializer,
 } from "../models/ingestEndpointHeadersOut";
-import { IngestEndpointIn, IngestEndpointInSerializer } from "../models/ingestEndpointIn";
 import {
-  IngestEndpointOut,
+  type IngestEndpointIn,
+  IngestEndpointInSerializer,
+} from "../models/ingestEndpointIn";
+import {
+  type IngestEndpointOut,
   IngestEndpointOutSerializer,
 } from "../models/ingestEndpointOut";
 import {
-  IngestEndpointSecretIn,
+  type IngestEndpointSecretIn,
   IngestEndpointSecretInSerializer,
 } from "../models/ingestEndpointSecretIn";
 import {
-  IngestEndpointSecretOut,
+  type IngestEndpointSecretOut,
   IngestEndpointSecretOutSerializer,
 } from "../models/ingestEndpointSecretOut";
 import {
-  IngestEndpointTransformationOut,
+  type IngestEndpointTransformationOut,
   IngestEndpointTransformationOutSerializer,
 } from "../models/ingestEndpointTransformationOut";
 import {
-  IngestEndpointTransformationPatch,
+  type IngestEndpointTransformationPatch,
   IngestEndpointTransformationPatchSerializer,
 } from "../models/ingestEndpointTransformationPatch";
 import {
-  IngestEndpointUpdate,
+  type IngestEndpointUpdate,
   IngestEndpointUpdateSerializer,
 } from "../models/ingestEndpointUpdate";
 import {
-  ListResponseIngestEndpointOut,
+  type ListResponseIngestEndpointOut,
   ListResponseIngestEndpointOutSerializer,
 } from "../models/listResponseIngestEndpointOut";
-import { Ordering } from "../models/ordering";
-import { HttpMethod, SvixRequest, SvixRequestContext } from "../request";
+import type { Ordering } from "../models/ordering";
+import { HttpMethod, SvixRequest, type SvixRequestContext } from "../request";
 
 export interface IngestEndpointListOptions {
   /** Limit the number of returned items */

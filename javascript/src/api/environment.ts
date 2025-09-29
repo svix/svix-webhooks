@@ -1,8 +1,8 @@
 // this file is @generated
 
-import { EnvironmentIn, EnvironmentInSerializer } from "../models/environmentIn";
-import { EnvironmentOut, EnvironmentOutSerializer } from "../models/environmentOut";
-import { HttpMethod, SvixRequest, SvixRequestContext } from "../request";
+import { type EnvironmentIn, EnvironmentInSerializer } from "../models/environmentIn";
+import { type EnvironmentOut, EnvironmentOutSerializer } from "../models/environmentOut";
+import { HttpMethod, SvixRequest, type SvixRequestContext } from "../request";
 
 export interface EnvironmentExportOptions {
   idempotencyKey?: string;

@@ -1,25 +1,34 @@
 // this file is @generated
-import { AdobeSignConfigOut, AdobeSignConfigOutSerializer } from "./adobeSignConfigOut";
-import { AirwallexConfigOut, AirwallexConfigOutSerializer } from "./airwallexConfigOut";
-import { CheckbookConfigOut, CheckbookConfigOutSerializer } from "./checkbookConfigOut";
-import { CronConfig, CronConfigSerializer } from "./cronConfig";
-import { DocusignConfigOut, DocusignConfigOutSerializer } from "./docusignConfigOut";
-import { EasypostConfigOut, EasypostConfigOutSerializer } from "./easypostConfigOut";
-import { GithubConfigOut, GithubConfigOutSerializer } from "./githubConfigOut";
-import { HubspotConfigOut, HubspotConfigOutSerializer } from "./hubspotConfigOut";
-import { OrumIoConfigOut, OrumIoConfigOutSerializer } from "./orumIoConfigOut";
-import { PandaDocConfigOut, PandaDocConfigOutSerializer } from "./pandaDocConfigOut";
-import { PortIoConfigOut, PortIoConfigOutSerializer } from "./portIoConfigOut";
-import { RutterConfigOut, RutterConfigOutSerializer } from "./rutterConfigOut";
-import { SegmentConfigOut, SegmentConfigOutSerializer } from "./segmentConfigOut";
-import { ShopifyConfigOut, ShopifyConfigOutSerializer } from "./shopifyConfigOut";
-import { SlackConfigOut, SlackConfigOutSerializer } from "./slackConfigOut";
-import { StripeConfigOut, StripeConfigOutSerializer } from "./stripeConfigOut";
-import { SvixConfigOut, SvixConfigOutSerializer } from "./svixConfigOut";
-import { TelnyxConfigOut, TelnyxConfigOutSerializer } from "./telnyxConfigOut";
-import { VapiConfigOut, VapiConfigOutSerializer } from "./vapiConfigOut";
-import { VeriffConfigOut, VeriffConfigOutSerializer } from "./veriffConfigOut";
-import { ZoomConfigOut, ZoomConfigOutSerializer } from "./zoomConfigOut";
+import {
+  type AdobeSignConfigOut,
+  AdobeSignConfigOutSerializer,
+} from "./adobeSignConfigOut";
+import {
+  type AirwallexConfigOut,
+  AirwallexConfigOutSerializer,
+} from "./airwallexConfigOut";
+import {
+  type CheckbookConfigOut,
+  CheckbookConfigOutSerializer,
+} from "./checkbookConfigOut";
+import { type CronConfig, CronConfigSerializer } from "./cronConfig";
+import { type DocusignConfigOut, DocusignConfigOutSerializer } from "./docusignConfigOut";
+import { type EasypostConfigOut, EasypostConfigOutSerializer } from "./easypostConfigOut";
+import { type GithubConfigOut, GithubConfigOutSerializer } from "./githubConfigOut";
+import { type HubspotConfigOut, HubspotConfigOutSerializer } from "./hubspotConfigOut";
+import { type OrumIoConfigOut, OrumIoConfigOutSerializer } from "./orumIoConfigOut";
+import { type PandaDocConfigOut, PandaDocConfigOutSerializer } from "./pandaDocConfigOut";
+import { type PortIoConfigOut, PortIoConfigOutSerializer } from "./portIoConfigOut";
+import { type RutterConfigOut, RutterConfigOutSerializer } from "./rutterConfigOut";
+import { type SegmentConfigOut, SegmentConfigOutSerializer } from "./segmentConfigOut";
+import { type ShopifyConfigOut, ShopifyConfigOutSerializer } from "./shopifyConfigOut";
+import { type SlackConfigOut, SlackConfigOutSerializer } from "./slackConfigOut";
+import { type StripeConfigOut, StripeConfigOutSerializer } from "./stripeConfigOut";
+import { type SvixConfigOut, SvixConfigOutSerializer } from "./svixConfigOut";
+import { type TelnyxConfigOut, TelnyxConfigOutSerializer } from "./telnyxConfigOut";
+import { type VapiConfigOut, VapiConfigOutSerializer } from "./vapiConfigOut";
+import { type VeriffConfigOut, VeriffConfigOutSerializer } from "./veriffConfigOut";
+import { type ZoomConfigOut, ZoomConfigOutSerializer } from "./zoomConfigOut";
 interface _IngestSourceOutFields {
   createdAt: Date;
   /** The Source's ID. */

@@ -1,5 +1,5 @@
 // this file is @generated
-import { IngestSourceOut, IngestSourceOutSerializer } from "./ingestSourceOut";
+import { type IngestSourceOut, IngestSourceOutSerializer } from "./ingestSourceOut";
 
 export interface ListResponseIngestSourceOut {
   data: IngestSourceOut[];

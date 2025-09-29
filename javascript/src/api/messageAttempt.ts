@@ -1,24 +1,24 @@
 // this file is @generated
 
 import {
-  ListResponseEndpointMessageOut,
+  type ListResponseEndpointMessageOut,
   ListResponseEndpointMessageOutSerializer,
 } from "../models/listResponseEndpointMessageOut";
 import {
-  ListResponseMessageAttemptOut,
+  type ListResponseMessageAttemptOut,
   ListResponseMessageAttemptOutSerializer,
 } from "../models/listResponseMessageAttemptOut";
 import {
-  ListResponseMessageEndpointOut,
+  type ListResponseMessageEndpointOut,
   ListResponseMessageEndpointOutSerializer,
 } from "../models/listResponseMessageEndpointOut";
 import {
-  MessageAttemptOut,
+  type MessageAttemptOut,
   MessageAttemptOutSerializer,
 } from "../models/messageAttemptOut";
-import { MessageStatus } from "../models/messageStatus";
-import { StatusCodeClass } from "../models/statusCodeClass";
-import { HttpMethod, SvixRequest, SvixRequestContext } from "../request";
+import type { MessageStatus } from "../models/messageStatus";
+import type { StatusCodeClass } from "../models/statusCodeClass";
+import { HttpMethod, SvixRequest, type SvixRequestContext } from "../request";
 
 export interface MessageAttemptListByEndpointOptions {
   /** Limit the number of returned items */

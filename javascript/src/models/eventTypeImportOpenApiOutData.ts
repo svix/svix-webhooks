@@ -1,6 +1,6 @@
 // this file is @generated
 import {
-  EventTypeFromOpenApi,
+  type EventTypeFromOpenApi,
   EventTypeFromOpenApiSerializer,
 } from "./eventTypeFromOpenApi";
 

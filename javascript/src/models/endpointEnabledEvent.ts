@@ -1,6 +1,6 @@
 // this file is @generated
 import {
-  EndpointEnabledEventData,
+  type EndpointEnabledEventData,
   EndpointEnabledEventDataSerializer,
 } from "./endpointEnabledEventData";
 

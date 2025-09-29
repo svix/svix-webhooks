@@ -1,23 +1,26 @@
 // this file is @generated
 
 import {
-  EventTypeImportOpenApiIn,
+  type EventTypeImportOpenApiIn,
   EventTypeImportOpenApiInSerializer,
 } from "../models/eventTypeImportOpenApiIn";
 import {
-  EventTypeImportOpenApiOut,
+  type EventTypeImportOpenApiOut,
   EventTypeImportOpenApiOutSerializer,
 } from "../models/eventTypeImportOpenApiOut";
-import { EventTypeIn, EventTypeInSerializer } from "../models/eventTypeIn";
-import { EventTypeOut, EventTypeOutSerializer } from "../models/eventTypeOut";
-import { EventTypePatch, EventTypePatchSerializer } from "../models/eventTypePatch";
-import { EventTypeUpdate, EventTypeUpdateSerializer } from "../models/eventTypeUpdate";
+import { type EventTypeIn, EventTypeInSerializer } from "../models/eventTypeIn";
+import { type EventTypeOut, EventTypeOutSerializer } from "../models/eventTypeOut";
+import { type EventTypePatch, EventTypePatchSerializer } from "../models/eventTypePatch";
 import {
-  ListResponseEventTypeOut,
+  type EventTypeUpdate,
+  EventTypeUpdateSerializer,
+} from "../models/eventTypeUpdate";
+import {
+  type ListResponseEventTypeOut,
   ListResponseEventTypeOutSerializer,
 } from "../models/listResponseEventTypeOut";
-import { Ordering } from "../models/ordering";
-import { HttpMethod, SvixRequest, SvixRequestContext } from "../request";
+import type { Ordering } from "../models/ordering";
+import { HttpMethod, SvixRequest, type SvixRequestContext } from "../request";
 
 export interface EventTypeListOptions {
   /** Limit the number of returned items */

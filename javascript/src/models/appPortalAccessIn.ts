@@ -1,9 +1,9 @@
 // this file is @generated
 import {
-  AppPortalCapability,
+  type AppPortalCapability,
   AppPortalCapabilitySerializer,
 } from "./appPortalCapability";
-import { ApplicationIn, ApplicationInSerializer } from "./applicationIn";
+import { type ApplicationIn, ApplicationInSerializer } from "./applicationIn";
 
 export interface AppPortalAccessIn {
   /**

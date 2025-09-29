@@ -1,6 +1,6 @@
 // this file is @generated
 import {
-  MessageAttemptExhaustedEventData,
+  type MessageAttemptExhaustedEventData,
   MessageAttemptExhaustedEventDataSerializer,
 } from "./messageAttemptExhaustedEventData";
 

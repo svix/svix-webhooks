@@ -1,6 +1,6 @@
 // this file is @generated
 import {
-  BackgroundTaskFinishedEvent2,
+  type BackgroundTaskFinishedEvent2,
   BackgroundTaskFinishedEvent2Serializer,
 } from "./backgroundTaskFinishedEvent2";
 

@@ -1,5 +1,5 @@
 // this file is @generated
-import { BackgroundTaskOut, BackgroundTaskOutSerializer } from "./backgroundTaskOut";
+import { type BackgroundTaskOut, BackgroundTaskOutSerializer } from "./backgroundTaskOut";
 
 export interface ListResponseBackgroundTaskOut {
   data: BackgroundTaskOut[];

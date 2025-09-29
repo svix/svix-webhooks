@@ -1,6 +1,6 @@
 // this file is @generated
 import {
-  IngestMessageAttemptExhaustedEventData,
+  type IngestMessageAttemptExhaustedEventData,
   IngestMessageAttemptExhaustedEventDataSerializer,
 } from "./ingestMessageAttemptExhaustedEventData";
 
