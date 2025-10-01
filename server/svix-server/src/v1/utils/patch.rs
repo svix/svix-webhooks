@@ -16,8 +16,9 @@ use validator::Validate;
 ///
 /// NOTE: You must tag these fields with `#[serde(default)]` in order for the
 /// serialization to work correctly.
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub enum UnrequiredNullableField<T> {
+    #[default]
     Absent,
     None,
     Some(T),
@@ -33,8 +34,9 @@ pub enum UnrequiredNullableField<T> {
 ///
 /// NOTE: You must tag these fields with `#[serde(default)]` in order for the
 /// serialization to work correctly.
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub enum UnrequiredField<T> {
+    #[default]
     Absent,
     Some(T),
 }
@@ -63,18 +65,6 @@ impl<T> UnrequiredField<T> {
             UnrequiredField::Absent => UnrequiredField::Absent,
             UnrequiredField::Some(v) => UnrequiredField::Some(f(v)),
         }
-    }
-}
-
-impl<T> Default for UnrequiredNullableField<T> {
-    fn default() -> Self {
-        Self::Absent
-    }
-}
-
-impl<T> Default for UnrequiredField<T> {
-    fn default() -> Self {
-        Self::Absent
     }
 }
 
