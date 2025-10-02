@@ -177,3 +177,18 @@ def test_sign_function():
     wh = Webhook(key)
     signature = wh.sign(msg_id=msg_id, timestamp=timestamp, data=payload)
     assert signature == expected
+
+
+def test_default_tolerance_is_five_minutes():
+    testPayload = PayloadForTesting()
+    wh = Webhook(testPayload.secret)
+    
+    assert wh._whtolerance == timedelta(minutes=5)
+
+
+def test_custom_tolerance_is_set():
+    testPayload = PayloadForTesting()
+    custom_tolerance = timedelta(minutes=10)
+    wh = Webhook(testPayload.secret, custom_tolerance)
+    
+    assert wh._whtolerance == custom_tolerance
