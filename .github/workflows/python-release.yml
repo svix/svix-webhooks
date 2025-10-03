@@ -10,6 +10,8 @@ on:
 
 jobs:
   build:
+    permissions:
+      id-token: write
     name: Build distributions
     runs-on: ubuntu-24.04
     environment: release
@@ -40,5 +42,4 @@ jobs:
 
       - uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          password: ${{ secrets.TWINE_PASSWORD }}
           packages_dir: python/dist
