@@ -71,7 +71,7 @@ async fn test_restricted_application_access() {
         .await
         .unwrap();
 
-    // READ should succeed when accessing the app_id the token is auhtorized for but no others
+    // READ should succeed when accessing the app_id the token is authorized for but no others
     let _: IgnoredAny = client
         .get(&format!("api/v1/app/{app_id_2}/"), StatusCode::NOT_FOUND)
         .await
