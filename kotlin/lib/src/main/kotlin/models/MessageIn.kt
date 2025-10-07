@@ -2,6 +2,7 @@
 package com.svix.kotlin.models
 
 import com.svix.kotlin.StringAnyMapSerializer
+import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -15,6 +16,13 @@ data class MessageIn(
     val application: ApplicationIn? = null,
     /** List of free-form identifiers that endpoints can filter by */
     val channels: Set<String>? = null,
+    /**
+     * The date and time at which the message will be delivered.
+     *
+     * Note that this time is best-effort-only. Must be at least one minute and no more than 24
+     * hours in the future.
+     */
+    val deliverAt: Instant? = null,
     /** Optional unique identifier for the message */
     val eventId: String? = null,
     /** The event type's name */

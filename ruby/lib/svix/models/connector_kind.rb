@@ -3,6 +3,7 @@
 module Svix
   class ConnectorKind
     CUSTOM = "Custom".freeze
+    AGENTIC_COMMERCE_PROTOCOL = "AgenticCommerceProtocol".freeze
     CLOSE_CRM = "CloseCRM".freeze
     CUSTOMER_IO = "CustomerIO".freeze
     DISCORD = "Discord".freeze
@@ -22,6 +23,7 @@ module Svix
     def self.all_vars
       @all_vars ||= [
         CUSTOM,
+        AGENTIC_COMMERCE_PROTOCOL,
         CLOSE_CRM,
         CUSTOMER_IO,
         DISCORD,

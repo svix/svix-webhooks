@@ -7,6 +7,7 @@ module Svix
   class EndpointMessageOut
     # List of free-form identifiers that endpoints can filter by
     attr_accessor :channels
+    attr_accessor :deliver_at
     # Optional unique identifier for the message
     attr_accessor :event_id
     # The event type's name
@@ -22,6 +23,7 @@ module Svix
 
     ALL_FIELD ||= [
       "channels",
+      "deliver_at",
       "event_id",
       "event_type",
       "id",
@@ -53,6 +55,7 @@ module Svix
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
       attrs["channels"] = attributes["channels"]
+      attrs["deliver_at"] = DateTime.rfc3339(attributes["deliverAt"]).to_time if attributes["deliverAt"]
       attrs["event_id"] = attributes["eventId"]
       attrs["event_type"] = attributes["eventType"]
       attrs["id"] = attributes["id"]
@@ -68,6 +71,7 @@ module Svix
     def serialize
       out = Hash.new
       out["channels"] = Svix::serialize_primitive(@channels) if @channels
+      out["deliverAt"] = Svix::serialize_primitive(@deliver_at) if @deliver_at
       out["eventId"] = Svix::serialize_primitive(@event_id) if @event_id
       out["eventType"] = Svix::serialize_primitive(@event_type) if @event_type
       out["id"] = Svix::serialize_primitive(@id) if @id

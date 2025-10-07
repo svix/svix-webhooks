@@ -11,49 +11,52 @@ namespace Svix.Models
         [EnumMember(Value = "Custom")]
         Custom = 1,
 
+        [EnumMember(Value = "AgenticCommerceProtocol")]
+        AgenticCommerceProtocol = 2,
+
         [EnumMember(Value = "CloseCRM")]
-        CloseCrm = 2,
+        CloseCrm = 3,
 
         [EnumMember(Value = "CustomerIO")]
-        CustomerIo = 3,
+        CustomerIo = 4,
 
         [EnumMember(Value = "Discord")]
-        Discord = 4,
+        Discord = 5,
 
         [EnumMember(Value = "Hubspot")]
-        Hubspot = 5,
+        Hubspot = 6,
 
         [EnumMember(Value = "Inngest")]
-        Inngest = 6,
+        Inngest = 7,
 
         [EnumMember(Value = "Loops")]
-        Loops = 7,
+        Loops = 8,
 
         [EnumMember(Value = "Resend")]
-        Resend = 8,
+        Resend = 9,
 
         [EnumMember(Value = "Salesforce")]
-        Salesforce = 9,
+        Salesforce = 10,
 
         [EnumMember(Value = "Segment")]
-        Segment = 10,
+        Segment = 11,
 
         [EnumMember(Value = "Sendgrid")]
-        Sendgrid = 11,
+        Sendgrid = 12,
 
         [EnumMember(Value = "Slack")]
-        Slack = 12,
+        Slack = 13,
 
         [EnumMember(Value = "Teams")]
-        Teams = 13,
+        Teams = 14,
 
         [EnumMember(Value = "TriggerDev")]
-        TriggerDev = 14,
+        TriggerDev = 15,
 
         [EnumMember(Value = "Windmill")]
-        Windmill = 15,
+        Windmill = 16,
 
         [EnumMember(Value = "Zapier")]
-        Zapier = 16,
+        Zapier = 17,
     }
 }

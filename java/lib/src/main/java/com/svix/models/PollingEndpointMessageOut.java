@@ -23,6 +23,7 @@ import java.util.Set;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class PollingEndpointMessageOut {
     @JsonProperty private Set<String> channels;
+    @JsonProperty private OffsetDateTime deliverAt;
     @JsonProperty private String eventId;
     @JsonProperty private String eventType;
     @JsonProperty private Map<String, String> headers;
@@ -59,6 +60,25 @@ public class PollingEndpointMessageOut {
 
     public void setChannels(Set<String> channels) {
         this.channels = channels;
+    }
+
+    public PollingEndpointMessageOut deliverAt(OffsetDateTime deliverAt) {
+        this.deliverAt = deliverAt;
+        return this;
+    }
+
+    /**
+     * Get deliverAt
+     *
+     * @return deliverAt
+     */
+    @javax.annotation.Nullable
+    public OffsetDateTime getDeliverAt() {
+        return deliverAt;
+    }
+
+    public void setDeliverAt(OffsetDateTime deliverAt) {
+        this.deliverAt = deliverAt;
     }
 
     public PollingEndpointMessageOut eventId(String eventId) {

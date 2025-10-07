@@ -1,5 +1,6 @@
 # this file is @generated
 import typing as t
+from datetime import datetime
 
 from .application_in import ApplicationIn
 from .common import BaseModel
@@ -13,6 +14,11 @@ class MessageIn(BaseModel):
 
     channels: t.Optional[t.List[str]] = None
     """List of free-form identifiers that endpoints can filter by"""
+
+    deliver_at: t.Optional[datetime] = None
+    """The date and time at which the message will be delivered.
+
+    Note that this time is best-effort-only. Must be at least one minute and no more than 24 hours in the future."""
 
     event_id: t.Optional[str] = None
     """Optional unique identifier for the message"""

@@ -13,10 +13,13 @@ class MessageIn implements \JsonSerializable
      * @param ApplicationIn|null $application Optionally creates a new application alongside the message.
      *
      * If the application id or uid that is used in the path already exists, this argument is ignored.
-     * @param list<string>|null $channels  List of free-form identifiers that endpoints can filter by
-     * @param string|null       $eventId   Optional unique identifier for the message
-     * @param string            $eventType The event type's name
-     * @param array             $payload   JSON payload to send as the request body of the webhook.
+     * @param list<string>|null       $channels  List of free-form identifiers that endpoints can filter by
+     * @param \DateTimeImmutable|null $deliverAt The date and time at which the message will be delivered.
+     *
+     * Note that this time is best-effort-only. Must be at least one minute and no more than 24 hours in the future.
+     * @param string|null $eventId   Optional unique identifier for the message
+     * @param string      $eventType The event type's name
+     * @param array       $payload   JSON payload to send as the request body of the webhook.
      *
      * We also support sending non-JSON payloads. Please contact us for more information.
      * @param int|null          $payloadRetentionHours  Optional number of hours to retain the message payload. Note that this is mutually exclusive with `payloadRetentionPeriod`.
@@ -29,6 +32,7 @@ class MessageIn implements \JsonSerializable
         public readonly array $payload,
         public readonly ?ApplicationIn $application = null,
         public readonly ?array $channels = null,
+        public readonly ?\DateTimeImmutable $deliverAt = null,
         public readonly ?string $eventId = null,
         public readonly ?int $payloadRetentionHours = null,
         public readonly ?int $payloadRetentionPeriod = null,
@@ -49,6 +53,7 @@ class MessageIn implements \JsonSerializable
         return new self(
             application: null,
             channels: null,
+            deliverAt: null,
             eventId: null,
             eventType: $eventType,
             payload: $payload,
@@ -68,6 +73,7 @@ class MessageIn implements \JsonSerializable
         return new self(
             application: $application,
             channels: $this->channels,
+            deliverAt: $this->deliverAt,
             eventId: $this->eventId,
             eventType: $this->eventType,
             payload: $this->payload,
@@ -87,6 +93,27 @@ class MessageIn implements \JsonSerializable
         return new self(
             application: $this->application,
             channels: $channels,
+            deliverAt: $this->deliverAt,
+            eventId: $this->eventId,
+            eventType: $this->eventType,
+            payload: $this->payload,
+            payloadRetentionHours: $this->payloadRetentionHours,
+            payloadRetentionPeriod: $this->payloadRetentionPeriod,
+            tags: $this->tags,
+            transformationsParams: $this->transformationsParams,
+            setFields: $setFields
+        );
+    }
+
+    public function withDeliverAt(?\DateTimeImmutable $deliverAt): self
+    {
+        $setFields = $this->setFields;
+        $setFields['deliverAt'] = true;
+
+        return new self(
+            application: $this->application,
+            channels: $this->channels,
+            deliverAt: $deliverAt,
             eventId: $this->eventId,
             eventType: $this->eventType,
             payload: $this->payload,
@@ -106,6 +133,7 @@ class MessageIn implements \JsonSerializable
         return new self(
             application: $this->application,
             channels: $this->channels,
+            deliverAt: $this->deliverAt,
             eventId: $eventId,
             eventType: $this->eventType,
             payload: $this->payload,
@@ -125,6 +153,7 @@ class MessageIn implements \JsonSerializable
         return new self(
             application: $this->application,
             channels: $this->channels,
+            deliverAt: $this->deliverAt,
             eventId: $this->eventId,
             eventType: $this->eventType,
             payload: $this->payload,
@@ -144,6 +173,7 @@ class MessageIn implements \JsonSerializable
         return new self(
             application: $this->application,
             channels: $this->channels,
+            deliverAt: $this->deliverAt,
             eventId: $this->eventId,
             eventType: $this->eventType,
             payload: $this->payload,
@@ -163,6 +193,7 @@ class MessageIn implements \JsonSerializable
         return new self(
             application: $this->application,
             channels: $this->channels,
+            deliverAt: $this->deliverAt,
             eventId: $this->eventId,
             eventType: $this->eventType,
             payload: $this->payload,
@@ -182,6 +213,7 @@ class MessageIn implements \JsonSerializable
         return new self(
             application: $this->application,
             channels: $this->channels,
+            deliverAt: $this->deliverAt,
             eventId: $this->eventId,
             eventType: $this->eventType,
             payload: $this->payload,
@@ -204,6 +236,9 @@ class MessageIn implements \JsonSerializable
         }
         if (isset($this->setFields['channels'])) {
             $data['channels'] = $this->channels;
+        }
+        if (isset($this->setFields['deliverAt'])) {
+            $data['deliverAt'] = $this->deliverAt->format('c');
         }
         if (isset($this->setFields['eventId'])) {
             $data['eventId'] = $this->eventId;
@@ -232,6 +267,7 @@ class MessageIn implements \JsonSerializable
         return new self(
             application: \Svix\Utils::deserializeObject($data, 'application', false, 'MessageIn', [ApplicationIn::class, 'fromMixed']),
             channels: \Svix\Utils::getValFromJson($data, 'channels', false, 'MessageIn'),
+            deliverAt: \Svix\Utils::deserializeDt($data, 'deliverAt', false, 'MessageIn'),
             eventId: \Svix\Utils::deserializeString($data, 'eventId', false, 'MessageIn'),
             eventType: \Svix\Utils::deserializeString($data, 'eventType', true, 'MessageIn'),
             payload: \Svix\Utils::getValFromJson($data, 'payload', true, 'MessageIn'),

@@ -9,6 +9,7 @@ import kotlinx.serialization.Serializable
 data class PollingEndpointMessageOut(
     /** List of free-form identifiers that endpoints can filter by */
     val channels: Set<String>? = null,
+    val deliverAt: Instant? = null,
     /** Optional unique identifier for the message */
     val eventId: String? = null,
     /** The event type's name */

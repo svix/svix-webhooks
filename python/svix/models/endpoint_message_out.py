@@ -13,6 +13,8 @@ class EndpointMessageOut(BaseModel):
     channels: t.Optional[t.List[str]] = None
     """List of free-form identifiers that endpoints can filter by"""
 
+    deliver_at: t.Optional[datetime] = None
+
     event_id: t.Optional[str] = None
     """Optional unique identifier for the message"""
 

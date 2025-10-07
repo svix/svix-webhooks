@@ -10,6 +10,8 @@ pub enum ConnectorKind {
     #[default]
     #[serde(rename = "Custom")]
     Custom,
+    #[serde(rename = "AgenticCommerceProtocol")]
+    AgenticCommerceProtocol,
     #[serde(rename = "CloseCRM")]
     CloseCrm,
     #[serde(rename = "CustomerIO")]
@@ -46,6 +48,7 @@ impl fmt::Display for ConnectorKind {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let value = match self {
             Self::Custom => "Custom",
+            Self::AgenticCommerceProtocol => "AgenticCommerceProtocol",
             Self::CloseCrm => "CloseCRM",
             Self::CustomerIo => "CustomerIO",
             Self::Discord => "Discord",

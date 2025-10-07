@@ -25,6 +25,7 @@ class EndpointMessageOut implements \JsonSerializable
         public readonly MessageStatusText $statusText,
         public readonly \DateTimeImmutable $timestamp,
         public readonly ?array $channels = null,
+        public readonly ?\DateTimeImmutable $deliverAt = null,
         public readonly ?string $eventId = null,
         public readonly ?\DateTimeImmutable $nextAttempt = null,
         public readonly ?array $tags = null,
@@ -46,6 +47,7 @@ class EndpointMessageOut implements \JsonSerializable
     ): self {
         return new self(
             channels: null,
+            deliverAt: null,
             eventId: null,
             eventType: $eventType,
             id: $id,
@@ -66,6 +68,28 @@ class EndpointMessageOut implements \JsonSerializable
 
         return new self(
             channels: $channels,
+            deliverAt: $this->deliverAt,
+            eventId: $this->eventId,
+            eventType: $this->eventType,
+            id: $this->id,
+            nextAttempt: $this->nextAttempt,
+            payload: $this->payload,
+            status: $this->status,
+            statusText: $this->statusText,
+            tags: $this->tags,
+            timestamp: $this->timestamp,
+            setFields: $setFields
+        );
+    }
+
+    public function withDeliverAt(?\DateTimeImmutable $deliverAt): self
+    {
+        $setFields = $this->setFields;
+        $setFields['deliverAt'] = true;
+
+        return new self(
+            channels: $this->channels,
+            deliverAt: $deliverAt,
             eventId: $this->eventId,
             eventType: $this->eventType,
             id: $this->id,
@@ -86,6 +110,7 @@ class EndpointMessageOut implements \JsonSerializable
 
         return new self(
             channels: $this->channels,
+            deliverAt: $this->deliverAt,
             eventId: $eventId,
             eventType: $this->eventType,
             id: $this->id,
@@ -106,6 +131,7 @@ class EndpointMessageOut implements \JsonSerializable
 
         return new self(
             channels: $this->channels,
+            deliverAt: $this->deliverAt,
             eventId: $this->eventId,
             eventType: $this->eventType,
             id: $this->id,
@@ -126,6 +152,7 @@ class EndpointMessageOut implements \JsonSerializable
 
         return new self(
             channels: $this->channels,
+            deliverAt: $this->deliverAt,
             eventId: $this->eventId,
             eventType: $this->eventType,
             id: $this->id,
@@ -152,6 +179,9 @@ class EndpointMessageOut implements \JsonSerializable
         if (isset($this->setFields['channels'])) {
             $data['channels'] = $this->channels;
         }
+        if (isset($this->setFields['deliverAt'])) {
+            $data['deliverAt'] = $this->deliverAt->format('c');
+        }
         if (isset($this->setFields['eventId'])) {
             $data['eventId'] = $this->eventId;
         }
@@ -172,6 +202,7 @@ class EndpointMessageOut implements \JsonSerializable
     {
         return new self(
             channels: \Svix\Utils::getValFromJson($data, 'channels', false, 'EndpointMessageOut'),
+            deliverAt: \Svix\Utils::deserializeDt($data, 'deliverAt', false, 'EndpointMessageOut'),
             eventId: \Svix\Utils::deserializeString($data, 'eventId', false, 'EndpointMessageOut'),
             eventType: \Svix\Utils::deserializeString($data, 'eventType', true, 'EndpointMessageOut'),
             id: \Svix\Utils::deserializeString($data, 'id', true, 'EndpointMessageOut'),

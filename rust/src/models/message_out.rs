@@ -7,6 +7,10 @@ pub struct MessageOut {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub channels: Option<Vec<String>>,
 
+    #[serde(rename = "deliverAt")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub deliver_at: Option<String>,
+
     /// Optional unique identifier for the message
     #[serde(rename = "eventId")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -36,6 +40,7 @@ impl MessageOut {
     ) -> Self {
         Self {
             channels: None,
+            deliver_at: None,
             event_id: None,
             event_type,
             id,

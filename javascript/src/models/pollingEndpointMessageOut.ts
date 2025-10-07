@@ -4,6 +4,7 @@
 export interface PollingEndpointMessageOut {
   /** List of free-form identifiers that endpoints can filter by */
   channels?: string[] | null;
+  deliverAt?: Date | null;
   /** Optional unique identifier for the message */
   eventId?: string | null;
   /** The event type's name */
@@ -20,6 +21,7 @@ export const PollingEndpointMessageOutSerializer = {
   _fromJsonObject(object: any): PollingEndpointMessageOut {
     return {
       channels: object["channels"],
+      deliverAt: object["deliverAt"] ? new Date(object["deliverAt"]) : null,
       eventId: object["eventId"],
       eventType: object["eventType"],
       headers: object["headers"],
@@ -33,6 +35,7 @@ export const PollingEndpointMessageOutSerializer = {
   _toJsonObject(self: PollingEndpointMessageOut): any {
     return {
       channels: self.channels,
+      deliverAt: self.deliverAt,
       eventId: self.eventId,
       eventType: self.eventType,
       headers: self.headers,
