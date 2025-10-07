@@ -16,6 +16,16 @@ pub struct MessageIn {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub channels: Option<Vec<String>>,
 
+    /// The date and time at which the message will be delivered.
+    ///
+    /// Note that this time is best-effort-only. Must be at least one minute and
+    /// no more than 24 hours in the future.
+    ///
+    /// RFC3339 date string.
+    #[serde(rename = "deliverAt")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub deliver_at: Option<String>,
+
     /// Optional unique identifier for the message
     #[serde(rename = "eventId")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -58,6 +68,7 @@ impl MessageIn {
         Self {
             application: None,
             channels: None,
+            deliver_at: None,
             event_id: None,
             event_type,
             payload,

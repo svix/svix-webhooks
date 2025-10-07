@@ -2,6 +2,7 @@
 
 export enum ConnectorKind {
   Custom = "Custom",
+  AgenticCommerceProtocol = "AgenticCommerceProtocol",
   CloseCrm = "CloseCRM",
   CustomerIo = "CustomerIO",
   Discord = "Discord",

@@ -31,6 +31,7 @@ type SettingsInternalUpdateOut struct {
 	RequireEndpointChannel        *bool                   `json:"requireEndpointChannel,omitempty"`
 	RequireEndpointFilterTypes    *bool                   `json:"requireEndpointFilterTypes,omitempty"`
 	RetryPolicy                   []int32                 `json:"retryPolicy,omitempty"`
+	SendSvixWebhookHeaders        *bool                   `json:"sendSvixWebhookHeaders,omitempty"`
 	ShowUseSvixPlay               *bool                   `json:"showUseSvixPlay,omitempty"`
 	WhitelabelHeaders             *bool                   `json:"whitelabelHeaders,omitempty"`
 	WipeSuccessfulPayload         *bool                   `json:"wipeSuccessfulPayload,omitempty"`

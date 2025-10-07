@@ -11,6 +11,7 @@ import com.svix.Utils;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+import java.time.OffsetDateTime;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -22,6 +23,7 @@ import java.util.Set;
 public class MessageIn {
     @JsonProperty private ApplicationIn application;
     @JsonProperty private Set<String> channels;
+    @JsonProperty private OffsetDateTime deliverAt;
     @JsonProperty private String eventId;
     @JsonProperty private String eventType;
     @JsonProperty private String payload;
@@ -80,6 +82,28 @@ public class MessageIn {
 
     public void setChannels(Set<String> channels) {
         this.channels = channels;
+    }
+
+    public MessageIn deliverAt(OffsetDateTime deliverAt) {
+        this.deliverAt = deliverAt;
+        return this;
+    }
+
+    /**
+     * The date and time at which the message will be delivered.
+     *
+     * <p>Note that this time is best-effort-only. Must be at least one minute and no more than 24
+     * hours in the future.
+     *
+     * @return deliverAt
+     */
+    @javax.annotation.Nullable
+    public OffsetDateTime getDeliverAt() {
+        return deliverAt;
+    }
+
+    public void setDeliverAt(OffsetDateTime deliverAt) {
+        this.deliverAt = deliverAt;
     }
 
     public MessageIn eventId(String eventId) {

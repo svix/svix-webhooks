@@ -10,6 +10,12 @@ export interface MessageIn {
   application?: ApplicationIn | null;
   /** List of free-form identifiers that endpoints can filter by */
   channels?: string[] | null;
+  /**
+   * The date and time at which the message will be delivered.
+   *
+   * Note that this time is best-effort-only. Must be at least one minute and no more than 24 hours in the future.
+   */
+  deliverAt?: Date | null;
   /** Optional unique identifier for the message */
   eventId?: string | null;
   /** The event type's name */
@@ -37,6 +43,7 @@ export const MessageInSerializer = {
         ? ApplicationInSerializer._fromJsonObject(object["application"])
         : undefined,
       channels: object["channels"],
+      deliverAt: object["deliverAt"] ? new Date(object["deliverAt"]) : null,
       eventId: object["eventId"],
       eventType: object["eventType"],
       payload: object["payload"],
@@ -53,6 +60,7 @@ export const MessageInSerializer = {
         ? ApplicationInSerializer._toJsonObject(self.application)
         : undefined,
       channels: self.channels,
+      deliverAt: self.deliverAt,
       eventId: self.eventId,
       eventType: self.eventType,
       payload: self.payload,

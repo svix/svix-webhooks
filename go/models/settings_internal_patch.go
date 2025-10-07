@@ -37,6 +37,7 @@ type SettingsInternalPatch struct {
 	RequireEndpointChannel        *bool                                 `json:"requireEndpointChannel,omitempty"`
 	RequireEndpointFilterTypes    *bool                                 `json:"requireEndpointFilterTypes,omitempty"`
 	RetryPolicy                   utils.Nullable[[]int32]               `json:"retryPolicy"`
+	SendSvixWebhookHeaders        *bool                                 `json:"sendSvixWebhookHeaders,omitempty"`
 	ShowUseSvixPlay               *bool                                 `json:"showUseSvixPlay,omitempty"`
 	WhitelabelHeaders             *bool                                 `json:"whitelabelHeaders,omitempty"`
 	WipeSuccessfulPayload         *bool                                 `json:"wipeSuccessfulPayload,omitempty"`
@@ -130,6 +131,9 @@ func (o SettingsInternalPatch) MarshalJSON() ([]byte, error) {
 	}
 	if o.RetryPolicy.IsSet() {
 		toSerialize["retryPolicy"] = o.RetryPolicy
+	}
+	if o.SendSvixWebhookHeaders != nil {
+		toSerialize["sendSvixWebhookHeaders"] = o.SendSvixWebhookHeaders
 	}
 	if o.ShowUseSvixPlay != nil {
 		toSerialize["showUseSvixPlay"] = o.ShowUseSvixPlay

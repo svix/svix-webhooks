@@ -6,6 +6,7 @@ import com.svix.Utils.ToQueryParam;
 
 public enum ConnectorKind implements ToQueryParam {
     CUSTOM("Custom"),
+    AGENTIC_COMMERCE_PROTOCOL("AgenticCommerceProtocol"),
     CLOSE_CRM("CloseCRM"),
     CUSTOMER_IO("CustomerIO"),
     DISCORD("Discord"),

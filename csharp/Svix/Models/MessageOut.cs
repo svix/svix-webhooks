@@ -9,6 +9,9 @@ namespace Svix.Models
         [JsonProperty("channels")]
         public List<string>? Channels { get; set; } = null;
 
+        [JsonProperty("deliverAt")]
+        public DateTime? DeliverAt { get; set; } = null;
+
         [JsonProperty("eventId")]
         public string? EventId { get; set; } = null;
 
@@ -33,6 +36,7 @@ namespace Svix.Models
 
             sb.Append("class MessageOut {\n");
             sb.Append("  Channels: ").Append(Channels).Append('\n');
+            sb.Append("  DeliverAt: ").Append(DeliverAt).Append('\n');
             sb.Append("  EventId: ").Append(EventId).Append('\n');
             sb.Append("  EventType: ").Append(EventType).Append('\n');
             sb.Append("  Id: ").Append(Id).Append('\n');

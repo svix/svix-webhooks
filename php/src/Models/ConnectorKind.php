@@ -8,6 +8,7 @@ namespace Svix\Models;
 enum ConnectorKind: string implements \JsonSerializable
 {
     case CUSTOM = 'Custom';
+    case AGENTIC_COMMERCE_PROTOCOL = 'AgenticCommerceProtocol';
     case CLOSE_CRM = 'CloseCRM';
     case CUSTOMER_IO = 'CustomerIO';
     case DISCORD = 'Discord';

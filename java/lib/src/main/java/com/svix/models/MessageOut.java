@@ -21,6 +21,7 @@ import java.util.Set;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class MessageOut {
     @JsonProperty private Set<String> channels;
+    @JsonProperty private OffsetDateTime deliverAt;
     @JsonProperty private String eventId;
     @JsonProperty private String eventType;
     @JsonProperty private String id;
@@ -56,6 +57,25 @@ public class MessageOut {
 
     public void setChannels(Set<String> channels) {
         this.channels = channels;
+    }
+
+    public MessageOut deliverAt(OffsetDateTime deliverAt) {
+        this.deliverAt = deliverAt;
+        return this;
+    }
+
+    /**
+     * Get deliverAt
+     *
+     * @return deliverAt
+     */
+    @javax.annotation.Nullable
+    public OffsetDateTime getDeliverAt() {
+        return deliverAt;
+    }
+
+    public void setDeliverAt(OffsetDateTime deliverAt) {
+        this.deliverAt = deliverAt;
     }
 
     public MessageOut eventId(String eventId) {
