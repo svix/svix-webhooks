@@ -13,6 +13,7 @@ class Svix(token: String, options: SvixOptions = SvixOptions()) {
     val message: Message
     val messageAttempt: MessageAttempt
     val statistics: Statistics
+    val stream: Stream
     val operationalWebhook: OperationalWebhook
     val operationalWebhookEndpoint: OperationalWebhookEndpoint
 
@@ -42,6 +43,7 @@ class Svix(token: String, options: SvixOptions = SvixOptions()) {
         message = Message(httpClient)
         messageAttempt = MessageAttempt(httpClient)
         statistics = Statistics(httpClient)
+        stream = Stream(httpClient)
         operationalWebhook = OperationalWebhook(httpClient)
         operationalWebhookEndpoint = OperationalWebhookEndpoint(httpClient)
     }

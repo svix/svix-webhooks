@@ -1,5 +1,6 @@
 // this file is @generated
 
+import { type ApiTokenOut, ApiTokenOutSerializer } from "../models/apiTokenOut";
 import {
   type AppPortalAccessIn,
   AppPortalAccessInSerializer,
@@ -12,6 +13,14 @@ import {
   type ApplicationTokenExpireIn,
   ApplicationTokenExpireInSerializer,
 } from "../models/applicationTokenExpireIn";
+import {
+  type RotatePollerTokenIn,
+  RotatePollerTokenInSerializer,
+} from "../models/rotatePollerTokenIn";
+import {
+  type StreamPortalAccessIn,
+  StreamPortalAccessInSerializer,
+} from "../models/streamPortalAccessIn";
 import {
   type DashboardAccessOut,
   DashboardAccessOutSerializer,
@@ -27,6 +36,14 @@ export interface AuthenticationExpireAllOptions {
 }
 
 export interface AuthenticationLogoutOptions {
+  idempotencyKey?: string;
+}
+
+export interface AuthenticationStreamPortalAccessOptions {
+  idempotencyKey?: string;
+}
+
+export interface AuthenticationRotateStreamPollerTokenOptions {
   idempotencyKey?: string;
 }
 
@@ -103,5 +120,56 @@ export class Authentication {
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
 
     return request.sendNoResponseBody(this.requestCtx);
+  }
+
+  /** Use this function to get magic links (and authentication codes) for connecting your users to the Stream Consumer Portal. */
+  public streamPortalAccess(
+    streamId: string,
+    streamPortalAccessIn: StreamPortalAccessIn,
+    options?: AuthenticationStreamPortalAccessOptions
+  ): Promise<AppPortalAccessOut> {
+    const request = new SvixRequest(
+      HttpMethod.POST,
+      "/api/v1/auth/stream-portal-access/{stream_id}"
+    );
+
+    request.setPathParam("stream_id", streamId);
+    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
+    request.setBody(StreamPortalAccessInSerializer._toJsonObject(streamPortalAccessIn));
+
+    return request.send(this.requestCtx, AppPortalAccessOutSerializer._fromJsonObject);
+  }
+
+  /** Get the current auth token for the stream poller. */
+  public getStreamPollerToken(streamId: string, sinkId: string): Promise<ApiTokenOut> {
+    const request = new SvixRequest(
+      HttpMethod.GET,
+      "/api/v1/auth/stream/{stream_id}/sink/{sink_id}/poller/token"
+    );
+
+    request.setPathParam("stream_id", streamId);
+    request.setPathParam("sink_id", sinkId);
+
+    return request.send(this.requestCtx, ApiTokenOutSerializer._fromJsonObject);
+  }
+
+  /** Create a new auth token for the stream poller API. */
+  public rotateStreamPollerToken(
+    streamId: string,
+    sinkId: string,
+    rotatePollerTokenIn: RotatePollerTokenIn,
+    options?: AuthenticationRotateStreamPollerTokenOptions
+  ): Promise<ApiTokenOut> {
+    const request = new SvixRequest(
+      HttpMethod.POST,
+      "/api/v1/auth/stream/{stream_id}/sink/{sink_id}/poller/token/rotate"
+    );
+
+    request.setPathParam("stream_id", streamId);
+    request.setPathParam("sink_id", sinkId);
+    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
+    request.setBody(RotatePollerTokenInSerializer._toJsonObject(rotatePollerTokenIn));
+
+    return request.send(this.requestCtx, ApiTokenOutSerializer._fromJsonObject);
   }
 }

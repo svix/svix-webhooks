@@ -57,5 +57,39 @@ module Svix
       )
     end
 
+    def stream_portal_access(stream_id, stream_portal_access_in, options = {})
+      options = options.transform_keys(&:to_s)
+      res = @client.execute_request(
+        "POST",
+        "/api/v1/auth/stream-portal-access/#{stream_id}",
+        headers: {
+          "idempotency-key" => options["idempotency-key"]
+        },
+        body: stream_portal_access_in
+      )
+      AppPortalAccessOut.deserialize(res)
+    end
+
+    def get_stream_poller_token(stream_id, sink_id)
+      res = @client.execute_request(
+        "GET",
+        "/api/v1/auth/stream/#{stream_id}/sink/#{sink_id}/poller/token"
+      )
+      ApiTokenOut.deserialize(res)
+    end
+
+    def rotate_stream_poller_token(stream_id, sink_id, rotate_poller_token_in, options = {})
+      options = options.transform_keys(&:to_s)
+      res = @client.execute_request(
+        "POST",
+        "/api/v1/auth/stream/#{stream_id}/sink/#{sink_id}/poller/token/rotate",
+        headers: {
+          "idempotency-key" => options["idempotency-key"]
+        },
+        body: rotate_poller_token_in
+      )
+      ApiTokenOut.deserialize(res)
+    end
+
   end
 end

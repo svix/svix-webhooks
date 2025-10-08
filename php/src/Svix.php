@@ -19,6 +19,7 @@ use Svix\Api\Message;
 use Svix\Api\MessageAttempt;
 use Svix\Api\OperationalWebhook;
 use Svix\Api\Statistics;
+use Svix\Api\Stream;
 use Svix\Request\SvixHttpClient;
 
 class Svix
@@ -36,6 +37,7 @@ class Svix
     public MessageAttempt $messageAttempt;
     public OperationalWebhook $operationalWebhook;
     public Statistics $statistics;
+    public Stream $stream;
 
     public function __construct(
         string $token,
@@ -64,5 +66,6 @@ class Svix
         $this->messageAttempt = new MessageAttempt($svixHttpClient);
         $this->operationalWebhook = new OperationalWebhook($svixHttpClient);
         $this->statistics = new Statistics($svixHttpClient);
+        $this->stream = new Stream($svixHttpClient);
     }
 }

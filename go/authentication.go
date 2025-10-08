@@ -30,6 +30,14 @@ type AuthenticationLogoutOptions struct {
 	IdempotencyKey *string
 }
 
+type AuthenticationStreamPortalAccessOptions struct {
+	IdempotencyKey *string
+}
+
+type AuthenticationRotateStreamPollerTokenOptions struct {
+	IdempotencyKey *string
+}
+
 // Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal.
 func (authentication *Authentication) AppPortalAccess(
 	ctx context.Context,
@@ -146,4 +154,88 @@ func (authentication *Authentication) Logout(
 		nil,
 	)
 	return err
+}
+
+// Use this function to get magic links (and authentication codes) for connecting your users to the Stream Consumer Portal.
+func (authentication *Authentication) StreamPortalAccess(
+	ctx context.Context,
+	streamId string,
+	streamPortalAccessIn models.StreamPortalAccessIn,
+	o *AuthenticationStreamPortalAccessOptions,
+) (*models.AppPortalAccessOut, error) {
+	pathMap := map[string]string{
+		"stream_id": streamId,
+	}
+	headerMap := map[string]string{}
+	var err error
+	if o != nil {
+		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return internal.ExecuteRequest[models.StreamPortalAccessIn, models.AppPortalAccessOut](
+		ctx,
+		authentication.client,
+		"POST",
+		"/api/v1/auth/stream-portal-access/{stream_id}",
+		pathMap,
+		nil,
+		headerMap,
+		&streamPortalAccessIn,
+	)
+}
+
+// Get the current auth token for the stream poller.
+func (authentication *Authentication) GetStreamPollerToken(
+	ctx context.Context,
+	streamId string,
+	sinkId string,
+) (*models.ApiTokenOut, error) {
+	pathMap := map[string]string{
+		"stream_id": streamId,
+		"sink_id":   sinkId,
+	}
+	return internal.ExecuteRequest[any, models.ApiTokenOut](
+		ctx,
+		authentication.client,
+		"GET",
+		"/api/v1/auth/stream/{stream_id}/sink/{sink_id}/poller/token",
+		pathMap,
+		nil,
+		nil,
+		nil,
+	)
+}
+
+// Create a new auth token for the stream poller API.
+func (authentication *Authentication) RotateStreamPollerToken(
+	ctx context.Context,
+	streamId string,
+	sinkId string,
+	rotatePollerTokenIn models.RotatePollerTokenIn,
+	o *AuthenticationRotateStreamPollerTokenOptions,
+) (*models.ApiTokenOut, error) {
+	pathMap := map[string]string{
+		"stream_id": streamId,
+		"sink_id":   sinkId,
+	}
+	headerMap := map[string]string{}
+	var err error
+	if o != nil {
+		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return internal.ExecuteRequest[models.RotatePollerTokenIn, models.ApiTokenOut](
+		ctx,
+		authentication.client,
+		"POST",
+		"/api/v1/auth/stream/{stream_id}/sink/{sink_id}/poller/token/rotate",
+		pathMap,
+		nil,
+		headerMap,
+		&rotatePollerTokenIn,
+	)
 }

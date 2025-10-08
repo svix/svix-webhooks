@@ -33,6 +33,7 @@ type (
 		Message                    *Message
 		MessageAttempt             *MessageAttempt
 		Statistics                 *Statistics
+		Stream                     *Stream
 		OperationalWebhook         *OperationalWebhook
 		OperationalWebhookEndpoint *OperationalWebhookEndpoint
 	}
@@ -75,6 +76,7 @@ func New(token string, options *SvixOptions) (*Svix, error) {
 		Integration:                newIntegration(&svixHttpClient),
 		MessageAttempt:             newMessageAttempt(&svixHttpClient),
 		Statistics:                 newStatistics(&svixHttpClient),
+		Stream:                     newStream(&svixHttpClient)
 		OperationalWebhook:         newOperationalWebhook(&svixHttpClient),
 		OperationalWebhookEndpoint: newOperationalWebhookEndpoint(&svixHttpClient),
 	}
