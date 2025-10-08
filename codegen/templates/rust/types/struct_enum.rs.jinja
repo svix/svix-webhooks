@@ -1,4 +1,7 @@
 use serde::{Deserialize, Serialize};
+{% if type.name is endingwith "Patch" -%}
+    use js_option::JsOption;
+{% endif %}
 
 use super::{
     {% for c in referenced_components -%}
