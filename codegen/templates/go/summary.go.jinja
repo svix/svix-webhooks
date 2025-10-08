@@ -24,18 +24,9 @@ type (
 		// to override the user agent use `SetUseragentSuffix`
 		client *internal.SvixHttpClient
 
-		Application                *Application
-		Authentication             *Authentication
-		BackgroundTask             *BackgroundTask
-		Endpoint                   *Endpoint
-		Environment                *Environment
-		EventType                  *EventType
-		Ingest                     *Ingest
-		Integration                *Integration
-		Message                    *Message
-		MessageAttempt             *MessageAttempt
-		OperationalWebhook         *OperationalWebhook
-		Statistics                 *Statistics
+		{% for resource in api.resources -%}
+		{{ resource.name | to_upper_camel_case }} *{{ resource.name | to_upper_camel_case }}
+		{% endfor -%}
 		OperationalWebhookEndpoint *OperationalWebhookEndpoint
 	}
 )
@@ -67,18 +58,10 @@ func New(token string, options *SvixOptions) (*Svix, error) {
 	svx := Svix{
 		client: &svixHttpClient,
 
-		Application:                newApplication(&svixHttpClient),
-		Authentication:             newAuthentication(&svixHttpClient),
-		BackgroundTask:             newBackgroundTask(&svixHttpClient),
-		Endpoint:                   newEndpoint(&svixHttpClient),
-		Environment:                newEnvironment(&svixHttpClient),
-		EventType:                  newEventType(&svixHttpClient),
-		Ingest:                     newIngest(&svixHttpClient),
-		Integration:                newIntegration(&svixHttpClient),
-		Message:                    newMessage(&svixHttpClient),
-		MessageAttempt:             newMessageAttempt(&svixHttpClient),
-		OperationalWebhook:         newOperationalWebhook(&svixHttpClient),
-		Statistics:                 newStatistics(&svixHttpClient),
+
+		{% for resource in api.resources -%}
+		{{ resource.name | to_upper_camel_case }}: new{{ resource.name | to_upper_camel_case }}(&svixHttpClient),
+		{% endfor -%}
 		OperationalWebhookEndpoint: newOperationalWebhookEndpoint(&svixHttpClient),
 	}
 	return &svx, nil
@@ -120,3 +103,6 @@ func getDefaultBaseUrl(token string) string {
 		return "https://api.svix.com"
 	}
 }
+
+
+{% do set_summary_filename("svix.go") -%}
