@@ -101,6 +101,10 @@ extra_shell_commands = [
    "sed -i.bak 's/package svix/package internalapi/g' go/internalapi/management* && rm go/internalapi/management*.bak",
 ]
 extra_codegen_args = ["-e=v1.health.get"]
+
+[[go.task]]
+template = "templates/go/summary.go.jinja"
+output_dir = "go"
 [[go.task]]
 template = "templates/go/api_resource.go.jinja"
 output_dir = "go"

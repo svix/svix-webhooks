@@ -404,6 +404,9 @@
         "go/models/settings_internal_update_out.go"
     ],
     [
+        "go/svix.go"
+    ],
+    [
         "java/lib/src/main/java/com/svix/api/Application.java",
         "java/lib/src/main/java/com/svix/api/Authentication.java",
         "java/lib/src/main/java/com/svix/api/BackgroundTask.java",
