@@ -92,6 +92,8 @@ urlencoding = "2.1.2"
 # haven't gotten around to doing a proper upgrade yet (0.17 is a large
 # rewrite with a barely-useful changelog)
 validator = { git = "https://github.com/svix/validator.git", rev = "aebdc34a4ed72524902ff6d63397b9c435b0578f", features = ["derive"] }
+cel = "0.11.1"
+once_cell = "1.19"
 
 [target.'cfg(not(target_env = "msvc"))'.dependencies]
 tikv-jemallocator = { version = "0.6", optional = true }
