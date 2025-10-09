@@ -12,6 +12,7 @@ use self::{
             endpoint::EndpointArgs, environment::EnvironmentArgs, event_type::EventTypeArgs,
             ingest::IngestArgs, integration::IntegrationArgs, message::MessageArgs,
             message_attempt::MessageAttemptArgs, operational_webhook::OperationalWebhookArgs,
+            streaming::StreamingArgs,
         },
         listen::ListenArgs,
         open::OpenArgs,
@@ -84,6 +85,8 @@ enum RootCommands {
     Open(OpenArgs),
     /// List, create & modify operational webhook endpoints
     OperationalWebhook(OperationalWebhookArgs),
+    /// List, create & modify Svix Stream resources
+    Streaming(StreamingArgs),
     /// Generate a test application with sample endpoints and event types
     Seed(SeedArgs),
     /// Verifying and signing webhooks with the Svix signature scheme
@@ -145,6 +148,10 @@ async fn main() -> Result<()> {
             args.command.exec(&client, color_mode).await?;
         }
         RootCommands::OperationalWebhook(args) => {
+            let client = get_client(&cfg?)?;
+            args.command.exec(&client, color_mode).await?;
+        }
+        RootCommands::Streaming(args) => {
             let client = get_client(&cfg?)?;
             args.command.exec(&client, color_mode).await?;
         }
