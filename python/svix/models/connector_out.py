@@ -11,8 +11,6 @@ class ConnectorOut(BaseModel):
 
     description: str
 
-    feature_flag: t.Optional[str] = None
-
     feature_flags: t.Optional[t.List[str]] = None
 
     filter_types: t.Optional[t.List[str]] = None
@@ -21,8 +19,6 @@ class ConnectorOut(BaseModel):
     """The Connector's ID."""
 
     instructions: str
-
-    instructions_link: t.Optional[str] = None
 
     kind: ConnectorKind
 

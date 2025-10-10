@@ -10,10 +10,6 @@ pub struct ConnectorOut {
 
     pub description: String,
 
-    #[serde(rename = "featureFlag")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub feature_flag: Option<String>,
-
     #[serde(rename = "featureFlags")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub feature_flags: Option<Vec<String>>,
@@ -26,10 +22,6 @@ pub struct ConnectorOut {
     pub id: String,
 
     pub instructions: String,
-
-    #[serde(rename = "instructionsLink")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub instructions_link: Option<String>,
 
     pub kind: ConnectorKind,
 
@@ -63,12 +55,10 @@ impl ConnectorOut {
         Self {
             created_at,
             description,
-            feature_flag: None,
             feature_flags: None,
             filter_types: None,
             id,
             instructions,
-            instructions_link: None,
             kind,
             logo,
             name,

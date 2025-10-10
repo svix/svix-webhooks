@@ -12,3 +12,8 @@ pub mod message_attempt;
 pub mod message_poller;
 pub mod operational_webhook;
 pub mod operational_webhook_endpoint;
+pub mod streaming;
+pub mod streaming_event_type;
+pub mod streaming_events;
+pub mod streaming_sink;
+pub mod streaming_stream;

@@ -23,12 +23,10 @@ import java.util.Set;
 public class ConnectorOut {
     @JsonProperty private OffsetDateTime createdAt;
     @JsonProperty private String description;
-    @JsonProperty private String featureFlag;
     @JsonProperty private Set<String> featureFlags;
     @JsonProperty private Set<String> filterTypes;
     @JsonProperty private String id;
     @JsonProperty private String instructions;
-    @JsonProperty private URI instructionsLink;
     @JsonProperty private ConnectorKind kind;
     @JsonProperty private URI logo;
     @JsonProperty private String name;
@@ -74,25 +72,6 @@ public class ConnectorOut {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public ConnectorOut featureFlag(String featureFlag) {
-        this.featureFlag = featureFlag;
-        return this;
-    }
-
-    /**
-     * Get featureFlag
-     *
-     * @return featureFlag
-     */
-    @javax.annotation.Nullable
-    public String getFeatureFlag() {
-        return featureFlag;
-    }
-
-    public void setFeatureFlag(String featureFlag) {
-        this.featureFlag = featureFlag;
     }
 
     public ConnectorOut featureFlags(Set<String> featureFlags) {
@@ -187,25 +166,6 @@ public class ConnectorOut {
 
     public void setInstructions(String instructions) {
         this.instructions = instructions;
-    }
-
-    public ConnectorOut instructionsLink(URI instructionsLink) {
-        this.instructionsLink = instructionsLink;
-        return this;
-    }
-
-    /**
-     * Get instructionsLink
-     *
-     * @return instructionsLink
-     */
-    @javax.annotation.Nullable
-    public URI getInstructionsLink() {
-        return instructionsLink;
-    }
-
-    public void setInstructionsLink(URI instructionsLink) {
-        this.instructionsLink = instructionsLink;
     }
 
     public ConnectorOut kind(ConnectorKind kind) {

@@ -43,6 +43,36 @@ impl From<AuthenticationLogoutOptions> for svix::api::AuthenticationLogoutOption
     }
 }
 
+#[derive(Args, Clone)]
+pub struct AuthenticationStreamPortalAccessOptions {
+    #[arg(long)]
+    pub idempotency_key: Option<String>,
+}
+
+impl From<AuthenticationStreamPortalAccessOptions>
+    for svix::api::AuthenticationStreamPortalAccessOptions
+{
+    fn from(value: AuthenticationStreamPortalAccessOptions) -> Self {
+        let AuthenticationStreamPortalAccessOptions { idempotency_key } = value;
+        Self { idempotency_key }
+    }
+}
+
+#[derive(Args, Clone)]
+pub struct AuthenticationRotateStreamPollerTokenOptions {
+    #[arg(long)]
+    pub idempotency_key: Option<String>,
+}
+
+impl From<AuthenticationRotateStreamPollerTokenOptions>
+    for svix::api::AuthenticationRotateStreamPollerTokenOptions
+{
+    fn from(value: AuthenticationRotateStreamPollerTokenOptions) -> Self {
+        let AuthenticationRotateStreamPollerTokenOptions { idempotency_key } = value;
+        Self { idempotency_key }
+    }
+}
+
 #[derive(Args)]
 #[command(args_conflicts_with_subcommands = true, flatten_help = true)]
 pub struct AuthenticationArgs {
@@ -72,6 +102,23 @@ pub enum AuthenticationCommands {
     Logout {
         #[clap(flatten)]
         options: AuthenticationLogoutOptions,
+    },
+    /// Use this function to get magic links (and authentication codes) for connecting your users to the Stream Consumer Portal.
+    StreamPortalAccess {
+        stream_id: String,
+        stream_portal_access_in: Option<crate::json::JsonOf<StreamPortalAccessIn>>,
+        #[clap(flatten)]
+        options: AuthenticationStreamPortalAccessOptions,
+    },
+    /// Get the current auth token for the stream poller.
+    GetStreamPollerToken { stream_id: String, sink_id: String },
+    /// Create a new auth token for the stream poller API.
+    RotateStreamPollerToken {
+        stream_id: String,
+        sink_id: String,
+        rotate_poller_token_in: Option<crate::json::JsonOf<RotatePollerTokenIn>>,
+        #[clap(flatten)]
+        options: AuthenticationRotateStreamPollerTokenOptions,
     },
 }
 
@@ -113,6 +160,45 @@ impl AuthenticationCommands {
             }
             Self::Logout { options } => {
                 client.authentication().logout(Some(options.into())).await?;
+            }
+            Self::StreamPortalAccess {
+                stream_id,
+                stream_portal_access_in,
+                options,
+            } => {
+                let resp = client
+                    .authentication()
+                    .stream_portal_access(
+                        stream_id,
+                        stream_portal_access_in.unwrap_or_default().into_inner(),
+                        Some(options.into()),
+                    )
+                    .await?;
+                crate::json::print_json_output(&resp, color_mode)?;
+            }
+            Self::GetStreamPollerToken { stream_id, sink_id } => {
+                let resp = client
+                    .authentication()
+                    .get_stream_poller_token(stream_id, sink_id)
+                    .await?;
+                crate::json::print_json_output(&resp, color_mode)?;
+            }
+            Self::RotateStreamPollerToken {
+                stream_id,
+                sink_id,
+                rotate_poller_token_in,
+                options,
+            } => {
+                let resp = client
+                    .authentication()
+                    .rotate_stream_poller_token(
+                        stream_id,
+                        sink_id,
+                        rotate_poller_token_in.unwrap_or_default().into_inner(),
+                        Some(options.into()),
+                    )
+                    .await?;
+                crate::json::print_json_output(&resp, color_mode)?;
             }
         }
 

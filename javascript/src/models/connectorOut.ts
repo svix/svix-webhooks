@@ -4,13 +4,11 @@ import { type ConnectorKind, ConnectorKindSerializer } from "./connectorKind";
 export interface ConnectorOut {
   createdAt: Date;
   description: string;
-  featureFlag?: string | null;
   featureFlags?: string[] | null;
   filterTypes?: string[] | null;
   /** The Connector's ID. */
   id: string;
   instructions: string;
-  instructionsLink?: string | null;
   kind: ConnectorKind;
   logo: string;
   name: string;
@@ -25,12 +23,10 @@ export const ConnectorOutSerializer = {
     return {
       createdAt: new Date(object["createdAt"]),
       description: object["description"],
-      featureFlag: object["featureFlag"],
       featureFlags: object["featureFlags"],
       filterTypes: object["filterTypes"],
       id: object["id"],
       instructions: object["instructions"],
-      instructionsLink: object["instructionsLink"],
       kind: ConnectorKindSerializer._fromJsonObject(object["kind"]),
       logo: object["logo"],
       name: object["name"],
@@ -44,12 +40,10 @@ export const ConnectorOutSerializer = {
     return {
       createdAt: self.createdAt,
       description: self.description,
-      featureFlag: self.featureFlag,
       featureFlags: self.featureFlags,
       filterTypes: self.filterTypes,
       id: self.id,
       instructions: self.instructions,
-      instructionsLink: self.instructionsLink,
       kind: ConnectorKindSerializer._toJsonObject(self.kind),
       logo: self.logo,
       name: self.name,

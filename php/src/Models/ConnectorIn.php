@@ -10,7 +10,6 @@ class ConnectorIn implements \JsonSerializable
     private array $setFields = [];
 
     /**
-     * @param string|null       $featureFlag  deprecated - prefer featureFlags instead
      * @param list<string>|null $featureFlags
      * @param list<string>|null $filterTypes
      */
@@ -19,11 +18,9 @@ class ConnectorIn implements \JsonSerializable
         public readonly string $name,
         public readonly string $transformation,
         public readonly ?string $description = null,
-        public readonly ?string $featureFlag = null,
         public readonly ?array $featureFlags = null,
         public readonly ?array $filterTypes = null,
         public readonly ?string $instructions = null,
-        public readonly ?string $instructionsLink = null,
         public readonly ?ConnectorKind $kind = null,
         array $setFields = [],
     ) {
@@ -40,11 +37,9 @@ class ConnectorIn implements \JsonSerializable
     ): self {
         return new self(
             description: null,
-            featureFlag: null,
             featureFlags: null,
             filterTypes: null,
             instructions: null,
-            instructionsLink: null,
             kind: null,
             logo: $logo,
             name: $name,
@@ -60,31 +55,9 @@ class ConnectorIn implements \JsonSerializable
 
         return new self(
             description: $description,
-            featureFlag: $this->featureFlag,
             featureFlags: $this->featureFlags,
             filterTypes: $this->filterTypes,
             instructions: $this->instructions,
-            instructionsLink: $this->instructionsLink,
-            kind: $this->kind,
-            logo: $this->logo,
-            name: $this->name,
-            transformation: $this->transformation,
-            setFields: $setFields
-        );
-    }
-
-    public function withFeatureFlag(?string $featureFlag): self
-    {
-        $setFields = $this->setFields;
-        $setFields['featureFlag'] = true;
-
-        return new self(
-            description: $this->description,
-            featureFlag: $featureFlag,
-            featureFlags: $this->featureFlags,
-            filterTypes: $this->filterTypes,
-            instructions: $this->instructions,
-            instructionsLink: $this->instructionsLink,
             kind: $this->kind,
             logo: $this->logo,
             name: $this->name,
@@ -100,11 +73,9 @@ class ConnectorIn implements \JsonSerializable
 
         return new self(
             description: $this->description,
-            featureFlag: $this->featureFlag,
             featureFlags: $featureFlags,
             filterTypes: $this->filterTypes,
             instructions: $this->instructions,
-            instructionsLink: $this->instructionsLink,
             kind: $this->kind,
             logo: $this->logo,
             name: $this->name,
@@ -120,11 +91,9 @@ class ConnectorIn implements \JsonSerializable
 
         return new self(
             description: $this->description,
-            featureFlag: $this->featureFlag,
             featureFlags: $this->featureFlags,
             filterTypes: $filterTypes,
             instructions: $this->instructions,
-            instructionsLink: $this->instructionsLink,
             kind: $this->kind,
             logo: $this->logo,
             name: $this->name,
@@ -140,31 +109,9 @@ class ConnectorIn implements \JsonSerializable
 
         return new self(
             description: $this->description,
-            featureFlag: $this->featureFlag,
             featureFlags: $this->featureFlags,
             filterTypes: $this->filterTypes,
             instructions: $instructions,
-            instructionsLink: $this->instructionsLink,
-            kind: $this->kind,
-            logo: $this->logo,
-            name: $this->name,
-            transformation: $this->transformation,
-            setFields: $setFields
-        );
-    }
-
-    public function withInstructionsLink(?string $instructionsLink): self
-    {
-        $setFields = $this->setFields;
-        $setFields['instructionsLink'] = true;
-
-        return new self(
-            description: $this->description,
-            featureFlag: $this->featureFlag,
-            featureFlags: $this->featureFlags,
-            filterTypes: $this->filterTypes,
-            instructions: $this->instructions,
-            instructionsLink: $instructionsLink,
             kind: $this->kind,
             logo: $this->logo,
             name: $this->name,
@@ -180,11 +127,9 @@ class ConnectorIn implements \JsonSerializable
 
         return new self(
             description: $this->description,
-            featureFlag: $this->featureFlag,
             featureFlags: $this->featureFlags,
             filterTypes: $this->filterTypes,
             instructions: $this->instructions,
-            instructionsLink: $this->instructionsLink,
             kind: $kind,
             logo: $this->logo,
             name: $this->name,
@@ -203,9 +148,6 @@ class ConnectorIn implements \JsonSerializable
         if (null !== $this->description) {
             $data['description'] = $this->description;
         }
-        if (isset($this->setFields['featureFlag'])) {
-            $data['featureFlag'] = $this->featureFlag;
-        }
         if (isset($this->setFields['featureFlags'])) {
             $data['featureFlags'] = $this->featureFlags;
         }
@@ -214,9 +156,6 @@ class ConnectorIn implements \JsonSerializable
         }
         if (null !== $this->instructions) {
             $data['instructions'] = $this->instructions;
-        }
-        if (isset($this->setFields['instructionsLink'])) {
-            $data['instructionsLink'] = $this->instructionsLink;
         }
         if (null !== $this->kind) {
             $data['kind'] = $this->kind;
@@ -232,11 +171,9 @@ class ConnectorIn implements \JsonSerializable
     {
         return new self(
             description: \Svix\Utils::deserializeString($data, 'description', false, 'ConnectorIn'),
-            featureFlag: \Svix\Utils::deserializeString($data, 'featureFlag', false, 'ConnectorIn'),
             featureFlags: \Svix\Utils::getValFromJson($data, 'featureFlags', false, 'ConnectorIn'),
             filterTypes: \Svix\Utils::getValFromJson($data, 'filterTypes', false, 'ConnectorIn'),
             instructions: \Svix\Utils::deserializeString($data, 'instructions', false, 'ConnectorIn'),
-            instructionsLink: \Svix\Utils::getValFromJson($data, 'instructionsLink', false, 'ConnectorIn'),
             kind: \Svix\Utils::deserializeObject($data, 'kind', false, 'ConnectorIn', [ConnectorKind::class, 'fromMixed']),
             logo: \Svix\Utils::getValFromJson($data, 'logo', true, 'ConnectorIn'),
             name: \Svix\Utils::deserializeString($data, 'name', true, 'ConnectorIn'),

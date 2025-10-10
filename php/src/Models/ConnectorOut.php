@@ -26,10 +26,8 @@ class ConnectorOut implements \JsonSerializable
         public readonly string $orgId,
         public readonly string $transformation,
         public readonly \DateTimeImmutable $updatedAt,
-        public readonly ?string $featureFlag = null,
         public readonly ?array $featureFlags = null,
         public readonly ?array $filterTypes = null,
-        public readonly ?string $instructionsLink = null,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -53,12 +51,10 @@ class ConnectorOut implements \JsonSerializable
         return new self(
             createdAt: $createdAt,
             description: $description,
-            featureFlag: null,
             featureFlags: null,
             filterTypes: null,
             id: $id,
             instructions: $instructions,
-            instructionsLink: null,
             kind: $kind,
             logo: $logo,
             name: $name,
@@ -66,30 +62,6 @@ class ConnectorOut implements \JsonSerializable
             transformation: $transformation,
             updatedAt: $updatedAt,
             setFields: ['createdAt' => true, 'description' => true, 'id' => true, 'instructions' => true, 'kind' => true, 'logo' => true, 'name' => true, 'orgId' => true, 'transformation' => true, 'updatedAt' => true]
-        );
-    }
-
-    public function withFeatureFlag(?string $featureFlag): self
-    {
-        $setFields = $this->setFields;
-        $setFields['featureFlag'] = true;
-
-        return new self(
-            createdAt: $this->createdAt,
-            description: $this->description,
-            featureFlag: $featureFlag,
-            featureFlags: $this->featureFlags,
-            filterTypes: $this->filterTypes,
-            id: $this->id,
-            instructions: $this->instructions,
-            instructionsLink: $this->instructionsLink,
-            kind: $this->kind,
-            logo: $this->logo,
-            name: $this->name,
-            orgId: $this->orgId,
-            transformation: $this->transformation,
-            updatedAt: $this->updatedAt,
-            setFields: $setFields
         );
     }
 
@@ -101,12 +73,10 @@ class ConnectorOut implements \JsonSerializable
         return new self(
             createdAt: $this->createdAt,
             description: $this->description,
-            featureFlag: $this->featureFlag,
             featureFlags: $featureFlags,
             filterTypes: $this->filterTypes,
             id: $this->id,
             instructions: $this->instructions,
-            instructionsLink: $this->instructionsLink,
             kind: $this->kind,
             logo: $this->logo,
             name: $this->name,
@@ -125,36 +95,10 @@ class ConnectorOut implements \JsonSerializable
         return new self(
             createdAt: $this->createdAt,
             description: $this->description,
-            featureFlag: $this->featureFlag,
             featureFlags: $this->featureFlags,
             filterTypes: $filterTypes,
             id: $this->id,
             instructions: $this->instructions,
-            instructionsLink: $this->instructionsLink,
-            kind: $this->kind,
-            logo: $this->logo,
-            name: $this->name,
-            orgId: $this->orgId,
-            transformation: $this->transformation,
-            updatedAt: $this->updatedAt,
-            setFields: $setFields
-        );
-    }
-
-    public function withInstructionsLink(?string $instructionsLink): self
-    {
-        $setFields = $this->setFields;
-        $setFields['instructionsLink'] = true;
-
-        return new self(
-            createdAt: $this->createdAt,
-            description: $this->description,
-            featureFlag: $this->featureFlag,
-            featureFlags: $this->featureFlags,
-            filterTypes: $this->filterTypes,
-            id: $this->id,
-            instructions: $this->instructions,
-            instructionsLink: $instructionsLink,
             kind: $this->kind,
             logo: $this->logo,
             name: $this->name,
@@ -179,17 +123,11 @@ class ConnectorOut implements \JsonSerializable
             'transformation' => $this->transformation,
             'updatedAt' => $this->updatedAt->format('c')];
 
-        if (isset($this->setFields['featureFlag'])) {
-            $data['featureFlag'] = $this->featureFlag;
-        }
         if (isset($this->setFields['featureFlags'])) {
             $data['featureFlags'] = $this->featureFlags;
         }
         if (isset($this->setFields['filterTypes'])) {
             $data['filterTypes'] = $this->filterTypes;
-        }
-        if (isset($this->setFields['instructionsLink'])) {
-            $data['instructionsLink'] = $this->instructionsLink;
         }
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
@@ -203,12 +141,10 @@ class ConnectorOut implements \JsonSerializable
         return new self(
             createdAt: \Svix\Utils::deserializeDt($data, 'createdAt', true, 'ConnectorOut'),
             description: \Svix\Utils::deserializeString($data, 'description', true, 'ConnectorOut'),
-            featureFlag: \Svix\Utils::deserializeString($data, 'featureFlag', false, 'ConnectorOut'),
             featureFlags: \Svix\Utils::getValFromJson($data, 'featureFlags', false, 'ConnectorOut'),
             filterTypes: \Svix\Utils::getValFromJson($data, 'filterTypes', false, 'ConnectorOut'),
             id: \Svix\Utils::deserializeString($data, 'id', true, 'ConnectorOut'),
             instructions: \Svix\Utils::deserializeString($data, 'instructions', true, 'ConnectorOut'),
-            instructionsLink: \Svix\Utils::getValFromJson($data, 'instructionsLink', false, 'ConnectorOut'),
             kind: \Svix\Utils::deserializeObject($data, 'kind', true, 'ConnectorOut', [ConnectorKind::class, 'fromMixed']),
             logo: \Svix\Utils::getValFromJson($data, 'logo', true, 'ConnectorOut'),
             name: \Svix\Utils::deserializeString($data, 'name', true, 'ConnectorOut'),

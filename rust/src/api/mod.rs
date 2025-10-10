@@ -23,6 +23,11 @@ mod message_poller;
 mod operational_webhook;
 mod operational_webhook_endpoint;
 mod statistics;
+mod streaming;
+mod streaming_event_type;
+mod streaming_events;
+mod streaming_sink;
+mod streaming_stream;
 
 #[cfg(feature = "svix_beta")]
 pub use self::message::{V1MessageEventsParams, V1MessageEventsSubscriptionParams};
@@ -30,7 +35,8 @@ pub use self::{
     application::{Application, ApplicationCreateOptions, ApplicationListOptions},
     authentication::{
         Authentication, AuthenticationAppPortalAccessOptions, AuthenticationExpireAllOptions,
-        AuthenticationLogoutOptions,
+        AuthenticationLogoutOptions, AuthenticationRotateStreamPollerTokenOptions,
+        AuthenticationStreamPortalAccessOptions,
     },
     background_task::{BackgroundTask, BackgroundTaskListOptions},
     deprecated::*,
@@ -75,6 +81,17 @@ pub use self::{
         OperationalWebhookEndpointListOptions, OperationalWebhookEndpointRotateSecretOptions,
     },
     statistics::{Statistics, StatisticsAggregateAppStatsOptions},
+    streaming::Streaming,
+    streaming_event_type::{
+        StreamingEventType, StreamingEventTypeCreateOptions, StreamingEventTypeDeleteOptions,
+        StreamingEventTypeListOptions,
+    },
+    streaming_events::{StreamingEvents, StreamingEventsCreateOptions, StreamingEventsGetOptions},
+    streaming_sink::{
+        StreamingSink, StreamingSinkCreateOptions, StreamingSinkListOptions,
+        StreamingSinkRotateSecretOptions,
+    },
+    streaming_stream::{StreamingStream, StreamingStreamCreateOptions, StreamingStreamListOptions},
 };
 
 impl Svix {
@@ -124,6 +141,10 @@ impl Svix {
 
     pub fn statistics(&self) -> Statistics<'_> {
         Statistics::new(&self.cfg)
+    }
+
+    pub fn streaming(&self) -> Streaming<'_> {
+        Streaming::new(&self.cfg)
     }
 
     #[deprecated = "Use .operational_webhook().endpoint() instead"]

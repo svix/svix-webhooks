@@ -12,9 +12,6 @@ namespace Svix.Models
         [JsonProperty("description", Required = Required.Always)]
         public required string Description { get; set; }
 
-        [JsonProperty("featureFlag")]
-        public string? FeatureFlag { get; set; } = null;
-
         [JsonProperty("featureFlags")]
         public List<string>? FeatureFlags { get; set; } = null;
 
@@ -26,9 +23,6 @@ namespace Svix.Models
 
         [JsonProperty("instructions", Required = Required.Always)]
         public required string Instructions { get; set; }
-
-        [JsonProperty("instructionsLink")]
-        public string? InstructionsLink { get; set; } = null;
 
         [JsonProperty("kind", Required = Required.Always)]
         public required ConnectorKind Kind { get; set; }
@@ -55,12 +49,10 @@ namespace Svix.Models
             sb.Append("class ConnectorOut {\n");
             sb.Append("  CreatedAt: ").Append(CreatedAt).Append('\n');
             sb.Append("  Description: ").Append(Description).Append('\n');
-            sb.Append("  FeatureFlag: ").Append(FeatureFlag).Append('\n');
             sb.Append("  FeatureFlags: ").Append(FeatureFlags).Append('\n');
             sb.Append("  FilterTypes: ").Append(FilterTypes).Append('\n');
             sb.Append("  Id: ").Append(Id).Append('\n');
             sb.Append("  Instructions: ").Append(Instructions).Append('\n');
-            sb.Append("  InstructionsLink: ").Append(InstructionsLink).Append('\n');
             sb.Append("  Kind: ").Append(Kind).Append('\n');
             sb.Append("  Logo: ").Append(Logo).Append('\n');
             sb.Append("  Name: ").Append(Name).Append('\n');

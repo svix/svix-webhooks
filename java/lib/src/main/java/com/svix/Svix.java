@@ -20,6 +20,7 @@ public class Svix {
     private final Message message;
     private final MessageAttempt messageAttempt;
     private final Statistics statistics;
+    private final Streaming streaming;
     private final OperationalWebhook operationalWebhook;
     private final OperationalWebhookEndpoint operationalWebhookEndpoint;
 
@@ -77,6 +78,7 @@ public class Svix {
         this.message = new Message(httpClient);
         this.messageAttempt = new MessageAttempt(httpClient);
         this.statistics = new Statistics(httpClient);
+        this.streaming = new Streaming(httpClient);
         this.operationalWebhook = new OperationalWebhook(httpClient);
         this.operationalWebhookEndpoint = new OperationalWebhookEndpoint(httpClient);
     }
