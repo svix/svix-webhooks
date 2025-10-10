@@ -1,7 +1,10 @@
 # Changelog
 
-## Unreleased
+## Version 1.77.0
+* Libs/All: Add API for the new [Svix Stream](https://www.svix.com/stream/)
 * Libs/PHP: Fix bug causing empty objects to be serialized as `[]` instead of `{}`
+* Libs/Rust: Upgrade rustls dependency version (thanks @GodTamIt)
+* Server: DB refactor, improves performance of a few API endpoints
 
 ## Version 1.76.1
 * Libs/Go: Fix bug causing 422 errors on `message.create` with messages created using the `NewMessageInRaw` helper
