@@ -952,6 +952,265 @@
                 ],
                 "type": "string"
             },
+            "BrandColor": {
+                "properties": {
+                    "hex": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "hex",
+                    "type"
+                ],
+                "type": "object"
+            },
+            "BrandCompany": {
+                "properties": {
+                    "employees": {
+                        "format": "uint64",
+                        "minimum": 0,
+                        "nullable": true,
+                        "type": "integer"
+                    },
+                    "financialIdentifiers": {
+                        "$ref": "#/components/schemas/FinancialIdentifiers",
+                        "nullable": true
+                    },
+                    "foundedYear": {
+                        "format": "uint64",
+                        "minimum": 0,
+                        "nullable": true,
+                        "type": "integer"
+                    },
+                    "industries": {
+                        "items": {
+                            "$ref": "#/components/schemas/Industry"
+                        },
+                        "type": "array"
+                    },
+                    "kind": {
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "location": {
+                        "$ref": "#/components/schemas/CompanyLocation",
+                        "nullable": true
+                    }
+                },
+                "required": [
+                    "industries"
+                ],
+                "type": "object"
+            },
+            "BrandFont": {
+                "properties": {
+                    "name": {
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "origin": {
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "originId": {
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "type"
+                ],
+                "type": "object"
+            },
+            "BrandFormat": {
+                "properties": {
+                    "background": {
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "format": {
+                        "type": "string"
+                    },
+                    "height": {
+                        "format": "uint64",
+                        "minimum": 0,
+                        "nullable": true,
+                        "type": "integer"
+                    },
+                    "size": {
+                        "format": "uint64",
+                        "minimum": 0,
+                        "type": "integer"
+                    },
+                    "src": {
+                        "type": "string"
+                    },
+                    "width": {
+                        "format": "uint64",
+                        "minimum": 0,
+                        "nullable": true,
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "format",
+                    "size",
+                    "src"
+                ],
+                "type": "object"
+            },
+            "BrandImage": {
+                "properties": {
+                    "formats": {
+                        "items": {
+                            "$ref": "#/components/schemas/BrandFormat"
+                        },
+                        "type": "array"
+                    },
+                    "type": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "formats",
+                    "type"
+                ],
+                "type": "object"
+            },
+            "BrandLink": {
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "url": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "name",
+                    "url"
+                ],
+                "type": "object"
+            },
+            "BrandLogo": {
+                "properties": {
+                    "formats": {
+                        "items": {
+                            "$ref": "#/components/schemas/BrandFormat"
+                        },
+                        "type": "array"
+                    },
+                    "theme": {
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "formats",
+                    "type"
+                ],
+                "type": "object"
+            },
+            "BrandSearchRequest": {
+                "properties": {
+                    "identifier": {
+                        "maxLength": 255,
+                        "minLength": 1,
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "identifier"
+                ],
+                "type": "object"
+            },
+            "BrandfetchResponse": {
+                "properties": {
+                    "claimed": {
+                        "type": "boolean"
+                    },
+                    "colors": {
+                        "items": {
+                            "$ref": "#/components/schemas/BrandColor"
+                        },
+                        "type": "array"
+                    },
+                    "company": {
+                        "$ref": "#/components/schemas/BrandCompany",
+                        "nullable": true
+                    },
+                    "description": {
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "domain": {
+                        "type": "string"
+                    },
+                    "fonts": {
+                        "items": {
+                            "$ref": "#/components/schemas/BrandFont"
+                        },
+                        "type": "array"
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "images": {
+                        "items": {
+                            "$ref": "#/components/schemas/BrandImage"
+                        },
+                        "type": "array"
+                    },
+                    "isNsfw": {
+                        "type": "boolean"
+                    },
+                    "links": {
+                        "items": {
+                            "$ref": "#/components/schemas/BrandLink"
+                        },
+                        "type": "array"
+                    },
+                    "logos": {
+                        "items": {
+                            "$ref": "#/components/schemas/BrandLogo"
+                        },
+                        "type": "array"
+                    },
+                    "longDescription": {
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "name": {
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "urn": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "claimed",
+                    "colors",
+                    "domain",
+                    "fonts",
+                    "id",
+                    "images",
+                    "isNsfw",
+                    "links",
+                    "logos",
+                    "urn"
+                ],
+                "type": "object"
+            },
             "CheckbookConfig": {
                 "properties": {
                     "secret": {
@@ -995,6 +1254,35 @@
                 ],
                 "type": "object"
             },
+            "CompanyLocation": {
+                "properties": {
+                    "city": {
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "country": {
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "countryCode": {
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "region": {
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "state": {
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "subregion": {
+                        "nullable": true,
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
             "CompletionChoice": {
                 "properties": {
                     "finish_reason": {
@@ -1036,15 +1324,6 @@
                         "default": "",
                         "type": "string"
                     },
-                    "featureFlag": {
-                        "default": null,
-                        "deprecated": true,
-                        "description": "Deprecated - prefer featureFlags instead.",
-                        "maxLength": 256,
-                        "nullable": true,
-                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                        "type": "string"
-                    },
                     "featureFlags": {
                         "default": null,
                         "example": [
@@ -1078,12 +1357,6 @@
                     },
                     "instructions": {
                         "default": "",
-                        "type": "string"
-                    },
-                    "instructionsLink": {
-                        "default": null,
-                        "format": "uri",
-                        "nullable": true,
                         "type": "string"
                     },
                     "kind": {
@@ -1141,13 +1414,6 @@
                     "description": {
                         "type": "string"
                     },
-                    "featureFlag": {
-                        "default": null,
-                        "maxLength": 256,
-                        "nullable": true,
-                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                        "type": "string"
-                    },
                     "featureFlags": {
                         "default": null,
                         "example": [
@@ -1188,11 +1454,6 @@
                         "type": "string"
                     },
                     "instructions": {
-                        "type": "string"
-                    },
-                    "instructionsLink": {
-                        "format": "uri",
-                        "nullable": true,
                         "type": "string"
                     },
                     "kind": {
@@ -1240,13 +1501,6 @@
                     "description": {
                         "type": "string"
                     },
-                    "featureFlag": {
-                        "deprecated": true,
-                        "maxLength": 256,
-                        "nullable": true,
-                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                        "type": "string"
-                    },
                     "featureFlags": {
                         "example": [
                             "cool-new-feature"
@@ -1278,11 +1532,6 @@
                         "uniqueItems": true
                     },
                     "instructions": {
-                        "type": "string"
-                    },
-                    "instructionsLink": {
-                        "format": "uri",
-                        "nullable": true,
                         "type": "string"
                     },
                     "kind": {
@@ -1309,14 +1558,6 @@
                         "default": "",
                         "type": "string"
                     },
-                    "featureFlag": {
-                        "default": null,
-                        "deprecated": true,
-                        "maxLength": 256,
-                        "nullable": true,
-                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                        "type": "string"
-                    },
                     "featureFlags": {
                         "default": null,
                         "example": [
@@ -1350,11 +1591,6 @@
                     },
                     "instructions": {
                         "default": "",
-                        "type": "string"
-                    },
-                    "instructionsLink": {
-                        "format": "uri",
-                        "nullable": true,
                         "type": "string"
                     },
                     "kind": {
@@ -3016,6 +3252,7 @@
                         "type": "string"
                     },
                     "customLogoUrl": {
+                        "deprecated": true,
                         "format": "uri",
                         "maxLength": 65536,
                         "minLength": 1,
@@ -3061,6 +3298,11 @@
                     "enableTransformations": {
                         "default": false,
                         "type": "boolean"
+                    },
+                    "logoUrl": {
+                        "format": "uri",
+                        "nullable": true,
+                        "type": "string"
                     },
                     "showSvixBrandFooter": {
                         "default": false,
@@ -3775,6 +4017,27 @@
                 ],
                 "type": "object"
             },
+            "FinancialIdentifiers": {
+                "properties": {
+                    "isin": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array"
+                    },
+                    "ticker": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array"
+                    }
+                },
+                "required": [
+                    "isin",
+                    "ticker"
+                ],
+                "type": "object"
+            },
             "FontSizeConfig": {
                 "properties": {
                     "base": {
@@ -3814,17 +4077,13 @@
                     },
                     "model": {
                         "type": "string"
-                    },
-                    "object": {
-                        "type": "string"
                     }
                 },
                 "required": [
                     "choices",
                     "created",
                     "id",
-                    "model",
-                    "object"
+                    "model"
                 ],
                 "type": "object"
             },
@@ -4026,6 +4285,29 @@
                         "type": "string"
                     }
                 },
+                "type": "object"
+            },
+            "Industry": {
+                "properties": {
+                    "emoji": {
+                        "type": "string"
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "slug": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "emoji",
+                    "id",
+                    "name",
+                    "slug"
+                ],
                 "type": "object"
             },
             "IngestEndpointDisabledEvent": {
@@ -27838,10 +28120,70 @@
                 ],
                 "summary": "Get Stream Portal Access",
                 "tags": [
-                    "Authentication"
+                    "Stream Authentication"
                 ],
-                "x-hidden": true,
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const response = await svix.authentication.streamPortalAccess(\n  \"strm_31Dc0DD72P5AddYUguyBd\",\n  {\n    featureFlags: [],\n    expiry: 1,\n    sessionId: \"user_1FB8\",\n  }\n);"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "TypeScript",
+                        "source": "const response = await svix.authentication.streamPortalAccess(\n  \"strm_31Dc0DD72P5AddYUguyBd\",\n  {\n    featureFlags: [],\n    expiry: 1,\n    sessionId: \"user_1FB8\",\n  }\n);"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "response = svix.authentication.stream_portal_access(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    StreamPortalAccessIn(\n        feature_flags=[],\n        expiry=1,\n        session_id=\"user_1FB8\",\n    ),\n)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python (Async)",
+                        "source": "response = await svix.authentication.stream_portal_access(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    StreamPortalAccessIn(\n        feature_flags=[],\n        expiry=1,\n        session_id=\"user_1FB8\",\n    ),\n)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "response, err := svix.Authentication.StreamPortalAccess(\n\tctx,\n\t\"strm_31Dc0DD72P5AddYUguyBd\",\n\tStreamPortalAccessIn{\n\t\tFeatureFlags: []string{},\n\t\tExpiry:       ptr(uint64(1)),\n\t\tSessionId:    ptr(\"user_1FB8\"),\n\t},\n\tnil,\n)"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val response =\n    svix.authentication.streamPortalAccess(\n        \"strm_31Dc0DD72P5AddYUguyBd\",\n        StreamPortalAccessIn(featureFlags = setOf(), expiry = 1u, sessionId = \"user_1FB8\"),\n    )"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "var response = svix.getAuthentication()\n        .streamPortalAccess(\n            \"strm_31Dc0DD72P5AddYUguyBd\",\n            new StreamPortalAccessIn().featureFlags(Set.of()).expiry(1L).sessionId(\"user_1FB8\"));"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "response = svix\n  .authentication\n  .stream_portal_access(\"strm_31Dc0DD72P5AddYUguyBd\", {featureFlags: [], expiry: 1, sessionId: \"user_1FB8\"})"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let response = svix\n    .authentication()\n    .stream_portal_access(\n        \"strm_31Dc0DD72P5AddYUguyBd\".to_string(),\n        StreamPortalAccessIn {\n            feature_flags: Some(vec![]),\n            expiry: Some(1),\n            session_id: Some(\"user_1FB8\".to_string()),\n        },\n        None,\n    )\n    .await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var response = svix.Authentication.StreamPortalAccess(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    new StreamPortalAccessIn\n    {\n        FeatureFlags = [],\n        Expiry = 1,\n        SessionId = \"user_1FB8\",\n    }\n);"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "CLI",
+                        "source": "svix authentication stream-portal-access \"strm_31Dc0DD72P5AddYUguyBd\" '{\n    \"expiry\": 1,\n    \"featureFlags\": [],\n    \"sessionId\": \"user_1FB8\"\n  }'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "cURL",
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/auth/stream-portal-access/strm_31Dc0DD72P5AddYUguyBd' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"expiry\": 1,\n    \"featureFlags\": [],\n    \"sessionId\": \"user_1FB8\"\n  }'"
+                    }
+                ]
             }
         },
         "/api/v1/auth/stream/{stream_id}/sink/{sink_id}/poller/token": {
@@ -27967,10 +28309,70 @@
                 ],
                 "summary": "Get Poller Token",
                 "tags": [
-                    "Authentication"
+                    "Stream Authentication"
                 ],
-                "x-hidden": true,
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const response = await svix.authentication.getStreamPollerToken(\n  \"strm_31Dc0DD72P5AddYUguyBd\",\n  \"sink_31Dc11sPYY9aLDkwPuGMa\"\n);"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "TypeScript",
+                        "source": "const response = await svix.authentication.getStreamPollerToken(\n  \"strm_31Dc0DD72P5AddYUguyBd\",\n  \"sink_31Dc11sPYY9aLDkwPuGMa\"\n);"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "response = svix.authentication.get_stream_poller_token(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python (Async)",
+                        "source": "response = await svix.authentication.get_stream_poller_token(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "response, err := svix.Authentication.GetStreamPollerToken(\n\tctx,\n\t\"strm_31Dc0DD72P5AddYUguyBd\",\n\t\"sink_31Dc11sPYY9aLDkwPuGMa\",\n)"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val response =\n    svix.authentication.getStreamPollerToken(\n        \"strm_31Dc0DD72P5AddYUguyBd\",\n        \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    )"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "var response = svix.getAuthentication()\n        .getStreamPollerToken(\"strm_31Dc0DD72P5AddYUguyBd\", \"sink_31Dc11sPYY9aLDkwPuGMa\");"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "response = svix.authentication.get_stream_poller_token(\"strm_31Dc0DD72P5AddYUguyBd\", \"sink_31Dc11sPYY9aLDkwPuGMa\")"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let response = svix\n    .authentication()\n    .get_stream_poller_token(\n        \"strm_31Dc0DD72P5AddYUguyBd\".to_string(),\n        \"sink_31Dc11sPYY9aLDkwPuGMa\".to_string(),\n    )\n    .await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var response = svix.Authentication.GetStreamPollerToken(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\"\n);"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "CLI",
+                        "source": "svix authentication get-stream-poller-token \"strm_31Dc0DD72P5AddYUguyBd\" \"sink_31Dc11sPYY9aLDkwPuGMa\""
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "cURL",
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/auth/stream/strm_31Dc0DD72P5AddYUguyBd/sink/sink_31Dc11sPYY9aLDkwPuGMa/poller/token' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json'"
+                    }
+                ]
             }
         },
         "/api/v1/auth/stream/{stream_id}/sink/{sink_id}/poller/token/rotate": {
@@ -28115,10 +28517,70 @@
                 ],
                 "summary": "Rotate Poller Token",
                 "tags": [
-                    "Authentication"
+                    "Stream Authentication"
                 ],
-                "x-hidden": true,
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const response = await svix.authentication.rotateStreamPollerToken(\n  \"strm_31Dc0DD72P5AddYUguyBd\",\n  \"sink_31Dc11sPYY9aLDkwPuGMa\",\n  {\n    expiry: 1,\n    oldTokenExpiry: 1,\n  }\n);"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "TypeScript",
+                        "source": "const response = await svix.authentication.rotateStreamPollerToken(\n  \"strm_31Dc0DD72P5AddYUguyBd\",\n  \"sink_31Dc11sPYY9aLDkwPuGMa\",\n  {\n    expiry: 1,\n    oldTokenExpiry: 1,\n  }\n);"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "response = svix.authentication.rotate_stream_poller_token(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    RotatePollerTokenIn(\n        expiry=1,\n        old_token_expiry=1,\n    ),\n)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python (Async)",
+                        "source": "response = await svix.authentication.rotate_stream_poller_token(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    RotatePollerTokenIn(\n        expiry=1,\n        old_token_expiry=1,\n    ),\n)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "response, err := svix.Authentication.RotateStreamPollerToken(\n\tctx,\n\t\"strm_31Dc0DD72P5AddYUguyBd\",\n\t\"sink_31Dc11sPYY9aLDkwPuGMa\",\n\tRotatePollerTokenIn{Expiry: ptr(int64(1)), OldTokenExpiry: ptr(int64(1))},\n\tnil,\n)"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val response =\n    svix.authentication.rotateStreamPollerToken(\n        \"strm_31Dc0DD72P5AddYUguyBd\",\n        \"sink_31Dc11sPYY9aLDkwPuGMa\",\n        RotatePollerTokenIn(expiry = 1, oldTokenExpiry = 1),\n    )"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "var response = svix.getAuthentication()\n        .rotateStreamPollerToken(\n            \"strm_31Dc0DD72P5AddYUguyBd\",\n            \"sink_31Dc11sPYY9aLDkwPuGMa\",\n            new RotatePollerTokenIn().expiry(1L).oldTokenExpiry(1L));"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "response = svix\n  .authentication\n  .rotate_stream_poller_token(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    {expiry: 1, oldTokenExpiry: 1}\n  )"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let response = svix\n    .authentication()\n    .rotate_stream_poller_token(\n        \"strm_31Dc0DD72P5AddYUguyBd\".to_string(),\n        \"sink_31Dc11sPYY9aLDkwPuGMa\".to_string(),\n        RotatePollerTokenIn {\n            expiry: Some(1),\n            old_token_expiry: Some(1),\n        },\n        None,\n    )\n    .await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var response = svix.Authentication.RotateStreamPollerToken(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    new RotatePollerTokenIn { Expiry = 1, OldTokenExpiry = 1 }\n);"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "CLI",
+                        "source": "svix authentication rotate-stream-poller-token \"strm_31Dc0DD72P5AddYUguyBd\" \"sink_31Dc11sPYY9aLDkwPuGMa\" '{\n    \"expiry\": 1,\n    \"oldTokenExpiry\": 1\n  }'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "cURL",
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/auth/stream/strm_31Dc0DD72P5AddYUguyBd/sink/sink_31Dc11sPYY9aLDkwPuGMa/poller/token/rotate' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"expiry\": 1,\n    \"oldTokenExpiry\": 1\n  }'"
+                    }
+                ]
             }
         },
         "/api/v1/background-task": {
@@ -36620,7 +37082,7 @@
         "/api/v1/stream": {
             "get": {
                 "description": "List of all the organization's streams.",
-                "operationId": "v1.stream.stream.list",
+                "operationId": "v1.streaming.stream.list",
                 "parameters": [
                     {
                         "description": "Limit the number of returned items",
@@ -36753,12 +37215,72 @@
                 "tags": [
                     "Stream"
                 ],
-                "x-hidden": true,
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const response = await svix.streaming.stream.list();"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "TypeScript",
+                        "source": "const response = await svix.streaming.stream.list();"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "response = svix.streaming.stream.list()"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python (Async)",
+                        "source": "response = await svix.streaming.stream.list()"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "response, err := svix.Streaming.Stream.List(ctx, nil)"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val response = svix.streaming.stream.list()"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "var response = svix.getStreaming().getStream().list();"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "response = svix.streaming.stream.list"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let response = svix.streaming().stream().list(None).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var response = svix.Streaming.Stream.List();"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "CLI",
+                        "source": "svix streaming stream list"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "cURL",
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/stream' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json'"
+                    }
+                ]
             },
             "post": {
                 "description": "Creates a new stream.",
-                "operationId": "v1.stream.stream.create",
+                "operationId": "v1.streaming.stream.create",
                 "parameters": [
                     {
                         "description": "The request's idempotency key",
@@ -36871,14 +37393,74 @@
                 "tags": [
                     "Stream"
                 ],
-                "x-hidden": true,
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const response = await svix.streaming.stream.create({\n  name: \"sample string\",\n  uid: \"unique-identifier\",\n  metadata: {},\n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "TypeScript",
+                        "source": "const response = await svix.streaming.stream.create({\n  name: \"sample string\",\n  uid: \"unique-identifier\",\n  metadata: {},\n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "response = svix.streaming.stream.create(\n    StreamIn(\n        name=\"sample string\",\n        uid=\"unique-identifier\",\n        metadata={},\n    ),\n)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python (Async)",
+                        "source": "response = await svix.streaming.stream.create(\n    StreamIn(\n        name=\"sample string\",\n        uid=\"unique-identifier\",\n        metadata={},\n    ),\n)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "response, err := svix.Streaming.Stream.Create(\n\tctx,\n\tStreamIn{Name: \"sample string\", Uid: ptr(\"unique-identifier\"), Metadata: nil},\n\tnil,\n)"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val response =\n    svix.streaming.stream.create(\n        StreamIn(name = \"sample string\", uid = \"unique-identifier\", metadata = mapOf())\n    )"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "var response = svix.getStreaming()\n        .getStream()\n        .create(new StreamIn().name(\"sample string\").uid(\"unique-identifier\").metadata(Map.of()));"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "response = svix.streaming.stream.create({name: \"sample string\", uid: \"unique-identifier\", metadata: {}})"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let response = svix\n    .streaming()\n    .stream()\n    .create(\n        StreamIn {\n            name: \"sample string\".to_string(),\n            uid: Some(\"unique-identifier\".to_string()),\n            metadata: Some(HashMap::new()),\n        },\n        None,\n    )\n    .await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var response = svix.Streaming.Stream.Create(\n    new StreamIn\n    {\n        Name = \"sample string\",\n        Uid = \"unique-identifier\",\n        Metadata = [],\n    }\n);"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "CLI",
+                        "source": "svix streaming stream create '{\n    \"metadata\": {},\n    \"name\": \"sample string\",\n    \"uid\": \"unique-identifier\"\n  }'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "cURL",
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/stream' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"metadata\": {},\n    \"name\": \"sample string\",\n    \"uid\": \"unique-identifier\"\n  }'"
+                    }
+                ]
             }
         },
         "/api/v1/stream/event-type": {
             "get": {
                 "description": "List of all the organization's event types for streaming.",
-                "operationId": "v1.stream.event-type.list",
+                "operationId": "v1.streaming.event-type.list",
                 "parameters": [
                     {
                         "description": "Limit the number of returned items",
@@ -37019,14 +37601,74 @@
                 ],
                 "summary": "List Stream Event Types",
                 "tags": [
-                    "Stream Event Types"
+                    "Stream Event Type"
                 ],
-                "x-hidden": true,
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const response = await svix.streaming.eventType.list();"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "TypeScript",
+                        "source": "const response = await svix.streaming.eventType.list();"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "response = svix.streaming.event_type.list()"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python (Async)",
+                        "source": "response = await svix.streaming.event_type.list()"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "response, err := svix.Streaming.EventType.List(ctx, nil)"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val response = svix.streaming.eventType.list()"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "var response = svix.getStreaming().getEventType().list();"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "response = svix.streaming.event_type.list"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let response = svix.streaming().event_type().list(None).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var response = svix.Streaming.EventType.List();"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "CLI",
+                        "source": "svix streaming event-type list"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "cURL",
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/stream/event-type' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json'"
+                    }
+                ]
             },
             "post": {
                 "description": "Create an event type for Streams.",
-                "operationId": "v1.stream.event-type.create",
+                "operationId": "v1.streaming.event-type.create",
                 "parameters": [
                     {
                         "description": "The request's idempotency key",
@@ -37137,16 +37779,76 @@
                 ],
                 "summary": "Create Stream Event Type",
                 "tags": [
-                    "Stream Event Types"
+                    "Stream Event Type"
                 ],
-                "x-hidden": true,
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const response = await svix.streaming.eventType.create({\n  name: \"user.signup\",\n  description: \"sample string\",\n  featureFlags: [\"cool-new-feature\"],\n  deprecated: true,\n  archived: true,\n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "TypeScript",
+                        "source": "const response = await svix.streaming.eventType.create({\n  name: \"user.signup\",\n  description: \"sample string\",\n  featureFlags: [\"cool-new-feature\"],\n  deprecated: true,\n  archived: true,\n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "response = svix.streaming.event_type.create(\n    StreamEventTypeIn(\n        name=\"user.signup\",\n        description=\"sample string\",\n        feature_flags=[\n            \"cool-new-feature\",\n        ],\n        deprecated=True,\n        archived=True,\n    ),\n)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python (Async)",
+                        "source": "response = await svix.streaming.event_type.create(\n    StreamEventTypeIn(\n        name=\"user.signup\",\n        description=\"sample string\",\n        feature_flags=[\n            \"cool-new-feature\",\n        ],\n        deprecated=True,\n        archived=True,\n    ),\n)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "response, err := svix.Streaming.EventType.Create(\n\tctx,\n\tStreamEventTypeIn{\n\t\tName:         \"user.signup\",\n\t\tDescription:  ptr(\"sample string\"),\n\t\tFeatureFlags: []string{\"cool-new-feature\"},\n\t\tDeprecated:   ptr(true),\n\t\tArchived:     ptr(true),\n\t},\n\tnil,\n)"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val response =\n    svix.streaming.eventType.create(\n        StreamEventTypeIn(\n            name = \"user.signup\",\n            description = \"sample string\",\n            featureFlags = setOf(\"cool-new-feature\"),\n            deprecated = true,\n            archived = true,\n        )\n    )"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "var response = svix.getStreaming()\n        .getEventType()\n        .create(new StreamEventTypeIn()\n            .name(\"user.signup\")\n            .description(\"sample string\")\n            .featureFlags(Set.of(\"cool-new-feature\"))\n            .deprecated(true)\n            .archived(true));"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "response = svix\n  .streaming\n  .event_type\n  .create(\n    {\n      name: \"user.signup\",\n      description: \"sample string\",\n      featureFlags: [\"cool-new-feature\"],\n      deprecated: true,\n      archived: true\n    }\n  )"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let response = svix\n    .streaming()\n    .event_type()\n    .create(\n        StreamEventTypeIn {\n            name: \"user.signup\".to_string(),\n            description: Some(\"sample string\".to_string()),\n            feature_flags: Some(vec![\"cool-new-feature\".to_string()]),\n            deprecated: Some(true),\n            archived: Some(true),\n        },\n        None,\n    )\n    .await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var response = svix.Streaming.EventType.Create(\n    new StreamEventTypeIn\n    {\n        Name = \"user.signup\",\n        Description = \"sample string\",\n        FeatureFlags = [\"cool-new-feature\"],\n        Deprecated = true,\n        Archived = true,\n    }\n);"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "CLI",
+                        "source": "svix streaming event-type create '{\n    \"archived\": true,\n    \"deprecated\": true,\n    \"description\": \"sample string\",\n    \"featureFlags\": [\n      \"cool-new-feature\"\n    ],\n    \"name\": \"user.signup\"\n  }'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "cURL",
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/stream/event-type' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"archived\": true,\n    \"deprecated\": true,\n    \"description\": \"sample string\",\n    \"featureFlags\": [\n      \"cool-new-feature\"\n    ],\n    \"name\": \"user.signup\"\n  }'"
+                    }
+                ]
             }
         },
         "/api/v1/stream/event-type/{name}": {
             "delete": {
                 "description": "Delete an event type.",
-                "operationId": "v1.stream.event-type.delete",
+                "operationId": "v1.streaming.event-type.delete",
                 "parameters": [
                     {
                         "description": "The event type's name",
@@ -37256,14 +37958,74 @@
                 ],
                 "summary": "Delete Stream Event Type",
                 "tags": [
-                    "Stream Event Types"
+                    "Stream Event Type"
                 ],
-                "x-hidden": true,
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "await svix.streaming.eventType.delete(\"name\");"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "TypeScript",
+                        "source": "await svix.streaming.eventType.delete(\"name\");"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "svix.streaming.event_type.delete(\n    \"name\",\n)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python (Async)",
+                        "source": "await svix.streaming.event_type.delete(\n    \"name\",\n)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "err := svix.Streaming.EventType.Delete(ctx, \"name\", nil)"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "svix.streaming.eventType.delete(\"name\")"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "svix.getStreaming().getEventType().delete(\"name\");"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "response = svix.streaming.event_type.delete(\"name\")"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "svix.streaming().event_type().delete(\"name\".to_string(), None).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var response = svix.Streaming.EventType.Delete(\"name\");"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "CLI",
+                        "source": "svix streaming event-type delete \"name\""
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "cURL",
+                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/stream/event-type/name' \\\n  -H 'Authorization: Bearer AUTH_TOKEN'"
+                    }
+                ]
             },
             "get": {
                 "description": "Get an event type.",
-                "operationId": "v1.stream.event-type.get",
+                "operationId": "v1.streaming.event-type.get",
                 "parameters": [
                     {
                         "description": "The event type's name",
@@ -37369,14 +38131,74 @@
                 ],
                 "summary": "Get Stream Event Type",
                 "tags": [
-                    "Stream Event Types"
+                    "Stream Event Type"
                 ],
-                "x-hidden": true,
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const response = await svix.streaming.eventType.get(\"name\");"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "TypeScript",
+                        "source": "const response = await svix.streaming.eventType.get(\"name\");"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "response = svix.streaming.event_type.get(\n    \"name\",\n)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python (Async)",
+                        "source": "response = await svix.streaming.event_type.get(\n    \"name\",\n)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "response, err := svix.Streaming.EventType.Get(ctx, \"name\")"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val response = svix.streaming.eventType.get(\"name\")"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "var response = svix.getStreaming().getEventType().get(\"name\");"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "response = svix.streaming.event_type.get(\"name\")"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let response = svix.streaming().event_type().get(\"name\".to_string()).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var response = svix.Streaming.EventType.Get(\"name\");"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "CLI",
+                        "source": "svix streaming event-type get \"name\""
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "cURL",
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/stream/event-type/name' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json'"
+                    }
+                ]
             },
             "patch": {
                 "description": "Patch an event type for Streams.",
-                "operationId": "v1.stream.event-type.patch",
+                "operationId": "v1.streaming.event-type.patch",
                 "parameters": [
                     {
                         "description": "The event type's name",
@@ -37492,14 +38314,74 @@
                 ],
                 "summary": "Patch Stream Event Type",
                 "tags": [
-                    "Stream Event Types"
+                    "Stream Event Type"
                 ],
-                "x-hidden": true,
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const response = await svix.streaming.eventType.patch(\"name\", {\n  name: \"user.signup\",\n  description: \"sample string\",\n  featureFlags: [\"cool-new-feature\"],\n  deprecated: true,\n  archived: true,\n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "TypeScript",
+                        "source": "const response = await svix.streaming.eventType.patch(\"name\", {\n  name: \"user.signup\",\n  description: \"sample string\",\n  featureFlags: [\"cool-new-feature\"],\n  deprecated: true,\n  archived: true,\n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "response = svix.streaming.event_type.patch(\n    \"name\",\n    StreamEventTypePatch(\n        name=\"user.signup\",\n        description=\"sample string\",\n        feature_flags=[\n            \"cool-new-feature\",\n        ],\n        deprecated=True,\n        archived=True,\n    ),\n)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python (Async)",
+                        "source": "response = await svix.streaming.event_type.patch(\n    \"name\",\n    StreamEventTypePatch(\n        name=\"user.signup\",\n        description=\"sample string\",\n        feature_flags=[\n            \"cool-new-feature\",\n        ],\n        deprecated=True,\n        archived=True,\n    ),\n)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "response, err := svix.Streaming.EventType.Patch(\n\tctx,\n\t\"name\",\n\tStreamEventTypePatch{\n\t\tName:         NewNullable(\"user.signup\"),\n\t\tDescription:  NewNullable(\"sample string\"),\n\t\tFeatureFlags: NewNullable([]string{\"cool-new-feature\"}),\n\t\tDeprecated:   ptr(true),\n\t\tArchived:     ptr(true),\n\t},\n)"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val response =\n    svix.streaming.eventType.patch(\n        \"name\",\n        StreamEventTypePatch(\n            name = MaybeUnset.Present(\"user.signup\"),\n            description = MaybeUnset.Present(\"sample string\"),\n            featureFlags = MaybeUnset.Present(setOf(\"cool-new-feature\")),\n            deprecated = true,\n            archived = true,\n        ),\n    )"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "var response = svix.getStreaming()\n        .getEventType()\n        .patch(\n            \"name\",\n            new StreamEventTypePatch()\n                .name(\"user.signup\")\n                .description(\"sample string\")\n                .featureFlags(Set.of(\"cool-new-feature\"))\n                .deprecated(true)\n                .archived(true));"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "response = svix\n  .streaming\n  .event_type\n  .patch(\n    \"name\",\n    {\n      name: \"user.signup\",\n      description: \"sample string\",\n      featureFlags: [\"cool-new-feature\"],\n      deprecated: true,\n      archived: true\n    }\n  )"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let response = svix\n    .streaming()\n    .event_type()\n    .patch(\n        \"name\".to_string(),\n        StreamEventTypePatch {\n            name: js_option::JsOption::Some(\"user.signup\".to_string()),\n            description: js_option::JsOption::Some(\"sample string\".to_string()),\n            feature_flags: js_option::JsOption::Some(\n                vec![\"cool-new-feature\".to_string()],\n            ),\n            deprecated: Some(true),\n            archived: Some(true),\n        },\n    )\n    .await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var response = svix.Streaming.EventType.Patch(\n    \"name\",\n    new StreamEventTypePatch\n    {\n        Name = \"user.signup\",\n        Description = \"sample string\",\n        FeatureFlags = MaybeUnset<List<string>?>.Set([\"cool-new-feature\"]),\n        Deprecated = true,\n        Archived = true,\n    }\n);"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "CLI",
+                        "source": "svix streaming event-type patch \"name\" '{\n    \"archived\": true,\n    \"deprecated\": true,\n    \"description\": \"sample string\",\n    \"featureFlags\": [\n      \"cool-new-feature\"\n    ],\n    \"name\": \"user.signup\"\n  }'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "cURL",
+                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/stream/event-type/name' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"archived\": true,\n    \"deprecated\": true,\n    \"description\": \"sample string\",\n    \"featureFlags\": [\n      \"cool-new-feature\"\n    ],\n    \"name\": \"user.signup\"\n  }'"
+                    }
+                ]
             },
             "put": {
                 "description": "Update or create a event type for Streams.",
-                "operationId": "v1.stream.event-type.update",
+                "operationId": "v1.streaming.event-type.update",
                 "parameters": [
                     {
                         "description": "The event type's name",
@@ -37625,16 +38507,76 @@
                 ],
                 "summary": "Update Stream Event Type",
                 "tags": [
-                    "Stream Event Types"
+                    "Stream Event Type"
                 ],
-                "x-hidden": true,
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const response = await svix.streaming.eventType.update(\"name\", {\n  name: \"user.signup\",\n  description: \"sample string\",\n  featureFlags: [\"cool-new-feature\"],\n  deprecated: true,\n  archived: true,\n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "TypeScript",
+                        "source": "const response = await svix.streaming.eventType.update(\"name\", {\n  name: \"user.signup\",\n  description: \"sample string\",\n  featureFlags: [\"cool-new-feature\"],\n  deprecated: true,\n  archived: true,\n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "response = svix.streaming.event_type.update(\n    \"name\",\n    StreamEventTypeIn(\n        name=\"user.signup\",\n        description=\"sample string\",\n        feature_flags=[\n            \"cool-new-feature\",\n        ],\n        deprecated=True,\n        archived=True,\n    ),\n)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python (Async)",
+                        "source": "response = await svix.streaming.event_type.update(\n    \"name\",\n    StreamEventTypeIn(\n        name=\"user.signup\",\n        description=\"sample string\",\n        feature_flags=[\n            \"cool-new-feature\",\n        ],\n        deprecated=True,\n        archived=True,\n    ),\n)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "response, err := svix.Streaming.EventType.Update(\n\tctx,\n\t\"name\",\n\tStreamEventTypeIn{\n\t\tName:         \"user.signup\",\n\t\tDescription:  ptr(\"sample string\"),\n\t\tFeatureFlags: []string{\"cool-new-feature\"},\n\t\tDeprecated:   ptr(true),\n\t\tArchived:     ptr(true),\n\t},\n)"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val response =\n    svix.streaming.eventType.update(\n        \"name\",\n        StreamEventTypeIn(\n            name = \"user.signup\",\n            description = \"sample string\",\n            featureFlags = setOf(\"cool-new-feature\"),\n            deprecated = true,\n            archived = true,\n        ),\n    )"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "var response = svix.getStreaming()\n        .getEventType()\n        .update(\n            \"name\",\n            new StreamEventTypeIn()\n                .name(\"user.signup\")\n                .description(\"sample string\")\n                .featureFlags(Set.of(\"cool-new-feature\"))\n                .deprecated(true)\n                .archived(true));"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "response = svix\n  .streaming\n  .event_type\n  .update(\n    \"name\",\n    {\n      name: \"user.signup\",\n      description: \"sample string\",\n      featureFlags: [\"cool-new-feature\"],\n      deprecated: true,\n      archived: true\n    }\n  )"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let response = svix\n    .streaming()\n    .event_type()\n    .update(\n        \"name\".to_string(),\n        StreamEventTypeIn {\n            name: \"user.signup\".to_string(),\n            description: Some(\"sample string\".to_string()),\n            feature_flags: Some(vec![\"cool-new-feature\".to_string()]),\n            deprecated: Some(true),\n            archived: Some(true),\n        },\n    )\n    .await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var response = svix.Streaming.EventType.Update(\n    \"name\",\n    new StreamEventTypeIn\n    {\n        Name = \"user.signup\",\n        Description = \"sample string\",\n        FeatureFlags = [\"cool-new-feature\"],\n        Deprecated = true,\n        Archived = true,\n    }\n);"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "CLI",
+                        "source": "svix streaming event-type update \"name\" '{\n    \"archived\": true,\n    \"deprecated\": true,\n    \"description\": \"sample string\",\n    \"featureFlags\": [\n      \"cool-new-feature\"\n    ],\n    \"name\": \"user.signup\"\n  }'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "cURL",
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/stream/event-type/name' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"archived\": true,\n    \"deprecated\": true,\n    \"description\": \"sample string\",\n    \"featureFlags\": [\n      \"cool-new-feature\"\n    ],\n    \"name\": \"user.signup\"\n  }'"
+                    }
+                ]
             }
         },
         "/api/v1/stream/transformations/simulate": {
             "post": {
                 "description": "Simulate the stream transformations endpoint",
-                "operationId": "v1.stream.simulate-transformation",
+                "operationId": "v1.streaming.simulate-transformation",
                 "parameters": [
                     {
                         "description": "The request's idempotency key",
@@ -37754,7 +38696,7 @@
         "/api/v1/stream/{stream_id}": {
             "delete": {
                 "description": "Delete a stream.",
-                "operationId": "v1.stream.stream.delete",
+                "operationId": "v1.streaming.stream.delete",
                 "parameters": [
                     {
                         "description": "The Stream's ID or UID.",
@@ -37855,12 +38797,72 @@
                 "tags": [
                     "Stream"
                 ],
-                "x-hidden": true,
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "await svix.streaming.stream.delete(\"strm_31Dc0DD72P5AddYUguyBd\");"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "TypeScript",
+                        "source": "await svix.streaming.stream.delete(\"strm_31Dc0DD72P5AddYUguyBd\");"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "svix.streaming.stream.delete(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python (Async)",
+                        "source": "await svix.streaming.stream.delete(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "err := svix.Streaming.Stream.Delete(ctx, \"strm_31Dc0DD72P5AddYUguyBd\")"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "svix.streaming.stream.delete(\"strm_31Dc0DD72P5AddYUguyBd\")"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "svix.getStreaming().getStream().delete(\"strm_31Dc0DD72P5AddYUguyBd\");"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "response = svix.streaming.stream.delete(\"strm_31Dc0DD72P5AddYUguyBd\")"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "svix.streaming().stream().delete(\"strm_31Dc0DD72P5AddYUguyBd\".to_string()).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var response = svix.Streaming.Stream.Delete(\"strm_31Dc0DD72P5AddYUguyBd\");"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "CLI",
+                        "source": "svix streaming stream delete \"strm_31Dc0DD72P5AddYUguyBd\""
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "cURL",
+                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/stream/strm_31Dc0DD72P5AddYUguyBd' \\\n  -H 'Authorization: Bearer AUTH_TOKEN'"
+                    }
+                ]
             },
             "get": {
                 "description": "Get a stream by id or uid.",
-                "operationId": "v1.stream.stream.get",
+                "operationId": "v1.streaming.stream.get",
                 "parameters": [
                     {
                         "description": "The Stream's ID or UID.",
@@ -37968,12 +38970,72 @@
                 "tags": [
                     "Stream"
                 ],
-                "x-hidden": true,
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const response = await svix.streaming.stream.get(\"strm_31Dc0DD72P5AddYUguyBd\");"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "TypeScript",
+                        "source": "const response = await svix.streaming.stream.get(\"strm_31Dc0DD72P5AddYUguyBd\");"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "response = svix.streaming.stream.get(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python (Async)",
+                        "source": "response = await svix.streaming.stream.get(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "response, err := svix.Streaming.Stream.Get(ctx, \"strm_31Dc0DD72P5AddYUguyBd\")"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val response = svix.streaming.stream.get(\"strm_31Dc0DD72P5AddYUguyBd\")"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "var response = svix.getStreaming().getStream().get(\"strm_31Dc0DD72P5AddYUguyBd\");"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "response = svix.streaming.stream.get(\"strm_31Dc0DD72P5AddYUguyBd\")"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let response = svix\n    .streaming()\n    .stream()\n    .get(\"strm_31Dc0DD72P5AddYUguyBd\".to_string())\n    .await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var response = svix.Streaming.Stream.Get(\"strm_31Dc0DD72P5AddYUguyBd\");"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "CLI",
+                        "source": "svix streaming stream get \"strm_31Dc0DD72P5AddYUguyBd\""
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "cURL",
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/stream/strm_31Dc0DD72P5AddYUguyBd' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json'"
+                    }
+                ]
             },
             "patch": {
                 "description": "Partially update a stream.",
-                "operationId": "v1.stream.stream.patch",
+                "operationId": "v1.streaming.stream.patch",
                 "parameters": [
                     {
                         "description": "The Stream's ID or UID.",
@@ -38091,12 +39153,72 @@
                 "tags": [
                     "Stream"
                 ],
-                "x-hidden": true,
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const response = await svix.streaming.stream.patch(\"strm_31Dc0DD72P5AddYUguyBd\", {\n  description: \"sample string\",\n  uid: \"unique-identifier\",\n  metadata: {},\n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "TypeScript",
+                        "source": "const response = await svix.streaming.stream.patch(\"strm_31Dc0DD72P5AddYUguyBd\", {\n  description: \"sample string\",\n  uid: \"unique-identifier\",\n  metadata: {},\n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "response = svix.streaming.stream.patch(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    StreamPatch(\n        description=\"sample string\",\n        uid=\"unique-identifier\",\n        metadata={},\n    ),\n)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python (Async)",
+                        "source": "response = await svix.streaming.stream.patch(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    StreamPatch(\n        description=\"sample string\",\n        uid=\"unique-identifier\",\n        metadata={},\n    ),\n)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "response, err := svix.Streaming.Stream.Patch(\n\tctx,\n\t\"strm_31Dc0DD72P5AddYUguyBd\",\n\tStreamPatch{\n\t\tDescription: ptr(\"sample string\"),\n\t\tUid:         NewNullable(\"unique-identifier\"),\n\t\tMetadata:    nil,\n\t},\n)"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val response =\n    svix.streaming.stream.patch(\n        \"strm_31Dc0DD72P5AddYUguyBd\",\n        StreamPatch(\n            description = \"sample string\",\n            uid = MaybeUnset.Present(\"unique-identifier\"),\n            metadata = mapOf(),\n        ),\n    )"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "var response = svix.getStreaming()\n        .getStream()\n        .patch(\n            \"strm_31Dc0DD72P5AddYUguyBd\",\n            new StreamPatch()\n                .description(\"sample string\")\n                .uid(\"unique-identifier\")\n                .metadata(Map.of()));"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "response = svix\n  .streaming\n  .stream\n  .patch(\"strm_31Dc0DD72P5AddYUguyBd\", {description: \"sample string\", uid: \"unique-identifier\", metadata: {}})"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let response = svix\n    .streaming()\n    .stream()\n    .patch(\n        \"strm_31Dc0DD72P5AddYUguyBd\".to_string(),\n        StreamPatch {\n            description: Some(\"sample string\".to_string()),\n            uid: js_option::JsOption::Some(\"unique-identifier\".to_string()),\n            metadata: Some(HashMap::new()),\n        },\n    )\n    .await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var response = svix.Streaming.Stream.Patch(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    new StreamPatch\n    {\n        Description = \"sample string\",\n        Uid = \"unique-identifier\",\n        Metadata = [],\n    }\n);"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "CLI",
+                        "source": "svix streaming stream patch \"strm_31Dc0DD72P5AddYUguyBd\" '{\n    \"description\": \"sample string\",\n    \"metadata\": {},\n    \"uid\": \"unique-identifier\"\n  }'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "cURL",
+                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/stream/strm_31Dc0DD72P5AddYUguyBd' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"description\": \"sample string\",\n    \"metadata\": {},\n    \"uid\": \"unique-identifier\"\n  }'"
+                    }
+                ]
             },
             "put": {
                 "description": "Update a stream.",
-                "operationId": "v1.stream.stream.update",
+                "operationId": "v1.streaming.stream.update",
                 "parameters": [
                     {
                         "description": "The Stream's ID or UID.",
@@ -38224,14 +39346,74 @@
                 "tags": [
                     "Stream"
                 ],
-                "x-hidden": true,
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const response = await svix.streaming.stream.update(\"strm_31Dc0DD72P5AddYUguyBd\", {\n  name: \"sample string\",\n  uid: \"unique-identifier\",\n  metadata: {},\n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "TypeScript",
+                        "source": "const response = await svix.streaming.stream.update(\"strm_31Dc0DD72P5AddYUguyBd\", {\n  name: \"sample string\",\n  uid: \"unique-identifier\",\n  metadata: {},\n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "response = svix.streaming.stream.update(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    StreamIn(\n        name=\"sample string\",\n        uid=\"unique-identifier\",\n        metadata={},\n    ),\n)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python (Async)",
+                        "source": "response = await svix.streaming.stream.update(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    StreamIn(\n        name=\"sample string\",\n        uid=\"unique-identifier\",\n        metadata={},\n    ),\n)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "response, err := svix.Streaming.Stream.Update(\n\tctx,\n\t\"strm_31Dc0DD72P5AddYUguyBd\",\n\tStreamIn{Name: \"sample string\", Uid: ptr(\"unique-identifier\"), Metadata: nil},\n)"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val response =\n    svix.streaming.stream.update(\n        \"strm_31Dc0DD72P5AddYUguyBd\",\n        StreamIn(name = \"sample string\", uid = \"unique-identifier\", metadata = mapOf()),\n    )"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "var response = svix.getStreaming()\n        .getStream()\n        .update(\n            \"strm_31Dc0DD72P5AddYUguyBd\",\n            new StreamIn().name(\"sample string\").uid(\"unique-identifier\").metadata(Map.of()));"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "response = svix\n  .streaming\n  .stream\n  .update(\"strm_31Dc0DD72P5AddYUguyBd\", {name: \"sample string\", uid: \"unique-identifier\", metadata: {}})"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let response = svix\n    .streaming()\n    .stream()\n    .update(\n        \"strm_31Dc0DD72P5AddYUguyBd\".to_string(),\n        StreamIn {\n            name: \"sample string\".to_string(),\n            uid: Some(\"unique-identifier\".to_string()),\n            metadata: Some(HashMap::new()),\n        },\n    )\n    .await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var response = svix.Streaming.Stream.Update(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    new StreamIn\n    {\n        Name = \"sample string\",\n        Uid = \"unique-identifier\",\n        Metadata = [],\n    }\n);"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "CLI",
+                        "source": "svix streaming stream update \"strm_31Dc0DD72P5AddYUguyBd\" '{\n    \"metadata\": {},\n    \"name\": \"sample string\",\n    \"uid\": \"unique-identifier\"\n  }'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "cURL",
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/stream/strm_31Dc0DD72P5AddYUguyBd' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"metadata\": {},\n    \"name\": \"sample string\",\n    \"uid\": \"unique-identifier\"\n  }'"
+                    }
+                ]
             }
         },
         "/api/v1/stream/{stream_id}/events": {
             "post": {
                 "description": "Creates events on the Stream.",
-                "operationId": "v1.stream.events.create",
+                "operationId": "v1.streaming.events.create",
                 "parameters": [
                     {
                         "description": "The Stream's ID or UID.",
@@ -38358,14 +39540,79 @@
                 "tags": [
                     "Event"
                 ],
-                "x-hidden": true,
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "Javascript",
+                        "source": "await svix.stream.events.create(\"rock_inc_uid\", {\n  events: [\n    {\n      \"eventType\": \"user.signup\",\n      \"payload\": '{\"email\":\"test@example.com\",\"username\":\"test_user\"}'\n    }\n  ]\n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "Typescript",
+                        "source": "await svix.stream.events.create(\"rock_inc_uid\", {\n  events: [\n    {\n      \"eventType\": \"user.signup\",\n      \"payload\": '{\"email\":\"test@example.com\",\"username\":\"test_user\"}'\n    }\n  ]\n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "svix.stream.events.create(\"rock_inc_uid\", CreateStreamEventsIn(\n  events=[\n    EventIn(\n      eventType=\"user.signup\",\n      payload='{\"email\":\"test@example.com\",\"username\":\"test_user\"}'\n    )\n  ]\n))"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python (Async)",
+                        "source": "await svix.stream.events.create(\"rock_inc_uid\", CreateStreamEventsIn(\n  events=[\n    EventIn(\n      eventType=\"user.signup\",\n      payload='{\"email\":\"test@example.com\",\"username\":\"test_user\"}'\n    )\n  ]\n))"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "svixClient.Stream.Events.Create(\n  ctx,\n  \"rock_inc_uid\",\n  &svix.CreateStreamEventsIn{\n    Events: []svix.EventIn{\n      {\n        EventType: \"user.signup\",\n        Payload: \\`{\"email\":\"test@example.com\",\"username\":\"test_user\"}\\`,\n      }\n    },\n  })"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "svix.stream.events.create(\"rock_inc_uid\", CreateStreamEventsIn()\n    .events(arrayOf(\n      EventIn(\n        eventType = \"user.signup\",\n        payload = \\`{\"email\":\"test@example.com\",\"username\":\"test_user\"}\\`,\n      )\n    ))\n)"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "svix.getStream().getEvents().create(\"rock_inc_uid\", new CreateStreamEventsIn()\n    .events(new EventIn[]{\n      new EventIn()\n        .eventType(\"user.signup\")\n        .payload(\"{\\\"email\\\":\\\"test@example.com\\\",\\\"username\\\":\\\"test_user\\\"}\")\n    })\n);"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "svix.stream.events.create(\"rock_inc_uid\", Svix::CreateStreamEventsIn.new({\n    \"events\": [\n      {\n        \"eventType\": \"user.signup\",\n        \"payload\": '{\"email\":\"test@example.com\",\"username\":\"test_user\"}'\n      }\n    ]\n}))"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "svix.stream().events().create(\"rock_inc_uid\", CreateStreamEventsIn {\n    events: vec![\n      EventIn {\n        event_type: \"user.signup\".into(),\n        payload: r#\"{\"email\":\"test@example.com\",\"username\":\"test_user\"}\"#.into()\n      }\n    ],\n    stream: None,\n}, None).await?;"
+                    },
+                    {
+                        "label": "Php",
+                        "lang": "Php",
+                        "source": "$svix->stream->events->create(\n  'rock_inc_uid',\n  CreateStreamEventsIn::create(\n    events: [\n      [\n        'eventType' => 'user.signup',\n        'payload' => '{\"email\":\"test@example.com\",\"username\":\"test_user\"}'\n      ]\n    ],\n  )\n);"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "await svix.Stream.Events.CreateAsync(\"stream_id\", new CreateStreamEventsIn{\n    events: new EventIn[] {\n      new EventIn(\n        eventType: \"user.signup\",\n        payload: \"{\\\\\"email\\\\\":\\\\\"test@example.com\\\\\",\\\\\"username\\\\\":\\\\\"test_user\\\\\"}\"\n      )\n    }\n});"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "cURL",
+                        "source": "curl -X 'POST' \\\\\n  'https://api.svix.com/api/v1/stream/rock_inc_uid/events' \\\\\n  -H 'accept: application/json' \\\\\n  -H \"Authorization: Bearer \\${AUTH_TOKEN}\" \\\\\n  -H 'Content-Type: application/json' \\\\\n  -d '{\n  \"events\": [\n    {\n      \"eventType\":\"user.signup\",\n      \"payload\":\"{\\\\\"email\\\":\\\\\"test@example.com\\\\\",\\\\\"username\\\\\":\\\\\"test_user\\\\\"}\"\n    }\n  ],\n}'"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "CLI",
+                        "source": "Coming soon to Svix CLI"
+                    }
+                ]
             }
         },
         "/api/v1/stream/{stream_id}/events/latest": {
             "get": {
                 "description": "Get the latest events from the stream",
-                "operationId": "v1.stream.events.get-latest",
+                "operationId": "v1.streaming.events.get-latest",
                 "parameters": [
                     {
                         "description": "The Stream's ID or UID.",
@@ -38492,7 +39739,7 @@
         "/api/v1/stream/{stream_id}/patch_alert_email": {
             "patch": {
                 "description": "Patch the alert email for a stream.",
-                "operationId": "v1.stream.stream.patch-alert-email",
+                "operationId": "v1.streaming.stream.patch-alert-email",
                 "parameters": [
                     {
                         "description": "The Stream's ID or UID.",
@@ -38610,7 +39857,7 @@
         "/api/v1/stream/{stream_id}/sink": {
             "get": {
                 "description": "List of all the stream's sinks.",
-                "operationId": "v1.stream.sink.list",
+                "operationId": "v1.streaming.sink.list",
                 "parameters": [
                     {
                         "description": "The Stream's ID or UID.",
@@ -38757,12 +40004,72 @@
                 "tags": [
                     "Sink"
                 ],
-                "x-hidden": true,
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const response = await svix.streaming.sink.list(\"strm_31Dc0DD72P5AddYUguyBd\");"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "TypeScript",
+                        "source": "const response = await svix.streaming.sink.list(\"strm_31Dc0DD72P5AddYUguyBd\");"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "response = svix.streaming.sink.list(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python (Async)",
+                        "source": "response = await svix.streaming.sink.list(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "response, err := svix.Streaming.Sink.List(ctx, \"strm_31Dc0DD72P5AddYUguyBd\", nil)"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val response = svix.streaming.sink.list(\"strm_31Dc0DD72P5AddYUguyBd\")"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "var response = svix.getStreaming().getSink().list(\"strm_31Dc0DD72P5AddYUguyBd\");"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "response = svix.streaming.sink.list(\"strm_31Dc0DD72P5AddYUguyBd\")"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let response = svix\n    .streaming()\n    .sink()\n    .list(\"strm_31Dc0DD72P5AddYUguyBd\".to_string(), None)\n    .await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var response = svix.Streaming.Sink.List(\"strm_31Dc0DD72P5AddYUguyBd\");"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "CLI",
+                        "source": "svix streaming sink list \"strm_31Dc0DD72P5AddYUguyBd\""
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "cURL",
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/stream/strm_31Dc0DD72P5AddYUguyBd/sink' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json'"
+                    }
+                ]
             },
             "post": {
                 "description": "Creates a new sink.",
-                "operationId": "v1.stream.sink.create",
+                "operationId": "v1.streaming.sink.create",
                 "parameters": [
                     {
                         "description": "The Stream's ID or UID.",
@@ -38889,14 +40196,74 @@
                 "tags": [
                     "Sink"
                 ],
-                "x-hidden": true,
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const response = await svix.streaming.sink.create(\"strm_31Dc0DD72P5AddYUguyBd\", {\n  uid: \"unique-identifier\",\n  status: {},\n  batchSize: 100,\n  maxWaitSecs: 1,\n  eventTypes: [],\n  metadata: {},\n  type: \"azureBlobStorage\",\n  config: {\n    container: \"sample string\",\n    account: \"sample string\",\n    accessKey: \"sample string\",\n  },\n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "TypeScript",
+                        "source": "const response = await svix.streaming.sink.create(\"strm_31Dc0DD72P5AddYUguyBd\", {\n  uid: \"unique-identifier\",\n  status: {},\n  batchSize: 100,\n  maxWaitSecs: 1,\n  eventTypes: [],\n  metadata: {},\n  type: \"azureBlobStorage\",\n  config: {\n    container: \"sample string\",\n    account: \"sample string\",\n    accessKey: \"sample string\",\n  },\n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "response = svix.streaming.sink.create(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    StreamSinkIn(\n        uid=\"unique-identifier\",\n        status=SinkStatusIn(),\n        batch_size=100,\n        max_wait_secs=1,\n        event_types=[],\n        metadata={},\n        type=\"azureBlobStorage\",\n        config=AzureBlobStorageConfig(\n            container=\"sample string\",\n            account=\"sample string\",\n            access_key=\"sample string\",\n        ),\n    ),\n)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python (Async)",
+                        "source": "response = await svix.streaming.sink.create(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    StreamSinkIn(\n        uid=\"unique-identifier\",\n        status=SinkStatusIn(),\n        batch_size=100,\n        max_wait_secs=1,\n        event_types=[],\n        metadata={},\n        type=\"azureBlobStorage\",\n        config=AzureBlobStorageConfig(\n            container=\"sample string\",\n            account=\"sample string\",\n            access_key=\"sample string\",\n        ),\n    ),\n)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "response, err := svix.Streaming.Sink.Create(\n\tctx,\n\t\"strm_31Dc0DD72P5AddYUguyBd\",\n\tStreamSinkIn{\n\t\tUid:         ptr(\"unique-identifier\"),\n\t\tStatus:      ptr(SinkStatusIn{}),\n\t\tBatchSize:   ptr(uint16(100)),\n\t\tMaxWaitSecs: ptr(uint16(1)),\n\t\tEventTypes:  []string{},\n\t\tMetadata:    nil,\n\t\tConfig:      (AzureBlobStorageConfig{Container: \"sample string\", Account: \"sample string\", AccessKey: \"sample string\"}),\n\t\tType:        \"azureBlobStorage\",\n\t},\n\tnil,\n)"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val response =\n    svix.streaming.sink.create(\n        \"strm_31Dc0DD72P5AddYUguyBd\",\n        StreamSinkIn(\n            uid = \"unique-identifier\",\n            status = SinkStatusIn(),\n            batchSize = 100u,\n            maxWaitSecs = 1u,\n            eventTypes = listOf(),\n            metadata = mapOf(),\n            config =\n                StreamSinkInConfig.AzureBlobStorage(\n                    AzureBlobStorageConfig(\n                        container = \"sample string\",\n                        account = \"sample string\",\n                        accessKey = \"sample string\",\n                    )\n                ),\n        ),\n    )"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "var response = svix.getStreaming()\n        .getSink()\n        .create(\n            \"strm_31Dc0DD72P5AddYUguyBd\",\n            new StreamSinkIn()\n                .uid(\"unique-identifier\")\n                .status(new SinkStatusIn())\n                .batchSize(100L)\n                .maxWaitSecs(1L)\n                .eventTypes(List.of())\n                .metadata(Map.of())\n                .config(new StreamSinkInConfig.AzureBlobStorage(new AzureBlobStorageConfig()\n                    .container(\"sample string\")\n                    .account(\"sample string\")\n                    .accessKey(\"sample string\"))));"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "response = svix\n  .streaming\n  .sink\n  .create(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    {\n      uid: \"unique-identifier\",\n      status: {},\n      batchSize: 100,\n      maxWaitSecs: 1,\n      eventTypes: [],\n      metadata: {},\n      config: {container: \"sample string\", account: \"sample string\", accessKey: \"sample string\"},\n      type: \"azureBlobStorage\"\n    }\n  )"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let response = svix\n    .streaming()\n    .sink()\n    .create(\n        \"strm_31Dc0DD72P5AddYUguyBd\".to_string(),\n        StreamSinkIn {\n            uid: Some(\"unique-identifier\".to_string()),\n            status: Some(SinkStatusIn {}),\n            batch_size: Some(100),\n            max_wait_secs: Some(1),\n            event_types: Some(vec![]),\n            metadata: Some(HashMap::new()),\n            config: StreamSinkInConfig::AzureBlobStorage(AzureBlobStorageConfig {\n                container: \"sample string\".to_string(),\n                account: \"sample string\".to_string(),\n                access_key: \"sample string\".to_string(),\n            }),\n        },\n        None,\n    )\n    .await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var response = svix.Streaming.Sink.Create(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    new StreamSinkIn\n    {\n        Uid = \"unique-identifier\",\n        Status = new SinkStatusIn { },\n        BatchSize = 100,\n        MaxWaitSecs = 1,\n        EventTypes = [],\n        Metadata = [],\n        Config = StreamSinkInConfig.AzureBlobStorage(\n            (\n                new AzureBlobStorageConfig\n                {\n                    Container = \"sample string\",\n                    Account = \"sample string\",\n                    AccessKey = \"sample string\",\n                }\n            )\n        ),\n    }\n);"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "CLI",
+                        "source": "svix streaming sink create \"strm_31Dc0DD72P5AddYUguyBd\" '{\n    \"batchSize\": 100,\n    \"config\": {\n      \"accessKey\": \"sample string\",\n      \"account\": \"sample string\",\n      \"container\": \"sample string\"\n    },\n    \"eventTypes\": [],\n    \"maxWaitSecs\": 1,\n    \"metadata\": {},\n    \"status\": {},\n    \"type\": \"azureBlobStorage\",\n    \"uid\": \"unique-identifier\"\n  }'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "cURL",
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/stream/strm_31Dc0DD72P5AddYUguyBd/sink' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"batchSize\": 100,\n    \"config\": {\n      \"accessKey\": \"sample string\",\n      \"account\": \"sample string\",\n      \"container\": \"sample string\"\n    },\n    \"eventTypes\": [],\n    \"maxWaitSecs\": 1,\n    \"metadata\": {},\n    \"status\": {},\n    \"type\": \"azureBlobStorage\",\n    \"uid\": \"unique-identifier\"\n  }'"
+                    }
+                ]
             }
         },
         "/api/v1/stream/{stream_id}/sink/{sink_id}": {
             "delete": {
                 "description": "Delete a sink.",
-                "operationId": "v1.stream.sink.delete",
+                "operationId": "v1.streaming.sink.delete",
                 "parameters": [
                     {
                         "description": "The Stream's ID or UID.",
@@ -39011,12 +40378,72 @@
                 "tags": [
                     "Sink"
                 ],
-                "x-hidden": true,
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "await svix.streaming.sink.delete(\n  \"strm_31Dc0DD72P5AddYUguyBd\",\n  \"sink_31Dc11sPYY9aLDkwPuGMa\"\n);"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "TypeScript",
+                        "source": "await svix.streaming.sink.delete(\n  \"strm_31Dc0DD72P5AddYUguyBd\",\n  \"sink_31Dc11sPYY9aLDkwPuGMa\"\n);"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "svix.streaming.sink.delete(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python (Async)",
+                        "source": "await svix.streaming.sink.delete(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "err := svix.Streaming.Sink.Delete(\n\tctx,\n\t\"strm_31Dc0DD72P5AddYUguyBd\",\n\t\"sink_31Dc11sPYY9aLDkwPuGMa\",\n)"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "svix.streaming.sink.delete(\"strm_31Dc0DD72P5AddYUguyBd\", \"sink_31Dc11sPYY9aLDkwPuGMa\")"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "svix.getStreaming()\n        .getSink()\n        .delete(\"strm_31Dc0DD72P5AddYUguyBd\", \"sink_31Dc11sPYY9aLDkwPuGMa\");"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "response = svix.streaming.sink.delete(\"strm_31Dc0DD72P5AddYUguyBd\", \"sink_31Dc11sPYY9aLDkwPuGMa\")"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "svix.streaming()\n    .sink()\n    .delete(\n        \"strm_31Dc0DD72P5AddYUguyBd\".to_string(),\n        \"sink_31Dc11sPYY9aLDkwPuGMa\".to_string(),\n    )\n    .await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var response = svix.Streaming.Sink.Delete(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\"\n);"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "CLI",
+                        "source": "svix streaming sink delete \"strm_31Dc0DD72P5AddYUguyBd\" \"sink_31Dc11sPYY9aLDkwPuGMa\""
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "cURL",
+                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/stream/strm_31Dc0DD72P5AddYUguyBd/sink/sink_31Dc11sPYY9aLDkwPuGMa' \\\n  -H 'Authorization: Bearer AUTH_TOKEN'"
+                    }
+                ]
             },
             "get": {
                 "description": "Get a sink by id or uid.",
-                "operationId": "v1.stream.sink.get",
+                "operationId": "v1.streaming.sink.get",
                 "parameters": [
                     {
                         "description": "The Stream's ID or UID.",
@@ -39138,12 +40565,72 @@
                 "tags": [
                     "Sink"
                 ],
-                "x-hidden": true,
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const response = await svix.streaming.sink.get(\n  \"strm_31Dc0DD72P5AddYUguyBd\",\n  \"sink_31Dc11sPYY9aLDkwPuGMa\"\n);"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "TypeScript",
+                        "source": "const response = await svix.streaming.sink.get(\n  \"strm_31Dc0DD72P5AddYUguyBd\",\n  \"sink_31Dc11sPYY9aLDkwPuGMa\"\n);"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "response = svix.streaming.sink.get(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python (Async)",
+                        "source": "response = await svix.streaming.sink.get(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "response, err := svix.Streaming.Sink.Get(\n\tctx,\n\t\"strm_31Dc0DD72P5AddYUguyBd\",\n\t\"sink_31Dc11sPYY9aLDkwPuGMa\",\n)"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val response = svix.streaming.sink.get(\"strm_31Dc0DD72P5AddYUguyBd\", \"sink_31Dc11sPYY9aLDkwPuGMa\")"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "var response = svix.getStreaming()\n        .getSink()\n        .get(\"strm_31Dc0DD72P5AddYUguyBd\", \"sink_31Dc11sPYY9aLDkwPuGMa\");"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "response = svix.streaming.sink.get(\"strm_31Dc0DD72P5AddYUguyBd\", \"sink_31Dc11sPYY9aLDkwPuGMa\")"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let response = svix\n    .streaming()\n    .sink()\n    .get(\n        \"strm_31Dc0DD72P5AddYUguyBd\".to_string(),\n        \"sink_31Dc11sPYY9aLDkwPuGMa\".to_string(),\n    )\n    .await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var response = svix.Streaming.Sink.Get(\"strm_31Dc0DD72P5AddYUguyBd\", \"sink_31Dc11sPYY9aLDkwPuGMa\");"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "CLI",
+                        "source": "svix streaming sink get \"strm_31Dc0DD72P5AddYUguyBd\" \"sink_31Dc11sPYY9aLDkwPuGMa\""
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "cURL",
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/stream/strm_31Dc0DD72P5AddYUguyBd/sink/sink_31Dc11sPYY9aLDkwPuGMa' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json'"
+                    }
+                ]
             },
             "patch": {
                 "description": "Partially update a sink.",
-                "operationId": "v1.stream.sink.patch",
+                "operationId": "v1.streaming.sink.patch",
                 "parameters": [
                     {
                         "description": "The Stream's ID or UID.",
@@ -39275,12 +40762,72 @@
                 "tags": [
                     "Sink"
                 ],
-                "x-hidden": true,
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const response = await svix.streaming.sink.patch(\n  \"strm_31Dc0DD72P5AddYUguyBd\",\n  \"sink_31Dc11sPYY9aLDkwPuGMa\",\n  {\n    uid: \"unique-identifier\",\n    status: {},\n    batchSize: 100,\n    maxWaitSecs: 1,\n    eventTypes: [],\n    metadata: {},\n    type: \"azureBlobStorage\",\n    config: {\n      container: \"sample string\",\n      account: \"sample string\",\n      accessKey: \"sample string\",\n    },\n  }\n);"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "TypeScript",
+                        "source": "const response = await svix.streaming.sink.patch(\n  \"strm_31Dc0DD72P5AddYUguyBd\",\n  \"sink_31Dc11sPYY9aLDkwPuGMa\",\n  {\n    uid: \"unique-identifier\",\n    status: {},\n    batchSize: 100,\n    maxWaitSecs: 1,\n    eventTypes: [],\n    metadata: {},\n    type: \"azureBlobStorage\",\n    config: {\n      container: \"sample string\",\n      account: \"sample string\",\n      accessKey: \"sample string\",\n    },\n  }\n);"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "response = svix.streaming.sink.patch(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    StreamSinkPatch(\n        uid=\"unique-identifier\",\n        status=SinkStatusIn(),\n        batch_size=100,\n        max_wait_secs=1,\n        event_types=[],\n        metadata={},\n        type=\"azureBlobStorage\",\n        config=AzureBlobStoragePatchConfig(\n            container=\"sample string\",\n            account=\"sample string\",\n            access_key=\"sample string\",\n        ),\n    ),\n)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python (Async)",
+                        "source": "response = await svix.streaming.sink.patch(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    StreamSinkPatch(\n        uid=\"unique-identifier\",\n        status=SinkStatusIn(),\n        batch_size=100,\n        max_wait_secs=1,\n        event_types=[],\n        metadata={},\n        type=\"azureBlobStorage\",\n        config=AzureBlobStoragePatchConfig(\n            container=\"sample string\",\n            account=\"sample string\",\n            access_key=\"sample string\",\n        ),\n    ),\n)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "response, err := svix.Streaming.Sink.Patch(\n\tctx,\n\t\"strm_31Dc0DD72P5AddYUguyBd\",\n\t\"sink_31Dc11sPYY9aLDkwPuGMa\",\n\tStreamSinkPatch{\n\t\tUid:         NewNullable(\"unique-identifier\"),\n\t\tStatus:      NewNullable(SinkStatusIn{}),\n\t\tBatchSize:   NewNullable(uint16(100)),\n\t\tMaxWaitSecs: NewNullable(uint16(1)),\n\t\tEventTypes:  []string{},\n\t\tMetadata:    nil,\n\t\tConfig:      (AzureBlobStoragePatchConfig{Container: ptr(\"sample string\"), Account: ptr(\"sample string\"), AccessKey: ptr(\"sample string\")}),\n\t\tType:        \"azureBlobStorage\",\n\t},\n)"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val response =\n    svix.streaming.sink.patch(\n        \"strm_31Dc0DD72P5AddYUguyBd\",\n        \"sink_31Dc11sPYY9aLDkwPuGMa\",\n        StreamSinkPatch(\n            uid = MaybeUnset.Present(\"unique-identifier\"),\n            status = MaybeUnset.Present(SinkStatusIn()),\n            batchSize = MaybeUnset.Present(100u),\n            maxWaitSecs = MaybeUnset.Present(1u),\n            eventTypes = listOf(),\n            metadata = mapOf(),\n            config =\n                StreamSinkPatchConfig.AzureBlobStorage(\n                    AzureBlobStoragePatchConfig(\n                        container = \"sample string\",\n                        account = \"sample string\",\n                        accessKey = \"sample string\",\n                    )\n                ),\n        ),\n    )"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "var response = svix.getStreaming()\n        .getSink()\n        .patch(\n            \"strm_31Dc0DD72P5AddYUguyBd\",\n            \"sink_31Dc11sPYY9aLDkwPuGMa\",\n            new StreamSinkPatch()\n                .uid(\"unique-identifier\")\n                .status(new SinkStatusIn())\n                .batchSize(100L)\n                .maxWaitSecs(1L)\n                .eventTypes(List.of())\n                .metadata(Map.of())\n                .config(new StreamSinkPatchConfig.AzureBlobStorage(new AzureBlobStoragePatchConfig()\n                    .container(\"sample string\")\n                    .account(\"sample string\")\n                    .accessKey(\"sample string\"))));"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "response = svix\n  .streaming\n  .sink\n  .patch(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    {\n      uid: \"unique-identifier\",\n      status: {},\n      batchSize: 100,\n      maxWaitSecs: 1,\n      eventTypes: [],\n      metadata: {},\n      config: {container: \"sample string\", account: \"sample string\", accessKey: \"sample string\"},\n      type: \"azureBlobStorage\"\n    }\n  )"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let response = svix\n    .streaming()\n    .sink()\n    .patch(\n        \"strm_31Dc0DD72P5AddYUguyBd\".to_string(),\n        \"sink_31Dc11sPYY9aLDkwPuGMa\".to_string(),\n        StreamSinkPatch {\n            uid: js_option::JsOption::Some(\"unique-identifier\".to_string()),\n            status: js_option::JsOption::Some(SinkStatusIn {}),\n            batch_size: js_option::JsOption::Some(100),\n            max_wait_secs: js_option::JsOption::Some(1),\n            event_types: Some(vec![]),\n            metadata: Some(HashMap::new()),\n            config: StreamSinkPatchConfig::AzureBlobStorage(AzureBlobStoragePatchConfig {\n                container: Some(\"sample string\".to_string()),\n                account: Some(\"sample string\".to_string()),\n                access_key: Some(\"sample string\".to_string()),\n            }),\n        },\n    )\n    .await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var response = svix.Streaming.Sink.Patch(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    new StreamSinkPatch\n    {\n        Uid = \"unique-identifier\",\n        Status = new SinkStatusIn { },\n        BatchSize = 100,\n        MaxWaitSecs = 1,\n        EventTypes = [],\n        Metadata = [],\n        Config = StreamSinkPatchConfig.AzureBlobStorage(\n            (\n                new AzureBlobStoragePatchConfig\n                {\n                    Container = \"sample string\",\n                    Account = \"sample string\",\n                    AccessKey = \"sample string\",\n                }\n            )\n        ),\n    }\n);"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "CLI",
+                        "source": "svix streaming sink patch \"strm_31Dc0DD72P5AddYUguyBd\" \"sink_31Dc11sPYY9aLDkwPuGMa\" '{\n    \"batchSize\": 100,\n    \"config\": {\n      \"accessKey\": \"sample string\",\n      \"account\": \"sample string\",\n      \"container\": \"sample string\"\n    },\n    \"eventTypes\": [],\n    \"maxWaitSecs\": 1,\n    \"metadata\": {},\n    \"status\": {},\n    \"type\": \"azureBlobStorage\",\n    \"uid\": \"unique-identifier\"\n  }'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "cURL",
+                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/stream/strm_31Dc0DD72P5AddYUguyBd/sink/sink_31Dc11sPYY9aLDkwPuGMa' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"batchSize\": 100,\n    \"config\": {\n      \"accessKey\": \"sample string\",\n      \"account\": \"sample string\",\n      \"container\": \"sample string\"\n    },\n    \"eventTypes\": [],\n    \"maxWaitSecs\": 1,\n    \"metadata\": {},\n    \"status\": {},\n    \"type\": \"azureBlobStorage\",\n    \"uid\": \"unique-identifier\"\n  }'"
+                    }
+                ]
             },
             "put": {
                 "description": "Update a sink.",
-                "operationId": "v1.stream.sink.update",
+                "operationId": "v1.streaming.sink.update",
                 "parameters": [
                     {
                         "description": "The Stream's ID or UID.",
@@ -39422,14 +40969,74 @@
                 "tags": [
                     "Sink"
                 ],
-                "x-hidden": true,
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const response = await svix.streaming.sink.update(\n  \"strm_31Dc0DD72P5AddYUguyBd\",\n  \"sink_31Dc11sPYY9aLDkwPuGMa\",\n  {\n    uid: \"unique-identifier\",\n    status: {},\n    batchSize: 100,\n    maxWaitSecs: 1,\n    eventTypes: [],\n    metadata: {},\n    type: \"azureBlobStorage\",\n    config: {\n      container: \"sample string\",\n      account: \"sample string\",\n      accessKey: \"sample string\",\n    },\n  }\n);"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "TypeScript",
+                        "source": "const response = await svix.streaming.sink.update(\n  \"strm_31Dc0DD72P5AddYUguyBd\",\n  \"sink_31Dc11sPYY9aLDkwPuGMa\",\n  {\n    uid: \"unique-identifier\",\n    status: {},\n    batchSize: 100,\n    maxWaitSecs: 1,\n    eventTypes: [],\n    metadata: {},\n    type: \"azureBlobStorage\",\n    config: {\n      container: \"sample string\",\n      account: \"sample string\",\n      accessKey: \"sample string\",\n    },\n  }\n);"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "response = svix.streaming.sink.update(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    StreamSinkIn(\n        uid=\"unique-identifier\",\n        status=SinkStatusIn(),\n        batch_size=100,\n        max_wait_secs=1,\n        event_types=[],\n        metadata={},\n        type=\"azureBlobStorage\",\n        config=AzureBlobStorageConfig(\n            container=\"sample string\",\n            account=\"sample string\",\n            access_key=\"sample string\",\n        ),\n    ),\n)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python (Async)",
+                        "source": "response = await svix.streaming.sink.update(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    StreamSinkIn(\n        uid=\"unique-identifier\",\n        status=SinkStatusIn(),\n        batch_size=100,\n        max_wait_secs=1,\n        event_types=[],\n        metadata={},\n        type=\"azureBlobStorage\",\n        config=AzureBlobStorageConfig(\n            container=\"sample string\",\n            account=\"sample string\",\n            access_key=\"sample string\",\n        ),\n    ),\n)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "response, err := svix.Streaming.Sink.Update(\n\tctx,\n\t\"strm_31Dc0DD72P5AddYUguyBd\",\n\t\"sink_31Dc11sPYY9aLDkwPuGMa\",\n\tStreamSinkIn{\n\t\tUid:         ptr(\"unique-identifier\"),\n\t\tStatus:      ptr(SinkStatusIn{}),\n\t\tBatchSize:   ptr(uint16(100)),\n\t\tMaxWaitSecs: ptr(uint16(1)),\n\t\tEventTypes:  []string{},\n\t\tMetadata:    nil,\n\t\tConfig:      (AzureBlobStorageConfig{Container: \"sample string\", Account: \"sample string\", AccessKey: \"sample string\"}),\n\t\tType:        \"azureBlobStorage\",\n\t},\n)"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val response =\n    svix.streaming.sink.update(\n        \"strm_31Dc0DD72P5AddYUguyBd\",\n        \"sink_31Dc11sPYY9aLDkwPuGMa\",\n        StreamSinkIn(\n            uid = \"unique-identifier\",\n            status = SinkStatusIn(),\n            batchSize = 100u,\n            maxWaitSecs = 1u,\n            eventTypes = listOf(),\n            metadata = mapOf(),\n            config =\n                StreamSinkInConfig.AzureBlobStorage(\n                    AzureBlobStorageConfig(\n                        container = \"sample string\",\n                        account = \"sample string\",\n                        accessKey = \"sample string\",\n                    )\n                ),\n        ),\n    )"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "var response = svix.getStreaming()\n        .getSink()\n        .update(\n            \"strm_31Dc0DD72P5AddYUguyBd\",\n            \"sink_31Dc11sPYY9aLDkwPuGMa\",\n            new StreamSinkIn()\n                .uid(\"unique-identifier\")\n                .status(new SinkStatusIn())\n                .batchSize(100L)\n                .maxWaitSecs(1L)\n                .eventTypes(List.of())\n                .metadata(Map.of())\n                .config(new StreamSinkInConfig.AzureBlobStorage(new AzureBlobStorageConfig()\n                    .container(\"sample string\")\n                    .account(\"sample string\")\n                    .accessKey(\"sample string\"))));"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "response = svix\n  .streaming\n  .sink\n  .update(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    {\n      uid: \"unique-identifier\",\n      status: {},\n      batchSize: 100,\n      maxWaitSecs: 1,\n      eventTypes: [],\n      metadata: {},\n      config: {container: \"sample string\", account: \"sample string\", accessKey: \"sample string\"},\n      type: \"azureBlobStorage\"\n    }\n  )"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let response = svix\n    .streaming()\n    .sink()\n    .update(\n        \"strm_31Dc0DD72P5AddYUguyBd\".to_string(),\n        \"sink_31Dc11sPYY9aLDkwPuGMa\".to_string(),\n        StreamSinkIn {\n            uid: Some(\"unique-identifier\".to_string()),\n            status: Some(SinkStatusIn {}),\n            batch_size: Some(100),\n            max_wait_secs: Some(1),\n            event_types: Some(vec![]),\n            metadata: Some(HashMap::new()),\n            config: StreamSinkInConfig::AzureBlobStorage(AzureBlobStorageConfig {\n                container: \"sample string\".to_string(),\n                account: \"sample string\".to_string(),\n                access_key: \"sample string\".to_string(),\n            }),\n        },\n    )\n    .await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var response = svix.Streaming.Sink.Update(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    new StreamSinkIn\n    {\n        Uid = \"unique-identifier\",\n        Status = new SinkStatusIn { },\n        BatchSize = 100,\n        MaxWaitSecs = 1,\n        EventTypes = [],\n        Metadata = [],\n        Config = StreamSinkInConfig.AzureBlobStorage(\n            (\n                new AzureBlobStorageConfig\n                {\n                    Container = \"sample string\",\n                    Account = \"sample string\",\n                    AccessKey = \"sample string\",\n                }\n            )\n        ),\n    }\n);"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "CLI",
+                        "source": "svix streaming sink update \"strm_31Dc0DD72P5AddYUguyBd\" \"sink_31Dc11sPYY9aLDkwPuGMa\" '{\n    \"batchSize\": 100,\n    \"config\": {\n      \"accessKey\": \"sample string\",\n      \"account\": \"sample string\",\n      \"container\": \"sample string\"\n    },\n    \"eventTypes\": [],\n    \"maxWaitSecs\": 1,\n    \"metadata\": {},\n    \"status\": {},\n    \"type\": \"azureBlobStorage\",\n    \"uid\": \"unique-identifier\"\n  }'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "cURL",
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/stream/strm_31Dc0DD72P5AddYUguyBd/sink/sink_31Dc11sPYY9aLDkwPuGMa' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"batchSize\": 100,\n    \"config\": {\n      \"accessKey\": \"sample string\",\n      \"account\": \"sample string\",\n      \"container\": \"sample string\"\n    },\n    \"eventTypes\": [],\n    \"maxWaitSecs\": 1,\n    \"metadata\": {},\n    \"status\": {},\n    \"type\": \"azureBlobStorage\",\n    \"uid\": \"unique-identifier\"\n  }'"
+                    }
+                ]
             }
         },
         "/api/v1/stream/{stream_id}/sink/{sink_id}/events": {
             "get": {
                 "description": "Iterate over a stream of events.\n\nThe sink must be of type `poller` to use the poller endpoint.",
-                "operationId": "v1.stream.events.get",
+                "operationId": "v1.streaming.events.get",
                 "parameters": [
                     {
                         "description": "The Stream's ID or UID.",
@@ -39585,14 +41192,74 @@
                 "tags": [
                     "Event"
                 ],
-                "x-hidden": true,
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const response = await svix.streaming.events.get(\n  \"strm_31Dc0DD72P5AddYUguyBd\",\n  \"sink_31Dc11sPYY9aLDkwPuGMa\"\n);"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "TypeScript",
+                        "source": "const response = await svix.streaming.events.get(\n  \"strm_31Dc0DD72P5AddYUguyBd\",\n  \"sink_31Dc11sPYY9aLDkwPuGMa\"\n);"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "response = svix.streaming.events.get(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python (Async)",
+                        "source": "response = await svix.streaming.events.get(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "response, err := svix.Streaming.Events.Get(\n\tctx,\n\t\"strm_31Dc0DD72P5AddYUguyBd\",\n\t\"sink_31Dc11sPYY9aLDkwPuGMa\",\n\tnil,\n)"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val response = svix.streaming.events.get(\"strm_31Dc0DD72P5AddYUguyBd\", \"sink_31Dc11sPYY9aLDkwPuGMa\")"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "var response = svix.getStreaming()\n        .getEvents()\n        .get(\"strm_31Dc0DD72P5AddYUguyBd\", \"sink_31Dc11sPYY9aLDkwPuGMa\");"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "response = svix.streaming.events.get(\"strm_31Dc0DD72P5AddYUguyBd\", \"sink_31Dc11sPYY9aLDkwPuGMa\")"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let response = svix\n    .streaming()\n    .events()\n    .get(\n        \"strm_31Dc0DD72P5AddYUguyBd\".to_string(),\n        \"sink_31Dc11sPYY9aLDkwPuGMa\".to_string(),\n        None,\n    )\n    .await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var response = svix.Streaming.Events.Get(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\"\n);"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "CLI",
+                        "source": "svix streaming events get \"strm_31Dc0DD72P5AddYUguyBd\" \"sink_31Dc11sPYY9aLDkwPuGMa\""
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "cURL",
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/stream/strm_31Dc0DD72P5AddYUguyBd/sink/sink_31Dc11sPYY9aLDkwPuGMa/events' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json'"
+                    }
+                ]
             }
         },
         "/api/v1/stream/{stream_id}/sink/{sink_id}/force-retry": {
             "post": {
                 "description": "Forces a Sink to retry dispatch immediately (if the sink is retrying).",
-                "operationId": "v1.stream.sink.force-retry",
+                "operationId": "v1.streaming.sink.force-retry",
                 "parameters": [
                     {
                         "description": "The Stream's ID or UID.",
@@ -39723,7 +41390,7 @@
         "/api/v1/stream/{stream_id}/sink/{sink_id}/headers": {
             "get": {
                 "description": "Get the HTTP sink headers. Only valid for `http` or `otelTracing` sinks.",
-                "operationId": "v1.stream.sink-headers-get",
+                "operationId": "v1.streaming.sink-headers-get",
                 "parameters": [
                     {
                         "description": "The Stream's ID or UID.",
@@ -39845,12 +41512,72 @@
                 "tags": [
                     "Sink"
                 ],
-                "x-hidden": true,
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const response = await svix.streaming.sinkHeadersGet(\n  \"strm_31Dc0DD72P5AddYUguyBd\",\n  \"sink_31Dc11sPYY9aLDkwPuGMa\"\n);"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "TypeScript",
+                        "source": "const response = await svix.streaming.sinkHeadersGet(\n  \"strm_31Dc0DD72P5AddYUguyBd\",\n  \"sink_31Dc11sPYY9aLDkwPuGMa\"\n);"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "response = svix.streaming.sink_headers_get(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python (Async)",
+                        "source": "response = await svix.streaming.sink_headers_get(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "response, err := svix.Streaming.SinkHeadersGet(\n\tctx,\n\t\"strm_31Dc0DD72P5AddYUguyBd\",\n\t\"sink_31Dc11sPYY9aLDkwPuGMa\",\n)"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val response =\n    svix.streaming.sinkHeadersGet(\"strm_31Dc0DD72P5AddYUguyBd\", \"sink_31Dc11sPYY9aLDkwPuGMa\")"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "var response = svix.getStreaming()\n        .sinkHeadersGet(\"strm_31Dc0DD72P5AddYUguyBd\", \"sink_31Dc11sPYY9aLDkwPuGMa\");"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "response = svix.streaming.sink_headers_get(\"strm_31Dc0DD72P5AddYUguyBd\", \"sink_31Dc11sPYY9aLDkwPuGMa\")"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let response = svix\n    .streaming()\n    .sink_headers_get(\n        \"strm_31Dc0DD72P5AddYUguyBd\".to_string(),\n        \"sink_31Dc11sPYY9aLDkwPuGMa\".to_string(),\n    )\n    .await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var response = svix.Streaming.SinkHeadersGet(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\"\n);"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "CLI",
+                        "source": "svix streaming sink-headers-get \"strm_31Dc0DD72P5AddYUguyBd\" \"sink_31Dc11sPYY9aLDkwPuGMa\""
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "cURL",
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/stream/strm_31Dc0DD72P5AddYUguyBd/sink/sink_31Dc11sPYY9aLDkwPuGMa/headers' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json'"
+                    }
+                ]
             },
             "patch": {
                 "description": "Updates the Sink's headers. Only valid for `http` or `otelTracing` sinks.",
-                "operationId": "v1.stream.sink-headers-patch",
+                "operationId": "v1.streaming.sink-headers-patch",
                 "parameters": [
                     {
                         "description": "The Stream's ID or UID.",
@@ -39982,14 +41709,74 @@
                 "tags": [
                     "Sink"
                 ],
-                "x-hidden": true,
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const response = await svix.streaming.sinkHeadersPatch(\n  \"strm_31Dc0DD72P5AddYUguyBd\",\n  \"sink_31Dc11sPYY9aLDkwPuGMa\",\n  {\n    headers: { \"X-Example\": \"123\", \"X-Foobar\": \"Bar\" },\n  }\n);"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "TypeScript",
+                        "source": "const response = await svix.streaming.sinkHeadersPatch(\n  \"strm_31Dc0DD72P5AddYUguyBd\",\n  \"sink_31Dc11sPYY9aLDkwPuGMa\",\n  {\n    headers: { \"X-Example\": \"123\", \"X-Foobar\": \"Bar\" },\n  }\n);"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "response = svix.streaming.sink_headers_patch(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    HttpSinkHeadersPatchIn(\n        headers={\"X-Example\": \"123\", \"X-Foobar\": \"Bar\"},\n    ),\n)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python (Async)",
+                        "source": "response = await svix.streaming.sink_headers_patch(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    HttpSinkHeadersPatchIn(\n        headers={\"X-Example\": \"123\", \"X-Foobar\": \"Bar\"},\n    ),\n)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "response, err := svix.Streaming.SinkHeadersPatch(\n\tctx,\n\t\"strm_31Dc0DD72P5AddYUguyBd\",\n\t\"sink_31Dc11sPYY9aLDkwPuGMa\",\n\tHttpSinkHeadersPatchIn{Headers: map[string]string{\"X-Example\": \"123\", \"X-Foobar\": \"Bar\"}},\n)"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val response =\n    svix.streaming.sinkHeadersPatch(\n        \"strm_31Dc0DD72P5AddYUguyBd\",\n        \"sink_31Dc11sPYY9aLDkwPuGMa\",\n        HttpSinkHeadersPatchIn(headers = mapOf(\"X-Example\" to \"123\", \"X-Foobar\" to \"Bar\")),\n    )"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "var response = svix.getStreaming()\n        .sinkHeadersPatch(\n            \"strm_31Dc0DD72P5AddYUguyBd\",\n            \"sink_31Dc11sPYY9aLDkwPuGMa\",\n            new HttpSinkHeadersPatchIn()\n                .headers(\n                    Map.ofEntries(Map.entry(\"X-Example\", \"123\"), Map.entry(\"X-Foobar\", \"Bar\"))));"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "response = svix\n  .streaming\n  .sink_headers_patch(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    {headers: {:\"X-Example\" => \"123\", :\"X-Foobar\" => \"Bar\"}}\n  )"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let response = svix\n    .streaming()\n    .sink_headers_patch(\n        \"strm_31Dc0DD72P5AddYUguyBd\".to_string(),\n        \"sink_31Dc11sPYY9aLDkwPuGMa\".to_string(),\n        HttpSinkHeadersPatchIn {\n            headers: HashMap::from([\n                (\"X-Example\".to_string(), \"123\".to_string()),\n                (\"X-Foobar\".to_string(), \"Bar\".to_string()),\n            ]),\n        },\n    )\n    .await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var response = svix.Streaming.SinkHeadersPatch(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    new HttpSinkHeadersPatchIn\n    {\n        Headers = new() { { \"X-Example\", \"123\" }, { \"X-Foobar\", \"Bar\" } },\n    }\n);"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "CLI",
+                        "source": "svix streaming sink-headers-patch \"strm_31Dc0DD72P5AddYUguyBd\" \"sink_31Dc11sPYY9aLDkwPuGMa\" '{\n    \"headers\": {\n      \"X-Example\": \"123\",\n      \"X-Foobar\": \"Bar\"\n    }\n  }'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "cURL",
+                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/stream/strm_31Dc0DD72P5AddYUguyBd/sink/sink_31Dc11sPYY9aLDkwPuGMa/headers' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"headers\": {\n      \"X-Example\": \"123\",\n      \"X-Foobar\": \"Bar\"\n    }\n  }'"
+                    }
+                ]
             }
         },
         "/api/v1/stream/{stream_id}/sink/{sink_id}/last-acked-event": {
             "get": {
                 "description": "Get the latest event acked from the stream",
-                "operationId": "v1.stream.sink.get-last-acked-event",
+                "operationId": "v1.streaming.sink.get-last-acked-event",
                 "parameters": [
                     {
                         "description": "The Stream's ID or UID.",
@@ -40118,7 +41905,7 @@
         "/api/v1/stream/{stream_id}/sink/{sink_id}/next-event": {
             "get": {
                 "description": "Get the oldest event that has not been acked by the sink",
-                "operationId": "v1.stream.sink.events.get-next-event",
+                "operationId": "v1.streaming.sink.events.get-next-event",
                 "parameters": [
                     {
                         "description": "The Stream's ID or UID.",
@@ -40247,7 +42034,7 @@
         "/api/v1/stream/{stream_id}/sink/{sink_id}/secret": {
             "get": {
                 "description": "Get the sink's signing secret (only supported for http sinks)\n\nThis is used to verify the authenticity of the delivery.\n\nFor more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).",
-                "operationId": "v1.stream.sink.get-secret",
+                "operationId": "v1.streaming.sink.get-secret",
                 "parameters": [
                     {
                         "description": "The Stream's ID or UID.",
@@ -40369,14 +42156,74 @@
                 "tags": [
                     "Sink"
                 ],
-                "x-hidden": true,
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const response = await svix.streaming.sink.getSecret(\n  \"strm_31Dc0DD72P5AddYUguyBd\",\n  \"sink_31Dc11sPYY9aLDkwPuGMa\"\n);"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "TypeScript",
+                        "source": "const response = await svix.streaming.sink.getSecret(\n  \"strm_31Dc0DD72P5AddYUguyBd\",\n  \"sink_31Dc11sPYY9aLDkwPuGMa\"\n);"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "response = svix.streaming.sink.get_secret(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python (Async)",
+                        "source": "response = await svix.streaming.sink.get_secret(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "response, err := svix.Streaming.Sink.GetSecret(\n\tctx,\n\t\"strm_31Dc0DD72P5AddYUguyBd\",\n\t\"sink_31Dc11sPYY9aLDkwPuGMa\",\n)"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val response =\n    svix.streaming.sink.getSecret(\"strm_31Dc0DD72P5AddYUguyBd\", \"sink_31Dc11sPYY9aLDkwPuGMa\")"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "var response = svix.getStreaming()\n        .getSink()\n        .getSecret(\"strm_31Dc0DD72P5AddYUguyBd\", \"sink_31Dc11sPYY9aLDkwPuGMa\");"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "response = svix.streaming.sink.get_secret(\"strm_31Dc0DD72P5AddYUguyBd\", \"sink_31Dc11sPYY9aLDkwPuGMa\")"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let response = svix\n    .streaming()\n    .sink()\n    .get_secret(\n        \"strm_31Dc0DD72P5AddYUguyBd\".to_string(),\n        \"sink_31Dc11sPYY9aLDkwPuGMa\".to_string(),\n    )\n    .await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var response = svix.Streaming.Sink.GetSecret(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\"\n);"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "CLI",
+                        "source": "svix streaming sink get-secret \"strm_31Dc0DD72P5AddYUguyBd\" \"sink_31Dc11sPYY9aLDkwPuGMa\""
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "cURL",
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/stream/strm_31Dc0DD72P5AddYUguyBd/sink/sink_31Dc11sPYY9aLDkwPuGMa/secret' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json'"
+                    }
+                ]
             }
         },
         "/api/v1/stream/{stream_id}/sink/{sink_id}/secret/rotate": {
             "post": {
                 "description": "Rotates the signing secret (only supported for http sinks).",
-                "operationId": "v1.stream.sink.rotate-secret",
+                "operationId": "v1.streaming.sink.rotate-secret",
                 "parameters": [
                     {
                         "description": "The Stream's ID or UID.",
@@ -40517,14 +42364,74 @@
                 "tags": [
                     "Sink"
                 ],
-                "x-hidden": true,
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const response = await svix.streaming.sink.rotateSecret(\n  \"strm_31Dc0DD72P5AddYUguyBd\",\n  \"sink_31Dc11sPYY9aLDkwPuGMa\",\n  {\n    key: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n  }\n);"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "TypeScript",
+                        "source": "const response = await svix.streaming.sink.rotateSecret(\n  \"strm_31Dc0DD72P5AddYUguyBd\",\n  \"sink_31Dc11sPYY9aLDkwPuGMa\",\n  {\n    key: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n  }\n);"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "response = svix.streaming.sink.rotate_secret(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    EndpointSecretRotateIn(\n        key=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    ),\n)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python (Async)",
+                        "source": "response = await svix.streaming.sink.rotate_secret(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    EndpointSecretRotateIn(\n        key=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    ),\n)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "response, err := svix.Streaming.Sink.RotateSecret(\n\tctx,\n\t\"strm_31Dc0DD72P5AddYUguyBd\",\n\t\"sink_31Dc11sPYY9aLDkwPuGMa\",\n\tEndpointSecretRotateIn{Key: ptr(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")},\n\tnil,\n)"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val response =\n    svix.streaming.sink.rotateSecret(\n        \"strm_31Dc0DD72P5AddYUguyBd\",\n        \"sink_31Dc11sPYY9aLDkwPuGMa\",\n        EndpointSecretRotateIn(key = \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"),\n    )"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "var response = svix.getStreaming()\n        .getSink()\n        .rotateSecret(\n            \"strm_31Dc0DD72P5AddYUguyBd\",\n            \"sink_31Dc11sPYY9aLDkwPuGMa\",\n            new EndpointSecretRotateIn().key(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"));"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "response = svix\n  .streaming\n  .sink\n  .rotate_secret(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    {key: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"}\n  )"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let response = svix\n    .streaming()\n    .sink()\n    .rotate_secret(\n        \"strm_31Dc0DD72P5AddYUguyBd\".to_string(),\n        \"sink_31Dc11sPYY9aLDkwPuGMa\".to_string(),\n        EndpointSecretRotateIn {\n            key: Some(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\".to_string()),\n        },\n        None,\n    )\n    .await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var response = svix.Streaming.Sink.RotateSecret(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    new EndpointSecretRotateIn { Key = \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\" }\n);"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "CLI",
+                        "source": "svix streaming sink rotate-secret \"strm_31Dc0DD72P5AddYUguyBd\" \"sink_31Dc11sPYY9aLDkwPuGMa\" '{\n    \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n  }'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "cURL",
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/stream/strm_31Dc0DD72P5AddYUguyBd/sink/sink_31Dc11sPYY9aLDkwPuGMa/secret/rotate' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n  }'"
+                    }
+                ]
             }
         },
         "/api/v1/stream/{stream_id}/sink/{sink_id}/skip": {
             "post": {
                 "description": "Skip events for a sink by moving its consumer group position event *after* the specified iterator.",
-                "operationId": "v1.stream.sink.skip",
+                "operationId": "v1.streaming.sink.skip",
                 "parameters": [
                     {
                         "description": "The Stream's ID or UID.",
@@ -40674,7 +42581,7 @@
         "/api/v1/stream/{stream_id}/sink/{sink_id}/transformation": {
             "get": {
                 "description": "Get the transformation code associated with this sink.",
-                "operationId": "v1.stream.sink-transformation-get",
+                "operationId": "v1.streaming.sink-transformation-get",
                 "parameters": [
                     {
                         "description": "The Stream's ID or UID.",
@@ -40796,12 +42703,72 @@
                 "tags": [
                     "Sink"
                 ],
-                "x-hidden": true,
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const response = await svix.streaming.sinkTransformationGet(\n  \"strm_31Dc0DD72P5AddYUguyBd\",\n  \"sink_31Dc11sPYY9aLDkwPuGMa\"\n);"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "TypeScript",
+                        "source": "const response = await svix.streaming.sinkTransformationGet(\n  \"strm_31Dc0DD72P5AddYUguyBd\",\n  \"sink_31Dc11sPYY9aLDkwPuGMa\"\n);"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "response = svix.streaming.sink_transformation_get(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python (Async)",
+                        "source": "response = await svix.streaming.sink_transformation_get(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "response, err := svix.Streaming.SinkTransformationGet(\n\tctx,\n\t\"strm_31Dc0DD72P5AddYUguyBd\",\n\t\"sink_31Dc11sPYY9aLDkwPuGMa\",\n)"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val response =\n    svix.streaming.sinkTransformationGet(\"strm_31Dc0DD72P5AddYUguyBd\", \"sink_31Dc11sPYY9aLDkwPuGMa\")"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "var response = svix.getStreaming()\n        .sinkTransformationGet(\"strm_31Dc0DD72P5AddYUguyBd\", \"sink_31Dc11sPYY9aLDkwPuGMa\");"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "response = svix.streaming.sink_transformation_get(\"strm_31Dc0DD72P5AddYUguyBd\", \"sink_31Dc11sPYY9aLDkwPuGMa\")"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let response = svix\n    .streaming()\n    .sink_transformation_get(\n        \"strm_31Dc0DD72P5AddYUguyBd\".to_string(),\n        \"sink_31Dc11sPYY9aLDkwPuGMa\".to_string(),\n    )\n    .await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var response = svix.Streaming.SinkTransformationGet(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\"\n);"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "CLI",
+                        "source": "svix streaming sink-transformation-get \"strm_31Dc0DD72P5AddYUguyBd\" \"sink_31Dc11sPYY9aLDkwPuGMa\""
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "cURL",
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/stream/strm_31Dc0DD72P5AddYUguyBd/sink/sink_31Dc11sPYY9aLDkwPuGMa/transformation' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json'"
+                    }
+                ]
             },
             "patch": {
                 "description": "Set or unset the transformation code associated with this sink.",
-                "operationId": "v1.stream.sink.transformation-partial-update",
+                "operationId": "v1.streaming.sink.transformation-partial-update",
                 "parameters": [
                     {
                         "description": "The Stream's ID or UID.",
@@ -40933,8 +42900,68 @@
                 "tags": [
                     "Sink"
                 ],
-                "x-hidden": true,
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const response = await svix.streaming.sink.transformationPartialUpdate(\n  \"strm_31Dc0DD72P5AddYUguyBd\",\n  \"sink_31Dc11sPYY9aLDkwPuGMa\",\n  {\n    code: \"sample string\",\n  }\n);"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "TypeScript",
+                        "source": "const response = await svix.streaming.sink.transformationPartialUpdate(\n  \"strm_31Dc0DD72P5AddYUguyBd\",\n  \"sink_31Dc11sPYY9aLDkwPuGMa\",\n  {\n    code: \"sample string\",\n  }\n);"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "response = svix.streaming.sink.transformation_partial_update(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    SinkTransformIn(\n        code=\"sample string\",\n    ),\n)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python (Async)",
+                        "source": "response = await svix.streaming.sink.transformation_partial_update(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    SinkTransformIn(\n        code=\"sample string\",\n    ),\n)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "response, err := svix.Streaming.Sink.TransformationPartialUpdate(\n\tctx,\n\t\"strm_31Dc0DD72P5AddYUguyBd\",\n\t\"sink_31Dc11sPYY9aLDkwPuGMa\",\n\tSinkTransformIn{Code: ptr(\"sample string\")},\n)"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val response =\n    svix.streaming.sink.transformationPartialUpdate(\n        \"strm_31Dc0DD72P5AddYUguyBd\",\n        \"sink_31Dc11sPYY9aLDkwPuGMa\",\n        SinkTransformIn(code = \"sample string\"),\n    )"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "var response = svix.getStreaming()\n        .getSink()\n        .transformationPartialUpdate(\n            \"strm_31Dc0DD72P5AddYUguyBd\",\n            \"sink_31Dc11sPYY9aLDkwPuGMa\",\n            new SinkTransformIn().code(\"sample string\"));"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "response = svix\n  .streaming\n  .sink\n  .transformation_partial_update(\"strm_31Dc0DD72P5AddYUguyBd\", \"sink_31Dc11sPYY9aLDkwPuGMa\", {code: \"sample string\"})"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let response = svix\n    .streaming()\n    .sink()\n    .transformation_partial_update(\n        \"strm_31Dc0DD72P5AddYUguyBd\".to_string(),\n        \"sink_31Dc11sPYY9aLDkwPuGMa\".to_string(),\n        SinkTransformIn {\n            code: Some(\"sample string\".to_string()),\n        },\n    )\n    .await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var response = svix.Streaming.Sink.TransformationPartialUpdate(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    new SinkTransformIn { Code = \"sample string\" }\n);"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "CLI",
+                        "source": "svix streaming sink transformation-partial-update \"strm_31Dc0DD72P5AddYUguyBd\" \"sink_31Dc11sPYY9aLDkwPuGMa\" '{\n    \"code\": \"sample string\"\n  }'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "cURL",
+                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/stream/strm_31Dc0DD72P5AddYUguyBd/sink/sink_31Dc11sPYY9aLDkwPuGMa/transformation' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"code\": \"sample string\"\n  }'"
+                    }
+                ]
             }
         },
         "/dashboard/survey": {
@@ -41052,6 +43079,126 @@
                 "summary": "Submit Survey",
                 "tags": [
                     "Survey"
+                ],
+                "x-hidden": true,
+                "x-internal": true
+            }
+        },
+        "/dashboard/v2/brand/search": {
+            "post": {
+                "description": "Search for brand information using Brandfetch API",
+                "operationId": "v1.dashboard.brand-search",
+                "parameters": [
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/BrandSearchRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BrandfetchResponse"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Search Brand",
+                "tags": [
+                    "Branding"
                 ],
                 "x-hidden": true,
                 "x-internal": true
@@ -45448,15 +47595,15 @@
         {
             "name": "General",
             "tags": [
-                "Application",
-                "Event Type",
                 "Background Task",
                 "Environment"
             ]
         },
         {
-            "name": "Application specific",
+            "name": "Dispatch",
             "tags": [
+                "Application",
+                "Event Type",
                 "Authentication",
                 "Endpoint",
                 "Message",
@@ -45465,16 +47612,20 @@
             ]
         },
         {
+            "name": "Stream",
+            "tags": [
+                "Stream",
+                "Sink",
+                "Event",
+                "Stream Event Type",
+                "Stream Authentication"
+            ]
+        },
+        {
             "name": "Ingest",
             "tags": [
                 "Ingest Source",
                 "Ingest Endpoint"
-            ]
-        },
-        {
-            "name": "Utility",
-            "tags": [
-                "Health"
             ]
         },
         {
@@ -45488,6 +47639,12 @@
             "name": "Statistics",
             "tags": [
                 "Statistics"
+            ]
+        },
+        {
+            "name": "Utility",
+            "tags": [
+                "Health"
             ]
         }
     ],

@@ -54,6 +54,11 @@ namespace Svix
             get => new Statistics(this);
         }
 
+        public Streaming Streaming
+        {
+            get => new Streaming(this);
+        }
+
         public OperationalWebhook OperationalWebhook
         {
             get => new OperationalWebhook(this);

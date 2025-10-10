@@ -5,12 +5,9 @@ require "json"
 module Svix
   class ConnectorIn
     attr_accessor :description
-    # Deprecated - prefer featureFlags instead.
-    attr_accessor :feature_flag
     attr_accessor :feature_flags
     attr_accessor :filter_types
     attr_accessor :instructions
-    attr_accessor :instructions_link
     attr_accessor :kind
     attr_accessor :logo
     attr_accessor :name
@@ -18,11 +15,9 @@ module Svix
 
     ALL_FIELD ||= [
       "description",
-      "feature_flag",
       "feature_flags",
       "filter_types",
       "instructions",
-      "instructions_link",
       "kind",
       "logo",
       "name",
@@ -49,11 +44,9 @@ module Svix
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
       attrs["description"] = attributes["description"]
-      attrs["feature_flag"] = attributes["featureFlag"]
       attrs["feature_flags"] = attributes["featureFlags"]
       attrs["filter_types"] = attributes["filterTypes"]
       attrs["instructions"] = attributes["instructions"]
-      attrs["instructions_link"] = attributes["instructionsLink"]
       attrs["kind"] = Svix::ConnectorKind.deserialize(attributes["kind"]) if attributes["kind"]
       attrs["logo"] = attributes["logo"]
       attrs["name"] = attributes["name"]
@@ -64,11 +57,9 @@ module Svix
     def serialize
       out = Hash.new
       out["description"] = Svix::serialize_primitive(@description) if @description
-      out["featureFlag"] = Svix::serialize_primitive(@feature_flag) if @feature_flag
       out["featureFlags"] = Svix::serialize_primitive(@feature_flags) if @feature_flags
       out["filterTypes"] = Svix::serialize_primitive(@filter_types) if @filter_types
       out["instructions"] = Svix::serialize_primitive(@instructions) if @instructions
-      out["instructionsLink"] = Svix::serialize_primitive(@instructions_link) if @instructions_link
       out["kind"] = Svix::serialize_schema_ref(@kind) if @kind
       out["logo"] = Svix::serialize_primitive(@logo) if @logo
       out["name"] = Svix::serialize_primitive(@name) if @name

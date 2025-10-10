@@ -12,6 +12,7 @@ import { Message } from "./api/message";
 import { MessageAttempt } from "./api/messageAttempt";
 import { OperationalWebhook } from "./api/operationalWebhook";
 import { Statistics } from "./api/statistics";
+import { Streaming } from "./api/streaming";
 import { OperationalWebhookEndpoint } from "./api/operationalWebhookEndpoint";
 import type { SvixRequestContext } from "./request";
 
@@ -139,6 +140,10 @@ export class Svix {
 
   public get statistics() {
     return new Statistics(this.requestCtx);
+  }
+
+  public get streaming() {
+    return new Streaming(this.requestCtx);
   }
 
   public get operationalWebhookEndpoint() {

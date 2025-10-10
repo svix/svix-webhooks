@@ -6,13 +6,11 @@ module Svix
   class ConnectorOut
     attr_accessor :created_at
     attr_accessor :description
-    attr_accessor :feature_flag
     attr_accessor :feature_flags
     attr_accessor :filter_types
     # The Connector's ID.
     attr_accessor :id
     attr_accessor :instructions
-    attr_accessor :instructions_link
     attr_accessor :kind
     attr_accessor :logo
     attr_accessor :name
@@ -24,12 +22,10 @@ module Svix
     ALL_FIELD ||= [
       "created_at",
       "description",
-      "feature_flag",
       "feature_flags",
       "filter_types",
       "id",
       "instructions",
-      "instructions_link",
       "kind",
       "logo",
       "name",
@@ -59,12 +55,10 @@ module Svix
       attrs = Hash.new
       attrs["created_at"] = DateTime.rfc3339(attributes["createdAt"]).to_time
       attrs["description"] = attributes["description"]
-      attrs["feature_flag"] = attributes["featureFlag"]
       attrs["feature_flags"] = attributes["featureFlags"]
       attrs["filter_types"] = attributes["filterTypes"]
       attrs["id"] = attributes["id"]
       attrs["instructions"] = attributes["instructions"]
-      attrs["instructions_link"] = attributes["instructionsLink"]
       attrs["kind"] = Svix::ConnectorKind.deserialize(attributes["kind"])
       attrs["logo"] = attributes["logo"]
       attrs["name"] = attributes["name"]
@@ -78,12 +72,10 @@ module Svix
       out = Hash.new
       out["createdAt"] = Svix::serialize_primitive(@created_at) if @created_at
       out["description"] = Svix::serialize_primitive(@description) if @description
-      out["featureFlag"] = Svix::serialize_primitive(@feature_flag) if @feature_flag
       out["featureFlags"] = Svix::serialize_primitive(@feature_flags) if @feature_flags
       out["filterTypes"] = Svix::serialize_primitive(@filter_types) if @filter_types
       out["id"] = Svix::serialize_primitive(@id) if @id
       out["instructions"] = Svix::serialize_primitive(@instructions) if @instructions
-      out["instructionsLink"] = Svix::serialize_primitive(@instructions_link) if @instructions_link
       out["kind"] = Svix::serialize_schema_ref(@kind) if @kind
       out["logo"] = Svix::serialize_primitive(@logo) if @logo
       out["name"] = Svix::serialize_primitive(@name) if @name

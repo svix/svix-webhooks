@@ -21,11 +21,9 @@ import java.util.Set;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class ConnectorIn {
     @JsonProperty private String description;
-    @JsonProperty private String featureFlag;
     @JsonProperty private Set<String> featureFlags;
     @JsonProperty private Set<String> filterTypes;
     @JsonProperty private String instructions;
-    @JsonProperty private URI instructionsLink;
     @JsonProperty private ConnectorKind kind;
     @JsonProperty private URI logo;
     @JsonProperty private String name;
@@ -50,28 +48,6 @@ public class ConnectorIn {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    @Deprecated
-    public ConnectorIn featureFlag(String featureFlag) {
-        this.featureFlag = featureFlag;
-        return this;
-    }
-
-    /**
-     * Deprecated - prefer featureFlags instead.
-     *
-     * @return featureFlag
-     */
-    @javax.annotation.Nullable
-    @Deprecated
-    public String getFeatureFlag() {
-        return featureFlag;
-    }
-
-    @Deprecated
-    public void setFeatureFlag(String featureFlag) {
-        this.featureFlag = featureFlag;
     }
 
     public ConnectorIn featureFlags(Set<String> featureFlags) {
@@ -147,25 +123,6 @@ public class ConnectorIn {
 
     public void setInstructions(String instructions) {
         this.instructions = instructions;
-    }
-
-    public ConnectorIn instructionsLink(URI instructionsLink) {
-        this.instructionsLink = instructionsLink;
-        return this;
-    }
-
-    /**
-     * Get instructionsLink
-     *
-     * @return instructionsLink
-     */
-    @javax.annotation.Nullable
-    public URI getInstructionsLink() {
-        return instructionsLink;
-    }
-
-    public void setInstructionsLink(URI instructionsLink) {
-        this.instructionsLink = instructionsLink;
     }
 
     public ConnectorIn kind(ConnectorKind kind) {

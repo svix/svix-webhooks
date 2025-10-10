@@ -8,13 +8,11 @@ import kotlinx.serialization.Serializable
 data class ConnectorOut(
     val createdAt: Instant,
     val description: String,
-    val featureFlag: String? = null,
     val featureFlags: Set<String>? = null,
     val filterTypes: Set<String>? = null,
     /** The Connector's ID. */
     val id: String,
     val instructions: String,
-    val instructionsLink: String? = null,
     val kind: ConnectorKind,
     val logo: String,
     val name: String,
