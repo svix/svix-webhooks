@@ -290,8 +290,8 @@ jobs:
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       PLAN: ${{ needs.plan.outputs.val }}
-      GITHUB_USER: "axo bot"
-      GITHUB_EMAIL: "admin+bot@axo.dev"
+      GITHUB_USER: "Svix Release Automation"
+      GITHUB_EMAIL: "no-reply@svix.com"
     if: ${{ !fromJson(needs.plan.outputs.val).announcement_is_prerelease || fromJson(needs.plan.outputs.val).publish_prereleases }}
     steps:
       - uses: actions/checkout@v4
@@ -306,6 +306,10 @@ jobs:
           pattern: artifacts-*
           path: Formula/
           merge-multiple: true
+      # cargo-dist doesn't let you customize homebrew formulae at all, which is kind of silly
+      - name: Apply patches
+        run: |
+          patch --no-backup-if-mismatch -p0 -i .patches/homebrew-add-completions.patch
       # This is extra complex because you can make your Formula name not match your app name
       # so we need to find releases with a *.rb file, and publish with that filename.
       - name: Commit formula files
