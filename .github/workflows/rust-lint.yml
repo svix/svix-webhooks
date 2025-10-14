@@ -29,7 +29,7 @@ jobs:
     name: Check formatting
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: dtolnay/rust-toolchain@nightly
         with:
@@ -43,7 +43,7 @@ jobs:
     name: Check for unused dependencies
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: taiki-e/install-action@cargo-machete
 
@@ -58,7 +58,7 @@ jobs:
         # bump this when bumping the MSRV
         rust: ["1.85.0", stable, beta]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Regen openapi libs
         run: ./regen_openapi.py
