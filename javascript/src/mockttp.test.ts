@@ -500,4 +500,22 @@ test("mockttp tests", async (t) => {
     const requests = await endpointMock.getSeenRequests();
     assert.equal(requests.length, 1);
   });
+
+  await t.test("should use custom fetch implementation", async () => {
+    let customFetchCalled = false;
+    const mockFetch: typeof fetch = async (_input, _init) => {
+      customFetchCalled = true;
+      return new Response(ListResponseApplicationOut, {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    };
+
+    await mockServer
+      .forGet(/\/api\/v1\/app.*/)
+      .thenReply(200, ListResponseApplicationOut);
+    const svx = new Svix("token", { serverUrl: mockServer.url, fetch: mockFetch });
+    await svx.application.list({ order: Ordering.Ascending });
+    assert(customFetchCalled);
+  });
 });
