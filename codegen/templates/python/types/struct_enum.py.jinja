@@ -26,6 +26,9 @@ class {{ type_name }}(BaseModel):
     def validate_model(
         cls, data: t.Any, handler: ModelWrapValidatorHandler[Self]
     ) -> Self:
+        {# sadly this is needed because of pydantic -#}
+        if "{{ type.content_field }}" not in data:
+            data["{{ type.content_field }}"] = {}
         output = handler(data)
         {% for v in type.variants -%}
 
