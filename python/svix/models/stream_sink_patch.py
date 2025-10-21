@@ -49,6 +49,8 @@ class StreamSinkPatch(BaseModel):
     def validate_model(
         cls, data: t.Any, handler: ModelWrapValidatorHandler[Self]
     ) -> Self:
+        if "config" not in data:
+            data["config"] = {}
         output = handler(data)
         if output.type == "poller":
             output.config = data.get("config", {})
