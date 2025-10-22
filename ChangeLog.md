@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 1.78.0
+* Libs/Python: Fix bug preventing the generic webhook ingest source from being deserialized
+* Libs/Python: Add API for the new [Svix Stream](https://www.svix.com/stream/)
+
 ## Version 1.77.0
 * Libs/All: Add API for the new [Svix Stream](https://www.svix.com/stream/)
 * Libs/PHP: Fix bug causing empty objects to be serialized as `[]` instead of `{}`
