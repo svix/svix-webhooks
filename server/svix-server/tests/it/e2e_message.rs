@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 use chrono::{Duration, Utc};
+use rand::distributions::DistString;
 use reqwest::StatusCode;
 use sea_orm::{sea_query::Expr, ColumnTrait, EntityTrait, QueryFilter};
 use serde::de::IgnoredAny;
@@ -17,6 +18,10 @@ use svix_server::{
         utils::ListResponse,
     },
 };
+
+fn rand_str(len: usize) -> String {
+    rand::distributions::Alphanumeric.sample_string(&mut rand::thread_rng(), len)
+}
 
 use crate::utils::{
     common_calls::{create_test_app, create_test_endpoint, create_test_msg_with, message_in},
@@ -602,4 +607,112 @@ async fn test_raw_payload() {
 
     let rec_body = receiver.data_recv.recv().await;
     assert_eq!(msg_payload.to_string(), rec_body.unwrap().to_string());
+}
+
+#[tokio::test]
+async fn test_create_message_with_application() {
+    let (client, _jh) = start_svix_server().await;
+
+    let app_uid = format!("app-created-in-cmg-{}", rand_str(15));
+
+    // cmg without the application field fails
+    let _: IgnoredAny = client
+        .post(
+            &format!("api/v1/app/{app_uid}/msg/"),
+            json!({
+                "eventType": "test.event",
+                "payload": { "test": "value" }
+            }),
+            StatusCode::NOT_FOUND,
+        )
+        .await
+        .unwrap();
+
+    // cmg with application
+    let _: IgnoredAny = client
+        .post(
+            &format!("api/v1/app/{app_uid}/msg/"),
+            json!({
+                "eventType": "test.event",
+                "payload": { "test": "value1" },
+                "application": {
+                    "name": "Test App Created With Message",
+                    "uid": app_uid,
+                }
+            }),
+            StatusCode::ACCEPTED,
+        )
+        .await
+        .unwrap();
+
+    // app was created
+    let app: serde_json::Value = client
+        .get(&format!("api/v1/app/{app_uid}/"), StatusCode::OK)
+        .await
+        .unwrap();
+
+    assert_eq!(app["uid"], app_uid);
+    assert_eq!(app["name"], "Test App Created With Message");
+
+    // Create another message to the now-existing app with the application field
+    // The application field should be ignored since the app already exists
+    let _: IgnoredAny = client
+        .post(
+            &format!("api/v1/app/{app_uid}/msg/"),
+            json!({
+                "eventType": "test.event",
+                "payload": { "test": "value2" },
+                "application": {
+                    "name": "Updated name will be ignored",
+                    "uid": app_uid,
+                }
+            }),
+            StatusCode::ACCEPTED,
+        )
+        .await
+        .unwrap();
+
+    // Verify the app name didn't change
+    let app_after: serde_json::Value = client
+        .get(&format!("api/v1/app/{app_uid}/"), StatusCode::OK)
+        .await
+        .unwrap();
+
+    assert_eq!(app_after["name"], "Test App Created With Message");
+
+    // UID in path must match UID in body
+    let _: IgnoredAny = client
+        .post(
+            "api/v1/app/different-uid/msg/",
+            json!({
+                "eventType": "test.event",
+                "payload": { "test": "value" },
+                "payloadRetentionPeriod": 5,
+                "application": {
+                    "name": "Test App",
+                    "uid": app_uid,  // This doesn't match the path
+                }
+            }),
+            StatusCode::UNPROCESSABLE_ENTITY,
+        )
+        .await
+        .unwrap();
+
+    // UID must be set in body when creating
+    let _: IgnoredAny = client
+        .post(
+            "api/v1/app/new-app-uid/msg/",
+            json!({
+                "eventType": "test.event",
+                "payload": { "test": "value" },
+                "payloadRetentionPeriod": 5,
+                "application": {
+                    "name": "Test App Without UID",
+                    // Missing uid field
+                }
+            }),
+            StatusCode::UNPROCESSABLE_ENTITY,
+        )
+        .await
+        .unwrap();
 }

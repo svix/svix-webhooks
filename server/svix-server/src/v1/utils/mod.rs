@@ -500,7 +500,7 @@ pub fn validation_error(code: Option<&'static str>, msg: Option<&'static str>) -
 
 /// Recursively searches a [`validator::ValidationErrors`] tree into a linear list of errors to be
 /// sent to the user
-fn validation_errors(
+pub fn validation_errors(
     acc_path: Vec<String>,
     err: validator::ValidationErrors,
 ) -> Vec<ValidationErrorItem> {

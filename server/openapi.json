@@ -1931,6 +1931,11 @@
             },
             "MessageIn": {
                 "properties": {
+                    "application": {
+                        "$ref": "#/components/schemas/ApplicationIn",
+                        "description": "Optionally creates a new application alongside the message.\n\nIf the application id or uid that is used in the path already exists, this argument is ignored.",
+                        "nullable": true
+                    },
                     "channels": {
                         "description": "List of free-form identifiers that endpoints can filter by",
                         "example": [
@@ -5290,6 +5295,19 @@
                             "type": "boolean"
                         },
                         "style": "form"
+                    },
+                    {
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "example": "unique-app-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
                     },
                     {
                         "description": "The request's idempotency key",

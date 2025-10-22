@@ -12,7 +12,7 @@ use axum::{
 use chrono::{DateTime, Utc};
 use futures::FutureExt;
 use schemars::JsonSchema;
-use sea_orm::{ActiveModelTrait, ActiveValue::Set, TransactionTrait};
+use sea_orm::{ActiveModelTrait, ActiveValue::Set, DatabaseConnection, TransactionTrait};
 use serde::{Deserialize, Serialize};
 use svix_server_derive::{aide_annotate, ModelOut};
 use validator::{Validate, ValidationError};
@@ -20,7 +20,7 @@ use validator::{Validate, ValidationError};
 use crate::{
     core::{
         permissions,
-        types::{metadata::Metadata, ApplicationId, ApplicationUid},
+        types::{metadata::Metadata, ApplicationId, ApplicationUid, OrganizationId},
     },
     db::models::{application, applicationmetadata},
     error::{http_error_on_conflict, HttpError, Result, Traceable},
@@ -270,11 +270,21 @@ async fn create_application(
         };
     }
 
-    let app = application::ActiveModel::new(org_id.clone());
+    let (app, metadata) = create_app_from_app_in(db, data, org_id).await?;
+
+    Ok(JsonStatusUpsert::Created((app, metadata).into()))
+}
+
+pub async fn create_app_from_app_in(
+    db: &DatabaseConnection,
+    app_in: ApplicationIn,
+    org_id: OrganizationId,
+) -> Result<(application::Model, applicationmetadata::Model)> {
+    let app = application::ActiveModel::new(org_id);
     let metadata = applicationmetadata::ActiveModel::new(app.id.clone().unwrap(), None);
 
     let mut model = (app, metadata);
-    data.update_model(&mut model);
+    app_in.update_model(&mut model);
     let (app, metadata) = model;
 
     let (app, metadata) = db
@@ -288,7 +298,7 @@ async fn create_application(
         })
         .await?;
 
-    Ok(JsonStatusUpsert::Created((app, metadata).into()))
+    Ok((app, metadata))
 }
 
 /// Get an application.

@@ -31,9 +31,9 @@ use crate::{
         cryptography::Encryption,
         permissions,
         types::{
-            metadata::Metadata, EndpointHeaders, EndpointHeadersPatch, EndpointId, EndpointSecret,
-            EndpointSecretInternal, EndpointUid, EventChannelSet, EventTypeName, EventTypeNameSet,
-            MessageStatus,
+            metadata::Metadata, ApplicationIdOrUid, EndpointHeaders, EndpointHeadersPatch,
+            EndpointId, EndpointSecret, EndpointSecretInternal, EndpointUid, EventChannelSet,
+            EventTypeName, EventTypeNameSet, MessageStatus,
         },
     },
     db::models::{
@@ -802,10 +802,20 @@ async fn send_example(
         uid: None,
         payload_retention_period: 90,
         extra_params: None,
+        application: None,
     };
 
-    let create_message =
-        create_message_inner(db, queue_tx, cache, false, Some(endpoint.id), msg_in, app).await?;
+    let create_message = create_message_inner(
+        db,
+        queue_tx,
+        cache,
+        false,
+        Some(endpoint.id),
+        msg_in,
+        app.org_id,
+        ApplicationIdOrUid(app.id.0),
+    )
+    .await?;
 
     Ok(Json(create_message))
 }
