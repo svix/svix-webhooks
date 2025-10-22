@@ -1,8 +1,12 @@
+# this file is @generated
+
 import typing as t
-from dataclasses import field, dataclass
+from dataclasses import dataclass, field
 
 from .application import Application, ApplicationAsync
 from .authentication import Authentication, AuthenticationAsync
+from .background_task import BackgroundTask, BackgroundTaskAsync
+from .client import AuthenticatedClient
 from .endpoint import Endpoint, EndpointAsync
 from .environment import Environment, EnvironmentAsync
 from .event_type import EventType, EventTypeAsync
@@ -16,7 +20,7 @@ from .operational_webhook_endpoint import (
     OperationalWebhookEndpointAsync,
 )
 from .statistics import Statistics, StatisticsAsync
-from .client import AuthenticatedClient
+from .streaming import Streaming, StreamingAsync
 
 DEFAULT_SERVER_URL = "https://api.svix.com"
 
@@ -86,12 +90,16 @@ class ClientBase:
 
 class SvixAsync(ClientBase):
     @property
+    def application(self) -> ApplicationAsync:
+        return ApplicationAsync(self._client)
+
+    @property
     def authentication(self) -> AuthenticationAsync:
         return AuthenticationAsync(self._client)
 
     @property
-    def application(self) -> ApplicationAsync:
-        return ApplicationAsync(self._client)
+    def background_task(self) -> BackgroundTaskAsync:
+        return BackgroundTaskAsync(self._client)
 
     @property
     def endpoint(self) -> EndpointAsync:
@@ -122,12 +130,16 @@ class SvixAsync(ClientBase):
         return MessageAttemptAsync(self._client)
 
     @property
+    def operational_webhook(self) -> OperationalWebhookAsync:
+        return OperationalWebhookAsync(self._client)
+
+    @property
     def statistics(self) -> StatisticsAsync:
         return StatisticsAsync(self._client)
 
     @property
-    def operational_webhook(self) -> OperationalWebhookAsync:
-        return OperationalWebhookAsync(self._client)
+    def streaming(self) -> StreamingAsync:
+        return StreamingAsync(self._client)
 
     @property
     def operational_webhook_endpoint(self) -> OperationalWebhookEndpointAsync:
@@ -136,12 +148,16 @@ class SvixAsync(ClientBase):
 
 class Svix(ClientBase):
     @property
+    def application(self) -> Application:
+        return Application(self._client)
+
+    @property
     def authentication(self) -> Authentication:
         return Authentication(self._client)
 
     @property
-    def application(self) -> Application:
-        return Application(self._client)
+    def background_task(self) -> BackgroundTask:
+        return BackgroundTask(self._client)
 
     @property
     def endpoint(self) -> Endpoint:
@@ -172,12 +188,16 @@ class Svix(ClientBase):
         return MessageAttempt(self._client)
 
     @property
+    def operational_webhook(self) -> OperationalWebhook:
+        return OperationalWebhook(self._client)
+
+    @property
     def statistics(self) -> Statistics:
         return Statistics(self._client)
 
     @property
-    def operational_webhook(self) -> OperationalWebhook:
-        return OperationalWebhook(self._client)
+    def streaming(self) -> Streaming:
+        return Streaming(self._client)
 
     @property
     def operational_webhook_endpoint(self) -> OperationalWebhookEndpoint:

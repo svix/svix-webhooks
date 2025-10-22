@@ -1,0 +1,104 @@
+{% do set_summary_filename("svix.py") -%}
+# this file is @generated
+
+import typing as t
+from dataclasses import field, dataclass
+
+{% for resource in api.resources %}
+from .{{ resource.name | to_snake_case }} import {{ resource.name | to_upper_camel_case }}, {{ resource.name | to_upper_camel_case }}Async
+{% endfor %}
+from .operational_webhook_endpoint import (
+    OperationalWebhookEndpoint,
+    OperationalWebhookEndpointAsync,
+)
+from .client import AuthenticatedClient
+
+DEFAULT_SERVER_URL = "https://api.svix.com"
+
+
+@dataclass
+class SvixOptions:
+    debug: bool = False
+    server_url: t.Optional[str] = None
+    """
+    The retry schedule, as seconds to wait after each failed request.
+
+    The first entry is the time in seconds to wait between the first request
+    failing and the first retry, and so on.
+    Up to five retries are supported, passing a retry schedule with more than
+    five entries will raise a `ValueError`.
+
+    Defaults to [0.05, 0.1, 0.2]
+    """
+    retry_schedule: t.List[float] = field(default_factory=lambda: [0.05, 0.1, 0.2])
+
+    """
+    The maximum amount of time in seconds a request can take.
+
+    Request methods will raise httpx.TimeoutException if this is exceeded.
+    """
+    timeout: float = 15.0
+
+    proxy: t.Optional[str] = None
+
+
+class ClientBase:
+    _client: AuthenticatedClient
+
+    def __init__(self, auth_token: str, options: SvixOptions = SvixOptions()) -> None:
+        from .. import __version__
+
+        if len(options.retry_schedule) > 5:
+            raise ValueError("number of retries must not exceed 5")
+
+        regional_url = None
+        region = auth_token.split(".")[-1]
+        if region == "us":
+            regional_url = "https://api.us.svix.com"
+        elif region == "eu":
+            regional_url = "https://api.eu.svix.com"
+        elif region == "in":
+            regional_url = "https://api.in.svix.com"
+        elif region == "ca":
+            regional_url = "https://api.ca.svix.com"
+        elif region == "au":
+            regional_url = "https://api.au.svix.com"
+
+        host = options.server_url or regional_url or DEFAULT_SERVER_URL
+        client = AuthenticatedClient(
+            base_url=host,
+            token=auth_token,
+            headers={"user-agent": f"svix-libs/{__version__}/python"},
+            verify_ssl=True,
+            retry_schedule=options.retry_schedule,
+            timeout=options.timeout,
+            follow_redirects=False,
+            raise_on_unexpected_status=True,
+            proxy=options.proxy,
+        )
+        self._client = client
+
+
+class SvixAsync(ClientBase):
+{% for resource in api.resources %}
+    @property
+    def {{ resource.name | to_snake_case }}(self) -> {{ resource.name | to_upper_camel_case }}Async:
+        return {{ resource.name | to_upper_camel_case }}Async(self._client)
+{% endfor %}
+    {# here for backwards compatibly #}
+    @property
+    def operational_webhook_endpoint(self) -> OperationalWebhookEndpointAsync:
+        return OperationalWebhookEndpointAsync(self._client)
+
+
+class Svix(ClientBase):
+{% for resource in api.resources %}
+    @property
+    def {{ resource.name | to_snake_case }}(self) -> {{ resource.name | to_upper_camel_case }}:
+        return {{ resource.name | to_upper_camel_case }}(self._client)
+{% endfor %}
+
+    {# here for backwards compatibly #}
+    @property
+    def operational_webhook_endpoint(self) -> OperationalWebhookEndpoint:
+        return OperationalWebhookEndpoint(self._client)

@@ -1515,6 +1515,9 @@
         "python/svix/api/streaming_stream.py"
     ],
     [
+        "python/svix/api/svix.py"
+    ],
+    [
         "python/svix/models/__init__.py"
     ],
     [
