@@ -124,6 +124,7 @@ pub fn message_in<T: Serialize>(event_type: &str, payload: T) -> Result<MessageI
         channels: None,
         uid: None,
         extra_params: None,
+        application: None,
     })
 }
 

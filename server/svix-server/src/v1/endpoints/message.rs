@@ -25,17 +25,21 @@ use crate::{
         message_app::CreateMessageApp,
         permissions,
         types::{
-            EndpointId, EventChannel, EventChannelSet, EventTypeName, EventTypeNameSet,
-            MessageAttemptTriggerType, MessageId, MessageUid,
+            ApplicationIdOrUid, EndpointId, EventChannel, EventChannelSet, EventTypeName,
+            EventTypeNameSet, MessageAttemptTriggerType, MessageId, MessageUid, OrganizationId,
         },
     },
     db::models::{application, message, messagecontent},
-    error::{http_error_on_conflict, Error, HttpError, Result},
+    error::{http_error_on_conflict, Error, HttpError, Result, ValidationErrorItem},
     queue::{MessageTaskBatch, TaskQueueProducer},
-    v1::utils::{
-        filter_and_paginate_time_limited, openapi_tag, validation_error, ApplicationMsgPath,
-        EventTypesQueryParams, JsonStatus, ListResponse, ModelIn, ModelOut, PaginationDescending,
-        PaginationLimit, ReversibleIterator, ValidatedJson, ValidatedQuery,
+    v1::{
+        endpoints::application::{create_app_from_app_in, ApplicationIn},
+        utils::{
+            filter_and_paginate_time_limited, openapi_tag, validation_error, validation_errors,
+            ApplicationMsgPath, ApplicationPath, EventTypesQueryParams, JsonStatus, ListResponse,
+            ModelIn, ModelOut, PaginationDescending, PaginationLimit, ReversibleIterator,
+            ValidatedJson, ValidatedQuery,
+        },
     },
     AppState,
 };
@@ -127,6 +131,14 @@ pub struct MessageIn {
     #[serde(rename = "transformationsParams")]
     #[schemars(skip)]
     pub extra_params: Option<MessageInExtraParams>,
+
+    /// Optionally creates a new application alongside the message.
+    ///
+    /// If the application id or uid that is used in the path already exists,
+    /// this argument is ignored.
+    #[validate]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub application: Option<ApplicationIn>,
 }
 
 impl MessageIn {
@@ -335,14 +347,26 @@ async fn create_message(
     ValidatedQuery(CreateMessageQueryParams { with_content }): ValidatedQuery<
         CreateMessageQueryParams,
     >,
-    permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
+    Path(ApplicationPath { app_id }): Path<ApplicationPath>,
+    permissions::Organization { org_id }: permissions::Organization,
     ValidatedJson(data): ValidatedJson<MessageIn>,
 ) -> Result<JsonStatus<202, MessageOut>> {
     Ok(JsonStatus(
-        create_message_inner(db, queue_tx, cache, with_content, None, data, app).await?,
+        create_message_inner(
+            db,
+            queue_tx,
+            cache,
+            with_content,
+            None,
+            data,
+            org_id,
+            app_id,
+        )
+        .await?,
     ))
 }
 
+#[allow(clippy::too_many_arguments)]
 pub(crate) async fn create_message_inner(
     db: &DatabaseConnection,
     queue_tx: TaskQueueProducer,
@@ -350,8 +374,37 @@ pub(crate) async fn create_message_inner(
     with_content: bool,
     force_endpoint: Option<EndpointId>,
     data: MessageIn,
-    app: application::Model,
+    org_id: OrganizationId,
+    app_id: ApplicationIdOrUid,
 ) -> Result<MessageOut> {
+    app_id.validate().map_err(|e| {
+        HttpError::unprocessable_entity(validation_errors(
+            vec!["path".to_owned(), "app_id_or_uid".to_owned()],
+            e,
+        ))
+    })?;
+
+    let app_from_path_app_id =
+        application::Entity::secure_find_by_id_or_uid(org_id.clone(), app_id.to_owned())
+            .one(db)
+            .await?;
+
+    let app = match (&data.application, app_from_path_app_id) {
+        (None, None) => {
+            return Err(
+                HttpError::not_found(None, Some("Application not found".to_string())).into(),
+            );
+        }
+
+        (_, Some(app_from_path_param)) => app_from_path_param,
+        (Some(cmg_app), None) => {
+            validate_create_app_uid(&app_id, cmg_app)?;
+            let (app, _metadata) = create_app_from_app_in(db, cmg_app.to_owned(), org_id).await?;
+
+            app
+        }
+    };
+
     let create_message_app = CreateMessageApp::layered_fetch(
         &cache,
         db,
@@ -405,6 +458,37 @@ pub(crate) async fn create_message_inner(
     let msg_out = MessageOut::from_msg_and_payload(msg, Some(msg_content.payload), with_content);
 
     Ok(msg_out)
+}
+
+fn validate_create_app_uid(app_id_or_uid: &ApplicationIdOrUid, data: &ApplicationIn) -> Result<()> {
+    // If implicit app creation is requested then the UID must be set
+    // in the request body, and it must match the UID given in the path
+    if let Some(uid) = &data.uid {
+        if uid.0 != app_id_or_uid.0 {
+            return Err(HttpError::unprocessable_entity(vec![ValidationErrorItem {
+                loc: vec![
+                    "body".to_string(),
+                    "application".to_string(),
+                    "uid".to_string(),
+                ],
+                msg: "Application UID in the path and body must match".to_string(),
+                ty: "application_uid_mismatch".to_string(),
+            }])
+            .into());
+        }
+    } else {
+        return Err(HttpError::unprocessable_entity(vec![ValidationErrorItem {
+            loc: vec![
+                "body".to_string(),
+                "application".to_string(),
+                "uid".to_string(),
+            ],
+            msg: "Application UID not set in body".to_string(),
+            ty: "application_uid_missing".to_string(),
+        }])
+        .into());
+    }
+    Ok(())
 }
 
 #[derive(Debug, Deserialize, Validate, JsonSchema)]
