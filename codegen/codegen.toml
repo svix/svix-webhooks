@@ -59,6 +59,9 @@ output_dir = "python/svix/models"
 template = "templates/python/component_type.py.jinja"
 output_dir = "python/svix/models"
 [[python.task]]
+template = "templates/python/api_summary.py.jinja"
+output_dir = "python/svix/api"
+[[python.task]]
 template = "templates/python/summary.py.jinja"
 output_dir = "python/svix/api"
 
