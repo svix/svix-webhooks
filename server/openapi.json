@@ -3,6 +3,11 @@
         "schemas": {
             "AppPortalAccessIn": {
                 "properties": {
+                    "application": {
+                        "$ref": "#/components/schemas/ApplicationIn",
+                        "description": "Optionally creates a new application alongside the message.\n\nIf the application id or uid that is used in the path already exists, this argument is ignored.",
+                        "nullable": true
+                    },
                     "featureFlags": {
                         "description": "The set of feature flags the created token will have access to.",
                         "example": [],
