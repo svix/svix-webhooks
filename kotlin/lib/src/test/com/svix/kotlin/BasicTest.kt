@@ -1,6 +1,6 @@
 package com.svix.kotlin
 
-import SvixOptions
+import com.svix.kotlin.SvixOptions
 import com.svix.kotlin.exceptions.ApiException
 import com.svix.kotlin.models.ApplicationIn
 import com.svix.kotlin.models.EndpointIn

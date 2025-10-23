@@ -1,10 +1,10 @@
 package com.svix.kotlin
 
-import SvixOptions
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.*
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
+import com.svix.kotlin.SvixOptions
 import com.svix.kotlin.exceptions.ApiException
 import com.svix.kotlin.models.*
 import kotlin.test.assertEquals
