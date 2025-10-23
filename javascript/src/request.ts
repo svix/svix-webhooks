@@ -24,6 +24,11 @@ export type SvixRequestContext = {
   token: string;
   /** Time in milliseconds to wait for requests to get a response. */
   timeout?: number;
+  /**
+   * Custom fetch implementation to use for HTTP requests.
+   * Useful for testing, adding custom middleware, or running in non-standard environments.
+   */
+  fetch?: typeof fetch;
 } & XOR<
   {
     /** List of delays (in milliseconds) to wait before each retry attempt.*/
@@ -159,7 +164,8 @@ export class SvixRequest {
       },
       ctx.retryScheduleInMs,
       ctx.retryScheduleInMs?.[0],
-      ctx.retryScheduleInMs?.length || ctx.numRetries
+      ctx.retryScheduleInMs?.length || ctx.numRetries,
+      ctx.fetch
     );
     return filterResponseForErrors(response);
   }
@@ -200,13 +206,14 @@ async function sendWithRetry(
   retryScheduleInMs?: number[],
   nextInterval = 50,
   triesLeft = 2,
+  fetchImpl: typeof fetch = fetch,
   retryCount = 1
 ): Promise<Response> {
   const sleep = (interval: number) =>
     new Promise((resolve) => setTimeout(resolve, interval));
 
   try {
-    const response = await fetch(url, init);
+    const response = await fetchImpl(url, init);
     if (triesLeft <= 0 || response.status < 500) {
       return response;
     }
@@ -225,6 +232,7 @@ async function sendWithRetry(
     retryScheduleInMs,
     nextInterval,
     --triesLeft,
+    fetchImpl,
     ++retryCount
   );
 }
