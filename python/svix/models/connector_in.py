@@ -6,17 +6,17 @@ from .connector_kind import ConnectorKind
 
 
 class ConnectorIn(BaseModel):
+    allowed_event_types: t.Optional[t.List[str]] = None
+
     description: t.Optional[str] = None
 
     feature_flags: t.Optional[t.List[str]] = None
-
-    filter_types: t.Optional[t.List[str]] = None
 
     instructions: t.Optional[str] = None
 
     kind: t.Optional[ConnectorKind] = None
 
-    logo: str
+    logo: t.Optional[str] = None
 
     name: str
 

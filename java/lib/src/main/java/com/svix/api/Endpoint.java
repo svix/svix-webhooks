@@ -186,6 +186,10 @@ public class Endpoint {
      * Resend all failed messages since a given time.
      *
      * <p>Messages that were sent successfully, even if failed initially, are not resent.
+     *
+     * <p>A completed task will return a payload like the following: ```json { "id":
+     * "qtask_33qen93MNuelBAq1T9G7eHLJRsF", "status": "finished", "task": "endpoint.recover",
+     * "data": { "messagesSent": 2 } } ```
      */
     public RecoverOut recover(
             final String appId, final String endpointId, final RecoverIn recoverIn)
@@ -197,6 +201,10 @@ public class Endpoint {
      * Resend all failed messages since a given time.
      *
      * <p>Messages that were sent successfully, even if failed initially, are not resent.
+     *
+     * <p>A completed task will return a payload like the following: ```json { "id":
+     * "qtask_33qen93MNuelBAq1T9G7eHLJRsF", "status": "finished", "task": "endpoint.recover",
+     * "data": { "messagesSent": 2 } } ```
      */
     public RecoverOut recover(
             final String appId,
@@ -223,6 +231,10 @@ public class Endpoint {
      *
      * <p>Only messages that were created after `since` will be sent. Messages that were previously
      * sent to the endpoint are not resent.
+     *
+     * <p>A completed task will return a payload like the following: ```json { "id":
+     * "qtask_33qen93MNuelBAq1T9G7eHLJRsF", "status": "finished", "task": "endpoint.replay", "data":
+     * { "messagesSent": 2 } } ```
      */
     public ReplayOut replayMissing(
             final String appId, final String endpointId, final ReplayIn replayIn)
@@ -235,6 +247,10 @@ public class Endpoint {
      *
      * <p>Only messages that were created after `since` will be sent. Messages that were previously
      * sent to the endpoint are not resent.
+     *
+     * <p>A completed task will return a payload like the following: ```json { "id":
+     * "qtask_33qen93MNuelBAq1T9G7eHLJRsF", "status": "finished", "task": "endpoint.replay", "data":
+     * { "messagesSent": 2 } } ```
      */
     public ReplayOut replayMissing(
             final String appId,

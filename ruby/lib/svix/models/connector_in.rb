@@ -4,9 +4,9 @@ require "json"
 
 module Svix
   class ConnectorIn
+    attr_accessor :allowed_event_types
     attr_accessor :description
     attr_accessor :feature_flags
-    attr_accessor :filter_types
     attr_accessor :instructions
     attr_accessor :kind
     attr_accessor :logo
@@ -14,9 +14,9 @@ module Svix
     attr_accessor :transformation
 
     ALL_FIELD ||= [
+      "allowed_event_types",
       "description",
       "feature_flags",
-      "filter_types",
       "instructions",
       "kind",
       "logo",
@@ -43,9 +43,9 @@ module Svix
     def self.deserialize(attributes = {})
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
+      attrs["allowed_event_types"] = attributes["allowedEventTypes"]
       attrs["description"] = attributes["description"]
       attrs["feature_flags"] = attributes["featureFlags"]
-      attrs["filter_types"] = attributes["filterTypes"]
       attrs["instructions"] = attributes["instructions"]
       attrs["kind"] = Svix::ConnectorKind.deserialize(attributes["kind"]) if attributes["kind"]
       attrs["logo"] = attributes["logo"]
@@ -56,9 +56,9 @@ module Svix
 
     def serialize
       out = Hash.new
+      out["allowedEventTypes"] = Svix::serialize_primitive(@allowed_event_types) if @allowed_event_types
       out["description"] = Svix::serialize_primitive(@description) if @description
       out["featureFlags"] = Svix::serialize_primitive(@feature_flags) if @feature_flags
-      out["filterTypes"] = Svix::serialize_primitive(@filter_types) if @filter_types
       out["instructions"] = Svix::serialize_primitive(@instructions) if @instructions
       out["kind"] = Svix::serialize_schema_ref(@kind) if @kind
       out["logo"] = Svix::serialize_primitive(@logo) if @logo

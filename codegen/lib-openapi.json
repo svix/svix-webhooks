@@ -1320,25 +1320,7 @@
             },
             "ConnectorIn": {
                 "properties": {
-                    "description": {
-                        "default": "",
-                        "type": "string"
-                    },
-                    "featureFlags": {
-                        "default": null,
-                        "example": [
-                            "cool-new-feature"
-                        ],
-                        "items": {
-                            "maxLength": 256,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                            "type": "string"
-                        },
-                        "nullable": true,
-                        "type": "array",
-                        "uniqueItems": true
-                    },
-                    "filterTypes": {
+                    "allowedEventTypes": {
                         "example": [
                             "user.signup",
                             "user.deleted"
@@ -1355,29 +1337,50 @@
                         "type": "array",
                         "uniqueItems": true
                     },
+                    "description": {
+                        "default": "",
+                        "example": "Example connector description",
+                        "type": "string"
+                    },
+                    "featureFlags": {
+                        "default": null,
+                        "items": {
+                            "maxLength": 256,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "nullable": true,
+                        "type": "array",
+                        "uniqueItems": true
+                    },
                     "instructions": {
                         "default": "",
+                        "example": "Markdown-formatted instructions",
                         "type": "string"
                     },
                     "kind": {
                         "$ref": "#/components/schemas/ConnectorKind",
-                        "default": "Custom"
+                        "default": "Custom",
+                        "example": "Slack"
                     },
                     "logo": {
+                        "example": "https://example.com/logo.png",
                         "format": "uri",
+                        "nullable": true,
                         "type": "string"
                     },
                     "name": {
+                        "example": "My first connector",
                         "type": "string"
                     },
                     "transformation": {
+                        "example": "function handler(webhook) { /* ... */ }",
                         "maxLength": 51200,
                         "minLength": 10,
                         "type": "string"
                     }
                 },
                 "required": [
-                    "logo",
                     "name",
                     "transformation"
                 ],
@@ -1407,6 +1410,23 @@
             },
             "ConnectorOut": {
                 "properties": {
+                    "allowedEventTypes": {
+                        "example": [
+                            "user.signup",
+                            "user.deleted"
+                        ],
+                        "items": {
+                            "description": "The event type's name",
+                            "example": "user.signup",
+                            "maxLength": 256,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "minItems": 1,
+                        "nullable": true,
+                        "type": "array",
+                        "uniqueItems": true
+                    },
                     "createdAt": {
                         "format": "date-time",
                         "type": "string"
@@ -1428,23 +1448,6 @@
                         "type": "array",
                         "uniqueItems": true
                     },
-                    "filterTypes": {
-                        "example": [
-                            "user.signup",
-                            "user.deleted"
-                        ],
-                        "items": {
-                            "description": "The event type's name",
-                            "example": "user.signup",
-                            "maxLength": 256,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                            "type": "string"
-                        },
-                        "minItems": 1,
-                        "nullable": true,
-                        "type": "array",
-                        "uniqueItems": true
-                    },
                     "id": {
                         "description": "The Connector's ID.",
                         "example": "trtmpl_1srOrx2ZWZBpBUvZwXKQmoEYga2",
@@ -1461,6 +1464,7 @@
                     },
                     "logo": {
                         "format": "uri",
+                        "nullable": true,
                         "type": "string"
                     },
                     "name": {
@@ -1488,7 +1492,6 @@
                     "id",
                     "instructions",
                     "kind",
-                    "logo",
                     "name",
                     "orgId",
                     "transformation",
@@ -1498,23 +1501,7 @@
             },
             "ConnectorPatch": {
                 "properties": {
-                    "description": {
-                        "type": "string"
-                    },
-                    "featureFlags": {
-                        "example": [
-                            "cool-new-feature"
-                        ],
-                        "items": {
-                            "maxLength": 256,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                            "type": "string"
-                        },
-                        "nullable": true,
-                        "type": "array",
-                        "uniqueItems": true
-                    },
-                    "filterTypes": {
+                    "allowedEventTypes": {
                         "example": [
                             "user.signup",
                             "user.deleted"
@@ -1531,6 +1518,22 @@
                         "type": "array",
                         "uniqueItems": true
                     },
+                    "description": {
+                        "type": "string"
+                    },
+                    "featureFlags": {
+                        "example": [
+                            "cool-new-feature"
+                        ],
+                        "items": {
+                            "maxLength": 256,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "nullable": true,
+                        "type": "array",
+                        "uniqueItems": true
+                    },
                     "instructions": {
                         "type": "string"
                     },
@@ -1539,6 +1542,7 @@
                     },
                     "logo": {
                         "format": "uri",
+                        "nullable": true,
                         "type": "string"
                     },
                     "name": {
@@ -1554,8 +1558,26 @@
             },
             "ConnectorUpdate": {
                 "properties": {
+                    "allowedEventTypes": {
+                        "example": [
+                            "user.signup",
+                            "user.deleted"
+                        ],
+                        "items": {
+                            "description": "The event type's name",
+                            "example": "user.signup",
+                            "maxLength": 256,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "minItems": 1,
+                        "nullable": true,
+                        "type": "array",
+                        "uniqueItems": true
+                    },
                     "description": {
                         "default": "",
+                        "example": "Example connector description",
                         "type": "string"
                     },
                     "featureFlags": {
@@ -1572,47 +1594,35 @@
                         "type": "array",
                         "uniqueItems": true
                     },
-                    "filterTypes": {
-                        "example": [
-                            "user.signup",
-                            "user.deleted"
-                        ],
-                        "items": {
-                            "description": "The event type's name",
-                            "example": "user.signup",
-                            "maxLength": 256,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                            "type": "string"
-                        },
-                        "minItems": 1,
-                        "nullable": true,
-                        "type": "array",
-                        "uniqueItems": true
-                    },
                     "instructions": {
                         "default": "",
+                        "example": "Markdown-formatted instructions",
                         "type": "string"
                     },
                     "kind": {
                         "$ref": "#/components/schemas/ConnectorKind",
-                        "default": "Custom"
+                        "default": "Custom",
+                        "example": "Slack"
                     },
                     "logo": {
+                        "example": "https://example.com/logo.png",
                         "format": "uri",
+                        "nullable": true,
                         "type": "string"
                     },
                     "name": {
                         "default": "",
+                        "example": "My first connector",
                         "type": "string"
                     },
                     "transformation": {
+                        "example": "function handler(webhook) { /* ... */ }",
                         "maxLength": 51200,
                         "minLength": 10,
                         "type": "string"
                     }
                 },
                 "required": [
-                    "logo",
                     "transformation"
                 ],
                 "type": "object"
@@ -3177,6 +3187,12 @@
             },
             "EnvironmentOut": {
                 "properties": {
+                    "connectors": {
+                        "items": {
+                            "$ref": "#/components/schemas/ConnectorOut"
+                        },
+                        "type": "array"
+                    },
                     "createdAt": {
                         "format": "date-time",
                         "type": "string"
@@ -3192,12 +3208,6 @@
                         "nullable": true,
                         "type": "object"
                     },
-                    "transformationTemplates": {
-                        "items": {
-                            "$ref": "#/components/schemas/ConnectorOut"
-                        },
-                        "type": "array"
-                    },
                     "version": {
                         "default": 1,
                         "format": "int",
@@ -3205,10 +3215,10 @@
                     }
                 },
                 "required": [
+                    "connectors",
                     "createdAt",
                     "eventTypes",
-                    "settings",
-                    "transformationTemplates"
+                    "settings"
                 ],
                 "type": "object"
             },
@@ -3303,6 +3313,10 @@
                         "format": "uri",
                         "nullable": true,
                         "type": "string"
+                    },
+                    "showFeatureTooltips": {
+                        "default": false,
+                        "type": "boolean"
                     },
                     "showSvixBrandFooter": {
                         "default": false,
@@ -9208,6 +9222,10 @@
                         "default": false,
                         "type": "boolean"
                     },
+                    "showFeatureTooltips": {
+                        "default": false,
+                        "type": "boolean"
+                    },
                     "showUseSvixPlay": {
                         "default": true,
                         "type": "boolean"
@@ -9368,6 +9386,10 @@
                         "default": false,
                         "type": "boolean"
                     },
+                    "showFeatureTooltips": {
+                        "default": false,
+                        "type": "boolean"
+                    },
                     "showSvixBrandFooter": {
                         "default": false,
                         "type": "boolean"
@@ -9519,6 +9541,9 @@
                         "type": "array"
                     },
                     "sendSvixWebhookHeaders": {
+                        "type": "boolean"
+                    },
+                    "showFeatureTooltips": {
                         "type": "boolean"
                     },
                     "showUseSvixPlay": {
@@ -9675,6 +9700,10 @@
                         "type": "array"
                     },
                     "sendSvixWebhookHeaders": {
+                        "default": false,
+                        "type": "boolean"
+                    },
+                    "showFeatureTooltips": {
                         "default": false,
                         "type": "boolean"
                     },
@@ -11761,7 +11790,6 @@
                 "tags": [
                     "Application"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -13044,7 +13072,6 @@
                 "tags": [
                     "Message Attempt"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -13736,62 +13763,62 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const response = await svix.endpoint.create(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", {\n  description: \"An example endpoint name\",\n  rateLimit: 1,\n  uid: \"unique-identifier\",\n  url: \"https://example.com/webhook/\",\n  version: 1,\n  disabled: true,\n  filterTypes: [\"user.signup\", \"user.deleted\"],\n  channels: [\"project_123\", \"group_2\"],\n  secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n  metadata: {},\n  headers: { \"X-Example\": \"123\", \"X-Foobar\": \"Bar\" },\n});"
+                        "source": "const response = await svix.endpoint.create(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", {\n  description: \"An example endpoint name\",\n  rateLimit: 1,\n  uid: \"unique-identifier\",\n  url: \"https://example.com/webhook/\",\n  headers: { \"X-Example\": \"123\", \"X-Foobar\": \"Bar\" },\n  disabled: true,\n  filterTypes: [\"user.signup\", \"user.deleted\"],\n  channels: [\"project_123\", \"group_2\"],\n  secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n  metadata: {},\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "TypeScript",
-                        "source": "const response = await svix.endpoint.create(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", {\n  description: \"An example endpoint name\",\n  rateLimit: 1,\n  uid: \"unique-identifier\",\n  url: \"https://example.com/webhook/\",\n  version: 1,\n  disabled: true,\n  filterTypes: [\"user.signup\", \"user.deleted\"],\n  channels: [\"project_123\", \"group_2\"],\n  secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n  metadata: {},\n  headers: { \"X-Example\": \"123\", \"X-Foobar\": \"Bar\" },\n});"
+                        "source": "const response = await svix.endpoint.create(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", {\n  description: \"An example endpoint name\",\n  rateLimit: 1,\n  uid: \"unique-identifier\",\n  url: \"https://example.com/webhook/\",\n  headers: { \"X-Example\": \"123\", \"X-Foobar\": \"Bar\" },\n  disabled: true,\n  filterTypes: [\"user.signup\", \"user.deleted\"],\n  channels: [\"project_123\", \"group_2\"],\n  secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n  metadata: {},\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "response = svix.endpoint.create(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    EndpointIn(\n        description=\"An example endpoint name\",\n        rate_limit=1,\n        uid=\"unique-identifier\",\n        url=\"https://example.com/webhook/\",\n        version=1,\n        disabled=True,\n        filter_types=[\n            \"user.signup\",\n            \"user.deleted\",\n        ],\n        channels=[\n            \"project_123\",\n            \"group_2\",\n        ],\n        secret=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n        metadata={},\n        headers={\"X-Example\": \"123\", \"X-Foobar\": \"Bar\"},\n    ),\n)"
+                        "source": "response = svix.endpoint.create(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    EndpointIn(\n        description=\"An example endpoint name\",\n        rate_limit=1,\n        uid=\"unique-identifier\",\n        url=\"https://example.com/webhook/\",\n        headers={\"X-Example\": \"123\", \"X-Foobar\": \"Bar\"},\n        disabled=True,\n        filter_types=[\n            \"user.signup\",\n            \"user.deleted\",\n        ],\n        channels=[\n            \"project_123\",\n            \"group_2\",\n        ],\n        secret=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n        metadata={},\n    ),\n)"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python (Async)",
-                        "source": "response = await svix.endpoint.create(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    EndpointIn(\n        description=\"An example endpoint name\",\n        rate_limit=1,\n        uid=\"unique-identifier\",\n        url=\"https://example.com/webhook/\",\n        version=1,\n        disabled=True,\n        filter_types=[\n            \"user.signup\",\n            \"user.deleted\",\n        ],\n        channels=[\n            \"project_123\",\n            \"group_2\",\n        ],\n        secret=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n        metadata={},\n        headers={\"X-Example\": \"123\", \"X-Foobar\": \"Bar\"},\n    ),\n)"
+                        "source": "response = await svix.endpoint.create(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    EndpointIn(\n        description=\"An example endpoint name\",\n        rate_limit=1,\n        uid=\"unique-identifier\",\n        url=\"https://example.com/webhook/\",\n        headers={\"X-Example\": \"123\", \"X-Foobar\": \"Bar\"},\n        disabled=True,\n        filter_types=[\n            \"user.signup\",\n            \"user.deleted\",\n        ],\n        channels=[\n            \"project_123\",\n            \"group_2\",\n        ],\n        secret=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n        metadata={},\n    ),\n)"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "response, err := svix.Endpoint.Create(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\tEndpointIn{\n\t\tDescription: ptr(\"An example endpoint name\"),\n\t\tRateLimit:   ptr(uint16(1)),\n\t\tUid:         ptr(\"unique-identifier\"),\n\t\tUrl:         \"https://example.com/webhook/\",\n\t\tVersion:     ptr(uint16(1)),\n\t\tDisabled:    ptr(true),\n\t\tFilterTypes: []string{\"user.signup\", \"user.deleted\"},\n\t\tChannels:    []string{\"project_123\", \"group_2\"},\n\t\tSecret:      ptr(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"),\n\t\tMetadata:    nil,\n\t\tHeaders:     &map[string]string{\"X-Example\": \"123\", \"X-Foobar\": \"Bar\"},\n\t},\n\tnil,\n)"
+                        "source": "response, err := svix.Endpoint.Create(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\tEndpointIn{\n\t\tDescription: ptr(\"An example endpoint name\"),\n\t\tRateLimit:   ptr(uint16(1)),\n\t\tUid:         ptr(\"unique-identifier\"),\n\t\tUrl:         \"https://example.com/webhook/\",\n\t\tHeaders:     &map[string]string{\"X-Example\": \"123\", \"X-Foobar\": \"Bar\"},\n\t\tDisabled:    ptr(true),\n\t\tFilterTypes: []string{\"user.signup\", \"user.deleted\"},\n\t\tChannels:    []string{\"project_123\", \"group_2\"},\n\t\tSecret:      ptr(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"),\n\t\tMetadata:    nil,\n\t},\n\tnil,\n)"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val response =\n    svix.endpoint.create(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n        EndpointIn(\n            description = \"An example endpoint name\",\n            rateLimit = 1u,\n            uid = \"unique-identifier\",\n            url = \"https://example.com/webhook/\",\n            version = 1u,\n            disabled = true,\n            filterTypes = setOf(\"user.signup\", \"user.deleted\"),\n            channels = setOf(\"project_123\", \"group_2\"),\n            secret = \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n            metadata = mapOf(),\n            headers = mapOf(\"X-Example\" to \"123\", \"X-Foobar\" to \"Bar\"),\n        ),\n    )"
+                        "source": "val response =\n    svix.endpoint.create(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n        EndpointIn(\n            description = \"An example endpoint name\",\n            rateLimit = 1u,\n            uid = \"unique-identifier\",\n            url = \"https://example.com/webhook/\",\n            headers = mapOf(\"X-Example\" to \"123\", \"X-Foobar\" to \"Bar\"),\n            disabled = true,\n            filterTypes = setOf(\"user.signup\", \"user.deleted\"),\n            channels = setOf(\"project_123\", \"group_2\"),\n            secret = \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n            metadata = mapOf(),\n        ),\n    )"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "var response = svix.getEndpoint()\n        .create(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            new EndpointIn()\n                .description(\"An example endpoint name\")\n                .rateLimit(1L)\n                .uid(\"unique-identifier\")\n                .url(URI.create(\"https://example.com/webhook/\"))\n                .version(1L)\n                .disabled(true)\n                .filterTypes(Set.of(\"user.signup\", \"user.deleted\"))\n                .channels(Set.of(\"project_123\", \"group_2\"))\n                .secret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n                .metadata(Map.of())\n                .headers(\n                    Map.ofEntries(Map.entry(\"X-Example\", \"123\"), Map.entry(\"X-Foobar\", \"Bar\"))));"
+                        "source": "var response = svix.getEndpoint()\n        .create(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            new EndpointIn()\n                .description(\"An example endpoint name\")\n                .rateLimit(1L)\n                .uid(\"unique-identifier\")\n                .url(URI.create(\"https://example.com/webhook/\"))\n                .headers(Map.ofEntries(Map.entry(\"X-Example\", \"123\"), Map.entry(\"X-Foobar\", \"Bar\")))\n                .disabled(true)\n                .filterTypes(Set.of(\"user.signup\", \"user.deleted\"))\n                .channels(Set.of(\"project_123\", \"group_2\"))\n                .secret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n                .metadata(Map.of()));"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "response = svix\n  .endpoint\n  .create(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    {\n      description: \"An example endpoint name\",\n      rateLimit: 1,\n      uid: \"unique-identifier\",\n      url: \"https://example.com/webhook/\",\n      version: 1,\n      disabled: true,\n      filterTypes: [\"user.signup\", \"user.deleted\"],\n      channels: [\"project_123\", \"group_2\"],\n      secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n      metadata: {},\n      headers: {:\"X-Example\" => \"123\", :\"X-Foobar\" => \"Bar\"}\n    }\n  )"
+                        "source": "response = svix\n  .endpoint\n  .create(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    {\n      description: \"An example endpoint name\",\n      rateLimit: 1,\n      uid: \"unique-identifier\",\n      url: \"https://example.com/webhook/\",\n      headers: {:\"X-Example\" => \"123\", :\"X-Foobar\" => \"Bar\"},\n      disabled: true,\n      filterTypes: [\"user.signup\", \"user.deleted\"],\n      channels: [\"project_123\", \"group_2\"],\n      secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n      metadata: {}\n    }\n  )"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let response = svix\n    .endpoint()\n    .create(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n        EndpointIn {\n            description: Some(\"An example endpoint name\".to_string()),\n            rate_limit: Some(1),\n            uid: Some(\"unique-identifier\".to_string()),\n            url: \"https://example.com/webhook/\".to_string(),\n            version: Some(1),\n            disabled: Some(true),\n            filter_types: Some(\n                vec![\"user.signup\".to_string(), \"user.deleted\".to_string()],\n            ),\n            channels: Some(vec![\"project_123\".to_string(), \"group_2\".to_string()]),\n            secret: Some(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\".to_string()),\n            metadata: Some(HashMap::new()),\n            headers: Some(\n                HashMap::from([\n                    (\"X-Example\".to_string(), \"123\".to_string()),\n                    (\"X-Foobar\".to_string(), \"Bar\".to_string()),\n                ]),\n            ),\n        },\n        None,\n    )\n    .await?;"
+                        "source": "let response = svix\n    .endpoint()\n    .create(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n        EndpointIn {\n            description: Some(\"An example endpoint name\".to_string()),\n            rate_limit: Some(1),\n            uid: Some(\"unique-identifier\".to_string()),\n            url: \"https://example.com/webhook/\".to_string(),\n            headers: Some(\n                HashMap::from([\n                    (\"X-Example\".to_string(), \"123\".to_string()),\n                    (\"X-Foobar\".to_string(), \"Bar\".to_string()),\n                ]),\n            ),\n            disabled: Some(true),\n            filter_types: Some(\n                vec![\"user.signup\".to_string(), \"user.deleted\".to_string()],\n            ),\n            channels: Some(vec![\"project_123\".to_string(), \"group_2\".to_string()]),\n            secret: Some(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\".to_string()),\n            metadata: Some(HashMap::new()),\n        },\n        None,\n    )\n    .await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var response = svix.Endpoint.Create(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    new EndpointIn\n    {\n        Description = \"An example endpoint name\",\n        RateLimit = 1,\n        Uid = \"unique-identifier\",\n        Url = \"https://example.com/webhook/\",\n        Version = 1,\n        Disabled = true,\n        FilterTypes = [\"user.signup\", \"user.deleted\"],\n        Channels = [\"project_123\", \"group_2\"],\n        Secret = \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n        Metadata = [],\n        Headers = new() { { \"X-Example\", \"123\" }, { \"X-Foobar\", \"Bar\" } },\n    }\n);"
+                        "source": "var response = svix.Endpoint.Create(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    new EndpointIn\n    {\n        Description = \"An example endpoint name\",\n        RateLimit = 1,\n        Uid = \"unique-identifier\",\n        Url = \"https://example.com/webhook/\",\n        Headers = new() { { \"X-Example\", \"123\" }, { \"X-Foobar\", \"Bar\" } },\n        Disabled = true,\n        FilterTypes = [\"user.signup\", \"user.deleted\"],\n        Channels = [\"project_123\", \"group_2\"],\n        Secret = \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n        Metadata = [],\n    }\n);"
                     },
                     {
                         "label": "CLI",
                         "lang": "CLI",
-                        "source": "svix endpoint create \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" '{\n    \"channels\": [\n      \"project_123\",\n      \"group_2\"\n    ],\n    \"description\": \"An example endpoint name\",\n    \"disabled\": true,\n    \"filterTypes\": [\n      \"user.signup\",\n      \"user.deleted\"\n    ],\n    \"headers\": {\n      \"X-Example\": \"123\",\n      \"X-Foobar\": \"Bar\"\n    },\n    \"metadata\": {},\n    \"rateLimit\": 1,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    \"uid\": \"unique-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1\n  }'"
+                        "source": "svix endpoint create \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" '{\n    \"channels\": [\n      \"project_123\",\n      \"group_2\"\n    ],\n    \"description\": \"An example endpoint name\",\n    \"disabled\": true,\n    \"filterTypes\": [\n      \"user.signup\",\n      \"user.deleted\"\n    ],\n    \"headers\": {\n      \"X-Example\": \"123\",\n      \"X-Foobar\": \"Bar\"\n    },\n    \"metadata\": {},\n    \"rateLimit\": 1,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    \"uid\": \"unique-identifier\",\n    \"url\": \"https://example.com/webhook/\"\n  }'"
                     },
                     {
                         "label": "cURL",
                         "lang": "cURL",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/app_1srOrx2ZWZBpBUvZwXKQmoEYga2/endpoint' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"channels\": [\n      \"project_123\",\n      \"group_2\"\n    ],\n    \"description\": \"An example endpoint name\",\n    \"disabled\": true,\n    \"filterTypes\": [\n      \"user.signup\",\n      \"user.deleted\"\n    ],\n    \"headers\": {\n      \"X-Example\": \"123\",\n      \"X-Foobar\": \"Bar\"\n    },\n    \"metadata\": {},\n    \"rateLimit\": 1,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    \"uid\": \"unique-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1\n  }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/app_1srOrx2ZWZBpBUvZwXKQmoEYga2/endpoint' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"channels\": [\n      \"project_123\",\n      \"group_2\"\n    ],\n    \"description\": \"An example endpoint name\",\n    \"disabled\": true,\n    \"filterTypes\": [\n      \"user.signup\",\n      \"user.deleted\"\n    ],\n    \"headers\": {\n      \"X-Example\": \"123\",\n      \"X-Foobar\": \"Bar\"\n    },\n    \"metadata\": {},\n    \"rateLimit\": 1,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    \"uid\": \"unique-identifier\",\n    \"url\": \"https://example.com/webhook/\"\n  }'"
                     }
                 ]
             }
@@ -14308,62 +14335,62 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const response = await svix.endpoint.patch(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n  {\n    description: \"sample string\",\n    rateLimit: 1,\n    uid: \"unique-identifier\",\n    url: \"sample string\",\n    version: 1,\n    disabled: true,\n    filterTypes: [],\n    channels: [],\n    secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    metadata: {},\n  }\n);"
+                        "source": "const response = await svix.endpoint.patch(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n  {\n    description: \"sample string\",\n    rateLimit: 1,\n    uid: \"unique-identifier\",\n    url: \"sample string\",\n    metadata: {},\n    disabled: true,\n    filterTypes: [],\n    channels: [],\n    secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n  }\n);"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "TypeScript",
-                        "source": "const response = await svix.endpoint.patch(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n  {\n    description: \"sample string\",\n    rateLimit: 1,\n    uid: \"unique-identifier\",\n    url: \"sample string\",\n    version: 1,\n    disabled: true,\n    filterTypes: [],\n    channels: [],\n    secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    metadata: {},\n  }\n);"
+                        "source": "const response = await svix.endpoint.patch(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n  {\n    description: \"sample string\",\n    rateLimit: 1,\n    uid: \"unique-identifier\",\n    url: \"sample string\",\n    metadata: {},\n    disabled: true,\n    filterTypes: [],\n    channels: [],\n    secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n  }\n);"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "response = svix.endpoint.patch(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointPatch(\n        description=\"sample string\",\n        rate_limit=1,\n        uid=\"unique-identifier\",\n        url=\"sample string\",\n        version=1,\n        disabled=True,\n        filter_types=[],\n        channels=[],\n        secret=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n        metadata={},\n    ),\n)"
+                        "source": "response = svix.endpoint.patch(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointPatch(\n        description=\"sample string\",\n        rate_limit=1,\n        uid=\"unique-identifier\",\n        url=\"sample string\",\n        metadata={},\n        disabled=True,\n        filter_types=[],\n        channels=[],\n        secret=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    ),\n)"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python (Async)",
-                        "source": "response = await svix.endpoint.patch(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointPatch(\n        description=\"sample string\",\n        rate_limit=1,\n        uid=\"unique-identifier\",\n        url=\"sample string\",\n        version=1,\n        disabled=True,\n        filter_types=[],\n        channels=[],\n        secret=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n        metadata={},\n    ),\n)"
+                        "source": "response = await svix.endpoint.patch(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointPatch(\n        description=\"sample string\",\n        rate_limit=1,\n        uid=\"unique-identifier\",\n        url=\"sample string\",\n        metadata={},\n        disabled=True,\n        filter_types=[],\n        channels=[],\n        secret=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    ),\n)"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "response, err := svix.Endpoint.Patch(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tEndpointPatch{\n\t\tDescription: ptr(\"sample string\"),\n\t\tRateLimit:   NewNullable(uint16(1)),\n\t\tUid:         NewNullable(\"unique-identifier\"),\n\t\tUrl:         ptr(\"sample string\"),\n\t\tVersion:     ptr(uint16(1)),\n\t\tDisabled:    ptr(true),\n\t\tFilterTypes: NewNullable([]string{}),\n\t\tChannels:    NewNullable([]string{}),\n\t\tSecret:      NewNullable(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"),\n\t\tMetadata:    nil,\n\t},\n)"
+                        "source": "response, err := svix.Endpoint.Patch(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tEndpointPatch{\n\t\tDescription: ptr(\"sample string\"),\n\t\tRateLimit:   NewNullable(uint16(1)),\n\t\tUid:         NewNullable(\"unique-identifier\"),\n\t\tUrl:         ptr(\"sample string\"),\n\t\tMetadata:    nil,\n\t\tDisabled:    ptr(true),\n\t\tFilterTypes: NewNullable([]string{}),\n\t\tChannels:    NewNullable([]string{}),\n\t\tSecret:      NewNullable(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"),\n\t},\n)"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val response =\n    svix.endpoint.patch(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n        \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n        EndpointPatch(\n            description = \"sample string\",\n            rateLimit = MaybeUnset.Present(1u),\n            uid = MaybeUnset.Present(\"unique-identifier\"),\n            url = \"https://example.com/\",\n            version = 1u,\n            disabled = true,\n            filterTypes = MaybeUnset.Present(setOf()),\n            channels = MaybeUnset.Present(setOf()),\n            secret = MaybeUnset.Present(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"),\n            metadata = mapOf(),\n        ),\n    )"
+                        "source": "val response =\n    svix.endpoint.patch(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n        \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n        EndpointPatch(\n            description = \"sample string\",\n            rateLimit = MaybeUnset.Present(1u),\n            uid = MaybeUnset.Present(\"unique-identifier\"),\n            url = \"https://example.com/\",\n            metadata = mapOf(),\n            disabled = true,\n            filterTypes = MaybeUnset.Present(setOf()),\n            channels = MaybeUnset.Present(setOf()),\n            secret = MaybeUnset.Present(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"),\n        ),\n    )"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "var response = svix.getEndpoint()\n        .patch(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n            new EndpointPatch()\n                .description(\"sample string\")\n                .rateLimit(1L)\n                .uid(\"unique-identifier\")\n                .url(URI.create(\"https://example.com/\"))\n                .version(1L)\n                .disabled(true)\n                .filterTypes(Set.of())\n                .channels(Set.of())\n                .secret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n                .metadata(Map.of()));"
+                        "source": "var response = svix.getEndpoint()\n        .patch(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n            new EndpointPatch()\n                .description(\"sample string\")\n                .rateLimit(1L)\n                .uid(\"unique-identifier\")\n                .url(URI.create(\"https://example.com/\"))\n                .metadata(Map.of())\n                .disabled(true)\n                .filterTypes(Set.of())\n                .channels(Set.of())\n                .secret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"));"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "response = svix\n  .endpoint\n  .patch(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    {\n      description: \"sample string\",\n      rateLimit: 1,\n      uid: \"unique-identifier\",\n      url: \"sample string\",\n      version: 1,\n      disabled: true,\n      filterTypes: [],\n      channels: [],\n      secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n      metadata: {}\n    }\n  )"
+                        "source": "response = svix\n  .endpoint\n  .patch(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    {\n      description: \"sample string\",\n      rateLimit: 1,\n      uid: \"unique-identifier\",\n      url: \"sample string\",\n      metadata: {},\n      disabled: true,\n      filterTypes: [],\n      channels: [],\n      secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n    }\n  )"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let response = svix\n    .endpoint()\n    .patch(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n        \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\".to_string(),\n        EndpointPatch {\n            description: Some(\"sample string\".to_string()),\n            rate_limit: js_option::JsOption::Some(1),\n            uid: js_option::JsOption::Some(\"unique-identifier\".to_string()),\n            url: Some(\"sample string\".to_string()),\n            version: Some(1),\n            disabled: Some(true),\n            filter_types: js_option::JsOption::Some(vec![]),\n            channels: js_option::JsOption::Some(vec![]),\n            secret: js_option::JsOption::Some(\n                \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\".to_string(),\n            ),\n            metadata: Some(HashMap::new()),\n        },\n    )\n    .await?;"
+                        "source": "let response = svix\n    .endpoint()\n    .patch(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n        \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\".to_string(),\n        EndpointPatch {\n            description: Some(\"sample string\".to_string()),\n            rate_limit: js_option::JsOption::Some(1),\n            uid: js_option::JsOption::Some(\"unique-identifier\".to_string()),\n            url: Some(\"sample string\".to_string()),\n            metadata: Some(HashMap::new()),\n            disabled: Some(true),\n            filter_types: js_option::JsOption::Some(vec![]),\n            channels: js_option::JsOption::Some(vec![]),\n            secret: js_option::JsOption::Some(\n                \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\".to_string(),\n            ),\n        },\n    )\n    .await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var response = svix.Endpoint.Patch(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    new EndpointPatch\n    {\n        Description = \"sample string\",\n        RateLimit = 1,\n        Uid = \"unique-identifier\",\n        Url = \"sample string\",\n        Version = 1,\n        Disabled = true,\n        FilterTypes = MaybeUnset<List<string>?>.Set([]),\n        Channels = MaybeUnset<List<string>?>.Set([]),\n        Secret = \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n        Metadata = [],\n    }\n);"
+                        "source": "var response = svix.Endpoint.Patch(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    new EndpointPatch\n    {\n        Description = \"sample string\",\n        RateLimit = 1,\n        Uid = \"unique-identifier\",\n        Url = \"sample string\",\n        Metadata = [],\n        Disabled = true,\n        FilterTypes = MaybeUnset<List<string>?>.Set([]),\n        Channels = MaybeUnset<List<string>?>.Set([]),\n        Secret = \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    }\n);"
                     },
                     {
                         "label": "CLI",
                         "lang": "CLI",
-                        "source": "svix endpoint patch \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\" '{\n    \"channels\": [],\n    \"description\": \"sample string\",\n    \"disabled\": true,\n    \"filterTypes\": [],\n    \"metadata\": {},\n    \"rateLimit\": 1,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    \"uid\": \"unique-identifier\",\n    \"url\": \"sample string\",\n    \"version\": 1\n  }'"
+                        "source": "svix endpoint patch \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\" '{\n    \"channels\": [],\n    \"description\": \"sample string\",\n    \"disabled\": true,\n    \"filterTypes\": [],\n    \"metadata\": {},\n    \"rateLimit\": 1,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    \"uid\": \"unique-identifier\",\n    \"url\": \"sample string\"\n  }'"
                     },
                     {
                         "label": "cURL",
                         "lang": "cURL",
-                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/app/app_1srOrx2ZWZBpBUvZwXKQmoEYga2/endpoint/ep_33ZIBDmz66FcPG35FnsbM6Ie4X1' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"channels\": [],\n    \"description\": \"sample string\",\n    \"disabled\": true,\n    \"filterTypes\": [],\n    \"metadata\": {},\n    \"rateLimit\": 1,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    \"uid\": \"unique-identifier\",\n    \"url\": \"sample string\",\n    \"version\": 1\n  }'"
+                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/app/app_1srOrx2ZWZBpBUvZwXKQmoEYga2/endpoint/ep_33ZIBDmz66FcPG35FnsbM6Ie4X1' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"channels\": [],\n    \"description\": \"sample string\",\n    \"disabled\": true,\n    \"filterTypes\": [],\n    \"metadata\": {},\n    \"rateLimit\": 1,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    \"uid\": \"unique-identifier\",\n    \"url\": \"sample string\"\n  }'"
                     }
                 ]
             },
@@ -14517,62 +14544,62 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const response = await svix.endpoint.update(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n  {\n    description: \"An example endpoint name\",\n    rateLimit: 1,\n    uid: \"unique-identifier\",\n    url: \"https://example.com/webhook/\",\n    version: 1,\n    disabled: true,\n    filterTypes: [\"user.signup\", \"user.deleted\"],\n    channels: [\"project_123\", \"group_2\"],\n    metadata: {},\n  }\n);"
+                        "source": "const response = await svix.endpoint.update(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n  {\n    description: \"An example endpoint name\",\n    rateLimit: 1,\n    uid: \"unique-identifier\",\n    url: \"https://example.com/webhook/\",\n    metadata: {},\n    disabled: true,\n    filterTypes: [\"user.signup\", \"user.deleted\"],\n    channels: [\"project_123\", \"group_2\"],\n  }\n);"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "TypeScript",
-                        "source": "const response = await svix.endpoint.update(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n  {\n    description: \"An example endpoint name\",\n    rateLimit: 1,\n    uid: \"unique-identifier\",\n    url: \"https://example.com/webhook/\",\n    version: 1,\n    disabled: true,\n    filterTypes: [\"user.signup\", \"user.deleted\"],\n    channels: [\"project_123\", \"group_2\"],\n    metadata: {},\n  }\n);"
+                        "source": "const response = await svix.endpoint.update(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n  {\n    description: \"An example endpoint name\",\n    rateLimit: 1,\n    uid: \"unique-identifier\",\n    url: \"https://example.com/webhook/\",\n    metadata: {},\n    disabled: true,\n    filterTypes: [\"user.signup\", \"user.deleted\"],\n    channels: [\"project_123\", \"group_2\"],\n  }\n);"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "response = svix.endpoint.update(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointUpdate(\n        description=\"An example endpoint name\",\n        rate_limit=1,\n        uid=\"unique-identifier\",\n        url=\"https://example.com/webhook/\",\n        version=1,\n        disabled=True,\n        filter_types=[\n            \"user.signup\",\n            \"user.deleted\",\n        ],\n        channels=[\n            \"project_123\",\n            \"group_2\",\n        ],\n        metadata={},\n    ),\n)"
+                        "source": "response = svix.endpoint.update(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointUpdate(\n        description=\"An example endpoint name\",\n        rate_limit=1,\n        uid=\"unique-identifier\",\n        url=\"https://example.com/webhook/\",\n        metadata={},\n        disabled=True,\n        filter_types=[\n            \"user.signup\",\n            \"user.deleted\",\n        ],\n        channels=[\n            \"project_123\",\n            \"group_2\",\n        ],\n    ),\n)"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python (Async)",
-                        "source": "response = await svix.endpoint.update(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointUpdate(\n        description=\"An example endpoint name\",\n        rate_limit=1,\n        uid=\"unique-identifier\",\n        url=\"https://example.com/webhook/\",\n        version=1,\n        disabled=True,\n        filter_types=[\n            \"user.signup\",\n            \"user.deleted\",\n        ],\n        channels=[\n            \"project_123\",\n            \"group_2\",\n        ],\n        metadata={},\n    ),\n)"
+                        "source": "response = await svix.endpoint.update(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointUpdate(\n        description=\"An example endpoint name\",\n        rate_limit=1,\n        uid=\"unique-identifier\",\n        url=\"https://example.com/webhook/\",\n        metadata={},\n        disabled=True,\n        filter_types=[\n            \"user.signup\",\n            \"user.deleted\",\n        ],\n        channels=[\n            \"project_123\",\n            \"group_2\",\n        ],\n    ),\n)"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "response, err := svix.Endpoint.Update(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tEndpointUpdate{\n\t\tDescription: ptr(\"An example endpoint name\"),\n\t\tRateLimit:   ptr(uint16(1)),\n\t\tUid:         ptr(\"unique-identifier\"),\n\t\tUrl:         \"https://example.com/webhook/\",\n\t\tVersion:     ptr(uint16(1)),\n\t\tDisabled:    ptr(true),\n\t\tFilterTypes: []string{\"user.signup\", \"user.deleted\"},\n\t\tChannels:    []string{\"project_123\", \"group_2\"},\n\t\tMetadata:    nil,\n\t},\n)"
+                        "source": "response, err := svix.Endpoint.Update(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tEndpointUpdate{\n\t\tDescription: ptr(\"An example endpoint name\"),\n\t\tRateLimit:   ptr(uint16(1)),\n\t\tUid:         ptr(\"unique-identifier\"),\n\t\tUrl:         \"https://example.com/webhook/\",\n\t\tMetadata:    nil,\n\t\tDisabled:    ptr(true),\n\t\tFilterTypes: []string{\"user.signup\", \"user.deleted\"},\n\t\tChannels:    []string{\"project_123\", \"group_2\"},\n\t},\n)"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val response =\n    svix.endpoint.update(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n        \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n        EndpointUpdate(\n            description = \"An example endpoint name\",\n            rateLimit = 1u,\n            uid = \"unique-identifier\",\n            url = \"https://example.com/webhook/\",\n            version = 1u,\n            disabled = true,\n            filterTypes = setOf(\"user.signup\", \"user.deleted\"),\n            channels = setOf(\"project_123\", \"group_2\"),\n            metadata = mapOf(),\n        ),\n    )"
+                        "source": "val response =\n    svix.endpoint.update(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n        \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n        EndpointUpdate(\n            description = \"An example endpoint name\",\n            rateLimit = 1u,\n            uid = \"unique-identifier\",\n            url = \"https://example.com/webhook/\",\n            metadata = mapOf(),\n            disabled = true,\n            filterTypes = setOf(\"user.signup\", \"user.deleted\"),\n            channels = setOf(\"project_123\", \"group_2\"),\n        ),\n    )"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "var response = svix.getEndpoint()\n        .update(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n            new EndpointUpdate()\n                .description(\"An example endpoint name\")\n                .rateLimit(1L)\n                .uid(\"unique-identifier\")\n                .url(URI.create(\"https://example.com/webhook/\"))\n                .version(1L)\n                .disabled(true)\n                .filterTypes(Set.of(\"user.signup\", \"user.deleted\"))\n                .channels(Set.of(\"project_123\", \"group_2\"))\n                .metadata(Map.of()));"
+                        "source": "var response = svix.getEndpoint()\n        .update(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n            new EndpointUpdate()\n                .description(\"An example endpoint name\")\n                .rateLimit(1L)\n                .uid(\"unique-identifier\")\n                .url(URI.create(\"https://example.com/webhook/\"))\n                .metadata(Map.of())\n                .disabled(true)\n                .filterTypes(Set.of(\"user.signup\", \"user.deleted\"))\n                .channels(Set.of(\"project_123\", \"group_2\")));"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "response = svix\n  .endpoint\n  .update(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    {\n      description: \"An example endpoint name\",\n      rateLimit: 1,\n      uid: \"unique-identifier\",\n      url: \"https://example.com/webhook/\",\n      version: 1,\n      disabled: true,\n      filterTypes: [\"user.signup\", \"user.deleted\"],\n      channels: [\"project_123\", \"group_2\"],\n      metadata: {}\n    }\n  )"
+                        "source": "response = svix\n  .endpoint\n  .update(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    {\n      description: \"An example endpoint name\",\n      rateLimit: 1,\n      uid: \"unique-identifier\",\n      url: \"https://example.com/webhook/\",\n      metadata: {},\n      disabled: true,\n      filterTypes: [\"user.signup\", \"user.deleted\"],\n      channels: [\"project_123\", \"group_2\"]\n    }\n  )"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let response = svix\n    .endpoint()\n    .update(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n        \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\".to_string(),\n        EndpointUpdate {\n            description: Some(\"An example endpoint name\".to_string()),\n            rate_limit: Some(1),\n            uid: Some(\"unique-identifier\".to_string()),\n            url: \"https://example.com/webhook/\".to_string(),\n            version: Some(1),\n            disabled: Some(true),\n            filter_types: Some(\n                vec![\"user.signup\".to_string(), \"user.deleted\".to_string()],\n            ),\n            channels: Some(vec![\"project_123\".to_string(), \"group_2\".to_string()]),\n            metadata: Some(HashMap::new()),\n        },\n    )\n    .await?;"
+                        "source": "let response = svix\n    .endpoint()\n    .update(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n        \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\".to_string(),\n        EndpointUpdate {\n            description: Some(\"An example endpoint name\".to_string()),\n            rate_limit: Some(1),\n            uid: Some(\"unique-identifier\".to_string()),\n            url: \"https://example.com/webhook/\".to_string(),\n            metadata: Some(HashMap::new()),\n            disabled: Some(true),\n            filter_types: Some(\n                vec![\"user.signup\".to_string(), \"user.deleted\".to_string()],\n            ),\n            channels: Some(vec![\"project_123\".to_string(), \"group_2\".to_string()]),\n        },\n    )\n    .await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var response = svix.Endpoint.Update(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    new EndpointUpdate\n    {\n        Description = \"An example endpoint name\",\n        RateLimit = 1,\n        Uid = \"unique-identifier\",\n        Url = \"https://example.com/webhook/\",\n        Version = 1,\n        Disabled = true,\n        FilterTypes = [\"user.signup\", \"user.deleted\"],\n        Channels = [\"project_123\", \"group_2\"],\n        Metadata = [],\n    }\n);"
+                        "source": "var response = svix.Endpoint.Update(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    new EndpointUpdate\n    {\n        Description = \"An example endpoint name\",\n        RateLimit = 1,\n        Uid = \"unique-identifier\",\n        Url = \"https://example.com/webhook/\",\n        Metadata = [],\n        Disabled = true,\n        FilterTypes = [\"user.signup\", \"user.deleted\"],\n        Channels = [\"project_123\", \"group_2\"],\n    }\n);"
                     },
                     {
                         "label": "CLI",
                         "lang": "CLI",
-                        "source": "svix endpoint update \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\" '{\n    \"channels\": [\n      \"project_123\",\n      \"group_2\"\n    ],\n    \"description\": \"An example endpoint name\",\n    \"disabled\": true,\n    \"filterTypes\": [\n      \"user.signup\",\n      \"user.deleted\"\n    ],\n    \"metadata\": {},\n    \"rateLimit\": 1,\n    \"uid\": \"unique-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1\n  }'"
+                        "source": "svix endpoint update \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\" '{\n    \"channels\": [\n      \"project_123\",\n      \"group_2\"\n    ],\n    \"description\": \"An example endpoint name\",\n    \"disabled\": true,\n    \"filterTypes\": [\n      \"user.signup\",\n      \"user.deleted\"\n    ],\n    \"metadata\": {},\n    \"rateLimit\": 1,\n    \"uid\": \"unique-identifier\",\n    \"url\": \"https://example.com/webhook/\"\n  }'"
                     },
                     {
                         "label": "cURL",
                         "lang": "cURL",
-                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/app/app_1srOrx2ZWZBpBUvZwXKQmoEYga2/endpoint/ep_33ZIBDmz66FcPG35FnsbM6Ie4X1' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"channels\": [\n      \"project_123\",\n      \"group_2\"\n    ],\n    \"description\": \"An example endpoint name\",\n    \"disabled\": true,\n    \"filterTypes\": [\n      \"user.signup\",\n      \"user.deleted\"\n    ],\n    \"metadata\": {},\n    \"rateLimit\": 1,\n    \"uid\": \"unique-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1\n  }'"
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/app/app_1srOrx2ZWZBpBUvZwXKQmoEYga2/endpoint/ep_33ZIBDmz66FcPG35FnsbM6Ie4X1' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"channels\": [\n      \"project_123\",\n      \"group_2\"\n    ],\n    \"description\": \"An example endpoint name\",\n    \"disabled\": true,\n    \"filterTypes\": [\n      \"user.signup\",\n      \"user.deleted\"\n    ],\n    \"metadata\": {},\n    \"rateLimit\": 1,\n    \"uid\": \"unique-identifier\",\n    \"url\": \"https://example.com/webhook/\"\n  }'"
                     }
                 ]
             }
@@ -14705,9 +14732,8 @@
                 ],
                 "summary": "Update Hubspot Oauth Config",
                 "tags": [
-                    "Transformation Template"
+                    "Connector"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -15745,7 +15771,6 @@
                 "tags": [
                     "Message"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -15869,7 +15894,6 @@
                 "tags": [
                     "Endpoint"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             },
             "get": {
@@ -15998,7 +16022,6 @@
                 "tags": [
                     "Endpoint"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             },
             "put": {
@@ -16130,7 +16153,6 @@
                 "tags": [
                     "Endpoint"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -16261,7 +16283,6 @@
                 "tags": [
                     "Endpoint"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -16385,7 +16406,6 @@
                 "tags": [
                     "Endpoint"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             },
             "get": {
@@ -16514,7 +16534,6 @@
                 "tags": [
                     "Endpoint"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             },
             "put": {
@@ -16646,7 +16665,6 @@
                 "tags": [
                     "Endpoint"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -16777,7 +16795,6 @@
                 "tags": [
                     "Endpoint"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -16908,13 +16925,12 @@
                 "tags": [
                     "Endpoint"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
         "/api/v1/app/{app_id}/endpoint/{endpoint_id}/recover": {
             "post": {
-                "description": "Resend all failed messages since a given time.\n\nMessages that were sent successfully, even if failed initially, are not resent.",
+                "description": "Resend all failed messages since a given time.\n\nMessages that were sent successfully, even if failed initially, are not resent.\n\nA completed task will return a payload like the following:\n```json\n{\n  \"id\": \"qtask_33qen93MNuelBAq1T9G7eHLJRsF\",\n  \"status\": \"finished\",\n  \"task\": \"endpoint.recover\",\n  \"data\": {\n    \"messagesSent\": 2\n  }\n}\n```",
                 "operationId": "v1.endpoint.recover",
                 "parameters": [
                     {
@@ -17124,7 +17140,7 @@
         },
         "/api/v1/app/{app_id}/endpoint/{endpoint_id}/replay-missing": {
             "post": {
-                "description": "Replays messages to the endpoint.\n\nOnly messages that were created after `since` will be sent.\nMessages that were previously sent to the endpoint are not resent.",
+                "description": "Replays messages to the endpoint.\n\nOnly messages that were created after `since` will be sent.\nMessages that were previously sent to the endpoint are not resent.\n\nA completed task will return a payload like the following:\n```json\n{\n  \"id\": \"qtask_33qen93MNuelBAq1T9G7eHLJRsF\",\n  \"status\": \"finished\",\n  \"task\": \"endpoint.replay\",\n  \"data\": {\n    \"messagesSent\": 2\n  }\n}\n```",
                 "operationId": "v1.endpoint.replay-missing",
                 "parameters": [
                     {
@@ -18680,7 +18696,6 @@
                 "tags": [
                     "Endpoint"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -18867,7 +18882,6 @@
                 "tags": [
                     "Message"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -19025,7 +19039,6 @@
                 "tags": [
                     "Inbound"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -19150,7 +19163,6 @@
                 "tags": [
                     "Inbound"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -21028,7 +21040,7 @@
         },
         "/api/v1/app/{app_id}/msg/expunge-all-contents": {
             "post": {
-                "description": "Delete all message payloads for the application.\n\nThis operation is only available in the <a href=\"https://svix.com/pricing\" target=\"_blank\">Enterprise</a> plan.",
+                "description": "Delete all message payloads for the application.\n\nThis operation is only available in the <a href=\"https://svix.com/pricing\" target=\"_blank\">Enterprise</a> plan.\n\nA completed task will return a payload like the following:\n```json\n{\n  \"id\": \"qtask_33qen93MNuelBAq1T9G7eHLJRsF\",\n  \"status\": \"finished\",\n  \"task\": \"application.purge_content\",\n  \"data\": {\n    \"messagesPurged\": 150\n  }\n}\n```",
                 "operationId": "v1.message.expunge-all-contents",
                 "parameters": [
                     {
@@ -21342,7 +21354,6 @@
                 "tags": [
                     "Message"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -22095,7 +22106,6 @@
                 "tags": [
                     "Message Attempt"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -22837,7 +22847,6 @@
                 "tags": [
                     "Message"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -22956,7 +22965,6 @@
                 "tags": [
                     "Application"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -23807,7 +23815,6 @@
                 "tags": [
                     "Endpoint"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             },
             "post": {
@@ -23940,7 +23947,6 @@
                 "tags": [
                     "Endpoint"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -24071,7 +24077,6 @@
                 "tags": [
                     "Endpoint"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -24211,7 +24216,6 @@
                 "tags": [
                     "Application"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -24366,7 +24370,6 @@
                 "tags": [
                     "Sink"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             },
             "post": {
@@ -24499,7 +24502,6 @@
                 "tags": [
                     "Sink"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -24622,7 +24624,6 @@
                 "tags": [
                     "Sink"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             },
             "get": {
@@ -24750,7 +24751,6 @@
                 "tags": [
                     "Sink"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             },
             "patch": {
@@ -24888,7 +24888,6 @@
                 "tags": [
                     "Sink"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             },
             "put": {
@@ -25036,7 +25035,6 @@
                 "tags": [
                     "Sink"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -25168,7 +25166,6 @@
                 "tags": [
                     "Sink"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -25298,7 +25295,6 @@
                 "tags": [
                     "Sink"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             },
             "patch": {
@@ -25436,7 +25432,6 @@
                 "tags": [
                     "Sink"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -25566,7 +25561,6 @@
                 "tags": [
                     "Sink"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -25696,7 +25690,6 @@
                 "tags": [
                     "Sink"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -25826,7 +25819,6 @@
                 "tags": [
                     "Sink"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -25975,7 +25967,6 @@
                 "tags": [
                     "Sink"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -26126,7 +26117,6 @@
                 "tags": [
                     "Sink"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -26256,7 +26246,6 @@
                 "tags": [
                     "Sink"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             },
             "patch": {
@@ -26394,7 +26383,6 @@
                 "tags": [
                     "Sink"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -26724,7 +26712,6 @@
                 "tags": [
                     "Authentication"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -27043,7 +27030,6 @@
                 "tags": [
                     "Authentication"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -27193,7 +27179,6 @@
                 "tags": [
                     "Authentication"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -27476,7 +27461,6 @@
                 "tags": [
                     "Authentication"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -27616,7 +27600,6 @@
                 "tags": [
                     "Authentication"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             },
             "post": {
@@ -27734,7 +27717,6 @@
                 "tags": [
                     "Authentication"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -27860,7 +27842,6 @@
                 "tags": [
                     "Authentication"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -27988,7 +27969,6 @@
                 "tags": [
                     "Authentication"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -28983,8 +28963,8 @@
         },
         "/api/v1/connector": {
             "get": {
-                "description": "List all transformation templates for an application.",
-                "operationId": "v1.beta.connector.list",
+                "description": "List all connectors for an application.",
+                "operationId": "v1.connector.list",
                 "parameters": [
                     {
                         "description": "Limit the number of returned items",
@@ -29115,14 +29095,74 @@
                 ],
                 "summary": "List Connectors",
                 "tags": [
-                    "Transformation Template"
+                    "Connector"
                 ],
-                "x-hidden": true,
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const response = await svix.connector.list();"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "TypeScript",
+                        "source": "const response = await svix.connector.list();"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "response = svix.connector.list()"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python (Async)",
+                        "source": "response = await svix.connector.list()"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "response, err := svix.Connector.List(ctx, nil)"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val response = svix.connector.list()"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "var response = svix.getConnector().list();"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "response = svix.connector.list"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let response = svix.connector().list(None).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var response = svix.Connector.List();"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "CLI",
+                        "source": "svix connector list"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "cURL",
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/connector' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json'"
+                    }
+                ]
             },
             "post": {
                 "description": "Create a new connector.",
-                "operationId": "v1.beta.connector.create",
+                "operationId": "v1.connector.create",
                 "parameters": [
                     {
                         "description": "The request's idempotency key",
@@ -29233,16 +29273,76 @@
                 ],
                 "summary": "Create Connector",
                 "tags": [
-                    "Transformation Template"
+                    "Connector"
                 ],
-                "x-hidden": true,
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const response = await svix.connector.create({\n  name: \"My first connector\",\n  logo: \"https://example.com/logo.png\",\n  description: \"Example connector description\",\n  kind: {},\n  instructions: \"Markdown-formatted instructions\",\n  allowedEventTypes: [\"user.signup\", \"user.deleted\"],\n  transformation: \"function handler(webhook) { /* ... */ }\",\n  featureFlags: [],\n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "TypeScript",
+                        "source": "const response = await svix.connector.create({\n  name: \"My first connector\",\n  logo: \"https://example.com/logo.png\",\n  description: \"Example connector description\",\n  kind: {},\n  instructions: \"Markdown-formatted instructions\",\n  allowedEventTypes: [\"user.signup\", \"user.deleted\"],\n  transformation: \"function handler(webhook) { /* ... */ }\",\n  featureFlags: [],\n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "response = svix.connector.create(\n    ConnectorIn(\n        name=\"My first connector\",\n        logo=\"https://example.com/logo.png\",\n        description=\"Example connector description\",\n        kind=ConnectorKind(),\n        instructions=\"Markdown-formatted instructions\",\n        allowed_event_types=[\n            \"user.signup\",\n            \"user.deleted\",\n        ],\n        transformation=\"function handler(webhook) { /* ... */ }\",\n        feature_flags=[],\n    ),\n)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python (Async)",
+                        "source": "response = await svix.connector.create(\n    ConnectorIn(\n        name=\"My first connector\",\n        logo=\"https://example.com/logo.png\",\n        description=\"Example connector description\",\n        kind=ConnectorKind(),\n        instructions=\"Markdown-formatted instructions\",\n        allowed_event_types=[\n            \"user.signup\",\n            \"user.deleted\",\n        ],\n        transformation=\"function handler(webhook) { /* ... */ }\",\n        feature_flags=[],\n    ),\n)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "response, err := svix.Connector.Create(\n\tctx,\n\tConnectorIn{\n\t\tName:              \"My first connector\",\n\t\tLogo:              ptr(\"https://example.com/logo.png\"),\n\t\tDescription:       ptr(\"Example connector description\"),\n\t\tKind:              ptr(ConnectorKind{}),\n\t\tInstructions:      ptr(\"Markdown-formatted instructions\"),\n\t\tAllowedEventTypes: []string{\"user.signup\", \"user.deleted\"},\n\t\tTransformation:    \"function handler(webhook) { /* ... */ }\",\n\t\tFeatureFlags:      []string{},\n\t},\n\tnil,\n)"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val response =\n    svix.connector.create(\n        ConnectorIn(\n            name = \"My first connector\",\n            logo = \"https://example.com/logo.png\",\n            description = \"Example connector description\",\n            kind = ConnectorKind(),\n            instructions = \"Markdown-formatted instructions\",\n            allowedEventTypes = setOf(\"user.signup\", \"user.deleted\"),\n            transformation = \"function handler(webhook) { /* ... */ }\",\n            featureFlags = setOf(),\n        )\n    )"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "var response = svix.getConnector()\n        .create(new ConnectorIn()\n            .name(\"My first connector\")\n            .logo(URI.create(\"https://example.com/logo.png\"))\n            .description(\"Example connector description\")\n            .kind(new ConnectorKind())\n            .instructions(\"Markdown-formatted instructions\")\n            .allowedEventTypes(Set.of(\"user.signup\", \"user.deleted\"))\n            .transformation(\"function handler(webhook) { /* ... */ }\")\n            .featureFlags(Set.of()));"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "response = svix\n  .connector\n  .create(\n    {\n      name: \"My first connector\",\n      logo: \"https://example.com/logo.png\",\n      description: \"Example connector description\",\n      kind: {},\n      instructions: \"Markdown-formatted instructions\",\n      allowedEventTypes: [\"user.signup\", \"user.deleted\"],\n      transformation: \"function handler(webhook) { /* ... */ }\",\n      featureFlags: []\n    }\n  )"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let response = svix\n    .connector()\n    .create(\n        ConnectorIn {\n            name: \"My first connector\".to_string(),\n            logo: Some(\"https://example.com/logo.png\".to_string()),\n            description: Some(\"Example connector description\".to_string()),\n            kind: Some(ConnectorKind {}),\n            instructions: Some(\"Markdown-formatted instructions\".to_string()),\n            allowed_event_types: Some(\n                vec![\"user.signup\".to_string(), \"user.deleted\".to_string()],\n            ),\n            transformation: \"function handler(webhook) { /* ... */ }\".to_string(),\n            feature_flags: Some(vec![]),\n        },\n        None,\n    )\n    .await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var response = svix.Connector.Create(\n    new ConnectorIn\n    {\n        Name = \"My first connector\",\n        Logo = \"https://example.com/logo.png\",\n        Description = \"Example connector description\",\n        Kind = new ConnectorKind { },\n        Instructions = \"Markdown-formatted instructions\",\n        AllowedEventTypes = [\"user.signup\", \"user.deleted\"],\n        Transformation = \"function handler(webhook) { /* ... */ }\",\n        FeatureFlags = [],\n    }\n);"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "CLI",
+                        "source": "svix connector create '{\n    \"allowedEventTypes\": [\n      \"user.signup\",\n      \"user.deleted\"\n    ],\n    \"description\": \"Example connector description\",\n    \"featureFlags\": [],\n    \"instructions\": \"Markdown-formatted instructions\",\n    \"kind\": {},\n    \"logo\": \"https://example.com/logo.png\",\n    \"name\": \"My first connector\",\n    \"transformation\": \"function handler(webhook) { /* ... */ }\"\n  }'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "cURL",
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/connector' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"allowedEventTypes\": [\n      \"user.signup\",\n      \"user.deleted\"\n    ],\n    \"description\": \"Example connector description\",\n    \"featureFlags\": [],\n    \"instructions\": \"Markdown-formatted instructions\",\n    \"kind\": {},\n    \"logo\": \"https://example.com/logo.png\",\n    \"name\": \"My first connector\",\n    \"transformation\": \"function handler(webhook) { /* ... */ }\"\n  }'"
+                    }
+                ]
             }
         },
         "/api/v1/connector/generate": {
             "post": {
                 "description": "Use OpenAI's Completion API to generate code for a connector.",
-                "operationId": "v1.beta.connector.generate",
+                "operationId": "v1.connector.generate",
                 "parameters": [
                     {
                         "description": "The request's idempotency key",
@@ -29353,16 +29453,15 @@
                 ],
                 "summary": "Generate",
                 "tags": [
-                    "Transformation Template"
+                    "Connector"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
         "/api/v1/connector/oauth/discord": {
             "post": {
                 "description": "Get Discord Incoming webhook URL.",
-                "operationId": "v1.beta.connector.oauth.discord",
+                "operationId": "v1.connector.oauth.discord",
                 "parameters": [
                     {
                         "description": "The request's idempotency key",
@@ -29473,16 +29572,15 @@
                 ],
                 "summary": "Authorize Discord",
                 "tags": [
-                    "Transformation Template"
+                    "Connector"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
         "/api/v1/connector/oauth/hubspot": {
             "post": {
                 "description": "Get Hubspot access token using authorization code.",
-                "operationId": "v1.beta.connector.oauth.hubspot",
+                "operationId": "v1.connector.oauth.hubspot",
                 "parameters": [
                     {
                         "description": "The request's idempotency key",
@@ -29593,16 +29691,15 @@
                 ],
                 "summary": "Authorize Hubspot",
                 "tags": [
-                    "Transformation Template"
+                    "Connector"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
         "/api/v1/connector/oauth/slack": {
             "post": {
                 "description": "Get Slack Incoming webhook URL.",
-                "operationId": "v1.beta.connector.oauth.slack",
+                "operationId": "v1.connector.oauth.slack",
                 "parameters": [
                     {
                         "description": "The request's idempotency key",
@@ -29713,16 +29810,15 @@
                 ],
                 "summary": "Authorize Slack",
                 "tags": [
-                    "Transformation Template"
+                    "Connector"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
         "/api/v1/connector/simulate": {
             "post": {
                 "description": "Simulate running the transformation on the payload and code.",
-                "operationId": "v1.beta.connector.simulate",
+                "operationId": "v1.connector.simulate",
                 "parameters": [
                     {
                         "description": "The request's idempotency key",
@@ -29833,16 +29929,15 @@
                 ],
                 "summary": "Simulate",
                 "tags": [
-                    "Transformation Template"
+                    "Connector"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
         "/api/v1/connector/{connector_id}": {
             "delete": {
                 "description": "Delete a connector.",
-                "operationId": "v1.beta.connector.delete",
+                "operationId": "v1.connector.delete",
                 "parameters": [
                     {
                         "description": "The Connector's ID.",
@@ -29942,14 +30037,74 @@
                 ],
                 "summary": "Delete Connector",
                 "tags": [
-                    "Transformation Template"
+                    "Connector"
                 ],
-                "x-hidden": true,
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "await svix.connector.delete(\"connector_id\");"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "TypeScript",
+                        "source": "await svix.connector.delete(\"connector_id\");"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "svix.connector.delete(\n    \"connector_id\",\n)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python (Async)",
+                        "source": "await svix.connector.delete(\n    \"connector_id\",\n)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "err := svix.Connector.Delete(ctx, \"connector_id\")"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "svix.connector.delete(\"connector_id\")"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "svix.getConnector().delete(\"connector_id\");"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "response = svix.connector.delete(\"connector_id\")"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "svix.connector().delete(\"connector_id\".to_string()).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var response = svix.Connector.Delete(\"connector_id\");"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "CLI",
+                        "source": "svix connector delete \"connector_id\""
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "cURL",
+                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/connector/connector_id' \\\n  -H 'Authorization: Bearer AUTH_TOKEN'"
+                    }
+                ]
             },
             "get": {
                 "description": "Get a connector.",
-                "operationId": "v1.beta.connector.get",
+                "operationId": "v1.connector.get",
                 "parameters": [
                     {
                         "description": "The Connector's ID.",
@@ -30056,14 +30211,74 @@
                 ],
                 "summary": "Get Connector",
                 "tags": [
-                    "Transformation Template"
+                    "Connector"
                 ],
-                "x-hidden": true,
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const response = await svix.connector.get(\"connector_id\");"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "TypeScript",
+                        "source": "const response = await svix.connector.get(\"connector_id\");"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "response = svix.connector.get(\n    \"connector_id\",\n)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python (Async)",
+                        "source": "response = await svix.connector.get(\n    \"connector_id\",\n)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "response, err := svix.Connector.Get(ctx, \"connector_id\")"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val response = svix.connector.get(\"connector_id\")"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "var response = svix.getConnector().get(\"connector_id\");"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "response = svix.connector.get(\"connector_id\")"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let response = svix.connector().get(\"connector_id\".to_string()).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var response = svix.Connector.Get(\"connector_id\");"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "CLI",
+                        "source": "svix connector get \"connector_id\""
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "cURL",
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/connector/connector_id' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json'"
+                    }
+                ]
             },
             "patch": {
                 "description": "Partially update a connector.",
-                "operationId": "v1.beta.connector.patch",
+                "operationId": "v1.connector.patch",
                 "parameters": [
                     {
                         "description": "The Connector's ID.",
@@ -30180,14 +30395,74 @@
                 ],
                 "summary": "Patch Connector",
                 "tags": [
-                    "Transformation Template"
+                    "Connector"
                 ],
-                "x-hidden": true,
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const response = await svix.connector.patch(\"connector_id\", {\n  name: \"sample string\",\n  logo: \"sample string\",\n  description: \"sample string\",\n  kind: {},\n  instructions: \"sample string\",\n  allowedEventTypes: [\"user.signup\", \"user.deleted\"],\n  transformation: \"sample string\",\n  featureFlags: [\"cool-new-feature\"],\n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "TypeScript",
+                        "source": "const response = await svix.connector.patch(\"connector_id\", {\n  name: \"sample string\",\n  logo: \"sample string\",\n  description: \"sample string\",\n  kind: {},\n  instructions: \"sample string\",\n  allowedEventTypes: [\"user.signup\", \"user.deleted\"],\n  transformation: \"sample string\",\n  featureFlags: [\"cool-new-feature\"],\n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "response = svix.connector.patch(\n    \"connector_id\",\n    ConnectorPatch(\n        name=\"sample string\",\n        logo=\"sample string\",\n        description=\"sample string\",\n        kind=ConnectorKind(),\n        instructions=\"sample string\",\n        allowed_event_types=[\n            \"user.signup\",\n            \"user.deleted\",\n        ],\n        transformation=\"sample string\",\n        feature_flags=[\n            \"cool-new-feature\",\n        ],\n    ),\n)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python (Async)",
+                        "source": "response = await svix.connector.patch(\n    \"connector_id\",\n    ConnectorPatch(\n        name=\"sample string\",\n        logo=\"sample string\",\n        description=\"sample string\",\n        kind=ConnectorKind(),\n        instructions=\"sample string\",\n        allowed_event_types=[\n            \"user.signup\",\n            \"user.deleted\",\n        ],\n        transformation=\"sample string\",\n        feature_flags=[\n            \"cool-new-feature\",\n        ],\n    ),\n)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "response, err := svix.Connector.Patch(\n\tctx,\n\t\"connector_id\",\n\tConnectorPatch{\n\t\tName:              ptr(\"sample string\"),\n\t\tLogo:              NewNullable(\"sample string\"),\n\t\tDescription:       ptr(\"sample string\"),\n\t\tKind:              ptr(ConnectorKind{}),\n\t\tInstructions:      ptr(\"sample string\"),\n\t\tAllowedEventTypes: NewNullable([]string{\"user.signup\", \"user.deleted\"}),\n\t\tTransformation:    ptr(\"sample string\"),\n\t\tFeatureFlags:      NewNullable([]string{\"cool-new-feature\"}),\n\t},\n)"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val response =\n    svix.connector.patch(\n        \"connector_id\",\n        ConnectorPatch(\n            name = \"sample string\",\n            logo = MaybeUnset.Present(\"https://example.com/\"),\n            description = \"sample string\",\n            kind = ConnectorKind(),\n            instructions = \"sample string\",\n            allowedEventTypes = MaybeUnset.Present(setOf(\"user.signup\", \"user.deleted\")),\n            transformation = \"sample string\",\n            featureFlags = MaybeUnset.Present(setOf(\"cool-new-feature\")),\n        ),\n    )"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "var response = svix.getConnector()\n        .patch(\n            \"connector_id\",\n            new ConnectorPatch()\n                .name(\"sample string\")\n                .logo(URI.create(\"https://example.com/\"))\n                .description(\"sample string\")\n                .kind(new ConnectorKind())\n                .instructions(\"sample string\")\n                .allowedEventTypes(Set.of(\"user.signup\", \"user.deleted\"))\n                .transformation(\"sample string\")\n                .featureFlags(Set.of(\"cool-new-feature\")));"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "response = svix\n  .connector\n  .patch(\n    \"connector_id\",\n    {\n      name: \"sample string\",\n      logo: \"sample string\",\n      description: \"sample string\",\n      kind: {},\n      instructions: \"sample string\",\n      allowedEventTypes: [\"user.signup\", \"user.deleted\"],\n      transformation: \"sample string\",\n      featureFlags: [\"cool-new-feature\"]\n    }\n  )"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let response = svix\n    .connector()\n    .patch(\n        \"connector_id\".to_string(),\n        ConnectorPatch {\n            name: Some(\"sample string\".to_string()),\n            logo: js_option::JsOption::Some(\"sample string\".to_string()),\n            description: Some(\"sample string\".to_string()),\n            kind: Some(ConnectorKind {}),\n            instructions: Some(\"sample string\".to_string()),\n            allowed_event_types: js_option::JsOption::Some(\n                vec![\"user.signup\".to_string(), \"user.deleted\".to_string()],\n            ),\n            transformation: Some(\"sample string\".to_string()),\n            feature_flags: js_option::JsOption::Some(\n                vec![\"cool-new-feature\".to_string()],\n            ),\n        },\n    )\n    .await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var response = svix.Connector.Patch(\n    \"connector_id\",\n    new ConnectorPatch\n    {\n        Name = \"sample string\",\n        Logo = \"sample string\",\n        Description = \"sample string\",\n        Kind = new ConnectorKind { },\n        Instructions = \"sample string\",\n        AllowedEventTypes = MaybeUnset<List<string>?>.Set([\"user.signup\", \"user.deleted\"]),\n        Transformation = \"sample string\",\n        FeatureFlags = MaybeUnset<List<string>?>.Set([\"cool-new-feature\"]),\n    }\n);"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "CLI",
+                        "source": "svix connector patch \"connector_id\" '{\n    \"allowedEventTypes\": [\n      \"user.signup\",\n      \"user.deleted\"\n    ],\n    \"description\": \"sample string\",\n    \"featureFlags\": [\n      \"cool-new-feature\"\n    ],\n    \"instructions\": \"sample string\",\n    \"kind\": {},\n    \"logo\": \"sample string\",\n    \"name\": \"sample string\",\n    \"transformation\": \"sample string\"\n  }'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "cURL",
+                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/connector/connector_id' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"allowedEventTypes\": [\n      \"user.signup\",\n      \"user.deleted\"\n    ],\n    \"description\": \"sample string\",\n    \"featureFlags\": [\n      \"cool-new-feature\"\n    ],\n    \"instructions\": \"sample string\",\n    \"kind\": {},\n    \"logo\": \"sample string\",\n    \"name\": \"sample string\",\n    \"transformation\": \"sample string\"\n  }'"
+                    }
+                ]
             },
             "put": {
                 "description": "Update a connector.",
-                "operationId": "v1.beta.connector.update",
+                "operationId": "v1.connector.update",
                 "parameters": [
                     {
                         "description": "The Connector's ID.",
@@ -30314,15 +30589,75 @@
                 ],
                 "summary": "Update Connector",
                 "tags": [
-                    "Transformation Template"
+                    "Connector"
                 ],
-                "x-hidden": true,
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const response = await svix.connector.update(\"connector_id\", {\n  name: \"My first connector\",\n  logo: \"https://example.com/logo.png\",\n  description: \"Example connector description\",\n  kind: {},\n  instructions: \"Markdown-formatted instructions\",\n  allowedEventTypes: [\"user.signup\", \"user.deleted\"],\n  transformation: \"function handler(webhook) { /* ... */ }\",\n  featureFlags: [\"cool-new-feature\"],\n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "TypeScript",
+                        "source": "const response = await svix.connector.update(\"connector_id\", {\n  name: \"My first connector\",\n  logo: \"https://example.com/logo.png\",\n  description: \"Example connector description\",\n  kind: {},\n  instructions: \"Markdown-formatted instructions\",\n  allowedEventTypes: [\"user.signup\", \"user.deleted\"],\n  transformation: \"function handler(webhook) { /* ... */ }\",\n  featureFlags: [\"cool-new-feature\"],\n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "response = svix.connector.update(\n    \"connector_id\",\n    ConnectorUpdate(\n        name=\"My first connector\",\n        logo=\"https://example.com/logo.png\",\n        description=\"Example connector description\",\n        kind=ConnectorKind(),\n        instructions=\"Markdown-formatted instructions\",\n        allowed_event_types=[\n            \"user.signup\",\n            \"user.deleted\",\n        ],\n        transformation=\"function handler(webhook) { /* ... */ }\",\n        feature_flags=[\n            \"cool-new-feature\",\n        ],\n    ),\n)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python (Async)",
+                        "source": "response = await svix.connector.update(\n    \"connector_id\",\n    ConnectorUpdate(\n        name=\"My first connector\",\n        logo=\"https://example.com/logo.png\",\n        description=\"Example connector description\",\n        kind=ConnectorKind(),\n        instructions=\"Markdown-formatted instructions\",\n        allowed_event_types=[\n            \"user.signup\",\n            \"user.deleted\",\n        ],\n        transformation=\"function handler(webhook) { /* ... */ }\",\n        feature_flags=[\n            \"cool-new-feature\",\n        ],\n    ),\n)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "response, err := svix.Connector.Update(\n\tctx,\n\t\"connector_id\",\n\tConnectorUpdate{\n\t\tName:              ptr(\"My first connector\"),\n\t\tLogo:              ptr(\"https://example.com/logo.png\"),\n\t\tDescription:       ptr(\"Example connector description\"),\n\t\tKind:              ptr(ConnectorKind{}),\n\t\tInstructions:      ptr(\"Markdown-formatted instructions\"),\n\t\tAllowedEventTypes: []string{\"user.signup\", \"user.deleted\"},\n\t\tTransformation:    \"function handler(webhook) { /* ... */ }\",\n\t\tFeatureFlags:      []string{\"cool-new-feature\"},\n\t},\n)"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val response =\n    svix.connector.update(\n        \"connector_id\",\n        ConnectorUpdate(\n            name = \"My first connector\",\n            logo = \"https://example.com/logo.png\",\n            description = \"Example connector description\",\n            kind = ConnectorKind(),\n            instructions = \"Markdown-formatted instructions\",\n            allowedEventTypes = setOf(\"user.signup\", \"user.deleted\"),\n            transformation = \"function handler(webhook) { /* ... */ }\",\n            featureFlags = setOf(\"cool-new-feature\"),\n        ),\n    )"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "var response = svix.getConnector()\n        .update(\n            \"connector_id\",\n            new ConnectorUpdate()\n                .name(\"My first connector\")\n                .logo(URI.create(\"https://example.com/logo.png\"))\n                .description(\"Example connector description\")\n                .kind(new ConnectorKind())\n                .instructions(\"Markdown-formatted instructions\")\n                .allowedEventTypes(Set.of(\"user.signup\", \"user.deleted\"))\n                .transformation(\"function handler(webhook) { /* ... */ }\")\n                .featureFlags(Set.of(\"cool-new-feature\")));"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "response = svix\n  .connector\n  .update(\n    \"connector_id\",\n    {\n      name: \"My first connector\",\n      logo: \"https://example.com/logo.png\",\n      description: \"Example connector description\",\n      kind: {},\n      instructions: \"Markdown-formatted instructions\",\n      allowedEventTypes: [\"user.signup\", \"user.deleted\"],\n      transformation: \"function handler(webhook) { /* ... */ }\",\n      featureFlags: [\"cool-new-feature\"]\n    }\n  )"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let response = svix\n    .connector()\n    .update(\n        \"connector_id\".to_string(),\n        ConnectorUpdate {\n            name: Some(\"My first connector\".to_string()),\n            logo: Some(\"https://example.com/logo.png\".to_string()),\n            description: Some(\"Example connector description\".to_string()),\n            kind: Some(ConnectorKind {}),\n            instructions: Some(\"Markdown-formatted instructions\".to_string()),\n            allowed_event_types: Some(\n                vec![\"user.signup\".to_string(), \"user.deleted\".to_string()],\n            ),\n            transformation: \"function handler(webhook) { /* ... */ }\".to_string(),\n            feature_flags: Some(vec![\"cool-new-feature\".to_string()]),\n        },\n    )\n    .await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var response = svix.Connector.Update(\n    \"connector_id\",\n    new ConnectorUpdate\n    {\n        Name = \"My first connector\",\n        Logo = \"https://example.com/logo.png\",\n        Description = \"Example connector description\",\n        Kind = new ConnectorKind { },\n        Instructions = \"Markdown-formatted instructions\",\n        AllowedEventTypes = [\"user.signup\", \"user.deleted\"],\n        Transformation = \"function handler(webhook) { /* ... */ }\",\n        FeatureFlags = [\"cool-new-feature\"],\n    }\n);"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "CLI",
+                        "source": "svix connector update \"connector_id\" '{\n    \"allowedEventTypes\": [\n      \"user.signup\",\n      \"user.deleted\"\n    ],\n    \"description\": \"Example connector description\",\n    \"featureFlags\": [\n      \"cool-new-feature\"\n    ],\n    \"instructions\": \"Markdown-formatted instructions\",\n    \"kind\": {},\n    \"logo\": \"https://example.com/logo.png\",\n    \"name\": \"My first connector\",\n    \"transformation\": \"function handler(webhook) { /* ... */ }\"\n  }'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "cURL",
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/connector/connector_id' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"allowedEventTypes\": [\n      \"user.signup\",\n      \"user.deleted\"\n    ],\n    \"description\": \"Example connector description\",\n    \"featureFlags\": [\n      \"cool-new-feature\"\n    ],\n    \"instructions\": \"Markdown-formatted instructions\",\n    \"kind\": {},\n    \"logo\": \"https://example.com/logo.png\",\n    \"name\": \"My first connector\",\n    \"transformation\": \"function handler(webhook) { /* ... */ }\"\n  }'"
+                    }
+                ]
             }
         },
         "/api/v1/environment/export": {
             "post": {
-                "description": "Download a JSON file containing all org-settings and event types.",
+                "description": "Download a JSON file containing all org-settings and event types.\n\nNote that the schema for [`EnvironmentOut`] is subject to change. The fields\nherein are provided for convenience but should be treated as JSON blobs.",
                 "operationId": "v1.environment.export",
                 "parameters": [
                     {
@@ -30492,7 +30827,7 @@
         },
         "/api/v1/environment/import": {
             "post": {
-                "description": "Import a configuration into the active organization.\n\nIt doesn't delete anything, only adds / updates what was passed to it.",
+                "description": "Import a configuration into the active organization.\n\nIt doesn't delete anything, only adds / updates what was passed to it.\n\nNote that the schema for [`EnvironmentIn`] is subject to change. The fields\nherein are provided for convenience but should be treated as JSON blobs.",
                 "operationId": "v1.environment.import",
                 "parameters": [
                     {
@@ -30758,7 +31093,6 @@
                 "tags": [
                     "Environment-Settings"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -31163,7 +31497,7 @@
         },
         "/api/v1/event-type/export/openapi": {
             "post": {
-                "description": "Exports event type definitions based on the OpenAPI schemas associated\nwith each existing event type.",
+                "description": "Exports event type definitions based on the OpenAPI schemas associated\nwith each existing event type.\n\nA completed task will return a payload like the following:\n```json\n{\n  \"id\": \"qtask_33qen93MNuelBAq1T9G7eHLJRsF\",\n  \"status\": \"finished\",\n  \"task\": \"sdk.generate\",\n  \"data\": {\n    \"schemaZip\": \"https://example.com/schema.zip\"\n  }\n}\n```",
                 "operationId": "v1.event-type.export-openapi",
                 "parameters": [
                     {
@@ -31267,7 +31601,6 @@
                 "tags": [
                     "Event Type"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -31568,7 +31901,6 @@
                 "tags": [
                     "Event Type"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -32411,7 +32743,6 @@
                 "tags": [
                     "Event Type"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             },
             "put": {
@@ -32534,7 +32865,6 @@
                 "tags": [
                     "Event Type"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -32706,7 +33036,6 @@
                 "tags": [
                     "Events"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -32946,7 +33275,6 @@
                 "tags": [
                     "Authentication"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             },
             "post": {
@@ -33079,7 +33407,6 @@
                 "tags": [
                     "Authentication"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -33210,7 +33537,6 @@
                 "tags": [
                     "Authentication"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             },
             "put": {
@@ -33349,7 +33675,6 @@
                 "tags": [
                     "Authentication"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -33492,7 +33817,6 @@
                 "tags": [
                     "Authentication"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -33632,7 +33956,6 @@
                 "tags": [
                     "Environment"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             },
             "post": {
@@ -33750,7 +34073,6 @@
                 "tags": [
                     "Environment"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -33849,7 +34171,6 @@
                 "tags": [
                     "Environment-Settings"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             },
             "patch": {
@@ -33956,7 +34277,6 @@
                 "tags": [
                     "Environment-Settings"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             },
             "put": {
@@ -34063,7 +34383,6 @@
                 "tags": [
                     "Environment-Settings"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -34155,7 +34474,6 @@
                 "tags": [
                     "Environment-Settings"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             },
             "get": {
@@ -34252,7 +34570,6 @@
                 "tags": [
                     "Environment-Settings"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             },
             "put": {
@@ -34352,7 +34669,6 @@
                 "tags": [
                     "Environment-Settings"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -34461,7 +34777,6 @@
                 "tags": [
                     "Environment"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             },
             "get": {
@@ -34575,7 +34890,6 @@
                 "tags": [
                     "Environment"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             },
             "put": {
@@ -34699,13 +35013,12 @@
                 "tags": [
                     "Environment"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
         "/api/v1/msg/broadcast": {
             "post": {
-                "description": "Creates a background task to send the same message to each application in your organization.",
+                "description": "Creates a background task to send the same message to each application in your organization.\n\nA completed task will return a payload like the following:\n```json\n{\n  \"id\": \"qtask_33qen93MNuelBAq1T9G7eHLJRsF\",\n  \"status\": \"finished\",\n  \"task\": \"message.broadcast\",\n  \"data\": {\n    \"messagesCreated\": [\n      {\n        \"appId\": \"app_33s1An2Zz5cO9SWbhHsYyDmVC6m\",\n        \"msgId\": \"msg_33s1An2Zz5cO9SWbhHsYyDmVC6m\"\n      },\n      {\n        \"appId\": \"app_33sXYjcO6bkWeZIXDI8w6ZYMivz\",\n        \"msgId\": \"msg_33sZJfmYMOQGApyIgRdteOX0xlX\"\n      }\n    ]\n  }\n}\n```",
                 "operationId": "create_broadcast_message",
                 "parameters": [
                     {
@@ -34819,7 +35132,6 @@
                 "tags": [
                     "Broadcast"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -36581,7 +36893,6 @@
                 "tags": [
                     "Statistics"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -36736,13 +37047,12 @@
                 "tags": [
                     "Statistics"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
         "/api/v1/stats/usage/app": {
             "post": {
-                "description": "Creates a background task to calculate the message destinations for all applications in the environment.\n\nNote that this endpoint is asynchronous. You will need to poll the `Get Background Task` endpoint to\nretrieve the results of the operation.",
+                "description": "Creates a background task to calculate the message destinations for all applications in the environment.\n\nNote that this endpoint is asynchronous. You will need to poll the `Get Background Task` endpoint to\nretrieve the results of the operation.\n\nThe completed background task will return a payload like the following:\n```json\n{\n  \"id\": \"qtask_33qe39Stble9Rn3ZxFrqL5ZSsjT\",\n  \"status\": \"finished\",\n  \"task\": \"application.stats\",\n  \"data\": {\n    \"appStats\": [\n      {\n        \"messageDestinations\": 2,\n        \"appId\": \"app_33W1An2Zz5cO9SWbhHsYyDmVC6m\",\n        \"appUid\": null\n      }\n    ]\n  }\n}\n```",
                 "operationId": "v1.statistics.aggregate-app-stats",
                 "parameters": [
                     {
@@ -36922,7 +37232,7 @@
         },
         "/api/v1/stats/usage/event-types": {
             "put": {
-                "description": "Creates a background task to calculate the listed event types for all apps in the organization.\n\nNote that this endpoint is asynchronous. You will need to poll the `Get Background Task` endpoint to\nretrieve the results of the operation.",
+                "description": "Creates a background task to calculate the listed event types for all apps in the organization.\n\nNote that this endpoint is asynchronous. You will need to poll the `Get Background Task` endpoint to\nretrieve the results of the operation.\n\nThe completed background task will return a payload like the following:\n```json\n{\n  \"id\": \"qtask_33qe39Stble9Rn3ZxFrqL5ZSsjT\",\n  \"status\": \"finished\",\n  \"task\": \"event-type.aggregate\",\n  \"data\": {\n    \"event_types\": [\n      {\n        \"appId\": \"app_33W1An2Zz5cO9SWbhHsYyDmVC6m\",\n        \"explicitlySubscribedEventTypes\": [\"user.signup\", \"user.deleted\"],\n        \"hasCatchAllEndpoint\": false\n      }\n    ]\n  }\n}\n```",
                 "operationId": "v1.statistics.aggregate-event-types",
                 "responses": {
                     "202": {
@@ -38689,7 +38999,6 @@
                 "tags": [
                     "Stream"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -39544,32 +39853,32 @@
                     {
                         "label": "JavaScript",
                         "lang": "Javascript",
-                        "source": "await svix.stream.events.create(\"rock_inc_uid\", {\n  events: [\n    {\n      \"eventType\": \"user.signup\",\n      \"payload\": '{\"email\":\"test@example.com\",\"username\":\"test_user\"}'\n    }\n  ]\n});"
+                        "source": "await svix.streaming.events.create(\"rock_inc_uid\", {\n  events: [\n    {\n      \"eventType\": \"user.signup\",\n      \"payload\": '{\"email\":\"test@example.com\",\"username\":\"test_user\"}'\n    }\n  ]\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "Typescript",
-                        "source": "await svix.stream.events.create(\"rock_inc_uid\", {\n  events: [\n    {\n      \"eventType\": \"user.signup\",\n      \"payload\": '{\"email\":\"test@example.com\",\"username\":\"test_user\"}'\n    }\n  ]\n});"
+                        "source": "await svix.streaming.events.create(\"rock_inc_uid\", {\n  events: [\n    {\n      \"eventType\": \"user.signup\",\n      \"payload\": '{\"email\":\"test@example.com\",\"username\":\"test_user\"}'\n    }\n  ]\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "svix.stream.events.create(\"rock_inc_uid\", CreateStreamEventsIn(\n  events=[\n    EventIn(\n      eventType=\"user.signup\",\n      payload='{\"email\":\"test@example.com\",\"username\":\"test_user\"}'\n    )\n  ]\n))"
+                        "source": "svix.streaming.events.create(\"rock_inc_uid\", CreateStreamEventsIn(\n  events=[\n    EventIn(\n      eventType=\"user.signup\",\n      payload='{\"email\":\"test@example.com\",\"username\":\"test_user\"}'\n    )\n  ]\n))"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python (Async)",
-                        "source": "await svix.stream.events.create(\"rock_inc_uid\", CreateStreamEventsIn(\n  events=[\n    EventIn(\n      eventType=\"user.signup\",\n      payload='{\"email\":\"test@example.com\",\"username\":\"test_user\"}'\n    )\n  ]\n))"
+                        "source": "await svix.streaming.events.create(\"rock_inc_uid\", CreateStreamEventsIn(\n  events=[\n    EventIn(\n      eventType=\"user.signup\",\n      payload='{\"email\":\"test@example.com\",\"username\":\"test_user\"}'\n    )\n  ]\n))"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "svixClient.Stream.Events.Create(\n  ctx,\n  \"rock_inc_uid\",\n  &svix.CreateStreamEventsIn{\n    Events: []svix.EventIn{\n      {\n        EventType: \"user.signup\",\n        Payload: \\`{\"email\":\"test@example.com\",\"username\":\"test_user\"}\\`,\n      }\n    },\n  })"
+                        "source": "svixClient.Streaming.Events.Create(\n  ctx,\n  \"rock_inc_uid\",\n  &svix.CreateStreamEventsIn{\n    Events: []svix.EventIn{\n      {\n        EventType: \"user.signup\",\n        Payload: \\`{\"email\":\"test@example.com\",\"username\":\"test_user\"}\\`,\n      }\n    },\n  })"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "svix.stream.events.create(\"rock_inc_uid\", CreateStreamEventsIn()\n    .events(arrayOf(\n      EventIn(\n        eventType = \"user.signup\",\n        payload = \\`{\"email\":\"test@example.com\",\"username\":\"test_user\"}\\`,\n      )\n    ))\n)"
+                        "source": "svix.streaming.events.create(\"rock_inc_uid\", CreateStreamEventsIn()\n    .events(arrayOf(\n      EventIn(\n        eventType = \"user.signup\",\n        payload = \\`{\"email\":\"test@example.com\",\"username\":\"test_user\"}\\`,\n      )\n    ))\n)"
                     },
                     {
                         "label": "Java",
@@ -39579,22 +39888,22 @@
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "svix.stream.events.create(\"rock_inc_uid\", Svix::CreateStreamEventsIn.new({\n    \"events\": [\n      {\n        \"eventType\": \"user.signup\",\n        \"payload\": '{\"email\":\"test@example.com\",\"username\":\"test_user\"}'\n      }\n    ]\n}))"
+                        "source": "svix.streaming.events.create(\"rock_inc_uid\", Svix::CreateStreamEventsIn.new({\n    \"events\": [\n      {\n        \"eventType\": \"user.signup\",\n        \"payload\": '{\"email\":\"test@example.com\",\"username\":\"test_user\"}'\n      }\n    ]\n}))"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "svix.stream().events().create(\"rock_inc_uid\", CreateStreamEventsIn {\n    events: vec![\n      EventIn {\n        event_type: \"user.signup\".into(),\n        payload: r#\"{\"email\":\"test@example.com\",\"username\":\"test_user\"}\"#.into()\n      }\n    ],\n    stream: None,\n}, None).await?;"
+                        "source": "svix.streaming().events().create(\"rock_inc_uid\", CreateStreamEventsIn {\n    events: vec![\n      EventIn {\n        event_type: \"user.signup\".into(),\n        payload: r#\"{\"email\":\"test@example.com\",\"username\":\"test_user\"}\"#.into()\n      }\n    ],\n    stream: None,\n}, None).await?;"
                     },
                     {
                         "label": "Php",
                         "lang": "Php",
-                        "source": "$svix->stream->events->create(\n  'rock_inc_uid',\n  CreateStreamEventsIn::create(\n    events: [\n      [\n        'eventType' => 'user.signup',\n        'payload' => '{\"email\":\"test@example.com\",\"username\":\"test_user\"}'\n      ]\n    ],\n  )\n);"
+                        "source": "$svix->streaming->events->create(\n  'rock_inc_uid',\n  CreateStreamEventsIn::create(\n    events: [\n      [\n        'eventType' => 'user.signup',\n        'payload' => '{\"email\":\"test@example.com\",\"username\":\"test_user\"}'\n      ]\n    ],\n  )\n);"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "await svix.Stream.Events.CreateAsync(\"stream_id\", new CreateStreamEventsIn{\n    events: new EventIn[] {\n      new EventIn(\n        eventType: \"user.signup\",\n        payload: \"{\\\\\"email\\\\\":\\\\\"test@example.com\\\\\",\\\\\"username\\\\\":\\\\\"test_user\\\\\"}\"\n      )\n    }\n});"
+                        "source": "await svix.Streaming.Events.CreateAsync(\"stream_id\", new CreateStreamEventsIn{\n    events: new EventIn[] {\n      new EventIn(\n        eventType: \"user.signup\",\n        payload: \"{\\\\\"email\\\\\":\\\\\"test@example.com\\\\\",\\\\\"username\\\\\":\\\\\"test_user\\\\\"}\"\n      )\n    }\n});"
                     },
                     {
                         "label": "cURL",
@@ -39732,7 +40041,6 @@
                 "tags": [
                     "Event"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -39850,7 +40158,6 @@
                 "tags": [
                     "Stream"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -41383,7 +41690,6 @@
                 "tags": [
                     "Sink"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -41898,7 +42204,6 @@
                 "tags": [
                     "Sink"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -42027,7 +42332,6 @@
                 "tags": [
                     "Sink"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -42574,7 +42878,6 @@
                 "tags": [
                     "Sink"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -43080,7 +43383,6 @@
                 "tags": [
                     "Survey"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -43200,7 +43502,6 @@
                 "tags": [
                     "Branding"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -44042,7 +44343,6 @@
                 "tags": [
                     "Ingest Source"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             },
             "put": {
@@ -46695,7 +46995,6 @@
                 "tags": [
                     "Ingest Message"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             },
             "post": {
@@ -46839,7 +47138,6 @@
                 "tags": [
                     "Ingest Message"
                 ],
-                "x-hidden": true,
                 "x-internal": true
             }
         },
@@ -47106,6 +47404,10 @@
         {
             "description": "Configure where Svix Ingest sends messages.",
             "name": "Ingest Endpoint"
+        },
+        {
+            "description": "Connectors allow you to connect applications to external services.",
+            "name": "Connector"
         }
     ],
     "webhooks": {
@@ -47608,7 +47910,8 @@
                 "Endpoint",
                 "Message",
                 "Message Attempt",
-                "Integration"
+                "Integration",
+                "Connector"
             ]
         },
         {

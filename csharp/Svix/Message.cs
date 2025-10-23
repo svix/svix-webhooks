@@ -292,6 +292,18 @@ namespace Svix
         /// Delete all message payloads for the application.
         ///
         /// This operation is only available in the <a href="https://svix.com/pricing" target="_blank">Enterprise</a> plan.
+        ///
+        /// A completed task will return a payload like the following:
+        /// ```json
+        /// {
+        ///   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+        ///   "status": "finished",
+        ///   "task": "application.purge_content",
+        ///   "data": {
+        ///     "messagesPurged": 150
+        ///   }
+        /// }
+        /// ```
         /// </summary>
         public async Task<ExpungeAllContentsOut> ExpungeAllContentsAsync(
             string appId,
@@ -323,6 +335,18 @@ namespace Svix
         /// Delete all message payloads for the application.
         ///
         /// This operation is only available in the <a href="https://svix.com/pricing" target="_blank">Enterprise</a> plan.
+        ///
+        /// A completed task will return a payload like the following:
+        /// ```json
+        /// {
+        ///   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+        ///   "status": "finished",
+        ///   "task": "application.purge_content",
+        ///   "data": {
+        ///     "messagesPurged": 150
+        ///   }
+        /// }
+        /// ```
         /// </summary>
         public ExpungeAllContentsOut ExpungeAllContents(
             string appId,

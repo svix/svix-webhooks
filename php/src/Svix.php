@@ -9,6 +9,7 @@ use GuzzleHttp\Client;
 use Svix\Api\Application;
 use Svix\Api\Authentication;
 use Svix\Api\BackgroundTask;
+use Svix\Api\Connector;
 use Svix\Api\Endpoint;
 use Svix\Api\Environment;
 use Svix\Api\EventType;
@@ -27,6 +28,7 @@ class Svix
     public Application $application;
     public Authentication $authentication;
     public BackgroundTask $backgroundTask;
+    public Connector $connector;
     public Endpoint $endpoint;
     public Environment $environment;
     public EventType $eventType;
@@ -56,6 +58,7 @@ class Svix
         $this->application = new Application($svixHttpClient);
         $this->authentication = new Authentication($svixHttpClient);
         $this->backgroundTask = new BackgroundTask($svixHttpClient);
+        $this->connector = new Connector($svixHttpClient);
         $this->endpoint = new Endpoint($svixHttpClient);
         $this->environment = new Environment($svixHttpClient);
         $this->eventType = new EventType($svixHttpClient);

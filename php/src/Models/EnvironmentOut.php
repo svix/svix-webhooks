@@ -10,14 +10,14 @@ class EnvironmentOut implements \JsonSerializable
     private array $setFields = [];
 
     /**
+     * @param list<ConnectorOut> $connectors
      * @param list<EventTypeOut> $eventTypes
-     * @param list<ConnectorOut> $transformationTemplates
      */
     private function __construct(
+        public readonly array $connectors,
         public readonly \DateTimeImmutable $createdAt,
         public readonly array $eventTypes,
         public readonly array $settings,
-        public readonly array $transformationTemplates,
         public readonly ?int $version = null,
         array $setFields = [],
     ) {
@@ -28,18 +28,18 @@ class EnvironmentOut implements \JsonSerializable
      * Create an instance of EnvironmentOut with required fields.
      */
     public static function create(
+        array $connectors,
         \DateTimeImmutable $createdAt,
         array $eventTypes,
         array $settings,
-        array $transformationTemplates,
     ): self {
         return new self(
+            connectors: $connectors,
             createdAt: $createdAt,
             eventTypes: $eventTypes,
             settings: $settings,
-            transformationTemplates: $transformationTemplates,
             version: null,
-            setFields: ['createdAt' => true, 'eventTypes' => true, 'settings' => true, 'transformationTemplates' => true]
+            setFields: ['connectors' => true, 'createdAt' => true, 'eventTypes' => true, 'settings' => true]
         );
     }
 
@@ -49,10 +49,10 @@ class EnvironmentOut implements \JsonSerializable
         $setFields['version'] = true;
 
         return new self(
+            connectors: $this->connectors,
             createdAt: $this->createdAt,
             eventTypes: $this->eventTypes,
             settings: $this->settings,
-            transformationTemplates: $this->transformationTemplates,
             version: $version,
             setFields: $setFields
         );
@@ -61,9 +61,9 @@ class EnvironmentOut implements \JsonSerializable
     public function jsonSerialize(): mixed
     {
         $data = [
+            'connectors' => $this->connectors,
             'createdAt' => $this->createdAt->format('c'),
-            'eventTypes' => $this->eventTypes,
-            'transformationTemplates' => $this->transformationTemplates];
+            'eventTypes' => $this->eventTypes];
 
         if (null !== $this->version) {
             $data['version'] = $this->version;
@@ -78,10 +78,10 @@ class EnvironmentOut implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
+            connectors: \Svix\Utils::deserializeObjectArray($data, 'connectors', true, 'EnvironmentOut', [ConnectorOut::class, 'fromMixed']),
             createdAt: \Svix\Utils::deserializeDt($data, 'createdAt', true, 'EnvironmentOut'),
             eventTypes: \Svix\Utils::deserializeObjectArray($data, 'eventTypes', true, 'EnvironmentOut', [EventTypeOut::class, 'fromMixed']),
             settings: \Svix\Utils::getValFromJson($data, 'settings', true, 'EnvironmentOut'),
-            transformationTemplates: \Svix\Utils::deserializeObjectArray($data, 'transformationTemplates', true, 'EnvironmentOut', [ConnectorOut::class, 'fromMixed']),
             version: \Svix\Utils::deserializeInt($data, 'version', false, 'EnvironmentOut')
         );
     }

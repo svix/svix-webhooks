@@ -2,12 +2,12 @@
 import { type ConnectorKind, ConnectorKindSerializer } from "./connectorKind";
 
 export interface ConnectorIn {
+  allowedEventTypes?: string[] | null;
   description?: string;
   featureFlags?: string[] | null;
-  filterTypes?: string[] | null;
   instructions?: string;
   kind?: ConnectorKind;
-  logo: string;
+  logo?: string | null;
   name: string;
   transformation: string;
 }
@@ -15,9 +15,9 @@ export interface ConnectorIn {
 export const ConnectorInSerializer = {
   _fromJsonObject(object: any): ConnectorIn {
     return {
+      allowedEventTypes: object["allowedEventTypes"],
       description: object["description"],
       featureFlags: object["featureFlags"],
-      filterTypes: object["filterTypes"],
       instructions: object["instructions"],
       kind: object["kind"]
         ? ConnectorKindSerializer._fromJsonObject(object["kind"])
@@ -30,9 +30,9 @@ export const ConnectorInSerializer = {
 
   _toJsonObject(self: ConnectorIn): any {
     return {
+      allowedEventTypes: self.allowedEventTypes,
       description: self.description,
       featureFlags: self.featureFlags,
-      filterTypes: self.filterTypes,
       instructions: self.instructions,
       kind: self.kind ? ConnectorKindSerializer._toJsonObject(self.kind) : undefined,
       logo: self.logo,

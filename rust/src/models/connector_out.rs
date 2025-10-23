@@ -5,6 +5,10 @@ use super::connector_kind::ConnectorKind;
 
 #[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
 pub struct ConnectorOut {
+    #[serde(rename = "allowedEventTypes")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub allowed_event_types: Option<Vec<String>>,
+
     #[serde(rename = "createdAt")]
     pub created_at: String,
 
@@ -14,10 +18,6 @@ pub struct ConnectorOut {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub feature_flags: Option<Vec<String>>,
 
-    #[serde(rename = "filterTypes")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub filter_types: Option<Vec<String>>,
-
     /// The Connector's ID.
     pub id: String,
 
@@ -25,7 +25,8 @@ pub struct ConnectorOut {
 
     pub kind: ConnectorKind,
 
-    pub logo: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub logo: Option<String>,
 
     pub name: String,
 
@@ -46,21 +47,20 @@ impl ConnectorOut {
         id: String,
         instructions: String,
         kind: ConnectorKind,
-        logo: String,
         name: String,
         org_id: String,
         transformation: String,
         updated_at: String,
     ) -> Self {
         Self {
+            allowed_event_types: None,
             created_at,
             description,
             feature_flags: None,
-            filter_types: None,
             id,
             instructions,
             kind,
-            logo,
+            logo: None,
             name,
             org_id,
             transformation,

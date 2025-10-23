@@ -4,9 +4,9 @@ package models
 import "time"
 
 type EnvironmentOut struct {
-	CreatedAt               time.Time       `json:"createdAt"`
-	EventTypes              []EventTypeOut  `json:"eventTypes"`
-	Settings                *map[string]any `json:"settings,omitempty"`
-	TransformationTemplates []ConnectorOut  `json:"transformationTemplates"`
-	Version                 *int64          `json:"version,omitempty"`
+	Connectors []ConnectorOut  `json:"connectors"`
+	CreatedAt  time.Time       `json:"createdAt"`
+	EventTypes []EventTypeOut  `json:"eventTypes"`
+	Settings   *map[string]any `json:"settings,omitempty"`
+	Version    *int64          `json:"version,omitempty"`
 }

@@ -10,18 +10,18 @@ class ConnectorIn implements \JsonSerializable
     private array $setFields = [];
 
     /**
+     * @param list<string>|null $allowedEventTypes
      * @param list<string>|null $featureFlags
-     * @param list<string>|null $filterTypes
      */
     private function __construct(
-        public readonly string $logo,
         public readonly string $name,
         public readonly string $transformation,
+        public readonly ?array $allowedEventTypes = null,
         public readonly ?string $description = null,
         public readonly ?array $featureFlags = null,
-        public readonly ?array $filterTypes = null,
         public readonly ?string $instructions = null,
         public readonly ?ConnectorKind $kind = null,
+        public readonly ?string $logo = null,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -31,20 +31,37 @@ class ConnectorIn implements \JsonSerializable
      * Create an instance of ConnectorIn with required fields.
      */
     public static function create(
-        string $logo,
         string $name,
         string $transformation,
     ): self {
         return new self(
+            allowedEventTypes: null,
             description: null,
             featureFlags: null,
-            filterTypes: null,
             instructions: null,
             kind: null,
-            logo: $logo,
+            logo: null,
             name: $name,
             transformation: $transformation,
-            setFields: ['logo' => true, 'name' => true, 'transformation' => true]
+            setFields: ['name' => true, 'transformation' => true]
+        );
+    }
+
+    public function withAllowedEventTypes(?array $allowedEventTypes): self
+    {
+        $setFields = $this->setFields;
+        $setFields['allowedEventTypes'] = true;
+
+        return new self(
+            allowedEventTypes: $allowedEventTypes,
+            description: $this->description,
+            featureFlags: $this->featureFlags,
+            instructions: $this->instructions,
+            kind: $this->kind,
+            logo: $this->logo,
+            name: $this->name,
+            transformation: $this->transformation,
+            setFields: $setFields
         );
     }
 
@@ -54,9 +71,9 @@ class ConnectorIn implements \JsonSerializable
         $setFields['description'] = true;
 
         return new self(
+            allowedEventTypes: $this->allowedEventTypes,
             description: $description,
             featureFlags: $this->featureFlags,
-            filterTypes: $this->filterTypes,
             instructions: $this->instructions,
             kind: $this->kind,
             logo: $this->logo,
@@ -72,27 +89,9 @@ class ConnectorIn implements \JsonSerializable
         $setFields['featureFlags'] = true;
 
         return new self(
+            allowedEventTypes: $this->allowedEventTypes,
             description: $this->description,
             featureFlags: $featureFlags,
-            filterTypes: $this->filterTypes,
-            instructions: $this->instructions,
-            kind: $this->kind,
-            logo: $this->logo,
-            name: $this->name,
-            transformation: $this->transformation,
-            setFields: $setFields
-        );
-    }
-
-    public function withFilterTypes(?array $filterTypes): self
-    {
-        $setFields = $this->setFields;
-        $setFields['filterTypes'] = true;
-
-        return new self(
-            description: $this->description,
-            featureFlags: $this->featureFlags,
-            filterTypes: $filterTypes,
             instructions: $this->instructions,
             kind: $this->kind,
             logo: $this->logo,
@@ -108,9 +107,9 @@ class ConnectorIn implements \JsonSerializable
         $setFields['instructions'] = true;
 
         return new self(
+            allowedEventTypes: $this->allowedEventTypes,
             description: $this->description,
             featureFlags: $this->featureFlags,
-            filterTypes: $this->filterTypes,
             instructions: $instructions,
             kind: $this->kind,
             logo: $this->logo,
@@ -126,9 +125,9 @@ class ConnectorIn implements \JsonSerializable
         $setFields['kind'] = true;
 
         return new self(
+            allowedEventTypes: $this->allowedEventTypes,
             description: $this->description,
             featureFlags: $this->featureFlags,
-            filterTypes: $this->filterTypes,
             instructions: $this->instructions,
             kind: $kind,
             logo: $this->logo,
@@ -138,27 +137,47 @@ class ConnectorIn implements \JsonSerializable
         );
     }
 
+    public function withLogo(?string $logo): self
+    {
+        $setFields = $this->setFields;
+        $setFields['logo'] = true;
+
+        return new self(
+            allowedEventTypes: $this->allowedEventTypes,
+            description: $this->description,
+            featureFlags: $this->featureFlags,
+            instructions: $this->instructions,
+            kind: $this->kind,
+            logo: $logo,
+            name: $this->name,
+            transformation: $this->transformation,
+            setFields: $setFields
+        );
+    }
+
     public function jsonSerialize(): mixed
     {
         $data = [
-            'logo' => $this->logo,
             'name' => $this->name,
             'transformation' => $this->transformation];
 
+        if (isset($this->setFields['allowedEventTypes'])) {
+            $data['allowedEventTypes'] = $this->allowedEventTypes;
+        }
         if (null !== $this->description) {
             $data['description'] = $this->description;
         }
         if (isset($this->setFields['featureFlags'])) {
             $data['featureFlags'] = $this->featureFlags;
         }
-        if (isset($this->setFields['filterTypes'])) {
-            $data['filterTypes'] = $this->filterTypes;
-        }
         if (null !== $this->instructions) {
             $data['instructions'] = $this->instructions;
         }
         if (null !== $this->kind) {
             $data['kind'] = $this->kind;
+        }
+        if (isset($this->setFields['logo'])) {
+            $data['logo'] = $this->logo;
         }
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
@@ -170,12 +189,12 @@ class ConnectorIn implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
+            allowedEventTypes: \Svix\Utils::getValFromJson($data, 'allowedEventTypes', false, 'ConnectorIn'),
             description: \Svix\Utils::deserializeString($data, 'description', false, 'ConnectorIn'),
             featureFlags: \Svix\Utils::getValFromJson($data, 'featureFlags', false, 'ConnectorIn'),
-            filterTypes: \Svix\Utils::getValFromJson($data, 'filterTypes', false, 'ConnectorIn'),
             instructions: \Svix\Utils::deserializeString($data, 'instructions', false, 'ConnectorIn'),
             kind: \Svix\Utils::deserializeObject($data, 'kind', false, 'ConnectorIn', [ConnectorKind::class, 'fromMixed']),
-            logo: \Svix\Utils::getValFromJson($data, 'logo', true, 'ConnectorIn'),
+            logo: \Svix\Utils::getValFromJson($data, 'logo', false, 'ConnectorIn'),
             name: \Svix\Utils::deserializeString($data, 'name', true, 'ConnectorIn'),
             transformation: \Svix\Utils::deserializeString($data, 'transformation', true, 'ConnectorIn')
         );
