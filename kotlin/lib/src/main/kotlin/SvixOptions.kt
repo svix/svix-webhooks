@@ -1,3 +1,5 @@
+package com.svix.kotlin
+
 data class SvixOptions(
     var baseUrl: String? = null,
     val retrySchedule: List<Long> = listOf(50, 100, 200),
