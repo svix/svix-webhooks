@@ -4,10 +4,10 @@ require "json"
 
 module Svix
   class ConnectorOut
+    attr_accessor :allowed_event_types
     attr_accessor :created_at
     attr_accessor :description
     attr_accessor :feature_flags
-    attr_accessor :filter_types
     # The Connector's ID.
     attr_accessor :id
     attr_accessor :instructions
@@ -20,10 +20,10 @@ module Svix
     attr_accessor :updated_at
 
     ALL_FIELD ||= [
+      "allowed_event_types",
       "created_at",
       "description",
       "feature_flags",
-      "filter_types",
       "id",
       "instructions",
       "kind",
@@ -53,10 +53,10 @@ module Svix
     def self.deserialize(attributes = {})
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
+      attrs["allowed_event_types"] = attributes["allowedEventTypes"]
       attrs["created_at"] = DateTime.rfc3339(attributes["createdAt"]).to_time
       attrs["description"] = attributes["description"]
       attrs["feature_flags"] = attributes["featureFlags"]
-      attrs["filter_types"] = attributes["filterTypes"]
       attrs["id"] = attributes["id"]
       attrs["instructions"] = attributes["instructions"]
       attrs["kind"] = Svix::ConnectorKind.deserialize(attributes["kind"])
@@ -70,10 +70,10 @@ module Svix
 
     def serialize
       out = Hash.new
+      out["allowedEventTypes"] = Svix::serialize_primitive(@allowed_event_types) if @allowed_event_types
       out["createdAt"] = Svix::serialize_primitive(@created_at) if @created_at
       out["description"] = Svix::serialize_primitive(@description) if @description
       out["featureFlags"] = Svix::serialize_primitive(@feature_flags) if @feature_flags
-      out["filterTypes"] = Svix::serialize_primitive(@filter_types) if @filter_types
       out["id"] = Svix::serialize_primitive(@id) if @id
       out["instructions"] = Svix::serialize_primitive(@instructions) if @instructions
       out["kind"] = Svix::serialize_schema_ref(@kind) if @kind

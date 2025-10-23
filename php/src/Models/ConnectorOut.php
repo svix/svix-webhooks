@@ -10,10 +10,10 @@ class ConnectorOut implements \JsonSerializable
     private array $setFields = [];
 
     /**
+     * @param list<string>|null $allowedEventTypes
      * @param list<string>|null $featureFlags
-     * @param list<string>|null $filterTypes
-     * @param string            $id           the Connector's ID
-     * @param string            $orgId        the Environment's ID
+     * @param string            $id                the Connector's ID
+     * @param string            $orgId             the Environment's ID
      */
     private function __construct(
         public readonly \DateTimeImmutable $createdAt,
@@ -26,8 +26,8 @@ class ConnectorOut implements \JsonSerializable
         public readonly string $orgId,
         public readonly string $transformation,
         public readonly \DateTimeImmutable $updatedAt,
+        public readonly ?array $allowedEventTypes = null,
         public readonly ?array $featureFlags = null,
-        public readonly ?array $filterTypes = null,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -49,10 +49,10 @@ class ConnectorOut implements \JsonSerializable
         \DateTimeImmutable $updatedAt,
     ): self {
         return new self(
+            allowedEventTypes: null,
             createdAt: $createdAt,
             description: $description,
             featureFlags: null,
-            filterTypes: null,
             id: $id,
             instructions: $instructions,
             kind: $kind,
@@ -65,16 +65,16 @@ class ConnectorOut implements \JsonSerializable
         );
     }
 
-    public function withFeatureFlags(?array $featureFlags): self
+    public function withAllowedEventTypes(?array $allowedEventTypes): self
     {
         $setFields = $this->setFields;
-        $setFields['featureFlags'] = true;
+        $setFields['allowedEventTypes'] = true;
 
         return new self(
+            allowedEventTypes: $allowedEventTypes,
             createdAt: $this->createdAt,
             description: $this->description,
-            featureFlags: $featureFlags,
-            filterTypes: $this->filterTypes,
+            featureFlags: $this->featureFlags,
             id: $this->id,
             instructions: $this->instructions,
             kind: $this->kind,
@@ -87,16 +87,16 @@ class ConnectorOut implements \JsonSerializable
         );
     }
 
-    public function withFilterTypes(?array $filterTypes): self
+    public function withFeatureFlags(?array $featureFlags): self
     {
         $setFields = $this->setFields;
-        $setFields['filterTypes'] = true;
+        $setFields['featureFlags'] = true;
 
         return new self(
+            allowedEventTypes: $this->allowedEventTypes,
             createdAt: $this->createdAt,
             description: $this->description,
-            featureFlags: $this->featureFlags,
-            filterTypes: $filterTypes,
+            featureFlags: $featureFlags,
             id: $this->id,
             instructions: $this->instructions,
             kind: $this->kind,
@@ -123,11 +123,11 @@ class ConnectorOut implements \JsonSerializable
             'transformation' => $this->transformation,
             'updatedAt' => $this->updatedAt->format('c')];
 
+        if (isset($this->setFields['allowedEventTypes'])) {
+            $data['allowedEventTypes'] = $this->allowedEventTypes;
+        }
         if (isset($this->setFields['featureFlags'])) {
             $data['featureFlags'] = $this->featureFlags;
-        }
-        if (isset($this->setFields['filterTypes'])) {
-            $data['filterTypes'] = $this->filterTypes;
         }
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
@@ -139,10 +139,10 @@ class ConnectorOut implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
+            allowedEventTypes: \Svix\Utils::getValFromJson($data, 'allowedEventTypes', false, 'ConnectorOut'),
             createdAt: \Svix\Utils::deserializeDt($data, 'createdAt', true, 'ConnectorOut'),
             description: \Svix\Utils::deserializeString($data, 'description', true, 'ConnectorOut'),
             featureFlags: \Svix\Utils::getValFromJson($data, 'featureFlags', false, 'ConnectorOut'),
-            filterTypes: \Svix\Utils::getValFromJson($data, 'filterTypes', false, 'ConnectorOut'),
             id: \Svix\Utils::deserializeString($data, 'id', true, 'ConnectorOut'),
             instructions: \Svix\Utils::deserializeString($data, 'instructions', true, 'ConnectorOut'),
             kind: \Svix\Utils::deserializeObject($data, 'kind', true, 'ConnectorOut', [ConnectorKind::class, 'fromMixed']),

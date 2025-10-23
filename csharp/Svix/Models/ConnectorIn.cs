@@ -6,14 +6,14 @@ namespace Svix.Models
 {
     public class ConnectorIn
     {
+        [JsonProperty("allowedEventTypes")]
+        public List<string>? AllowedEventTypes { get; set; } = null;
+
         [JsonProperty("description")]
         public string? Description { get; set; } = null;
 
         [JsonProperty("featureFlags")]
         public List<string>? FeatureFlags { get; set; } = null;
-
-        [JsonProperty("filterTypes")]
-        public List<string>? FilterTypes { get; set; } = null;
 
         [JsonProperty("instructions")]
         public string? Instructions { get; set; } = null;
@@ -35,9 +35,9 @@ namespace Svix.Models
             StringBuilder sb = new StringBuilder();
 
             sb.Append("class ConnectorIn {\n");
+            sb.Append("  AllowedEventTypes: ").Append(AllowedEventTypes).Append('\n');
             sb.Append("  Description: ").Append(Description).Append('\n');
             sb.Append("  FeatureFlags: ").Append(FeatureFlags).Append('\n');
-            sb.Append("  FilterTypes: ").Append(FilterTypes).Append('\n');
             sb.Append("  Instructions: ").Append(Instructions).Append('\n');
             sb.Append("  Kind: ").Append(Kind).Append('\n');
             sb.Append("  Logo: ").Append(Logo).Append('\n');

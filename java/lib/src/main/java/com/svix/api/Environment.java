@@ -20,13 +20,23 @@ public class Environment {
         this.client = client;
     }
 
-    /** Download a JSON file containing all org-settings and event types. */
+    /**
+     * Download a JSON file containing all org-settings and event types.
+     *
+     * <p>Note that the schema for [`EnvironmentOut`] is subject to change. The fields herein are
+     * provided for convenience but should be treated as JSON blobs.
+     */
     public EnvironmentOut export() throws IOException, ApiException {
 
         return this.export(new EnvironmentExportOptions());
     }
 
-    /** Download a JSON file containing all org-settings and event types. */
+    /**
+     * Download a JSON file containing all org-settings and event types.
+     *
+     * <p>Note that the schema for [`EnvironmentOut`] is subject to change. The fields herein are
+     * provided for convenience but should be treated as JSON blobs.
+     */
     public EnvironmentOut export(final EnvironmentExportOptions options)
             throws IOException, ApiException {
         HttpUrl.Builder url = this.client.newUrlBuilder().encodedPath("/api/v1/environment/export");
@@ -42,6 +52,9 @@ public class Environment {
      * Import a configuration into the active organization.
      *
      * <p>It doesn't delete anything, only adds / updates what was passed to it.
+     *
+     * <p>Note that the schema for [`EnvironmentIn`] is subject to change. The fields herein are
+     * provided for convenience but should be treated as JSON blobs.
      */
     public void import_(final EnvironmentIn environmentIn) throws IOException, ApiException {
         this.import_(environmentIn, new EnvironmentImportOptions());
@@ -51,6 +64,9 @@ public class Environment {
      * Import a configuration into the active organization.
      *
      * <p>It doesn't delete anything, only adds / updates what was passed to it.
+     *
+     * <p>Note that the schema for [`EnvironmentIn`] is subject to change. The fields herein are
+     * provided for convenience but should be treated as JSON blobs.
      */
     public void import_(final EnvironmentIn environmentIn, final EnvironmentImportOptions options)
             throws IOException, ApiException {

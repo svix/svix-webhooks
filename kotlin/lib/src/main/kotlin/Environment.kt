@@ -10,7 +10,12 @@ data class EnvironmentExportOptions(val idempotencyKey: String? = null)
 data class EnvironmentImportOptions(val idempotencyKey: String? = null)
 
 class Environment(private val client: SvixHttpClient) {
-    /** Download a JSON file containing all org-settings and event types. */
+    /**
+     * Download a JSON file containing all org-settings and event types.
+     *
+     * Note that the schema for [`EnvironmentOut`] is subject to change. The fields herein are
+     * provided for convenience but should be treated as JSON blobs.
+     */
     suspend fun export(
         options: EnvironmentExportOptions = EnvironmentExportOptions()
     ): EnvironmentOut {
@@ -28,6 +33,9 @@ class Environment(private val client: SvixHttpClient) {
      * Import a configuration into the active organization.
      *
      * It doesn't delete anything, only adds / updates what was passed to it.
+     *
+     * Note that the schema for [`EnvironmentIn`] is subject to change. The fields herein are
+     * provided for convenience but should be treated as JSON blobs.
      */
     suspend fun import(
         environmentIn: EnvironmentIn,

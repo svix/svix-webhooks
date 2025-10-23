@@ -26,6 +26,24 @@ namespace Svix
         ///
         /// Note that this endpoint is asynchronous. You will need to poll the `Get Background Task` endpoint to
         /// retrieve the results of the operation.
+        ///
+        /// The completed background task will return a payload like the following:
+        /// ```json
+        /// {
+        ///   "id": "qtask_33qe39Stble9Rn3ZxFrqL5ZSsjT",
+        ///   "status": "finished",
+        ///   "task": "application.stats",
+        ///   "data": {
+        ///     "appStats": [
+        ///       {
+        ///         "messageDestinations": 2,
+        ///         "appId": "app_33W1An2Zz5cO9SWbhHsYyDmVC6m",
+        ///         "appUid": null
+        ///       }
+        ///     ]
+        ///   }
+        /// }
+        /// ```
         /// </summary>
         public async Task<AppUsageStatsOut> AggregateAppStatsAsync(
             AppUsageStatsIn appUsageStatsIn,
@@ -60,6 +78,24 @@ namespace Svix
         ///
         /// Note that this endpoint is asynchronous. You will need to poll the `Get Background Task` endpoint to
         /// retrieve the results of the operation.
+        ///
+        /// The completed background task will return a payload like the following:
+        /// ```json
+        /// {
+        ///   "id": "qtask_33qe39Stble9Rn3ZxFrqL5ZSsjT",
+        ///   "status": "finished",
+        ///   "task": "application.stats",
+        ///   "data": {
+        ///     "appStats": [
+        ///       {
+        ///         "messageDestinations": 2,
+        ///         "appId": "app_33W1An2Zz5cO9SWbhHsYyDmVC6m",
+        ///         "appUid": null
+        ///       }
+        ///     ]
+        ///   }
+        /// }
+        /// ```
         /// </summary>
         public AppUsageStatsOut AggregateAppStats(
             AppUsageStatsIn appUsageStatsIn,
@@ -92,6 +128,24 @@ namespace Svix
         ///
         /// Note that this endpoint is asynchronous. You will need to poll the `Get Background Task` endpoint to
         /// retrieve the results of the operation.
+        ///
+        /// The completed background task will return a payload like the following:
+        /// ```json
+        /// {
+        ///   "id": "qtask_33qe39Stble9Rn3ZxFrqL5ZSsjT",
+        ///   "status": "finished",
+        ///   "task": "event-type.aggregate",
+        ///   "data": {
+        ///     "event_types": [
+        ///       {
+        ///         "appId": "app_33W1An2Zz5cO9SWbhHsYyDmVC6m",
+        ///         "explicitlySubscribedEventTypes": ["user.signup", "user.deleted"],
+        ///         "hasCatchAllEndpoint": false
+        ///       }
+        ///     ]
+        ///   }
+        /// }
+        /// ```
         /// </summary>
         public async Task<AggregateEventTypesOut> AggregateEventTypesAsync(
             CancellationToken cancellationToken = default
@@ -120,6 +174,24 @@ namespace Svix
         ///
         /// Note that this endpoint is asynchronous. You will need to poll the `Get Background Task` endpoint to
         /// retrieve the results of the operation.
+        ///
+        /// The completed background task will return a payload like the following:
+        /// ```json
+        /// {
+        ///   "id": "qtask_33qe39Stble9Rn3ZxFrqL5ZSsjT",
+        ///   "status": "finished",
+        ///   "task": "event-type.aggregate",
+        ///   "data": {
+        ///     "event_types": [
+        ///       {
+        ///         "appId": "app_33W1An2Zz5cO9SWbhHsYyDmVC6m",
+        ///         "explicitlySubscribedEventTypes": ["user.signup", "user.deleted"],
+        ///         "hasCatchAllEndpoint": false
+        ///       }
+        ///     ]
+        ///   }
+        /// }
+        /// ```
         /// </summary>
         public AggregateEventTypesOut AggregateEventTypes()
         {

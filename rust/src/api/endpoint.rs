@@ -220,6 +220,18 @@ impl<'a> Endpoint<'a> {
     ///
     /// Messages that were sent successfully, even if failed initially, are not
     /// resent.
+    ///
+    /// A completed task will return a payload like the following:
+    /// ```json
+    /// {
+    ///   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+    ///   "status": "finished",
+    ///   "task": "endpoint.recover",
+    ///   "data": {
+    ///     "messagesSent": 2
+    ///   }
+    /// }
+    /// ```
     pub async fn recover(
         &self,
         app_id: String,
@@ -245,6 +257,18 @@ impl<'a> Endpoint<'a> {
     ///
     /// Only messages that were created after `since` will be sent.
     /// Messages that were previously sent to the endpoint are not resent.
+    ///
+    /// A completed task will return a payload like the following:
+    /// ```json
+    /// {
+    ///   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+    ///   "status": "finished",
+    ///   "task": "endpoint.replay",
+    ///   "data": {
+    ///     "messagesSent": 2
+    ///   }
+    /// }
+    /// ```
     pub async fn replay_missing(
         &self,
         app_id: String,

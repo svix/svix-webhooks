@@ -29,6 +29,8 @@ pub mod checkbook_config_out;
 pub mod connector_in;
 pub mod connector_kind;
 pub mod connector_out;
+pub mod connector_patch;
+pub mod connector_update;
 pub mod create_stream_events_in;
 pub mod create_stream_events_out;
 pub mod cron_config;
@@ -112,6 +114,7 @@ pub mod integration_out;
 pub mod integration_update;
 pub mod list_response_application_out;
 pub mod list_response_background_task_out;
+pub mod list_response_connector_out;
 pub mod list_response_endpoint_message_out;
 pub mod list_response_endpoint_out;
 pub mod list_response_event_type_out;
@@ -240,6 +243,8 @@ pub use self::{
     connector_in::ConnectorIn,
     connector_kind::ConnectorKind,
     connector_out::ConnectorOut,
+    connector_patch::ConnectorPatch,
+    connector_update::ConnectorUpdate,
     create_stream_events_in::CreateStreamEventsIn,
     create_stream_events_out::CreateStreamEventsOut,
     cron_config::CronConfig,
@@ -323,6 +328,7 @@ pub use self::{
     integration_update::IntegrationUpdate,
     list_response_application_out::ListResponseApplicationOut,
     list_response_background_task_out::ListResponseBackgroundTaskOut,
+    list_response_connector_out::ListResponseConnectorOut,
     list_response_endpoint_message_out::ListResponseEndpointMessageOut,
     list_response_endpoint_out::ListResponseEndpointOut,
     list_response_event_type_out::ListResponseEventTypeOut,
