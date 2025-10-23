@@ -139,6 +139,18 @@ class Message(private val client: SvixHttpClient) {
      *
      * This operation is only available in the <a href="https://svix.com/pricing"
      * target="_blank">Enterprise</a> plan.
+     *
+     * A completed task will return a payload like the following:
+     * ```json
+     * {
+     *   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+     *   "status": "finished",
+     *   "task": "application.purge_content",
+     *   "data": {
+     *     "messagesPurged": 150
+     *   }
+     * }
+     * ```
      */
     suspend fun expungeAllContents(
         appId: String,

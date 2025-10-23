@@ -660,6 +660,18 @@ namespace Svix
         /// Resend all failed messages since a given time.
         ///
         /// Messages that were sent successfully, even if failed initially, are not resent.
+        ///
+        /// A completed task will return a payload like the following:
+        /// ```json
+        /// {
+        ///   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+        ///   "status": "finished",
+        ///   "task": "endpoint.recover",
+        ///   "data": {
+        ///     "messagesSent": 2
+        ///   }
+        /// }
+        /// ```
         /// </summary>
         public async Task<RecoverOut> RecoverAsync(
             string appId,
@@ -699,6 +711,18 @@ namespace Svix
         /// Resend all failed messages since a given time.
         ///
         /// Messages that were sent successfully, even if failed initially, are not resent.
+        ///
+        /// A completed task will return a payload like the following:
+        /// ```json
+        /// {
+        ///   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+        ///   "status": "finished",
+        ///   "task": "endpoint.recover",
+        ///   "data": {
+        ///     "messagesSent": 2
+        ///   }
+        /// }
+        /// ```
         /// </summary>
         public RecoverOut Recover(
             string appId,
@@ -737,6 +761,18 @@ namespace Svix
         ///
         /// Only messages that were created after `since` will be sent.
         /// Messages that were previously sent to the endpoint are not resent.
+        ///
+        /// A completed task will return a payload like the following:
+        /// ```json
+        /// {
+        ///   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+        ///   "status": "finished",
+        ///   "task": "endpoint.replay",
+        ///   "data": {
+        ///     "messagesSent": 2
+        ///   }
+        /// }
+        /// ```
         /// </summary>
         public async Task<ReplayOut> ReplayMissingAsync(
             string appId,
@@ -777,6 +813,18 @@ namespace Svix
         ///
         /// Only messages that were created after `since` will be sent.
         /// Messages that were previously sent to the endpoint are not resent.
+        ///
+        /// A completed task will return a payload like the following:
+        /// ```json
+        /// {
+        ///   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+        ///   "status": "finished",
+        ///   "task": "endpoint.replay",
+        ///   "data": {
+        ///     "messagesSent": 2
+        ///   }
+        /// }
+        /// ```
         /// </summary>
         public ReplayOut ReplayMissing(
             string appId,

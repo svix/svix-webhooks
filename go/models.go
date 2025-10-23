@@ -32,6 +32,8 @@ type (
 	ConnectorIn                               = models.ConnectorIn
 	ConnectorKind                             = models.ConnectorKind
 	ConnectorOut                              = models.ConnectorOut
+	ConnectorPatch                            = models.ConnectorPatch
+	ConnectorUpdate                           = models.ConnectorUpdate
 	CreateStreamEventsIn                      = models.CreateStreamEventsIn
 	CreateStreamEventsOut                     = models.CreateStreamEventsOut
 	CronConfig                                = models.CronConfig
@@ -115,6 +117,7 @@ type (
 	IntegrationUpdate                         = models.IntegrationUpdate
 	ListResponseApplicationOut                = models.ListResponseApplicationOut
 	ListResponseBackgroundTaskOut             = models.ListResponseBackgroundTaskOut
+	ListResponseConnectorOut                  = models.ListResponseConnectorOut
 	ListResponseEndpointMessageOut            = models.ListResponseEndpointMessageOut
 	ListResponseEndpointOut                   = models.ListResponseEndpointOut
 	ListResponseEventTypeOut                  = models.ListResponseEventTypeOut

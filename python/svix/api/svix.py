@@ -7,6 +7,7 @@ from .application import Application, ApplicationAsync
 from .authentication import Authentication, AuthenticationAsync
 from .background_task import BackgroundTask, BackgroundTaskAsync
 from .client import AuthenticatedClient
+from .connector import Connector, ConnectorAsync
 from .endpoint import Endpoint, EndpointAsync
 from .environment import Environment, EnvironmentAsync
 from .event_type import EventType, EventTypeAsync
@@ -102,6 +103,10 @@ class SvixAsync(ClientBase):
         return BackgroundTaskAsync(self._client)
 
     @property
+    def connector(self) -> ConnectorAsync:
+        return ConnectorAsync(self._client)
+
+    @property
     def endpoint(self) -> EndpointAsync:
         return EndpointAsync(self._client)
 
@@ -158,6 +163,10 @@ class Svix(ClientBase):
     @property
     def background_task(self) -> BackgroundTask:
         return BackgroundTask(self._client)
+
+    @property
+    def connector(self) -> Connector:
+        return Connector(self._client)
 
     @property
     def endpoint(self) -> Endpoint:

@@ -34,7 +34,10 @@ class EnvironmentAsync(ApiBase):
     async def export(
         self, options: EnvironmentExportOptions = EnvironmentExportOptions()
     ) -> EnvironmentOut:
-        """Download a JSON file containing all org-settings and event types."""
+        """Download a JSON file containing all org-settings and event types.
+
+        Note that the schema for [`EnvironmentOut`] is subject to change. The fields
+        herein are provided for convenience but should be treated as JSON blobs."""
         response = await self._request_asyncio(
             method="post",
             path="/api/v1/environment/export",
@@ -51,7 +54,10 @@ class EnvironmentAsync(ApiBase):
     ) -> None:
         """Import a configuration into the active organization.
 
-        It doesn't delete anything, only adds / updates what was passed to it."""
+        It doesn't delete anything, only adds / updates what was passed to it.
+
+        Note that the schema for [`EnvironmentIn`] is subject to change. The fields
+        herein are provided for convenience but should be treated as JSON blobs."""
         await self._request_asyncio(
             method="post",
             path="/api/v1/environment/import",
@@ -66,7 +72,10 @@ class Environment(ApiBase):
     def export(
         self, options: EnvironmentExportOptions = EnvironmentExportOptions()
     ) -> EnvironmentOut:
-        """Download a JSON file containing all org-settings and event types."""
+        """Download a JSON file containing all org-settings and event types.
+
+        Note that the schema for [`EnvironmentOut`] is subject to change. The fields
+        herein are provided for convenience but should be treated as JSON blobs."""
         response = self._request_sync(
             method="post",
             path="/api/v1/environment/export",
@@ -83,7 +92,10 @@ class Environment(ApiBase):
     ) -> None:
         """Import a configuration into the active organization.
 
-        It doesn't delete anything, only adds / updates what was passed to it."""
+        It doesn't delete anything, only adds / updates what was passed to it.
+
+        Note that the schema for [`EnvironmentIn`] is subject to change. The fields
+        herein are provided for convenience but should be treated as JSON blobs."""
         self._request_sync(
             method="post",
             path="/api/v1/environment/import",

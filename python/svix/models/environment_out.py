@@ -8,12 +8,12 @@ from .event_type_out import EventTypeOut
 
 
 class EnvironmentOut(BaseModel):
+    connectors: t.List[ConnectorOut]
+
     created_at: datetime
 
     event_types: t.List[EventTypeOut]
 
     settings: t.Optional[t.Dict[str, t.Any]]
-
-    transformation_templates: t.List[ConnectorOut]
 
     version: t.Optional[int] = None

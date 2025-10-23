@@ -21,6 +21,10 @@ impl<'a> Environment<'a> {
     }
 
     /// Download a JSON file containing all org-settings and event types.
+    ///
+    /// Note that the schema for [`EnvironmentOut`] is subject to change. The
+    /// fields herein are provided for convenience but should be treated as
+    /// JSON blobs.
     pub async fn export(
         &self,
         options: Option<EnvironmentExportOptions>,
@@ -36,6 +40,10 @@ impl<'a> Environment<'a> {
     /// Import a configuration into the active organization.
     ///
     /// It doesn't delete anything, only adds / updates what was passed to it.
+    ///
+    /// Note that the schema for [`EnvironmentIn`] is subject to change. The
+    /// fields herein are provided for convenience but should be treated as
+    /// JSON blobs.
     pub async fn import(
         &self,
         environment_in: EnvironmentIn,

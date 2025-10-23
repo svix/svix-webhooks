@@ -27,6 +27,7 @@ type (
 		Application                *Application
 		Authentication             *Authentication
 		BackgroundTask             *BackgroundTask
+		Connector                  *Connector
 		Endpoint                   *Endpoint
 		Environment                *Environment
 		EventType                  *EventType
@@ -71,6 +72,7 @@ func New(token string, options *SvixOptions) (*Svix, error) {
 		Application:                newApplication(&svixHttpClient),
 		Authentication:             newAuthentication(&svixHttpClient),
 		BackgroundTask:             newBackgroundTask(&svixHttpClient),
+		Connector:                  newConnector(&svixHttpClient),
 		Endpoint:                   newEndpoint(&svixHttpClient),
 		Environment:                newEnvironment(&svixHttpClient),
 		EventType:                  newEventType(&svixHttpClient),

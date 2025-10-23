@@ -169,6 +169,10 @@ public class Message {
      *
      * <p>This operation is only available in the <a href="https://svix.com/pricing"
      * target="_blank">Enterprise</a> plan.
+     *
+     * <p>A completed task will return a payload like the following: ```json { "id":
+     * "qtask_33qen93MNuelBAq1T9G7eHLJRsF", "status": "finished", "task":
+     * "application.purge_content", "data": { "messagesPurged": 150 } } ```
      */
     public ExpungeAllContentsOut expungeAllContents(final String appId)
             throws IOException, ApiException {
@@ -180,6 +184,10 @@ public class Message {
      *
      * <p>This operation is only available in the <a href="https://svix.com/pricing"
      * target="_blank">Enterprise</a> plan.
+     *
+     * <p>A completed task will return a payload like the following: ```json { "id":
+     * "qtask_33qen93MNuelBAq1T9G7eHLJRsF", "status": "finished", "task":
+     * "application.purge_content", "data": { "messagesPurged": 150 } } ```
      */
     public ExpungeAllContentsOut expungeAllContents(
             final String appId, final MessageExpungeAllContentsOptions options)
