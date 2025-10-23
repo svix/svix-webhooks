@@ -191,6 +191,10 @@ pub struct EndpointIn {
 
     #[serde(default)]
     pub metadata: Metadata,
+
+    /// Optional CEL boolean expression to filter messages by payload
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub filter: Option<String>,
 }
 
 impl EndpointIn {
@@ -224,6 +228,7 @@ impl ModelIn for EndpointIn {
             channels,
             key: _,
             metadata: _,
+            filter,
         } = self;
 
         model.description = Set(description);
@@ -234,6 +239,7 @@ impl ModelIn for EndpointIn {
         model.disabled = Set(disabled);
         model.event_types_ids = Set(event_types_ids);
         model.channels = Set(channels);
+        model.filter = Set(filter);
     }
 }
 
@@ -282,6 +288,10 @@ struct EndpointUpdate {
 
     #[serde(default)]
     pub metadata: Metadata,
+
+    /// Optional CEL boolean expression to filter messages by payload
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub filter: Option<String>,
 }
 
 impl ModelIn for EndpointUpdate {
@@ -299,6 +309,7 @@ impl ModelIn for EndpointUpdate {
             event_types_ids,
             channels,
             metadata: _,
+            filter,
         } = self;
 
         model.description = Set(description);
@@ -309,6 +320,7 @@ impl ModelIn for EndpointUpdate {
         model.disabled = Set(disabled);
         model.event_types_ids = Set(event_types_ids);
         model.channels = Set(channels);
+        model.filter = Set(filter);
     }
 }
 
@@ -325,6 +337,7 @@ impl EndpointUpdate {
             event_types_ids,
             channels,
             metadata,
+            filter,
         } = self;
 
         EndpointIn {
@@ -337,6 +350,7 @@ impl EndpointUpdate {
             event_types_ids,
             channels,
             metadata,
+            filter,
 
             key: None,
         }
@@ -393,6 +407,10 @@ pub struct EndpointPatch {
     #[serde(default)]
     #[serde(skip_serializing_if = "UnrequiredField::is_absent")]
     pub metadata: UnrequiredField<Metadata>,
+
+    #[serde(default)]
+    #[serde(skip_serializing_if = "UnrequiredNullableField::is_absent")]
+    pub filter: UnrequiredNullableField<String>,
 }
 
 impl ModelIn for EndpointPatch {
@@ -411,6 +429,7 @@ impl ModelIn for EndpointPatch {
             channels,
             key: _,
             metadata: _,
+            filter,
         } = self;
 
         let map = |x: u16| -> i32 { x.into() };
@@ -424,6 +443,7 @@ impl ModelIn for EndpointPatch {
         patch_field_non_nullable!(model, disabled);
         patch_field_nullable!(model, event_types_ids);
         patch_field_nullable!(model, channels);
+        patch_field_nullable!(model, filter);
     }
 }
 
@@ -485,6 +505,7 @@ pub struct EndpointOutCommon {
     /// List of message channels this endpoint listens to (omit for all)
     #[schemars(example = "example_channel_set", length(min = 1, max = 10))]
     pub channels: Option<EventChannelSet>,
+    pub filter: Option<String>,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }
@@ -501,6 +522,7 @@ impl From<endpoint::Model> for EndpointOutCommon {
             disabled: model.disabled,
             event_types_ids: model.event_types_ids,
             channels: model.channels,
+            filter: model.filter,
             created_at: model.created_at.into(),
             updated_at: model.updated_at.into(),
         }

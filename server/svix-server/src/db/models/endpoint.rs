@@ -35,6 +35,8 @@ pub struct Model {
     pub old_keys: Option<ExpiringSigningKeys>,
     pub channels: Option<EventChannelSet>,
     pub headers: Option<EndpointHeaders>,
+    /// Optional CEL filter expression applied to payloads at dispatch time
+    pub filter: Option<String>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
