@@ -416,7 +416,10 @@ pub async fn app_portal_access(
     let resp: DashboardAccessOut = org_client
         .post(
             &format!("api/v1/auth/app-portal-access/{application_id}/"),
-            AppPortalAccessIn { feature_flags },
+            AppPortalAccessIn {
+                feature_flags,
+                application: None,
+            },
             StatusCode::OK,
         )
         .await

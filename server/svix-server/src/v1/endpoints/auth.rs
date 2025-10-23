@@ -13,8 +13,15 @@ use validator::Validate;
 
 use crate::{
     core::{permissions, security::generate_app_token, types::FeatureFlagSet},
-    error::Result,
-    v1::utils::{api_not_implemented, openapi_tag, ApplicationPath, ValidatedJson},
+    db::models::application,
+    error::{HttpError, Result},
+    v1::{
+        endpoints::{
+            application::{create_app_from_app_in, ApplicationIn},
+            message::validate_create_app_uid,
+        },
+        utils::{api_not_implemented, openapi_tag, ApplicationPath, ValidatedJson},
+    },
     AppState,
 };
 
@@ -45,6 +52,13 @@ pub struct AppPortalAccessIn {
     #[serde(default, skip_serializing_if = "FeatureFlagSet::is_empty")]
     #[schemars(example = "feature_flag_set_example")]
     pub feature_flags: FeatureFlagSet,
+    /// Optionally creates a new application alongside the message.
+    ///
+    /// If the application id or uid that is used in the path already exists,
+    /// this argument is ignored.
+    #[validate]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub application: Option<ApplicationIn>,
 }
 
 #[derive(Serialize, JsonSchema)]
@@ -62,11 +76,33 @@ impl From<DashboardAccessOut> for AppPortalAccessOut {
 /// Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal.
 #[aide_annotate(op_id = "v1.authentication.app-portal-access")]
 async fn app_portal_access(
-    State(AppState { cfg, .. }): State<AppState>,
-    _: Path<ApplicationPath>,
-    permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
+    State(AppState { ref db, cfg, .. }): State<AppState>,
+    Path(ApplicationPath { app_id }): Path<ApplicationPath>,
+    permissions::Organization { org_id }: permissions::Organization,
     ValidatedJson(data): ValidatedJson<AppPortalAccessIn>,
 ) -> Result<Json<AppPortalAccessOut>> {
+    let app_from_path_app_id =
+        application::Entity::secure_find_by_id_or_uid(org_id.clone(), app_id.to_owned())
+            .one(db)
+            .await?;
+
+    let app = match (&data.application, app_from_path_app_id) {
+        (None, None) => {
+            return Err(
+                HttpError::not_found(None, Some("Application not found".to_string())).into(),
+            );
+        }
+
+        (_, Some(app_from_path_param)) => app_from_path_param,
+        (Some(app_from_body), None) => {
+            validate_create_app_uid(&app_id, app_from_body)?;
+            let (app, _metadata) =
+                create_app_from_app_in(db, app_from_body.to_owned(), org_id).await?;
+
+            app
+        }
+    };
+
     let token = generate_app_token(
         &cfg.jwt_signing_config,
         app.org_id,
@@ -87,7 +123,7 @@ async fn app_portal_access(
 async fn dashboard_access(
     state: State<AppState>,
     path: Path<ApplicationPath>,
-    permissions: permissions::OrganizationWithApplication,
+    permissions: permissions::Organization,
 ) -> Result<Json<DashboardAccessOut>> {
     app_portal_access(
         state,
@@ -95,6 +131,7 @@ async fn dashboard_access(
         permissions,
         ValidatedJson(AppPortalAccessIn {
             feature_flags: FeatureFlagSet::default(),
+            application: None,
         }),
     )
     .await

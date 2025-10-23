@@ -2,9 +2,10 @@
 //! that the tokens returned by the endpoint have restricted functionality and that the response
 //! from the endpoint is valid in the process.
 
+use rand::distributions::DistString;
 use reqwest::StatusCode;
 use serde::de::IgnoredAny;
-use serde_json::Value;
+use serde_json::{json, Value};
 use svix_server::{
     core::{
         security::{INVALID_TOKEN_ERR, JWT_SECRET_ERR},
@@ -153,4 +154,107 @@ async fn test_invalid_auth_error_detail() {
             panic!("Unexpected response");
         }
     }
+}
+
+#[tokio::test]
+async fn test_app_portal_access_with_application() {
+    let (client, _jh) = start_svix_server().await;
+
+    let app_uid = format!(
+        "app-created-in-portal-{}",
+        rand::distributions::Alphanumeric.sample_string(&mut rand::thread_rng(), 15)
+    );
+
+    // app-portal-access without the application field fails
+    let _: IgnoredAny = client
+        .post(
+            &format!("api/v1/auth/app-portal-access/{app_uid}/"),
+            json!({
+                "featureFlags": []
+            }),
+            StatusCode::NOT_FOUND,
+        )
+        .await
+        .unwrap();
+
+    // app-portal-access with application
+    let _: IgnoredAny = client
+        .post(
+            &format!("api/v1/auth/app-portal-access/{app_uid}/"),
+            json!({
+                "featureFlags": [],
+                "application": {
+                    "name": "Test App Created With Portal Access",
+                    "uid": app_uid,
+                }
+            }),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    // app was created
+    let app: serde_json::Value = client
+        .get(&format!("api/v1/app/{app_uid}/"), StatusCode::OK)
+        .await
+        .unwrap();
+
+    assert_eq!(app["uid"], app_uid);
+    assert_eq!(app["name"], "Test App Created With Portal Access");
+
+    // Access portal again with application field - should be ignored since app exists
+    let _: IgnoredAny = client
+        .post(
+            &format!("api/v1/auth/app-portal-access/{app_uid}/"),
+            json!({
+                "featureFlags": [],
+                "application": {
+                    "name": "Updated name will be ignored",
+                    "uid": app_uid,
+                }
+            }),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    // Verify the app name didn't change
+    let app_after: serde_json::Value = client
+        .get(&format!("api/v1/app/{app_uid}/"), StatusCode::OK)
+        .await
+        .unwrap();
+
+    assert_eq!(app_after["name"], "Test App Created With Portal Access");
+
+    // UID in path must match UID in body
+    let _: IgnoredAny = client
+        .post(
+            "api/v1/auth/app-portal-access/different-uid/",
+            json!({
+                "featureFlags": [],
+                "application": {
+                    "name": "Test App",
+                    "uid": app_uid,  // This doesn't match the path
+                }
+            }),
+            StatusCode::UNPROCESSABLE_ENTITY,
+        )
+        .await
+        .unwrap();
+
+    // UID must be set in body when creating
+    let _: IgnoredAny = client
+        .post(
+            "api/v1/auth/app-portal-access/new-app-uid/",
+            json!({
+                "featureFlags": [],
+                "application": {
+                    "name": "Test App Without UID",
+                    // Missing uid field
+                }
+            }),
+            StatusCode::UNPROCESSABLE_ENTITY,
+        )
+        .await
+        .unwrap();
 }

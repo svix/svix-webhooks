@@ -460,7 +460,10 @@ pub(crate) async fn create_message_inner(
     Ok(msg_out)
 }
 
-fn validate_create_app_uid(app_id_or_uid: &ApplicationIdOrUid, data: &ApplicationIn) -> Result<()> {
+pub fn validate_create_app_uid(
+    app_id_or_uid: &ApplicationIdOrUid,
+    data: &ApplicationIn,
+) -> Result<()> {
     // If implicit app creation is requested then the UID must be set
     // in the request body, and it must match the UID given in the path
     if let Some(uid) = &data.uid {
