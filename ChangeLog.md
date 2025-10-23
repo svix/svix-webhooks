@@ -1,8 +1,10 @@
 # Changelog
 
-## Unreleased
+# Version 1.79.0
 * Libs/Kotlin: Add `SvixOptions` to the `com.svix.kotlin` namespace
   * The un-namespaced symbol is kept as a `typealias` for backwards compatibility
+* Libs/Javascript: Add option to configure the fetch method
+* Server: Add support for creating applications in the `POST /api/v1/app/{app_id}/msg` and the `POST /api/v1/auth/app-portal-access/{app_id}` API calls
 
 ## Version 1.78.0
 * Libs/Python: Fix bug preventing the generic webhook ingest source from being deserialized
