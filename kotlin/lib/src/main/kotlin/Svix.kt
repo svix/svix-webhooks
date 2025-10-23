@@ -1,6 +1,6 @@
 package com.svix.kotlin
 
-import SvixOptions
+import com.svix.kotlin.SvixOptions
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 
 class Svix(token: String, options: SvixOptions = SvixOptions()) {

@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+* Libs/Kotlin: Add `SvixOptions` to the `com.svix.kotlin` namespace
+  * The un-namespaced symbol is kept as a `typealias` for backwards compatibility
+
 ## Version 1.78.0
 * Libs/Python: Fix bug preventing the generic webhook ingest source from being deserialized
 * Libs/Python: Add API for the new [Svix Stream](https://www.svix.com/stream/)
