@@ -75,5 +75,8 @@ class {{ resource_type_name }}
         {% endif -%}
     }
 
+    {% set api_operation_extra -%}api_extra/{{ resource.name | to_snake_case }}_{{ op.name | to_snake_case }}.php{% endset %}
+    {% include api_operation_extra ignore missing %}
+
     {% endfor -%}
 }

@@ -455,4 +455,18 @@ class MockTest extends TestCase
 
         $this->assertEquals('{}', $rawBody);
     }
+
+    public function testGetOrCreate(): void
+    {
+        $this->mockHandler->append(new Response(200, [], AppOut));
+
+        $svx = new \Svix\Svix("super_secret", httpClient: $this->httpClient);
+
+        $svx->application->getOrCreate(ApplicationIn::create("asd"));
+
+        $req = $this->requestHistory[0]['request'];
+
+        $this->assertEquals('get_if_exists=true', $req->getUri()->getQuery());
+    }
+
 }
