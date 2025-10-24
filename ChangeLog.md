@@ -1,5 +1,8 @@
 # Changelog
 
+# Version 1.80.0
+* Libs/PHP added support for `$svix->application->getOrCreate`
+
 # Version 1.79.0
 * Libs/Kotlin: Add `SvixOptions` to the `com.svix.kotlin` namespace
   * The un-namespaced symbol is kept as a `typealias` for backwards compatibility
