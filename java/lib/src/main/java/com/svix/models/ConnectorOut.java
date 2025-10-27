@@ -21,10 +21,10 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class ConnectorOut {
+    @JsonProperty private Set<String> allowedEventTypes;
     @JsonProperty private OffsetDateTime createdAt;
     @JsonProperty private String description;
     @JsonProperty private Set<String> featureFlags;
-    @JsonProperty private Set<String> filterTypes;
     @JsonProperty private String id;
     @JsonProperty private String instructions;
     @JsonProperty private ConnectorKind kind;
@@ -35,6 +35,34 @@ public class ConnectorOut {
     @JsonProperty private OffsetDateTime updatedAt;
 
     public ConnectorOut() {}
+
+    public ConnectorOut allowedEventTypes(Set<String> allowedEventTypes) {
+        this.allowedEventTypes = allowedEventTypes;
+        return this;
+    }
+
+    public ConnectorOut addAllowedEventTypesItem(String allowedEventTypesItem) {
+        if (this.allowedEventTypes == null) {
+            this.allowedEventTypes = new LinkedHashSet<>();
+        }
+        this.allowedEventTypes.add(allowedEventTypesItem);
+
+        return this;
+    }
+
+    /**
+     * Get allowedEventTypes
+     *
+     * @return allowedEventTypes
+     */
+    @javax.annotation.Nullable
+    public Set<String> getAllowedEventTypes() {
+        return allowedEventTypes;
+    }
+
+    public void setAllowedEventTypes(Set<String> allowedEventTypes) {
+        this.allowedEventTypes = allowedEventTypes;
+    }
 
     public ConnectorOut createdAt(OffsetDateTime createdAt) {
         this.createdAt = createdAt;
@@ -100,34 +128,6 @@ public class ConnectorOut {
 
     public void setFeatureFlags(Set<String> featureFlags) {
         this.featureFlags = featureFlags;
-    }
-
-    public ConnectorOut filterTypes(Set<String> filterTypes) {
-        this.filterTypes = filterTypes;
-        return this;
-    }
-
-    public ConnectorOut addFilterTypesItem(String filterTypesItem) {
-        if (this.filterTypes == null) {
-            this.filterTypes = new LinkedHashSet<>();
-        }
-        this.filterTypes.add(filterTypesItem);
-
-        return this;
-    }
-
-    /**
-     * Get filterTypes
-     *
-     * @return filterTypes
-     */
-    @javax.annotation.Nullable
-    public Set<String> getFilterTypes() {
-        return filterTypes;
-    }
-
-    public void setFilterTypes(Set<String> filterTypes) {
-        this.filterTypes = filterTypes;
     }
 
     public ConnectorOut id(String id) {
@@ -197,7 +197,7 @@ public class ConnectorOut {
      *
      * @return logo
      */
-    @javax.annotation.Nonnull
+    @javax.annotation.Nullable
     public URI getLogo() {
         return logo;
     }

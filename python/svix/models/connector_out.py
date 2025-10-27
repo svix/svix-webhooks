@@ -7,13 +7,13 @@ from .connector_kind import ConnectorKind
 
 
 class ConnectorOut(BaseModel):
+    allowed_event_types: t.Optional[t.List[str]] = None
+
     created_at: datetime
 
     description: str
 
     feature_flags: t.Optional[t.List[str]] = None
-
-    filter_types: t.Optional[t.List[str]] = None
 
     id: str
     """The Connector's ID."""
@@ -22,7 +22,7 @@ class ConnectorOut(BaseModel):
 
     kind: ConnectorKind
 
-    logo: str
+    logo: t.Optional[str] = None
 
     name: str
 

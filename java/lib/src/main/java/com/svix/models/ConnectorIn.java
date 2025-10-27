@@ -20,9 +20,9 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class ConnectorIn {
+    @JsonProperty private Set<String> allowedEventTypes;
     @JsonProperty private String description;
     @JsonProperty private Set<String> featureFlags;
-    @JsonProperty private Set<String> filterTypes;
     @JsonProperty private String instructions;
     @JsonProperty private ConnectorKind kind;
     @JsonProperty private URI logo;
@@ -30,6 +30,34 @@ public class ConnectorIn {
     @JsonProperty private String transformation;
 
     public ConnectorIn() {}
+
+    public ConnectorIn allowedEventTypes(Set<String> allowedEventTypes) {
+        this.allowedEventTypes = allowedEventTypes;
+        return this;
+    }
+
+    public ConnectorIn addAllowedEventTypesItem(String allowedEventTypesItem) {
+        if (this.allowedEventTypes == null) {
+            this.allowedEventTypes = new LinkedHashSet<>();
+        }
+        this.allowedEventTypes.add(allowedEventTypesItem);
+
+        return this;
+    }
+
+    /**
+     * Get allowedEventTypes
+     *
+     * @return allowedEventTypes
+     */
+    @javax.annotation.Nullable
+    public Set<String> getAllowedEventTypes() {
+        return allowedEventTypes;
+    }
+
+    public void setAllowedEventTypes(Set<String> allowedEventTypes) {
+        this.allowedEventTypes = allowedEventTypes;
+    }
 
     public ConnectorIn description(String description) {
         this.description = description;
@@ -76,34 +104,6 @@ public class ConnectorIn {
 
     public void setFeatureFlags(Set<String> featureFlags) {
         this.featureFlags = featureFlags;
-    }
-
-    public ConnectorIn filterTypes(Set<String> filterTypes) {
-        this.filterTypes = filterTypes;
-        return this;
-    }
-
-    public ConnectorIn addFilterTypesItem(String filterTypesItem) {
-        if (this.filterTypes == null) {
-            this.filterTypes = new LinkedHashSet<>();
-        }
-        this.filterTypes.add(filterTypesItem);
-
-        return this;
-    }
-
-    /**
-     * Get filterTypes
-     *
-     * @return filterTypes
-     */
-    @javax.annotation.Nullable
-    public Set<String> getFilterTypes() {
-        return filterTypes;
-    }
-
-    public void setFilterTypes(Set<String> filterTypes) {
-        this.filterTypes = filterTypes;
     }
 
     public ConnectorIn instructions(String instructions) {
@@ -154,7 +154,7 @@ public class ConnectorIn {
      *
      * @return logo
      */
-    @javax.annotation.Nonnull
+    @javax.annotation.Nullable
     public URI getLogo() {
         return logo;
     }

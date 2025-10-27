@@ -20,6 +20,24 @@ impl<'a> Statistics<'a> {
     ///
     /// Note that this endpoint is asynchronous. You will need to poll the `Get
     /// Background Task` endpoint to retrieve the results of the operation.
+    ///
+    /// The completed background task will return a payload like the following:
+    /// ```json
+    /// {
+    ///   "id": "qtask_33qe39Stble9Rn3ZxFrqL5ZSsjT",
+    ///   "status": "finished",
+    ///   "task": "application.stats",
+    ///   "data": {
+    ///     "appStats": [
+    ///       {
+    ///         "messageDestinations": 2,
+    ///         "appId": "app_33W1An2Zz5cO9SWbhHsYyDmVC6m",
+    ///         "appUid": null
+    ///       }
+    ///     ]
+    ///   }
+    /// }
+    /// ```
     pub async fn aggregate_app_stats(
         &self,
         app_usage_stats_in: AppUsageStatsIn,
@@ -39,6 +57,24 @@ impl<'a> Statistics<'a> {
     ///
     /// Note that this endpoint is asynchronous. You will need to poll the `Get
     /// Background Task` endpoint to retrieve the results of the operation.
+    ///
+    /// The completed background task will return a payload like the following:
+    /// ```json
+    /// {
+    ///   "id": "qtask_33qe39Stble9Rn3ZxFrqL5ZSsjT",
+    ///   "status": "finished",
+    ///   "task": "event-type.aggregate",
+    ///   "data": {
+    ///     "event_types": [
+    ///       {
+    ///         "appId": "app_33W1An2Zz5cO9SWbhHsYyDmVC6m",
+    ///         "explicitlySubscribedEventTypes": ["user.signup", "user.deleted"],
+    ///         "hasCatchAllEndpoint": false
+    ///       }
+    ///     ]
+    ///   }
+    /// }
+    /// ```
     pub async fn aggregate_event_types(&self) -> Result<AggregateEventTypesOut> {
         crate::request::Request::new(http1::Method::PUT, "/api/v1/stats/usage/event-types")
             .execute(self.cfg)

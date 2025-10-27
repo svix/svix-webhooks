@@ -274,7 +274,19 @@ class EndpointAsync(ApiBase):
     ) -> RecoverOut:
         """Resend all failed messages since a given time.
 
-        Messages that were sent successfully, even if failed initially, are not resent."""
+        Messages that were sent successfully, even if failed initially, are not resent.
+
+        A completed task will return a payload like the following:
+        ```json
+        {
+          "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+          "status": "finished",
+          "task": "endpoint.recover",
+          "data": {
+            "messagesSent": 2
+          }
+        }
+        ```"""
         response = await self._request_asyncio(
             method="post",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/recover",
@@ -298,7 +310,19 @@ class EndpointAsync(ApiBase):
         """Replays messages to the endpoint.
 
         Only messages that were created after `since` will be sent.
-        Messages that were previously sent to the endpoint are not resent."""
+        Messages that were previously sent to the endpoint are not resent.
+
+        A completed task will return a payload like the following:
+        ```json
+        {
+          "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+          "status": "finished",
+          "task": "endpoint.replay",
+          "data": {
+            "messagesSent": 2
+          }
+        }
+        ```"""
         response = await self._request_asyncio(
             method="post",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/replay-missing",
@@ -595,7 +619,19 @@ class Endpoint(ApiBase):
     ) -> RecoverOut:
         """Resend all failed messages since a given time.
 
-        Messages that were sent successfully, even if failed initially, are not resent."""
+        Messages that were sent successfully, even if failed initially, are not resent.
+
+        A completed task will return a payload like the following:
+        ```json
+        {
+          "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+          "status": "finished",
+          "task": "endpoint.recover",
+          "data": {
+            "messagesSent": 2
+          }
+        }
+        ```"""
         response = self._request_sync(
             method="post",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/recover",
@@ -619,7 +655,19 @@ class Endpoint(ApiBase):
         """Replays messages to the endpoint.
 
         Only messages that were created after `since` will be sent.
-        Messages that were previously sent to the endpoint are not resent."""
+        Messages that were previously sent to the endpoint are not resent.
+
+        A completed task will return a payload like the following:
+        ```json
+        {
+          "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+          "status": "finished",
+          "task": "endpoint.replay",
+          "data": {
+            "messagesSent": 2
+          }
+        }
+        ```"""
         response = self._request_sync(
             method="post",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/replay-missing",

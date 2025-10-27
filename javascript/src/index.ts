@@ -2,6 +2,7 @@
 import { Application } from "./api/application";
 import { Authentication } from "./api/authentication";
 import { BackgroundTask } from "./api/backgroundTask";
+import { Connector } from "./api/connector";
 import { Endpoint } from "./api/endpoint";
 import { Environment } from "./api/environment";
 import { EventType } from "./api/eventType";
@@ -108,6 +109,10 @@ export class Svix {
 
   public get backgroundTask() {
     return new BackgroundTask(this.requestCtx);
+  }
+
+  public get connector() {
+    return new Connector(this.requestCtx);
   }
 
   public get endpoint() {

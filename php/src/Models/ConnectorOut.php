@@ -10,10 +10,10 @@ class ConnectorOut implements \JsonSerializable
     private array $setFields = [];
 
     /**
+     * @param list<string>|null $allowedEventTypes
      * @param list<string>|null $featureFlags
-     * @param list<string>|null $filterTypes
-     * @param string            $id           the Connector's ID
-     * @param string            $orgId        the Environment's ID
+     * @param string            $id                the Connector's ID
+     * @param string            $orgId             the Environment's ID
      */
     private function __construct(
         public readonly \DateTimeImmutable $createdAt,
@@ -21,13 +21,13 @@ class ConnectorOut implements \JsonSerializable
         public readonly string $id,
         public readonly string $instructions,
         public readonly ConnectorKind $kind,
-        public readonly string $logo,
         public readonly string $name,
         public readonly string $orgId,
         public readonly string $transformation,
         public readonly \DateTimeImmutable $updatedAt,
+        public readonly ?array $allowedEventTypes = null,
         public readonly ?array $featureFlags = null,
-        public readonly ?array $filterTypes = null,
+        public readonly ?string $logo = null,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -42,39 +42,38 @@ class ConnectorOut implements \JsonSerializable
         string $id,
         string $instructions,
         ConnectorKind $kind,
-        string $logo,
         string $name,
         string $orgId,
         string $transformation,
         \DateTimeImmutable $updatedAt,
     ): self {
         return new self(
+            allowedEventTypes: null,
             createdAt: $createdAt,
             description: $description,
             featureFlags: null,
-            filterTypes: null,
             id: $id,
             instructions: $instructions,
             kind: $kind,
-            logo: $logo,
+            logo: null,
             name: $name,
             orgId: $orgId,
             transformation: $transformation,
             updatedAt: $updatedAt,
-            setFields: ['createdAt' => true, 'description' => true, 'id' => true, 'instructions' => true, 'kind' => true, 'logo' => true, 'name' => true, 'orgId' => true, 'transformation' => true, 'updatedAt' => true]
+            setFields: ['createdAt' => true, 'description' => true, 'id' => true, 'instructions' => true, 'kind' => true, 'name' => true, 'orgId' => true, 'transformation' => true, 'updatedAt' => true]
         );
     }
 
-    public function withFeatureFlags(?array $featureFlags): self
+    public function withAllowedEventTypes(?array $allowedEventTypes): self
     {
         $setFields = $this->setFields;
-        $setFields['featureFlags'] = true;
+        $setFields['allowedEventTypes'] = true;
 
         return new self(
+            allowedEventTypes: $allowedEventTypes,
             createdAt: $this->createdAt,
             description: $this->description,
-            featureFlags: $featureFlags,
-            filterTypes: $this->filterTypes,
+            featureFlags: $this->featureFlags,
             id: $this->id,
             instructions: $this->instructions,
             kind: $this->kind,
@@ -87,20 +86,42 @@ class ConnectorOut implements \JsonSerializable
         );
     }
 
-    public function withFilterTypes(?array $filterTypes): self
+    public function withFeatureFlags(?array $featureFlags): self
     {
         $setFields = $this->setFields;
-        $setFields['filterTypes'] = true;
+        $setFields['featureFlags'] = true;
 
         return new self(
+            allowedEventTypes: $this->allowedEventTypes,
             createdAt: $this->createdAt,
             description: $this->description,
-            featureFlags: $this->featureFlags,
-            filterTypes: $filterTypes,
+            featureFlags: $featureFlags,
             id: $this->id,
             instructions: $this->instructions,
             kind: $this->kind,
             logo: $this->logo,
+            name: $this->name,
+            orgId: $this->orgId,
+            transformation: $this->transformation,
+            updatedAt: $this->updatedAt,
+            setFields: $setFields
+        );
+    }
+
+    public function withLogo(?string $logo): self
+    {
+        $setFields = $this->setFields;
+        $setFields['logo'] = true;
+
+        return new self(
+            allowedEventTypes: $this->allowedEventTypes,
+            createdAt: $this->createdAt,
+            description: $this->description,
+            featureFlags: $this->featureFlags,
+            id: $this->id,
+            instructions: $this->instructions,
+            kind: $this->kind,
+            logo: $logo,
             name: $this->name,
             orgId: $this->orgId,
             transformation: $this->transformation,
@@ -117,17 +138,19 @@ class ConnectorOut implements \JsonSerializable
             'id' => $this->id,
             'instructions' => $this->instructions,
             'kind' => $this->kind,
-            'logo' => $this->logo,
             'name' => $this->name,
             'orgId' => $this->orgId,
             'transformation' => $this->transformation,
             'updatedAt' => $this->updatedAt->format('c')];
 
+        if (isset($this->setFields['allowedEventTypes'])) {
+            $data['allowedEventTypes'] = $this->allowedEventTypes;
+        }
         if (isset($this->setFields['featureFlags'])) {
             $data['featureFlags'] = $this->featureFlags;
         }
-        if (isset($this->setFields['filterTypes'])) {
-            $data['filterTypes'] = $this->filterTypes;
+        if (isset($this->setFields['logo'])) {
+            $data['logo'] = $this->logo;
         }
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
@@ -139,14 +162,14 @@ class ConnectorOut implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
+            allowedEventTypes: \Svix\Utils::getValFromJson($data, 'allowedEventTypes', false, 'ConnectorOut'),
             createdAt: \Svix\Utils::deserializeDt($data, 'createdAt', true, 'ConnectorOut'),
             description: \Svix\Utils::deserializeString($data, 'description', true, 'ConnectorOut'),
             featureFlags: \Svix\Utils::getValFromJson($data, 'featureFlags', false, 'ConnectorOut'),
-            filterTypes: \Svix\Utils::getValFromJson($data, 'filterTypes', false, 'ConnectorOut'),
             id: \Svix\Utils::deserializeString($data, 'id', true, 'ConnectorOut'),
             instructions: \Svix\Utils::deserializeString($data, 'instructions', true, 'ConnectorOut'),
             kind: \Svix\Utils::deserializeObject($data, 'kind', true, 'ConnectorOut', [ConnectorKind::class, 'fromMixed']),
-            logo: \Svix\Utils::getValFromJson($data, 'logo', true, 'ConnectorOut'),
+            logo: \Svix\Utils::getValFromJson($data, 'logo', false, 'ConnectorOut'),
             name: \Svix\Utils::deserializeString($data, 'name', true, 'ConnectorOut'),
             orgId: \Svix\Utils::deserializeString($data, 'orgId', true, 'ConnectorOut'),
             transformation: \Svix\Utils::deserializeString($data, 'transformation', true, 'ConnectorOut'),

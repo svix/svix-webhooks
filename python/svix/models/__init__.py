@@ -28,6 +28,8 @@ from .checkbook_config_out import CheckbookConfigOut
 from .connector_in import ConnectorIn
 from .connector_kind import ConnectorKind
 from .connector_out import ConnectorOut
+from .connector_patch import ConnectorPatch
+from .connector_update import ConnectorUpdate
 from .create_stream_events_in import CreateStreamEventsIn
 from .create_stream_events_out import CreateStreamEventsOut
 from .cron_config import CronConfig
@@ -117,6 +119,7 @@ from .integration_out import IntegrationOut
 from .integration_update import IntegrationUpdate
 from .list_response_application_out import ListResponseApplicationOut
 from .list_response_background_task_out import ListResponseBackgroundTaskOut
+from .list_response_connector_out import ListResponseConnectorOut
 from .list_response_endpoint_message_out import ListResponseEndpointMessageOut
 from .list_response_endpoint_out import ListResponseEndpointOut
 from .list_response_event_type_out import ListResponseEventTypeOut
@@ -243,6 +246,8 @@ __all__ = [
     "ConnectorIn",
     "ConnectorKind",
     "ConnectorOut",
+    "ConnectorPatch",
+    "ConnectorUpdate",
     "CreateStreamEventsIn",
     "CreateStreamEventsOut",
     "CronConfig",
@@ -326,6 +331,7 @@ __all__ = [
     "IntegrationUpdate",
     "ListResponseApplicationOut",
     "ListResponseBackgroundTaskOut",
+    "ListResponseConnectorOut",
     "ListResponseEndpointMessageOut",
     "ListResponseEndpointOut",
     "ListResponseEventTypeOut",

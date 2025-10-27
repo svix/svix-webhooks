@@ -10,6 +10,7 @@ pub use crate::models::*;
 mod application;
 mod authentication;
 mod background_task;
+mod connector;
 mod endpoint;
 mod environment;
 mod event_type;
@@ -39,6 +40,7 @@ pub use self::{
         AuthenticationStreamPortalAccessOptions,
     },
     background_task::{BackgroundTask, BackgroundTaskListOptions},
+    connector::{Connector, ConnectorCreateOptions, ConnectorListOptions},
     deprecated::*,
     endpoint::{
         Endpoint, EndpointCreateOptions, EndpointGetStatsOptions, EndpointListOptions,
@@ -105,6 +107,10 @@ impl Svix {
 
     pub fn background_task(&self) -> BackgroundTask<'_> {
         BackgroundTask::new(&self.cfg)
+    }
+
+    pub fn connector(&self) -> Connector<'_> {
+        Connector::new(&self.cfg)
     }
 
     pub fn endpoint(&self) -> Endpoint<'_> {

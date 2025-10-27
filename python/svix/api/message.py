@@ -190,7 +190,19 @@ class MessageAsync(ApiBase):
     ) -> ExpungeAllContentsOut:
         """Delete all message payloads for the application.
 
-        This operation is only available in the <a href="https://svix.com/pricing" target="_blank">Enterprise</a> plan."""
+        This operation is only available in the <a href="https://svix.com/pricing" target="_blank">Enterprise</a> plan.
+
+        A completed task will return a payload like the following:
+        ```json
+        {
+          "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+          "status": "finished",
+          "task": "application.purge_content",
+          "data": {
+            "messagesPurged": 150
+          }
+        }
+        ```"""
         response = await self._request_asyncio(
             method="post",
             path="/api/v1/app/{app_id}/msg/expunge-all-contents",
@@ -295,7 +307,19 @@ class Message(ApiBase):
     ) -> ExpungeAllContentsOut:
         """Delete all message payloads for the application.
 
-        This operation is only available in the <a href="https://svix.com/pricing" target="_blank">Enterprise</a> plan."""
+        This operation is only available in the <a href="https://svix.com/pricing" target="_blank">Enterprise</a> plan.
+
+        A completed task will return a payload like the following:
+        ```json
+        {
+          "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+          "status": "finished",
+          "task": "application.purge_content",
+          "data": {
+            "messagesPurged": 150
+          }
+        }
+        ```"""
         response = self._request_sync(
             method="post",
             path="/api/v1/app/{app_id}/msg/expunge-all-contents",

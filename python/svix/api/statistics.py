@@ -27,7 +27,25 @@ class StatisticsAsync(ApiBase):
         """Creates a background task to calculate the message destinations for all applications in the environment.
 
         Note that this endpoint is asynchronous. You will need to poll the `Get Background Task` endpoint to
-        retrieve the results of the operation."""
+        retrieve the results of the operation.
+
+        The completed background task will return a payload like the following:
+        ```json
+        {
+          "id": "qtask_33qe39Stble9Rn3ZxFrqL5ZSsjT",
+          "status": "finished",
+          "task": "application.stats",
+          "data": {
+            "appStats": [
+              {
+                "messageDestinations": 2,
+                "appId": "app_33W1An2Zz5cO9SWbhHsYyDmVC6m",
+                "appUid": null
+              }
+            ]
+          }
+        }
+        ```"""
         response = await self._request_asyncio(
             method="post",
             path="/api/v1/stats/usage/app",
@@ -44,7 +62,25 @@ class StatisticsAsync(ApiBase):
         """Creates a background task to calculate the listed event types for all apps in the organization.
 
         Note that this endpoint is asynchronous. You will need to poll the `Get Background Task` endpoint to
-        retrieve the results of the operation."""
+        retrieve the results of the operation.
+
+        The completed background task will return a payload like the following:
+        ```json
+        {
+          "id": "qtask_33qe39Stble9Rn3ZxFrqL5ZSsjT",
+          "status": "finished",
+          "task": "event-type.aggregate",
+          "data": {
+            "event_types": [
+              {
+                "appId": "app_33W1An2Zz5cO9SWbhHsYyDmVC6m",
+                "explicitlySubscribedEventTypes": ["user.signup", "user.deleted"],
+                "hasCatchAllEndpoint": false
+              }
+            ]
+          }
+        }
+        ```"""
         response = await self._request_asyncio(
             method="put", path="/api/v1/stats/usage/event-types", path_params={}
         )
@@ -60,7 +96,25 @@ class Statistics(ApiBase):
         """Creates a background task to calculate the message destinations for all applications in the environment.
 
         Note that this endpoint is asynchronous. You will need to poll the `Get Background Task` endpoint to
-        retrieve the results of the operation."""
+        retrieve the results of the operation.
+
+        The completed background task will return a payload like the following:
+        ```json
+        {
+          "id": "qtask_33qe39Stble9Rn3ZxFrqL5ZSsjT",
+          "status": "finished",
+          "task": "application.stats",
+          "data": {
+            "appStats": [
+              {
+                "messageDestinations": 2,
+                "appId": "app_33W1An2Zz5cO9SWbhHsYyDmVC6m",
+                "appUid": null
+              }
+            ]
+          }
+        }
+        ```"""
         response = self._request_sync(
             method="post",
             path="/api/v1/stats/usage/app",
@@ -77,7 +131,25 @@ class Statistics(ApiBase):
         """Creates a background task to calculate the listed event types for all apps in the organization.
 
         Note that this endpoint is asynchronous. You will need to poll the `Get Background Task` endpoint to
-        retrieve the results of the operation."""
+        retrieve the results of the operation.
+
+        The completed background task will return a payload like the following:
+        ```json
+        {
+          "id": "qtask_33qe39Stble9Rn3ZxFrqL5ZSsjT",
+          "status": "finished",
+          "task": "event-type.aggregate",
+          "data": {
+            "event_types": [
+              {
+                "appId": "app_33W1An2Zz5cO9SWbhHsYyDmVC6m",
+                "explicitlySubscribedEventTypes": ["user.signup", "user.deleted"],
+                "hasCatchAllEndpoint": false
+              }
+            ]
+          }
+        }
+        ```"""
         response = self._request_sync(
             method="put", path="/api/v1/stats/usage/event-types", path_params={}
         )

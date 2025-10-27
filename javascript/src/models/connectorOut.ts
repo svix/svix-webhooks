@@ -2,15 +2,15 @@
 import { type ConnectorKind, ConnectorKindSerializer } from "./connectorKind";
 
 export interface ConnectorOut {
+  allowedEventTypes?: string[] | null;
   createdAt: Date;
   description: string;
   featureFlags?: string[] | null;
-  filterTypes?: string[] | null;
   /** The Connector's ID. */
   id: string;
   instructions: string;
   kind: ConnectorKind;
-  logo: string;
+  logo?: string | null;
   name: string;
   /** The Environment's ID. */
   orgId: string;
@@ -21,10 +21,10 @@ export interface ConnectorOut {
 export const ConnectorOutSerializer = {
   _fromJsonObject(object: any): ConnectorOut {
     return {
+      allowedEventTypes: object["allowedEventTypes"],
       createdAt: new Date(object["createdAt"]),
       description: object["description"],
       featureFlags: object["featureFlags"],
-      filterTypes: object["filterTypes"],
       id: object["id"],
       instructions: object["instructions"],
       kind: ConnectorKindSerializer._fromJsonObject(object["kind"]),
@@ -38,10 +38,10 @@ export const ConnectorOutSerializer = {
 
   _toJsonObject(self: ConnectorOut): any {
     return {
+      allowedEventTypes: self.allowedEventTypes,
       createdAt: self.createdAt,
       description: self.description,
       featureFlags: self.featureFlags,
-      filterTypes: self.filterTypes,
       id: self.id,
       instructions: self.instructions,
       kind: ConnectorKindSerializer._toJsonObject(self.kind),

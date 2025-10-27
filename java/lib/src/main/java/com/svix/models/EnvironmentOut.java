@@ -20,13 +20,41 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class EnvironmentOut {
+    @JsonProperty private List<ConnectorOut> connectors;
     @JsonProperty private OffsetDateTime createdAt;
     @JsonProperty private List<EventTypeOut> eventTypes;
     @JsonProperty private Object settings;
-    @JsonProperty private List<ConnectorOut> transformationTemplates;
     @JsonProperty private Long version;
 
     public EnvironmentOut() {}
+
+    public EnvironmentOut connectors(List<ConnectorOut> connectors) {
+        this.connectors = connectors;
+        return this;
+    }
+
+    public EnvironmentOut addConnectorsItem(ConnectorOut connectorsItem) {
+        if (this.connectors == null) {
+            this.connectors = new ArrayList<>();
+        }
+        this.connectors.add(connectorsItem);
+
+        return this;
+    }
+
+    /**
+     * Get connectors
+     *
+     * @return connectors
+     */
+    @javax.annotation.Nonnull
+    public List<ConnectorOut> getConnectors() {
+        return connectors;
+    }
+
+    public void setConnectors(List<ConnectorOut> connectors) {
+        this.connectors = connectors;
+    }
 
     public EnvironmentOut createdAt(OffsetDateTime createdAt) {
         this.createdAt = createdAt;
@@ -92,34 +120,6 @@ public class EnvironmentOut {
 
     public void setSettings(Object settings) {
         this.settings = settings;
-    }
-
-    public EnvironmentOut transformationTemplates(List<ConnectorOut> transformationTemplates) {
-        this.transformationTemplates = transformationTemplates;
-        return this;
-    }
-
-    public EnvironmentOut addTransformationTemplatesItem(ConnectorOut transformationTemplatesItem) {
-        if (this.transformationTemplates == null) {
-            this.transformationTemplates = new ArrayList<>();
-        }
-        this.transformationTemplates.add(transformationTemplatesItem);
-
-        return this;
-    }
-
-    /**
-     * Get transformationTemplates
-     *
-     * @return transformationTemplates
-     */
-    @javax.annotation.Nonnull
-    public List<ConnectorOut> getTransformationTemplates() {
-        return transformationTemplates;
-    }
-
-    public void setTransformationTemplates(List<ConnectorOut> transformationTemplates) {
-        this.transformationTemplates = transformationTemplates;
     }
 
     public EnvironmentOut version(Long version) {
