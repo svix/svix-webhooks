@@ -99,6 +99,12 @@ enum RootCommands {
 async fn main() -> Result<()> {
     let cli = Cli::parse();
     let color_mode = cli.color_mode();
+
+    // rustls requires a crypto backend ("provider") choice to be made explicitly
+    // The Svix SDK uses the default provider if a default is not installed, but
+    // we use reqwest directly in some code paths, which does not do this.
+    _ = rustls::crypto::aws_lc_rs::default_provider().install_default();
+
     // XXX: cfg can give an Err in certain situations.
     // Assigning the variable here since several match arms need a `&Config` but the rest of them
     // won't care/are still usable if the config doesn't exist.
