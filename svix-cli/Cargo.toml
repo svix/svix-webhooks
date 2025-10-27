@@ -46,6 +46,7 @@ indoc = "2.0.5"
 open = "5.3.1"
 rand = "0.8.5"
 reqwest = { version = "0.12.9", features = ["rustls-tls", "json", "charset", "http2", "macos-system-configuration"], default-features = false }
+rustls = "0.23.34"
 serde = { version = "1.0.215", features = ["derive"] }
 serde_json = "1.0.133"
 svix = { path = "../rust" }
