@@ -1,9 +1,14 @@
 # Changelog
 
-# Version 1.80.0
+## Version 1.81.0
+* Libs/All: Add support for the new [Connector API](https://api.svix.com/docs#tag/Connector)
+  (see also [the corresponding docs section](https://docs.svix.com/connectors))
+* CLI: Fix `svix listen` failing with "Could not automatically determine the process-level CryptoProvider"
+
+## Version 1.80.0
 * Libs/PHP added support for `$svix->application->getOrCreate`
 
-# Version 1.79.0
+## Version 1.79.0
 * Libs/Kotlin: Add `SvixOptions` to the `com.svix.kotlin` namespace
   * The un-namespaced symbol is kept as a `typealias` for backwards compatibility
 * Libs/Javascript: Add option to configure the fetch method
