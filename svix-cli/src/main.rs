@@ -21,6 +21,7 @@ use self::{
     },
     config::Config,
 };
+use crate::cmds::api::connector::ConnectorArgs;
 
 mod cmds;
 mod config;
@@ -63,6 +64,8 @@ enum RootCommands {
     Authentication(AuthenticationArgs),
     /// Generate the autocompletion script for the specified shell
     Completion { shell: Shell },
+    /// List, create & modify connectors
+    Connector(ConnectorArgs),
     /// List, create & modify endpoints
     Endpoint(EndpointArgs),
     /// Import or export environments
@@ -123,6 +126,10 @@ async fn main() -> Result<()> {
         RootCommands::Authentication(args) => {
             let cfg = cfg?;
             let client = get_client(&cfg)?;
+            args.command.exec(&client, color_mode).await?;
+        }
+        RootCommands::Connector(args) => {
+            let client = get_client(&cfg?)?;
             args.command.exec(&client, color_mode).await?;
         }
         RootCommands::EventType(args) => {

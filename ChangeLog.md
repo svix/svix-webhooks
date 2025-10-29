@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+* CLI: Add support for the Connector API
+
 ## Version 1.81.0
 * Libs/All: Add support for the new [Connector API](https://api.svix.com/docs#tag/Connector)
   (see also [the corresponding docs section](https://docs.svix.com/connectors))

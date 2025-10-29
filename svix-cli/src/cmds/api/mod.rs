@@ -1,5 +1,6 @@
 pub mod application;
 pub mod authentication;
+pub mod connector;
 pub mod endpoint;
 pub mod environment;
 pub mod event_type;
