@@ -34,8 +34,8 @@
             or value_t.is_list()
             or value_t.is_set()
             or value_t.is_map() -%}
-            Object.fromEntries(Object.entries({{ field_expr }}).map(
-                (item : {{ inner_t.to_js() }}) => [item[0], {{ field_from_json("item[1]", value_t, true) }}]
+            Object.fromEntries(Object.entries<{{ value_t.to_js() }}>({{ field_expr }}).map(
+                (item : [string, {{ value_t.to_js() }}]) => [item[0], {{ field_from_json("item[1]", value_t, true) }}]
             ))
         {%- else -%}
             {{ field_expr }}
