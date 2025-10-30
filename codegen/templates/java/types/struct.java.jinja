@@ -1,5 +1,5 @@
 // This file is @generated
-{% set class_ty = type.name | to_upper_camel_case  -%}
+{% set class_ty = type.name | to_upper_camel_case -%}
 package com.svix.models;
 
 import com.svix.MaybeUnset;
@@ -84,7 +84,7 @@ public class {{ type.name | to_upper_camel_case }} {
     }
 
     {% if field.type.is_set() or  field.type.is_list() -%}
-    {{ f_deprecated }} public {{ class_ty }} add{{ f_varname | to_upper_camel_case }}Item ({{ field.type.inner_type().to_java() }} {{ f_varname  }}Item) {
+    {{ f_deprecated }} public {{ class_ty }} add{{ f_varname | to_upper_camel_case }}Item ({{ field.type.inner_type().to_java() }} {{ f_varname }}Item) {
         if (this.{{ f_varname }} == null) {
             {% if field.type.is_set() -%}
                 {% if type.name is endingwith "Patch" and field.nullable -%}
@@ -101,14 +101,14 @@ public class {{ type.name | to_upper_camel_case }} {
             {% endif -%}
         }
         {% if type.name is endingwith "Patch" and field.nullable -%}
-        this.{{ f_varname }}.getValue().add({{ f_varname  }}Item);
+        this.{{ f_varname }}.getValue().add({{ f_varname }}Item);
         {% else -%}
-        this.{{ f_varname }}.add({{ f_varname  }}Item);
+        this.{{ f_varname }}.add({{ f_varname }}Item);
         {% endif %}
         return this;
     }
     {% elif field.type.is_map() -%}
-    {{ f_deprecated }} public {{ class_ty }} put{{ f_varname | to_upper_camel_case  }}Item(String key, String {{ f_varname }}Item) {
+    {{ f_deprecated }} public {{ class_ty }} put{{ f_varname | to_upper_camel_case }}Item(String key, String {{ f_varname }}Item) {
         if (this.{{ f_varname }} == null) {
             {% if type.name is endingwith "Patch" and field.nullable -%}
             this.{{ f_varname }} = new MaybeUnset<>(new HashMap<>());
@@ -132,7 +132,7 @@ public class {{ type.name | to_upper_camel_case }} {
      * Get {{ f_varname }}
     {% endif -%}
      *
-     * @return {{ f_varname  }}
+     * @return {{ f_varname }}
      */
     {% if field.nullable or not field.required -%}
     @javax.annotation.Nullable

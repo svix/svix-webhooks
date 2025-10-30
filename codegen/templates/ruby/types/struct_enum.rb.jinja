@@ -1,5 +1,5 @@
 {% from "types/macros.rb.jinja" import deserialize_field, serialize_field -%}
-{% set class_ty = type.name | to_upper_camel_case  -%}
+{% set class_ty = type.name | to_upper_camel_case -%}
 {% set enum_type_name %}{{ class_ty }}{{ type.content_field | to_upper_camel_case }}{% endset-%}
 # frozen_string_literal: true
 # This file is @generated
@@ -69,7 +69,7 @@ module Svix
         unless ALL_FIELD.include?(k.to_s)
           fail(ArgumentError, "The field #{k} is not part of Svix::{{ class_ty }}")
         end
-        if k == "{{type.content_field | to_snake_case  }}"
+        if k == "{{type.content_field | to_snake_case }}"
           unless TYPE_TO_NAME.key?(v.class)
             fail(ArgumentError, "The field #{k} can't be a `#{v.class}` expected one of #{TYPE_TO_NAME.keys}")
           end
@@ -95,7 +95,7 @@ module Svix
       unless attributes.key? "{{ type.content_field }}"
         fail(ArgumentError, "Missing required field {{ type.content_field }}")
       end
-      attrs["{{ type.content_field  }}"] = NAME_TO_TYPE[attributes["{{ type.discriminator_field }}"]].deserialize(attributes["{{ type.content_field }}"])
+      attrs["{{ type.content_field }}"] = NAME_TO_TYPE[attributes["{{ type.discriminator_field }}"]].deserialize(attributes["{{ type.content_field }}"])
       new(attrs)
     end
 

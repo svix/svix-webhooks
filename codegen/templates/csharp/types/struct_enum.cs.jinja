@@ -24,7 +24,7 @@ namespace Svix.Models {
         [JsonProperty("{{ type.discriminator_field }}")]
         private string {{ discriminator_field_name }} => Config.GetDiscriminator();
 
-        [JsonProperty("{{ type.content_field  }}")]
+        [JsonProperty("{{ type.content_field }}")]
         private object real{{ content_field_name }} { get => Config.GetContent(); set => Config.SetContent(value); }
 
 

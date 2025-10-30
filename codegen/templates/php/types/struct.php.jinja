@@ -71,7 +71,7 @@ class {{ type.name | to_upper_camel_case }} implements \JsonSerializable
     public function with{{ field.name | to_upper_camel_case }}(?{{ field.type.to_php() }} ${{ field.name | to_lower_camel_case }}): self
         {
             $setFields = $this->setFields;
-            $setFields['{{  field.name | to_lower_camel_case }}'] = true;
+            $setFields['{{ field.name | to_lower_camel_case }}'] = true;
             return new self(
                 {% for inner_field in type.fields -%}
                     {% if field.name != inner_field.name -%}

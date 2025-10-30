@@ -15,7 +15,7 @@ type {{ ty_name }} int64
 
 const (
 {% for varname, val in type.variants -%}
-	{{ type.name |  to_upper_snake_case | replace("_", "") }}_{{ varname | to_upper_snake_case }}  {{ ty_name }} = {{ val }}
+	{{ type.name | to_upper_snake_case | replace("_", "") }}_{{ varname | to_upper_snake_case }}  {{ ty_name }} = {{ val }}
 {% endfor -%}
 )
 
@@ -43,6 +43,6 @@ func (v *{{ ty_name }}) UnmarshalJSON(src []byte) error {
 
 var {{ ty_name }}FromInt64 = map[int64]{{ ty_name }}{
 	{% for varname, val in type.variants -%}
-	{{ val }} : {{ type.name |  to_upper_snake_case | replace("_", "") }}_{{ varname | to_upper_snake_case }},
+	{{ val }} : {{ type.name | to_upper_snake_case | replace("_", "") }}_{{ varname | to_upper_snake_case }},
 	{% endfor -%}
 }
