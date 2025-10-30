@@ -101,7 +101,7 @@ async fn graceful_shutdown_handler() {
 
 pub async fn run(cfg: Configuration) {
     let _metrics = setup_metrics(&cfg);
-    run_with_prefix(None, cfg, None).await
+    run_with_prefix(cfg.queue_prefix.clone(), cfg, None).await
 }
 
 #[derive(Clone)]
