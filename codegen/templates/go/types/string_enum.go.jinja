@@ -15,7 +15,7 @@ type {{ ty_name }} string
 
 const (
 {% for value in type.values -%}
-	{{ type.name |  to_upper_snake_case | replace("_", "") }}_{{ value | to_upper_snake_case }} {{ ty_name }} = "{{ value }}"
+	{{ type.name | to_upper_snake_case | replace("_", "") }}_{{ value | to_upper_snake_case }} {{ ty_name }} = "{{ value }}"
 {% endfor -%}
 )
 
@@ -43,6 +43,6 @@ func (v *{{ ty_name }}) UnmarshalJSON(src []byte) error {
 
 var {{ ty_name }}FromString = map[string]{{ ty_name }}{
 	{% for value in type.values -%}
-	"{{ value }}" : {{ type.name |  to_upper_snake_case | replace("_", "") }}_{{ value | to_upper_snake_case }},
+	"{{ value }}" : {{ type.name | to_upper_snake_case | replace("_", "") }}_{{ value | to_upper_snake_case }},
 	{% endfor -%}
 }

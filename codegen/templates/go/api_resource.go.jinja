@@ -166,7 +166,7 @@ func ({{ resource_self_name }} *{{ resource_type_name }}) {{ op.name | to_upper_
 		{% endif -%}
 
 		{#- query params -#}
-		{% if op.query_params | length > 0 or op.id == "v1.application.create"  -%}
+		{% if op.query_params | length > 0 or op.id == "v1.application.create" -%}
 		queryMap,
 		{% else -%}
 		nil,

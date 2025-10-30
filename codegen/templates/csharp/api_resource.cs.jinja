@@ -77,7 +77,7 @@ namespace Svix
             {%- set ret_ty = op.response_body_schema_name | to_upper_camel_case %}
         {%- endif %}
         {%- if async %}
-            {%- set ret_ty_sig  %}Task<{{ ret_ty }}>{% endset %}
+            {%- set ret_ty_sig%}Task<{{ ret_ty }}>{% endset %}
         {%- else %}
             {%- set ret_ty_sig = ret_ty %}
         {%- endif %}

@@ -14,10 +14,10 @@ use Svix\Models\{{ c | to_upper_camel_case }};
 class {{ resource_type_name }}{{ operation.name | to_upper_camel_case }}Options {
     public function __construct(
     {% for p in operation.query_params -%}
-        public readonly ?{{ p.type.to_php() }} ${{ p.name | to_lower_camel_case  }} = null,
+        public readonly ?{{ p.type.to_php() }} ${{ p.name | to_lower_camel_case }} = null,
     {% endfor -%}
     {% for p in operation.header_params -%}
-        public readonly ?string ${{ p.name | to_lower_camel_case  }} = null,
+        public readonly ?string ${{ p.name | to_lower_camel_case }} = null,
     {% endfor -%}
     ) {}
 }
