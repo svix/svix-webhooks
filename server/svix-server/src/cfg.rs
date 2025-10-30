@@ -185,7 +185,10 @@ pub struct ConfigurationInner {
     /// The DSN for the Redis-backed queue. Overrides `redis_dsn`. (can be left empty if not using
     /// redis)
     pub queue_dsn: Option<String>,
-    /// The prefix to use for the queue. If not provided it will be empty.
+    /// Optional prefix to use for the queue.
+    ///
+    /// Allows multiple instances of svix-server to share a single queue backend
+    /// without interfering with each other.
     pub queue_prefix: Option<String>,
 
     /// What kind of cache to use. Supported: memory, redis (must have redis_dsn or cache_dsn
