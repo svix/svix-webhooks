@@ -10,7 +10,7 @@ use aide::axum::ApiRouter;
 use cfg::ConfigurationInner;
 use opentelemetry::trace::TracerProvider as _;
 use opentelemetry_otlp::WithExportConfig;
-use opentelemetry_sdk::{metrics::SdkMeterProvider, runtime::Tokio};
+use opentelemetry_sdk::{metrics::SdkMeterProvider, resource::ResourceDetector, runtime::Tokio};
 use queue::TaskQueueProducer;
 use redis::RedisManager;
 use sea_orm::DatabaseConnection;
@@ -275,6 +275,16 @@ pub fn setup_tracing(
             .tonic()
             .with_endpoint(addr);
 
+        let resource_detector = opentelemetry_sdk::resource::EnvResourceDetector::new();
+        let resource = resource_detector
+            .detect(std::time::Duration::from_secs(5))
+            .merge(&opentelemetry_sdk::Resource::new(vec![
+                opentelemetry::KeyValue::new(
+                    "service.name",
+                    cfg.opentelemetry_service_name.clone(),
+                ),
+            ]));
+
         let provider = opentelemetry_otlp::new_pipeline()
             .tracing()
             .with_exporter(exporter)
@@ -285,12 +295,7 @@ pub fn setup_tracing(
                             .map(opentelemetry_sdk::trace::Sampler::TraceIdRatioBased)
                             .unwrap_or(opentelemetry_sdk::trace::Sampler::AlwaysOn),
                     )
-                    .with_resource(opentelemetry_sdk::Resource::new(vec![
-                        opentelemetry::KeyValue::new(
-                            "service.name",
-                            cfg.opentelemetry_service_name.clone(),
-                        ),
-                    ])),
+                    .with_resource(resource),
             )
             .install_batch(Tokio)
             .unwrap();
