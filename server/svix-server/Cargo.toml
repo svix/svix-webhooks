@@ -76,7 +76,7 @@ serde_path_to_error = "0.1.7"
 sqlx = { version = "0.8.2", features = [ "runtime-tokio-rustls", "postgres", "migrate" ] }
 svix = "1.17.0"
 svix-ksuid = "^0.5.1"
-svix-server_derive = { path = "../svix-server_derive" }
+svix-server-derive = { path = "../svix-server-derive" }
 thiserror = "2.0.11"
 time = { version = "0.3.9", features = [ "std" ] }
 tokio = { version = "1.24.2", features = ["full"] }
