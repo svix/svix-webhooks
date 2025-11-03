@@ -4974,7 +4974,7 @@ dependencies = [
  "sqlx",
  "svix",
  "svix-ksuid 0.5.3",
- "svix-server_derive",
+ "svix-server-derive",
  "thiserror 2.0.12",
  "tikv-jemallocator",
  "time",
@@ -4992,7 +4992,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "svix-server_derive"
+name = "svix-server-derive"
 version = "1.81.0"
 dependencies = [
  "proc-macro2",

@@ -1,5 +1,5 @@
 [package]
-name = "svix-server_derive"
+name = "svix-server-derive"
 publish = false
 version.workspace = true
 edition.workspace = true
