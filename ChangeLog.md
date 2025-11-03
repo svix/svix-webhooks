@@ -516,7 +516,7 @@ This version contains a big overhaul of the client libraries, with improved typi
 
 ## Version 1.5.0
 * Server: update OpenSSL dep and fix an incredibly slow memory leak.
-* Libs/Go: support passing `WithContent` to `List Attepmted Messages`
+* Libs/Go: support passing `WithContent` to `List Attempted Messages`
 * Libs/Python: fix regression in Python library (causing some functions not to work).
 
 ## Version 1.4.12
