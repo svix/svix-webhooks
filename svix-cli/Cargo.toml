@@ -52,6 +52,8 @@ serde_json = "1.0.133"
 svix = { path = "../rust" }
 tokio = { version = "1.42.0", features = ["macros", "time", "rt-multi-thread"] }
 tokio-tungstenite = { version = "0.26.0", features = ["rustls-tls-native-roots"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features=["std", "ansi", "fmt", "registry", "local-time"], default-features = false }
 toml = "0.8.19"
 url = "2.5.4"
 

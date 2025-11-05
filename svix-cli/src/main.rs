@@ -37,6 +37,13 @@ const BIN_NAME: &str = env!("CARGO_BIN_NAME");
 struct Cli {
     #[command(flatten)]
     color: Color,
+    #[arg(
+        short,
+        long,
+        action = clap::ArgAction::Count,
+        help = "Log more. This option may be repeated up to 3 times"
+    )]
+    verbose: u8,
     #[command(subcommand)]
     command: RootCommands,
 }
@@ -51,6 +58,15 @@ impl Cli {
             ColorChoice::Auto => ColorMode::Auto(Output::StdOut),
             ColorChoice::Always => ColorMode::On,
             ColorChoice::Never => ColorMode::Off,
+        }
+    }
+
+    fn log_level(&self) -> tracing::Level {
+        match self.verbose {
+            3.. => tracing::Level::TRACE,
+            2 => tracing::Level::DEBUG,
+            1 => tracing::Level::INFO,
+            0 => tracing::Level::WARN,
         }
     }
 }
@@ -102,6 +118,11 @@ enum RootCommands {
 async fn main() -> Result<()> {
     let cli = Cli::parse();
     let color_mode = cli.color_mode();
+
+    tracing_subscriber::fmt()
+        .with_max_level(cli.log_level())
+        .with_timer(tracing_subscriber::fmt::time::LocalTime::rfc_3339())
+        .init();
 
     // rustls requires a crypto backend ("provider") choice to be made explicitly
     // The Svix SDK uses the default provider if a default is not installed, but
