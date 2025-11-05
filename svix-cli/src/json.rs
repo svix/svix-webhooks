@@ -1,6 +1,6 @@
-use std::str::FromStr;
+use std::{io::Read, str::FromStr};
 
-use anyhow::{Error, Result};
+use anyhow::{Context, Error, Result};
 use colored_json::{Color, ColorMode, ToColoredJson};
 use serde::{de::DeserializeOwned, Serialize};
 
@@ -11,7 +11,16 @@ impl<T: DeserializeOwned> FromStr for JsonOf<T> {
     type Err = Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Ok(JsonOf(serde_json::from_str(s)?))
+        if s == "-" {
+            let mut stdin = std::io::stdin().lock();
+            let mut input = String::new();
+            stdin
+                .read_to_string(&mut input)
+                .context("Error reading stdin for '-' argument")?;
+            Ok(JsonOf(serde_json::from_str(&input)?))
+        } else {
+            Ok(JsonOf(serde_json::from_str(s)?))
+        }
     }
 }
 
