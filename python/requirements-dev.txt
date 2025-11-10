@@ -40,7 +40,7 @@ packaging==24.1
     # via
     #   build
     #   pytest
-pip==25.2
+pip==25.3
     # via pip-tools
 pip-tools==7.4.1
     # via -r requirements.in/development.txt
