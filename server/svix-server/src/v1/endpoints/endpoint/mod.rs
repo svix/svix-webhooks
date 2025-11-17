@@ -384,12 +384,6 @@ pub struct EndpointPatch {
     #[serde(default, skip_serializing_if = "UnrequiredNullableField::is_absent")]
     pub channels: UnrequiredNullableField<EventChannelSet>,
 
-    #[validate]
-    #[serde(default)]
-    #[serde(rename = "secret")]
-    #[serde(skip_serializing_if = "UnrequiredNullableField::is_absent")]
-    pub key: UnrequiredNullableField<EndpointSecret>,
-
     #[serde(default)]
     #[serde(skip_serializing_if = "UnrequiredField::is_absent")]
     pub metadata: UnrequiredField<Metadata>,
@@ -409,7 +403,6 @@ impl ModelIn for EndpointPatch {
             disabled,
             event_types_ids,
             channels,
-            key: _,
             metadata: _,
         } = self;
 
