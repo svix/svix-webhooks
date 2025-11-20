@@ -732,13 +732,6 @@
                         "nullable": true,
                         "type": "integer"
                     },
-                    "secret": {
-                        "description": "The endpoint's verification secret. If `null` is passed, a secret is automatically generated. Format: `base64` encoded random bytes optionally prefixed with `whsec_`. Recommended size: 24.",
-                        "example": "whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD",
-                        "nullable": true,
-                        "pattern": "^(whsec_)?[a-zA-Z0-9+/=]{32,100}$",
-                        "type": "string"
-                    },
                     "uid": {
                         "example": "unique-ep-identifier",
                         "maxLength": 256,
