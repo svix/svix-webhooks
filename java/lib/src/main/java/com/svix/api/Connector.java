@@ -43,6 +43,9 @@ public class Connector {
         if (options.order != null) {
             url.addQueryParameter("order", Utils.serializeQueryParam(options.order));
         }
+        if (options.productType != null) {
+            url.addQueryParameter("product_type", Utils.serializeQueryParam(options.productType));
+        }
         return this.client.executeRequest(
                 "GET", url.build(), null, null, ListResponseConnectorOut.class);
     }

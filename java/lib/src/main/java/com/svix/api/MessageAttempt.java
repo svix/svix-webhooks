@@ -4,6 +4,7 @@ package com.svix.api;
 import com.svix.SvixHttpClient;
 import com.svix.Utils;
 import com.svix.exceptions.ApiException;
+import com.svix.models.EmptyResponse;
 import com.svix.models.ListResponseEndpointMessageOut;
 import com.svix.models.ListResponseMessageAttemptOut;
 import com.svix.models.ListResponseMessageEndpointOut;
@@ -299,13 +300,13 @@ public class MessageAttempt {
     }
 
     /** Resend a message to the specified endpoint. */
-    public void resend(final String appId, final String msgId, final String endpointId)
+    public EmptyResponse resend(final String appId, final String msgId, final String endpointId)
             throws IOException, ApiException {
-        this.resend(appId, msgId, endpointId, new MessageAttemptResendOptions());
+        return this.resend(appId, msgId, endpointId, new MessageAttemptResendOptions());
     }
 
     /** Resend a message to the specified endpoint. */
-    public void resend(
+    public EmptyResponse resend(
             final String appId,
             final String msgId,
             final String endpointId,
@@ -322,6 +323,7 @@ public class MessageAttempt {
         if (options.idempotencyKey != null) {
             headers.put("idempotency-key", options.idempotencyKey);
         }
-        this.client.executeRequest("POST", url.build(), Headers.of(headers), null, null);
+        return this.client.executeRequest(
+                "POST", url.build(), Headers.of(headers), null, EmptyResponse.class);
     }
 }

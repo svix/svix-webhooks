@@ -3,6 +3,7 @@
 import { type ConnectorIn, ConnectorInSerializer } from "../models/connectorIn";
 import { type ConnectorOut, ConnectorOutSerializer } from "../models/connectorOut";
 import { type ConnectorPatch, ConnectorPatchSerializer } from "../models/connectorPatch";
+import type { ConnectorProduct } from "../models/connectorProduct";
 import {
   type ConnectorUpdate,
   ConnectorUpdateSerializer,
@@ -21,6 +22,7 @@ export interface ConnectorListOptions {
   iterator?: string | null;
   /** The sorting order of the returned items */
   order?: Ordering;
+  productType?: ConnectorProduct;
 }
 
 export interface ConnectorCreateOptions {
@@ -37,6 +39,7 @@ export class Connector {
     request.setQueryParam("limit", options?.limit);
     request.setQueryParam("iterator", options?.iterator);
     request.setQueryParam("order", options?.order);
+    request.setQueryParam("product_type", options?.productType);
 
     return request.send(
       this.requestCtx,

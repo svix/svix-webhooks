@@ -7,6 +7,8 @@ namespace Svix
 {
     public class ApplicationListOptions : SvixOptionsBase
     {
+        public bool? ExcludeAppsWithNoEndpoints { get; set; }
+        public bool? ExcludeAppsWithDisabledEndpoints { get; set; }
         public ulong? Limit { get; set; }
         public string? Iterator { get; set; }
         public Ordering? Order { get; set; }
@@ -16,6 +18,8 @@ namespace Svix
             return SerializeParams(
                 new Dictionary<string, object?>
                 {
+                    { "exclude_apps_with_no_endpoints", ExcludeAppsWithNoEndpoints },
+                    { "exclude_apps_with_disabled_endpoints", ExcludeAppsWithDisabledEndpoints },
                     { "limit", Limit },
                     { "iterator", Iterator },
                     { "order", Order },

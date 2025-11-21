@@ -33,6 +33,7 @@ type (
 	ConnectorKind                             = models.ConnectorKind
 	ConnectorOut                              = models.ConnectorOut
 	ConnectorPatch                            = models.ConnectorPatch
+	ConnectorProduct                          = models.ConnectorProduct
 	ConnectorUpdate                           = models.ConnectorUpdate
 	CreateStreamEventsIn                      = models.CreateStreamEventsIn
 	CreateStreamEventsOut                     = models.CreateStreamEventsOut
@@ -87,6 +88,7 @@ type (
 	GithubConfigOut                           = models.GithubConfigOut
 	GoogleCloudStorageConfig                  = models.GoogleCloudStorageConfig
 	GoogleCloudStoragePatchConfig             = models.GoogleCloudStoragePatchConfig
+	HttpAttemptTimes                          = models.HttpAttemptTimes
 	HttpPatchConfig                           = models.HttpPatchConfig
 	HttpSinkHeadersPatchIn                    = models.HttpSinkHeadersPatchIn
 	HubspotConfig                             = models.HubspotConfig
@@ -136,6 +138,8 @@ type (
 	MessageAttemptFailedData                  = models.MessageAttemptFailedData
 	MessageAttemptFailingEvent                = models.MessageAttemptFailingEvent
 	MessageAttemptFailingEventData            = models.MessageAttemptFailingEventData
+	MessageAttemptLog                         = models.MessageAttemptLog
+	MessageAttemptLogEvent                    = models.MessageAttemptLogEvent
 	MessageAttemptOut                         = models.MessageAttemptOut
 	MessageAttemptRecoveredEvent              = models.MessageAttemptRecoveredEvent
 	MessageAttemptRecoveredEventData          = models.MessageAttemptRecoveredEventData

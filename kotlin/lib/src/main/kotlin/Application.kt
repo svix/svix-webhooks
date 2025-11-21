@@ -9,6 +9,10 @@ import com.svix.kotlin.models.Ordering
 import okhttp3.Headers
 
 data class ApplicationListOptions(
+    /** Exclude applications that have no endpoints. Default is false. */
+    val excludeAppsWithNoEndpoints: Boolean? = null,
+    /** Exclude applications that have only disabled endpoints. Default is false. */
+    val excludeAppsWithDisabledEndpoints: Boolean? = null,
     /** Limit the number of returned items */
     val limit: ULong? = null,
     /** The iterator returned from a prior invocation */
@@ -25,6 +29,12 @@ class Application(private val client: SvixHttpClient) {
         options: ApplicationListOptions = ApplicationListOptions()
     ): ListResponseApplicationOut {
         val url = client.newUrlBuilder().encodedPath("/api/v1/app")
+        options.excludeAppsWithNoEndpoints?.let {
+            url.addQueryParameter("exclude_apps_with_no_endpoints", serializeQueryParam(it))
+        }
+        options.excludeAppsWithDisabledEndpoints?.let {
+            url.addQueryParameter("exclude_apps_with_disabled_endpoints", serializeQueryParam(it))
+        }
         options.limit?.let { url.addQueryParameter("limit", serializeQueryParam(it)) }
         options.iterator?.let { url.addQueryParameter("iterator", it) }
         options.order?.let { url.addQueryParameter("order", serializeQueryParam(it)) }

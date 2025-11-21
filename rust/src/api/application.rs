@@ -3,6 +3,13 @@ use crate::{error::Result, models::*, Configuration};
 
 #[derive(Default)]
 pub struct ApplicationListOptions {
+    /// Exclude applications that have no endpoints. Default is false.
+    pub exclude_apps_with_no_endpoints: Option<bool>,
+
+    /// Exclude applications that have only disabled endpoints. Default is
+    /// false.
+    pub exclude_apps_with_disabled_endpoints: Option<bool>,
+
     /// Limit the number of returned items
     pub limit: Option<i32>,
 
@@ -33,12 +40,22 @@ impl<'a> Application<'a> {
         options: Option<ApplicationListOptions>,
     ) -> Result<ListResponseApplicationOut> {
         let ApplicationListOptions {
+            exclude_apps_with_no_endpoints,
+            exclude_apps_with_disabled_endpoints,
             limit,
             iterator,
             order,
         } = options.unwrap_or_default();
 
         crate::request::Request::new(http1::Method::GET, "/api/v1/app")
+            .with_optional_query_param(
+                "exclude_apps_with_no_endpoints",
+                exclude_apps_with_no_endpoints,
+            )
+            .with_optional_query_param(
+                "exclude_apps_with_disabled_endpoints",
+                exclude_apps_with_disabled_endpoints,
+            )
             .with_optional_query_param("limit", limit)
             .with_optional_query_param("iterator", iterator)
             .with_optional_query_param("order", order)

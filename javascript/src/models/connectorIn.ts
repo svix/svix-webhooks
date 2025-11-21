@@ -1,5 +1,6 @@
 // this file is @generated
 import { type ConnectorKind, ConnectorKindSerializer } from "./connectorKind";
+import { type ConnectorProduct, ConnectorProductSerializer } from "./connectorProduct";
 
 export interface ConnectorIn {
   allowedEventTypes?: string[] | null;
@@ -9,7 +10,10 @@ export interface ConnectorIn {
   kind?: ConnectorKind;
   logo?: string | null;
   name: string;
+  productType?: ConnectorProduct | null;
   transformation: string;
+  /** The Connector's UID. */
+  uid?: string | null;
 }
 
 export const ConnectorInSerializer = {
@@ -24,7 +28,11 @@ export const ConnectorInSerializer = {
         : undefined,
       logo: object["logo"],
       name: object["name"],
+      productType: object["productType"]
+        ? ConnectorProductSerializer._fromJsonObject(object["productType"])
+        : undefined,
       transformation: object["transformation"],
+      uid: object["uid"],
     };
   },
 
@@ -37,7 +45,11 @@ export const ConnectorInSerializer = {
       kind: self.kind ? ConnectorKindSerializer._toJsonObject(self.kind) : undefined,
       logo: self.logo,
       name: self.name,
+      productType: self.productType
+        ? ConnectorProductSerializer._toJsonObject(self.productType)
+        : undefined,
       transformation: self.transformation,
+      uid: self.uid,
     };
   },
 };

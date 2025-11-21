@@ -14,6 +14,7 @@ class ConnectorOut implements \JsonSerializable
      * @param list<string>|null $featureFlags
      * @param string            $id                the Connector's ID
      * @param string            $orgId             the Environment's ID
+     * @param string|null       $uid               the Connector's UID
      */
     private function __construct(
         public readonly \DateTimeImmutable $createdAt,
@@ -23,11 +24,13 @@ class ConnectorOut implements \JsonSerializable
         public readonly ConnectorKind $kind,
         public readonly string $name,
         public readonly string $orgId,
+        public readonly ConnectorProduct $productType,
         public readonly string $transformation,
         public readonly \DateTimeImmutable $updatedAt,
         public readonly ?array $allowedEventTypes = null,
         public readonly ?array $featureFlags = null,
         public readonly ?string $logo = null,
+        public readonly ?string $uid = null,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -44,6 +47,7 @@ class ConnectorOut implements \JsonSerializable
         ConnectorKind $kind,
         string $name,
         string $orgId,
+        ConnectorProduct $productType,
         string $transformation,
         \DateTimeImmutable $updatedAt,
     ): self {
@@ -58,9 +62,11 @@ class ConnectorOut implements \JsonSerializable
             logo: null,
             name: $name,
             orgId: $orgId,
+            productType: $productType,
             transformation: $transformation,
+            uid: null,
             updatedAt: $updatedAt,
-            setFields: ['createdAt' => true, 'description' => true, 'id' => true, 'instructions' => true, 'kind' => true, 'name' => true, 'orgId' => true, 'transformation' => true, 'updatedAt' => true]
+            setFields: ['createdAt' => true, 'description' => true, 'id' => true, 'instructions' => true, 'kind' => true, 'name' => true, 'orgId' => true, 'productType' => true, 'transformation' => true, 'updatedAt' => true]
         );
     }
 
@@ -80,7 +86,9 @@ class ConnectorOut implements \JsonSerializable
             logo: $this->logo,
             name: $this->name,
             orgId: $this->orgId,
+            productType: $this->productType,
             transformation: $this->transformation,
+            uid: $this->uid,
             updatedAt: $this->updatedAt,
             setFields: $setFields
         );
@@ -102,7 +110,9 @@ class ConnectorOut implements \JsonSerializable
             logo: $this->logo,
             name: $this->name,
             orgId: $this->orgId,
+            productType: $this->productType,
             transformation: $this->transformation,
+            uid: $this->uid,
             updatedAt: $this->updatedAt,
             setFields: $setFields
         );
@@ -124,7 +134,33 @@ class ConnectorOut implements \JsonSerializable
             logo: $logo,
             name: $this->name,
             orgId: $this->orgId,
+            productType: $this->productType,
             transformation: $this->transformation,
+            uid: $this->uid,
+            updatedAt: $this->updatedAt,
+            setFields: $setFields
+        );
+    }
+
+    public function withUid(?string $uid): self
+    {
+        $setFields = $this->setFields;
+        $setFields['uid'] = true;
+
+        return new self(
+            allowedEventTypes: $this->allowedEventTypes,
+            createdAt: $this->createdAt,
+            description: $this->description,
+            featureFlags: $this->featureFlags,
+            id: $this->id,
+            instructions: $this->instructions,
+            kind: $this->kind,
+            logo: $this->logo,
+            name: $this->name,
+            orgId: $this->orgId,
+            productType: $this->productType,
+            transformation: $this->transformation,
+            uid: $uid,
             updatedAt: $this->updatedAt,
             setFields: $setFields
         );
@@ -140,6 +176,7 @@ class ConnectorOut implements \JsonSerializable
             'kind' => $this->kind,
             'name' => $this->name,
             'orgId' => $this->orgId,
+            'productType' => $this->productType,
             'transformation' => $this->transformation,
             'updatedAt' => $this->updatedAt->format('c')];
 
@@ -151,6 +188,9 @@ class ConnectorOut implements \JsonSerializable
         }
         if (isset($this->setFields['logo'])) {
             $data['logo'] = $this->logo;
+        }
+        if (isset($this->setFields['uid'])) {
+            $data['uid'] = $this->uid;
         }
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
@@ -172,7 +212,9 @@ class ConnectorOut implements \JsonSerializable
             logo: \Svix\Utils::getValFromJson($data, 'logo', false, 'ConnectorOut'),
             name: \Svix\Utils::deserializeString($data, 'name', true, 'ConnectorOut'),
             orgId: \Svix\Utils::deserializeString($data, 'orgId', true, 'ConnectorOut'),
+            productType: \Svix\Utils::deserializeObject($data, 'productType', true, 'ConnectorOut', [ConnectorProduct::class, 'fromMixed']),
             transformation: \Svix\Utils::deserializeString($data, 'transformation', true, 'ConnectorOut'),
+            uid: \Svix\Utils::deserializeString($data, 'uid', false, 'ConnectorOut'),
             updatedAt: \Svix\Utils::deserializeDt($data, 'updatedAt', true, 'ConnectorOut')
         );
     }

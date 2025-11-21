@@ -27,7 +27,9 @@ public class ConnectorIn {
     @JsonProperty private ConnectorKind kind;
     @JsonProperty private URI logo;
     @JsonProperty private String name;
+    @JsonProperty private ConnectorProduct productType;
     @JsonProperty private String transformation;
+    @JsonProperty private String uid;
 
     public ConnectorIn() {}
 
@@ -182,6 +184,25 @@ public class ConnectorIn {
         this.name = name;
     }
 
+    public ConnectorIn productType(ConnectorProduct productType) {
+        this.productType = productType;
+        return this;
+    }
+
+    /**
+     * Get productType
+     *
+     * @return productType
+     */
+    @javax.annotation.Nullable
+    public ConnectorProduct getProductType() {
+        return productType;
+    }
+
+    public void setProductType(ConnectorProduct productType) {
+        this.productType = productType;
+    }
+
     public ConnectorIn transformation(String transformation) {
         this.transformation = transformation;
         return this;
@@ -199,6 +220,25 @@ public class ConnectorIn {
 
     public void setTransformation(String transformation) {
         this.transformation = transformation;
+    }
+
+    public ConnectorIn uid(String uid) {
+        this.uid = uid;
+        return this;
+    }
+
+    /**
+     * The Connector's UID.
+     *
+     * @return uid
+     */
+    @javax.annotation.Nullable
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
     /**

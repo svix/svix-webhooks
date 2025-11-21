@@ -13,6 +13,8 @@ pub struct ConnectorListOptions {
     /// The sorting order of the returned items
     #[arg(long)]
     pub order: Option<Ordering>,
+    #[arg(long)]
+    pub product_type: Option<ConnectorProduct>,
 }
 
 impl From<ConnectorListOptions> for svix::api::ConnectorListOptions {
@@ -21,11 +23,13 @@ impl From<ConnectorListOptions> for svix::api::ConnectorListOptions {
             limit,
             iterator,
             order,
+            product_type,
         } = value;
         Self {
             limit,
             iterator,
             order,
+            product_type,
         }
     }
 }

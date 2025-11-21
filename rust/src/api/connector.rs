@@ -11,6 +11,8 @@ pub struct ConnectorListOptions {
 
     /// The sorting order of the returned items
     pub order: Option<Ordering>,
+
+    pub product_type: Option<ConnectorProduct>,
 }
 
 #[derive(Default)]
@@ -36,12 +38,14 @@ impl<'a> Connector<'a> {
             limit,
             iterator,
             order,
+            product_type,
         } = options.unwrap_or_default();
 
         crate::request::Request::new(http1::Method::GET, "/api/v1/connector")
             .with_optional_query_param("limit", limit)
             .with_optional_query_param("iterator", iterator)
             .with_optional_query_param("order", order)
+            .with_optional_query_param("product_type", product_type)
             .execute(self.cfg)
             .await
     }

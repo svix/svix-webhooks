@@ -33,6 +33,16 @@ public class Application {
     public ListResponseApplicationOut list(final ApplicationListOptions options)
             throws IOException, ApiException {
         HttpUrl.Builder url = this.client.newUrlBuilder().encodedPath("/api/v1/app");
+        if (options.excludeAppsWithNoEndpoints != null) {
+            url.addQueryParameter(
+                    "exclude_apps_with_no_endpoints",
+                    Utils.serializeQueryParam(options.excludeAppsWithNoEndpoints));
+        }
+        if (options.excludeAppsWithDisabledEndpoints != null) {
+            url.addQueryParameter(
+                    "exclude_apps_with_disabled_endpoints",
+                    Utils.serializeQueryParam(options.excludeAppsWithDisabledEndpoints));
+        }
         if (options.limit != null) {
             url.addQueryParameter("limit", Utils.serializeQueryParam(options.limit));
         }

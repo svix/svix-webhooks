@@ -32,31 +32,34 @@ namespace Svix.Models
         [EnumMember(Value = "Loops")]
         Loops = 8,
 
+        [EnumMember(Value = "Otel")]
+        Otel = 9,
+
         [EnumMember(Value = "Resend")]
-        Resend = 9,
+        Resend = 10,
 
         [EnumMember(Value = "Salesforce")]
-        Salesforce = 10,
+        Salesforce = 11,
 
         [EnumMember(Value = "Segment")]
-        Segment = 11,
+        Segment = 12,
 
         [EnumMember(Value = "Sendgrid")]
-        Sendgrid = 12,
+        Sendgrid = 13,
 
         [EnumMember(Value = "Slack")]
-        Slack = 13,
+        Slack = 14,
 
         [EnumMember(Value = "Teams")]
-        Teams = 14,
+        Teams = 15,
 
         [EnumMember(Value = "TriggerDev")]
-        TriggerDev = 15,
+        TriggerDev = 16,
 
         [EnumMember(Value = "Windmill")]
-        Windmill = 16,
+        Windmill = 17,
 
         [EnumMember(Value = "Zapier")]
-        Zapier = 17,
+        Zapier = 18,
     }
 }

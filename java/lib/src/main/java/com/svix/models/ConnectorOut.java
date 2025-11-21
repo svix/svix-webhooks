@@ -31,7 +31,9 @@ public class ConnectorOut {
     @JsonProperty private URI logo;
     @JsonProperty private String name;
     @JsonProperty private String orgId;
+    @JsonProperty private ConnectorProduct productType;
     @JsonProperty private String transformation;
+    @JsonProperty private String uid;
     @JsonProperty private OffsetDateTime updatedAt;
 
     public ConnectorOut() {}
@@ -244,6 +246,25 @@ public class ConnectorOut {
         this.orgId = orgId;
     }
 
+    public ConnectorOut productType(ConnectorProduct productType) {
+        this.productType = productType;
+        return this;
+    }
+
+    /**
+     * Get productType
+     *
+     * @return productType
+     */
+    @javax.annotation.Nonnull
+    public ConnectorProduct getProductType() {
+        return productType;
+    }
+
+    public void setProductType(ConnectorProduct productType) {
+        this.productType = productType;
+    }
+
     public ConnectorOut transformation(String transformation) {
         this.transformation = transformation;
         return this;
@@ -261,6 +282,25 @@ public class ConnectorOut {
 
     public void setTransformation(String transformation) {
         this.transformation = transformation;
+    }
+
+    public ConnectorOut uid(String uid) {
+        this.uid = uid;
+        return this;
+    }
+
+    /**
+     * The Connector's UID.
+     *
+     * @return uid
+     */
+    @javax.annotation.Nullable
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
     public ConnectorOut updatedAt(OffsetDateTime updatedAt) {

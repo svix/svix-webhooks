@@ -16,7 +16,10 @@ module Svix
     attr_accessor :name
     # The Environment's ID.
     attr_accessor :org_id
+    attr_accessor :product_type
     attr_accessor :transformation
+    # The Connector's UID.
+    attr_accessor :uid
     attr_accessor :updated_at
 
     ALL_FIELD ||= [
@@ -30,7 +33,9 @@ module Svix
       "logo",
       "name",
       "org_id",
+      "product_type",
       "transformation",
+      "uid",
       "updated_at"
     ].freeze
     private_constant :ALL_FIELD
@@ -63,7 +68,9 @@ module Svix
       attrs["logo"] = attributes["logo"]
       attrs["name"] = attributes["name"]
       attrs["org_id"] = attributes["orgId"]
+      attrs["product_type"] = Svix::ConnectorProduct.deserialize(attributes["productType"])
       attrs["transformation"] = attributes["transformation"]
+      attrs["uid"] = attributes["uid"]
       attrs["updated_at"] = DateTime.rfc3339(attributes["updatedAt"]).to_time
       new(attrs)
     end
@@ -80,7 +87,9 @@ module Svix
       out["logo"] = Svix::serialize_primitive(@logo) if @logo
       out["name"] = Svix::serialize_primitive(@name) if @name
       out["orgId"] = Svix::serialize_primitive(@org_id) if @org_id
+      out["productType"] = Svix::serialize_schema_ref(@product_type) if @product_type
       out["transformation"] = Svix::serialize_primitive(@transformation) if @transformation
+      out["uid"] = Svix::serialize_primitive(@uid) if @uid
       out["updatedAt"] = Svix::serialize_primitive(@updated_at) if @updated_at
       out
     end

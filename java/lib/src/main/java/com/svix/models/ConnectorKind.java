@@ -13,6 +13,7 @@ public enum ConnectorKind implements ToQueryParam {
     HUBSPOT("Hubspot"),
     INNGEST("Inngest"),
     LOOPS("Loops"),
+    OTEL("Otel"),
     RESEND("Resend"),
     SALESFORCE("Salesforce"),
     SEGMENT("Segment"),

@@ -23,6 +23,8 @@ module Svix
     # - `CreateAttempts`: Allows user to replay missing messages and send example messages.
     #
     # - `ManageEndpoint`: Allows user to read/modify any field or configuration of an endpoint (including secrets)
+    #
+    # By default, the token will get all capabilities if the capabilities are not explicitly specified.
     attr_accessor :capabilities
     # How long the token will be valid for, in seconds.
     #

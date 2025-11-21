@@ -21,6 +21,7 @@ class ConnectorListOptions(BaseOptions):
     """The iterator returned from a prior invocation"""
     order: t.Optional[models.Ordering] = None
     """The sorting order of the returned items"""
+    product_type: t.Optional[models.ConnectorProduct] = None
 
     def _query_params(self) -> t.Dict[str, str]:
         return serialize_params(
@@ -28,6 +29,7 @@ class ConnectorListOptions(BaseOptions):
                 "limit": self.limit,
                 "iterator": self.iterator,
                 "order": self.order,
+                "product_type": self.product_type,
             }
         )
 

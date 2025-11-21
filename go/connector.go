@@ -26,6 +26,8 @@ type ConnectorListOptions struct {
 
 	// The sorting order of the returned items
 	Order *models.Ordering
+
+	ProductType *models.ConnectorProduct
 }
 
 type ConnectorCreateOptions struct {
@@ -43,6 +45,7 @@ func (connector *Connector) List(
 		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
 		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
 		internal.SerializeParamToMap("order", o.Order, queryMap, &err)
+		internal.SerializeParamToMap("product_type", o.ProductType, queryMap, &err)
 		if err != nil {
 			return nil, err
 		}

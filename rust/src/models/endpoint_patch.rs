@@ -29,6 +29,7 @@ pub struct EndpointPatch {
     /// Format: `base64` encoded random bytes optionally prefixed with `whsec_`.
     /// It is recommended to not set this and let the server generate the
     /// secret.
+    #[deprecated]
     #[serde(default, skip_serializing_if = "JsOption::is_undefined")]
     pub secret: JsOption<String>,
 

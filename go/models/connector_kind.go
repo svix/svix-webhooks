@@ -18,6 +18,7 @@ const (
 	CONNECTORKIND_HUBSPOT                   ConnectorKind = "Hubspot"
 	CONNECTORKIND_INNGEST                   ConnectorKind = "Inngest"
 	CONNECTORKIND_LOOPS                     ConnectorKind = "Loops"
+	CONNECTORKIND_OTEL                      ConnectorKind = "Otel"
 	CONNECTORKIND_RESEND                    ConnectorKind = "Resend"
 	CONNECTORKIND_SALESFORCE                ConnectorKind = "Salesforce"
 	CONNECTORKIND_SEGMENT                   ConnectorKind = "Segment"
@@ -38,6 +39,7 @@ var allowedConnectorKind = []ConnectorKind{
 	"Hubspot",
 	"Inngest",
 	"Loops",
+	"Otel",
 	"Resend",
 	"Salesforce",
 	"Segment",
@@ -73,6 +75,7 @@ var ConnectorKindFromString = map[string]ConnectorKind{
 	"Hubspot":                 CONNECTORKIND_HUBSPOT,
 	"Inngest":                 CONNECTORKIND_INNGEST,
 	"Loops":                   CONNECTORKIND_LOOPS,
+	"Otel":                    CONNECTORKIND_OTEL,
 	"Resend":                  CONNECTORKIND_RESEND,
 	"Salesforce":              CONNECTORKIND_SALESFORCE,
 	"Segment":                 CONNECTORKIND_SEGMENT,

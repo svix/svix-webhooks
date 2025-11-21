@@ -27,8 +27,14 @@ namespace Svix.Models
         [JsonProperty("name", Required = Required.Always)]
         public required string Name { get; set; }
 
+        [JsonProperty("productType")]
+        public ConnectorProduct? ProductType { get; set; } = null;
+
         [JsonProperty("transformation", Required = Required.Always)]
         public required string Transformation { get; set; }
+
+        [JsonProperty("uid")]
+        public string? Uid { get; set; } = null;
 
         public override string ToString()
         {
@@ -42,7 +48,9 @@ namespace Svix.Models
             sb.Append("  Kind: ").Append(Kind).Append('\n');
             sb.Append("  Logo: ").Append(Logo).Append('\n');
             sb.Append("  Name: ").Append(Name).Append('\n');
+            sb.Append("  ProductType: ").Append(ProductType).Append('\n');
             sb.Append("  Transformation: ").Append(Transformation).Append('\n');
+            sb.Append("  Uid: ").Append(Uid).Append('\n');
             sb.Append("}\n");
             return sb.ToString();
         }
