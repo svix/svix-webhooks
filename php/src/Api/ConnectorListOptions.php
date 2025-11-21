@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace Svix\Api;
 
+use Svix\Models\ConnectorProduct;
 use Svix\Models\Ordering;
 
 class ConnectorListOptions
@@ -13,6 +14,7 @@ class ConnectorListOptions
         public readonly ?int $limit = null,
         public readonly ?string $iterator = null,
         public readonly ?Ordering $order = null,
+        public readonly ?ConnectorProduct $productType = null,
     ) {
     }
 }

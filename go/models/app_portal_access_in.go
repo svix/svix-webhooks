@@ -21,6 +21,8 @@ type AppPortalAccessIn struct {
 	// - `CreateAttempts`: Allows user to replay missing messages and send example messages.
 	//
 	// - `ManageEndpoint`: Allows user to read/modify any field or configuration of an endpoint (including secrets)
+	//
+	// By default, the token will get all capabilities if the capabilities are not explicitly specified.
 	Capabilities []AppPortalCapability `json:"capabilities,omitempty"`
 	// How long the token will be valid for, in seconds.
 	//

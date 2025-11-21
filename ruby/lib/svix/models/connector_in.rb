@@ -11,7 +11,10 @@ module Svix
     attr_accessor :kind
     attr_accessor :logo
     attr_accessor :name
+    attr_accessor :product_type
     attr_accessor :transformation
+    # The Connector's UID.
+    attr_accessor :uid
 
     ALL_FIELD ||= [
       "allowed_event_types",
@@ -21,7 +24,9 @@ module Svix
       "kind",
       "logo",
       "name",
-      "transformation"
+      "product_type",
+      "transformation",
+      "uid"
     ].freeze
     private_constant :ALL_FIELD
 
@@ -50,7 +55,12 @@ module Svix
       attrs["kind"] = Svix::ConnectorKind.deserialize(attributes["kind"]) if attributes["kind"]
       attrs["logo"] = attributes["logo"]
       attrs["name"] = attributes["name"]
+      if attributes["productType"]
+        attrs["product_type"] = Svix::ConnectorProduct.deserialize(attributes["productType"])
+      end
+
       attrs["transformation"] = attributes["transformation"]
+      attrs["uid"] = attributes["uid"]
       new(attrs)
     end
 
@@ -63,7 +73,9 @@ module Svix
       out["kind"] = Svix::serialize_schema_ref(@kind) if @kind
       out["logo"] = Svix::serialize_primitive(@logo) if @logo
       out["name"] = Svix::serialize_primitive(@name) if @name
+      out["productType"] = Svix::serialize_schema_ref(@product_type) if @product_type
       out["transformation"] = Svix::serialize_primitive(@transformation) if @transformation
+      out["uid"] = Svix::serialize_primitive(@uid) if @uid
       out
     end
 

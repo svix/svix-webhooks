@@ -36,8 +36,14 @@ namespace Svix.Models
         [JsonProperty("orgId", Required = Required.Always)]
         public required string OrgId { get; set; }
 
+        [JsonProperty("productType", Required = Required.Always)]
+        public required ConnectorProduct ProductType { get; set; }
+
         [JsonProperty("transformation", Required = Required.Always)]
         public required string Transformation { get; set; }
+
+        [JsonProperty("uid")]
+        public string? Uid { get; set; } = null;
 
         [JsonProperty("updatedAt", Required = Required.Always)]
         public required DateTime UpdatedAt { get; set; }
@@ -57,7 +63,9 @@ namespace Svix.Models
             sb.Append("  Logo: ").Append(Logo).Append('\n');
             sb.Append("  Name: ").Append(Name).Append('\n');
             sb.Append("  OrgId: ").Append(OrgId).Append('\n');
+            sb.Append("  ProductType: ").Append(ProductType).Append('\n');
             sb.Append("  Transformation: ").Append(Transformation).Append('\n');
+            sb.Append("  Uid: ").Append(Uid).Append('\n');
             sb.Append("  UpdatedAt: ").Append(UpdatedAt).Append('\n');
             sb.Append("}\n");
             return sb.ToString();

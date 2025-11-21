@@ -28,6 +28,7 @@ class Connector
             $request->setQueryParam('limit', $options->limit);
             $request->setQueryParam('iterator', $options->iterator);
             $request->setQueryParam('order', $options->order);
+            $request->setQueryParam('product_type', $options->productType);
         }
         $res = $this->client->send($request);
 

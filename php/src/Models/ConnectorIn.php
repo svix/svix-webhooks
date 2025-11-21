@@ -12,6 +12,7 @@ class ConnectorIn implements \JsonSerializable
     /**
      * @param list<string>|null $allowedEventTypes
      * @param list<string>|null $featureFlags
+     * @param string|null       $uid               the Connector's UID
      */
     private function __construct(
         public readonly string $name,
@@ -22,6 +23,8 @@ class ConnectorIn implements \JsonSerializable
         public readonly ?string $instructions = null,
         public readonly ?ConnectorKind $kind = null,
         public readonly ?string $logo = null,
+        public readonly ?ConnectorProduct $productType = null,
+        public readonly ?string $uid = null,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -42,7 +45,9 @@ class ConnectorIn implements \JsonSerializable
             kind: null,
             logo: null,
             name: $name,
+            productType: null,
             transformation: $transformation,
+            uid: null,
             setFields: ['name' => true, 'transformation' => true]
         );
     }
@@ -60,7 +65,9 @@ class ConnectorIn implements \JsonSerializable
             kind: $this->kind,
             logo: $this->logo,
             name: $this->name,
+            productType: $this->productType,
             transformation: $this->transformation,
+            uid: $this->uid,
             setFields: $setFields
         );
     }
@@ -78,7 +85,9 @@ class ConnectorIn implements \JsonSerializable
             kind: $this->kind,
             logo: $this->logo,
             name: $this->name,
+            productType: $this->productType,
             transformation: $this->transformation,
+            uid: $this->uid,
             setFields: $setFields
         );
     }
@@ -96,7 +105,9 @@ class ConnectorIn implements \JsonSerializable
             kind: $this->kind,
             logo: $this->logo,
             name: $this->name,
+            productType: $this->productType,
             transformation: $this->transformation,
+            uid: $this->uid,
             setFields: $setFields
         );
     }
@@ -114,7 +125,9 @@ class ConnectorIn implements \JsonSerializable
             kind: $this->kind,
             logo: $this->logo,
             name: $this->name,
+            productType: $this->productType,
             transformation: $this->transformation,
+            uid: $this->uid,
             setFields: $setFields
         );
     }
@@ -132,7 +145,9 @@ class ConnectorIn implements \JsonSerializable
             kind: $kind,
             logo: $this->logo,
             name: $this->name,
+            productType: $this->productType,
             transformation: $this->transformation,
+            uid: $this->uid,
             setFields: $setFields
         );
     }
@@ -150,7 +165,49 @@ class ConnectorIn implements \JsonSerializable
             kind: $this->kind,
             logo: $logo,
             name: $this->name,
+            productType: $this->productType,
             transformation: $this->transformation,
+            uid: $this->uid,
+            setFields: $setFields
+        );
+    }
+
+    public function withProductType(?ConnectorProduct $productType): self
+    {
+        $setFields = $this->setFields;
+        $setFields['productType'] = true;
+
+        return new self(
+            allowedEventTypes: $this->allowedEventTypes,
+            description: $this->description,
+            featureFlags: $this->featureFlags,
+            instructions: $this->instructions,
+            kind: $this->kind,
+            logo: $this->logo,
+            name: $this->name,
+            productType: $productType,
+            transformation: $this->transformation,
+            uid: $this->uid,
+            setFields: $setFields
+        );
+    }
+
+    public function withUid(?string $uid): self
+    {
+        $setFields = $this->setFields;
+        $setFields['uid'] = true;
+
+        return new self(
+            allowedEventTypes: $this->allowedEventTypes,
+            description: $this->description,
+            featureFlags: $this->featureFlags,
+            instructions: $this->instructions,
+            kind: $this->kind,
+            logo: $this->logo,
+            name: $this->name,
+            productType: $this->productType,
+            transformation: $this->transformation,
+            uid: $uid,
             setFields: $setFields
         );
     }
@@ -179,6 +236,12 @@ class ConnectorIn implements \JsonSerializable
         if (isset($this->setFields['logo'])) {
             $data['logo'] = $this->logo;
         }
+        if (isset($this->setFields['productType'])) {
+            $data['productType'] = $this->productType;
+        }
+        if (isset($this->setFields['uid'])) {
+            $data['uid'] = $this->uid;
+        }
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
@@ -196,7 +259,9 @@ class ConnectorIn implements \JsonSerializable
             kind: \Svix\Utils::deserializeObject($data, 'kind', false, 'ConnectorIn', [ConnectorKind::class, 'fromMixed']),
             logo: \Svix\Utils::getValFromJson($data, 'logo', false, 'ConnectorIn'),
             name: \Svix\Utils::deserializeString($data, 'name', true, 'ConnectorIn'),
-            transformation: \Svix\Utils::deserializeString($data, 'transformation', true, 'ConnectorIn')
+            productType: \Svix\Utils::deserializeObject($data, 'productType', false, 'ConnectorIn', [ConnectorProduct::class, 'fromMixed']),
+            transformation: \Svix\Utils::deserializeString($data, 'transformation', true, 'ConnectorIn'),
+            uid: \Svix\Utils::deserializeString($data, 'uid', false, 'ConnectorIn')
         );
     }
 

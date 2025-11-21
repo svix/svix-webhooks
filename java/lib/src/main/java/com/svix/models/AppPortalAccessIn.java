@@ -83,6 +83,9 @@ public class AppPortalAccessIn {
      * <p>- `ManageEndpoint`: Allows user to read/modify any field or configuration of an endpoint
      * (including secrets)
      *
+     * <p>By default, the token will get all capabilities if the capabilities are not explicitly
+     * specified.
+     *
      * @return capabilities
      */
     @javax.annotation.Nullable

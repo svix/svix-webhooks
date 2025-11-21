@@ -4,6 +4,7 @@ from datetime import datetime
 
 from .common import BaseModel
 from .connector_kind import ConnectorKind
+from .connector_product import ConnectorProduct
 
 
 class ConnectorOut(BaseModel):
@@ -29,6 +30,11 @@ class ConnectorOut(BaseModel):
     org_id: str
     """The Environment's ID."""
 
+    product_type: ConnectorProduct
+
     transformation: str
+
+    uid: t.Optional[str] = None
+    """The Connector's UID."""
 
     updated_at: datetime
