@@ -9,6 +9,7 @@ export enum ConnectorKind {
   Hubspot = "Hubspot",
   Inngest = "Inngest",
   Loops = "Loops",
+  Otel = "Otel",
   Resend = "Resend",
   Salesforce = "Salesforce",
   Segment = "Segment",

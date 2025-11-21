@@ -30,6 +30,7 @@ pub mod connector_in;
 pub mod connector_kind;
 pub mod connector_out;
 pub mod connector_patch;
+pub mod connector_product;
 pub mod connector_update;
 pub mod create_stream_events_in;
 pub mod create_stream_events_out;
@@ -84,6 +85,7 @@ pub mod github_config;
 pub mod github_config_out;
 pub mod google_cloud_storage_config;
 pub mod google_cloud_storage_patch_config;
+pub mod http_attempt_times;
 pub mod http_patch_config;
 pub mod http_sink_headers_patch_in;
 pub mod hubspot_config;
@@ -133,6 +135,8 @@ pub mod message_attempt_exhausted_event_data;
 pub mod message_attempt_failed_data;
 pub mod message_attempt_failing_event;
 pub mod message_attempt_failing_event_data;
+pub mod message_attempt_log;
+pub mod message_attempt_log_event;
 pub mod message_attempt_out;
 pub mod message_attempt_recovered_event;
 pub mod message_attempt_recovered_event_data;
@@ -244,6 +248,7 @@ pub use self::{
     connector_kind::ConnectorKind,
     connector_out::ConnectorOut,
     connector_patch::ConnectorPatch,
+    connector_product::ConnectorProduct,
     connector_update::ConnectorUpdate,
     create_stream_events_in::CreateStreamEventsIn,
     create_stream_events_out::CreateStreamEventsOut,
@@ -298,6 +303,7 @@ pub use self::{
     github_config_out::GithubConfigOut,
     google_cloud_storage_config::GoogleCloudStorageConfig,
     google_cloud_storage_patch_config::GoogleCloudStoragePatchConfig,
+    http_attempt_times::HttpAttemptTimes,
     http_patch_config::HttpPatchConfig,
     http_sink_headers_patch_in::HttpSinkHeadersPatchIn,
     hubspot_config::HubspotConfig,
@@ -347,6 +353,8 @@ pub use self::{
     message_attempt_failed_data::MessageAttemptFailedData,
     message_attempt_failing_event::MessageAttemptFailingEvent,
     message_attempt_failing_event_data::MessageAttemptFailingEventData,
+    message_attempt_log::MessageAttemptLog,
+    message_attempt_log_event::MessageAttemptLogEvent,
     message_attempt_out::MessageAttemptOut,
     message_attempt_recovered_event::MessageAttemptRecoveredEvent,
     message_attempt_recovered_event_data::MessageAttemptRecoveredEventData,

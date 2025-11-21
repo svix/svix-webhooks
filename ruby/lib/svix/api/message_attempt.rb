@@ -103,13 +103,14 @@ module Svix
 
     def resend(app_id, msg_id, endpoint_id, options = {})
       options = options.transform_keys(&:to_s)
-      @client.execute_request(
+      res = @client.execute_request(
         "POST",
         "/api/v1/app/#{app_id}/msg/#{msg_id}/endpoint/#{endpoint_id}/resend",
         headers: {
           "idempotency-key" => options["idempotency-key"]
         }
       )
+      EmptyResponse.deserialize(res)
     end
 
   end

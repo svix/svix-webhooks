@@ -24,6 +24,8 @@ pub enum ConnectorKind {
     Inngest,
     #[serde(rename = "Loops")]
     Loops,
+    #[serde(rename = "Otel")]
+    Otel,
     #[serde(rename = "Resend")]
     Resend,
     #[serde(rename = "Salesforce")]
@@ -55,6 +57,7 @@ impl fmt::Display for ConnectorKind {
             Self::Hubspot => "Hubspot",
             Self::Inngest => "Inngest",
             Self::Loops => "Loops",
+            Self::Otel => "Otel",
             Self::Resend => "Resend",
             Self::Salesforce => "Salesforce",
             Self::Segment => "Segment",

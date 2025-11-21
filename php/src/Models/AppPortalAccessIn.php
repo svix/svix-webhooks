@@ -28,6 +28,8 @@ class AppPortalAccessIn implements \JsonSerializable
      * - `CreateAttempts`: Allows user to replay missing messages and send example messages.
      *
      * - `ManageEndpoint`: Allows user to read/modify any field or configuration of an endpoint (including secrets)
+     *
+     * By default, the token will get all capabilities if the capabilities are not explicitly specified.
      * @param int|null $expiry How long the token will be valid for, in seconds.
      *
      * Valid values are between 1 hour and 7 days. The default is 7 days.

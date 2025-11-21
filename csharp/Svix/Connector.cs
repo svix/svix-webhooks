@@ -10,6 +10,7 @@ namespace Svix
         public ulong? Limit { get; set; }
         public string? Iterator { get; set; }
         public Ordering? Order { get; set; }
+        public ConnectorProduct? ProductType { get; set; }
 
         public new Dictionary<string, string> QueryParams()
         {
@@ -19,6 +20,7 @@ namespace Svix
                     { "limit", Limit },
                     { "iterator", Iterator },
                     { "order", Order },
+                    { "product_type", ProductType },
                 }
             );
         }

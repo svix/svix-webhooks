@@ -7,6 +7,12 @@ import lombok.Data;
 
 @Data
 public class ApplicationListOptions {
+    /** Exclude applications that have no endpoints. Default is false. */
+    Boolean excludeAppsWithNoEndpoints;
+
+    /** Exclude applications that have only disabled endpoints. Default is false. */
+    Boolean excludeAppsWithDisabledEndpoints;
+
     /** Limit the number of returned items */
     Long limit;
 

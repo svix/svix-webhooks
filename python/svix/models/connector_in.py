@@ -3,6 +3,7 @@ import typing as t
 
 from .common import BaseModel
 from .connector_kind import ConnectorKind
+from .connector_product import ConnectorProduct
 
 
 class ConnectorIn(BaseModel):
@@ -20,4 +21,9 @@ class ConnectorIn(BaseModel):
 
     name: str
 
+    product_type: t.Optional[ConnectorProduct] = None
+
     transformation: str
+
+    uid: t.Optional[str] = None
+    """The Connector's UID."""

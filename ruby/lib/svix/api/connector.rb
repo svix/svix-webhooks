@@ -17,7 +17,8 @@ module Svix
         query_params: {
           "limit" => options["limit"],
           "iterator" => options["iterator"],
-          "order" => options["order"]
+          "order" => options["order"],
+          "product_type" => options["product_type"]
         }
       )
       ListResponseConnectorOut.deserialize(res)
