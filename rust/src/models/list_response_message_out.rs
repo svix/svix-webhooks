@@ -1,5 +1,8 @@
 // this file is @generated
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 use super::message_out::MessageOut;
 
@@ -18,7 +21,10 @@ pub struct ListResponseMessageOut {
 }
 
 impl ListResponseMessageOut {
-    pub fn new(data: Vec<MessageOut>, done: bool) -> Self {
+    pub fn new(
+        data: Vec<MessageOut>,
+        done: bool,
+    ) -> Self {
         Self {
             data,
             done,

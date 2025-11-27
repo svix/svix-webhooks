@@ -1,7 +1,11 @@
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 use super::{
-    message_attempt_trigger_type::MessageAttemptTriggerType, message_out::MessageOut,
+    message_attempt_trigger_type::MessageAttemptTriggerType,
+    message_out::MessageOut,
     message_status::MessageStatus,
 };
 

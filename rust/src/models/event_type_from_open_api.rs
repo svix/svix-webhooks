@@ -1,5 +1,8 @@
 // this file is @generated
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 #[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
 pub struct EventTypeFromOpenApi {
@@ -29,7 +32,11 @@ pub struct EventTypeFromOpenApi {
 }
 
 impl EventTypeFromOpenApi {
-    pub fn new(deprecated: bool, description: String, name: String) -> Self {
+    pub fn new(
+        deprecated: bool,
+        description: String,
+        name: String,
+    ) -> Self {
         #[allow(deprecated)]
         Self {
             deprecated,

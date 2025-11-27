@@ -1,7 +1,13 @@
 // this file is @generated
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
-use super::{message_status::MessageStatus, message_status_text::MessageStatusText};
+use super::{
+    message_status::MessageStatus,
+    message_status_text::MessageStatusText,
+};
 
 #[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
 pub struct MessageEndpointOut {

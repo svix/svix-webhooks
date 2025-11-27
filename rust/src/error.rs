@@ -26,20 +26,27 @@ impl Error {
         Self::Generic(format!("{err:?}"))
     }
 
-    pub(crate) async fn from_response(status_code: http1::StatusCode, body: Incoming) -> Self {
+    pub(crate) async fn from_response(
+        status_code: http1::StatusCode,
+        body: Incoming,
+    ) -> Self {
         match body.collect().await {
             Ok(collected) => {
                 let bytes = collected.to_bytes();
                 if status_code == http1::StatusCode::UNPROCESSABLE_ENTITY {
-                    Self::Validation(HttpErrorContent {
-                        status: http02::StatusCode::UNPROCESSABLE_ENTITY,
-                        payload: serde_json::from_slice(&bytes).ok(),
-                    })
+                    Self::Validation(
+                        HttpErrorContent {
+                            status: http02::StatusCode::UNPROCESSABLE_ENTITY,
+                            payload: serde_json::from_slice(&bytes).ok(),
+                        },
+                    )
                 } else {
-                    Error::Http(HttpErrorContent {
-                        status: http1_to_02_status_code(status_code),
-                        payload: serde_json::from_slice(&bytes).ok(),
-                    })
+                    Error::Http(
+                        HttpErrorContent {
+                            status: http1_to_02_status_code(status_code),
+                            payload: serde_json::from_slice(&bytes).ok(),
+                        },
+                    )
                 }
             }
             Err(e) => Self::Generic(e.to_string()),
@@ -55,11 +62,22 @@ impl From<Error> for String {
 }
 
 impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(
+        &self,
+        f: &mut fmt::Formatter,
+    ) -> fmt::Result {
         match self {
             Error::Generic(s) => s.fmt(f),
-            Error::Http(e) => format!("Http error (status={}) {:?}", e.status, e.payload).fmt(f),
-            Error::Validation(e) => format!("Validation error {:?}", e.payload).fmt(f),
+            Error::Http(e) => format!(
+                "Http error (status={}) {:?}",
+                e.status, e.payload
+            )
+            .fmt(f),
+            Error::Validation(e) => format!(
+                "Validation error {:?}",
+                e.payload
+            )
+            .fmt(f),
         }
     }
 }

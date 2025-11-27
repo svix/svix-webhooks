@@ -1,5 +1,9 @@
 // this file is @generated
-use crate::{error::Result, models::*, Configuration};
+use crate::{
+    error::Result,
+    models::*,
+    Configuration,
+};
 
 #[derive(Default)]
 pub struct IngestEndpointListOptions {
@@ -29,7 +33,9 @@ pub struct IngestEndpoint<'a> {
 
 impl<'a> IngestEndpoint<'a> {
     pub(super) fn new(cfg: &'a Configuration) -> Self {
-        Self { cfg }
+        Self {
+            cfg,
+        }
     }
 
     /// List ingest endpoints.
@@ -48,10 +54,19 @@ impl<'a> IngestEndpoint<'a> {
             http1::Method::GET,
             "/ingest/api/v1/source/{source_id}/endpoint",
         )
-        .with_path_param("source_id", source_id)
-        .with_optional_query_param("limit", limit)
-        .with_optional_query_param("iterator", iterator)
-        .with_optional_query_param("order", order)
+        .with_path_param(
+            "source_id",
+            source_id,
+        )
+        .with_optional_query_param(
+            "limit", limit,
+        )
+        .with_optional_query_param(
+            "iterator", iterator,
+        )
+        .with_optional_query_param(
+            "order", order,
+        )
         .execute(self.cfg)
         .await
     }
@@ -63,27 +78,45 @@ impl<'a> IngestEndpoint<'a> {
         ingest_endpoint_in: IngestEndpointIn,
         options: Option<IngestEndpointCreateOptions>,
     ) -> Result<IngestEndpointOut> {
-        let IngestEndpointCreateOptions { idempotency_key } = options.unwrap_or_default();
+        let IngestEndpointCreateOptions {
+            idempotency_key,
+        } = options.unwrap_or_default();
 
         crate::request::Request::new(
             http1::Method::POST,
             "/ingest/api/v1/source/{source_id}/endpoint",
         )
-        .with_path_param("source_id", source_id)
-        .with_optional_header_param("idempotency-key", idempotency_key)
+        .with_path_param(
+            "source_id",
+            source_id,
+        )
+        .with_optional_header_param(
+            "idempotency-key",
+            idempotency_key,
+        )
         .with_body_param(ingest_endpoint_in)
         .execute(self.cfg)
         .await
     }
 
     /// Get an ingest endpoint.
-    pub async fn get(&self, source_id: String, endpoint_id: String) -> Result<IngestEndpointOut> {
+    pub async fn get(
+        &self,
+        source_id: String,
+        endpoint_id: String,
+    ) -> Result<IngestEndpointOut> {
         crate::request::Request::new(
             http1::Method::GET,
             "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}",
         )
-        .with_path_param("source_id", source_id)
-        .with_path_param("endpoint_id", endpoint_id)
+        .with_path_param(
+            "source_id",
+            source_id,
+        )
+        .with_path_param(
+            "endpoint_id",
+            endpoint_id,
+        )
         .execute(self.cfg)
         .await
     }
@@ -99,21 +132,37 @@ impl<'a> IngestEndpoint<'a> {
             http1::Method::PUT,
             "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}",
         )
-        .with_path_param("source_id", source_id)
-        .with_path_param("endpoint_id", endpoint_id)
+        .with_path_param(
+            "source_id",
+            source_id,
+        )
+        .with_path_param(
+            "endpoint_id",
+            endpoint_id,
+        )
         .with_body_param(ingest_endpoint_update)
         .execute(self.cfg)
         .await
     }
 
     /// Delete an ingest endpoint.
-    pub async fn delete(&self, source_id: String, endpoint_id: String) -> Result<()> {
+    pub async fn delete(
+        &self,
+        source_id: String,
+        endpoint_id: String,
+    ) -> Result<()> {
         crate::request::Request::new(
             http1::Method::DELETE,
             "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}",
         )
-        .with_path_param("source_id", source_id)
-        .with_path_param("endpoint_id", endpoint_id)
+        .with_path_param(
+            "source_id",
+            source_id,
+        )
+        .with_path_param(
+            "endpoint_id",
+            endpoint_id,
+        )
         .returns_nothing()
         .execute(self.cfg)
         .await
@@ -129,8 +178,14 @@ impl<'a> IngestEndpoint<'a> {
             http1::Method::GET,
             "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/headers",
         )
-        .with_path_param("source_id", source_id)
-        .with_path_param("endpoint_id", endpoint_id)
+        .with_path_param(
+            "source_id",
+            source_id,
+        )
+        .with_path_param(
+            "endpoint_id",
+            endpoint_id,
+        )
         .execute(self.cfg)
         .await
     }
@@ -146,8 +201,14 @@ impl<'a> IngestEndpoint<'a> {
             http1::Method::PUT,
             "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/headers",
         )
-        .with_path_param("source_id", source_id)
-        .with_path_param("endpoint_id", endpoint_id)
+        .with_path_param(
+            "source_id",
+            source_id,
+        )
+        .with_path_param(
+            "endpoint_id",
+            endpoint_id,
+        )
         .with_body_param(ingest_endpoint_headers_in)
         .returns_nothing()
         .execute(self.cfg)
@@ -167,8 +228,14 @@ impl<'a> IngestEndpoint<'a> {
             http1::Method::GET,
             "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/secret",
         )
-        .with_path_param("source_id", source_id)
-        .with_path_param("endpoint_id", endpoint_id)
+        .with_path_param(
+            "source_id",
+            source_id,
+        )
+        .with_path_param(
+            "endpoint_id",
+            endpoint_id,
+        )
         .execute(self.cfg)
         .await
     }
@@ -183,15 +250,26 @@ impl<'a> IngestEndpoint<'a> {
         ingest_endpoint_secret_in: IngestEndpointSecretIn,
         options: Option<IngestEndpointRotateSecretOptions>,
     ) -> Result<()> {
-        let IngestEndpointRotateSecretOptions { idempotency_key } = options.unwrap_or_default();
+        let IngestEndpointRotateSecretOptions {
+            idempotency_key,
+        } = options.unwrap_or_default();
 
         crate::request::Request::new(
             http1::Method::POST,
             "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/secret/rotate",
         )
-        .with_path_param("source_id", source_id)
-        .with_path_param("endpoint_id", endpoint_id)
-        .with_optional_header_param("idempotency-key", idempotency_key)
+        .with_path_param(
+            "source_id",
+            source_id,
+        )
+        .with_path_param(
+            "endpoint_id",
+            endpoint_id,
+        )
+        .with_optional_header_param(
+            "idempotency-key",
+            idempotency_key,
+        )
         .with_body_param(ingest_endpoint_secret_in)
         .returns_nothing()
         .execute(self.cfg)
@@ -208,8 +286,14 @@ impl<'a> IngestEndpoint<'a> {
             http1::Method::GET,
             "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/transformation",
         )
-        .with_path_param("source_id", source_id)
-        .with_path_param("endpoint_id", endpoint_id)
+        .with_path_param(
+            "source_id",
+            source_id,
+        )
+        .with_path_param(
+            "endpoint_id",
+            endpoint_id,
+        )
         .execute(self.cfg)
         .await
     }
@@ -226,8 +310,14 @@ impl<'a> IngestEndpoint<'a> {
             http1::Method::PATCH,
             "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/transformation",
         )
-        .with_path_param("source_id", source_id)
-        .with_path_param("endpoint_id", endpoint_id)
+        .with_path_param(
+            "source_id",
+            source_id,
+        )
+        .with_path_param(
+            "endpoint_id",
+            endpoint_id,
+        )
         .with_body_param(ingest_endpoint_transformation_patch)
         .returns_nothing()
         .execute(self.cfg)

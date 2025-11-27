@@ -1,5 +1,8 @@
 // this file is @generated
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 use super::message_attempt_failing_event_data::MessageAttemptFailingEventData;
 
@@ -14,7 +17,13 @@ pub struct MessageAttemptFailingEvent {
 }
 
 impl MessageAttemptFailingEvent {
-    pub fn new(data: MessageAttemptFailingEventData, r#type: String) -> Self {
-        Self { data, r#type }
+    pub fn new(
+        data: MessageAttemptFailingEventData,
+        r#type: String,
+    ) -> Self {
+        Self {
+            data,
+            r#type,
+        }
     }
 }

@@ -1,5 +1,8 @@
 // this file is @generated
-use clap::{Args, Subcommand};
+use clap::{
+    Args,
+    Subcommand,
+};
 use svix::api::*;
 
 #[derive(Args, Clone)]
@@ -48,8 +51,12 @@ pub struct EventTypeCreateOptions {
 
 impl From<EventTypeCreateOptions> for svix::api::EventTypeCreateOptions {
     fn from(value: EventTypeCreateOptions) -> Self {
-        let EventTypeCreateOptions { idempotency_key } = value;
-        Self { idempotency_key }
+        let EventTypeCreateOptions {
+            idempotency_key,
+        } = value;
+        Self {
+            idempotency_key,
+        }
     }
 }
 
@@ -61,8 +68,12 @@ pub struct EventTypeImportOpenapiOptions {
 
 impl From<EventTypeImportOpenapiOptions> for svix::api::EventTypeImportOpenapiOptions {
     fn from(value: EventTypeImportOpenapiOptions) -> Self {
-        let EventTypeImportOpenapiOptions { idempotency_key } = value;
-        Self { idempotency_key }
+        let EventTypeImportOpenapiOptions {
+            idempotency_key,
+        } = value;
+        Self {
+            idempotency_key,
+        }
     }
 }
 
@@ -75,8 +86,12 @@ pub struct EventTypeDeleteOptions {
 
 impl From<EventTypeDeleteOptions> for svix::api::EventTypeDeleteOptions {
     fn from(value: EventTypeDeleteOptions) -> Self {
-        let EventTypeDeleteOptions { expunge } = value;
-        Self { expunge }
+        let EventTypeDeleteOptions {
+            expunge,
+        } = value;
+        Self {
+            expunge,
+        }
     }
 }
 
@@ -146,9 +161,13 @@ impl EventTypeCommands {
         color_mode: colored_json::ColorMode,
     ) -> anyhow::Result<()> {
         match self {
-            Self::List { options } => {
+            Self::List {
+                options,
+            } => {
                 let resp = client.event_type().list(Some(options.into())).await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::Create {
                 event_type_in,
@@ -156,9 +175,14 @@ impl EventTypeCommands {
             } => {
                 let resp = client
                     .event_type()
-                    .create(event_type_in.into_inner(), Some(options.into()))
+                    .create(
+                        event_type_in.into_inner(),
+                        Some(options.into()),
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::ImportOpenapi {
                 event_type_import_open_api_in,
@@ -173,11 +197,17 @@ impl EventTypeCommands {
                         Some(options.into()),
                     )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
-            Self::Get { event_type_name } => {
+            Self::Get {
+                event_type_name,
+            } => {
                 let resp = client.event_type().get(event_type_name).await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::Update {
                 event_type_name,
@@ -185,9 +215,14 @@ impl EventTypeCommands {
             } => {
                 let resp = client
                     .event_type()
-                    .update(event_type_name, event_type_update.into_inner())
+                    .update(
+                        event_type_name,
+                        event_type_update.into_inner(),
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::Delete {
                 event_type_name,
@@ -195,7 +230,10 @@ impl EventTypeCommands {
             } => {
                 client
                     .event_type()
-                    .delete(event_type_name, Some(options.into()))
+                    .delete(
+                        event_type_name,
+                        Some(options.into()),
+                    )
                     .await?;
             }
             Self::Patch {
@@ -209,7 +247,9 @@ impl EventTypeCommands {
                         event_type_patch.unwrap_or_default().into_inner(),
                     )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
         }
 

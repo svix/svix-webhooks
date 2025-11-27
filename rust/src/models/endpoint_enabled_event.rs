@@ -1,5 +1,8 @@
 // this file is @generated
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 use super::endpoint_enabled_event_data::EndpointEnabledEventData;
 
@@ -12,7 +15,13 @@ pub struct EndpointEnabledEvent {
 }
 
 impl EndpointEnabledEvent {
-    pub fn new(data: EndpointEnabledEventData, r#type: String) -> Self {
-        Self { data, r#type }
+    pub fn new(
+        data: EndpointEnabledEventData,
+        r#type: String,
+    ) -> Self {
+        Self {
+            data,
+            r#type,
+        }
     }
 }

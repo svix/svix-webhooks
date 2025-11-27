@@ -1,5 +1,8 @@
 // this file is @generated
-use clap::{Args, Subcommand};
+use clap::{
+    Args,
+    Subcommand,
+};
 use svix::api::*;
 
 #[derive(Args, Clone)]
@@ -42,8 +45,12 @@ impl From<OperationalWebhookEndpointCreateOptions>
     for svix::api::OperationalWebhookEndpointCreateOptions
 {
     fn from(value: OperationalWebhookEndpointCreateOptions) -> Self {
-        let OperationalWebhookEndpointCreateOptions { idempotency_key } = value;
-        Self { idempotency_key }
+        let OperationalWebhookEndpointCreateOptions {
+            idempotency_key,
+        } = value;
+        Self {
+            idempotency_key,
+        }
     }
 }
 
@@ -57,8 +64,12 @@ impl From<OperationalWebhookEndpointRotateSecretOptions>
     for svix::api::OperationalWebhookEndpointRotateSecretOptions
 {
     fn from(value: OperationalWebhookEndpointRotateSecretOptions) -> Self {
-        let OperationalWebhookEndpointRotateSecretOptions { idempotency_key } = value;
-        Self { idempotency_key }
+        let OperationalWebhookEndpointRotateSecretOptions {
+            idempotency_key,
+        } = value;
+        Self {
+            idempotency_key,
+        }
     }
 }
 
@@ -123,13 +134,17 @@ impl OperationalWebhookEndpointCommands {
         color_mode: colored_json::ColorMode,
     ) -> anyhow::Result<()> {
         match self {
-            Self::List { options } => {
+            Self::List {
+                options,
+            } => {
                 let resp = client
                     .operational_webhook()
                     .endpoint()
                     .list(Some(options.into()))
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::Create {
                 operational_webhook_endpoint_in,
@@ -143,15 +158,21 @@ impl OperationalWebhookEndpointCommands {
                         Some(options.into()),
                     )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
-            Self::Get { endpoint_id } => {
+            Self::Get {
+                endpoint_id,
+            } => {
                 let resp = client
                     .operational_webhook()
                     .endpoint()
                     .get(endpoint_id)
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::Update {
                 endpoint_id,
@@ -165,22 +186,30 @@ impl OperationalWebhookEndpointCommands {
                         operational_webhook_endpoint_update.into_inner(),
                     )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
-            Self::Delete { endpoint_id } => {
+            Self::Delete {
+                endpoint_id,
+            } => {
                 client
                     .operational_webhook()
                     .endpoint()
                     .delete(endpoint_id)
                     .await?;
             }
-            Self::GetHeaders { endpoint_id } => {
+            Self::GetHeaders {
+                endpoint_id,
+            } => {
                 let resp = client
                     .operational_webhook()
                     .endpoint()
                     .get_headers(endpoint_id)
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::UpdateHeaders {
                 endpoint_id,
@@ -195,13 +224,17 @@ impl OperationalWebhookEndpointCommands {
                     )
                     .await?;
             }
-            Self::GetSecret { endpoint_id } => {
+            Self::GetSecret {
+                endpoint_id,
+            } => {
                 let resp = client
                     .operational_webhook()
                     .endpoint()
                     .get_secret(endpoint_id)
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::RotateSecret {
                 endpoint_id,

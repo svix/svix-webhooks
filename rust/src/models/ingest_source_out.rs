@@ -1,17 +1,30 @@
 // this file is @generated
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 use super::{
-    adobe_sign_config_out::AdobeSignConfigOut, airwallex_config_out::AirwallexConfigOut,
-    checkbook_config_out::CheckbookConfigOut, cron_config::CronConfig,
-    docusign_config_out::DocusignConfigOut, easypost_config_out::EasypostConfigOut,
-    github_config_out::GithubConfigOut, hubspot_config_out::HubspotConfigOut,
-    orum_io_config_out::OrumIoConfigOut, panda_doc_config_out::PandaDocConfigOut,
-    port_io_config_out::PortIoConfigOut, rutter_config_out::RutterConfigOut,
-    segment_config_out::SegmentConfigOut, shopify_config_out::ShopifyConfigOut,
-    slack_config_out::SlackConfigOut, stripe_config_out::StripeConfigOut,
-    svix_config_out::SvixConfigOut, telnyx_config_out::TelnyxConfigOut,
-    vapi_config_out::VapiConfigOut, veriff_config_out::VeriffConfigOut,
+    adobe_sign_config_out::AdobeSignConfigOut,
+    airwallex_config_out::AirwallexConfigOut,
+    checkbook_config_out::CheckbookConfigOut,
+    cron_config::CronConfig,
+    docusign_config_out::DocusignConfigOut,
+    easypost_config_out::EasypostConfigOut,
+    github_config_out::GithubConfigOut,
+    hubspot_config_out::HubspotConfigOut,
+    orum_io_config_out::OrumIoConfigOut,
+    panda_doc_config_out::PandaDocConfigOut,
+    port_io_config_out::PortIoConfigOut,
+    rutter_config_out::RutterConfigOut,
+    segment_config_out::SegmentConfigOut,
+    shopify_config_out::ShopifyConfigOut,
+    slack_config_out::SlackConfigOut,
+    stripe_config_out::StripeConfigOut,
+    svix_config_out::SvixConfigOut,
+    telnyx_config_out::TelnyxConfigOut,
+    vapi_config_out::VapiConfigOut,
+    veriff_config_out::VeriffConfigOut,
     zoom_config_out::ZoomConfigOut,
 };
 

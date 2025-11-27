@@ -1,5 +1,8 @@
 // this file is @generated
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 #[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
 pub struct ApiTokenOut {
@@ -23,7 +26,11 @@ pub struct ApiTokenOut {
 }
 
 impl ApiTokenOut {
-    pub fn new(created_at: String, id: String, token: String) -> Self {
+    pub fn new(
+        created_at: String,
+        id: String,
+        token: String,
+    ) -> Self {
         Self {
             created_at,
             expires_at: None,

@@ -1,5 +1,8 @@
 // this file is @generated
-use clap::{Args, Subcommand};
+use clap::{
+    Args,
+    Subcommand,
+};
 use svix::api::*;
 
 #[derive(Args, Clone)]
@@ -43,8 +46,12 @@ pub struct StreamingEventTypeCreateOptions {
 
 impl From<StreamingEventTypeCreateOptions> for svix::api::StreamingEventTypeCreateOptions {
     fn from(value: StreamingEventTypeCreateOptions) -> Self {
-        let StreamingEventTypeCreateOptions { idempotency_key } = value;
-        Self { idempotency_key }
+        let StreamingEventTypeCreateOptions {
+            idempotency_key,
+        } = value;
+        Self {
+            idempotency_key,
+        }
     }
 }
 
@@ -57,8 +64,12 @@ pub struct StreamingEventTypeDeleteOptions {
 
 impl From<StreamingEventTypeDeleteOptions> for svix::api::StreamingEventTypeDeleteOptions {
     fn from(value: StreamingEventTypeDeleteOptions) -> Self {
-        let StreamingEventTypeDeleteOptions { expunge } = value;
-        Self { expunge }
+        let StreamingEventTypeDeleteOptions {
+            expunge,
+        } = value;
+        Self {
+            expunge,
+        }
     }
 }
 
@@ -109,13 +120,17 @@ impl StreamingEventTypeCommands {
         color_mode: colored_json::ColorMode,
     ) -> anyhow::Result<()> {
         match self {
-            Self::List { options } => {
+            Self::List {
+                options,
+            } => {
                 let resp = client
                     .streaming()
                     .event_type()
                     .list(Some(options.into()))
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::Create {
                 stream_event_type_in,
@@ -124,13 +139,22 @@ impl StreamingEventTypeCommands {
                 let resp = client
                     .streaming()
                     .event_type()
-                    .create(stream_event_type_in.into_inner(), Some(options.into()))
+                    .create(
+                        stream_event_type_in.into_inner(),
+                        Some(options.into()),
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
-            Self::Get { name } => {
+            Self::Get {
+                name,
+            } => {
                 let resp = client.streaming().event_type().get(name).await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::Update {
                 name,
@@ -139,15 +163,26 @@ impl StreamingEventTypeCommands {
                 let resp = client
                     .streaming()
                     .event_type()
-                    .update(name, stream_event_type_in.into_inner())
+                    .update(
+                        name,
+                        stream_event_type_in.into_inner(),
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
-            Self::Delete { name, options } => {
+            Self::Delete {
+                name,
+                options,
+            } => {
                 client
                     .streaming()
                     .event_type()
-                    .delete(name, Some(options.into()))
+                    .delete(
+                        name,
+                        Some(options.into()),
+                    )
                     .await?;
             }
             Self::Patch {
@@ -162,7 +197,9 @@ impl StreamingEventTypeCommands {
                         stream_event_type_patch.unwrap_or_default().into_inner(),
                     )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
         }
 

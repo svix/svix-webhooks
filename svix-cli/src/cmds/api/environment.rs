@@ -1,5 +1,8 @@
 // this file is @generated
-use clap::{Args, Subcommand};
+use clap::{
+    Args,
+    Subcommand,
+};
 use svix::api::*;
 
 #[derive(Args, Clone)]
@@ -10,8 +13,12 @@ pub struct EnvironmentExportOptions {
 
 impl From<EnvironmentExportOptions> for svix::api::EnvironmentExportOptions {
     fn from(value: EnvironmentExportOptions) -> Self {
-        let EnvironmentExportOptions { idempotency_key } = value;
-        Self { idempotency_key }
+        let EnvironmentExportOptions {
+            idempotency_key,
+        } = value;
+        Self {
+            idempotency_key,
+        }
     }
 }
 
@@ -23,8 +30,12 @@ pub struct EnvironmentImportOptions {
 
 impl From<EnvironmentImportOptions> for svix::api::EnvironmentImportOptions {
     fn from(value: EnvironmentImportOptions) -> Self {
-        let EnvironmentImportOptions { idempotency_key } = value;
-        Self { idempotency_key }
+        let EnvironmentImportOptions {
+            idempotency_key,
+        } = value;
+        Self {
+            idempotency_key,
+        }
     }
 }
 
@@ -65,9 +76,13 @@ impl EnvironmentCommands {
         color_mode: colored_json::ColorMode,
     ) -> anyhow::Result<()> {
         match self {
-            Self::Export { options } => {
+            Self::Export {
+                options,
+            } => {
                 let resp = client.environment().export(Some(options.into())).await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::Import {
                 environment_in,

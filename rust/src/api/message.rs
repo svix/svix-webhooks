@@ -1,6 +1,10 @@
 // this file is @generated
 use super::MessagePoller;
-use crate::{error::Result, models::*, Configuration};
+use crate::{
+    error::Result,
+    models::*,
+    Configuration,
+};
 
 #[derive(Default)]
 pub struct MessageListOptions {
@@ -58,7 +62,9 @@ pub struct Message<'a> {
 
 impl<'a> Message<'a> {
     pub(super) fn new(cfg: &'a Configuration) -> Self {
-        Self { cfg }
+        Self {
+            cfg,
+        }
     }
 
     pub fn poller(&self) -> MessagePoller<'a> {
@@ -92,18 +98,41 @@ impl<'a> Message<'a> {
             event_types,
         } = options.unwrap_or_default();
 
-        crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}/msg")
-            .with_path_param("app_id", app_id)
-            .with_optional_query_param("limit", limit)
-            .with_optional_query_param("iterator", iterator)
-            .with_optional_query_param("channel", channel)
-            .with_optional_query_param("before", before)
-            .with_optional_query_param("after", after)
-            .with_optional_query_param("with_content", with_content)
-            .with_optional_query_param("tag", tag)
-            .with_optional_query_param("event_types", event_types)
-            .execute(self.cfg)
-            .await
+        crate::request::Request::new(
+            http1::Method::GET,
+            "/api/v1/app/{app_id}/msg",
+        )
+        .with_path_param(
+            "app_id", app_id,
+        )
+        .with_optional_query_param(
+            "limit", limit,
+        )
+        .with_optional_query_param(
+            "iterator", iterator,
+        )
+        .with_optional_query_param(
+            "channel", channel,
+        )
+        .with_optional_query_param(
+            "before", before,
+        )
+        .with_optional_query_param(
+            "after", after,
+        )
+        .with_optional_query_param(
+            "with_content",
+            with_content,
+        )
+        .with_optional_query_param(
+            "tag", tag,
+        )
+        .with_optional_query_param(
+            "event_types",
+            event_types,
+        )
+        .execute(self.cfg)
+        .await
     }
 
     /// Creates a new message and dispatches it to all of the application's
@@ -136,13 +165,24 @@ impl<'a> Message<'a> {
             idempotency_key,
         } = options.unwrap_or_default();
 
-        crate::request::Request::new(http1::Method::POST, "/api/v1/app/{app_id}/msg")
-            .with_path_param("app_id", app_id)
-            .with_optional_query_param("with_content", with_content)
-            .with_optional_header_param("idempotency-key", idempotency_key)
-            .with_body_param(message_in)
-            .execute(self.cfg)
-            .await
+        crate::request::Request::new(
+            http1::Method::POST,
+            "/api/v1/app/{app_id}/msg",
+        )
+        .with_path_param(
+            "app_id", app_id,
+        )
+        .with_optional_query_param(
+            "with_content",
+            with_content,
+        )
+        .with_optional_header_param(
+            "idempotency-key",
+            idempotency_key,
+        )
+        .with_body_param(message_in)
+        .execute(self.cfg)
+        .await
     }
 
     /// Delete all message payloads for the application.
@@ -165,14 +205,21 @@ impl<'a> Message<'a> {
         app_id: String,
         options: Option<MessageExpungeAllContentsOptions>,
     ) -> Result<ExpungeAllContentsOut> {
-        let MessageExpungeAllContentsOptions { idempotency_key } = options.unwrap_or_default();
+        let MessageExpungeAllContentsOptions {
+            idempotency_key,
+        } = options.unwrap_or_default();
 
         crate::request::Request::new(
             http1::Method::POST,
             "/api/v1/app/{app_id}/msg/expunge-all-contents",
         )
-        .with_path_param("app_id", app_id)
-        .with_optional_header_param("idempotency-key", idempotency_key)
+        .with_path_param(
+            "app_id", app_id,
+        )
+        .with_optional_header_param(
+            "idempotency-key",
+            idempotency_key,
+        )
         .execute(self.cfg)
         .await
     }
@@ -184,14 +231,26 @@ impl<'a> Message<'a> {
         msg_id: String,
         options: Option<MessageGetOptions>,
     ) -> Result<MessageOut> {
-        let MessageGetOptions { with_content } = options.unwrap_or_default();
+        let MessageGetOptions {
+            with_content,
+        } = options.unwrap_or_default();
 
-        crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}/msg/{msg_id}")
-            .with_path_param("app_id", app_id)
-            .with_path_param("msg_id", msg_id)
-            .with_optional_query_param("with_content", with_content)
-            .execute(self.cfg)
-            .await
+        crate::request::Request::new(
+            http1::Method::GET,
+            "/api/v1/app/{app_id}/msg/{msg_id}",
+        )
+        .with_path_param(
+            "app_id", app_id,
+        )
+        .with_path_param(
+            "msg_id", msg_id,
+        )
+        .with_optional_query_param(
+            "with_content",
+            with_content,
+        )
+        .execute(self.cfg)
+        .await
     }
 
     /// Delete the given message's payload.
@@ -199,13 +258,21 @@ impl<'a> Message<'a> {
     /// Useful in cases when a message was accidentally sent with sensitive
     /// content. The message can't be replayed or resent once its payload
     /// has been deleted or expired.
-    pub async fn expunge_content(&self, app_id: String, msg_id: String) -> Result<()> {
+    pub async fn expunge_content(
+        &self,
+        app_id: String,
+        msg_id: String,
+    ) -> Result<()> {
         crate::request::Request::new(
             http1::Method::DELETE,
             "/api/v1/app/{app_id}/msg/{msg_id}/content",
         )
-        .with_path_param("app_id", app_id)
-        .with_path_param("msg_id", msg_id)
+        .with_path_param(
+            "app_id", app_id,
+        )
+        .with_path_param(
+            "msg_id", msg_id,
+        )
         .returns_nothing()
         .execute(self.cfg)
         .await
@@ -225,15 +292,31 @@ impl<'a> Message<'a> {
             after,
         } = params;
 
-        crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}/events")
-            .with_path_param("app_id", app_id)
-            .with_optional_query_param("limit", limit)
-            .with_optional_query_param("iterator", iterator)
-            .with_optional_query_param("event_types", event_types)
-            .with_optional_query_param("channels", channels)
-            .with_optional_query_param("after", after)
-            .execute(self.cfg)
-            .await
+        crate::request::Request::new(
+            http1::Method::GET,
+            "/api/v1/app/{app_id}/events",
+        )
+        .with_path_param(
+            "app_id", app_id,
+        )
+        .with_optional_query_param(
+            "limit", limit,
+        )
+        .with_optional_query_param(
+            "iterator", iterator,
+        )
+        .with_optional_query_param(
+            "event_types",
+            event_types,
+        )
+        .with_optional_query_param(
+            "channels", channels,
+        )
+        .with_optional_query_param(
+            "after", after,
+        )
+        .execute(self.cfg)
+        .await
     }
 
     #[cfg(feature = "svix_beta")]
@@ -255,13 +338,30 @@ impl<'a> Message<'a> {
             http1::Method::GET,
             "/api/v1/app/{app_id}/events/subscription/{subscription_id}",
         )
-        .with_path_param("app_id", app_id.to_string())
-        .with_path_param("subscription_id", subscription_id.to_string())
-        .with_optional_query_param("limit", limit)
-        .with_optional_query_param("iterator", iterator)
-        .with_optional_query_param("event_types", event_types)
-        .with_optional_query_param("channels", channels)
-        .with_optional_query_param("after", after)
+        .with_path_param(
+            "app_id",
+            app_id.to_string(),
+        )
+        .with_path_param(
+            "subscription_id",
+            subscription_id.to_string(),
+        )
+        .with_optional_query_param(
+            "limit", limit,
+        )
+        .with_optional_query_param(
+            "iterator", iterator,
+        )
+        .with_optional_query_param(
+            "event_types",
+            event_types,
+        )
+        .with_optional_query_param(
+            "channels", channels,
+        )
+        .with_optional_query_param(
+            "after", after,
+        )
         .execute(self.cfg)
         .await
     }

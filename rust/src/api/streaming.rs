@@ -1,6 +1,15 @@
 // this file is @generated
-use super::{StreamingEventType, StreamingEvents, StreamingSink, StreamingStream};
-use crate::{error::Result, models::*, Configuration};
+use super::{
+    StreamingEventType,
+    StreamingEvents,
+    StreamingSink,
+    StreamingStream,
+};
+use crate::{
+    error::Result,
+    models::*,
+    Configuration,
+};
 
 pub struct Streaming<'a> {
     cfg: &'a Configuration,
@@ -8,7 +17,9 @@ pub struct Streaming<'a> {
 
 impl<'a> Streaming<'a> {
     pub(super) fn new(cfg: &'a Configuration) -> Self {
-        Self { cfg }
+        Self {
+            cfg,
+        }
     }
 
     pub fn event_type(&self) -> StreamingEventType<'a> {
@@ -37,8 +48,13 @@ impl<'a> Streaming<'a> {
             http1::Method::GET,
             "/api/v1/stream/{stream_id}/sink/{sink_id}/headers",
         )
-        .with_path_param("stream_id", stream_id)
-        .with_path_param("sink_id", sink_id)
+        .with_path_param(
+            "stream_id",
+            stream_id,
+        )
+        .with_path_param(
+            "sink_id", sink_id,
+        )
         .execute(self.cfg)
         .await
     }
@@ -55,8 +71,13 @@ impl<'a> Streaming<'a> {
             http1::Method::PATCH,
             "/api/v1/stream/{stream_id}/sink/{sink_id}/headers",
         )
-        .with_path_param("stream_id", stream_id)
-        .with_path_param("sink_id", sink_id)
+        .with_path_param(
+            "stream_id",
+            stream_id,
+        )
+        .with_path_param(
+            "sink_id", sink_id,
+        )
         .with_body_param(http_sink_headers_patch_in)
         .execute(self.cfg)
         .await
@@ -72,8 +93,13 @@ impl<'a> Streaming<'a> {
             http1::Method::GET,
             "/api/v1/stream/{stream_id}/sink/{sink_id}/transformation",
         )
-        .with_path_param("stream_id", stream_id)
-        .with_path_param("sink_id", sink_id)
+        .with_path_param(
+            "stream_id",
+            stream_id,
+        )
+        .with_path_param(
+            "sink_id", sink_id,
+        )
         .execute(self.cfg)
         .await
     }

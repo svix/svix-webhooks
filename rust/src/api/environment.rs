@@ -1,5 +1,9 @@
 // this file is @generated
-use crate::{error::Result, models::*, Configuration};
+use crate::{
+    error::Result,
+    models::*,
+    Configuration,
+};
 
 #[derive(Default)]
 pub struct EnvironmentExportOptions {
@@ -17,7 +21,9 @@ pub struct Environment<'a> {
 
 impl<'a> Environment<'a> {
     pub(super) fn new(cfg: &'a Configuration) -> Self {
-        Self { cfg }
+        Self {
+            cfg,
+        }
     }
 
     /// Download a JSON file containing all org-settings and event types.
@@ -29,12 +35,20 @@ impl<'a> Environment<'a> {
         &self,
         options: Option<EnvironmentExportOptions>,
     ) -> Result<EnvironmentOut> {
-        let EnvironmentExportOptions { idempotency_key } = options.unwrap_or_default();
+        let EnvironmentExportOptions {
+            idempotency_key,
+        } = options.unwrap_or_default();
 
-        crate::request::Request::new(http1::Method::POST, "/api/v1/environment/export")
-            .with_optional_header_param("idempotency-key", idempotency_key)
-            .execute(self.cfg)
-            .await
+        crate::request::Request::new(
+            http1::Method::POST,
+            "/api/v1/environment/export",
+        )
+        .with_optional_header_param(
+            "idempotency-key",
+            idempotency_key,
+        )
+        .execute(self.cfg)
+        .await
     }
 
     /// Import a configuration into the active organization.
@@ -49,13 +63,21 @@ impl<'a> Environment<'a> {
         environment_in: EnvironmentIn,
         options: Option<EnvironmentImportOptions>,
     ) -> Result<()> {
-        let EnvironmentImportOptions { idempotency_key } = options.unwrap_or_default();
+        let EnvironmentImportOptions {
+            idempotency_key,
+        } = options.unwrap_or_default();
 
-        crate::request::Request::new(http1::Method::POST, "/api/v1/environment/import")
-            .with_optional_header_param("idempotency-key", idempotency_key)
-            .with_body_param(environment_in)
-            .returns_nothing()
-            .execute(self.cfg)
-            .await
+        crate::request::Request::new(
+            http1::Method::POST,
+            "/api/v1/environment/import",
+        )
+        .with_optional_header_param(
+            "idempotency-key",
+            idempotency_key,
+        )
+        .with_body_param(environment_in)
+        .returns_nothing()
+        .execute(self.cfg)
+        .await
     }
 }

@@ -1,7 +1,10 @@
 // this file is @generated
 use std::fmt;
 
-use serde_repr::{Deserialize_repr, Serialize_repr};
+use serde_repr::{
+    Deserialize_repr,
+    Serialize_repr,
+};
 
 /// The reason an attempt was made:
 ///
@@ -28,7 +31,14 @@ pub enum MessageAttemptTriggerType {
 }
 
 impl fmt::Display for MessageAttemptTriggerType {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", *self as i64)
+    fn fmt(
+        &self,
+        f: &mut fmt::Formatter,
+    ) -> fmt::Result {
+        write!(
+            f,
+            "{}",
+            *self as i64
+        )
     }
 }

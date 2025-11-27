@@ -1,20 +1,41 @@
 use std::{
     collections::HashMap,
-    fmt::{Debug, Display, Formatter},
+    fmt::{
+        Debug,
+        Display,
+        Formatter,
+    },
     time::Duration,
 };
 
-use anyhow::{Context, Result};
-use futures_util::{
-    stream::{SplitSink, SplitStream},
-    SinkExt, StreamExt,
+use anyhow::{
+    Context,
+    Result,
 };
-use http::{HeaderMap, HeaderName, HeaderValue};
+use futures_util::{
+    stream::{
+        SplitSink,
+        SplitStream,
+    },
+    SinkExt,
+    StreamExt,
+};
+use http::{
+    HeaderMap,
+    HeaderName,
+    HeaderValue,
+};
 use indoc::printdoc;
-use message::{MessageIn, MessageInEvent};
+use message::{
+    MessageIn,
+    MessageInEvent,
+};
 use tokio::{
     net::TcpStream,
-    sync::mpsc::{UnboundedReceiver, UnboundedSender},
+    sync::mpsc::{
+        UnboundedReceiver,
+        UnboundedSender,
+    },
     task::JoinSet,
     time::Instant,
 };
@@ -22,14 +43,24 @@ use tokio_tungstenite::{
     connect_async,
     tungstenite::{
         client::IntoClientRequest,
-        protocol::{frame::coding::CloseCode::Policy, CloseFrame, Message},
-        Bytes, Utf8Bytes,
+        protocol::{
+            frame::coding::CloseCode::Policy,
+            CloseFrame,
+            Message,
+        },
+        Bytes,
+        Utf8Bytes,
     },
-    MaybeTlsStream, WebSocketStream,
+    MaybeTlsStream,
+    WebSocketStream,
 };
 
 use crate::relay::{
-    message::{MessageOut, MessageOutEvent, MessageOutStart},
+    message::{
+        MessageOut,
+        MessageOutEvent,
+        MessageOutStart,
+    },
     token::generate_token,
 };
 
@@ -75,13 +106,19 @@ struct Client {
 struct TokenInUse;
 
 impl Debug for TokenInUse {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(
+        &self,
+        f: &mut Formatter<'_>,
+    ) -> std::fmt::Result {
         f.write_str("TokenInUse")
     }
 }
 
 impl Display for TokenInUse {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(
+        &self,
+        f: &mut Formatter<'_>,
+    ) -> std::fmt::Result {
         f.write_str("TokenInUse")
     }
 }
@@ -89,7 +126,10 @@ impl Display for TokenInUse {
 impl std::error::Error for TokenInUse {}
 
 impl Client {
-    async fn connect(&mut self, show_welcome_message: bool) -> Result<()> {
+    async fn connect(
+        &mut self,
+        show_welcome_message: bool,
+    ) -> Result<()> {
         let mut set = JoinSet::new();
         let conn = WsConnection::new(&self.websocket_url).await?;
         let (mut ws_tx, mut ws_rx) = conn.stream.split();
@@ -98,15 +138,19 @@ impl Client {
 
         match tokio::time::timeout(
             WRITE_WAIT,
-            ws_tx.send(Message::Text(
-                serde_json::to_string(&MessageOut::Start {
-                    version: message::VERSION,
-                    data: MessageOutStart {
-                        token: self.token.clone(),
-                    },
-                })?
-                .into(),
-            )),
+            ws_tx.send(
+                Message::Text(
+                    serde_json::to_string(
+                        &MessageOut::Start {
+                            version: message::VERSION,
+                            data: MessageOutStart {
+                                token: self.token.clone(),
+                            },
+                        },
+                    )?
+                    .into(),
+                ),
+            ),
         )
         .await
         {
@@ -129,7 +173,12 @@ impl Client {
             }
             attempts += 1;
 
-            match tokio::time::timeout(SERVER_PING_PERIOD, ws_rx.next()).await {
+            match tokio::time::timeout(
+                SERVER_PING_PERIOD,
+                ws_rx.next(),
+            )
+            .await
+            {
                 Err(_timeout) => continue,
                 Ok(None) => {
                     anyhow::bail!("no response from server for start message");
@@ -137,9 +186,10 @@ impl Client {
                 Ok(Some(msg)) => {
                     let data = match msg? {
                         // Control messages.
-                        Message::Close(Some(CloseFrame { code, reason }))
-                            if code == Policy && reason == SOCKET_IN_USE_REASON =>
-                        {
+                        Message::Close(Some(CloseFrame {
+                            code,
+                            reason,
+                        })) if code == Policy && reason == SOCKET_IN_USE_REASON => {
                             return Err(TokenInUse.into())
                         }
                         Message::Close(_) => {
@@ -155,8 +205,13 @@ impl Client {
                     match serde_json::from_slice::<MessageIn>(&data)? {
                         // This is what we're waiting to see. A `MessageOut::Start` sent to the writer
                         // should result in a `MessageInStart` coming back on the reader.
-                        MessageIn::Start { data, .. } => break data,
-                        MessageIn::Event { .. } => continue,
+                        MessageIn::Start {
+                            data,
+                            ..
+                        } => break data,
+                        MessageIn::Event {
+                            ..
+                        } => continue,
                     };
                 }
             }
@@ -185,21 +240,32 @@ impl Client {
             println!("Connected!");
         }
 
-        set.spawn({
-            let local_url = self.local_url.clone();
-            let http_client = self.http_client.clone();
-            async move {
-                read_from_ws_loop(ws_rx, remote_tx, local_url.clone(), http_client.clone())
+        set.spawn(
+            {
+                let local_url = self.local_url.clone();
+                let http_client = self.http_client.clone();
+                async move {
+                    read_from_ws_loop(
+                        ws_rx,
+                        remote_tx,
+                        local_url.clone(),
+                        http_client.clone(),
+                    )
                     .await
                     .inspect_err(|e| eprintln!("read loop terminated: {e}"))
-            }
-        });
+                }
+            },
+        );
 
-        set.spawn(async move {
-            send_to_ws_loop(remote_rx, ws_tx)
+        set.spawn(
+            async move {
+                send_to_ws_loop(
+                    remote_rx, ws_tx,
+                )
                 .await
                 .inspect_err(|e| eprintln!("write loop terminated: {e}"))
-        });
+            },
+        );
 
         // If any task terminates, trash the rest so we can reconnect.
         if set.join_next().await.is_some() {
@@ -270,7 +336,10 @@ pub async fn listen(
         }
 
         let backoff = *backoff_schedule.get(attempt_count).unwrap_or(&MAX_BACKOFF);
-        eprintln!("Reattempting connection in: {}ms", backoff.as_millis());
+        eprintln!(
+            "Reattempting connection in: {}ms",
+            backoff.as_millis()
+        );
 
         attempt_count += 1;
         last_attempt = Instant::now();
@@ -301,7 +370,11 @@ impl WsConnection {
             .inspect_err(|e| eprintln!("{e}"))
             .context("failed to connect to websocket server")?;
 
-        Ok(Self { stream })
+        Ok(
+            Self {
+                stream,
+            },
+        )
     }
 }
 
@@ -320,7 +393,12 @@ async fn read_from_ws_loop(
     loop {
         const REMOTE_SERVER_CLOSED: &str = "remote server closed connection";
 
-        match tokio::time::timeout(SERVER_PING_PERIOD, rx.next()).await {
+        match tokio::time::timeout(
+            SERVER_PING_PERIOD,
+            rx.next(),
+        )
+        .await
+        {
             Err(_timeout_hit) => {
                 // Generous. 1.5x the ping frequency. If we go that long without
                 // seeing anything from the server, force a reconnect.
@@ -343,7 +421,13 @@ async fn read_from_ws_loop(
                     Message::Binary(bytes) => bytes,
                 };
 
-                handle_incoming_message(client.clone(), data, &local_url, tx.clone()).await;
+                handle_incoming_message(
+                    client.clone(),
+                    data,
+                    &local_url,
+                    tx.clone(),
+                )
+                .await;
             }
         }
     }
@@ -358,11 +442,13 @@ async fn send_to_ws_loop(
     while let Some(msg) = rx.recv().await {
         tokio::time::timeout(
             WRITE_WAIT,
-            tx.send(Message::Binary(
-                serde_json::to_vec(&msg)
-                    .expect("trivial serialization")
-                    .into(),
-            )),
+            tx.send(
+                Message::Binary(
+                    serde_json::to_vec(&msg)
+                        .expect("trivial serialization")
+                        .into(),
+                ),
+            ),
         )
         .await?
         .context("Websocket write timeout")?;
@@ -389,19 +475,27 @@ async fn make_local_request(
             HeaderValue::try_from(v.as_str())?,
         );
     }
-    Ok(client
-        .request(method, url.clone())
-        .timeout(DEFAULT_TIMEOUT)
-        .body(body)
-        .headers(headers)
-        .send()
-        .await?)
+    Ok(
+        client
+            .request(
+                method,
+                url.clone(),
+            )
+            .timeout(DEFAULT_TIMEOUT)
+            .body(body)
+            .headers(headers)
+            .send()
+            .await?,
+    )
 }
 
 fn format_resp_headers(headers: &HeaderMap) -> Result<HashMap<String, String>> {
     let mut out = HashMap::new();
     for (k, v) in headers {
-        out.insert(k.to_string(), v.to_str()?.to_string());
+        out.insert(
+            k.to_string(),
+            v.to_str()?.to_string(),
+        );
     }
     Ok(out)
 }
@@ -413,21 +507,34 @@ async fn handle_incoming_message(
     tx: UnboundedSender<MessageOut>,
 ) {
     match serde_json::from_slice::<MessageIn>(&bytes) {
-        Ok(MessageIn::Event { data, .. }) => {
+        Ok(MessageIn::Event {
+            data,
+            ..
+        }) => {
             let msg_id = data.id.clone();
             println!("<- Forwarding message id={msg_id} to: {local_url}");
-            match make_local_request(client, local_url, data).await {
+            match make_local_request(
+                client, local_url, data,
+            )
+            .await
+            {
                 Err(err) => {
                     eprintln!("Failed to make request to local server: \n{err}");
                 }
                 Ok(resp) => {
-                    if let Err(err) = process_response(msg_id, resp, tx).await {
+                    if let Err(err) = process_response(
+                        msg_id, resp, tx,
+                    )
+                    .await
+                    {
                         eprintln!("Failed to read response from local server: \n{err}");
                     }
                 }
             }
         }
-        Ok(MessageIn::Start { .. }) => { /* nothing to do */ }
+        Ok(MessageIn::Start {
+            ..
+        }) => { /* nothing to do */ }
         Err(_err) => {
             eprintln!("Received invalid webhook message... skipping");
         }

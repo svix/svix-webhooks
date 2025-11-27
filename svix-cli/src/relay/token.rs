@@ -1,5 +1,8 @@
 use anyhow::Result;
-use rand::distributions::{Distribution, Uniform};
+use rand::distributions::{
+    Distribution,
+    Uniform,
+};
 
 const BASE62: &[u8; 62] = b"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
@@ -24,8 +27,17 @@ mod tests {
         let out3 = generate_token().unwrap();
 
         // Sort of weak as far as assertions go, but this is the least we can expect, right?
-        assert_ne!(out1, out2, "random tokens should be different");
-        assert_ne!(out2, out3, "random tokens should be different");
-        assert_ne!(out3, out1, "random tokens should be different");
+        assert_ne!(
+            out1, out2,
+            "random tokens should be different"
+        );
+        assert_ne!(
+            out2, out3,
+            "random tokens should be different"
+        );
+        assert_ne!(
+            out3, out1,
+            "random tokens should be different"
+        );
     }
 }

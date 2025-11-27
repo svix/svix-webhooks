@@ -1,2 +1,6 @@
 imports_granularity = "Crate"
 group_imports = "StdExternalCrate"
+fn_params_layout = "Vertical"
+struct_lit_width = 0
+imports_layout = "Vertical"
+fn_call_width = 0

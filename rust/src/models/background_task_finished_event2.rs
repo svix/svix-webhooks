@@ -1,8 +1,12 @@
 // this file is @generated
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 use super::{
-    background_task_status::BackgroundTaskStatus, background_task_type::BackgroundTaskType,
+    background_task_status::BackgroundTaskStatus,
+    background_task_type::BackgroundTaskType,
 };
 
 #[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]

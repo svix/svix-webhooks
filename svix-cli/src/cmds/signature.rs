@@ -1,4 +1,7 @@
-use clap::{Args, Subcommand};
+use clap::{
+    Args,
+    Subcommand,
+};
 
 #[derive(Args)]
 #[command(args_conflicts_with_subcommands = true)]
@@ -44,7 +47,11 @@ impl SignatureCommands {
                 payload,
             } => {
                 let webhook = svix::webhooks::Webhook::new(&secret)?;
-                let signature = webhook.sign(&msg_id, timestamp, payload.as_bytes())?;
+                let signature = webhook.sign(
+                    &msg_id,
+                    timestamp,
+                    payload.as_bytes(),
+                )?;
                 println!("{signature}");
             }
             SignatureCommands::Verify {
@@ -56,10 +63,22 @@ impl SignatureCommands {
             } => {
                 let webhook = svix::webhooks::Webhook::new(&secret)?;
                 let mut headers = http::HeaderMap::with_capacity(3);
-                headers.insert("svix-id", msg_id.parse()?);
-                headers.insert("svix-timestamp", timestamp.to_string().parse()?);
-                headers.insert("svix-signature", signature.parse()?);
-                webhook.verify_ignoring_timestamp(payload.as_bytes(), &headers)?;
+                headers.insert(
+                    "svix-id",
+                    msg_id.parse()?,
+                );
+                headers.insert(
+                    "svix-timestamp",
+                    timestamp.to_string().parse()?,
+                );
+                headers.insert(
+                    "svix-signature",
+                    signature.parse()?,
+                );
+                webhook.verify_ignoring_timestamp(
+                    payload.as_bytes(),
+                    &headers,
+                )?;
             }
         }
         Ok(())

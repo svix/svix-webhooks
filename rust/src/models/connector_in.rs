@@ -1,5 +1,8 @@
 // this file is @generated
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 use super::connector_kind::ConnectorKind;
 
@@ -31,7 +34,10 @@ pub struct ConnectorIn {
 }
 
 impl ConnectorIn {
-    pub fn new(name: String, transformation: String) -> Self {
+    pub fn new(
+        name: String,
+        transformation: String,
+    ) -> Self {
         Self {
             allowed_event_types: None,
             description: None,

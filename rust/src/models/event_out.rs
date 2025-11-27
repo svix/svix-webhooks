@@ -1,5 +1,8 @@
 // this file is @generated
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 #[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
 pub struct EventOut {
@@ -13,7 +16,11 @@ pub struct EventOut {
 }
 
 impl EventOut {
-    pub fn new(event_type: String, payload: String, timestamp: String) -> Self {
+    pub fn new(
+        event_type: String,
+        payload: String,
+        timestamp: String,
+    ) -> Self {
         Self {
             event_type,
             payload,

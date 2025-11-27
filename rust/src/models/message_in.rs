@@ -1,5 +1,8 @@
 // this file is @generated
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 use super::application_in::ApplicationIn;
 
@@ -64,7 +67,10 @@ pub struct MessageIn {
 }
 
 impl MessageIn {
-    pub fn new(event_type: String, payload: serde_json::Value) -> Self {
+    pub fn new(
+        event_type: String,
+        payload: serde_json::Value,
+    ) -> Self {
         Self {
             application: None,
             channels: None,

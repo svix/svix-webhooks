@@ -1,10 +1,15 @@
 // this file is @generated
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 use super::{
     azure_blob_storage_config::AzureBlobStorageConfig,
-    google_cloud_storage_config::GoogleCloudStorageConfig, s3_config::S3Config,
-    sink_http_config::SinkHttpConfig, sink_otel_v1_config::SinkOtelV1Config,
+    google_cloud_storage_config::GoogleCloudStorageConfig,
+    s3_config::S3Config,
+    sink_http_config::SinkHttpConfig,
+    sink_otel_v1_config::SinkOtelV1Config,
     sink_status::SinkStatus,
 };
 

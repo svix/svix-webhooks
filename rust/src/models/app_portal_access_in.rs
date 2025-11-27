@@ -1,7 +1,13 @@
 // this file is @generated
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
-use super::{app_portal_capability::AppPortalCapability, application_in::ApplicationIn};
+use super::{
+    app_portal_capability::AppPortalCapability,
+    application_in::ApplicationIn,
+};
 
 #[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
 pub struct AppPortalAccessIn {

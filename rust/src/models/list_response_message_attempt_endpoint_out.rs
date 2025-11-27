@@ -1,4 +1,7 @@
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 use super::message_attempt_endpoint_out::MessageAttemptEndpointOut;
 
@@ -16,7 +19,11 @@ pub struct ListResponseMessageAttemptEndpointOut {
 }
 
 impl ListResponseMessageAttemptEndpointOut {
-    pub fn new(data: Vec<MessageAttemptEndpointOut>, done: bool, iterator: String) -> Self {
+    pub fn new(
+        data: Vec<MessageAttemptEndpointOut>,
+        done: bool,
+        iterator: String,
+    ) -> Self {
         Self {
             data,
             done,

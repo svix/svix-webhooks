@@ -1,5 +1,8 @@
 // this file is @generated
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 #[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
 pub struct EndpointSecretRotateIn {
@@ -14,6 +17,8 @@ pub struct EndpointSecretRotateIn {
 
 impl EndpointSecretRotateIn {
     pub fn new() -> Self {
-        Self { key: None }
+        Self {
+            key: None,
+        }
     }
 }

@@ -1,7 +1,13 @@
 // this file is @generated
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
-use super::{message_status::MessageStatus, message_status_text::MessageStatusText};
+use super::{
+    message_status::MessageStatus,
+    message_status_text::MessageStatusText,
+};
 
 /// A model containing information on a given message plus additional fields on
 /// the last attempt for that message.

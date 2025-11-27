@@ -1,7 +1,10 @@
 // this file is @generated
 use std::fmt;
 
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 /// Defines the ordering in a listing of results.
 #[derive(
@@ -16,7 +19,10 @@ pub enum Ordering {
 }
 
 impl fmt::Display for Ordering {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(
+        &self,
+        f: &mut fmt::Formatter,
+    ) -> fmt::Result {
         let value = match self {
             Self::Ascending => "ascending",
             Self::Descending => "descending",

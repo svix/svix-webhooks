@@ -1,5 +1,8 @@
 // this file is @generated
-use clap::{Args, Subcommand};
+use clap::{
+    Args,
+    Subcommand,
+};
 use svix::api::*;
 
 use super::operational_webhook_endpoint::OperationalWebhookEndpointArgs;
@@ -24,7 +27,11 @@ impl OperationalWebhookCommands {
     ) -> anyhow::Result<()> {
         match self {
             Self::Endpoint(args) => {
-                args.command.exec(client, color_mode).await?;
+                args.command
+                    .exec(
+                        client, color_mode,
+                    )
+                    .await?;
             }
         }
 

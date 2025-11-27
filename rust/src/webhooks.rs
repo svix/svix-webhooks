@@ -49,15 +49,29 @@ impl Webhook {
         let secret = secret.strip_prefix(PREFIX).unwrap_or(secret);
         let key = base64::decode(secret)?;
 
-        Ok(Webhook { key })
+        Ok(
+            Webhook {
+                key,
+            },
+        )
     }
 
     pub fn from_bytes(secret: Vec<u8>) -> Result<Self, WebhookError> {
-        Ok(Webhook { key: secret })
+        Ok(
+            Webhook {
+                key: secret,
+            },
+        )
     }
 
-    pub fn verify<HM: HeaderMap>(&self, payload: &[u8], headers: &HM) -> Result<(), WebhookError> {
-        self.verify_inner(payload, headers, /* enforce_tolerance */ true)
+    pub fn verify<HM: HeaderMap>(
+        &self,
+        payload: &[u8],
+        headers: &HM,
+    ) -> Result<(), WebhookError> {
+        self.verify_inner(
+            payload, headers, /* enforce_tolerance */ true,
+        )
     }
 
     pub fn verify_ignoring_timestamp<HM: HeaderMap>(
@@ -65,7 +79,9 @@ impl Webhook {
         payload: &[u8],
         headers: &HM,
     ) -> Result<(), WebhookError> {
-        self.verify_inner(payload, headers, /* enforce_tolerance */ false)
+        self.verify_inner(
+            payload, headers, /* enforce_tolerance */ false,
+        )
     }
 
     fn verify_inner<HM: HeaderMap>(
@@ -74,7 +90,12 @@ impl Webhook {
         headers: &HM,
         enforce_tolerance: bool,
     ) -> Result<(), WebhookError> {
-        let msg_id = Self::get_header(headers, SVIX_MSG_ID_KEY, UNBRANDED_MSG_ID_KEY, "id")?;
+        let msg_id = Self::get_header(
+            headers,
+            SVIX_MSG_ID_KEY,
+            UNBRANDED_MSG_ID_KEY,
+            "id",
+        )?;
         let msg_signature = Self::get_header(
             headers,
             SVIX_MSG_SIGNATURE_KEY,
@@ -93,7 +114,9 @@ impl Webhook {
             Self::verify_timestamp(msg_ts)?;
         }
 
-        let versioned_signature = self.sign(msg_id, msg_ts, payload)?;
+        let versioned_signature = self.sign(
+            msg_id, msg_ts, payload,
+        )?;
         let expected_signature = versioned_signature
             .split_once(',')
             .map(|x| x.1)
@@ -103,15 +126,15 @@ impl Webhook {
             .split(' ')
             .filter_map(|x| x.split_once(','))
             .filter(|x| x.0 == SIGNATURE_VERSION)
-            .any(|x| {
-                (x.1.len() == expected_signature.len())
-                    && (x
-                        .1
-                        .bytes()
-                        .zip(expected_signature.bytes())
-                        .fold(0, |acc, (a, b)| acc | (a ^ b))
-                        == 0)
-            })
+            .any(
+                |x| {
+                    (x.1.len() == expected_signature.len())
+                        && (x.1.bytes().zip(expected_signature.bytes()).fold(
+                            0,
+                            |acc, (a, b)| acc | (a ^ b),
+                        ) == 0)
+                },
+            )
             .then_some(())
             .ok_or(WebhookError::InvalidSignature)
     }
@@ -124,7 +147,10 @@ impl Webhook {
     ) -> Result<String, WebhookError> {
         let payload = std::str::from_utf8(payload).map_err(|_| WebhookError::InvalidPayload)?;
         let to_sign = format!("{msg_id}.{timestamp}.{payload}",);
-        let signed = hmac_sha256::HMAC::mac(to_sign.as_bytes(), &self.key);
+        let signed = hmac_sha256::HMAC::mac(
+            to_sign.as_bytes(),
+            &self.key,
+        );
         let encoded = base64::encode(signed);
 
         Ok(format!("{SIGNATURE_VERSION},{encoded}"))
@@ -172,18 +198,27 @@ impl HeaderMap for http1::HeaderMap {}
 mod private {
     pub trait HeaderMapSealed {
         type HeaderValue: HeaderValueSealed;
-        fn _get(&self, name: &str) -> Option<&Self::HeaderValue>;
+        fn _get(
+            &self,
+            name: &str,
+        ) -> Option<&Self::HeaderValue>;
     }
 
     impl HeaderMapSealed for http02::HeaderMap {
         type HeaderValue = http02::HeaderValue;
-        fn _get(&self, name: &str) -> Option<&Self::HeaderValue> {
+        fn _get(
+            &self,
+            name: &str,
+        ) -> Option<&Self::HeaderValue> {
             self.get(name)
         }
     }
     impl HeaderMapSealed for http1::HeaderMap {
         type HeaderValue = http1::HeaderValue;
-        fn _get(&self, name: &str) -> Option<&Self::HeaderValue> {
+        fn _get(
+            &self,
+            name: &str,
+        ) -> Option<&Self::HeaderValue> {
             self.get(name)
         }
     }
@@ -210,14 +245,28 @@ mod tests {
     use time::OffsetDateTime;
 
     use super::{
-        Webhook, SVIX_MSG_ID_KEY, SVIX_MSG_SIGNATURE_KEY, SVIX_MSG_TIMESTAMP_KEY,
-        UNBRANDED_MSG_ID_KEY, UNBRANDED_MSG_SIGNATURE_KEY, UNBRANDED_MSG_TIMESTAMP_KEY,
+        Webhook,
+        SVIX_MSG_ID_KEY,
+        SVIX_MSG_SIGNATURE_KEY,
+        SVIX_MSG_TIMESTAMP_KEY,
+        UNBRANDED_MSG_ID_KEY,
+        UNBRANDED_MSG_SIGNATURE_KEY,
+        UNBRANDED_MSG_TIMESTAMP_KEY,
     };
 
-    fn get_svix_headers(msg_id: &str, signature: &str) -> HeaderMap {
+    fn get_svix_headers(
+        msg_id: &str,
+        signature: &str,
+    ) -> HeaderMap {
         let mut headers = HeaderMap::new();
-        headers.insert(SVIX_MSG_ID_KEY, msg_id.parse().unwrap());
-        headers.insert(SVIX_MSG_SIGNATURE_KEY, signature.parse().unwrap());
+        headers.insert(
+            SVIX_MSG_ID_KEY,
+            msg_id.parse().unwrap(),
+        );
+        headers.insert(
+            SVIX_MSG_SIGNATURE_KEY,
+            signature.parse().unwrap(),
+        );
         headers.insert(
             SVIX_MSG_TIMESTAMP_KEY,
             OffsetDateTime::now_utc()
@@ -229,10 +278,19 @@ mod tests {
         headers
     }
 
-    fn get_unbranded_headers(msg_id: &str, signature: &str) -> HeaderMap {
+    fn get_unbranded_headers(
+        msg_id: &str,
+        signature: &str,
+    ) -> HeaderMap {
         let mut headers = HeaderMap::new();
-        headers.insert(UNBRANDED_MSG_ID_KEY, msg_id.parse().unwrap());
-        headers.insert(UNBRANDED_MSG_SIGNATURE_KEY, signature.parse().unwrap());
+        headers.insert(
+            UNBRANDED_MSG_ID_KEY,
+            msg_id.parse().unwrap(),
+        );
+        headers.insert(
+            UNBRANDED_MSG_SIGNATURE_KEY,
+            signature.parse().unwrap(),
+        );
         headers.insert(
             UNBRANDED_MSG_TIMESTAMP_KEY,
             OffsetDateTime::now_utc()
@@ -266,13 +324,24 @@ mod tests {
         let wh = Webhook::new(&secret).unwrap();
 
         let signature = wh
-            .sign(msg_id, OffsetDateTime::now_utc().unix_timestamp(), payload)
+            .sign(
+                msg_id,
+                OffsetDateTime::now_utc().unix_timestamp(),
+                payload,
+            )
             .unwrap();
         for headers in [
-            get_svix_headers(msg_id, &signature),
-            get_unbranded_headers(msg_id, &signature),
+            get_svix_headers(
+                msg_id, &signature,
+            ),
+            get_unbranded_headers(
+                msg_id, &signature,
+            ),
         ] {
-            wh.verify(payload, &headers).unwrap();
+            wh.verify(
+                payload, &headers,
+            )
+            .unwrap();
         }
     }
 
@@ -285,8 +354,12 @@ mod tests {
 
         let signature = "v1,R3PTzyfHASBKHH98a7yexTwaJ4yNIcGhFQc1yuN+BPU=".to_owned();
         for headers in [
-            get_svix_headers(msg_id, &signature),
-            get_unbranded_headers(msg_id, &signature),
+            get_svix_headers(
+                msg_id, &signature,
+            ),
+            get_unbranded_headers(
+                msg_id, &signature,
+            ),
         ] {
             assert!(wh.verify(payload, &headers).is_err());
         }
@@ -300,31 +373,55 @@ mod tests {
         let wh = Webhook::new(&secret).unwrap();
 
         let signature = wh
-            .sign(msg_id, OffsetDateTime::now_utc().unix_timestamp(), payload)
+            .sign(
+                msg_id,
+                OffsetDateTime::now_utc().unix_timestamp(),
+                payload,
+            )
             .unwrap();
 
         // Just `v1,`
         for mut headers in [
-            get_svix_headers(msg_id, &signature),
-            get_unbranded_headers(msg_id, &signature),
+            get_svix_headers(
+                msg_id, &signature,
+            ),
+            get_unbranded_headers(
+                msg_id, &signature,
+            ),
         ] {
             let partial = format!(
                 "{},",
                 signature.split(',').collect::<Vec<&str>>().first().unwrap()
             );
-            headers.insert(SVIX_MSG_SIGNATURE_KEY, partial.parse().unwrap());
-            headers.insert(UNBRANDED_MSG_SIGNATURE_KEY, partial.parse().unwrap());
+            headers.insert(
+                SVIX_MSG_SIGNATURE_KEY,
+                partial.parse().unwrap(),
+            );
+            headers.insert(
+                UNBRANDED_MSG_SIGNATURE_KEY,
+                partial.parse().unwrap(),
+            );
             assert!(wh.verify(payload, &headers).is_err());
         }
 
         // Non-empty but still partial signature (first few bytes)
         for mut headers in [
-            get_svix_headers(msg_id, &signature),
-            get_unbranded_headers(msg_id, &signature),
+            get_svix_headers(
+                msg_id, &signature,
+            ),
+            get_unbranded_headers(
+                msg_id, &signature,
+            ),
         ] {
             let partial = &signature[0..8];
-            headers.insert(SVIX_MSG_SIGNATURE_KEY, partial.parse().unwrap());
-            headers.insert(UNBRANDED_MSG_SIGNATURE_KEY, partial.parse().unwrap());
+            headers.insert(
+                SVIX_MSG_SIGNATURE_KEY,
+                partial.parse().unwrap(),
+            );
+            headers.insert(
+                UNBRANDED_MSG_SIGNATURE_KEY,
+                partial.parse().unwrap(),
+            );
             assert!(wh.verify(payload, &headers).is_err());
         }
     }
@@ -342,8 +439,14 @@ mod tests {
             OffsetDateTime::now_utc().unix_timestamp() - (super::TOLERANCE_IN_SECONDS + 1),
             OffsetDateTime::now_utc().unix_timestamp() + (super::TOLERANCE_IN_SECONDS + 1),
         ] {
-            let signature = wh.sign(msg_id, ts, payload).unwrap();
-            let mut headers = get_svix_headers(msg_id, &signature);
+            let signature = wh
+                .sign(
+                    msg_id, ts, payload,
+                )
+                .unwrap();
+            let mut headers = get_svix_headers(
+                msg_id, &signature,
+            );
             headers.insert(
                 super::SVIX_MSG_TIMESTAMP_KEY,
                 ts.to_string().parse().unwrap(),
@@ -355,8 +458,14 @@ mod tests {
         }
 
         let ts = OffsetDateTime::now_utc().unix_timestamp();
-        let signature = wh.sign(msg_id, ts, payload).unwrap();
-        let mut headers = get_svix_headers(msg_id, &signature);
+        let signature = wh
+            .sign(
+                msg_id, ts, payload,
+            )
+            .unwrap();
+        let mut headers = get_svix_headers(
+            msg_id, &signature,
+        );
         headers.insert(
             super::SVIX_MSG_TIMESTAMP_KEY,
             // Timestamp mismatch!
@@ -377,7 +486,11 @@ mod tests {
         let wh = Webhook::new(&secret).unwrap();
 
         let signature = wh
-            .sign(msg_id, OffsetDateTime::now_utc().unix_timestamp(), payload)
+            .sign(
+                msg_id,
+                OffsetDateTime::now_utc().unix_timestamp(),
+                payload,
+            )
             .unwrap();
 
         let multi_sig = format!(
@@ -388,9 +501,14 @@ mod tests {
             "v1,9DfC1c3eeOrXB6w/5dIDydLNQaEyww5KalE5jLBZucE=",
         );
 
-        let headers = get_svix_headers(msg_id, &multi_sig);
+        let headers = get_svix_headers(
+            msg_id, &multi_sig,
+        );
 
-        wh.verify(payload, &headers).unwrap();
+        wh.verify(
+            payload, &headers,
+        )
+        .unwrap();
     }
 
     #[test]
@@ -407,7 +525,10 @@ mod tests {
             "v1,9DfC1c3eeOrXB6w/5dIDydLNQaEyww5KalE5jLBZucE=",
         );
 
-        let headers = get_svix_headers(msg_id, &missing_sig);
+        let headers = get_svix_headers(
+            msg_id,
+            &missing_sig,
+        );
 
         assert!(wh.verify(payload, &headers).is_err());
     }
@@ -420,11 +541,17 @@ mod tests {
         let wh = Webhook::new(&secret).unwrap();
 
         let signature = wh
-            .sign(msg_id, OffsetDateTime::now_utc().unix_timestamp(), payload)
+            .sign(
+                msg_id,
+                OffsetDateTime::now_utc().unix_timestamp(),
+                payload,
+            )
             .unwrap();
         for (mut hdr_map, hdrs) in [
             (
-                get_svix_headers(msg_id, &signature),
+                get_svix_headers(
+                    msg_id, &signature,
+                ),
                 [
                     SVIX_MSG_ID_KEY,
                     SVIX_MSG_SIGNATURE_KEY,
@@ -432,7 +559,9 @@ mod tests {
                 ],
             ),
             (
-                get_unbranded_headers(msg_id, &signature),
+                get_unbranded_headers(
+                    msg_id, &signature,
+                ),
                 [
                     UNBRANDED_MSG_ID_KEY,
                     UNBRANDED_MSG_SIGNATURE_KEY,

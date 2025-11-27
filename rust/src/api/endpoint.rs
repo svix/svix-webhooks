@@ -1,5 +1,9 @@
 // this file is @generated
-use crate::{error::Result, models::*, Configuration};
+use crate::{
+    error::Result,
+    models::*,
+    Configuration,
+};
 
 #[derive(Default)]
 pub struct EndpointListOptions {
@@ -57,7 +61,9 @@ pub struct Endpoint<'a> {
 
 impl<'a> Endpoint<'a> {
     pub(super) fn new(cfg: &'a Configuration) -> Self {
-        Self { cfg }
+        Self {
+            cfg,
+        }
     }
 
     /// List the application's endpoints.
@@ -72,13 +78,24 @@ impl<'a> Endpoint<'a> {
             order,
         } = options.unwrap_or_default();
 
-        crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}/endpoint")
-            .with_path_param("app_id", app_id)
-            .with_optional_query_param("limit", limit)
-            .with_optional_query_param("iterator", iterator)
-            .with_optional_query_param("order", order)
-            .execute(self.cfg)
-            .await
+        crate::request::Request::new(
+            http1::Method::GET,
+            "/api/v1/app/{app_id}/endpoint",
+        )
+        .with_path_param(
+            "app_id", app_id,
+        )
+        .with_optional_query_param(
+            "limit", limit,
+        )
+        .with_optional_query_param(
+            "iterator", iterator,
+        )
+        .with_optional_query_param(
+            "order", order,
+        )
+        .execute(self.cfg)
+        .await
     }
 
     /// Create a new endpoint for the application.
@@ -91,24 +108,43 @@ impl<'a> Endpoint<'a> {
         endpoint_in: EndpointIn,
         options: Option<EndpointCreateOptions>,
     ) -> Result<EndpointOut> {
-        let EndpointCreateOptions { idempotency_key } = options.unwrap_or_default();
+        let EndpointCreateOptions {
+            idempotency_key,
+        } = options.unwrap_or_default();
 
-        crate::request::Request::new(http1::Method::POST, "/api/v1/app/{app_id}/endpoint")
-            .with_path_param("app_id", app_id)
-            .with_optional_header_param("idempotency-key", idempotency_key)
-            .with_body_param(endpoint_in)
-            .execute(self.cfg)
-            .await
+        crate::request::Request::new(
+            http1::Method::POST,
+            "/api/v1/app/{app_id}/endpoint",
+        )
+        .with_path_param(
+            "app_id", app_id,
+        )
+        .with_optional_header_param(
+            "idempotency-key",
+            idempotency_key,
+        )
+        .with_body_param(endpoint_in)
+        .execute(self.cfg)
+        .await
     }
 
     /// Get an endpoint.
-    pub async fn get(&self, app_id: String, endpoint_id: String) -> Result<EndpointOut> {
+    pub async fn get(
+        &self,
+        app_id: String,
+        endpoint_id: String,
+    ) -> Result<EndpointOut> {
         crate::request::Request::new(
             http1::Method::GET,
             "/api/v1/app/{app_id}/endpoint/{endpoint_id}",
         )
-        .with_path_param("app_id", app_id)
-        .with_path_param("endpoint_id", endpoint_id)
+        .with_path_param(
+            "app_id", app_id,
+        )
+        .with_path_param(
+            "endpoint_id",
+            endpoint_id,
+        )
         .execute(self.cfg)
         .await
     }
@@ -124,21 +160,35 @@ impl<'a> Endpoint<'a> {
             http1::Method::PUT,
             "/api/v1/app/{app_id}/endpoint/{endpoint_id}",
         )
-        .with_path_param("app_id", app_id)
-        .with_path_param("endpoint_id", endpoint_id)
+        .with_path_param(
+            "app_id", app_id,
+        )
+        .with_path_param(
+            "endpoint_id",
+            endpoint_id,
+        )
         .with_body_param(endpoint_update)
         .execute(self.cfg)
         .await
     }
 
     /// Delete an endpoint.
-    pub async fn delete(&self, app_id: String, endpoint_id: String) -> Result<()> {
+    pub async fn delete(
+        &self,
+        app_id: String,
+        endpoint_id: String,
+    ) -> Result<()> {
         crate::request::Request::new(
             http1::Method::DELETE,
             "/api/v1/app/{app_id}/endpoint/{endpoint_id}",
         )
-        .with_path_param("app_id", app_id)
-        .with_path_param("endpoint_id", endpoint_id)
+        .with_path_param(
+            "app_id", app_id,
+        )
+        .with_path_param(
+            "endpoint_id",
+            endpoint_id,
+        )
         .returns_nothing()
         .execute(self.cfg)
         .await
@@ -155,8 +205,13 @@ impl<'a> Endpoint<'a> {
             http1::Method::PATCH,
             "/api/v1/app/{app_id}/endpoint/{endpoint_id}",
         )
-        .with_path_param("app_id", app_id)
-        .with_path_param("endpoint_id", endpoint_id)
+        .with_path_param(
+            "app_id", app_id,
+        )
+        .with_path_param(
+            "endpoint_id",
+            endpoint_id,
+        )
         .with_body_param(endpoint_patch)
         .execute(self.cfg)
         .await
@@ -172,8 +227,13 @@ impl<'a> Endpoint<'a> {
             http1::Method::GET,
             "/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers",
         )
-        .with_path_param("app_id", app_id)
-        .with_path_param("endpoint_id", endpoint_id)
+        .with_path_param(
+            "app_id", app_id,
+        )
+        .with_path_param(
+            "endpoint_id",
+            endpoint_id,
+        )
         .execute(self.cfg)
         .await
     }
@@ -189,8 +249,13 @@ impl<'a> Endpoint<'a> {
             http1::Method::PUT,
             "/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers",
         )
-        .with_path_param("app_id", app_id)
-        .with_path_param("endpoint_id", endpoint_id)
+        .with_path_param(
+            "app_id", app_id,
+        )
+        .with_path_param(
+            "endpoint_id",
+            endpoint_id,
+        )
         .with_body_param(endpoint_headers_in)
         .returns_nothing()
         .execute(self.cfg)
@@ -208,8 +273,13 @@ impl<'a> Endpoint<'a> {
             http1::Method::PATCH,
             "/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers",
         )
-        .with_path_param("app_id", app_id)
-        .with_path_param("endpoint_id", endpoint_id)
+        .with_path_param(
+            "app_id", app_id,
+        )
+        .with_path_param(
+            "endpoint_id",
+            endpoint_id,
+        )
         .with_body_param(endpoint_headers_patch_in)
         .returns_nothing()
         .execute(self.cfg)
@@ -239,15 +309,25 @@ impl<'a> Endpoint<'a> {
         recover_in: RecoverIn,
         options: Option<EndpointRecoverOptions>,
     ) -> Result<RecoverOut> {
-        let EndpointRecoverOptions { idempotency_key } = options.unwrap_or_default();
+        let EndpointRecoverOptions {
+            idempotency_key,
+        } = options.unwrap_or_default();
 
         crate::request::Request::new(
             http1::Method::POST,
             "/api/v1/app/{app_id}/endpoint/{endpoint_id}/recover",
         )
-        .with_path_param("app_id", app_id)
-        .with_path_param("endpoint_id", endpoint_id)
-        .with_optional_header_param("idempotency-key", idempotency_key)
+        .with_path_param(
+            "app_id", app_id,
+        )
+        .with_path_param(
+            "endpoint_id",
+            endpoint_id,
+        )
+        .with_optional_header_param(
+            "idempotency-key",
+            idempotency_key,
+        )
         .with_body_param(recover_in)
         .execute(self.cfg)
         .await
@@ -276,15 +356,25 @@ impl<'a> Endpoint<'a> {
         replay_in: ReplayIn,
         options: Option<EndpointReplayMissingOptions>,
     ) -> Result<ReplayOut> {
-        let EndpointReplayMissingOptions { idempotency_key } = options.unwrap_or_default();
+        let EndpointReplayMissingOptions {
+            idempotency_key,
+        } = options.unwrap_or_default();
 
         crate::request::Request::new(
             http1::Method::POST,
             "/api/v1/app/{app_id}/endpoint/{endpoint_id}/replay-missing",
         )
-        .with_path_param("app_id", app_id)
-        .with_path_param("endpoint_id", endpoint_id)
-        .with_optional_header_param("idempotency-key", idempotency_key)
+        .with_path_param(
+            "app_id", app_id,
+        )
+        .with_path_param(
+            "endpoint_id",
+            endpoint_id,
+        )
+        .with_optional_header_param(
+            "idempotency-key",
+            idempotency_key,
+        )
         .with_body_param(replay_in)
         .execute(self.cfg)
         .await
@@ -303,8 +393,13 @@ impl<'a> Endpoint<'a> {
             http1::Method::GET,
             "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret",
         )
-        .with_path_param("app_id", app_id)
-        .with_path_param("endpoint_id", endpoint_id)
+        .with_path_param(
+            "app_id", app_id,
+        )
+        .with_path_param(
+            "endpoint_id",
+            endpoint_id,
+        )
         .execute(self.cfg)
         .await
     }
@@ -319,15 +414,25 @@ impl<'a> Endpoint<'a> {
         endpoint_secret_rotate_in: EndpointSecretRotateIn,
         options: Option<EndpointRotateSecretOptions>,
     ) -> Result<()> {
-        let EndpointRotateSecretOptions { idempotency_key } = options.unwrap_or_default();
+        let EndpointRotateSecretOptions {
+            idempotency_key,
+        } = options.unwrap_or_default();
 
         crate::request::Request::new(
             http1::Method::POST,
             "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate",
         )
-        .with_path_param("app_id", app_id)
-        .with_path_param("endpoint_id", endpoint_id)
-        .with_optional_header_param("idempotency-key", idempotency_key)
+        .with_path_param(
+            "app_id", app_id,
+        )
+        .with_path_param(
+            "endpoint_id",
+            endpoint_id,
+        )
+        .with_optional_header_param(
+            "idempotency-key",
+            idempotency_key,
+        )
         .with_body_param(endpoint_secret_rotate_in)
         .returns_nothing()
         .execute(self.cfg)
@@ -342,15 +447,25 @@ impl<'a> Endpoint<'a> {
         event_example_in: EventExampleIn,
         options: Option<EndpointSendExampleOptions>,
     ) -> Result<MessageOut> {
-        let EndpointSendExampleOptions { idempotency_key } = options.unwrap_or_default();
+        let EndpointSendExampleOptions {
+            idempotency_key,
+        } = options.unwrap_or_default();
 
         crate::request::Request::new(
             http1::Method::POST,
             "/api/v1/app/{app_id}/endpoint/{endpoint_id}/send-example",
         )
-        .with_path_param("app_id", app_id)
-        .with_path_param("endpoint_id", endpoint_id)
-        .with_optional_header_param("idempotency-key", idempotency_key)
+        .with_path_param(
+            "app_id", app_id,
+        )
+        .with_path_param(
+            "endpoint_id",
+            endpoint_id,
+        )
+        .with_optional_header_param(
+            "idempotency-key",
+            idempotency_key,
+        )
         .with_body_param(event_example_in)
         .execute(self.cfg)
         .await
@@ -363,16 +478,28 @@ impl<'a> Endpoint<'a> {
         endpoint_id: String,
         options: Option<EndpointGetStatsOptions>,
     ) -> Result<EndpointStats> {
-        let EndpointGetStatsOptions { since, until } = options.unwrap_or_default();
+        let EndpointGetStatsOptions {
+            since,
+            until,
+        } = options.unwrap_or_default();
 
         crate::request::Request::new(
             http1::Method::GET,
             "/api/v1/app/{app_id}/endpoint/{endpoint_id}/stats",
         )
-        .with_path_param("app_id", app_id)
-        .with_path_param("endpoint_id", endpoint_id)
-        .with_optional_query_param("since", since)
-        .with_optional_query_param("until", until)
+        .with_path_param(
+            "app_id", app_id,
+        )
+        .with_path_param(
+            "endpoint_id",
+            endpoint_id,
+        )
+        .with_optional_query_param(
+            "since", since,
+        )
+        .with_optional_query_param(
+            "until", until,
+        )
         .execute(self.cfg)
         .await
     }
@@ -387,8 +514,13 @@ impl<'a> Endpoint<'a> {
             http1::Method::GET,
             "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
         )
-        .with_path_param("app_id", app_id)
-        .with_path_param("endpoint_id", endpoint_id)
+        .with_path_param(
+            "app_id", app_id,
+        )
+        .with_path_param(
+            "endpoint_id",
+            endpoint_id,
+        )
         .execute(self.cfg)
         .await
     }
@@ -404,8 +536,13 @@ impl<'a> Endpoint<'a> {
             http1::Method::PATCH,
             "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
         )
-        .with_path_param("app_id", app_id)
-        .with_path_param("endpoint_id", endpoint_id)
+        .with_path_param(
+            "app_id", app_id,
+        )
+        .with_path_param(
+            "endpoint_id",
+            endpoint_id,
+        )
         .with_body_param(endpoint_transformation_patch)
         .returns_nothing()
         .execute(self.cfg)
@@ -424,8 +561,13 @@ impl<'a> Endpoint<'a> {
             http1::Method::PATCH,
             "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
         )
-        .with_path_param("app_id", app_id)
-        .with_path_param("endpoint_id", endpoint_id)
+        .with_path_param(
+            "app_id", app_id,
+        )
+        .with_path_param(
+            "endpoint_id",
+            endpoint_id,
+        )
         .with_body_param(endpoint_transformation_in)
         .returns_nothing()
         .execute(self.cfg)

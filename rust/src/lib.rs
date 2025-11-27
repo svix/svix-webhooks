@@ -21,7 +21,10 @@ mod models;
 mod request;
 pub mod webhooks;
 
-pub(crate) use connector::{make_connector, Connector};
+pub(crate) use connector::{
+    make_connector,
+    Connector,
+};
 
 pub struct Configuration {
     pub base_path: String,

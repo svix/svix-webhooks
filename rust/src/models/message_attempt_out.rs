@@ -1,9 +1,14 @@
 // this file is @generated
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 use super::{
-    message_attempt_trigger_type::MessageAttemptTriggerType, message_out::MessageOut,
-    message_status::MessageStatus, message_status_text::MessageStatusText,
+    message_attempt_trigger_type::MessageAttemptTriggerType,
+    message_out::MessageOut,
+    message_status::MessageStatus,
+    message_status_text::MessageStatusText,
 };
 
 #[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]

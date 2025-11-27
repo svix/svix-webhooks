@@ -1,5 +1,8 @@
 // this file is @generated
-use clap::{Args, Subcommand};
+use clap::{
+    Args,
+    Subcommand,
+};
 use svix::api::*;
 
 use super::message_poller::MessagePollerArgs;
@@ -88,8 +91,12 @@ pub struct MessageExpungeAllContentsOptions {
 
 impl From<MessageExpungeAllContentsOptions> for svix::api::MessageExpungeAllContentsOptions {
     fn from(value: MessageExpungeAllContentsOptions) -> Self {
-        let MessageExpungeAllContentsOptions { idempotency_key } = value;
-        Self { idempotency_key }
+        let MessageExpungeAllContentsOptions {
+            idempotency_key,
+        } = value;
+        Self {
+            idempotency_key,
+        }
     }
 }
 
@@ -102,8 +109,12 @@ pub struct MessageGetOptions {
 
 impl From<MessageGetOptions> for svix::api::MessageGetOptions {
     fn from(value: MessageGetOptions) -> Self {
-        let MessageGetOptions { with_content } = value;
-        Self { with_content }
+        let MessageGetOptions {
+            with_content,
+        } = value;
+        Self {
+            with_content,
+        }
     }
 }
 
@@ -191,11 +202,26 @@ impl MessageCommands {
     ) -> anyhow::Result<()> {
         match self {
             Self::Poller(args) => {
-                args.command.exec(client, color_mode).await?;
+                args.command
+                    .exec(
+                        client, color_mode,
+                    )
+                    .await?;
             }
-            Self::List { app_id, options } => {
-                let resp = client.message().list(app_id, Some(options.into())).await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+            Self::List {
+                app_id,
+                options,
+            } => {
+                let resp = client
+                    .message()
+                    .list(
+                        app_id,
+                        Some(options.into()),
+                    )
+                    .await?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::Create {
                 app_id,
@@ -204,16 +230,30 @@ impl MessageCommands {
             } => {
                 let resp = client
                     .message()
-                    .create(app_id, message_in.into_inner(), Some(options.into()))
+                    .create(
+                        app_id,
+                        message_in.into_inner(),
+                        Some(options.into()),
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
-            Self::ExpungeAllContents { app_id, options } => {
+            Self::ExpungeAllContents {
+                app_id,
+                options,
+            } => {
                 let resp = client
                     .message()
-                    .expunge_all_contents(app_id, Some(options.into()))
+                    .expunge_all_contents(
+                        app_id,
+                        Some(options.into()),
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::Get {
                 app_id,
@@ -222,12 +262,26 @@ impl MessageCommands {
             } => {
                 let resp = client
                     .message()
-                    .get(app_id, id, Some(options.into()))
+                    .get(
+                        app_id,
+                        id,
+                        Some(options.into()),
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
-            Self::ExpungeContent { app_id, id } => {
-                client.message().expunge_content(app_id, id).await?;
+            Self::ExpungeContent {
+                app_id,
+                id,
+            } => {
+                client
+                    .message()
+                    .expunge_content(
+                        app_id, id,
+                    )
+                    .await?;
             }
         }
 
