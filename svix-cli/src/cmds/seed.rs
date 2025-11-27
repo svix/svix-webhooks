@@ -1,7 +1,14 @@
 use anyhow::Context;
 use clap::Args;
-use rand::{rngs::StdRng, seq::SliceRandom, SeedableRng};
-use serde::{Deserialize, Serialize};
+use rand::{
+    rngs::StdRng,
+    seq::SliceRandom,
+    SeedableRng,
+};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 use serde_json::json;
 use svix::api::*;
 
@@ -71,7 +78,13 @@ pub async fn exec(
         name: "Test application".to_string(),
         ..Default::default()
     };
-    let application_out = client.application().create(application_in, None).await?;
+    let application_out = client
+        .application()
+        .create(
+            application_in,
+            None,
+        )
+        .await?;
 
     seed_out.application = application_out.clone();
 
@@ -83,9 +96,16 @@ pub async fn exec(
         let client = client.clone();
         let app_id = app_id.clone();
 
-        handles.push(tokio::spawn(async move {
-            create_endpoint(client, app_id).await
-        }))
+        handles.push(
+            tokio::spawn(
+                async move {
+                    create_endpoint(
+                        client, app_id,
+                    )
+                    .await
+                },
+            ),
+        )
     }
 
     for h in handles {
@@ -100,7 +120,13 @@ pub async fn exec(
             schemas: Some(json!(schema_example())),
             ..Default::default()
         };
-        let res = client.event_type().create(event_type_in, None).await;
+        let res = client
+            .event_type()
+            .create(
+                event_type_in,
+                None,
+            )
+            .await;
 
         match res {
             Ok(event_type_out) => {
@@ -118,9 +144,16 @@ pub async fn exec(
         let client = client.clone();
         let app_id = app_id.clone();
 
-        handles.push(tokio::spawn(
-            async move { create_message(client, app_id).await },
-        ))
+        handles.push(
+            tokio::spawn(
+                async move {
+                    create_message(
+                        client, app_id,
+                    )
+                    .await
+                },
+            ),
+        )
     }
 
     for h in handles {
@@ -136,13 +169,18 @@ pub async fn exec(
         seed_out.application.name
     );
 
-    crate::json::print_json_output(&seed_out, color_mode)?;
+    crate::json::print_json_output(
+        &seed_out, color_mode,
+    )?;
     println!("{summary}");
 
     Ok(())
 }
 
-async fn create_endpoint(client: Svix, app_id: String) -> anyhow::Result<EndpointOut> {
+async fn create_endpoint(
+    client: Svix,
+    app_id: String,
+) -> anyhow::Result<EndpointOut> {
     let req_client = reqwest::Client::new();
 
     let resp = req_client
@@ -154,14 +192,27 @@ async fn create_endpoint(client: Svix, app_id: String) -> anyhow::Result<Endpoin
         .context("Failed to get token from public api")?;
 
     let endpoint_in = EndpointIn {
-        url: format!("https://play.svix.com/in/{}/", resp.token),
+        url: format!(
+            "https://play.svix.com/in/{}/",
+            resp.token
+        ),
         ..Default::default()
     };
-    let endpoint_out = client.endpoint().create(app_id, endpoint_in, None).await?;
+    let endpoint_out = client
+        .endpoint()
+        .create(
+            app_id,
+            endpoint_in,
+            None,
+        )
+        .await?;
     Ok(endpoint_out)
 }
 
-async fn create_message(client: Svix, app_id: String) -> anyhow::Result<MessageOut> {
+async fn create_message(
+    client: Svix,
+    app_id: String,
+) -> anyhow::Result<MessageOut> {
     let mut rng = StdRng::from_entropy();
 
     let event_type = USER_EVENT_TYPES
@@ -178,7 +229,12 @@ async fn create_message(client: Svix, app_id: String) -> anyhow::Result<MessageO
         ..Default::default()
     };
 
-    let message_out = client.message().create(app_id, message_in, None).await?;
+    let message_out = client
+        .message()
+        .create(
+            app_id, message_in, None,
+        )
+        .await?;
     Ok(message_out)
 }
 
@@ -189,11 +245,18 @@ async fn reset_application(client: &Svix) -> anyhow::Result<()> {
     for app_out in resp.data {
         let client = client.clone();
 
-        handles.push(tokio::spawn(async move {
-            if let Err(err) = client.application().delete(app_out.id.clone()).await {
-                eprintln!("Failed to delete application {}: {}", app_out.id, err);
-            }
-        }));
+        handles.push(
+            tokio::spawn(
+                async move {
+                    if let Err(err) = client.application().delete(app_out.id.clone()).await {
+                        eprintln!(
+                            "Failed to delete application {}: {}",
+                            app_out.id, err
+                        );
+                    }
+                },
+            ),
+        );
     }
 
     for h in handles {
@@ -210,17 +273,21 @@ async fn reset_event_type(client: &Svix) -> anyhow::Result<()> {
     for event_type_out in resp.data {
         let client = client.clone();
 
-        let handle = tokio::spawn(async move {
-            let _ = client
-                .event_type()
-                .delete(
-                    event_type_out.name,
-                    Some(EventTypeDeleteOptions {
-                        expunge: Some(true),
-                    }),
-                )
-                .await;
-        });
+        let handle = tokio::spawn(
+            async move {
+                let _ = client
+                    .event_type()
+                    .delete(
+                        event_type_out.name,
+                        Some(
+                            EventTypeDeleteOptions {
+                                expunge: Some(true),
+                            },
+                        ),
+                    )
+                    .await;
+            },
+        );
         handles.push(handle);
     }
 

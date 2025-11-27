@@ -1,9 +1,15 @@
-use std::{future::Future, pin::Pin};
+use std::{
+    future::Future,
+    pin::Pin,
+};
 
 use http1::Uri;
 use hyper_util::{
     client::legacy::connect::{
-        proxy::{SocksV5, Tunnel},
+        proxy::{
+            SocksV5,
+            Tunnel,
+        },
         HttpConnector,
     },
     rt::TokioIo,
@@ -19,11 +25,17 @@ type MaybeHttpsStream<T> = T;
 
 // If only native TLS is enabled, use that.
 #[cfg(all(feature = "native-tls", not(feature = "rustls-tls")))]
-use hyper_tls::{HttpsConnector as HttpsIfAvailable, MaybeHttpsStream};
+use hyper_tls::{
+    HttpsConnector as HttpsIfAvailable,
+    MaybeHttpsStream,
+};
 
 // If rustls is enabled, use that.
 #[cfg(feature = "rustls-tls")]
-use hyper_rustls::{HttpsConnector as HttpsIfAvailable, MaybeHttpsStream};
+use hyper_rustls::{
+    HttpsConnector as HttpsIfAvailable,
+    MaybeHttpsStream,
+};
 
 fn wrap_connector<H>(conn: H) -> HttpsIfAvailable<H> {
     #[cfg(not(any(feature = "native-tls", feature = "rustls-tls")))]
@@ -64,7 +76,12 @@ pub(crate) enum Connector {
 // to be fallible and bubble the error up from `Svix::new`.
 pub(crate) fn make_connector(proxy_addr: Option<String>) -> Connector {
     let mut http = hyper_util::client::legacy::connect::HttpConnector::new();
-    if cfg!(any(feature = "native-tls", feature = "rustls-tls")) {
+    if cfg!(
+        any(
+            feature = "native-tls",
+            feature = "rustls-tls"
+        )
+    ) {
         http.enforce_http(false);
     }
 
@@ -84,15 +101,22 @@ pub(crate) fn make_connector(proxy_addr: Option<String>) -> Connector {
 
     match proxy_addr.scheme_str() {
         Some("http" | "https") => {
-            let tunnel = Tunnel::new(proxy_addr, http);
+            let tunnel = Tunnel::new(
+                proxy_addr, http,
+            );
             Connector::HttpProxy(wrap_connector(tunnel))
         }
         Some("socks5") => {
-            let socks = SocksV5::new(proxy_addr, http).local_dns(true);
+            let socks = SocksV5::new(
+                proxy_addr, http,
+            )
+            .local_dns(true);
             Connector::Socks5Proxy(wrap_connector(socks))
         }
         Some("socks5h") => {
-            let socks = SocksV5::new(proxy_addr, http);
+            let socks = SocksV5::new(
+                proxy_addr, http,
+            );
             Connector::Socks5Proxy(wrap_connector(socks))
         }
         scheme => {
@@ -121,7 +145,10 @@ impl Service<Uri> for Connector {
         }
     }
 
-    fn call(&mut self, req: Uri) -> Self::Future {
+    fn call(
+        &mut self,
+        req: Uri,
+    ) -> Self::Future {
         match self {
             Self::Regular(inner) => Box::pin(inner.call(req)),
             Self::Socks5Proxy(inner) => Box::pin(inner.call(req)),

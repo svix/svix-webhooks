@@ -1,6 +1,12 @@
-use std::{sync::Arc, time::Duration};
+use std::{
+    sync::Arc,
+    time::Duration,
+};
 
-use hyper_util::{client::legacy::Client as HyperClient, rt::TokioExecutor};
+use hyper_util::{
+    client::legacy::Client as HyperClient,
+    rt::TokioExecutor,
+};
 
 use crate::Configuration;
 
@@ -64,20 +70,25 @@ pub struct Svix {
 }
 
 impl Svix {
-    pub fn new(token: String, options: Option<SvixOptions>) -> Self {
+    pub fn new(
+        token: String,
+        options: Option<SvixOptions>,
+    ) -> Self {
         let options = options.unwrap_or_default();
 
-        let cfg = Arc::new(Configuration {
-            user_agent: Some(format!("svix-libs/{CRATE_VERSION}/rust")),
-            client: HyperClient::builder(TokioExecutor::new())
-                .build(crate::make_connector(options.proxy_address)),
-            timeout: options.timeout,
-            // These fields will be set by `with_token` below
-            base_path: String::new(),
-            bearer_access_token: None,
-            num_retries: options.num_retries.unwrap_or(2),
-            retry_schedule: options.retry_schedule,
-        });
+        let cfg = Arc::new(
+            Configuration {
+                user_agent: Some(format!("svix-libs/{CRATE_VERSION}/rust")),
+                client: HyperClient::builder(TokioExecutor::new())
+                    .build(crate::make_connector(options.proxy_address)),
+                timeout: options.timeout,
+                // These fields will be set by `with_token` below
+                base_path: String::new(),
+                bearer_access_token: None,
+                num_retries: options.num_retries.unwrap_or(2),
+                retry_schedule: options.retry_schedule,
+            },
+        );
         let svix = Self {
             cfg,
             server_url: options.server_url,
@@ -91,27 +102,34 @@ impl Svix {
     ///
     /// This can be used to change the token without incurring
     /// the cost of TLS initialization.
-    pub fn with_token(&self, token: String) -> Self {
-        let base_path = self.server_url.clone().unwrap_or_else(|| {
-            match token.split('.').next_back() {
-                Some("us") => "https://api.us.svix.com",
-                Some("eu") => "https://api.eu.svix.com",
-                Some("in") => "https://api.in.svix.com",
-                Some("ca") => "https://api.ca.svix.com",
-                Some("au") => "https://api.au.svix.com",
-                _ => "https://api.svix.com",
-            }
-            .to_string()
-        });
-        let cfg = Arc::new(Configuration {
-            base_path,
-            user_agent: self.cfg.user_agent.clone(),
-            bearer_access_token: Some(token),
-            client: self.cfg.client.clone(),
-            timeout: self.cfg.timeout,
-            num_retries: self.cfg.num_retries,
-            retry_schedule: self.cfg.retry_schedule.clone(),
-        });
+    pub fn with_token(
+        &self,
+        token: String,
+    ) -> Self {
+        let base_path = self.server_url.clone().unwrap_or_else(
+            || {
+                match token.split('.').next_back() {
+                    Some("us") => "https://api.us.svix.com",
+                    Some("eu") => "https://api.eu.svix.com",
+                    Some("in") => "https://api.in.svix.com",
+                    Some("ca") => "https://api.ca.svix.com",
+                    Some("au") => "https://api.au.svix.com",
+                    _ => "https://api.svix.com",
+                }
+                .to_string()
+            },
+        );
+        let cfg = Arc::new(
+            Configuration {
+                base_path,
+                user_agent: self.cfg.user_agent.clone(),
+                bearer_access_token: Some(token),
+                client: self.cfg.client.clone(),
+                timeout: self.cfg.timeout,
+                num_retries: self.cfg.num_retries,
+                retry_schedule: self.cfg.retry_schedule.clone(),
+            },
+        );
 
         Self {
             cfg,
@@ -133,9 +151,15 @@ mod tests {
     fn test_future_send_sync() {
         fn require_send_sync<T: Send + Sync>(_: T) {}
 
-        let svix = Svix::new(String::new(), None);
+        let svix = Svix::new(
+            String::new(),
+            None,
+        );
         let message_api = svix.message();
-        let fut = message_api.expunge_content(String::new(), String::new());
+        let fut = message_api.expunge_content(
+            String::new(),
+            String::new(),
+        );
         require_send_sync(fut);
     }
 }

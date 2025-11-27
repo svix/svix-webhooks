@@ -5,7 +5,11 @@ use std::str::FromStr;
 use serde_json::json;
 
 use crate::{
-    api::{MessageStatus, Ordering, StatusCodeClass},
+    api::{
+        MessageStatus,
+        Ordering,
+        StatusCodeClass,
+    },
     models::MessageIn,
 };
 
@@ -22,15 +26,24 @@ impl MessageIn {
     /// The default `content-type` of `application/json` will still be used for
     /// the webhook sent by Svix, unless overwritten with
     /// [`with_content_type`][Self::with_content_type].
-    pub fn new_raw_payload(event_type: String, payload: String) -> Self {
+    pub fn new_raw_payload(
+        event_type: String,
+        payload: String,
+    ) -> Self {
         Self {
             transformations_params: Some(json!({ "rawPayload": payload })),
-            ..Self::new(event_type, json!({}))
+            ..Self::new(
+                event_type,
+                json!({}),
+            )
         }
     }
 
     /// Set the `content-type` header to use for the webhook sent by Svix.
-    pub fn with_content_type(mut self, content_type: String) -> Self {
+    pub fn with_content_type(
+        mut self,
+        content_type: String,
+    ) -> Self {
         let transformations_params = self.transformations_params.get_or_insert_with(|| json!({}));
 
         // This will panic if transformations_params, its headers field, or the

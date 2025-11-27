@@ -1,11 +1,20 @@
-use std::time::{Duration, Instant};
+use std::time::{
+    Duration,
+    Instant,
+};
 
-use anyhow::{Context, Result};
+use anyhow::{
+    Context,
+    Result,
+};
 use dialoguer::Input;
 use reqwest::Client;
 use serde::Deserialize;
 
-use crate::{config, config::Config};
+use crate::{
+    config,
+    config::Config,
+};
 
 pub async fn prompt(_cfg: &Config) -> Result<()> {
     print!("Welcome to the Svix CLI!\n\n");
@@ -22,15 +31,17 @@ pub async fn prompt(_cfg: &Config) -> Result<()> {
     } else {
         Input::new()
             .with_prompt("Auth Token")
-            .validate_with({
-                move |input: &String| -> Result<()> {
-                    if !input.trim().is_empty() {
-                        Ok(())
-                    } else {
-                        Err(anyhow::anyhow!("auth token cannot be empty"))
+            .validate_with(
+                {
+                    move |input: &String| -> Result<()> {
+                        if !input.trim().is_empty() {
+                            Ok(())
+                        } else {
+                            Err(anyhow::anyhow!("auth token cannot be empty"))
+                        }
                     }
-                }
-            })
+                },
+            )
             .interact_text()?
             .trim()
             .to_string()
@@ -111,15 +122,24 @@ pub async fn dashboard_login() -> Result<String> {
 
     // First, poll the discovery endpoint to get the region
     let discovery_poll_url = format!("{LOGIN_SERVER_URL}/dashboard/cli/login/discovery/complete");
-    let discovery_data: DiscoverySessionOut =
-        poll_session(&client, &discovery_poll_url, &session_id).await?;
+    let discovery_data: DiscoverySessionOut = poll_session(
+        &client,
+        &discovery_poll_url,
+        &session_id,
+    )
+    .await?;
 
     let region = discovery_data.region;
     let region_server_url = format!("https://api.{region}.svix.com");
     let token_poll_url = format!("{region_server_url}/dashboard/cli/login/token/complete");
 
     // Then, poll the token endpoint to get the auth token
-    let token_data: AuthTokenOut = poll_session(&client, &token_poll_url, &session_id).await?;
+    let token_data: AuthTokenOut = poll_session(
+        &client,
+        &token_poll_url,
+        &session_id,
+    )
+    .await?;
 
     println!("Authentication successful!\n");
     Ok(token_data.token)
@@ -127,7 +147,11 @@ pub async fn dashboard_login() -> Result<String> {
 
 const MAX_POLL_TIME: Duration = Duration::from_secs(5 * 60);
 
-async fn poll_session<T>(client: &Client, poll_url: &str, session_id: &str) -> Result<T>
+async fn poll_session<T>(
+    client: &Client,
+    poll_url: &str,
+    session_id: &str,
+) -> Result<T>
 where
     T: for<'de> serde::Deserialize<'de>,
 {

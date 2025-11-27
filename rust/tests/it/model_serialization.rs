@@ -1,10 +1,21 @@
-use std::{collections::HashMap, fmt::Debug};
+use std::{
+    collections::HashMap,
+    fmt::Debug,
+};
 
 use serde::de::DeserializeOwned;
 use serde_json::json;
 use svix::api::{
-    CronConfig, IngestSourceIn, IngestSourceInConfig, IngestSourceOut, IngestSourceOutConfig,
-    ListResponseApplicationOut, SegmentConfig, SegmentConfigOut, SvixConfig, SvixConfigOut,
+    CronConfig,
+    IngestSourceIn,
+    IngestSourceInConfig,
+    IngestSourceOut,
+    IngestSourceOutConfig,
+    ListResponseApplicationOut,
+    SegmentConfig,
+    SegmentConfigOut,
+    SvixConfig,
+    SvixConfigOut,
 };
 
 #[test]
@@ -21,7 +32,10 @@ fn test_list_response_xxx_out() {
         prev_iterator: Some("prevIterator-str".to_string()),
     };
 
-    assert_eq!(expected_model, loaded_json);
+    assert_eq!(
+        expected_model,
+        loaded_json
+    );
 
     // without iterator and prevIterator
     let json_str = r#"{"data":[],"done":true,"iterator":null,"prevIterator":null}"#;
@@ -33,18 +47,23 @@ fn test_list_response_xxx_out() {
         ..Default::default()
     };
 
-    assert_eq!(expected_model, loaded_json);
+    assert_eq!(
+        expected_model,
+        loaded_json
+    );
 }
 
 #[test]
 fn test_ingest_source_in() {
     assert_eq!(
-        json!(IngestSourceIn {
-            name: "foo".to_owned(),
-            uid: None,
-            config: IngestSourceInConfig::GenericWebhook,
-            metadata: Some(HashMap::new())
-        }),
+        json!(
+            IngestSourceIn {
+                name: "foo".to_owned(),
+                uid: None,
+                config: IngestSourceInConfig::GenericWebhook,
+                metadata: Some(HashMap::new())
+            }
+        ),
         json!({
             "name": "foo",
             "type": "generic-webhook",
@@ -53,14 +72,18 @@ fn test_ingest_source_in() {
     );
 
     assert_eq!(
-        json!(IngestSourceIn {
-            name: "foo".to_owned(),
-            uid: None,
-            config: IngestSourceInConfig::Svix(SvixConfig {
-                secret: "xxx".to_owned()
-            }),
-            metadata: Some(HashMap::new())
-        }),
+        json!(
+            IngestSourceIn {
+                name: "foo".to_owned(),
+                uid: None,
+                config: IngestSourceInConfig::Svix(
+                    SvixConfig {
+                        secret: "xxx".to_owned()
+                    }
+                ),
+                metadata: Some(HashMap::new())
+            }
+        ),
         json!({
             "name": "foo",
             "type": "svix",
@@ -70,12 +93,18 @@ fn test_ingest_source_in() {
     );
 
     assert_eq!(
-        json!(IngestSourceIn {
-            name: "foo".to_owned(),
-            uid: None,
-            config: IngestSourceInConfig::Segment(SegmentConfig { secret: None }),
-            metadata: Some(HashMap::new())
-        }),
+        json!(
+            IngestSourceIn {
+                name: "foo".to_owned(),
+                uid: None,
+                config: IngestSourceInConfig::Segment(
+                    SegmentConfig {
+                        secret: None
+                    }
+                ),
+                metadata: Some(HashMap::new())
+            }
+        ),
         json!({
             "name": "foo",
             "type": "segment",
@@ -85,16 +114,20 @@ fn test_ingest_source_in() {
     );
 
     assert_eq!(
-        json!(IngestSourceIn {
-            name: "foo".to_owned(),
-            uid: None,
-            config: IngestSourceInConfig::Cron(CronConfig {
-                content_type: None,
-                payload: "💣".to_owned(),
-                schedule: "* * * * *".to_owned(),
-            }),
-            metadata: Some(HashMap::new())
-        }),
+        json!(
+            IngestSourceIn {
+                name: "foo".to_owned(),
+                uid: None,
+                config: IngestSourceInConfig::Cron(
+                    CronConfig {
+                        content_type: None,
+                        payload: "💣".to_owned(),
+                        schedule: "* * * * *".to_owned(),
+                    }
+                ),
+                metadata: Some(HashMap::new())
+            }
+        ),
         json!({
             "name": "foo",
             "type": "cron",
@@ -197,11 +230,13 @@ fn test_ingest_source_out() {
             name: "foo".to_owned(),
             uid: None,
             updated_at: "2006-01-02T15:04:05Z".to_owned(),
-            config: IngestSourceOutConfig::Cron(CronConfig {
-                content_type: None,
-                payload: "💣".to_owned(),
-                schedule: "* * * * *".to_owned(),
-            }),
+            config: IngestSourceOutConfig::Cron(
+                CronConfig {
+                    content_type: None,
+                    payload: "💣".to_owned(),
+                    schedule: "* * * * *".to_owned(),
+                },
+            ),
             metadata: HashMap::new(),
         },
     );
@@ -212,5 +247,8 @@ fn assert_deserializes_to<T: Debug + PartialEq + DeserializeOwned>(
     expected: T,
 ) {
     let actual = T::deserialize(value).unwrap();
-    assert_eq!(actual, expected);
+    assert_eq!(
+        actual,
+        expected
+    );
 }

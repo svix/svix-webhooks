@@ -1,8 +1,17 @@
-use svix::api::{MessageListOptions, Svix, SvixOptions};
+use svix::api::{
+    MessageListOptions,
+    Svix,
+    SvixOptions,
+};
 
 use wiremock::{
-    matchers::{method, path},
-    Mock, MockServer, ResponseTemplate,
+    matchers::{
+        method,
+        path,
+    },
+    Mock,
+    MockServer,
+    ResponseTemplate,
 };
 
 #[tokio::test]
@@ -19,19 +28,23 @@ async fn test_urlencoded_octothorpe() {
 
     let svx = Svix::new(
         "token".to_string(),
-        Some(SvixOptions {
-            server_url: Some(mock_server.uri()),
-            ..Default::default()
-        }),
+        Some(
+            SvixOptions {
+                server_url: Some(mock_server.uri()),
+                ..Default::default()
+            },
+        ),
     );
 
     svx.message()
         .list(
             "app_id".to_string(),
-            Some(MessageListOptions {
-                tag: Some("test#test".into()),
-                ..Default::default()
-            }),
+            Some(
+                MessageListOptions {
+                    tag: Some("test#test".into()),
+                    ..Default::default()
+                },
+            ),
         )
         .await
         .unwrap();
@@ -41,8 +54,14 @@ async fn test_urlencoded_octothorpe() {
         .await
         .expect("we should have sent a request");
 
-    assert_eq!(1, requests.len());
-    assert_eq!(Some("tag=test%23test"), requests[0].url.query());
+    assert_eq!(
+        1,
+        requests.len()
+    );
+    assert_eq!(
+        Some("tag=test%23test"),
+        requests[0].url.query()
+    );
 }
 
 #[tokio::test]
@@ -58,14 +77,19 @@ async fn test_idempotency_key_is_sent_for_create_request() {
 
     let svx = Svix::new(
         "token".to_string(),
-        Some(SvixOptions {
-            server_url: Some(mock_server.uri()),
-            ..Default::default()
-        }),
+        Some(
+            SvixOptions {
+                server_url: Some(mock_server.uri()),
+                ..Default::default()
+            },
+        ),
     );
 
     svx.application()
-        .create(svix::api::ApplicationIn::new("test app".to_string()), None)
+        .create(
+            svix::api::ApplicationIn::new("test app".to_string()),
+            None,
+        )
         .await
         .unwrap();
 
@@ -74,7 +98,10 @@ async fn test_idempotency_key_is_sent_for_create_request() {
         .await
         .expect("we should have sent a request");
 
-    assert_eq!(1, requests.len());
+    assert_eq!(
+        1,
+        requests.len()
+    );
     let idempotency_key = requests[0]
         .headers
         .get("idempotency-key")
@@ -98,19 +125,23 @@ async fn test_client_provided_idempotency_key_is_not_overridden() {
 
     let svx = Svix::new(
         "token".to_string(),
-        Some(SvixOptions {
-            server_url: Some(mock_server.uri()),
-            ..Default::default()
-        }),
+        Some(
+            SvixOptions {
+                server_url: Some(mock_server.uri()),
+                ..Default::default()
+            },
+        ),
     );
 
     let client_provided_key = "test-key-123";
     svx.application()
         .create(
             svix::api::ApplicationIn::new("test app".to_string()),
-            Some(svix::api::ApplicationCreateOptions {
-                idempotency_key: Some(client_provided_key.to_string()),
-            }),
+            Some(
+                svix::api::ApplicationCreateOptions {
+                    idempotency_key: Some(client_provided_key.to_string()),
+                },
+            ),
         )
         .await
         .unwrap();
@@ -120,7 +151,10 @@ async fn test_client_provided_idempotency_key_is_not_overridden() {
         .await
         .expect("we should have sent a request");
 
-    assert_eq!(1, requests.len());
+    assert_eq!(
+        1,
+        requests.len()
+    );
     let idempotency_key = requests[0]
         .headers
         .get("idempotency-key")
@@ -147,10 +181,12 @@ async fn test_unknown_keys_are_ignored() {
 
     let svx = Svix::new(
         "token".to_string(),
-        Some(SvixOptions {
-            server_url: Some(mock_server.uri()),
-            ..Default::default()
-        }),
+        Some(
+            SvixOptions {
+                server_url: Some(mock_server.uri()),
+                ..Default::default()
+            },
+        ),
     );
 
     svx.application().list(None).await.unwrap();

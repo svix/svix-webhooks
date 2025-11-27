@@ -1,17 +1,32 @@
 use anyhow::Result;
-use clap::{Parser, Subcommand};
+use clap::{
+    Parser,
+    Subcommand,
+};
 use clap_complete::Shell;
-use colored_json::{ColorMode, Output};
-use concolor_clap::{Color, ColorChoice};
+use colored_json::{
+    ColorMode,
+    Output,
+};
+use concolor_clap::{
+    Color,
+    ColorChoice,
+};
 use svix::api::SvixOptions;
 
 use self::{
     cmds::{
         api::{
-            application::ApplicationArgs, authentication::AuthenticationArgs,
-            endpoint::EndpointArgs, environment::EnvironmentArgs, event_type::EventTypeArgs,
-            ingest::IngestArgs, integration::IntegrationArgs, message::MessageArgs,
-            message_attempt::MessageAttemptArgs, operational_webhook::OperationalWebhookArgs,
+            application::ApplicationArgs,
+            authentication::AuthenticationArgs,
+            endpoint::EndpointArgs,
+            environment::EnvironmentArgs,
+            event_type::EventTypeArgs,
+            ingest::IngestArgs,
+            integration::IntegrationArgs,
+            message::MessageArgs,
+            message_attempt::MessageAttemptArgs,
+            operational_webhook::OperationalWebhookArgs,
             streaming::StreamingArgs,
         },
         listen::ListenArgs,
@@ -142,60 +157,113 @@ async fn main() -> Result<()> {
         // Remote API calls
         RootCommands::Application(args) => {
             let client = get_client(&cfg?)?;
-            args.command.exec(&client, color_mode).await?;
+            args.command
+                .exec(
+                    &client, color_mode,
+                )
+                .await?;
         }
         RootCommands::Authentication(args) => {
             let cfg = cfg?;
             let client = get_client(&cfg)?;
-            args.command.exec(&client, color_mode).await?;
+            args.command
+                .exec(
+                    &client, color_mode,
+                )
+                .await?;
         }
         RootCommands::Connector(args) => {
             let client = get_client(&cfg?)?;
-            args.command.exec(&client, color_mode).await?;
+            args.command
+                .exec(
+                    &client, color_mode,
+                )
+                .await?;
         }
         RootCommands::EventType(args) => {
             let client = get_client(&cfg?)?;
-            args.command.exec(&client, color_mode).await?;
+            args.command
+                .exec(
+                    &client, color_mode,
+                )
+                .await?;
         }
         RootCommands::Endpoint(args) => {
             let client = get_client(&cfg?)?;
-            args.command.exec(&client, color_mode).await?;
+            args.command
+                .exec(
+                    &client, color_mode,
+                )
+                .await?;
         }
         RootCommands::Environment(args) => {
             let client = get_client(&cfg?)?;
-            args.command.exec(&client, color_mode).await?;
+            args.command
+                .exec(
+                    &client, color_mode,
+                )
+                .await?;
         }
         RootCommands::Message(args) => {
             let client = get_client(&cfg?)?;
-            args.command.exec(&client, color_mode).await?;
+            args.command
+                .exec(
+                    &client, color_mode,
+                )
+                .await?;
         }
         RootCommands::MessageAttempt(args) => {
             let client = get_client(&cfg?)?;
-            args.command.exec(&client, color_mode).await?;
+            args.command
+                .exec(
+                    &client, color_mode,
+                )
+                .await?;
         }
         RootCommands::Ingest(args) => {
             let client = get_client(&cfg?)?;
-            args.command.exec(&client, color_mode).await?;
+            args.command
+                .exec(
+                    &client, color_mode,
+                )
+                .await?;
         }
         RootCommands::Integration(args) => {
             let client = get_client(&cfg?)?;
-            args.command.exec(&client, color_mode).await?;
+            args.command
+                .exec(
+                    &client, color_mode,
+                )
+                .await?;
         }
         RootCommands::OperationalWebhook(args) => {
             let client = get_client(&cfg?)?;
-            args.command.exec(&client, color_mode).await?;
+            args.command
+                .exec(
+                    &client, color_mode,
+                )
+                .await?;
         }
         RootCommands::Streaming(args) => {
             let client = get_client(&cfg?)?;
-            args.command.exec(&client, color_mode).await?;
+            args.command
+                .exec(
+                    &client, color_mode,
+                )
+                .await?;
         }
 
         RootCommands::Listen(args) => args.exec(&cfg?).await?,
         RootCommands::Login => cmds::login::prompt(&cfg?).await?,
-        RootCommands::Completion { shell } => cmds::completion::generate(&shell)?,
+        RootCommands::Completion {
+            shell,
+        } => cmds::completion::generate(&shell)?,
         RootCommands::Seed(args) => {
             let client = get_client(&cfg?)?;
-            cmds::seed::exec(&client, args, color_mode).await?;
+            cmds::seed::exec(
+                &client, args, color_mode,
+            )
+            .await?;
         }
     }
 
@@ -203,18 +271,25 @@ async fn main() -> Result<()> {
 }
 
 fn get_client(cfg: &Config) -> Result<svix::api::Svix> {
-    let token = cfg.auth_token.clone().ok_or_else(|| {
-        anyhow::anyhow!("No auth token set. Try running `{BIN_NAME} login` to get started.")
-    })?;
+    let token = cfg.auth_token.clone().ok_or_else(
+        || anyhow::anyhow!("No auth token set. Try running `{BIN_NAME} login` to get started."),
+    )?;
     let opts = get_client_options(cfg)?;
-    Ok(svix::api::Svix::new(token, Some(opts)))
+    Ok(
+        svix::api::Svix::new(
+            token,
+            Some(opts),
+        ),
+    )
 }
 
 fn get_client_options(cfg: &Config) -> Result<svix::api::SvixOptions> {
-    Ok(svix::api::SvixOptions {
-        debug: false,
-        server_url: cfg.server_url().map(Into::into),
-        timeout: None,
-        ..SvixOptions::default()
-    })
+    Ok(
+        svix::api::SvixOptions {
+            debug: false,
+            server_url: cfg.server_url().map(Into::into),
+            timeout: None,
+            ..SvixOptions::default()
+        },
+    )
 }

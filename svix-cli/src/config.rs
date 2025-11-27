@@ -1,15 +1,28 @@
 use std::{
-    fs::{File, OpenOptions},
+    fs::{
+        File,
+        OpenOptions,
+    },
     io::Write,
-    path::{Path, PathBuf},
+    path::{
+        Path,
+        PathBuf,
+    },
 };
 
 use anyhow::Result;
 use figment::{
-    providers::{Env, Format, Toml},
+    providers::{
+        Env,
+        Format,
+        Toml,
+    },
     Figment,
 };
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct Config {
@@ -60,7 +73,10 @@ impl Config {
         Ok(config)
     }
 
-    pub fn save_to_disk(&self, path: &Path) -> Result<()> {
+    pub fn save_to_disk(
+        &self,
+        path: &Path,
+    ) -> Result<()> {
         let mut fh = open_config_file(path)?;
 
         let source = &toml::to_string_pretty(self)?;

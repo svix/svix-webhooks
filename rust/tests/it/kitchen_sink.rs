@@ -1,10 +1,22 @@
 use js_option::JsOption;
-use std::{collections::HashSet, time::Duration};
+use std::{
+    collections::HashSet,
+    time::Duration,
+};
 use svix::{
-    api::{ApplicationIn, EndpointIn, EndpointPatch, EventTypeIn},
+    api::{
+        ApplicationIn,
+        EndpointIn,
+        EndpointPatch,
+        EventTypeIn,
+    },
     error::Error,
 };
-use wiremock::{Mock, MockServer, ResponseTemplate};
+use wiremock::{
+    Mock,
+    MockServer,
+    ResponseTemplate,
+};
 
 use crate::utils::test_client::TestClientBuilder;
 
@@ -88,8 +100,14 @@ async fn test_endpoint_crud() {
         .into_iter()
         .collect();
     let got_channels = ep.channels.clone().unwrap().into_iter().collect();
-    assert_eq!(want_channels, got_channels);
-    assert_eq!(0, ep.filter_types.unwrap_or_default().len());
+    assert_eq!(
+        want_channels,
+        got_channels
+    );
+    assert_eq!(
+        0,
+        ep.filter_types.unwrap_or_default().len()
+    );
 
     let ep_patched = client
         .endpoint()
@@ -97,10 +115,9 @@ async fn test_endpoint_crud() {
             app.id.clone(),
             ep.id.clone(),
             EndpointPatch {
-                filter_types: JsOption::Some(vec![
-                    String::from("event.started"),
-                    String::from("event.ended"),
-                ]),
+                filter_types: JsOption::Some(
+                    vec![String::from("event.started"), String::from("event.ended")],
+                ),
                 ..Default::default()
             },
         )
@@ -118,14 +135,23 @@ async fn test_endpoint_crud() {
         .unwrap()
         .into_iter()
         .collect();
-    assert_eq!(want_channels, got_channels);
-    assert_eq!(want_filter_types, got_filter_types);
+    assert_eq!(
+        want_channels,
+        got_channels
+    );
+    assert_eq!(
+        want_filter_types,
+        got_filter_types
+    );
 
     // Should complete without error if the deserialization handles empty bodies
     // correctly.
     client
         .endpoint()
-        .delete(app.id.clone(), ep.id)
+        .delete(
+            app.id.clone(),
+            ep.id,
+        )
         .await
         .unwrap();
 
@@ -146,7 +172,12 @@ async fn test_default_retries() {
 
     Mock::given(wiremock::matchers::method("POST"))
         .and(wiremock::matchers::path("/api/v1/app"))
-        .and(wiremock::matchers::header("svix-retry-count", 1))
+        .and(
+            wiremock::matchers::header(
+                "svix-retry-count",
+                1,
+            ),
+        )
         .and(wiremock::matchers::header_exists("svix-req-id"))
         .respond_with(ResponseTemplate::new(500))
         .up_to_n_times(1)
@@ -156,7 +187,12 @@ async fn test_default_retries() {
 
     Mock::given(wiremock::matchers::method("POST"))
         .and(wiremock::matchers::path("/api/v1/app"))
-        .and(wiremock::matchers::header("svix-retry-count", 2))
+        .and(
+            wiremock::matchers::header(
+                "svix-retry-count",
+                2,
+            ),
+        )
         .respond_with(ResponseTemplate::new(500))
         .up_to_n_times(1)
         .expect(1)
@@ -204,7 +240,12 @@ async fn test_custom_retries() {
     for i in 1..=num_retries {
         Mock::given(wiremock::matchers::method("POST"))
             .and(wiremock::matchers::path("/api/v1/app"))
-            .and(wiremock::matchers::header("svix-retry-count", i))
+            .and(
+                wiremock::matchers::header(
+                    "svix-retry-count",
+                    i,
+                ),
+            )
             .respond_with(ResponseTemplate::new(500))
             .up_to_n_times(1)
             .expect(1)
@@ -256,7 +297,12 @@ async fn test_custom_retry_schedule() {
     for i in 1..=retry_schedule_in_ms.len() {
         Mock::given(wiremock::matchers::method("POST"))
             .and(wiremock::matchers::path("/api/v1/app"))
-            .and(wiremock::matchers::header("svix-retry-count", i))
+            .and(
+                wiremock::matchers::header(
+                    "svix-retry-count",
+                    i,
+                ),
+            )
             .respond_with(ResponseTemplate::new(500))
             .up_to_n_times(1)
             .expect(1)

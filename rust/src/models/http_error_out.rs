@@ -11,7 +11,10 @@
 #[allow(unused_imports)]
 use crate::models;
 #[allow(unused_imports)]
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct HttpErrorOut {
@@ -22,7 +25,13 @@ pub struct HttpErrorOut {
 }
 
 impl HttpErrorOut {
-    pub fn new(code: String, detail: String) -> HttpErrorOut {
-        HttpErrorOut { code, detail }
+    pub fn new(
+        code: String,
+        detail: String,
+    ) -> HttpErrorOut {
+        HttpErrorOut {
+            code,
+            detail,
+        }
     }
 }
