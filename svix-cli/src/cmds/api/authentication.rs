@@ -1,5 +1,8 @@
 // this file is @generated
-use clap::{Args, Subcommand};
+use clap::{
+    Args,
+    Subcommand,
+};
 use svix::api::*;
 
 #[derive(Args, Clone)]
@@ -12,8 +15,12 @@ impl From<AuthenticationAppPortalAccessOptions>
     for svix::api::AuthenticationAppPortalAccessOptions
 {
     fn from(value: AuthenticationAppPortalAccessOptions) -> Self {
-        let AuthenticationAppPortalAccessOptions { idempotency_key } = value;
-        Self { idempotency_key }
+        let AuthenticationAppPortalAccessOptions {
+            idempotency_key,
+        } = value;
+        Self {
+            idempotency_key,
+        }
     }
 }
 
@@ -25,8 +32,12 @@ pub struct AuthenticationExpireAllOptions {
 
 impl From<AuthenticationExpireAllOptions> for svix::api::AuthenticationExpireAllOptions {
     fn from(value: AuthenticationExpireAllOptions) -> Self {
-        let AuthenticationExpireAllOptions { idempotency_key } = value;
-        Self { idempotency_key }
+        let AuthenticationExpireAllOptions {
+            idempotency_key,
+        } = value;
+        Self {
+            idempotency_key,
+        }
     }
 }
 
@@ -38,8 +49,12 @@ pub struct AuthenticationLogoutOptions {
 
 impl From<AuthenticationLogoutOptions> for svix::api::AuthenticationLogoutOptions {
     fn from(value: AuthenticationLogoutOptions) -> Self {
-        let AuthenticationLogoutOptions { idempotency_key } = value;
-        Self { idempotency_key }
+        let AuthenticationLogoutOptions {
+            idempotency_key,
+        } = value;
+        Self {
+            idempotency_key,
+        }
     }
 }
 
@@ -53,8 +68,12 @@ impl From<AuthenticationStreamPortalAccessOptions>
     for svix::api::AuthenticationStreamPortalAccessOptions
 {
     fn from(value: AuthenticationStreamPortalAccessOptions) -> Self {
-        let AuthenticationStreamPortalAccessOptions { idempotency_key } = value;
-        Self { idempotency_key }
+        let AuthenticationStreamPortalAccessOptions {
+            idempotency_key,
+        } = value;
+        Self {
+            idempotency_key,
+        }
     }
 }
 
@@ -68,8 +87,12 @@ impl From<AuthenticationRotateStreamPollerTokenOptions>
     for svix::api::AuthenticationRotateStreamPollerTokenOptions
 {
     fn from(value: AuthenticationRotateStreamPollerTokenOptions) -> Self {
-        let AuthenticationRotateStreamPollerTokenOptions { idempotency_key } = value;
-        Self { idempotency_key }
+        let AuthenticationRotateStreamPollerTokenOptions {
+            idempotency_key,
+        } = value;
+        Self {
+            idempotency_key,
+        }
     }
 }
 
@@ -142,7 +165,9 @@ impl AuthenticationCommands {
                         Some(options.into()),
                     )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::ExpireAll {
                 app_id,
@@ -158,7 +183,9 @@ impl AuthenticationCommands {
                     )
                     .await?;
             }
-            Self::Logout { options } => {
+            Self::Logout {
+                options,
+            } => {
                 client.authentication().logout(Some(options.into())).await?;
             }
             Self::StreamPortalAccess {
@@ -174,14 +201,23 @@ impl AuthenticationCommands {
                         Some(options.into()),
                     )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
-            Self::GetStreamPollerToken { stream_id, sink_id } => {
+            Self::GetStreamPollerToken {
+                stream_id,
+                sink_id,
+            } => {
                 let resp = client
                     .authentication()
-                    .get_stream_poller_token(stream_id, sink_id)
+                    .get_stream_poller_token(
+                        stream_id, sink_id,
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::RotateStreamPollerToken {
                 stream_id,
@@ -198,7 +234,9 @@ impl AuthenticationCommands {
                         Some(options.into()),
                     )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
         }
 

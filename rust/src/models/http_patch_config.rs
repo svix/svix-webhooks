@@ -1,5 +1,8 @@
 // this file is @generated
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 #[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
 pub struct HttpPatchConfig {
@@ -9,6 +12,8 @@ pub struct HttpPatchConfig {
 
 impl HttpPatchConfig {
     pub fn new() -> Self {
-        Self { url: None }
+        Self {
+            url: None,
+        }
     }
 }

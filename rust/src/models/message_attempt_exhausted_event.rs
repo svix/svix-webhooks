@@ -1,5 +1,8 @@
 // this file is @generated
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 use super::message_attempt_exhausted_event_data::MessageAttemptExhaustedEventData;
 
@@ -13,7 +16,13 @@ pub struct MessageAttemptExhaustedEvent {
 }
 
 impl MessageAttemptExhaustedEvent {
-    pub fn new(data: MessageAttemptExhaustedEventData, r#type: String) -> Self {
-        Self { data, r#type }
+    pub fn new(
+        data: MessageAttemptExhaustedEventData,
+        r#type: String,
+    ) -> Self {
+        Self {
+            data,
+            r#type,
+        }
     }
 }

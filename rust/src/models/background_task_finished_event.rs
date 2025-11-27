@@ -1,5 +1,8 @@
 // this file is @generated
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 use super::background_task_finished_event2::BackgroundTaskFinishedEvent2;
 
@@ -12,7 +15,13 @@ pub struct BackgroundTaskFinishedEvent {
 }
 
 impl BackgroundTaskFinishedEvent {
-    pub fn new(data: BackgroundTaskFinishedEvent2, r#type: String) -> Self {
-        Self { data, r#type }
+    pub fn new(
+        data: BackgroundTaskFinishedEvent2,
+        r#type: String,
+    ) -> Self {
+        Self {
+            data,
+            r#type,
+        }
     }
 }

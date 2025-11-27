@@ -1,5 +1,8 @@
 // this file is @generated
-use clap::{Args, Subcommand};
+use clap::{
+    Args,
+    Subcommand,
+};
 use svix::api::*;
 
 #[derive(Args, Clone)]
@@ -38,8 +41,12 @@ pub struct StreamingStreamCreateOptions {
 
 impl From<StreamingStreamCreateOptions> for svix::api::StreamingStreamCreateOptions {
     fn from(value: StreamingStreamCreateOptions) -> Self {
-        let StreamingStreamCreateOptions { idempotency_key } = value;
-        Self { idempotency_key }
+        let StreamingStreamCreateOptions {
+            idempotency_key,
+        } = value;
+        Self {
+            idempotency_key,
+        }
     }
 }
 
@@ -86,25 +93,41 @@ impl StreamingStreamCommands {
         color_mode: colored_json::ColorMode,
     ) -> anyhow::Result<()> {
         match self {
-            Self::List { options } => {
+            Self::List {
+                options,
+            } => {
                 let resp = client
                     .streaming()
                     .stream()
                     .list(Some(options.into()))
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
-            Self::Create { stream_in, options } => {
+            Self::Create {
+                stream_in,
+                options,
+            } => {
                 let resp = client
                     .streaming()
                     .stream()
-                    .create(stream_in.into_inner(), Some(options.into()))
+                    .create(
+                        stream_in.into_inner(),
+                        Some(options.into()),
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
-            Self::Get { stream_id } => {
+            Self::Get {
+                stream_id,
+            } => {
                 let resp = client.streaming().stream().get(stream_id).await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::Update {
                 stream_id,
@@ -113,11 +136,18 @@ impl StreamingStreamCommands {
                 let resp = client
                     .streaming()
                     .stream()
-                    .update(stream_id, stream_in.into_inner())
+                    .update(
+                        stream_id,
+                        stream_in.into_inner(),
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
-            Self::Delete { stream_id } => {
+            Self::Delete {
+                stream_id,
+            } => {
                 client.streaming().stream().delete(stream_id).await?;
             }
             Self::Patch {
@@ -127,9 +157,14 @@ impl StreamingStreamCommands {
                 let resp = client
                     .streaming()
                     .stream()
-                    .patch(stream_id, stream_patch.unwrap_or_default().into_inner())
+                    .patch(
+                        stream_id,
+                        stream_patch.unwrap_or_default().into_inner(),
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
         }
 

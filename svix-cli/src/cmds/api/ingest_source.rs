@@ -1,5 +1,8 @@
 // this file is @generated
-use clap::{Args, Subcommand};
+use clap::{
+    Args,
+    Subcommand,
+};
 use svix::api::*;
 
 #[derive(Args, Clone)]
@@ -38,8 +41,12 @@ pub struct IngestSourceCreateOptions {
 
 impl From<IngestSourceCreateOptions> for svix::api::IngestSourceCreateOptions {
     fn from(value: IngestSourceCreateOptions) -> Self {
-        let IngestSourceCreateOptions { idempotency_key } = value;
-        Self { idempotency_key }
+        let IngestSourceCreateOptions {
+            idempotency_key,
+        } = value;
+        Self {
+            idempotency_key,
+        }
     }
 }
 
@@ -51,8 +58,12 @@ pub struct IngestSourceRotateTokenOptions {
 
 impl From<IngestSourceRotateTokenOptions> for svix::api::IngestSourceRotateTokenOptions {
     fn from(value: IngestSourceRotateTokenOptions) -> Self {
-        let IngestSourceRotateTokenOptions { idempotency_key } = value;
-        Self { idempotency_key }
+        let IngestSourceRotateTokenOptions {
+            idempotency_key,
+        } = value;
+        Self {
+            idempotency_key,
+        }
     }
 }
 
@@ -105,9 +116,13 @@ impl IngestSourceCommands {
         color_mode: colored_json::ColorMode,
     ) -> anyhow::Result<()> {
         match self {
-            Self::List { options } => {
+            Self::List {
+                options,
+            } => {
                 let resp = client.ingest().source().list(Some(options.into())).await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::Create {
                 ingest_source_in,
@@ -116,13 +131,22 @@ impl IngestSourceCommands {
                 let resp = client
                     .ingest()
                     .source()
-                    .create(ingest_source_in.into_inner(), Some(options.into()))
+                    .create(
+                        ingest_source_in.into_inner(),
+                        Some(options.into()),
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
-            Self::Get { source_id } => {
+            Self::Get {
+                source_id,
+            } => {
                 let resp = client.ingest().source().get(source_id).await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::Update {
                 source_id,
@@ -131,20 +155,35 @@ impl IngestSourceCommands {
                 let resp = client
                     .ingest()
                     .source()
-                    .update(source_id, ingest_source_in.into_inner())
+                    .update(
+                        source_id,
+                        ingest_source_in.into_inner(),
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
-            Self::Delete { source_id } => {
+            Self::Delete {
+                source_id,
+            } => {
                 client.ingest().source().delete(source_id).await?;
             }
-            Self::RotateToken { source_id, options } => {
+            Self::RotateToken {
+                source_id,
+                options,
+            } => {
                 let resp = client
                     .ingest()
                     .source()
-                    .rotate_token(source_id, Some(options.into()))
+                    .rotate_token(
+                        source_id,
+                        Some(options.into()),
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
         }
 

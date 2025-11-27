@@ -1,5 +1,8 @@
 // this file is @generated
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 use super::stream_event_type_out::StreamEventTypeOut;
 
@@ -18,7 +21,10 @@ pub struct ListResponseStreamEventTypeOut {
 }
 
 impl ListResponseStreamEventTypeOut {
-    pub fn new(data: Vec<StreamEventTypeOut>, done: bool) -> Self {
+    pub fn new(
+        data: Vec<StreamEventTypeOut>,
+        done: bool,
+    ) -> Self {
         Self {
             data,
             done,

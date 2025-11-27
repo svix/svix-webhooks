@@ -1,5 +1,8 @@
 // this file is @generated
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 #[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
 pub struct IntegrationOut {
@@ -21,7 +24,12 @@ pub struct IntegrationOut {
 }
 
 impl IntegrationOut {
-    pub fn new(created_at: String, id: String, name: String, updated_at: String) -> Self {
+    pub fn new(
+        created_at: String,
+        id: String,
+        name: String,
+        updated_at: String,
+    ) -> Self {
         Self {
             created_at,
             feature_flags: None,

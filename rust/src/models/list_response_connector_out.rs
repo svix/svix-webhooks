@@ -1,5 +1,8 @@
 // this file is @generated
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 use super::connector_out::ConnectorOut;
 
@@ -18,7 +21,10 @@ pub struct ListResponseConnectorOut {
 }
 
 impl ListResponseConnectorOut {
-    pub fn new(data: Vec<ConnectorOut>, done: bool) -> Self {
+    pub fn new(
+        data: Vec<ConnectorOut>,
+        done: bool,
+    ) -> Self {
         Self {
             data,
             done,

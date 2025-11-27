@@ -1,5 +1,8 @@
 // this file is @generated
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 use super::ingest_message_attempt_recovered_event_data::IngestMessageAttemptRecoveredEventData;
 
@@ -13,7 +16,13 @@ pub struct IngestMessageAttemptRecoveredEvent {
 }
 
 impl IngestMessageAttemptRecoveredEvent {
-    pub fn new(data: IngestMessageAttemptRecoveredEventData, r#type: String) -> Self {
-        Self { data, r#type }
+    pub fn new(
+        data: IngestMessageAttemptRecoveredEventData,
+        r#type: String,
+    ) -> Self {
+        Self {
+            data,
+            r#type,
+        }
     }
 }

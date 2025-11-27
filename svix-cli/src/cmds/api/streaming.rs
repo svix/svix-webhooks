@@ -1,10 +1,15 @@
 // this file is @generated
-use clap::{Args, Subcommand};
+use clap::{
+    Args,
+    Subcommand,
+};
 use svix::api::*;
 
 use super::{
-    streaming_event_type::StreamingEventTypeArgs, streaming_events::StreamingEventsArgs,
-    streaming_sink::StreamingSinkArgs, streaming_stream::StreamingStreamArgs,
+    streaming_event_type::StreamingEventTypeArgs,
+    streaming_events::StreamingEventsArgs,
+    streaming_sink::StreamingSinkArgs,
+    streaming_stream::StreamingStreamArgs,
 };
 
 #[derive(Args)]
@@ -46,23 +51,46 @@ impl StreamingCommands {
     ) -> anyhow::Result<()> {
         match self {
             Self::EventType(args) => {
-                args.command.exec(client, color_mode).await?;
+                args.command
+                    .exec(
+                        client, color_mode,
+                    )
+                    .await?;
             }
             Self::Events(args) => {
-                args.command.exec(client, color_mode).await?;
+                args.command
+                    .exec(
+                        client, color_mode,
+                    )
+                    .await?;
             }
             Self::Sink(args) => {
-                args.command.exec(client, color_mode).await?;
+                args.command
+                    .exec(
+                        client, color_mode,
+                    )
+                    .await?;
             }
             Self::Stream(args) => {
-                args.command.exec(client, color_mode).await?;
+                args.command
+                    .exec(
+                        client, color_mode,
+                    )
+                    .await?;
             }
-            Self::SinkHeadersGet { stream_id, sink_id } => {
+            Self::SinkHeadersGet {
+                stream_id,
+                sink_id,
+            } => {
                 let resp = client
                     .streaming()
-                    .sink_headers_get(stream_id, sink_id)
+                    .sink_headers_get(
+                        stream_id, sink_id,
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::SinkHeadersPatch {
                 stream_id,
@@ -71,16 +99,29 @@ impl StreamingCommands {
             } => {
                 let resp = client
                     .streaming()
-                    .sink_headers_patch(stream_id, sink_id, http_sink_headers_patch_in.into_inner())
+                    .sink_headers_patch(
+                        stream_id,
+                        sink_id,
+                        http_sink_headers_patch_in.into_inner(),
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
-            Self::SinkTransformationGet { stream_id, sink_id } => {
+            Self::SinkTransformationGet {
+                stream_id,
+                sink_id,
+            } => {
                 let resp = client
                     .streaming()
-                    .sink_transformation_get(stream_id, sink_id)
+                    .sink_transformation_get(
+                        stream_id, sink_id,
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
         }
 

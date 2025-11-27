@@ -1,5 +1,8 @@
 // this file is @generated
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 #[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
 pub struct SinkOtelV1Config {
@@ -11,6 +14,9 @@ pub struct SinkOtelV1Config {
 
 impl SinkOtelV1Config {
     pub fn new(url: String) -> Self {
-        Self { headers: None, url }
+        Self {
+            headers: None,
+            url,
+        }
     }
 }

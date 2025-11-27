@@ -1,5 +1,8 @@
 // this file is @generated
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 /// Sent when an endpoint is created, updated, or deleted
 #[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
@@ -24,7 +27,10 @@ pub struct EndpointUpdatedEventData {
 }
 
 impl EndpointUpdatedEventData {
-    pub fn new(app_id: String, endpoint_id: String) -> Self {
+    pub fn new(
+        app_id: String,
+        endpoint_id: String,
+    ) -> Self {
         Self {
             app_id,
             app_uid: None,

@@ -1,14 +1,30 @@
 // this file is @generated
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 use super::{
-    adobe_sign_config::AdobeSignConfig, airwallex_config::AirwallexConfig,
-    checkbook_config::CheckbookConfig, cron_config::CronConfig, docusign_config::DocusignConfig,
-    easypost_config::EasypostConfig, github_config::GithubConfig, hubspot_config::HubspotConfig,
-    orum_io_config::OrumIoConfig, panda_doc_config::PandaDocConfig, port_io_config::PortIoConfig,
-    rutter_config::RutterConfig, segment_config::SegmentConfig, shopify_config::ShopifyConfig,
-    slack_config::SlackConfig, stripe_config::StripeConfig, svix_config::SvixConfig,
-    telnyx_config::TelnyxConfig, vapi_config::VapiConfig, veriff_config::VeriffConfig,
+    adobe_sign_config::AdobeSignConfig,
+    airwallex_config::AirwallexConfig,
+    checkbook_config::CheckbookConfig,
+    cron_config::CronConfig,
+    docusign_config::DocusignConfig,
+    easypost_config::EasypostConfig,
+    github_config::GithubConfig,
+    hubspot_config::HubspotConfig,
+    orum_io_config::OrumIoConfig,
+    panda_doc_config::PandaDocConfig,
+    port_io_config::PortIoConfig,
+    rutter_config::RutterConfig,
+    segment_config::SegmentConfig,
+    shopify_config::ShopifyConfig,
+    slack_config::SlackConfig,
+    stripe_config::StripeConfig,
+    svix_config::SvixConfig,
+    telnyx_config::TelnyxConfig,
+    vapi_config::VapiConfig,
+    veriff_config::VeriffConfig,
     zoom_config::ZoomConfig,
 };
 

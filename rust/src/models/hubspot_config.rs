@@ -1,5 +1,8 @@
 // this file is @generated
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 #[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
 pub struct HubspotConfig {
@@ -9,6 +12,8 @@ pub struct HubspotConfig {
 
 impl HubspotConfig {
     pub fn new() -> Self {
-        Self { secret: None }
+        Self {
+            secret: None,
+        }
     }
 }

@@ -320,8 +320,14 @@ pub use self::{
     ingest_message_attempt_recovered_event::IngestMessageAttemptRecoveredEvent,
     ingest_message_attempt_recovered_event_data::IngestMessageAttemptRecoveredEventData,
     ingest_source_consumer_portal_access_in::IngestSourceConsumerPortalAccessIn,
-    ingest_source_in::{IngestSourceIn, IngestSourceInConfig},
-    ingest_source_out::{IngestSourceOut, IngestSourceOutConfig},
+    ingest_source_in::{
+        IngestSourceIn,
+        IngestSourceInConfig,
+    },
+    ingest_source_out::{
+        IngestSourceOut,
+        IngestSourceOutConfig,
+    },
     integration_in::IntegrationIn,
     integration_key_out::IntegrationKeyOut,
     integration_out::IntegrationOut,
@@ -405,9 +411,18 @@ pub use self::{
     stream_out::StreamOut,
     stream_patch::StreamPatch,
     stream_portal_access_in::StreamPortalAccessIn,
-    stream_sink_in::{StreamSinkIn, StreamSinkInConfig},
-    stream_sink_out::{StreamSinkOut, StreamSinkOutConfig},
-    stream_sink_patch::{StreamSinkPatch, StreamSinkPatchConfig},
+    stream_sink_in::{
+        StreamSinkIn,
+        StreamSinkInConfig,
+    },
+    stream_sink_out::{
+        StreamSinkOut,
+        StreamSinkOutConfig,
+    },
+    stream_sink_patch::{
+        StreamSinkPatch,
+        StreamSinkPatchConfig,
+    },
     stripe_config::StripeConfig,
     stripe_config_out::StripeConfigOut,
     svix_config::SvixConfig,
@@ -424,8 +439,10 @@ pub use self::{
 
 // not currently generated
 pub use self::{
-    http_error_out::HttpErrorOut, http_validation_error::HttpValidationError,
+    http_error_out::HttpErrorOut,
+    http_validation_error::HttpValidationError,
     list_response_message_attempt_endpoint_out::ListResponseMessageAttemptEndpointOut,
-    message_attempt_endpoint_out::MessageAttemptEndpointOut, message_events_out::MessageEventsOut,
+    message_attempt_endpoint_out::MessageAttemptEndpointOut,
+    message_events_out::MessageEventsOut,
     validation_error::ValidationError,
 };

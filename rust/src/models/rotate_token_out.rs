@@ -1,5 +1,8 @@
 // this file is @generated
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 #[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
 pub struct RotateTokenOut {
@@ -9,6 +12,8 @@ pub struct RotateTokenOut {
 
 impl RotateTokenOut {
     pub fn new(ingest_url: String) -> Self {
-        Self { ingest_url }
+        Self {
+            ingest_url,
+        }
     }
 }

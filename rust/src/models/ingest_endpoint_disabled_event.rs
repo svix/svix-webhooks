@@ -1,5 +1,8 @@
 // this file is @generated
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 use super::ingest_endpoint_disabled_event_data::IngestEndpointDisabledEventData;
 
@@ -13,7 +16,13 @@ pub struct IngestEndpointDisabledEvent {
 }
 
 impl IngestEndpointDisabledEvent {
-    pub fn new(data: IngestEndpointDisabledEventData, r#type: String) -> Self {
-        Self { data, r#type }
+    pub fn new(
+        data: IngestEndpointDisabledEventData,
+        r#type: String,
+    ) -> Self {
+        Self {
+            data,
+            r#type,
+        }
     }
 }

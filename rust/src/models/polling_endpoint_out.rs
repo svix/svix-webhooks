@@ -1,5 +1,8 @@
 // this file is @generated
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 use super::polling_endpoint_message_out::PollingEndpointMessageOut;
 
@@ -13,7 +16,11 @@ pub struct PollingEndpointOut {
 }
 
 impl PollingEndpointOut {
-    pub fn new(data: Vec<PollingEndpointMessageOut>, done: bool, iterator: String) -> Self {
+    pub fn new(
+        data: Vec<PollingEndpointMessageOut>,
+        done: bool,
+        iterator: String,
+    ) -> Self {
         Self {
             data,
             done,

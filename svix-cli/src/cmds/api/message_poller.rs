@@ -1,5 +1,8 @@
 // this file is @generated
-use clap::{Args, Subcommand};
+use clap::{
+    Args,
+    Subcommand,
+};
 use svix::api::*;
 
 #[derive(Args, Clone)]
@@ -51,8 +54,14 @@ pub struct MessagePollerConsumerPollOptions {
 
 impl From<MessagePollerConsumerPollOptions> for svix::api::MessagePollerConsumerPollOptions {
     fn from(value: MessagePollerConsumerPollOptions) -> Self {
-        let MessagePollerConsumerPollOptions { limit, iterator } = value;
-        Self { limit, iterator }
+        let MessagePollerConsumerPollOptions {
+            limit,
+            iterator,
+        } = value;
+        Self {
+            limit,
+            iterator,
+        }
     }
 }
 
@@ -64,8 +73,12 @@ pub struct MessagePollerConsumerSeekOptions {
 
 impl From<MessagePollerConsumerSeekOptions> for svix::api::MessagePollerConsumerSeekOptions {
     fn from(value: MessagePollerConsumerSeekOptions) -> Self {
-        let MessagePollerConsumerSeekOptions { idempotency_key } = value;
-        Self { idempotency_key }
+        let MessagePollerConsumerSeekOptions {
+            idempotency_key,
+        } = value;
+        Self {
+            idempotency_key,
+        }
     }
 }
 
@@ -120,9 +133,15 @@ impl MessagePollerCommands {
                 let resp = client
                     .message()
                     .poller()
-                    .poll(app_id, sink_id, Some(options.into()))
+                    .poll(
+                        app_id,
+                        sink_id,
+                        Some(options.into()),
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::ConsumerPoll {
                 app_id,
@@ -133,9 +152,16 @@ impl MessagePollerCommands {
                 let resp = client
                     .message()
                     .poller()
-                    .consumer_poll(app_id, sink_id, consumer_id, Some(options.into()))
+                    .consumer_poll(
+                        app_id,
+                        sink_id,
+                        consumer_id,
+                        Some(options.into()),
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::ConsumerSeek {
                 app_id,
@@ -155,7 +181,9 @@ impl MessagePollerCommands {
                         Some(options.into()),
                     )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
         }
 

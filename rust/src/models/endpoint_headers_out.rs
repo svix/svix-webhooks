@@ -1,5 +1,8 @@
 // this file is @generated
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 /// The value of the headers is returned in the `headers` field.
 ///
@@ -13,7 +16,13 @@ pub struct EndpointHeadersOut {
 }
 
 impl EndpointHeadersOut {
-    pub fn new(headers: std::collections::HashMap<String, String>, sensitive: Vec<String>) -> Self {
-        Self { headers, sensitive }
+    pub fn new(
+        headers: std::collections::HashMap<String, String>,
+        sensitive: Vec<String>,
+    ) -> Self {
+        Self {
+            headers,
+            sensitive,
+        }
     }
 }

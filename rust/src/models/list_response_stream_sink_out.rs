@@ -1,5 +1,8 @@
 // this file is @generated
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 use super::stream_sink_out::StreamSinkOut;
 
@@ -18,7 +21,10 @@ pub struct ListResponseStreamSinkOut {
 }
 
 impl ListResponseStreamSinkOut {
-    pub fn new(data: Vec<StreamSinkOut>, done: bool) -> Self {
+    pub fn new(
+        data: Vec<StreamSinkOut>,
+        done: bool,
+    ) -> Self {
         Self {
             data,
             done,

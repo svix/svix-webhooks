@@ -1,5 +1,8 @@
 // this file is @generated
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 #[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
 pub struct TelnyxConfigOut {
@@ -9,6 +12,8 @@ pub struct TelnyxConfigOut {
 
 impl TelnyxConfigOut {
     pub fn new(public_key: String) -> Self {
-        Self { public_key }
+        Self {
+            public_key,
+        }
     }
 }

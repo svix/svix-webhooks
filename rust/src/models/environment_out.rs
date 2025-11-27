@@ -1,7 +1,13 @@
 // this file is @generated
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
-use super::{connector_out::ConnectorOut, event_type_out::EventTypeOut};
+use super::{
+    connector_out::ConnectorOut,
+    event_type_out::EventTypeOut,
+};
 
 #[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
 pub struct EnvironmentOut {

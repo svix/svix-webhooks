@@ -1,5 +1,8 @@
 // this file is @generated
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 #[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
 pub struct EndpointSecretOut {
@@ -13,6 +16,8 @@ pub struct EndpointSecretOut {
 
 impl EndpointSecretOut {
     pub fn new(key: String) -> Self {
-        Self { key }
+        Self {
+            key,
+        }
     }
 }

@@ -1,5 +1,8 @@
 // this file is @generated
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 use super::event_out::EventOut;
 
@@ -13,7 +16,11 @@ pub struct EventStreamOut {
 }
 
 impl EventStreamOut {
-    pub fn new(data: Vec<EventOut>, done: bool, iterator: String) -> Self {
+    pub fn new(
+        data: Vec<EventOut>,
+        done: bool,
+        iterator: String,
+    ) -> Self {
         Self {
             data,
             done,

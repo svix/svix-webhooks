@@ -1,5 +1,8 @@
 // this file is @generated
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 /// Configuration for a Google Cloud Storage sink.
 ///
@@ -14,7 +17,10 @@ pub struct GoogleCloudStorageConfig {
 }
 
 impl GoogleCloudStorageConfig {
-    pub fn new(bucket: String, credentials: String) -> Self {
+    pub fn new(
+        bucket: String,
+        credentials: String,
+    ) -> Self {
         Self {
             bucket,
             credentials,

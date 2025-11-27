@@ -1,5 +1,8 @@
 // this file is @generated
-use clap::{Args, Subcommand};
+use clap::{
+    Args,
+    Subcommand,
+};
 use svix::api::*;
 
 #[derive(Args, Clone)]
@@ -38,8 +41,12 @@ pub struct StreamingSinkCreateOptions {
 
 impl From<StreamingSinkCreateOptions> for svix::api::StreamingSinkCreateOptions {
     fn from(value: StreamingSinkCreateOptions) -> Self {
-        let StreamingSinkCreateOptions { idempotency_key } = value;
-        Self { idempotency_key }
+        let StreamingSinkCreateOptions {
+            idempotency_key,
+        } = value;
+        Self {
+            idempotency_key,
+        }
     }
 }
 
@@ -51,8 +58,12 @@ pub struct StreamingSinkRotateSecretOptions {
 
 impl From<StreamingSinkRotateSecretOptions> for svix::api::StreamingSinkRotateSecretOptions {
     fn from(value: StreamingSinkRotateSecretOptions) -> Self {
-        let StreamingSinkRotateSecretOptions { idempotency_key } = value;
-        Self { idempotency_key }
+        let StreamingSinkRotateSecretOptions {
+            idempotency_key,
+        } = value;
+        Self {
+            idempotency_key,
+        }
     }
 }
 
@@ -123,13 +134,21 @@ impl StreamingSinkCommands {
         color_mode: colored_json::ColorMode,
     ) -> anyhow::Result<()> {
         match self {
-            Self::List { stream_id, options } => {
+            Self::List {
+                stream_id,
+                options,
+            } => {
                 let resp = client
                     .streaming()
                     .sink()
-                    .list(stream_id, Some(options.into()))
+                    .list(
+                        stream_id,
+                        Some(options.into()),
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::Create {
                 stream_id,
@@ -145,11 +164,24 @@ impl StreamingSinkCommands {
                         Some(options.into()),
                     )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
-            Self::Get { stream_id, sink_id } => {
-                let resp = client.streaming().sink().get(stream_id, sink_id).await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+            Self::Get {
+                stream_id,
+                sink_id,
+            } => {
+                let resp = client
+                    .streaming()
+                    .sink()
+                    .get(
+                        stream_id, sink_id,
+                    )
+                    .await?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::Update {
                 stream_id,
@@ -165,10 +197,21 @@ impl StreamingSinkCommands {
                         stream_sink_in.unwrap_or_default().into_inner(),
                     )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
-            Self::Delete { stream_id, sink_id } => {
-                client.streaming().sink().delete(stream_id, sink_id).await?;
+            Self::Delete {
+                stream_id,
+                sink_id,
+            } => {
+                client
+                    .streaming()
+                    .sink()
+                    .delete(
+                        stream_id, sink_id,
+                    )
+                    .await?;
             }
             Self::Patch {
                 stream_id,
@@ -184,15 +227,24 @@ impl StreamingSinkCommands {
                         stream_sink_patch.unwrap_or_default().into_inner(),
                     )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
-            Self::GetSecret { stream_id, sink_id } => {
+            Self::GetSecret {
+                stream_id,
+                sink_id,
+            } => {
                 let resp = client
                     .streaming()
                     .sink()
-                    .get_secret(stream_id, sink_id)
+                    .get_secret(
+                        stream_id, sink_id,
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::RotateSecret {
                 stream_id,
@@ -210,7 +262,9 @@ impl StreamingSinkCommands {
                         Some(options.into()),
                     )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::TransformationPartialUpdate {
                 stream_id,
@@ -226,7 +280,9 @@ impl StreamingSinkCommands {
                         sink_transform_in.unwrap_or_default().into_inner(),
                     )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
         }
 

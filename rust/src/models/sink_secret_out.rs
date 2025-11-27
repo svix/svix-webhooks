@@ -1,5 +1,8 @@
 // this file is @generated
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 #[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
 pub struct SinkSecretOut {
@@ -14,6 +17,8 @@ pub struct SinkSecretOut {
 
 impl SinkSecretOut {
     pub fn new() -> Self {
-        Self { key: None }
+        Self {
+            key: None,
+        }
     }
 }

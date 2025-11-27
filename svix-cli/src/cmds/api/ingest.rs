@@ -1,8 +1,14 @@
 // this file is @generated
-use clap::{Args, Subcommand};
+use clap::{
+    Args,
+    Subcommand,
+};
 use svix::api::*;
 
-use super::{ingest_endpoint::IngestEndpointArgs, ingest_source::IngestSourceArgs};
+use super::{
+    ingest_endpoint::IngestEndpointArgs,
+    ingest_source::IngestSourceArgs,
+};
 
 #[derive(Args, Clone)]
 pub struct IngestDashboardOptions {
@@ -12,8 +18,12 @@ pub struct IngestDashboardOptions {
 
 impl From<IngestDashboardOptions> for svix::api::IngestDashboardOptions {
     fn from(value: IngestDashboardOptions) -> Self {
-        let IngestDashboardOptions { idempotency_key } = value;
-        Self { idempotency_key }
+        let IngestDashboardOptions {
+            idempotency_key,
+        } = value;
+        Self {
+            idempotency_key,
+        }
     }
 }
 
@@ -46,10 +56,18 @@ impl IngestCommands {
     ) -> anyhow::Result<()> {
         match self {
             Self::Endpoint(args) => {
-                args.command.exec(client, color_mode).await?;
+                args.command
+                    .exec(
+                        client, color_mode,
+                    )
+                    .await?;
             }
             Self::Source(args) => {
-                args.command.exec(client, color_mode).await?;
+                args.command
+                    .exec(
+                        client, color_mode,
+                    )
+                    .await?;
             }
             Self::Dashboard {
                 source_id,
@@ -66,7 +84,9 @@ impl IngestCommands {
                         Some(options.into()),
                     )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
         }
 

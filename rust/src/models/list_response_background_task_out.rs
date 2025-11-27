@@ -1,5 +1,8 @@
 // this file is @generated
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 use super::background_task_out::BackgroundTaskOut;
 
@@ -18,7 +21,10 @@ pub struct ListResponseBackgroundTaskOut {
 }
 
 impl ListResponseBackgroundTaskOut {
-    pub fn new(data: Vec<BackgroundTaskOut>, done: bool) -> Self {
+    pub fn new(
+        data: Vec<BackgroundTaskOut>,
+        done: bool,
+    ) -> Self {
         Self {
             data,
             done,

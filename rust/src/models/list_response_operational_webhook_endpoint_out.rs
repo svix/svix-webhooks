@@ -1,5 +1,8 @@
 // this file is @generated
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 use super::operational_webhook_endpoint_out::OperationalWebhookEndpointOut;
 
@@ -18,7 +21,10 @@ pub struct ListResponseOperationalWebhookEndpointOut {
 }
 
 impl ListResponseOperationalWebhookEndpointOut {
-    pub fn new(data: Vec<OperationalWebhookEndpointOut>, done: bool) -> Self {
+    pub fn new(
+        data: Vec<OperationalWebhookEndpointOut>,
+        done: bool,
+    ) -> Self {
         Self {
             data,
             done,

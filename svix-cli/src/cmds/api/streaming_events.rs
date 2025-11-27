@@ -1,5 +1,8 @@
 // this file is @generated
-use clap::{Args, Subcommand};
+use clap::{
+    Args,
+    Subcommand,
+};
 use svix::api::*;
 
 #[derive(Args, Clone)]
@@ -10,8 +13,12 @@ pub struct StreamingEventsCreateOptions {
 
 impl From<StreamingEventsCreateOptions> for svix::api::StreamingEventsCreateOptions {
     fn from(value: StreamingEventsCreateOptions) -> Self {
-        let StreamingEventsCreateOptions { idempotency_key } = value;
-        Self { idempotency_key }
+        let StreamingEventsCreateOptions {
+            idempotency_key,
+        } = value;
+        Self {
+            idempotency_key,
+        }
     }
 }
 
@@ -90,7 +97,9 @@ impl StreamingEventsCommands {
                         Some(options.into()),
                     )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::Get {
                 stream_id,
@@ -100,9 +109,15 @@ impl StreamingEventsCommands {
                 let resp = client
                     .streaming()
                     .events()
-                    .get(stream_id, sink_id, Some(options.into()))
+                    .get(
+                        stream_id,
+                        sink_id,
+                        Some(options.into()),
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
         }
 

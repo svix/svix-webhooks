@@ -1,5 +1,9 @@
 // this file is @generated
-use crate::{error::Result, models::*, Configuration};
+use crate::{
+    error::Result,
+    models::*,
+    Configuration,
+};
 
 #[derive(Default)]
 pub struct StreamingEventsCreateOptions {
@@ -23,7 +27,9 @@ pub struct StreamingEvents<'a> {
 
 impl<'a> StreamingEvents<'a> {
     pub(super) fn new(cfg: &'a Configuration) -> Self {
-        Self { cfg }
+        Self {
+            cfg,
+        }
     }
 
     /// Creates events on the Stream.
@@ -33,14 +39,25 @@ impl<'a> StreamingEvents<'a> {
         create_stream_events_in: CreateStreamEventsIn,
         options: Option<StreamingEventsCreateOptions>,
     ) -> Result<CreateStreamEventsOut> {
-        let StreamingEventsCreateOptions { idempotency_key } = options.unwrap_or_default();
+        let StreamingEventsCreateOptions {
+            idempotency_key,
+        } = options.unwrap_or_default();
 
-        crate::request::Request::new(http1::Method::POST, "/api/v1/stream/{stream_id}/events")
-            .with_path_param("stream_id", stream_id)
-            .with_optional_header_param("idempotency-key", idempotency_key)
-            .with_body_param(create_stream_events_in)
-            .execute(self.cfg)
-            .await
+        crate::request::Request::new(
+            http1::Method::POST,
+            "/api/v1/stream/{stream_id}/events",
+        )
+        .with_path_param(
+            "stream_id",
+            stream_id,
+        )
+        .with_optional_header_param(
+            "idempotency-key",
+            idempotency_key,
+        )
+        .with_body_param(create_stream_events_in)
+        .execute(self.cfg)
+        .await
     }
 
     /// Iterate over a stream of events.
@@ -62,11 +79,22 @@ impl<'a> StreamingEvents<'a> {
             http1::Method::GET,
             "/api/v1/stream/{stream_id}/sink/{sink_id}/events",
         )
-        .with_path_param("stream_id", stream_id)
-        .with_path_param("sink_id", sink_id)
-        .with_optional_query_param("limit", limit)
-        .with_optional_query_param("iterator", iterator)
-        .with_optional_query_param("after", after)
+        .with_path_param(
+            "stream_id",
+            stream_id,
+        )
+        .with_path_param(
+            "sink_id", sink_id,
+        )
+        .with_optional_query_param(
+            "limit", limit,
+        )
+        .with_optional_query_param(
+            "iterator", iterator,
+        )
+        .with_optional_query_param(
+            "after", after,
+        )
         .execute(self.cfg)
         .await
     }

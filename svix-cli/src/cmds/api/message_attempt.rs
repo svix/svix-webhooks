@@ -1,5 +1,8 @@
 // this file is @generated
-use clap::{Args, Subcommand};
+use clap::{
+    Args,
+    Subcommand,
+};
 use svix::api::*;
 
 #[derive(Args, Clone)]
@@ -212,8 +215,14 @@ impl From<MessageAttemptListAttemptedDestinationsOptions>
     for svix::api::MessageAttemptListAttemptedDestinationsOptions
 {
     fn from(value: MessageAttemptListAttemptedDestinationsOptions) -> Self {
-        let MessageAttemptListAttemptedDestinationsOptions { limit, iterator } = value;
-        Self { limit, iterator }
+        let MessageAttemptListAttemptedDestinationsOptions {
+            limit,
+            iterator,
+        } = value;
+        Self {
+            limit,
+            iterator,
+        }
     }
 }
 
@@ -225,8 +234,12 @@ pub struct MessageAttemptResendOptions {
 
 impl From<MessageAttemptResendOptions> for svix::api::MessageAttemptResendOptions {
     fn from(value: MessageAttemptResendOptions) -> Self {
-        let MessageAttemptResendOptions { idempotency_key } = value;
-        Self { idempotency_key }
+        let MessageAttemptResendOptions {
+            idempotency_key,
+        } = value;
+        Self {
+            idempotency_key,
+        }
     }
 }
 
@@ -326,9 +339,15 @@ impl MessageAttemptCommands {
             } => {
                 let resp = client
                     .message_attempt()
-                    .list_by_endpoint(app_id, endpoint_id, Some(options.into()))
+                    .list_by_endpoint(
+                        app_id,
+                        endpoint_id,
+                        Some(options.into()),
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::ListByMsg {
                 app_id,
@@ -337,9 +356,15 @@ impl MessageAttemptCommands {
             } => {
                 let resp = client
                     .message_attempt()
-                    .list_by_msg(app_id, msg_id, Some(options.into()))
+                    .list_by_msg(
+                        app_id,
+                        msg_id,
+                        Some(options.into()),
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::ListAttemptedMessages {
                 app_id,
@@ -348,9 +373,15 @@ impl MessageAttemptCommands {
             } => {
                 let resp = client
                     .message_attempt()
-                    .list_attempted_messages(app_id, endpoint_id, Some(options.into()))
+                    .list_attempted_messages(
+                        app_id,
+                        endpoint_id,
+                        Some(options.into()),
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::Get {
                 app_id,
@@ -359,9 +390,13 @@ impl MessageAttemptCommands {
             } => {
                 let resp = client
                     .message_attempt()
-                    .get(app_id, msg_id, attempt_id)
+                    .get(
+                        app_id, msg_id, attempt_id,
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::ExpungeContent {
                 app_id,
@@ -370,7 +405,9 @@ impl MessageAttemptCommands {
             } => {
                 client
                     .message_attempt()
-                    .expunge_content(app_id, msg_id, attempt_id)
+                    .expunge_content(
+                        app_id, msg_id, attempt_id,
+                    )
                     .await?;
             }
             Self::ListAttemptedDestinations {
@@ -380,9 +417,15 @@ impl MessageAttemptCommands {
             } => {
                 let resp = client
                     .message_attempt()
-                    .list_attempted_destinations(app_id, msg_id, Some(options.into()))
+                    .list_attempted_destinations(
+                        app_id,
+                        msg_id,
+                        Some(options.into()),
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::Resend {
                 app_id,
@@ -392,7 +435,12 @@ impl MessageAttemptCommands {
             } => {
                 client
                     .message_attempt()
-                    .resend(app_id, msg_id, endpoint_id, Some(options.into()))
+                    .resend(
+                        app_id,
+                        msg_id,
+                        endpoint_id,
+                        Some(options.into()),
+                    )
                     .await?;
             }
         }

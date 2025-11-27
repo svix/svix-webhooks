@@ -1,5 +1,8 @@
 // this file is @generated
-use clap::{Args, Subcommand};
+use clap::{
+    Args,
+    Subcommand,
+};
 use svix::api::*;
 
 #[derive(Args, Clone)]
@@ -38,8 +41,12 @@ pub struct ConnectorCreateOptions {
 
 impl From<ConnectorCreateOptions> for svix::api::ConnectorCreateOptions {
     fn from(value: ConnectorCreateOptions) -> Self {
-        let ConnectorCreateOptions { idempotency_key } = value;
-        Self { idempotency_key }
+        let ConnectorCreateOptions {
+            idempotency_key,
+        } = value;
+        Self {
+            idempotency_key,
+        }
     }
 }
 
@@ -86,9 +93,13 @@ impl ConnectorCommands {
         color_mode: colored_json::ColorMode,
     ) -> anyhow::Result<()> {
         match self {
-            Self::List { options } => {
+            Self::List {
+                options,
+            } => {
                 let resp = client.connector().list(Some(options.into())).await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::Create {
                 connector_in,
@@ -96,13 +107,22 @@ impl ConnectorCommands {
             } => {
                 let resp = client
                     .connector()
-                    .create(connector_in.into_inner(), Some(options.into()))
+                    .create(
+                        connector_in.into_inner(),
+                        Some(options.into()),
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
-            Self::Get { id } => {
+            Self::Get {
+                id,
+            } => {
                 let resp = client.connector().get(id).await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::Update {
                 id,
@@ -110,11 +130,18 @@ impl ConnectorCommands {
             } => {
                 let resp = client
                     .connector()
-                    .update(id, connector_update.into_inner())
+                    .update(
+                        id,
+                        connector_update.into_inner(),
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
-            Self::Delete { id } => {
+            Self::Delete {
+                id,
+            } => {
                 client.connector().delete(id).await?;
             }
             Self::Patch {
@@ -123,9 +150,14 @@ impl ConnectorCommands {
             } => {
                 let resp = client
                     .connector()
-                    .patch(id, connector_patch.unwrap_or_default().into_inner())
+                    .patch(
+                        id,
+                        connector_patch.unwrap_or_default().into_inner(),
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
         }
 

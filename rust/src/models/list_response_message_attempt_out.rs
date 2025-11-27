@@ -1,5 +1,8 @@
 // this file is @generated
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 use super::message_attempt_out::MessageAttemptOut;
 
@@ -18,7 +21,10 @@ pub struct ListResponseMessageAttemptOut {
 }
 
 impl ListResponseMessageAttemptOut {
-    pub fn new(data: Vec<MessageAttemptOut>, done: bool) -> Self {
+    pub fn new(
+        data: Vec<MessageAttemptOut>,
+        done: bool,
+    ) -> Self {
         Self {
             data,
             done,

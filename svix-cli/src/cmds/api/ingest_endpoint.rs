@@ -1,5 +1,8 @@
 // this file is @generated
-use clap::{Args, Subcommand};
+use clap::{
+    Args,
+    Subcommand,
+};
 use svix::api::*;
 
 #[derive(Args, Clone)]
@@ -38,8 +41,12 @@ pub struct IngestEndpointCreateOptions {
 
 impl From<IngestEndpointCreateOptions> for svix::api::IngestEndpointCreateOptions {
     fn from(value: IngestEndpointCreateOptions) -> Self {
-        let IngestEndpointCreateOptions { idempotency_key } = value;
-        Self { idempotency_key }
+        let IngestEndpointCreateOptions {
+            idempotency_key,
+        } = value;
+        Self {
+            idempotency_key,
+        }
     }
 }
 
@@ -51,8 +58,12 @@ pub struct IngestEndpointRotateSecretOptions {
 
 impl From<IngestEndpointRotateSecretOptions> for svix::api::IngestEndpointRotateSecretOptions {
     fn from(value: IngestEndpointRotateSecretOptions) -> Self {
-        let IngestEndpointRotateSecretOptions { idempotency_key } = value;
-        Self { idempotency_key }
+        let IngestEndpointRotateSecretOptions {
+            idempotency_key,
+        } = value;
+        Self {
+            idempotency_key,
+        }
     }
 }
 
@@ -144,13 +155,21 @@ impl IngestEndpointCommands {
         color_mode: colored_json::ColorMode,
     ) -> anyhow::Result<()> {
         match self {
-            Self::List { source_id, options } => {
+            Self::List {
+                source_id,
+                options,
+            } => {
                 let resp = client
                     .ingest()
                     .endpoint()
-                    .list(source_id, Some(options.into()))
+                    .list(
+                        source_id,
+                        Some(options.into()),
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::Create {
                 source_id,
@@ -166,7 +185,9 @@ impl IngestEndpointCommands {
                         Some(options.into()),
                     )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::Get {
                 source_id,
@@ -175,9 +196,14 @@ impl IngestEndpointCommands {
                 let resp = client
                     .ingest()
                     .endpoint()
-                    .get(source_id, endpoint_id)
+                    .get(
+                        source_id,
+                        endpoint_id,
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::Update {
                 source_id,
@@ -187,9 +213,15 @@ impl IngestEndpointCommands {
                 let resp = client
                     .ingest()
                     .endpoint()
-                    .update(source_id, endpoint_id, ingest_endpoint_update.into_inner())
+                    .update(
+                        source_id,
+                        endpoint_id,
+                        ingest_endpoint_update.into_inner(),
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::Delete {
                 source_id,
@@ -198,7 +230,10 @@ impl IngestEndpointCommands {
                 client
                     .ingest()
                     .endpoint()
-                    .delete(source_id, endpoint_id)
+                    .delete(
+                        source_id,
+                        endpoint_id,
+                    )
                     .await?;
             }
             Self::GetHeaders {
@@ -208,9 +243,14 @@ impl IngestEndpointCommands {
                 let resp = client
                     .ingest()
                     .endpoint()
-                    .get_headers(source_id, endpoint_id)
+                    .get_headers(
+                        source_id,
+                        endpoint_id,
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::UpdateHeaders {
                 source_id,
@@ -234,9 +274,14 @@ impl IngestEndpointCommands {
                 let resp = client
                     .ingest()
                     .endpoint()
-                    .get_secret(source_id, endpoint_id)
+                    .get_secret(
+                        source_id,
+                        endpoint_id,
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::RotateSecret {
                 source_id,
@@ -262,9 +307,14 @@ impl IngestEndpointCommands {
                 let resp = client
                     .ingest()
                     .endpoint()
-                    .get_transformation(source_id, endpoint_id)
+                    .get_transformation(
+                        source_id,
+                        endpoint_id,
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::SetTransformation {
                 source_id,

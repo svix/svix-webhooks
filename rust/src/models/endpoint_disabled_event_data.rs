@@ -1,5 +1,8 @@
 // this file is @generated
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 use super::endpoint_disabled_trigger::EndpointDisabledTrigger;
 
@@ -34,7 +37,10 @@ pub struct EndpointDisabledEventData {
 }
 
 impl EndpointDisabledEventData {
-    pub fn new(app_id: String, endpoint_id: String) -> Self {
+    pub fn new(
+        app_id: String,
+        endpoint_id: String,
+    ) -> Self {
         Self {
             app_id,
             app_uid: None,

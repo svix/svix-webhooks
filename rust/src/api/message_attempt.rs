@@ -1,5 +1,9 @@
 // this file is @generated
-use crate::{error::Result, models::*, Configuration};
+use crate::{
+    error::Result,
+    models::*,
+    Configuration,
+};
 
 #[derive(Default)]
 pub struct MessageAttemptListByEndpointOptions {
@@ -138,7 +142,9 @@ pub struct MessageAttempt<'a> {
 
 impl<'a> MessageAttempt<'a> {
     pub(super) fn new(cfg: &'a Configuration) -> Self {
-        Self { cfg }
+        Self {
+            cfg,
+        }
     }
 
     /// List attempts by endpoint id
@@ -172,19 +178,49 @@ impl<'a> MessageAttempt<'a> {
             http1::Method::GET,
             "/api/v1/app/{app_id}/attempt/endpoint/{endpoint_id}",
         )
-        .with_path_param("app_id", app_id)
-        .with_path_param("endpoint_id", endpoint_id)
-        .with_optional_query_param("limit", limit)
-        .with_optional_query_param("iterator", iterator)
-        .with_optional_query_param("status", status)
-        .with_optional_query_param("status_code_class", status_code_class)
-        .with_optional_query_param("channel", channel)
-        .with_optional_query_param("tag", tag)
-        .with_optional_query_param("before", before)
-        .with_optional_query_param("after", after)
-        .with_optional_query_param("with_content", with_content)
-        .with_optional_query_param("with_msg", with_msg)
-        .with_optional_query_param("event_types", event_types)
+        .with_path_param(
+            "app_id", app_id,
+        )
+        .with_path_param(
+            "endpoint_id",
+            endpoint_id,
+        )
+        .with_optional_query_param(
+            "limit", limit,
+        )
+        .with_optional_query_param(
+            "iterator", iterator,
+        )
+        .with_optional_query_param(
+            "status", status,
+        )
+        .with_optional_query_param(
+            "status_code_class",
+            status_code_class,
+        )
+        .with_optional_query_param(
+            "channel", channel,
+        )
+        .with_optional_query_param(
+            "tag", tag,
+        )
+        .with_optional_query_param(
+            "before", before,
+        )
+        .with_optional_query_param(
+            "after", after,
+        )
+        .with_optional_query_param(
+            "with_content",
+            with_content,
+        )
+        .with_optional_query_param(
+            "with_msg", with_msg,
+        )
+        .with_optional_query_param(
+            "event_types",
+            event_types,
+        )
         .execute(self.cfg)
         .await
     }
@@ -220,19 +256,49 @@ impl<'a> MessageAttempt<'a> {
             http1::Method::GET,
             "/api/v1/app/{app_id}/attempt/msg/{msg_id}",
         )
-        .with_path_param("app_id", app_id)
-        .with_path_param("msg_id", msg_id)
-        .with_optional_query_param("limit", limit)
-        .with_optional_query_param("iterator", iterator)
-        .with_optional_query_param("status", status)
-        .with_optional_query_param("status_code_class", status_code_class)
-        .with_optional_query_param("channel", channel)
-        .with_optional_query_param("tag", tag)
-        .with_optional_query_param("endpoint_id", endpoint_id)
-        .with_optional_query_param("before", before)
-        .with_optional_query_param("after", after)
-        .with_optional_query_param("with_content", with_content)
-        .with_optional_query_param("event_types", event_types)
+        .with_path_param(
+            "app_id", app_id,
+        )
+        .with_path_param(
+            "msg_id", msg_id,
+        )
+        .with_optional_query_param(
+            "limit", limit,
+        )
+        .with_optional_query_param(
+            "iterator", iterator,
+        )
+        .with_optional_query_param(
+            "status", status,
+        )
+        .with_optional_query_param(
+            "status_code_class",
+            status_code_class,
+        )
+        .with_optional_query_param(
+            "channel", channel,
+        )
+        .with_optional_query_param(
+            "tag", tag,
+        )
+        .with_optional_query_param(
+            "endpoint_id",
+            endpoint_id,
+        )
+        .with_optional_query_param(
+            "before", before,
+        )
+        .with_optional_query_param(
+            "after", after,
+        )
+        .with_optional_query_param(
+            "with_content",
+            with_content,
+        )
+        .with_optional_query_param(
+            "event_types",
+            event_types,
+        )
         .execute(self.cfg)
         .await
     }
@@ -270,17 +336,42 @@ impl<'a> MessageAttempt<'a> {
             http1::Method::GET,
             "/api/v1/app/{app_id}/endpoint/{endpoint_id}/msg",
         )
-        .with_path_param("app_id", app_id)
-        .with_path_param("endpoint_id", endpoint_id)
-        .with_optional_query_param("limit", limit)
-        .with_optional_query_param("iterator", iterator)
-        .with_optional_query_param("channel", channel)
-        .with_optional_query_param("tag", tag)
-        .with_optional_query_param("status", status)
-        .with_optional_query_param("before", before)
-        .with_optional_query_param("after", after)
-        .with_optional_query_param("with_content", with_content)
-        .with_optional_query_param("event_types", event_types)
+        .with_path_param(
+            "app_id", app_id,
+        )
+        .with_path_param(
+            "endpoint_id",
+            endpoint_id,
+        )
+        .with_optional_query_param(
+            "limit", limit,
+        )
+        .with_optional_query_param(
+            "iterator", iterator,
+        )
+        .with_optional_query_param(
+            "channel", channel,
+        )
+        .with_optional_query_param(
+            "tag", tag,
+        )
+        .with_optional_query_param(
+            "status", status,
+        )
+        .with_optional_query_param(
+            "before", before,
+        )
+        .with_optional_query_param(
+            "after", after,
+        )
+        .with_optional_query_param(
+            "with_content",
+            with_content,
+        )
+        .with_optional_query_param(
+            "event_types",
+            event_types,
+        )
         .execute(self.cfg)
         .await
     }
@@ -311,17 +402,43 @@ impl<'a> MessageAttempt<'a> {
             http1::Method::GET,
             "/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/attempt",
         )
-        .with_optional_query_param("limit", limit)
-        .with_optional_query_param("iterator", iterator)
-        .with_optional_query_param("channel", channel)
-        .with_optional_query_param("tag", tag)
-        .with_optional_query_param("status", status)
-        .with_optional_query_param("before", before)
-        .with_optional_query_param("after", after)
-        .with_optional_query_param("event_types", event_types)
-        .with_path_param("app_id", app_id.to_string())
-        .with_path_param("msg_id", msg_id.to_string())
-        .with_path_param("endpoint_id", endpoint_id.to_string())
+        .with_optional_query_param(
+            "limit", limit,
+        )
+        .with_optional_query_param(
+            "iterator", iterator,
+        )
+        .with_optional_query_param(
+            "channel", channel,
+        )
+        .with_optional_query_param(
+            "tag", tag,
+        )
+        .with_optional_query_param(
+            "status", status,
+        )
+        .with_optional_query_param(
+            "before", before,
+        )
+        .with_optional_query_param(
+            "after", after,
+        )
+        .with_optional_query_param(
+            "event_types",
+            event_types,
+        )
+        .with_path_param(
+            "app_id",
+            app_id.to_string(),
+        )
+        .with_path_param(
+            "msg_id",
+            msg_id.to_string(),
+        )
+        .with_path_param(
+            "endpoint_id",
+            endpoint_id.to_string(),
+        )
         .execute(self.cfg)
         .await
     }
@@ -337,9 +454,16 @@ impl<'a> MessageAttempt<'a> {
             http1::Method::GET,
             "/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}",
         )
-        .with_path_param("app_id", app_id)
-        .with_path_param("msg_id", msg_id)
-        .with_path_param("attempt_id", attempt_id)
+        .with_path_param(
+            "app_id", app_id,
+        )
+        .with_path_param(
+            "msg_id", msg_id,
+        )
+        .with_path_param(
+            "attempt_id",
+            attempt_id,
+        )
         .execute(self.cfg)
         .await
     }
@@ -359,9 +483,16 @@ impl<'a> MessageAttempt<'a> {
             http1::Method::DELETE,
             "/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/content",
         )
-        .with_path_param("app_id", app_id)
-        .with_path_param("msg_id", msg_id)
-        .with_path_param("attempt_id", attempt_id)
+        .with_path_param(
+            "app_id", app_id,
+        )
+        .with_path_param(
+            "msg_id", msg_id,
+        )
+        .with_path_param(
+            "attempt_id",
+            attempt_id,
+        )
         .returns_nothing()
         .execute(self.cfg)
         .await
@@ -377,17 +508,27 @@ impl<'a> MessageAttempt<'a> {
         msg_id: String,
         options: Option<MessageAttemptListAttemptedDestinationsOptions>,
     ) -> Result<ListResponseMessageEndpointOut> {
-        let MessageAttemptListAttemptedDestinationsOptions { limit, iterator } =
-            options.unwrap_or_default();
+        let MessageAttemptListAttemptedDestinationsOptions {
+            limit,
+            iterator,
+        } = options.unwrap_or_default();
 
         crate::request::Request::new(
             http1::Method::GET,
             "/api/v1/app/{app_id}/msg/{msg_id}/endpoint",
         )
-        .with_path_param("app_id", app_id)
-        .with_path_param("msg_id", msg_id)
-        .with_optional_query_param("limit", limit)
-        .with_optional_query_param("iterator", iterator)
+        .with_path_param(
+            "app_id", app_id,
+        )
+        .with_path_param(
+            "msg_id", msg_id,
+        )
+        .with_optional_query_param(
+            "limit", limit,
+        )
+        .with_optional_query_param(
+            "iterator", iterator,
+        )
         .execute(self.cfg)
         .await
     }
@@ -400,16 +541,28 @@ impl<'a> MessageAttempt<'a> {
         endpoint_id: String,
         options: Option<MessageAttemptResendOptions>,
     ) -> Result<()> {
-        let MessageAttemptResendOptions { idempotency_key } = options.unwrap_or_default();
+        let MessageAttemptResendOptions {
+            idempotency_key,
+        } = options.unwrap_or_default();
 
         crate::request::Request::new(
             http1::Method::POST,
             "/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/resend",
         )
-        .with_path_param("app_id", app_id)
-        .with_path_param("msg_id", msg_id)
-        .with_path_param("endpoint_id", endpoint_id)
-        .with_optional_header_param("idempotency-key", idempotency_key)
+        .with_path_param(
+            "app_id", app_id,
+        )
+        .with_path_param(
+            "msg_id", msg_id,
+        )
+        .with_path_param(
+            "endpoint_id",
+            endpoint_id,
+        )
+        .with_optional_header_param(
+            "idempotency-key",
+            idempotency_key,
+        )
         .returns_nothing()
         .execute(self.cfg)
         .await

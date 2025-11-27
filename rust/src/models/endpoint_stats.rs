@@ -1,5 +1,8 @@
 // this file is @generated
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 #[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
 pub struct EndpointStats {
@@ -13,7 +16,12 @@ pub struct EndpointStats {
 }
 
 impl EndpointStats {
-    pub fn new(fail: i32, pending: i32, sending: i32, success: i32) -> Self {
+    pub fn new(
+        fail: i32,
+        pending: i32,
+        sending: i32,
+        success: i32,
+    ) -> Self {
         Self {
             fail,
             pending,

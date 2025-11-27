@@ -1,5 +1,8 @@
 // this file is @generated
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 /// The MessageOut equivalent of polling endpoint
 #[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]

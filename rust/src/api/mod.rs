@@ -4,7 +4,10 @@
 mod client;
 mod deprecated;
 
-pub use self::client::{Svix, SvixOptions};
+pub use self::client::{
+    Svix,
+    SvixOptions,
+};
 pub use crate::models::*;
 
 mod application;
@@ -31,69 +34,133 @@ mod streaming_sink;
 mod streaming_stream;
 
 #[cfg(feature = "svix_beta")]
-pub use self::message::{V1MessageEventsParams, V1MessageEventsSubscriptionParams};
+pub use self::message::{
+    V1MessageEventsParams,
+    V1MessageEventsSubscriptionParams,
+};
 pub use self::{
-    application::{Application, ApplicationCreateOptions, ApplicationListOptions},
+    application::{
+        Application,
+        ApplicationCreateOptions,
+        ApplicationListOptions,
+    },
     authentication::{
-        Authentication, AuthenticationAppPortalAccessOptions, AuthenticationExpireAllOptions,
-        AuthenticationLogoutOptions, AuthenticationRotateStreamPollerTokenOptions,
+        Authentication,
+        AuthenticationAppPortalAccessOptions,
+        AuthenticationExpireAllOptions,
+        AuthenticationLogoutOptions,
+        AuthenticationRotateStreamPollerTokenOptions,
         AuthenticationStreamPortalAccessOptions,
     },
-    background_task::{BackgroundTask, BackgroundTaskListOptions},
-    connector::{Connector, ConnectorCreateOptions, ConnectorListOptions},
+    background_task::{
+        BackgroundTask,
+        BackgroundTaskListOptions,
+    },
+    connector::{
+        Connector,
+        ConnectorCreateOptions,
+        ConnectorListOptions,
+    },
     deprecated::*,
     endpoint::{
-        Endpoint, EndpointCreateOptions, EndpointGetStatsOptions, EndpointListOptions,
-        EndpointRecoverOptions, EndpointReplayMissingOptions, EndpointRotateSecretOptions,
+        Endpoint,
+        EndpointCreateOptions,
+        EndpointGetStatsOptions,
+        EndpointListOptions,
+        EndpointRecoverOptions,
+        EndpointReplayMissingOptions,
+        EndpointRotateSecretOptions,
         EndpointSendExampleOptions,
     },
-    environment::{Environment, EnvironmentExportOptions, EnvironmentImportOptions},
+    environment::{
+        Environment,
+        EnvironmentExportOptions,
+        EnvironmentImportOptions,
+    },
     event_type::{
-        EventType, EventTypeCreateOptions, EventTypeDeleteOptions, EventTypeImportOpenapiOptions,
+        EventType,
+        EventTypeCreateOptions,
+        EventTypeDeleteOptions,
+        EventTypeImportOpenapiOptions,
         EventTypeListOptions,
     },
-    ingest::{Ingest, IngestDashboardOptions},
+    ingest::{
+        Ingest,
+        IngestDashboardOptions,
+    },
     ingest_endpoint::{
-        IngestEndpoint, IngestEndpointCreateOptions, IngestEndpointListOptions,
+        IngestEndpoint,
+        IngestEndpointCreateOptions,
+        IngestEndpointListOptions,
         IngestEndpointRotateSecretOptions,
     },
     ingest_source::{
-        IngestSource, IngestSourceCreateOptions, IngestSourceListOptions,
+        IngestSource,
+        IngestSourceCreateOptions,
+        IngestSourceListOptions,
         IngestSourceRotateTokenOptions,
     },
     integration::{
-        Integration, IntegrationCreateOptions, IntegrationListOptions, IntegrationRotateKeyOptions,
+        Integration,
+        IntegrationCreateOptions,
+        IntegrationListOptions,
+        IntegrationRotateKeyOptions,
     },
     message::{
-        Message, MessageCreateOptions, MessageExpungeAllContentsOptions, MessageGetOptions,
+        Message,
+        MessageCreateOptions,
+        MessageExpungeAllContentsOptions,
+        MessageGetOptions,
         MessageListOptions,
     },
     message_attempt::{
-        MessageAttempt, MessageAttemptListAttemptedDestinationsOptions,
-        MessageAttemptListAttemptedMessagesOptions, MessageAttemptListByEndpointOptions,
-        MessageAttemptListByMsgOptions, MessageAttemptResendOptions,
+        MessageAttempt,
+        MessageAttemptListAttemptedDestinationsOptions,
+        MessageAttemptListAttemptedMessagesOptions,
+        MessageAttemptListByEndpointOptions,
+        MessageAttemptListByMsgOptions,
+        MessageAttemptResendOptions,
     },
     message_poller::{
-        MessagePoller, MessagePollerConsumerPollOptions, MessagePollerConsumerSeekOptions,
+        MessagePoller,
+        MessagePollerConsumerPollOptions,
+        MessagePollerConsumerSeekOptions,
         MessagePollerPollOptions,
     },
     operational_webhook::OperationalWebhook,
     operational_webhook_endpoint::{
-        OperationalWebhookEndpoint, OperationalWebhookEndpointCreateOptions,
-        OperationalWebhookEndpointListOptions, OperationalWebhookEndpointRotateSecretOptions,
+        OperationalWebhookEndpoint,
+        OperationalWebhookEndpointCreateOptions,
+        OperationalWebhookEndpointListOptions,
+        OperationalWebhookEndpointRotateSecretOptions,
     },
-    statistics::{Statistics, StatisticsAggregateAppStatsOptions},
+    statistics::{
+        Statistics,
+        StatisticsAggregateAppStatsOptions,
+    },
     streaming::Streaming,
     streaming_event_type::{
-        StreamingEventType, StreamingEventTypeCreateOptions, StreamingEventTypeDeleteOptions,
+        StreamingEventType,
+        StreamingEventTypeCreateOptions,
+        StreamingEventTypeDeleteOptions,
         StreamingEventTypeListOptions,
     },
-    streaming_events::{StreamingEvents, StreamingEventsCreateOptions, StreamingEventsGetOptions},
+    streaming_events::{
+        StreamingEvents,
+        StreamingEventsCreateOptions,
+        StreamingEventsGetOptions,
+    },
     streaming_sink::{
-        StreamingSink, StreamingSinkCreateOptions, StreamingSinkListOptions,
+        StreamingSink,
+        StreamingSinkCreateOptions,
+        StreamingSinkListOptions,
         StreamingSinkRotateSecretOptions,
     },
-    streaming_stream::{StreamingStream, StreamingStreamCreateOptions, StreamingStreamListOptions},
+    streaming_stream::{
+        StreamingStream,
+        StreamingStreamCreateOptions,
+        StreamingStreamListOptions,
+    },
 };
 
 impl Svix {

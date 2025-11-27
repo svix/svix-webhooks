@@ -8,7 +8,9 @@ pub struct OperationalWebhook<'a> {
 
 impl<'a> OperationalWebhook<'a> {
     pub(super) fn new(cfg: &'a Configuration) -> Self {
-        Self { cfg }
+        Self {
+            cfg,
+        }
     }
 
     pub fn endpoint(&self) -> OperationalWebhookEndpoint<'a> {

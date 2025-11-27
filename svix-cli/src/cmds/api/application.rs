@@ -1,5 +1,8 @@
 // this file is @generated
-use clap::{Args, Subcommand};
+use clap::{
+    Args,
+    Subcommand,
+};
 use svix::api::*;
 
 #[derive(Args, Clone)]
@@ -38,8 +41,12 @@ pub struct ApplicationCreateOptions {
 
 impl From<ApplicationCreateOptions> for svix::api::ApplicationCreateOptions {
     fn from(value: ApplicationCreateOptions) -> Self {
-        let ApplicationCreateOptions { idempotency_key } = value;
-        Self { idempotency_key }
+        let ApplicationCreateOptions {
+            idempotency_key,
+        } = value;
+        Self {
+            idempotency_key,
+        }
     }
 }
 
@@ -86,9 +93,13 @@ impl ApplicationCommands {
         color_mode: colored_json::ColorMode,
     ) -> anyhow::Result<()> {
         match self {
-            Self::List { options } => {
+            Self::List {
+                options,
+            } => {
                 let resp = client.application().list(Some(options.into())).await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::Create {
                 application_in,
@@ -96,22 +107,41 @@ impl ApplicationCommands {
             } => {
                 let resp = client
                     .application()
-                    .create(application_in.into_inner(), Some(options.into()))
+                    .create(
+                        application_in.into_inner(),
+                        Some(options.into()),
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
-            Self::Get { id } => {
+            Self::Get {
+                id,
+            } => {
                 let resp = client.application().get(id).await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
-            Self::Update { id, application_in } => {
+            Self::Update {
+                id,
+                application_in,
+            } => {
                 let resp = client
                     .application()
-                    .update(id, application_in.into_inner())
+                    .update(
+                        id,
+                        application_in.into_inner(),
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
-            Self::Delete { id } => {
+            Self::Delete {
+                id,
+            } => {
                 client.application().delete(id).await?;
             }
             Self::Patch {
@@ -120,9 +150,14 @@ impl ApplicationCommands {
             } => {
                 let resp = client
                     .application()
-                    .patch(id, application_patch.unwrap_or_default().into_inner())
+                    .patch(
+                        id,
+                        application_patch.unwrap_or_default().into_inner(),
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
         }
 

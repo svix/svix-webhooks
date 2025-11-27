@@ -1,5 +1,8 @@
 // this file is @generated
-use clap::{Args, Subcommand};
+use clap::{
+    Args,
+    Subcommand,
+};
 use svix::api::*;
 
 #[derive(Args, Clone)]
@@ -38,8 +41,12 @@ pub struct IntegrationCreateOptions {
 
 impl From<IntegrationCreateOptions> for svix::api::IntegrationCreateOptions {
     fn from(value: IntegrationCreateOptions) -> Self {
-        let IntegrationCreateOptions { idempotency_key } = value;
-        Self { idempotency_key }
+        let IntegrationCreateOptions {
+            idempotency_key,
+        } = value;
+        Self {
+            idempotency_key,
+        }
     }
 }
 
@@ -51,8 +58,12 @@ pub struct IntegrationRotateKeyOptions {
 
 impl From<IntegrationRotateKeyOptions> for svix::api::IntegrationRotateKeyOptions {
     fn from(value: IntegrationRotateKeyOptions) -> Self {
-        let IntegrationRotateKeyOptions { idempotency_key } = value;
-        Self { idempotency_key }
+        let IntegrationRotateKeyOptions {
+            idempotency_key,
+        } = value;
+        Self {
+            idempotency_key,
+        }
     }
 }
 
@@ -106,12 +117,20 @@ impl IntegrationCommands {
         color_mode: colored_json::ColorMode,
     ) -> anyhow::Result<()> {
         match self {
-            Self::List { app_id, options } => {
+            Self::List {
+                app_id,
+                options,
+            } => {
                 let resp = client
                     .integration()
-                    .list(app_id, Some(options.into()))
+                    .list(
+                        app_id,
+                        Some(options.into()),
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::Create {
                 app_id,
@@ -120,13 +139,29 @@ impl IntegrationCommands {
             } => {
                 let resp = client
                     .integration()
-                    .create(app_id, integration_in.into_inner(), Some(options.into()))
+                    .create(
+                        app_id,
+                        integration_in.into_inner(),
+                        Some(options.into()),
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
-            Self::Get { app_id, id } => {
-                let resp = client.integration().get(app_id, id).await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+            Self::Get {
+                app_id,
+                id,
+            } => {
+                let resp = client
+                    .integration()
+                    .get(
+                        app_id, id,
+                    )
+                    .await?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::Update {
                 app_id,
@@ -135,17 +170,41 @@ impl IntegrationCommands {
             } => {
                 let resp = client
                     .integration()
-                    .update(app_id, id, integration_update.into_inner())
+                    .update(
+                        app_id,
+                        id,
+                        integration_update.into_inner(),
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
-            Self::Delete { app_id, id } => {
-                client.integration().delete(app_id, id).await?;
+            Self::Delete {
+                app_id,
+                id,
+            } => {
+                client
+                    .integration()
+                    .delete(
+                        app_id, id,
+                    )
+                    .await?;
             }
-            Self::GetKey { app_id, id } => {
+            Self::GetKey {
+                app_id,
+                id,
+            } => {
                 #[allow(deprecated)]
-                let resp = client.integration().get_key(app_id, id).await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                let resp = client
+                    .integration()
+                    .get_key(
+                        app_id, id,
+                    )
+                    .await?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::RotateKey {
                 app_id,
@@ -154,9 +213,15 @@ impl IntegrationCommands {
             } => {
                 let resp = client
                     .integration()
-                    .rotate_key(app_id, id, Some(options.into()))
+                    .rotate_key(
+                        app_id,
+                        id,
+                        Some(options.into()),
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
         }
 

@@ -1,5 +1,9 @@
 // this file is @generated
-use crate::{error::Result, models::*, Configuration};
+use crate::{
+    error::Result,
+    models::*,
+    Configuration,
+};
 
 #[derive(Default)]
 pub struct EventTypeListOptions {
@@ -44,7 +48,9 @@ pub struct EventType<'a> {
 
 impl<'a> EventType<'a> {
     pub(super) fn new(cfg: &'a Configuration) -> Self {
-        Self { cfg }
+        Self {
+            cfg,
+        }
     }
 
     /// Return the list of event types.
@@ -60,14 +66,29 @@ impl<'a> EventType<'a> {
             with_content,
         } = options.unwrap_or_default();
 
-        crate::request::Request::new(http1::Method::GET, "/api/v1/event-type")
-            .with_optional_query_param("limit", limit)
-            .with_optional_query_param("iterator", iterator)
-            .with_optional_query_param("order", order)
-            .with_optional_query_param("include_archived", include_archived)
-            .with_optional_query_param("with_content", with_content)
-            .execute(self.cfg)
-            .await
+        crate::request::Request::new(
+            http1::Method::GET,
+            "/api/v1/event-type",
+        )
+        .with_optional_query_param(
+            "limit", limit,
+        )
+        .with_optional_query_param(
+            "iterator", iterator,
+        )
+        .with_optional_query_param(
+            "order", order,
+        )
+        .with_optional_query_param(
+            "include_archived",
+            include_archived,
+        )
+        .with_optional_query_param(
+            "with_content",
+            with_content,
+        )
+        .execute(self.cfg)
+        .await
     }
 
     /// Create new or unarchive existing event type.
@@ -81,13 +102,21 @@ impl<'a> EventType<'a> {
         event_type_in: EventTypeIn,
         options: Option<EventTypeCreateOptions>,
     ) -> Result<EventTypeOut> {
-        let EventTypeCreateOptions { idempotency_key } = options.unwrap_or_default();
+        let EventTypeCreateOptions {
+            idempotency_key,
+        } = options.unwrap_or_default();
 
-        crate::request::Request::new(http1::Method::POST, "/api/v1/event-type")
-            .with_optional_header_param("idempotency-key", idempotency_key)
-            .with_body_param(event_type_in)
-            .execute(self.cfg)
-            .await
+        crate::request::Request::new(
+            http1::Method::POST,
+            "/api/v1/event-type",
+        )
+        .with_optional_header_param(
+            "idempotency-key",
+            idempotency_key,
+        )
+        .with_body_param(event_type_in)
+        .execute(self.cfg)
+        .await
     }
 
     /// Given an OpenAPI spec, create new or update existing event types.
@@ -100,21 +129,38 @@ impl<'a> EventType<'a> {
         event_type_import_open_api_in: EventTypeImportOpenApiIn,
         options: Option<EventTypeImportOpenapiOptions>,
     ) -> Result<EventTypeImportOpenApiOut> {
-        let EventTypeImportOpenapiOptions { idempotency_key } = options.unwrap_or_default();
+        let EventTypeImportOpenapiOptions {
+            idempotency_key,
+        } = options.unwrap_or_default();
 
-        crate::request::Request::new(http1::Method::POST, "/api/v1/event-type/import/openapi")
-            .with_optional_header_param("idempotency-key", idempotency_key)
-            .with_body_param(event_type_import_open_api_in)
-            .execute(self.cfg)
-            .await
+        crate::request::Request::new(
+            http1::Method::POST,
+            "/api/v1/event-type/import/openapi",
+        )
+        .with_optional_header_param(
+            "idempotency-key",
+            idempotency_key,
+        )
+        .with_body_param(event_type_import_open_api_in)
+        .execute(self.cfg)
+        .await
     }
 
     /// Get an event type.
-    pub async fn get(&self, event_type_name: String) -> Result<EventTypeOut> {
-        crate::request::Request::new(http1::Method::GET, "/api/v1/event-type/{event_type_name}")
-            .with_path_param("event_type_name", event_type_name)
-            .execute(self.cfg)
-            .await
+    pub async fn get(
+        &self,
+        event_type_name: String,
+    ) -> Result<EventTypeOut> {
+        crate::request::Request::new(
+            http1::Method::GET,
+            "/api/v1/event-type/{event_type_name}",
+        )
+        .with_path_param(
+            "event_type_name",
+            event_type_name,
+        )
+        .execute(self.cfg)
+        .await
     }
 
     /// Update an event type.
@@ -123,11 +169,17 @@ impl<'a> EventType<'a> {
         event_type_name: String,
         event_type_update: EventTypeUpdate,
     ) -> Result<EventTypeOut> {
-        crate::request::Request::new(http1::Method::PUT, "/api/v1/event-type/{event_type_name}")
-            .with_path_param("event_type_name", event_type_name)
-            .with_body_param(event_type_update)
-            .execute(self.cfg)
-            .await
+        crate::request::Request::new(
+            http1::Method::PUT,
+            "/api/v1/event-type/{event_type_name}",
+        )
+        .with_path_param(
+            "event_type_name",
+            event_type_name,
+        )
+        .with_body_param(event_type_update)
+        .execute(self.cfg)
+        .await
     }
 
     /// Archive an event type.
@@ -142,14 +194,21 @@ impl<'a> EventType<'a> {
         event_type_name: String,
         options: Option<EventTypeDeleteOptions>,
     ) -> Result<()> {
-        let EventTypeDeleteOptions { expunge } = options.unwrap_or_default();
+        let EventTypeDeleteOptions {
+            expunge,
+        } = options.unwrap_or_default();
 
         crate::request::Request::new(
             http1::Method::DELETE,
             "/api/v1/event-type/{event_type_name}",
         )
-        .with_path_param("event_type_name", event_type_name)
-        .with_optional_query_param("expunge", expunge)
+        .with_path_param(
+            "event_type_name",
+            event_type_name,
+        )
+        .with_optional_query_param(
+            "expunge", expunge,
+        )
         .returns_nothing()
         .execute(self.cfg)
         .await
@@ -161,10 +220,16 @@ impl<'a> EventType<'a> {
         event_type_name: String,
         event_type_patch: EventTypePatch,
     ) -> Result<EventTypeOut> {
-        crate::request::Request::new(http1::Method::PATCH, "/api/v1/event-type/{event_type_name}")
-            .with_path_param("event_type_name", event_type_name)
-            .with_body_param(event_type_patch)
-            .execute(self.cfg)
-            .await
+        crate::request::Request::new(
+            http1::Method::PATCH,
+            "/api/v1/event-type/{event_type_name}",
+        )
+        .with_path_param(
+            "event_type_name",
+            event_type_name,
+        )
+        .with_body_param(event_type_patch)
+        .execute(self.cfg)
+        .await
     }
 }

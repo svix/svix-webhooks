@@ -1,5 +1,8 @@
 // this file is @generated
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 use super::endpoint_deleted_event_data::EndpointDeletedEventData;
 
@@ -12,7 +15,13 @@ pub struct EndpointDeletedEvent {
 }
 
 impl EndpointDeletedEvent {
-    pub fn new(data: EndpointDeletedEventData, r#type: String) -> Self {
-        Self { data, r#type }
+    pub fn new(
+        data: EndpointDeletedEventData,
+        r#type: String,
+    ) -> Self {
+        Self {
+            data,
+            r#type,
+        }
     }
 }

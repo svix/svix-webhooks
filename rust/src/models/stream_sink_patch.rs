@@ -1,12 +1,16 @@
 // this file is @generated
 use js_option::JsOption;
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 use super::{
     amazon_s3_patch_config::AmazonS3PatchConfig,
     azure_blob_storage_patch_config::AzureBlobStoragePatchConfig,
     google_cloud_storage_patch_config::GoogleCloudStoragePatchConfig,
-    http_patch_config::HttpPatchConfig, otel_tracing_patch_config::OtelTracingPatchConfig,
+    http_patch_config::HttpPatchConfig,
+    otel_tracing_patch_config::OtelTracingPatchConfig,
     sink_status_in::SinkStatusIn,
 };
 

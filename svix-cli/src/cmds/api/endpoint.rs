@@ -1,5 +1,8 @@
 // this file is @generated
-use clap::{Args, Subcommand};
+use clap::{
+    Args,
+    Subcommand,
+};
 use svix::api::*;
 
 #[derive(Args, Clone)]
@@ -38,8 +41,12 @@ pub struct EndpointCreateOptions {
 
 impl From<EndpointCreateOptions> for svix::api::EndpointCreateOptions {
     fn from(value: EndpointCreateOptions) -> Self {
-        let EndpointCreateOptions { idempotency_key } = value;
-        Self { idempotency_key }
+        let EndpointCreateOptions {
+            idempotency_key,
+        } = value;
+        Self {
+            idempotency_key,
+        }
     }
 }
 
@@ -51,8 +58,12 @@ pub struct EndpointRecoverOptions {
 
 impl From<EndpointRecoverOptions> for svix::api::EndpointRecoverOptions {
     fn from(value: EndpointRecoverOptions) -> Self {
-        let EndpointRecoverOptions { idempotency_key } = value;
-        Self { idempotency_key }
+        let EndpointRecoverOptions {
+            idempotency_key,
+        } = value;
+        Self {
+            idempotency_key,
+        }
     }
 }
 
@@ -64,8 +75,12 @@ pub struct EndpointReplayMissingOptions {
 
 impl From<EndpointReplayMissingOptions> for svix::api::EndpointReplayMissingOptions {
     fn from(value: EndpointReplayMissingOptions) -> Self {
-        let EndpointReplayMissingOptions { idempotency_key } = value;
-        Self { idempotency_key }
+        let EndpointReplayMissingOptions {
+            idempotency_key,
+        } = value;
+        Self {
+            idempotency_key,
+        }
     }
 }
 
@@ -77,8 +92,12 @@ pub struct EndpointRotateSecretOptions {
 
 impl From<EndpointRotateSecretOptions> for svix::api::EndpointRotateSecretOptions {
     fn from(value: EndpointRotateSecretOptions) -> Self {
-        let EndpointRotateSecretOptions { idempotency_key } = value;
-        Self { idempotency_key }
+        let EndpointRotateSecretOptions {
+            idempotency_key,
+        } = value;
+        Self {
+            idempotency_key,
+        }
     }
 }
 
@@ -90,8 +109,12 @@ pub struct EndpointSendExampleOptions {
 
 impl From<EndpointSendExampleOptions> for svix::api::EndpointSendExampleOptions {
     fn from(value: EndpointSendExampleOptions) -> Self {
-        let EndpointSendExampleOptions { idempotency_key } = value;
-        Self { idempotency_key }
+        let EndpointSendExampleOptions {
+            idempotency_key,
+        } = value;
+        Self {
+            idempotency_key,
+        }
     }
 }
 
@@ -107,7 +130,10 @@ pub struct EndpointGetStatsOptions {
 
 impl From<EndpointGetStatsOptions> for svix::api::EndpointGetStatsOptions {
     fn from(value: EndpointGetStatsOptions) -> Self {
-        let EndpointGetStatsOptions { since, until } = value;
+        let EndpointGetStatsOptions {
+            since,
+            until,
+        } = value;
         Self {
             since: since.map(|dt| dt.to_rfc3339()),
             until: until.map(|dt| dt.to_rfc3339()),
@@ -267,9 +293,20 @@ impl EndpointCommands {
         color_mode: colored_json::ColorMode,
     ) -> anyhow::Result<()> {
         match self {
-            Self::List { app_id, options } => {
-                let resp = client.endpoint().list(app_id, Some(options.into())).await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+            Self::List {
+                app_id,
+                options,
+            } => {
+                let resp = client
+                    .endpoint()
+                    .list(
+                        app_id,
+                        Some(options.into()),
+                    )
+                    .await?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::Create {
                 app_id,
@@ -278,13 +315,29 @@ impl EndpointCommands {
             } => {
                 let resp = client
                     .endpoint()
-                    .create(app_id, endpoint_in.into_inner(), Some(options.into()))
+                    .create(
+                        app_id,
+                        endpoint_in.into_inner(),
+                        Some(options.into()),
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
-            Self::Get { app_id, id } => {
-                let resp = client.endpoint().get(app_id, id).await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+            Self::Get {
+                app_id,
+                id,
+            } => {
+                let resp = client
+                    .endpoint()
+                    .get(
+                        app_id, id,
+                    )
+                    .await?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::Update {
                 app_id,
@@ -293,12 +346,26 @@ impl EndpointCommands {
             } => {
                 let resp = client
                     .endpoint()
-                    .update(app_id, id, endpoint_update.into_inner())
+                    .update(
+                        app_id,
+                        id,
+                        endpoint_update.into_inner(),
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
-            Self::Delete { app_id, id } => {
-                client.endpoint().delete(app_id, id).await?;
+            Self::Delete {
+                app_id,
+                id,
+            } => {
+                client
+                    .endpoint()
+                    .delete(
+                        app_id, id,
+                    )
+                    .await?;
             }
             Self::Patch {
                 app_id,
@@ -307,13 +374,29 @@ impl EndpointCommands {
             } => {
                 let resp = client
                     .endpoint()
-                    .patch(app_id, id, endpoint_patch.unwrap_or_default().into_inner())
+                    .patch(
+                        app_id,
+                        id,
+                        endpoint_patch.unwrap_or_default().into_inner(),
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
-            Self::GetHeaders { app_id, id } => {
-                let resp = client.endpoint().get_headers(app_id, id).await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+            Self::GetHeaders {
+                app_id,
+                id,
+            } => {
+                let resp = client
+                    .endpoint()
+                    .get_headers(
+                        app_id, id,
+                    )
+                    .await?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::UpdateHeaders {
                 app_id,
@@ -322,7 +405,11 @@ impl EndpointCommands {
             } => {
                 client
                     .endpoint()
-                    .update_headers(app_id, id, endpoint_headers_in.into_inner())
+                    .update_headers(
+                        app_id,
+                        id,
+                        endpoint_headers_in.into_inner(),
+                    )
                     .await?;
             }
             Self::PatchHeaders {
@@ -332,7 +419,11 @@ impl EndpointCommands {
             } => {
                 client
                     .endpoint()
-                    .patch_headers(app_id, id, endpoint_headers_patch_in.into_inner())
+                    .patch_headers(
+                        app_id,
+                        id,
+                        endpoint_headers_patch_in.into_inner(),
+                    )
                     .await?;
             }
             Self::Recover {
@@ -343,9 +434,16 @@ impl EndpointCommands {
             } => {
                 let resp = client
                     .endpoint()
-                    .recover(app_id, id, recover_in.into_inner(), Some(options.into()))
+                    .recover(
+                        app_id,
+                        id,
+                        recover_in.into_inner(),
+                        Some(options.into()),
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::ReplayMissing {
                 app_id,
@@ -355,13 +453,30 @@ impl EndpointCommands {
             } => {
                 let resp = client
                     .endpoint()
-                    .replay_missing(app_id, id, replay_in.into_inner(), Some(options.into()))
+                    .replay_missing(
+                        app_id,
+                        id,
+                        replay_in.into_inner(),
+                        Some(options.into()),
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
-            Self::GetSecret { app_id, id } => {
-                let resp = client.endpoint().get_secret(app_id, id).await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+            Self::GetSecret {
+                app_id,
+                id,
+            } => {
+                let resp = client
+                    .endpoint()
+                    .get_secret(
+                        app_id, id,
+                    )
+                    .await?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::RotateSecret {
                 app_id,
@@ -394,7 +509,9 @@ impl EndpointCommands {
                         Some(options.into()),
                     )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::GetStats {
                 app_id,
@@ -403,13 +520,29 @@ impl EndpointCommands {
             } => {
                 let resp = client
                     .endpoint()
-                    .get_stats(app_id, id, Some(options.into()))
+                    .get_stats(
+                        app_id,
+                        id,
+                        Some(options.into()),
+                    )
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
-            Self::TransformationGet { app_id, id } => {
-                let resp = client.endpoint().transformation_get(app_id, id).await?;
-                crate::json::print_json_output(&resp, color_mode)?;
+            Self::TransformationGet {
+                app_id,
+                id,
+            } => {
+                let resp = client
+                    .endpoint()
+                    .transformation_get(
+                        app_id, id,
+                    )
+                    .await?;
+                crate::json::print_json_output(
+                    &resp, color_mode,
+                )?;
             }
             Self::PatchTransformation {
                 app_id,
