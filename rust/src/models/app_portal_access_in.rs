@@ -33,6 +33,9 @@ pub struct AppPortalAccessIn {
     ///
     /// - `ManageEndpoint`: Allows user to read/modify any field or
     ///   configuration of an endpoint (including secrets)
+    ///
+    /// By default, the token will get all capabilities if the capabilities are
+    /// not explicitly specified.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub capabilities: Option<Vec<AppPortalCapability>>,
 

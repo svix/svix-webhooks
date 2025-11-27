@@ -5,6 +5,7 @@ from datetime import datetime
 
 from .. import models
 from ..models import (
+    EmptyResponse,
     ListResponseEndpointMessageOut,
     ListResponseMessageAttemptOut,
     ListResponseMessageEndpointOut,
@@ -297,9 +298,9 @@ class MessageAttemptAsync(ApiBase):
         msg_id: str,
         endpoint_id: str,
         options: MessageAttemptResendOptions = MessageAttemptResendOptions(),
-    ) -> None:
+    ) -> EmptyResponse:
         """Resend a message to the specified endpoint."""
-        await self._request_asyncio(
+        response = await self._request_asyncio(
             method="post",
             path="/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/resend",
             path_params={
@@ -310,6 +311,7 @@ class MessageAttemptAsync(ApiBase):
             query_params=options._query_params(),
             header_params=options._header_params(),
         )
+        return EmptyResponse.model_validate(response.json())
 
 
 class MessageAttempt(ApiBase):
@@ -445,9 +447,9 @@ class MessageAttempt(ApiBase):
         msg_id: str,
         endpoint_id: str,
         options: MessageAttemptResendOptions = MessageAttemptResendOptions(),
-    ) -> None:
+    ) -> EmptyResponse:
         """Resend a message to the specified endpoint."""
-        self._request_sync(
+        response = self._request_sync(
             method="post",
             path="/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/resend",
             path_params={
@@ -458,3 +460,4 @@ class MessageAttempt(ApiBase):
             query_params=options._query_params(),
             header_params=options._header_params(),
         )
+        return EmptyResponse.model_validate(response.json())

@@ -14,6 +14,10 @@ from .common import ApiBase, BaseOptions, serialize_params
 
 @dataclass
 class ApplicationListOptions(BaseOptions):
+    excludeAppsWithNoEndpoints: t.Optional[bool] = None
+    """Exclude applications that have no endpoints. Default is false."""
+    excludeAppsWithDisabledEndpoints: t.Optional[bool] = None
+    """Exclude applications that have only disabled endpoints. Default is false."""
     limit: t.Optional[int] = None
     """Limit the number of returned items"""
     iterator: t.Optional[str] = None
@@ -24,6 +28,8 @@ class ApplicationListOptions(BaseOptions):
     def _query_params(self) -> t.Dict[str, str]:
         return serialize_params(
             {
+                "excludeAppsWithNoEndpoints": self.exclude_apps_with_no_endpoints,
+                "excludeAppsWithDisabledEndpoints": self.exclude_apps_with_disabled_endpoints,
                 "limit": self.limit,
                 "iterator": self.iterator,
                 "order": self.order,

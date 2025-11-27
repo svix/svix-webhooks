@@ -24,6 +24,8 @@ class Application
     ): ListResponseApplicationOut {
         $request = $this->client->newReq('GET', '/api/v1/app');
         if (null !== $options) {
+            $request->setQueryParam('excludeAppsWithNoEndpoints', $options->excludeAppsWithNoEndpoints);
+            $request->setQueryParam('excludeAppsWithDisabledEndpoints', $options->excludeAppsWithDisabledEndpoints);
             $request->setQueryParam('limit', $options->limit);
             $request->setQueryParam('iterator', $options->iterator);
             $request->setQueryParam('order', $options->order);

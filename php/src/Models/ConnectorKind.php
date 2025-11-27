@@ -15,6 +15,7 @@ enum ConnectorKind: string implements \JsonSerializable
     case HUBSPOT = 'Hubspot';
     case INNGEST = 'Inngest';
     case LOOPS = 'Loops';
+    case OTEL = 'Otel';
     case RESEND = 'Resend';
     case SALESFORCE = 'Salesforce';
     case SEGMENT = 'Segment';
