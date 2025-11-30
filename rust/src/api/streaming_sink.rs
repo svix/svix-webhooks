@@ -29,7 +29,9 @@ pub struct StreamingSink<'a> {
 
 impl<'a> StreamingSink<'a> {
     pub(super) fn new(cfg: &'a Configuration) -> Self {
-        Self { cfg }
+        Self {
+            cfg,
+        }
     }
 
     /// List of all the stream's sinks.
@@ -44,7 +46,10 @@ impl<'a> StreamingSink<'a> {
             order,
         } = options.unwrap_or_default();
 
-        crate::request::Request::new(http1::Method::GET, "/api/v1/stream/{stream_id}/sink")
+        crate::request::Request::new(
+            http1::Method::GET,
+            "/api/v1/stream/{stream_id}/sink",
+        )
             .with_path_param("stream_id", stream_id)
             .with_optional_query_param("limit", limit)
             .with_optional_query_param("iterator", iterator)
@@ -60,9 +65,14 @@ impl<'a> StreamingSink<'a> {
         stream_sink_in: StreamSinkIn,
         options: Option<StreamingSinkCreateOptions>,
     ) -> Result<StreamSinkOut> {
-        let StreamingSinkCreateOptions { idempotency_key } = options.unwrap_or_default();
+        let StreamingSinkCreateOptions {
+            idempotency_key,
+        } = options.unwrap_or_default();
 
-        crate::request::Request::new(http1::Method::POST, "/api/v1/stream/{stream_id}/sink")
+        crate::request::Request::new(
+            http1::Method::POST,
+            "/api/v1/stream/{stream_id}/sink",
+        )
             .with_path_param("stream_id", stream_id)
             .with_optional_header_param("idempotency-key", idempotency_key)
             .with_body_param(stream_sink_in)
@@ -71,15 +81,19 @@ impl<'a> StreamingSink<'a> {
     }
 
     /// Get a sink by id or uid.
-    pub async fn get(&self, stream_id: String, sink_id: String) -> Result<StreamSinkOut> {
+    pub async fn get(
+        &self,
+        stream_id: String,
+        sink_id: String,
+    ) -> Result<StreamSinkOut> {
         crate::request::Request::new(
             http1::Method::GET,
             "/api/v1/stream/{stream_id}/sink/{sink_id}",
         )
-        .with_path_param("stream_id", stream_id)
-        .with_path_param("sink_id", sink_id)
-        .execute(self.cfg)
-        .await
+            .with_path_param("stream_id", stream_id)
+            .with_path_param("sink_id", sink_id)
+            .execute(self.cfg)
+            .await
     }
 
     /// Update a sink.
@@ -93,24 +107,28 @@ impl<'a> StreamingSink<'a> {
             http1::Method::PUT,
             "/api/v1/stream/{stream_id}/sink/{sink_id}",
         )
-        .with_path_param("stream_id", stream_id)
-        .with_path_param("sink_id", sink_id)
-        .with_body_param(stream_sink_in)
-        .execute(self.cfg)
-        .await
+            .with_path_param("stream_id", stream_id)
+            .with_path_param("sink_id", sink_id)
+            .with_body_param(stream_sink_in)
+            .execute(self.cfg)
+            .await
     }
 
     /// Delete a sink.
-    pub async fn delete(&self, stream_id: String, sink_id: String) -> Result<()> {
+    pub async fn delete(
+        &self,
+        stream_id: String,
+        sink_id: String,
+    ) -> Result<()> {
         crate::request::Request::new(
             http1::Method::DELETE,
             "/api/v1/stream/{stream_id}/sink/{sink_id}",
         )
-        .with_path_param("stream_id", stream_id)
-        .with_path_param("sink_id", sink_id)
-        .returns_nothing()
-        .execute(self.cfg)
-        .await
+            .with_path_param("stream_id", stream_id)
+            .with_path_param("sink_id", sink_id)
+            .returns_nothing()
+            .execute(self.cfg)
+            .await
     }
 
     /// Partially update a sink.
@@ -124,11 +142,11 @@ impl<'a> StreamingSink<'a> {
             http1::Method::PATCH,
             "/api/v1/stream/{stream_id}/sink/{sink_id}",
         )
-        .with_path_param("stream_id", stream_id)
-        .with_path_param("sink_id", sink_id)
-        .with_body_param(stream_sink_patch)
-        .execute(self.cfg)
-        .await
+            .with_path_param("stream_id", stream_id)
+            .with_path_param("sink_id", sink_id)
+            .with_body_param(stream_sink_patch)
+            .execute(self.cfg)
+            .await
     }
 
     /// Get the sink's signing secret (only supported for http sinks)
@@ -136,15 +154,19 @@ impl<'a> StreamingSink<'a> {
     /// This is used to verify the authenticity of the delivery.
     ///
     /// For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
-    pub async fn get_secret(&self, stream_id: String, sink_id: String) -> Result<SinkSecretOut> {
+    pub async fn get_secret(
+        &self,
+        stream_id: String,
+        sink_id: String,
+    ) -> Result<SinkSecretOut> {
         crate::request::Request::new(
             http1::Method::GET,
             "/api/v1/stream/{stream_id}/sink/{sink_id}/secret",
         )
-        .with_path_param("stream_id", stream_id)
-        .with_path_param("sink_id", sink_id)
-        .execute(self.cfg)
-        .await
+            .with_path_param("stream_id", stream_id)
+            .with_path_param("sink_id", sink_id)
+            .execute(self.cfg)
+            .await
     }
 
     /// Rotates the signing secret (only supported for http sinks).
@@ -155,18 +177,20 @@ impl<'a> StreamingSink<'a> {
         endpoint_secret_rotate_in: EndpointSecretRotateIn,
         options: Option<StreamingSinkRotateSecretOptions>,
     ) -> Result<EmptyResponse> {
-        let StreamingSinkRotateSecretOptions { idempotency_key } = options.unwrap_or_default();
+        let StreamingSinkRotateSecretOptions {
+            idempotency_key,
+        } = options.unwrap_or_default();
 
         crate::request::Request::new(
             http1::Method::POST,
             "/api/v1/stream/{stream_id}/sink/{sink_id}/secret/rotate",
         )
-        .with_path_param("stream_id", stream_id)
-        .with_path_param("sink_id", sink_id)
-        .with_optional_header_param("idempotency-key", idempotency_key)
-        .with_body_param(endpoint_secret_rotate_in)
-        .execute(self.cfg)
-        .await
+            .with_path_param("stream_id", stream_id)
+            .with_path_param("sink_id", sink_id)
+            .with_optional_header_param("idempotency-key", idempotency_key)
+            .with_body_param(endpoint_secret_rotate_in)
+            .execute(self.cfg)
+            .await
     }
 
     /// Set or unset the transformation code associated with this sink.
@@ -180,10 +204,10 @@ impl<'a> StreamingSink<'a> {
             http1::Method::PATCH,
             "/api/v1/stream/{stream_id}/sink/{sink_id}/transformation",
         )
-        .with_path_param("stream_id", stream_id)
-        .with_path_param("sink_id", sink_id)
-        .with_body_param(sink_transform_in)
-        .execute(self.cfg)
-        .await
+            .with_path_param("stream_id", stream_id)
+            .with_path_param("sink_id", sink_id)
+            .with_body_param(sink_transform_in)
+            .execute(self.cfg)
+            .await
     }
 }

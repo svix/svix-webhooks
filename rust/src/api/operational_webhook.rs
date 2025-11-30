@@ -1,6 +1,8 @@
 // this file is @generated
-use super::OperationalWebhookEndpoint;
-use crate::Configuration;
+use super::{
+    OperationalWebhookEndpoint,
+};
+use crate::{ Configuration};
 
 pub struct OperationalWebhook<'a> {
     cfg: &'a Configuration,
@@ -8,7 +10,9 @@ pub struct OperationalWebhook<'a> {
 
 impl<'a> OperationalWebhook<'a> {
     pub(super) fn new(cfg: &'a Configuration) -> Self {
-        Self { cfg }
+        Self {
+            cfg,
+        }
     }
 
     pub fn endpoint(&self) -> OperationalWebhookEndpoint<'a> {

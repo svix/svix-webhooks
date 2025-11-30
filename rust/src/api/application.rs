@@ -24,7 +24,9 @@ pub struct Application<'a> {
 
 impl<'a> Application<'a> {
     pub(super) fn new(cfg: &'a Configuration) -> Self {
-        Self { cfg }
+        Self {
+            cfg,
+        }
     }
 
     /// List of all the organization's applications.
@@ -38,7 +40,10 @@ impl<'a> Application<'a> {
             order,
         } = options.unwrap_or_default();
 
-        crate::request::Request::new(http1::Method::GET, "/api/v1/app")
+        crate::request::Request::new(
+            http1::Method::GET,
+            "/api/v1/app",
+        )
             .with_optional_query_param("limit", limit)
             .with_optional_query_param("iterator", iterator)
             .with_optional_query_param("order", order)
@@ -52,9 +57,14 @@ impl<'a> Application<'a> {
         application_in: ApplicationIn,
         options: Option<ApplicationCreateOptions>,
     ) -> Result<ApplicationOut> {
-        let ApplicationCreateOptions { idempotency_key } = options.unwrap_or_default();
+        let ApplicationCreateOptions {
+            idempotency_key,
+        } = options.unwrap_or_default();
 
-        crate::request::Request::new(http1::Method::POST, "/api/v1/app")
+        crate::request::Request::new(
+            http1::Method::POST,
+            "/api/v1/app",
+        )
             .with_optional_header_param("idempotency-key", idempotency_key)
             .with_body_param(application_in)
             .execute(self.cfg)
@@ -79,8 +89,14 @@ impl<'a> Application<'a> {
     }
 
     /// Get an application.
-    pub async fn get(&self, app_id: String) -> Result<ApplicationOut> {
-        crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}")
+    pub async fn get(
+        &self,
+        app_id: String,
+    ) -> Result<ApplicationOut> {
+        crate::request::Request::new(
+            http1::Method::GET,
+            "/api/v1/app/{app_id}",
+        )
             .with_path_param("app_id", app_id)
             .execute(self.cfg)
             .await
@@ -92,7 +108,10 @@ impl<'a> Application<'a> {
         app_id: String,
         application_in: ApplicationIn,
     ) -> Result<ApplicationOut> {
-        crate::request::Request::new(http1::Method::PUT, "/api/v1/app/{app_id}")
+        crate::request::Request::new(
+            http1::Method::PUT,
+            "/api/v1/app/{app_id}",
+        )
             .with_path_param("app_id", app_id)
             .with_body_param(application_in)
             .execute(self.cfg)
@@ -100,8 +119,14 @@ impl<'a> Application<'a> {
     }
 
     /// Delete an application.
-    pub async fn delete(&self, app_id: String) -> Result<()> {
-        crate::request::Request::new(http1::Method::DELETE, "/api/v1/app/{app_id}")
+    pub async fn delete(
+        &self,
+        app_id: String,
+    ) -> Result<()> {
+        crate::request::Request::new(
+            http1::Method::DELETE,
+            "/api/v1/app/{app_id}",
+        )
             .with_path_param("app_id", app_id)
             .returns_nothing()
             .execute(self.cfg)
@@ -114,7 +139,10 @@ impl<'a> Application<'a> {
         app_id: String,
         application_patch: ApplicationPatch,
     ) -> Result<ApplicationOut> {
-        crate::request::Request::new(http1::Method::PATCH, "/api/v1/app/{app_id}")
+        crate::request::Request::new(
+            http1::Method::PATCH,
+            "/api/v1/app/{app_id}",
+        )
             .with_path_param("app_id", app_id)
             .with_body_param(application_patch)
             .execute(self.cfg)

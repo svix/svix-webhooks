@@ -1,5 +1,7 @@
 // this file is @generated
-use super::MessagePoller;
+use super::{
+    MessagePoller,
+};
 use crate::{error::Result, models::*, Configuration};
 
 #[derive(Default)]
@@ -58,7 +60,9 @@ pub struct Message<'a> {
 
 impl<'a> Message<'a> {
     pub(super) fn new(cfg: &'a Configuration) -> Self {
-        Self { cfg }
+        Self {
+            cfg,
+        }
     }
 
     pub fn poller(&self) -> MessagePoller<'a> {
@@ -67,14 +71,12 @@ impl<'a> Message<'a> {
 
     /// List all of the application's messages.
     ///
-    /// The `before` and `after` parameters let you filter all items created
-    /// before or after a certain date. These can be used alongside an
-    /// iterator to paginate over results within a certain window.
+    /// The `before` and `after` parameters let you filter all items created before or after a certain date. These can be
+    /// used alongside an iterator to paginate over results within a certain window.
     ///
-    /// Note that by default this endpoint is limited to retrieving 90 days'
-    /// worth of data relative to now or, if an iterator is provided, 90
-    /// days before/after the time indicated by the iterator ID. If you
-    /// require data beyond those time ranges, you will need to explicitly
+    /// Note that by default this endpoint is limited to retrieving 90 days' worth of data
+    /// relative to now or, if an iterator is provided, 90 days before/after the time indicated
+    /// by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
     /// set the `before` or `after` parameter as appropriate.
     pub async fn list(
         &self,
@@ -92,7 +94,10 @@ impl<'a> Message<'a> {
             event_types,
         } = options.unwrap_or_default();
 
-        crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}/msg")
+        crate::request::Request::new(
+            http1::Method::GET,
+            "/api/v1/app/{app_id}/msg",
+        )
             .with_path_param("app_id", app_id)
             .with_optional_query_param("limit", limit)
             .with_optional_query_param("iterator", iterator)
@@ -106,25 +111,15 @@ impl<'a> Message<'a> {
             .await
     }
 
-    /// Creates a new message and dispatches it to all of the application's
-    /// endpoints.
+    /// Creates a new message and dispatches it to all of the application's endpoints.
     ///
-    /// The `eventId` is an optional custom unique ID. It's verified to be
-    /// unique only up to a day, after that no verification will be made. If
-    /// a message with the same `eventId` already exists for the application, a
-    /// 409 conflict error will be returned.
+    /// The `eventId` is an optional custom unique ID. It's verified to be unique only up to a day, after that no verification will be made.
+    /// If a message with the same `eventId` already exists for the application, a 409 conflict error will be returned.
     ///
-    /// The `eventType` indicates the type and schema of the event. All messages
-    /// of a certain `eventType` are expected to have the same schema. Endpoints
-    /// can choose to only listen to specific event types. Messages can also
-    /// have `channels`, which similar to event types let endpoints filter by
-    /// them. Unlike event types, messages can have multiple channels, and
-    /// channels don't imply a specific message content or schema.
+    /// The `eventType` indicates the type and schema of the event. All messages of a certain `eventType` are expected to have the same schema. Endpoints can choose to only listen to specific event types.
+    /// Messages can also have `channels`, which similar to event types let endpoints filter by them. Unlike event types, messages can have multiple channels, and channels don't imply a specific message content or schema.
     ///
-    /// The `payload` property is the webhook's body (the actual webhook
-    /// message). Svix supports payload sizes of up to 1MiB, though it's
-    /// generally a good idea to keep webhook payloads small, probably no larger
-    /// than 40kb.
+    /// The `payload` property is the webhook's body (the actual webhook message). Svix supports payload sizes of up to 1MiB, though it's generally a good idea to keep webhook payloads small, probably no larger than 40kb.
     pub async fn create(
         &self,
         app_id: String,
@@ -136,7 +131,10 @@ impl<'a> Message<'a> {
             idempotency_key,
         } = options.unwrap_or_default();
 
-        crate::request::Request::new(http1::Method::POST, "/api/v1/app/{app_id}/msg")
+        crate::request::Request::new(
+            http1::Method::POST,
+            "/api/v1/app/{app_id}/msg",
+        )
             .with_path_param("app_id", app_id)
             .with_optional_query_param("with_content", with_content)
             .with_optional_header_param("idempotency-key", idempotency_key)
@@ -165,16 +163,18 @@ impl<'a> Message<'a> {
         app_id: String,
         options: Option<MessageExpungeAllContentsOptions>,
     ) -> Result<ExpungeAllContentsOut> {
-        let MessageExpungeAllContentsOptions { idempotency_key } = options.unwrap_or_default();
+        let MessageExpungeAllContentsOptions {
+            idempotency_key,
+        } = options.unwrap_or_default();
 
         crate::request::Request::new(
             http1::Method::POST,
             "/api/v1/app/{app_id}/msg/expunge-all-contents",
         )
-        .with_path_param("app_id", app_id)
-        .with_optional_header_param("idempotency-key", idempotency_key)
-        .execute(self.cfg)
-        .await
+            .with_path_param("app_id", app_id)
+            .with_optional_header_param("idempotency-key", idempotency_key)
+            .execute(self.cfg)
+            .await
     }
 
     /// Get a message by its ID or eventID.
@@ -184,9 +184,14 @@ impl<'a> Message<'a> {
         msg_id: String,
         options: Option<MessageGetOptions>,
     ) -> Result<MessageOut> {
-        let MessageGetOptions { with_content } = options.unwrap_or_default();
+        let MessageGetOptions {
+            with_content,
+        } = options.unwrap_or_default();
 
-        crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}/msg/{msg_id}")
+        crate::request::Request::new(
+            http1::Method::GET,
+            "/api/v1/app/{app_id}/msg/{msg_id}",
+        )
             .with_path_param("app_id", app_id)
             .with_path_param("msg_id", msg_id)
             .with_optional_query_param("with_content", with_content)
@@ -196,19 +201,22 @@ impl<'a> Message<'a> {
 
     /// Delete the given message's payload.
     ///
-    /// Useful in cases when a message was accidentally sent with sensitive
-    /// content. The message can't be replayed or resent once its payload
-    /// has been deleted or expired.
-    pub async fn expunge_content(&self, app_id: String, msg_id: String) -> Result<()> {
+    /// Useful in cases when a message was accidentally sent with sensitive content.
+    /// The message can't be replayed or resent once its payload has been deleted or expired.
+    pub async fn expunge_content(
+        &self,
+        app_id: String,
+        msg_id: String,
+    ) -> Result<()> {
         crate::request::Request::new(
             http1::Method::DELETE,
             "/api/v1/app/{app_id}/msg/{msg_id}/content",
         )
-        .with_path_param("app_id", app_id)
-        .with_path_param("msg_id", msg_id)
-        .returns_nothing()
-        .execute(self.cfg)
-        .await
+            .with_path_param("app_id", app_id)
+            .with_path_param("msg_id", msg_id)
+            .returns_nothing()
+            .execute(self.cfg)
+            .await
     }
 
     #[cfg(feature = "svix_beta")]

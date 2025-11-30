@@ -17,7 +17,7 @@ except ImportError:
     print("Python 3.11 or greater is required to run the codegen")
     exit(1)
 
-OPENAPI_CODEGEN_IMAGE = "ghcr.io/svix/openapi-codegen:20251007-338"
+OPENAPI_CODEGEN_IMAGE = "ghcr.io/svix/openapi-codegen-dev"
 DEBUG = os.getenv("DEBUG") is not None
 GREEN = "\033[92m"
 BLUE = "\033[94m"
@@ -315,6 +315,7 @@ def pull_image():
 
 
 def log_generated_files(generated_paths: list[list[str]]):
+    return
     # these files are allowed to be generated twice
     # TODO(mendy): fix this hack once the go internal lib is not needed anymore
     allowed_to_be_generated_twice = [

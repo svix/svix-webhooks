@@ -1,5 +1,8 @@
 // this file is @generated
-use super::{IngestEndpoint, IngestSource};
+use super::{
+    IngestEndpoint,
+    IngestSource,
+};
 use crate::{error::Result, models::*, Configuration};
 
 #[derive(Default)]
@@ -13,7 +16,9 @@ pub struct Ingest<'a> {
 
 impl<'a> Ingest<'a> {
     pub(super) fn new(cfg: &'a Configuration) -> Self {
-        Self { cfg }
+        Self {
+            cfg,
+        }
     }
 
     pub fn endpoint(&self) -> IngestEndpoint<'a> {
@@ -31,16 +36,18 @@ impl<'a> Ingest<'a> {
         ingest_source_consumer_portal_access_in: IngestSourceConsumerPortalAccessIn,
         options: Option<IngestDashboardOptions>,
     ) -> Result<DashboardAccessOut> {
-        let IngestDashboardOptions { idempotency_key } = options.unwrap_or_default();
+        let IngestDashboardOptions {
+            idempotency_key,
+        } = options.unwrap_or_default();
 
         crate::request::Request::new(
             http1::Method::POST,
             "/ingest/api/v1/source/{source_id}/dashboard",
         )
-        .with_path_param("source_id", source_id)
-        .with_optional_header_param("idempotency-key", idempotency_key)
-        .with_body_param(ingest_source_consumer_portal_access_in)
-        .execute(self.cfg)
-        .await
+            .with_path_param("source_id", source_id)
+            .with_optional_header_param("idempotency-key", idempotency_key)
+            .with_body_param(ingest_source_consumer_portal_access_in)
+            .execute(self.cfg)
+            .await
     }
 }

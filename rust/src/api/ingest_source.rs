@@ -29,7 +29,9 @@ pub struct IngestSource<'a> {
 
 impl<'a> IngestSource<'a> {
     pub(super) fn new(cfg: &'a Configuration) -> Self {
-        Self { cfg }
+        Self {
+            cfg,
+        }
     }
 
     /// List of all the organization's Ingest Sources.
@@ -43,7 +45,10 @@ impl<'a> IngestSource<'a> {
             order,
         } = options.unwrap_or_default();
 
-        crate::request::Request::new(http1::Method::GET, "/ingest/api/v1/source")
+        crate::request::Request::new(
+            http1::Method::GET,
+            "/ingest/api/v1/source",
+        )
             .with_optional_query_param("limit", limit)
             .with_optional_query_param("iterator", iterator)
             .with_optional_query_param("order", order)
@@ -57,9 +62,14 @@ impl<'a> IngestSource<'a> {
         ingest_source_in: IngestSourceIn,
         options: Option<IngestSourceCreateOptions>,
     ) -> Result<IngestSourceOut> {
-        let IngestSourceCreateOptions { idempotency_key } = options.unwrap_or_default();
+        let IngestSourceCreateOptions {
+            idempotency_key,
+        } = options.unwrap_or_default();
 
-        crate::request::Request::new(http1::Method::POST, "/ingest/api/v1/source")
+        crate::request::Request::new(
+            http1::Method::POST,
+            "/ingest/api/v1/source",
+        )
             .with_optional_header_param("idempotency-key", idempotency_key)
             .with_body_param(ingest_source_in)
             .execute(self.cfg)
@@ -67,8 +77,14 @@ impl<'a> IngestSource<'a> {
     }
 
     /// Get an Ingest Source by id or uid.
-    pub async fn get(&self, source_id: String) -> Result<IngestSourceOut> {
-        crate::request::Request::new(http1::Method::GET, "/ingest/api/v1/source/{source_id}")
+    pub async fn get(
+        &self,
+        source_id: String,
+    ) -> Result<IngestSourceOut> {
+        crate::request::Request::new(
+            http1::Method::GET,
+            "/ingest/api/v1/source/{source_id}",
+        )
             .with_path_param("source_id", source_id)
             .execute(self.cfg)
             .await
@@ -80,7 +96,10 @@ impl<'a> IngestSource<'a> {
         source_id: String,
         ingest_source_in: IngestSourceIn,
     ) -> Result<IngestSourceOut> {
-        crate::request::Request::new(http1::Method::PUT, "/ingest/api/v1/source/{source_id}")
+        crate::request::Request::new(
+            http1::Method::PUT,
+            "/ingest/api/v1/source/{source_id}",
+        )
             .with_path_param("source_id", source_id)
             .with_body_param(ingest_source_in)
             .execute(self.cfg)
@@ -88,8 +107,14 @@ impl<'a> IngestSource<'a> {
     }
 
     /// Delete an Ingest Source.
-    pub async fn delete(&self, source_id: String) -> Result<()> {
-        crate::request::Request::new(http1::Method::DELETE, "/ingest/api/v1/source/{source_id}")
+    pub async fn delete(
+        &self,
+        source_id: String,
+    ) -> Result<()> {
+        crate::request::Request::new(
+            http1::Method::DELETE,
+            "/ingest/api/v1/source/{source_id}",
+        )
             .with_path_param("source_id", source_id)
             .returns_nothing()
             .execute(self.cfg)
@@ -107,15 +132,17 @@ impl<'a> IngestSource<'a> {
         source_id: String,
         options: Option<IngestSourceRotateTokenOptions>,
     ) -> Result<RotateTokenOut> {
-        let IngestSourceRotateTokenOptions { idempotency_key } = options.unwrap_or_default();
+        let IngestSourceRotateTokenOptions {
+            idempotency_key,
+        } = options.unwrap_or_default();
 
         crate::request::Request::new(
             http1::Method::POST,
             "/ingest/api/v1/source/{source_id}/token/rotate",
         )
-        .with_path_param("source_id", source_id)
-        .with_optional_header_param("idempotency-key", idempotency_key)
-        .execute(self.cfg)
-        .await
+            .with_path_param("source_id", source_id)
+            .with_optional_header_param("idempotency-key", idempotency_key)
+            .execute(self.cfg)
+            .await
     }
 }

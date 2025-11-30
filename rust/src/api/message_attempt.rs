@@ -9,8 +9,7 @@ pub struct MessageAttemptListByEndpointOptions {
     /// The iterator returned from a prior invocation
     pub iterator: Option<String>,
 
-    /// Filter response based on the status of the attempt: Success (0), Pending
-    /// (1), Failed (2), or Sending (3)
+    /// Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)
     pub status: Option<MessageStatus>,
 
     /// Filter response based on the HTTP status code
@@ -50,8 +49,7 @@ pub struct MessageAttemptListByMsgOptions {
     /// The iterator returned from a prior invocation
     pub iterator: Option<String>,
 
-    /// Filter response based on the status of the attempt: Success (0), Pending
-    /// (1), Failed (2), or Sending (3)
+    /// Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)
     pub status: Option<MessageStatus>,
 
     /// Filter response based on the HTTP status code
@@ -97,8 +95,7 @@ pub struct MessageAttemptListAttemptedMessagesOptions {
     /// Filter response based on the message tags
     pub tag: Option<String>,
 
-    /// Filter response based on the status of the attempt: Success (0), Pending
-    /// (1), Failed (2), or Sending (3)
+    /// Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)
     pub status: Option<MessageStatus>,
 
     /// Only include items created before a certain date
@@ -138,15 +135,16 @@ pub struct MessageAttempt<'a> {
 
 impl<'a> MessageAttempt<'a> {
     pub(super) fn new(cfg: &'a Configuration) -> Self {
-        Self { cfg }
+        Self {
+            cfg,
+        }
     }
 
     /// List attempts by endpoint id
     ///
-    /// Note that by default this endpoint is limited to retrieving 90 days'
-    /// worth of data relative to now or, if an iterator is provided, 90
-    /// days before/after the time indicated by the iterator ID. If you
-    /// require data beyond those time ranges, you will need to explicitly
+    /// Note that by default this endpoint is limited to retrieving 90 days' worth of data
+    /// relative to now or, if an iterator is provided, 90 days before/after the time indicated
+    /// by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
     /// set the `before` or `after` parameter as appropriate.
     pub async fn list_by_endpoint(
         &self,
@@ -172,29 +170,28 @@ impl<'a> MessageAttempt<'a> {
             http1::Method::GET,
             "/api/v1/app/{app_id}/attempt/endpoint/{endpoint_id}",
         )
-        .with_path_param("app_id", app_id)
-        .with_path_param("endpoint_id", endpoint_id)
-        .with_optional_query_param("limit", limit)
-        .with_optional_query_param("iterator", iterator)
-        .with_optional_query_param("status", status)
-        .with_optional_query_param("status_code_class", status_code_class)
-        .with_optional_query_param("channel", channel)
-        .with_optional_query_param("tag", tag)
-        .with_optional_query_param("before", before)
-        .with_optional_query_param("after", after)
-        .with_optional_query_param("with_content", with_content)
-        .with_optional_query_param("with_msg", with_msg)
-        .with_optional_query_param("event_types", event_types)
-        .execute(self.cfg)
-        .await
+            .with_path_param("app_id", app_id)
+            .with_path_param("endpoint_id", endpoint_id)
+            .with_optional_query_param("limit", limit)
+            .with_optional_query_param("iterator", iterator)
+            .with_optional_query_param("status", status)
+            .with_optional_query_param("status_code_class", status_code_class)
+            .with_optional_query_param("channel", channel)
+            .with_optional_query_param("tag", tag)
+            .with_optional_query_param("before", before)
+            .with_optional_query_param("after", after)
+            .with_optional_query_param("with_content", with_content)
+            .with_optional_query_param("with_msg", with_msg)
+            .with_optional_query_param("event_types", event_types)
+            .execute(self.cfg)
+            .await
     }
 
     /// List attempts by message ID.
     ///
-    /// Note that by default this endpoint is limited to retrieving 90 days'
-    /// worth of data relative to now or, if an iterator is provided, 90
-    /// days before/after the time indicated by the iterator ID. If you
-    /// require data beyond those time ranges, you will need to explicitly
+    /// Note that by default this endpoint is limited to retrieving 90 days' worth of data
+    /// relative to now or, if an iterator is provided, 90 days before/after the time indicated
+    /// by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
     /// set the `before` or `after` parameter as appropriate.
     pub async fn list_by_msg(
         &self,
@@ -220,33 +217,30 @@ impl<'a> MessageAttempt<'a> {
             http1::Method::GET,
             "/api/v1/app/{app_id}/attempt/msg/{msg_id}",
         )
-        .with_path_param("app_id", app_id)
-        .with_path_param("msg_id", msg_id)
-        .with_optional_query_param("limit", limit)
-        .with_optional_query_param("iterator", iterator)
-        .with_optional_query_param("status", status)
-        .with_optional_query_param("status_code_class", status_code_class)
-        .with_optional_query_param("channel", channel)
-        .with_optional_query_param("tag", tag)
-        .with_optional_query_param("endpoint_id", endpoint_id)
-        .with_optional_query_param("before", before)
-        .with_optional_query_param("after", after)
-        .with_optional_query_param("with_content", with_content)
-        .with_optional_query_param("event_types", event_types)
-        .execute(self.cfg)
-        .await
+            .with_path_param("app_id", app_id)
+            .with_path_param("msg_id", msg_id)
+            .with_optional_query_param("limit", limit)
+            .with_optional_query_param("iterator", iterator)
+            .with_optional_query_param("status", status)
+            .with_optional_query_param("status_code_class", status_code_class)
+            .with_optional_query_param("channel", channel)
+            .with_optional_query_param("tag", tag)
+            .with_optional_query_param("endpoint_id", endpoint_id)
+            .with_optional_query_param("before", before)
+            .with_optional_query_param("after", after)
+            .with_optional_query_param("with_content", with_content)
+            .with_optional_query_param("event_types", event_types)
+            .execute(self.cfg)
+            .await
     }
 
-    /// List messages for a particular endpoint. Additionally includes metadata
-    /// about the latest message attempt.
+    /// List messages for a particular endpoint. Additionally includes metadata about the latest message attempt.
     ///
-    /// The `before` parameter lets you filter all items created before a
-    /// certain date and is ignored if an iterator is passed.
+    /// The `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.
     ///
-    /// Note that by default this endpoint is limited to retrieving 90 days'
-    /// worth of data relative to now or, if an iterator is provided, 90
-    /// days before/after the time indicated by the iterator ID. If you
-    /// require data beyond those time ranges, you will need to explicitly
+    /// Note that by default this endpoint is limited to retrieving 90 days' worth of data
+    /// relative to now or, if an iterator is provided, 90 days before/after the time indicated
+    /// by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
     /// set the `before` or `after` parameter as appropriate.
     pub async fn list_attempted_messages(
         &self,
@@ -270,19 +264,19 @@ impl<'a> MessageAttempt<'a> {
             http1::Method::GET,
             "/api/v1/app/{app_id}/endpoint/{endpoint_id}/msg",
         )
-        .with_path_param("app_id", app_id)
-        .with_path_param("endpoint_id", endpoint_id)
-        .with_optional_query_param("limit", limit)
-        .with_optional_query_param("iterator", iterator)
-        .with_optional_query_param("channel", channel)
-        .with_optional_query_param("tag", tag)
-        .with_optional_query_param("status", status)
-        .with_optional_query_param("before", before)
-        .with_optional_query_param("after", after)
-        .with_optional_query_param("with_content", with_content)
-        .with_optional_query_param("event_types", event_types)
-        .execute(self.cfg)
-        .await
+            .with_path_param("app_id", app_id)
+            .with_path_param("endpoint_id", endpoint_id)
+            .with_optional_query_param("limit", limit)
+            .with_optional_query_param("iterator", iterator)
+            .with_optional_query_param("channel", channel)
+            .with_optional_query_param("tag", tag)
+            .with_optional_query_param("status", status)
+            .with_optional_query_param("before", before)
+            .with_optional_query_param("after", after)
+            .with_optional_query_param("with_content", with_content)
+            .with_optional_query_param("event_types", event_types)
+            .execute(self.cfg)
+            .await
     }
 
     #[deprecated = "Use `list_by_msg` instead, setting the `endpoint_id` in `options`."]
@@ -337,18 +331,17 @@ impl<'a> MessageAttempt<'a> {
             http1::Method::GET,
             "/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}",
         )
-        .with_path_param("app_id", app_id)
-        .with_path_param("msg_id", msg_id)
-        .with_path_param("attempt_id", attempt_id)
-        .execute(self.cfg)
-        .await
+            .with_path_param("app_id", app_id)
+            .with_path_param("msg_id", msg_id)
+            .with_path_param("attempt_id", attempt_id)
+            .execute(self.cfg)
+            .await
     }
 
     /// Deletes the given attempt's response body.
     ///
     /// Useful when an endpoint accidentally returned sensitive content.
-    /// The message can't be replayed or resent once its payload has been
-    /// deleted or expired.
+    /// The message can't be replayed or resent once its payload has been deleted or expired.
     pub async fn expunge_content(
         &self,
         app_id: String,
@@ -359,12 +352,12 @@ impl<'a> MessageAttempt<'a> {
             http1::Method::DELETE,
             "/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/content",
         )
-        .with_path_param("app_id", app_id)
-        .with_path_param("msg_id", msg_id)
-        .with_path_param("attempt_id", attempt_id)
-        .returns_nothing()
-        .execute(self.cfg)
-        .await
+            .with_path_param("app_id", app_id)
+            .with_path_param("msg_id", msg_id)
+            .with_path_param("attempt_id", attempt_id)
+            .returns_nothing()
+            .execute(self.cfg)
+            .await
     }
 
     /// List endpoints attempted by a given message.
@@ -377,19 +370,21 @@ impl<'a> MessageAttempt<'a> {
         msg_id: String,
         options: Option<MessageAttemptListAttemptedDestinationsOptions>,
     ) -> Result<ListResponseMessageEndpointOut> {
-        let MessageAttemptListAttemptedDestinationsOptions { limit, iterator } =
-            options.unwrap_or_default();
+        let MessageAttemptListAttemptedDestinationsOptions {
+            limit,
+            iterator,
+        } = options.unwrap_or_default();
 
         crate::request::Request::new(
             http1::Method::GET,
             "/api/v1/app/{app_id}/msg/{msg_id}/endpoint",
         )
-        .with_path_param("app_id", app_id)
-        .with_path_param("msg_id", msg_id)
-        .with_optional_query_param("limit", limit)
-        .with_optional_query_param("iterator", iterator)
-        .execute(self.cfg)
-        .await
+            .with_path_param("app_id", app_id)
+            .with_path_param("msg_id", msg_id)
+            .with_optional_query_param("limit", limit)
+            .with_optional_query_param("iterator", iterator)
+            .execute(self.cfg)
+            .await
     }
 
     /// Resend a message to the specified endpoint.
@@ -400,18 +395,20 @@ impl<'a> MessageAttempt<'a> {
         endpoint_id: String,
         options: Option<MessageAttemptResendOptions>,
     ) -> Result<()> {
-        let MessageAttemptResendOptions { idempotency_key } = options.unwrap_or_default();
+        let MessageAttemptResendOptions {
+            idempotency_key,
+        } = options.unwrap_or_default();
 
         crate::request::Request::new(
             http1::Method::POST,
             "/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/resend",
         )
-        .with_path_param("app_id", app_id)
-        .with_path_param("msg_id", msg_id)
-        .with_path_param("endpoint_id", endpoint_id)
-        .with_optional_header_param("idempotency-key", idempotency_key)
-        .returns_nothing()
-        .execute(self.cfg)
-        .await
+            .with_path_param("app_id", app_id)
+            .with_path_param("msg_id", msg_id)
+            .with_path_param("endpoint_id", endpoint_id)
+            .with_optional_header_param("idempotency-key", idempotency_key)
+            .returns_nothing()
+            .execute(self.cfg)
+            .await
     }
 }

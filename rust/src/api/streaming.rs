@@ -1,5 +1,10 @@
 // this file is @generated
-use super::{StreamingEventType, StreamingEvents, StreamingSink, StreamingStream};
+use super::{
+    StreamingEventType,
+    StreamingEvents,
+    StreamingSink,
+    StreamingStream,
+};
 use crate::{error::Result, models::*, Configuration};
 
 pub struct Streaming<'a> {
@@ -8,7 +13,9 @@ pub struct Streaming<'a> {
 
 impl<'a> Streaming<'a> {
     pub(super) fn new(cfg: &'a Configuration) -> Self {
-        Self { cfg }
+        Self {
+            cfg,
+        }
     }
 
     pub fn event_type(&self) -> StreamingEventType<'a> {
@@ -37,14 +44,13 @@ impl<'a> Streaming<'a> {
             http1::Method::GET,
             "/api/v1/stream/{stream_id}/sink/{sink_id}/headers",
         )
-        .with_path_param("stream_id", stream_id)
-        .with_path_param("sink_id", sink_id)
-        .execute(self.cfg)
-        .await
+            .with_path_param("stream_id", stream_id)
+            .with_path_param("sink_id", sink_id)
+            .execute(self.cfg)
+            .await
     }
 
-    /// Updates the Sink's headers. Only valid for `http` or `otelTracing`
-    /// sinks.
+    /// Updates the Sink's headers. Only valid for `http` or `otelTracing` sinks.
     pub async fn sink_headers_patch(
         &self,
         stream_id: String,
@@ -55,11 +61,11 @@ impl<'a> Streaming<'a> {
             http1::Method::PATCH,
             "/api/v1/stream/{stream_id}/sink/{sink_id}/headers",
         )
-        .with_path_param("stream_id", stream_id)
-        .with_path_param("sink_id", sink_id)
-        .with_body_param(http_sink_headers_patch_in)
-        .execute(self.cfg)
-        .await
+            .with_path_param("stream_id", stream_id)
+            .with_path_param("sink_id", sink_id)
+            .with_body_param(http_sink_headers_patch_in)
+            .execute(self.cfg)
+            .await
     }
 
     /// Get the transformation code associated with this sink.
@@ -72,9 +78,9 @@ impl<'a> Streaming<'a> {
             http1::Method::GET,
             "/api/v1/stream/{stream_id}/sink/{sink_id}/transformation",
         )
-        .with_path_param("stream_id", stream_id)
-        .with_path_param("sink_id", sink_id)
-        .execute(self.cfg)
-        .await
+            .with_path_param("stream_id", stream_id)
+            .with_path_param("sink_id", sink_id)
+            .execute(self.cfg)
+            .await
     }
 }

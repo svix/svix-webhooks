@@ -38,11 +38,12 @@ pub struct MessagePoller<'a> {
 
 impl<'a> MessagePoller<'a> {
     pub(super) fn new(cfg: &'a Configuration) -> Self {
-        Self { cfg }
+        Self {
+            cfg,
+        }
     }
 
-    /// Reads the stream of created messages for an application, filtered on the
-    /// Sink's event types and Channels.
+    /// Reads the stream of created messages for an application, filtered on the Sink's event types and Channels.
     pub async fn poll(
         &self,
         app_id: String,
@@ -57,7 +58,10 @@ impl<'a> MessagePoller<'a> {
             after,
         } = options.unwrap_or_default();
 
-        crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}/poller/{sink_id}")
+        crate::request::Request::new(
+            http1::Method::GET,
+            "/api/v1/app/{app_id}/poller/{sink_id}",
+        )
             .with_path_param("app_id", app_id)
             .with_path_param("sink_id", sink_id)
             .with_optional_query_param("limit", limit)
@@ -69,9 +73,8 @@ impl<'a> MessagePoller<'a> {
             .await
     }
 
-    /// Reads the stream of created messages for an application, filtered on the
-    /// Sink's event types and Channels, using server-managed iterator
-    /// tracking.
+    /// Reads the stream of created messages for an application, filtered on the Sink's event types and
+    /// Channels, using server-managed iterator tracking.
     pub async fn consumer_poll(
         &self,
         app_id: String,
@@ -79,19 +82,22 @@ impl<'a> MessagePoller<'a> {
         consumer_id: String,
         options: Option<MessagePollerConsumerPollOptions>,
     ) -> Result<PollingEndpointOut> {
-        let MessagePollerConsumerPollOptions { limit, iterator } = options.unwrap_or_default();
+        let MessagePollerConsumerPollOptions {
+            limit,
+            iterator,
+        } = options.unwrap_or_default();
 
         crate::request::Request::new(
             http1::Method::GET,
             "/api/v1/app/{app_id}/poller/{sink_id}/consumer/{consumer_id}",
         )
-        .with_path_param("app_id", app_id)
-        .with_path_param("sink_id", sink_id)
-        .with_path_param("consumer_id", consumer_id)
-        .with_optional_query_param("limit", limit)
-        .with_optional_query_param("iterator", iterator)
-        .execute(self.cfg)
-        .await
+            .with_path_param("app_id", app_id)
+            .with_path_param("sink_id", sink_id)
+            .with_path_param("consumer_id", consumer_id)
+            .with_optional_query_param("limit", limit)
+            .with_optional_query_param("iterator", iterator)
+            .execute(self.cfg)
+            .await
     }
 
     /// Sets the starting offset for the consumer of a polling endpoint.
@@ -103,18 +109,20 @@ impl<'a> MessagePoller<'a> {
         polling_endpoint_consumer_seek_in: PollingEndpointConsumerSeekIn,
         options: Option<MessagePollerConsumerSeekOptions>,
     ) -> Result<PollingEndpointConsumerSeekOut> {
-        let MessagePollerConsumerSeekOptions { idempotency_key } = options.unwrap_or_default();
+        let MessagePollerConsumerSeekOptions {
+            idempotency_key,
+        } = options.unwrap_or_default();
 
         crate::request::Request::new(
             http1::Method::POST,
             "/api/v1/app/{app_id}/poller/{sink_id}/consumer/{consumer_id}/seek",
         )
-        .with_path_param("app_id", app_id)
-        .with_path_param("sink_id", sink_id)
-        .with_path_param("consumer_id", consumer_id)
-        .with_optional_header_param("idempotency-key", idempotency_key)
-        .with_body_param(polling_endpoint_consumer_seek_in)
-        .execute(self.cfg)
-        .await
+            .with_path_param("app_id", app_id)
+            .with_path_param("sink_id", sink_id)
+            .with_path_param("consumer_id", consumer_id)
+            .with_optional_header_param("idempotency-key", idempotency_key)
+            .with_body_param(polling_endpoint_consumer_seek_in)
+            .execute(self.cfg)
+            .await
     }
 }
