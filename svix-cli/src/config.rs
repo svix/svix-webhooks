@@ -3,7 +3,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use anyhow::Result;
+use anyhow::{Context as _, Result};
 use figment::{
     providers::{Env, Format, Toml},
     Figment,
@@ -52,7 +52,7 @@ fn open_config_file(path: &Path) -> Result<File> {
 
 impl Config {
     pub fn load() -> Result<Config> {
-        let cfg_file = get_folder()?.join(FILE_NAME);
+        let cfg_file = get_config_file_path()?;
         let config: Config = Figment::new()
             .merge(Toml::file(cfg_file))
             .merge(Env::prefixed("SVIX_"))
@@ -81,21 +81,9 @@ impl Config {
 const FILE_NAME: &str = "config.toml";
 
 fn get_folder() -> Result<PathBuf> {
-    let config_path = if cfg!(windows) {
-        std::env::var("APPDATA")
-    } else {
-        std::env::var("XDG_CONFIG_HOME")
-    };
-
-    let pb = match config_path {
-        Ok(path) => PathBuf::from(path),
-        Err(_e) => {
-            // N.b. per <https://github.com/rust-lang/cargo/blob/master/crates/home/README.md> the
-            // stdlib should be fixed as of Rust 1.86.
-            home::home_dir().ok_or_else(|| anyhow::anyhow!("unable to find config path"))?
-        }
-    };
-    Ok(pb.join(".config").join("svix"))
+    Ok(dirs::config_dir()
+        .context("unable to find config path")?
+        .join("svix"))
 }
 
 pub fn get_config_file_path() -> Result<PathBuf> {
