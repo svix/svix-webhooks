@@ -20,9 +20,9 @@ impl ListenArgs {
                 let cfg_path = get_config_file_path()?;
                 if let Err(e) = updated_cfg.save_to_disk(&cfg_path).context(format!(
                     "failed to save relay token to config file at `{}`",
-                    cfg_path.as_os_str().to_str().unwrap_or_default()
+                    cfg_path.display()
                 )) {
-                    eprintln!("{e}");
+                    eprintln!("{e:#}");
                 }
                 token
             }

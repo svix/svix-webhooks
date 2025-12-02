@@ -1,14 +1,14 @@
 use std::{
-    fs::{File, OpenOptions},
     io::Write,
     path::{Path, PathBuf},
 };
 
-use anyhow::Result;
+use anyhow::{Context as _, Result};
 use figment::{
     providers::{Env, Format, Toml},
     Figment,
 };
+use fs_err::{self as fs, File};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
@@ -30,29 +30,29 @@ pub struct Config {
     pub relay_disable_security: Option<bool>,
 }
 
-fn config_file_open_opts() -> OpenOptions {
-    OpenOptions::new()
-        .create(true)
-        .truncate(true)
-        .write(true)
-        .to_owned()
-}
+fn create_config_file(path: &Path) -> Result<File> {
+    let dir = path
+        .parent()
+        .context("config file path must not be empty")?;
+    fs::create_dir_all(dir)?;
 
-#[cfg(windows)]
-fn open_config_file(path: &Path) -> Result<File> {
-    Ok(config_file_open_opts().open(path)?)
-}
+    let mut opts = File::options();
+    opts.create(true).truncate(true).write(true);
 
-#[cfg(unix)]
-fn open_config_file(path: &Path) -> Result<File> {
-    use std::os::unix::fs::OpenOptionsExt;
-    const FILE_MODE: u32 = 0o600;
-    Ok(config_file_open_opts().mode(FILE_MODE).open(path)?)
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+
+        const FILE_MODE: u32 = 0o600;
+        opts.options_mut().mode(FILE_MODE);
+    }
+
+    Ok(opts.open(path)?)
 }
 
 impl Config {
     pub fn load() -> Result<Config> {
-        let cfg_file = get_folder()?.join(FILE_NAME);
+        let cfg_file = get_config_file_path()?;
         let config: Config = Figment::new()
             .merge(Toml::file(cfg_file))
             .merge(Env::prefixed("SVIX_"))
@@ -61,8 +61,7 @@ impl Config {
     }
 
     pub fn save_to_disk(&self, path: &Path) -> Result<()> {
-        let mut fh = open_config_file(path)?;
-
+        let mut fh = create_config_file(path)?;
         let source = &toml::to_string_pretty(self)?;
         fh.write_all(source.as_bytes())?;
         Ok(())
@@ -81,21 +80,9 @@ impl Config {
 const FILE_NAME: &str = "config.toml";
 
 fn get_folder() -> Result<PathBuf> {
-    let config_path = if cfg!(windows) {
-        std::env::var("APPDATA")
-    } else {
-        std::env::var("XDG_CONFIG_HOME")
-    };
-
-    let pb = match config_path {
-        Ok(path) => PathBuf::from(path),
-        Err(_e) => {
-            // N.b. per <https://github.com/rust-lang/cargo/blob/master/crates/home/README.md> the
-            // stdlib should be fixed as of Rust 1.86.
-            home::home_dir().ok_or_else(|| anyhow::anyhow!("unable to find config path"))?
-        }
-    };
-    Ok(pb.join(".config").join("svix"))
+    Ok(dirs::config_dir()
+        .context("unable to find config path")?
+        .join("svix"))
 }
 
 pub fn get_config_file_path() -> Result<PathBuf> {
