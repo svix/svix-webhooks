@@ -10,6 +10,7 @@ module Svix
     HUBSPOT = "Hubspot".freeze
     INNGEST = "Inngest".freeze
     LOOPS = "Loops".freeze
+    OTEL = "Otel".freeze
     RESEND = "Resend".freeze
     SALESFORCE = "Salesforce".freeze
     SEGMENT = "Segment".freeze
@@ -30,6 +31,7 @@ module Svix
         HUBSPOT,
         INNGEST,
         LOOPS,
+        OTEL,
         RESEND,
         SALESFORCE,
         SEGMENT,

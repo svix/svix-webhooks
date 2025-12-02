@@ -4,6 +4,7 @@ package com.svix.kotlin
 import com.svix.kotlin.models.ConnectorIn
 import com.svix.kotlin.models.ConnectorOut
 import com.svix.kotlin.models.ConnectorPatch
+import com.svix.kotlin.models.ConnectorProduct
 import com.svix.kotlin.models.ConnectorUpdate
 import com.svix.kotlin.models.ListResponseConnectorOut
 import com.svix.kotlin.models.Ordering
@@ -16,6 +17,7 @@ data class ConnectorListOptions(
     val iterator: String? = null,
     /** The sorting order of the returned items */
     val order: Ordering? = null,
+    val productType: ConnectorProduct? = null,
 )
 
 data class ConnectorCreateOptions(val idempotencyKey: String? = null)
@@ -29,6 +31,7 @@ class Connector(private val client: SvixHttpClient) {
         options.limit?.let { url.addQueryParameter("limit", serializeQueryParam(it)) }
         options.iterator?.let { url.addQueryParameter("iterator", it) }
         options.order?.let { url.addQueryParameter("order", serializeQueryParam(it)) }
+        options.productType?.let { url.addQueryParameter("product_type", serializeQueryParam(it)) }
         return client.executeRequest<Any, ListResponseConnectorOut>("GET", url.build())
     }
 

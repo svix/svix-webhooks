@@ -1,6 +1,7 @@
 // this file is @generated
 package com.svix.kotlin
 
+import com.svix.kotlin.models.EmptyResponse
 import com.svix.kotlin.models.ListResponseEndpointMessageOut
 import com.svix.kotlin.models.ListResponseMessageAttemptOut
 import com.svix.kotlin.models.ListResponseMessageEndpointOut
@@ -237,13 +238,17 @@ class MessageAttempt(private val client: SvixHttpClient) {
         msgId: String,
         endpointId: String,
         options: MessageAttemptResendOptions = MessageAttemptResendOptions(),
-    ) {
+    ): EmptyResponse {
         val url =
             client
                 .newUrlBuilder()
                 .encodedPath("/api/v1/app/$appId/msg/$msgId/endpoint/$endpointId/resend")
         val headers = Headers.Builder()
         options.idempotencyKey?.let { headers.add("idempotency-key", it) }
-        client.executeRequest<Any, Boolean>("POST", url.build(), headers = headers.build())
+        return client.executeRequest<Any, EmptyResponse>(
+            "POST",
+            url.build(),
+            headers = headers.build(),
+        )
     }
 }

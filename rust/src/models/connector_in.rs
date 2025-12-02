@@ -1,7 +1,7 @@
 // this file is @generated
 use serde::{Deserialize, Serialize};
 
-use super::connector_kind::ConnectorKind;
+use super::{connector_kind::ConnectorKind, connector_product::ConnectorProduct};
 
 #[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
 pub struct ConnectorIn {
@@ -27,7 +27,15 @@ pub struct ConnectorIn {
 
     pub name: String,
 
+    #[serde(rename = "productType")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub product_type: Option<ConnectorProduct>,
+
     pub transformation: String,
+
+    /// The Connector's UID.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub uid: Option<String>,
 }
 
 impl ConnectorIn {
@@ -40,7 +48,9 @@ impl ConnectorIn {
             kind: None,
             logo: None,
             name,
+            product_type: None,
             transformation,
+            uid: None,
         }
     }
 }

@@ -390,10 +390,11 @@ impl MessageAttemptCommands {
                 endpoint_id,
                 options,
             } => {
-                client
+                let resp = client
                     .message_attempt()
                     .resend(app_id, msg_id, endpoint_id, Some(options.into()))
                     .await?;
+                crate::json::print_json_output(&resp, color_mode)?;
             }
         }
 

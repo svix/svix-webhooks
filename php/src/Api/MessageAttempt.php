@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace Svix\Api;
 
+use Svix\Models\EmptyResponse;
 use Svix\Models\ListResponseEndpointMessageOut;
 use Svix\Models\ListResponseMessageAttemptOut;
 use Svix\Models\ListResponseMessageEndpointOut;
@@ -168,11 +169,13 @@ class MessageAttempt
         string $msgId,
         string $endpointId,
         ?MessageAttemptResendOptions $options = null,
-    ): void {
+    ): EmptyResponse {
         $request = $this->client->newReq('POST', "/api/v1/app/{$appId}/msg/{$msgId}/endpoint/{$endpointId}/resend");
         if (null !== $options) {
             $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
         }
-        $res = $this->client->sendNoResponseBody($request);
+        $res = $this->client->send($request);
+
+        return EmptyResponse::fromJson($res);
     }
 }

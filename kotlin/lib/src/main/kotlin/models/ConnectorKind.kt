@@ -18,6 +18,7 @@ enum class ConnectorKind : ToQueryParam {
     @SerialName("Hubspot") HUBSPOT,
     @SerialName("Inngest") INNGEST,
     @SerialName("Loops") LOOPS,
+    @SerialName("Otel") OTEL,
     @SerialName("Resend") RESEND,
     @SerialName("Salesforce") SALESFORCE,
     @SerialName("Segment") SEGMENT,

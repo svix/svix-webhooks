@@ -15,6 +15,8 @@ module Svix
         "GET",
         "/api/v1/app",
         query_params: {
+          "exclude_apps_with_no_endpoints" => options["exclude_apps_with_no_endpoints"],
+          "exclude_apps_with_disabled_endpoints" => options["exclude_apps_with_disabled_endpoints"],
           "limit" => options["limit"],
           "iterator" => options["iterator"],
           "order" => options["order"]

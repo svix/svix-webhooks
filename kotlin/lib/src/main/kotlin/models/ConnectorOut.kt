@@ -18,6 +18,9 @@ data class ConnectorOut(
     val name: String,
     /** The Environment's ID. */
     val orgId: String,
+    val productType: ConnectorProduct,
     val transformation: String,
+    /** The Connector's UID. */
+    val uid: String? = null,
     val updatedAt: Instant,
 )

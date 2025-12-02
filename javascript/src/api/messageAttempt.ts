@@ -1,5 +1,6 @@
 // this file is @generated
 
+import { type EmptyResponse, EmptyResponseSerializer } from "../models/emptyResponse";
 import {
   type ListResponseEndpointMessageOut,
   ListResponseEndpointMessageOutSerializer,
@@ -289,7 +290,7 @@ export class MessageAttempt {
     msgId: string,
     endpointId: string,
     options?: MessageAttemptResendOptions
-  ): Promise<void> {
+  ): Promise<EmptyResponse> {
     const request = new SvixRequest(
       HttpMethod.POST,
       "/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/resend"
@@ -300,6 +301,6 @@ export class MessageAttempt {
     request.setPathParam("endpoint_id", endpointId);
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
 
-    return request.sendNoResponseBody(this.requestCtx);
+    return request.send(this.requestCtx, EmptyResponseSerializer._fromJsonObject);
   }
 }

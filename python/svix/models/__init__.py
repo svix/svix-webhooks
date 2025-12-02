@@ -29,6 +29,7 @@ from .connector_in import ConnectorIn
 from .connector_kind import ConnectorKind
 from .connector_out import ConnectorOut
 from .connector_patch import ConnectorPatch
+from .connector_product import ConnectorProduct
 from .connector_update import ConnectorUpdate
 from .create_stream_events_in import CreateStreamEventsIn
 from .create_stream_events_out import CreateStreamEventsOut
@@ -83,6 +84,7 @@ from .github_config import GithubConfig
 from .github_config_out import GithubConfigOut
 from .google_cloud_storage_config import GoogleCloudStorageConfig
 from .google_cloud_storage_patch_config import GoogleCloudStoragePatchConfig
+from .http_attempt_times import HttpAttemptTimes
 from .http_patch_config import HttpPatchConfig
 from .http_sink_headers_patch_in import HttpSinkHeadersPatchIn
 from .hubspot_config import HubspotConfig
@@ -140,6 +142,8 @@ from .message_attempt_exhausted_event_data import MessageAttemptExhaustedEventDa
 from .message_attempt_failed_data import MessageAttemptFailedData
 from .message_attempt_failing_event import MessageAttemptFailingEvent
 from .message_attempt_failing_event_data import MessageAttemptFailingEventData
+from .message_attempt_log import MessageAttemptLog
+from .message_attempt_log_event import MessageAttemptLogEvent
 from .message_attempt_out import MessageAttemptOut
 from .message_attempt_recovered_event import MessageAttemptRecoveredEvent
 from .message_attempt_recovered_event_data import MessageAttemptRecoveredEventData
@@ -247,6 +251,7 @@ __all__ = [
     "ConnectorKind",
     "ConnectorOut",
     "ConnectorPatch",
+    "ConnectorProduct",
     "ConnectorUpdate",
     "CreateStreamEventsIn",
     "CreateStreamEventsOut",
@@ -301,6 +306,7 @@ __all__ = [
     "GithubConfigOut",
     "GoogleCloudStorageConfig",
     "GoogleCloudStoragePatchConfig",
+    "HttpAttemptTimes",
     "HttpPatchConfig",
     "HttpSinkHeadersPatchIn",
     "HubspotConfig",
@@ -350,6 +356,8 @@ __all__ = [
     "MessageAttemptFailedData",
     "MessageAttemptFailingEvent",
     "MessageAttemptFailingEventData",
+    "MessageAttemptLog",
+    "MessageAttemptLogEvent",
     "MessageAttemptOut",
     "MessageAttemptRecoveredEvent",
     "MessageAttemptRecoveredEventData",

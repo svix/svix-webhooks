@@ -4,6 +4,12 @@ use svix::api::*;
 
 #[derive(Args, Clone)]
 pub struct ApplicationListOptions {
+    /// Exclude applications that have no endpoints. Default is false.
+    #[arg(long)]
+    pub exclude_apps_with_no_endpoints: Option<bool>,
+    /// Exclude applications that have only disabled endpoints. Default is false.
+    #[arg(long)]
+    pub exclude_apps_with_disabled_endpoints: Option<bool>,
     /// Limit the number of returned items
     #[arg(long)]
     pub limit: Option<i32>,
@@ -18,11 +24,15 @@ pub struct ApplicationListOptions {
 impl From<ApplicationListOptions> for svix::api::ApplicationListOptions {
     fn from(value: ApplicationListOptions) -> Self {
         let ApplicationListOptions {
+            exclude_apps_with_no_endpoints,
+            exclude_apps_with_disabled_endpoints,
             limit,
             iterator,
             order,
         } = value;
         Self {
+            exclude_apps_with_no_endpoints,
+            exclude_apps_with_disabled_endpoints,
             limit,
             iterator,
             order,

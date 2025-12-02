@@ -1,6 +1,7 @@
 // this file is @generated
 package com.svix.api;
 
+import com.svix.models.ConnectorProduct;
 import com.svix.models.Ordering;
 
 import lombok.Data;
@@ -15,4 +16,6 @@ public class ConnectorListOptions {
 
     /** The sorting order of the returned items */
     Ordering order;
+
+    ConnectorProduct productType;
 }

@@ -186,6 +186,7 @@ public class EndpointPatch {
         this.rateLimit = new MaybeUnset<>(rateLimit);
     }
 
+    @Deprecated
     public EndpointPatch secret(String secret) {
         this.secret = new MaybeUnset<>(secret);
         return this;
@@ -200,6 +201,7 @@ public class EndpointPatch {
      * @return secret
      */
     @javax.annotation.Nullable
+    @Deprecated
     public String getSecret() {
         if (secret == null) {
             return null;
@@ -207,6 +209,7 @@ public class EndpointPatch {
         return secret.getValue();
     }
 
+    @Deprecated
     public void setSecret(String secret) {
         this.secret = new MaybeUnset<>(secret);
     }

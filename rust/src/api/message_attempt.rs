@@ -399,7 +399,7 @@ impl<'a> MessageAttempt<'a> {
         msg_id: String,
         endpoint_id: String,
         options: Option<MessageAttemptResendOptions>,
-    ) -> Result<()> {
+    ) -> Result<EmptyResponse> {
         let MessageAttemptResendOptions { idempotency_key } = options.unwrap_or_default();
 
         crate::request::Request::new(
@@ -410,7 +410,6 @@ impl<'a> MessageAttempt<'a> {
         .with_path_param("msg_id", msg_id)
         .with_path_param("endpoint_id", endpoint_id)
         .with_optional_header_param("idempotency-key", idempotency_key)
-        .returns_nothing()
         .execute(self.cfg)
         .await
     }

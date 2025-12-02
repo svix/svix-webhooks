@@ -572,7 +572,7 @@ namespace Svix
         /// <summary>
         /// Resend a message to the specified endpoint.
         /// </summary>
-        public async Task<bool> ResendAsync(
+        public async Task<EmptyResponse> ResendAsync(
             string appId,
             string msgId,
             string endpointId,
@@ -582,7 +582,7 @@ namespace Svix
         {
             try
             {
-                var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
+                var response = await _client.SvixHttpClient.SendRequestAsync<EmptyResponse>(
                     method: HttpMethod.Post,
                     path: "/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/resend",
                     pathParams: new Dictionary<string, string>
@@ -608,7 +608,7 @@ namespace Svix
         /// <summary>
         /// Resend a message to the specified endpoint.
         /// </summary>
-        public bool Resend(
+        public EmptyResponse Resend(
             string appId,
             string msgId,
             string endpointId,
@@ -617,7 +617,7 @@ namespace Svix
         {
             try
             {
-                var response = _client.SvixHttpClient.SendRequest<bool>(
+                var response = _client.SvixHttpClient.SendRequest<EmptyResponse>(
                     method: HttpMethod.Post,
                     path: "/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/resend",
                     pathParams: new Dictionary<string, string>

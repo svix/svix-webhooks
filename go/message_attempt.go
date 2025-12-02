@@ -338,7 +338,7 @@ func (messageAttempt *MessageAttempt) Resend(
 	msgId string,
 	endpointId string,
 	o *MessageAttemptResendOptions,
-) error {
+) (*models.EmptyResponse, error) {
 	pathMap := map[string]string{
 		"app_id":      appId,
 		"msg_id":      msgId,
@@ -349,10 +349,10 @@ func (messageAttempt *MessageAttempt) Resend(
 	if o != nil {
 		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
-			return err
+			return nil, err
 		}
 	}
-	_, err = internal.ExecuteRequest[any, any](
+	return internal.ExecuteRequest[any, models.EmptyResponse](
 		ctx,
 		messageAttempt.client,
 		"POST",
@@ -362,5 +362,4 @@ func (messageAttempt *MessageAttempt) Resend(
 		headerMap,
 		nil,
 	)
-	return err
 }
