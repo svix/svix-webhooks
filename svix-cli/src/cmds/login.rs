@@ -52,7 +52,7 @@ pub async fn prompt(_cfg: &Config) -> Result<()> {
 
     println!(
         "All Set! Your config has been written to `{}`",
-        fp.as_os_str().to_str().unwrap_or_default()
+        fp.display()
     );
     println!(
         "Type `{} --help` to print the Svix CLI documentation!",
