@@ -36,6 +36,7 @@ colored_json = "5.0.0"
 concolor-clap = "0.1.0"
 dialoguer = "0.11.0"
 figment = { version = "0.10.19", features = ["toml", "env"] }
+fs-err = "3.2.0"
 futures-util = "0.3.31"
 home = "0.5.11"
 http = "1.2.0"

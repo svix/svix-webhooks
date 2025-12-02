@@ -1,5 +1,4 @@
 use std::{
-    fs::{File, OpenOptions},
     io::Write,
     path::{Path, PathBuf},
 };
@@ -9,6 +8,7 @@ use figment::{
     providers::{Env, Format, Toml},
     Figment,
 };
+use fs_err::{File, OpenOptions};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
@@ -31,11 +31,9 @@ pub struct Config {
 }
 
 fn config_file_open_opts() -> OpenOptions {
-    OpenOptions::new()
-        .create(true)
-        .truncate(true)
-        .write(true)
-        .to_owned()
+    let mut opts = File::options();
+    opts.create(true).truncate(true).write(true);
+    opts
 }
 
 #[cfg(windows)]
@@ -47,7 +45,9 @@ fn open_config_file(path: &Path) -> Result<File> {
 fn open_config_file(path: &Path) -> Result<File> {
     use std::os::unix::fs::OpenOptionsExt;
     const FILE_MODE: u32 = 0o600;
-    Ok(config_file_open_opts().mode(FILE_MODE).open(path)?)
+    let mut open_opts = config_file_open_opts();
+    open_opts.options_mut().mode(FILE_MODE);
+    Ok(open_opts.open(path)?)
 }
 
 impl Config {
