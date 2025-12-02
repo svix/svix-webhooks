@@ -2,7 +2,7 @@ import { ApiException, type XOR } from "./util";
 import type { HttpErrorOut, HTTPValidationError } from "./HttpErrors";
 import { v4 as uuidv4 } from "uuid";
 
-export const LIB_VERSION = "1.81.0";
+export const LIB_VERSION = "1.82.0";
 const USER_AGENT = `svix-libs/${LIB_VERSION}/javascript`;
 
 export enum HttpMethod {
@@ -144,7 +144,7 @@ export class SvixRequest {
     }
     // Cloudflare Workers fail if the credentials option is used in a fetch call.
     // This work around that. Source:
-    // https://github.com/cloudflare/workers-sdk/issues/2514#issuecomment-21.81.0014
+    // https://github.com/cloudflare/workers-sdk/issues/2514#issuecomment-21.82.0014
     const isCredentialsSupported = "credentials" in Request.prototype;
 
     const response = await sendWithRetry(
