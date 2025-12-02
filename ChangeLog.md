@@ -1,7 +1,10 @@
 # Changelog
 
-## Unreleased
+## Version 1.82.0
+* Libs/All: Add support for connector UIDs
 * CLI: Add support for the Connector API
+* CLI: Add `-v --verbose` flag
+* Server: Allow specifying queue prefix (thanks @turip)
 
 ## Version 1.81.0
 * Libs/All: Add support for the new [Connector API](https://api.svix.com/docs#tag/Connector)
