@@ -4,6 +4,7 @@
 * Libs/All: Add support for connector UIDs
 * CLI: Add support for the Connector API
 * CLI: Add `-v --verbose` flag
+* CLI: Fix a bug in config file saving
 * Server: Allow specifying queue prefix (thanks @turip)
 
 ## Version 1.81.0
