@@ -22,7 +22,7 @@ impl ListenArgs {
                     "failed to save relay token to config file at `{}`",
                     cfg_path.display()
                 )) {
-                    eprintln!("{e}");
+                    eprintln!("{e:#}");
                 }
                 token
             }

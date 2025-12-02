@@ -43,7 +43,7 @@ pub async fn prompt(_cfg: &Config) -> Result<()> {
     cfg.auth_token = Some(auth_token);
     let fp = config::get_config_file_path()?;
     if let Err(e) = cfg.save_to_disk(&fp) {
-        eprintln!("\n{e}\n");
+        eprintln!("\n{e:#}\n");
         anyhow::bail!(
             "Failed to configure the Svix CLI, please try again or try setting your auth \
              token manually `SVIX_AUTH_TOKEN` environment variable."
