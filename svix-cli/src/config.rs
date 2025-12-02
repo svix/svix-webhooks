@@ -8,7 +8,7 @@ use figment::{
     providers::{Env, Format, Toml},
     Figment,
 };
-use fs_err::{File, OpenOptions};
+use fs_err::{self as fs, File};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
@@ -30,24 +30,24 @@ pub struct Config {
     pub relay_disable_security: Option<bool>,
 }
 
-fn config_file_open_opts() -> OpenOptions {
+fn create_config_file(path: &Path) -> Result<File> {
+    let dir = path
+        .parent()
+        .context("config file path must not be empty")?;
+    fs::create_dir_all(dir)?;
+
     let mut opts = File::options();
     opts.create(true).truncate(true).write(true);
-    opts
-}
 
-#[cfg(windows)]
-fn open_config_file(path: &Path) -> Result<File> {
-    Ok(config_file_open_opts().open(path)?)
-}
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
 
-#[cfg(unix)]
-fn open_config_file(path: &Path) -> Result<File> {
-    use std::os::unix::fs::OpenOptionsExt;
-    const FILE_MODE: u32 = 0o600;
-    let mut open_opts = config_file_open_opts();
-    open_opts.options_mut().mode(FILE_MODE);
-    Ok(open_opts.open(path)?)
+        const FILE_MODE: u32 = 0o600;
+        opts.options_mut().mode(FILE_MODE);
+    }
+
+    Ok(opts.open(path)?)
 }
 
 impl Config {
@@ -61,8 +61,7 @@ impl Config {
     }
 
     pub fn save_to_disk(&self, path: &Path) -> Result<()> {
-        let mut fh = open_config_file(path)?;
-
+        let mut fh = create_config_file(path)?;
         let source = &toml::to_string_pretty(self)?;
         fh.write_all(source.as_bytes())?;
         Ok(())
