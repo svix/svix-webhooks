@@ -74,7 +74,7 @@ urllib3==2.5.0
     # via
     #   requests
     #   types-requests
-werkzeug==3.0.6
+werkzeug==3.1.4
     # via pytest-httpserver
 wheel==0.44.0
     # via pip-tools
