@@ -15,6 +15,10 @@ on:
     types:
       - completed
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-24.04
@@ -28,15 +32,13 @@ jobs:
           node-version: 'latest'
           registry-url: 'https://registry.npmjs.org'
 
-      - name: Install modules
+      - name: Install modules and update NPM
         run: |
           cd javascript
-          yarn
+          npm install -g npm@latest
+          npm install
 
       - name: Publish
         if: ${{ github.ref_type == 'tag' || startsWith(github.event.workflow_run.head_branch,'v') }}
         run: |
-          cd javascript
-          yarn publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          npm publish

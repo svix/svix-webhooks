@@ -28,14 +28,14 @@ jobs:
       - name: Install modules
         run: |
           cd javascript
-          yarn
+          npm install
 
       - name: Lint
         run: |
           cd javascript
-          yarn run check
+          npm run check
 
       - name: Test
         run: |
           cd javascript
-          yarn run test
+          npm run test
