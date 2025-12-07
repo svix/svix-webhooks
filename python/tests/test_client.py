@@ -204,7 +204,8 @@ def test_svix_message_create(
         assert "Svix-Signature" in request.headers
 
         webhook = Webhook(secret)
-        received_payload = webhook.verify(request.data, request.headers)
+        headers: dict[str, str] = dict(request.headers.items())
+        received_payload = webhook.verify(request.data, headers)
         assert received_payload == payload
 
         return Response("OK")
