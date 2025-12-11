@@ -7037,30 +7037,6 @@
                 ]
             }
         },
-        "/api/v1/event-type/schema/generate-example": {
-            "post": {
-                "description": "Generates a fake example from the given JSONSchema",
-                "parameters": [
-                    {
-                        "description": "The request's idempotency key",
-                        "in": "header",
-                        "name": "idempotency-key",
-                        "schema": {
-                            "type": "string"
-                        },
-                        "style": "simple"
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "no content"
-                    }
-                },
-                "tags": [
-                    "Event Type"
-                ]
-            }
-        },
         "/api/v1/event-type/{event_type_name}": {
             "delete": {
                 "description": "Archive an event type.\n\nEndpoints already configured to filter on an event type will continue to do so after archival.\nHowever, new messages can not be sent with it and endpoints can not filter on it.\nAn event type can be unarchived with the\n[create operation](#operation/create_event_type_api_v1_event_type__post).",
