@@ -1341,6 +1341,27 @@ jsonschema_for_repr_enum! {
     Success, Pending, Fail, Sending
 }
 
+#[derive(Clone, Debug, Copy, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub enum MessageStatusText {
+    Success,
+    Pending,
+    #[serde(alias = "failed")]
+    Fail,
+    Sending,
+}
+
+impl From<MessageStatus> for MessageStatusText {
+    fn from(status: MessageStatus) -> Self {
+        match status {
+            MessageStatus::Success => Self::Success,
+            MessageStatus::Pending => Self::Pending,
+            MessageStatus::Fail => Self::Fail,
+            MessageStatus::Sending => Self::Sending,
+        }
+    }
+}
+
 #[repr(i16)]
 #[derive(Clone, Debug, Copy, PartialEq, Eq, IntoPrimitive, TryFromPrimitive)]
 pub enum StatusCodeClass {
