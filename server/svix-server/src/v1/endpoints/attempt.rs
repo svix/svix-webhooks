@@ -25,7 +25,8 @@ use crate::{
         permissions,
         types::{
             BaseId, EndpointId, EndpointIdOrUid, EventChannel, EventTypeNameSet, MessageAttemptId,
-            MessageAttemptTriggerType, MessageId, MessageStatus, StatusCodeClass,
+            MessageAttemptTriggerType, MessageId, MessageStatus, MessageStatusText,
+            StatusCodeClass,
         },
     },
     db::models::{
@@ -71,6 +72,7 @@ pub struct MessageAttemptOut {
     /// Response duration in milliseconds.
     pub response_duration_ms: i64,
     pub status: MessageStatus,
+    pub status_text: MessageStatusText,
     pub trigger_type: MessageAttemptTriggerType,
     pub msg_id: MessageId,
     pub endpoint_id: EndpointId,
@@ -81,7 +83,6 @@ pub struct MessageAttemptOut {
     pub created_at: DateTime<Utc>,
 }
 
-// FIXME: This can and should be a derive macro
 impl From<messageattempt::Model> for MessageAttemptOut {
     fn from(model: messageattempt::Model) -> Self {
         Self {
@@ -90,6 +91,7 @@ impl From<messageattempt::Model> for MessageAttemptOut {
             response_status_code: model.response_status_code,
             response_duration_ms: model.response_duration_ms,
             status: model.status,
+            status_text: model.status.into(),
             trigger_type: model.trigger_type,
             msg_id: model.msg_id,
             endpoint_id: model.endp_id,

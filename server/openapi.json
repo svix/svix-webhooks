@@ -1530,6 +1530,9 @@
                     "status": {
                         "$ref": "#/components/schemas/MessageStatus"
                     },
+                    "statusText": {
+                        "$ref": "#/components/schemas/MessageStatusText"
+                    },
                     "timestamp": {
                         "format": "date-time",
                         "type": "string"
@@ -1553,6 +1556,7 @@
                     "responseDurationMs",
                     "responseStatusCode",
                     "status",
+                    "statusText",
                     "timestamp",
                     "triggerType",
                     "url"
@@ -1716,6 +1720,9 @@
                     "status": {
                         "$ref": "#/components/schemas/MessageStatus"
                     },
+                    "statusText": {
+                        "$ref": "#/components/schemas/MessageStatusText"
+                    },
                     "timestamp": {
                         "format": "date-time",
                         "type": "string"
@@ -1739,6 +1746,7 @@
                     "responseDurationMs",
                     "responseStatusCode",
                     "status",
+                    "statusText",
                     "timestamp",
                     "triggerType",
                     "url"
@@ -2064,6 +2072,15 @@
                     "Fail",
                     "Sending"
                 ]
+            },
+            "MessageStatusText": {
+                "enum": [
+                    "success",
+                    "pending",
+                    "fail",
+                    "sending"
+                ],
+                "type": "string"
             },
             "Ordering": {
                 "description": "Defines the ordering in a listing of results.",
