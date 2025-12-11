@@ -24,7 +24,7 @@ use crate::{
     db::models::eventtype,
     error::{http_error_on_conflict, HttpError, Result},
     v1::utils::{
-        api_not_implemented, apply_pagination, openapi_desc, openapi_tag,
+        apply_pagination, openapi_tag,
         patch::{
             patch_field_non_nullable, patch_field_nullable, UnrequiredField,
             UnrequiredNullableField,
@@ -441,9 +441,6 @@ async fn delete_event_type(
     Ok(NoContent)
 }
 
-const GENERATE_SCHEMA_EXAMPLE_DESCRIPTION: &str =
-    "Generates a fake example from the given JSONSchema";
-
 pub fn router() -> ApiRouter<AppState> {
     let tag = openapi_tag("Event Type");
     ApiRouter::new()
@@ -461,19 +458,10 @@ pub fn router() -> ApiRouter<AppState> {
                 .delete_with(delete_event_type, delete_event_type_operation),
             &tag,
         )
-        .api_route_with(
-            "/event-type/schema/generate-example",
-            post_with(
-                api_not_implemented,
-                openapi_desc(GENERATE_SCHEMA_EXAMPLE_DESCRIPTION),
-            ),
-            tag,
-        )
 }
 
 #[cfg(test)]
 mod tests {
-
     use serde_json::json;
 
     use super::ListFetchQueryParams;
