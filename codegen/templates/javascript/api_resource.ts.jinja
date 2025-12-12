@@ -96,9 +96,13 @@ export class {{ resource_type_name }} {
             {% endfor -%}
 
             {# query parameters -#}
-            {% for p in op.query_params -%}
-                request.setQueryParam("{{ p.name }}", options{% if not p.required %}?{% endif %}.{{ p.name | to_lower_camel_case }});
-            {% endfor -%}
+            {% if op.query_params | length > 0 -%}
+            request.setQueryParams({
+                {% for p in op.query_params -%}
+                "{{ p.name }}": options{% if not p.required %}?{% endif %}.{{ p.name | to_lower_camel_case }},
+                {% endfor -%}
+            });
+            {% endif -%}
 
             {# header parameters -#}
             {% for p in op.header_params -%}

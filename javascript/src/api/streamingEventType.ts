@@ -48,10 +48,12 @@ export class StreamingEventType {
   ): Promise<ListResponseStreamEventTypeOut> {
     const request = new SvixRequest(HttpMethod.GET, "/api/v1/stream/event-type");
 
-    request.setQueryParam("limit", options?.limit);
-    request.setQueryParam("iterator", options?.iterator);
-    request.setQueryParam("order", options?.order);
-    request.setQueryParam("include_archived", options?.includeArchived);
+    request.setQueryParams({
+      limit: options?.limit,
+      iterator: options?.iterator,
+      order: options?.order,
+      include_archived: options?.includeArchived,
+    });
 
     return request.send(
       this.requestCtx,
@@ -102,7 +104,9 @@ export class StreamingEventType {
     );
 
     request.setPathParam("name", name);
-    request.setQueryParam("expunge", options?.expunge);
+    request.setQueryParams({
+      expunge: options?.expunge,
+    });
 
     return request.sendNoResponseBody(this.requestCtx);
   }

@@ -51,9 +51,11 @@ export class StreamingSink {
     const request = new SvixRequest(HttpMethod.GET, "/api/v1/stream/{stream_id}/sink");
 
     request.setPathParam("stream_id", streamId);
-    request.setQueryParam("limit", options?.limit);
-    request.setQueryParam("iterator", options?.iterator);
-    request.setQueryParam("order", options?.order);
+    request.setQueryParams({
+      limit: options?.limit,
+      iterator: options?.iterator,
+      order: options?.order,
+    });
 
     return request.send(
       this.requestCtx,

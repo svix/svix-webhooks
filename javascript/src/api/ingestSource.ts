@@ -37,9 +37,11 @@ export class IngestSource {
   public list(options?: IngestSourceListOptions): Promise<ListResponseIngestSourceOut> {
     const request = new SvixRequest(HttpMethod.GET, "/ingest/api/v1/source");
 
-    request.setQueryParam("limit", options?.limit);
-    request.setQueryParam("iterator", options?.iterator);
-    request.setQueryParam("order", options?.order);
+    request.setQueryParams({
+      limit: options?.limit,
+      iterator: options?.iterator,
+      order: options?.order,
+    });
 
     return request.send(
       this.requestCtx,

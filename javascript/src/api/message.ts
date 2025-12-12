@@ -72,14 +72,16 @@ export class Message {
     const request = new SvixRequest(HttpMethod.GET, "/api/v1/app/{app_id}/msg");
 
     request.setPathParam("app_id", appId);
-    request.setQueryParam("limit", options?.limit);
-    request.setQueryParam("iterator", options?.iterator);
-    request.setQueryParam("channel", options?.channel);
-    request.setQueryParam("before", options?.before);
-    request.setQueryParam("after", options?.after);
-    request.setQueryParam("with_content", options?.withContent);
-    request.setQueryParam("tag", options?.tag);
-    request.setQueryParam("event_types", options?.eventTypes);
+    request.setQueryParams({
+      limit: options?.limit,
+      iterator: options?.iterator,
+      channel: options?.channel,
+      before: options?.before,
+      after: options?.after,
+      with_content: options?.withContent,
+      tag: options?.tag,
+      event_types: options?.eventTypes,
+    });
 
     return request.send(
       this.requestCtx,
@@ -106,7 +108,9 @@ export class Message {
     const request = new SvixRequest(HttpMethod.POST, "/api/v1/app/{app_id}/msg");
 
     request.setPathParam("app_id", appId);
-    request.setQueryParam("with_content", options?.withContent);
+    request.setQueryParams({
+      with_content: options?.withContent,
+    });
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
     request.setBody(MessageInSerializer._toJsonObject(messageIn));
 
@@ -155,7 +159,9 @@ export class Message {
 
     request.setPathParam("app_id", appId);
     request.setPathParam("msg_id", msgId);
-    request.setQueryParam("with_content", options?.withContent);
+    request.setQueryParams({
+      with_content: options?.withContent,
+    });
 
     return request.send(this.requestCtx, MessageOutSerializer._fromJsonObject);
   }

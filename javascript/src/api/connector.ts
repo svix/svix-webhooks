@@ -36,10 +36,12 @@ export class Connector {
   public list(options?: ConnectorListOptions): Promise<ListResponseConnectorOut> {
     const request = new SvixRequest(HttpMethod.GET, "/api/v1/connector");
 
-    request.setQueryParam("limit", options?.limit);
-    request.setQueryParam("iterator", options?.iterator);
-    request.setQueryParam("order", options?.order);
-    request.setQueryParam("product_type", options?.productType);
+    request.setQueryParams({
+      limit: options?.limit,
+      iterator: options?.iterator,
+      order: options?.order,
+      product_type: options?.productType,
+    });
 
     return request.send(
       this.requestCtx,

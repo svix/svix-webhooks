@@ -126,17 +126,19 @@ export class MessageAttempt {
 
     request.setPathParam("app_id", appId);
     request.setPathParam("endpoint_id", endpointId);
-    request.setQueryParam("limit", options?.limit);
-    request.setQueryParam("iterator", options?.iterator);
-    request.setQueryParam("status", options?.status);
-    request.setQueryParam("status_code_class", options?.statusCodeClass);
-    request.setQueryParam("channel", options?.channel);
-    request.setQueryParam("tag", options?.tag);
-    request.setQueryParam("before", options?.before);
-    request.setQueryParam("after", options?.after);
-    request.setQueryParam("with_content", options?.withContent);
-    request.setQueryParam("with_msg", options?.withMsg);
-    request.setQueryParam("event_types", options?.eventTypes);
+    request.setQueryParams({
+      limit: options?.limit,
+      iterator: options?.iterator,
+      status: options?.status,
+      status_code_class: options?.statusCodeClass,
+      channel: options?.channel,
+      tag: options?.tag,
+      before: options?.before,
+      after: options?.after,
+      with_content: options?.withContent,
+      with_msg: options?.withMsg,
+      event_types: options?.eventTypes,
+    });
 
     return request.send(
       this.requestCtx,
@@ -164,17 +166,19 @@ export class MessageAttempt {
 
     request.setPathParam("app_id", appId);
     request.setPathParam("msg_id", msgId);
-    request.setQueryParam("limit", options?.limit);
-    request.setQueryParam("iterator", options?.iterator);
-    request.setQueryParam("status", options?.status);
-    request.setQueryParam("status_code_class", options?.statusCodeClass);
-    request.setQueryParam("channel", options?.channel);
-    request.setQueryParam("tag", options?.tag);
-    request.setQueryParam("endpoint_id", options?.endpointId);
-    request.setQueryParam("before", options?.before);
-    request.setQueryParam("after", options?.after);
-    request.setQueryParam("with_content", options?.withContent);
-    request.setQueryParam("event_types", options?.eventTypes);
+    request.setQueryParams({
+      limit: options?.limit,
+      iterator: options?.iterator,
+      status: options?.status,
+      status_code_class: options?.statusCodeClass,
+      channel: options?.channel,
+      tag: options?.tag,
+      endpoint_id: options?.endpointId,
+      before: options?.before,
+      after: options?.after,
+      with_content: options?.withContent,
+      event_types: options?.eventTypes,
+    });
 
     return request.send(
       this.requestCtx,
@@ -204,15 +208,17 @@ export class MessageAttempt {
 
     request.setPathParam("app_id", appId);
     request.setPathParam("endpoint_id", endpointId);
-    request.setQueryParam("limit", options?.limit);
-    request.setQueryParam("iterator", options?.iterator);
-    request.setQueryParam("channel", options?.channel);
-    request.setQueryParam("tag", options?.tag);
-    request.setQueryParam("status", options?.status);
-    request.setQueryParam("before", options?.before);
-    request.setQueryParam("after", options?.after);
-    request.setQueryParam("with_content", options?.withContent);
-    request.setQueryParam("event_types", options?.eventTypes);
+    request.setQueryParams({
+      limit: options?.limit,
+      iterator: options?.iterator,
+      channel: options?.channel,
+      tag: options?.tag,
+      status: options?.status,
+      before: options?.before,
+      after: options?.after,
+      with_content: options?.withContent,
+      event_types: options?.eventTypes,
+    });
 
     return request.send(
       this.requestCtx,
@@ -275,8 +281,10 @@ export class MessageAttempt {
 
     request.setPathParam("app_id", appId);
     request.setPathParam("msg_id", msgId);
-    request.setQueryParam("limit", options?.limit);
-    request.setQueryParam("iterator", options?.iterator);
+    request.setQueryParams({
+      limit: options?.limit,
+      iterator: options?.iterator,
+    });
 
     return request.send(
       this.requestCtx,
