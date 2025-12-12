@@ -98,7 +98,11 @@ class {{ type.name | to_upper_camel_case }} implements \JsonSerializable
             {%- for field in type.fields -%}
                 {%- if field.required and not field.nullable -%}
                     {% set field_expr %}$this->{{ field.name | to_lower_camel_case }}{% endset -%}
+                    {% if field.name == "payload" and type_name == "MessageIn" %}
+                    'payload' => \Svix\Utils::newStdClassIfArrayIsEmpty($this->payload),
+                    {% else -%}
                     '{{ field.name }}' => {{ field_to_json(field_expr, field.type, field.required, type_name) }},
+                    {% endif -%}
                 {% endif -%}
             {%- endfor -%}
         {%- endset -%}
@@ -146,4 +150,6 @@ class {{ type.name | to_upper_camel_case }} implements \JsonSerializable
         return self::fromMixed($data);
     }
 
+    {% set extra -%}types/extra/{{ type.name | to_upper_camel_case }}.php{% endset %}
+    {% include extra ignore missing %}
 }
