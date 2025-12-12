@@ -469,4 +469,18 @@ class MockTest extends TestCase
         $this->assertEquals('get_if_exists=true', $req->getUri()->getQuery());
     }
 
+
+    public function testMessageInRaw(): void
+    {
+        $this->mockHandler->append(new Response(200, [], MessageOut));
+
+        $svx = new \Svix\Svix("super_secret", httpClient: $this->httpClient);
+
+        $svx->message->create("app_1", MessageIn::createRaw("user.signup", "<xml> not json</xml>"));
+
+        $req = $this->requestHistory[0]['request'];
+        $rawBody = $req->getBody()->getContents();
+
+        $this->assertEquals('{"eventType":"user.signup","payload":{},"transformationsParams":{"rawPayload":"<xml> not json<\/xml>"}}', $rawBody);
+    }
 }
