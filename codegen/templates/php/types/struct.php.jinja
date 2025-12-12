@@ -72,6 +72,13 @@ class {{ type.name | to_upper_camel_case }} implements \JsonSerializable
         {
             $setFields = $this->setFields;
             $setFields['{{ field.name | to_lower_camel_case }}'] = true;
+
+            {% if field.name == "transformationsParams" and type_name == "MessageIn" -%}
+            if ($transformationsParams !== null || $this->transformationsParams !== null) {
+                $transformationsParams = array_merge($this->transformationsParams ?? [], $transformationsParams ?? []);
+            }
+            {% endif -%}
+
             return new self(
                 {% for inner_field in type.fields -%}
                     {% if field.name != inner_field.name -%}

@@ -210,6 +210,10 @@ class MessageIn implements \JsonSerializable
         $setFields = $this->setFields;
         $setFields['transformationsParams'] = true;
 
+        if (null !== $transformationsParams || null !== $this->transformationsParams) {
+            $transformationsParams = array_merge($this->transformationsParams ?? [], $transformationsParams ?? []);
+        }
+
         return new self(
             application: $this->application,
             channels: $this->channels,
