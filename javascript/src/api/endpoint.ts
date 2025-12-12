@@ -97,9 +97,11 @@ export class Endpoint {
     const request = new SvixRequest(HttpMethod.GET, "/api/v1/app/{app_id}/endpoint");
 
     request.setPathParam("app_id", appId);
-    request.setQueryParam("limit", options?.limit);
-    request.setQueryParam("iterator", options?.iterator);
-    request.setQueryParam("order", options?.order);
+    request.setQueryParams({
+      limit: options?.limit,
+      iterator: options?.iterator,
+      order: options?.order,
+    });
 
     return request.send(
       this.requestCtx,
@@ -405,8 +407,10 @@ export class Endpoint {
 
     request.setPathParam("app_id", appId);
     request.setPathParam("endpoint_id", endpointId);
-    request.setQueryParam("since", options?.since);
-    request.setQueryParam("until", options?.until);
+    request.setQueryParams({
+      since: options?.since,
+      until: options?.until,
+    });
 
     return request.send(this.requestCtx, EndpointStatsSerializer._fromJsonObject);
   }

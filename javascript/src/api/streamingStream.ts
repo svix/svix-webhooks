@@ -30,9 +30,11 @@ export class StreamingStream {
   public list(options?: StreamingStreamListOptions): Promise<ListResponseStreamOut> {
     const request = new SvixRequest(HttpMethod.GET, "/api/v1/stream");
 
-    request.setQueryParam("limit", options?.limit);
-    request.setQueryParam("iterator", options?.iterator);
-    request.setQueryParam("order", options?.order);
+    request.setQueryParams({
+      limit: options?.limit,
+      iterator: options?.iterator,
+      order: options?.order,
+    });
 
     return request.send(this.requestCtx, ListResponseStreamOutSerializer._fromJsonObject);
   }

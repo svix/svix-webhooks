@@ -53,11 +53,13 @@ export class MessagePoller {
 
     request.setPathParam("app_id", appId);
     request.setPathParam("sink_id", sinkId);
-    request.setQueryParam("limit", options?.limit);
-    request.setQueryParam("iterator", options?.iterator);
-    request.setQueryParam("event_type", options?.eventType);
-    request.setQueryParam("channel", options?.channel);
-    request.setQueryParam("after", options?.after);
+    request.setQueryParams({
+      limit: options?.limit,
+      iterator: options?.iterator,
+      event_type: options?.eventType,
+      channel: options?.channel,
+      after: options?.after,
+    });
 
     return request.send(this.requestCtx, PollingEndpointOutSerializer._fromJsonObject);
   }
@@ -80,8 +82,10 @@ export class MessagePoller {
     request.setPathParam("app_id", appId);
     request.setPathParam("sink_id", sinkId);
     request.setPathParam("consumer_id", consumerId);
-    request.setQueryParam("limit", options?.limit);
-    request.setQueryParam("iterator", options?.iterator);
+    request.setQueryParams({
+      limit: options?.limit,
+      iterator: options?.iterator,
+    });
 
     return request.send(this.requestCtx, PollingEndpointOutSerializer._fromJsonObject);
   }

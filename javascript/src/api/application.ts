@@ -37,17 +37,13 @@ export class Application {
   public list(options?: ApplicationListOptions): Promise<ListResponseApplicationOut> {
     const request = new SvixRequest(HttpMethod.GET, "/api/v1/app");
 
-    request.setQueryParam(
-      "exclude_apps_with_no_endpoints",
-      options?.excludeAppsWithNoEndpoints
-    );
-    request.setQueryParam(
-      "exclude_apps_with_disabled_endpoints",
-      options?.excludeAppsWithDisabledEndpoints
-    );
-    request.setQueryParam("limit", options?.limit);
-    request.setQueryParam("iterator", options?.iterator);
-    request.setQueryParam("order", options?.order);
+    request.setQueryParams({
+      exclude_apps_with_no_endpoints: options?.excludeAppsWithNoEndpoints,
+      exclude_apps_with_disabled_endpoints: options?.excludeAppsWithDisabledEndpoints,
+      limit: options?.limit,
+      iterator: options?.iterator,
+      order: options?.order,
+    });
 
     return request.send(
       this.requestCtx,

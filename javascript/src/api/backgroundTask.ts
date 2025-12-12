@@ -35,11 +35,13 @@ export class BackgroundTask {
   ): Promise<ListResponseBackgroundTaskOut> {
     const request = new SvixRequest(HttpMethod.GET, "/api/v1/background-task");
 
-    request.setQueryParam("status", options?.status);
-    request.setQueryParam("task", options?.task);
-    request.setQueryParam("limit", options?.limit);
-    request.setQueryParam("iterator", options?.iterator);
-    request.setQueryParam("order", options?.order);
+    request.setQueryParams({
+      status: options?.status,
+      task: options?.task,
+      limit: options?.limit,
+      iterator: options?.iterator,
+      order: options?.order,
+    });
 
     return request.send(
       this.requestCtx,

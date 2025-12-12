@@ -63,6 +63,12 @@ export class SvixRequest {
     this.path = newPath;
   }
 
+  public setQueryParams(params: { [name: string]: QueryParameter }) {
+    for (const [name, value] of Object.entries(params)) {
+      this.setQueryParam(name, value);
+    }
+  }
+
   public setQueryParam(name: string, value: QueryParameter) {
     if (value === undefined || value === null) {
       return;

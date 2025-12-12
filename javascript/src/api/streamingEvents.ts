@@ -58,9 +58,11 @@ export class StreamingEvents {
 
     request.setPathParam("stream_id", streamId);
     request.setPathParam("sink_id", sinkId);
-    request.setQueryParam("limit", options?.limit);
-    request.setQueryParam("iterator", options?.iterator);
-    request.setQueryParam("after", options?.after);
+    request.setQueryParams({
+      limit: options?.limit,
+      iterator: options?.iterator,
+      after: options?.after,
+    });
 
     return request.send(this.requestCtx, EventStreamOutSerializer._fromJsonObject);
   }
