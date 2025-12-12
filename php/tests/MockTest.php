@@ -483,4 +483,40 @@ class MockTest extends TestCase
 
         $this->assertEquals('{"eventType":"user.signup","payload":{},"transformationsParams":{"rawPayload":"<xml> not json<\/xml>"}}', $rawBody);
     }
+
+    public function testWithTransformationsParamsMerges(): void
+    {
+        $this->mockHandler->append(new Response(200, [], MessageOut));
+
+        $svx = new \Svix\Svix("super_secret", httpClient: $this->httpClient);
+
+        $msg = MessageIn::createRaw("user.signup", "<xml> not json</xml>")
+            ->withTransformationsParams(['newParam' => 'newValue', 'rawPayload' => 'overwritten']);
+
+        $svx->message->create("app_1", $msg);
+
+        $req = $this->requestHistory[0]['request'];
+        $rawBody = $req->getBody()->getContents();
+
+        $this->assertEquals('{"eventType":"user.signup","payload":{},"transformationsParams":{"rawPayload":"overwritten","newParam":"newValue"}}', $rawBody);
+    }
+
+    public function testWithTransformationsParamsPreservesRawPayload(): void
+    {
+        $this->mockHandler->append(new Response(200, [], MessageOut));
+
+        $svx = new \Svix\Svix("super_secret", httpClient: $this->httpClient);
+
+        $msg = MessageIn::createRaw("user.signup", "<xml> not json</xml>")
+            ->withTransformationsParams([
+                'headers' => ['content-type' => 'application/xml'],
+            ]);
+
+        $svx->message->create("app_1", $msg);
+
+        $req = $this->requestHistory[0]['request'];
+        $rawBody = $req->getBody()->getContents();
+
+        $this->assertEquals('{"eventType":"user.signup","payload":{},"transformationsParams":{"rawPayload":"<xml> not json<\/xml>","headers":{"content-type":"application\/xml"}}}', $rawBody);
+    }
 }
