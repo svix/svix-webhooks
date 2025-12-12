@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 1.82.1
+* Server: Add `status_text` field to `MessageAttemptOut` to match Svix Cloud
+  * Makes current versions of the SDKs work with endpoints using this type again
+
 ## Version 1.82.0
 * Libs/All: Add support for connector UIDs
 * CLI: Add support for the Connector API
