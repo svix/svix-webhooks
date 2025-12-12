@@ -17,6 +17,10 @@ ignore = [
     "RUSTSEC-2024-0370",
     # TODO: Wait for dependencies to upgrade off of paste
     "RUSTSEC-2024-0436",
+    # rustls-pemfile is unmaintained, but we only use it for parsing system
+    # certificates. This is not a serious attack vector for our use case.
+    # TODO: Upgrade rustls-native-certs to 0.8.x to get rid of this.
+    "RUSTSEC-2025-0134"
 ]
 
 [licenses]
