@@ -33,12 +33,13 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install modules and update NPM
+        working-directory: javascript
         run: |
-          cd javascript
           npm install -g npm@latest
           npm install
 
       - name: Publish
         if: ${{ github.ref_type == 'tag' || startsWith(github.event.workflow_run.head_branch,'v') }}
+        working-directory: javascript
         run: |
           npm publish
