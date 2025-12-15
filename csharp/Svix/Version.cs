@@ -2,6 +2,6 @@ namespace Svix
 {
     public static class Version
     {
-        public const string version = "1.82.0";
+        public const string version = "1.83.0";
     }
 }

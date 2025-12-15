@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 1.83.0
+* Server: Add `status_text` field to `MessageAttemptOut` to match Svix Cloud
+  * Makes current versions of the SDKs work with endpoints using this type again
+* Libs/PHP: Add `MessageIn::createRaw`, allows you to create a raw (non-json) message
+
 ## Version 1.82.0
 * Libs/All: Add support for connector UIDs
 * CLI: Add support for the Connector API
