@@ -3,7 +3,6 @@
 export interface ApiTokenOut {
   createdAt: Date;
   expiresAt?: Date | null;
-  /** The GlobalApplicationToken's ID. */
   id: string;
   name?: string | null;
   scopes?: string[] | null;

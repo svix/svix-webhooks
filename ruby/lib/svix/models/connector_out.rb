@@ -18,6 +18,7 @@ module Svix
     attr_accessor :org_id
     attr_accessor :product_type
     attr_accessor :transformation
+    attr_accessor :transformation_updated_at
     # The Connector's UID.
     attr_accessor :uid
     attr_accessor :updated_at
@@ -35,6 +36,7 @@ module Svix
       "org_id",
       "product_type",
       "transformation",
+      "transformation_updated_at",
       "uid",
       "updated_at"
     ].freeze
@@ -70,6 +72,7 @@ module Svix
       attrs["org_id"] = attributes["orgId"]
       attrs["product_type"] = Svix::ConnectorProduct.deserialize(attributes["productType"])
       attrs["transformation"] = attributes["transformation"]
+      attrs["transformation_updated_at"] = DateTime.rfc3339(attributes["transformationUpdatedAt"]).to_time
       attrs["uid"] = attributes["uid"]
       attrs["updated_at"] = DateTime.rfc3339(attributes["updatedAt"]).to_time
       new(attrs)
@@ -89,6 +92,10 @@ module Svix
       out["orgId"] = Svix::serialize_primitive(@org_id) if @org_id
       out["productType"] = Svix::serialize_schema_ref(@product_type) if @product_type
       out["transformation"] = Svix::serialize_primitive(@transformation) if @transformation
+      if @transformation_updated_at
+        out["transformationUpdatedAt"] = Svix::serialize_primitive(@transformation_updated_at)
+      end
+
       out["uid"] = Svix::serialize_primitive(@uid) if @uid
       out["updatedAt"] = Svix::serialize_primitive(@updated_at) if @updated_at
       out

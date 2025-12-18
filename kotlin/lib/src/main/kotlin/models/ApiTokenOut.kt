@@ -8,7 +8,6 @@ import kotlinx.serialization.Serializable
 data class ApiTokenOut(
     val createdAt: Instant,
     val expiresAt: Instant? = null,
-    /** The GlobalApplicationToken's ID. */
     val id: String,
     val name: String? = null,
     val scopes: List<String>? = null,

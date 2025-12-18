@@ -26,6 +26,7 @@ class ConnectorOut implements \JsonSerializable
         public readonly string $orgId,
         public readonly ConnectorProduct $productType,
         public readonly string $transformation,
+        public readonly \DateTimeImmutable $transformationUpdatedAt,
         public readonly \DateTimeImmutable $updatedAt,
         public readonly ?array $allowedEventTypes = null,
         public readonly ?array $featureFlags = null,
@@ -49,6 +50,7 @@ class ConnectorOut implements \JsonSerializable
         string $orgId,
         ConnectorProduct $productType,
         string $transformation,
+        \DateTimeImmutable $transformationUpdatedAt,
         \DateTimeImmutable $updatedAt,
     ): self {
         return new self(
@@ -64,9 +66,10 @@ class ConnectorOut implements \JsonSerializable
             orgId: $orgId,
             productType: $productType,
             transformation: $transformation,
+            transformationUpdatedAt: $transformationUpdatedAt,
             uid: null,
             updatedAt: $updatedAt,
-            setFields: ['createdAt' => true, 'description' => true, 'id' => true, 'instructions' => true, 'kind' => true, 'name' => true, 'orgId' => true, 'productType' => true, 'transformation' => true, 'updatedAt' => true]
+            setFields: ['createdAt' => true, 'description' => true, 'id' => true, 'instructions' => true, 'kind' => true, 'name' => true, 'orgId' => true, 'productType' => true, 'transformation' => true, 'transformationUpdatedAt' => true, 'updatedAt' => true]
         );
     }
 
@@ -88,6 +91,7 @@ class ConnectorOut implements \JsonSerializable
             orgId: $this->orgId,
             productType: $this->productType,
             transformation: $this->transformation,
+            transformationUpdatedAt: $this->transformationUpdatedAt,
             uid: $this->uid,
             updatedAt: $this->updatedAt,
             setFields: $setFields
@@ -112,6 +116,7 @@ class ConnectorOut implements \JsonSerializable
             orgId: $this->orgId,
             productType: $this->productType,
             transformation: $this->transformation,
+            transformationUpdatedAt: $this->transformationUpdatedAt,
             uid: $this->uid,
             updatedAt: $this->updatedAt,
             setFields: $setFields
@@ -136,6 +141,7 @@ class ConnectorOut implements \JsonSerializable
             orgId: $this->orgId,
             productType: $this->productType,
             transformation: $this->transformation,
+            transformationUpdatedAt: $this->transformationUpdatedAt,
             uid: $this->uid,
             updatedAt: $this->updatedAt,
             setFields: $setFields
@@ -160,6 +166,7 @@ class ConnectorOut implements \JsonSerializable
             orgId: $this->orgId,
             productType: $this->productType,
             transformation: $this->transformation,
+            transformationUpdatedAt: $this->transformationUpdatedAt,
             uid: $uid,
             updatedAt: $this->updatedAt,
             setFields: $setFields
@@ -178,6 +185,7 @@ class ConnectorOut implements \JsonSerializable
             'orgId' => $this->orgId,
             'productType' => $this->productType,
             'transformation' => $this->transformation,
+            'transformationUpdatedAt' => $this->transformationUpdatedAt->format('c'),
             'updatedAt' => $this->updatedAt->format('c')];
 
         if (isset($this->setFields['allowedEventTypes'])) {
@@ -214,6 +222,7 @@ class ConnectorOut implements \JsonSerializable
             orgId: \Svix\Utils::deserializeString($data, 'orgId', true, 'ConnectorOut'),
             productType: \Svix\Utils::deserializeObject($data, 'productType', true, 'ConnectorOut', [ConnectorProduct::class, 'fromMixed']),
             transformation: \Svix\Utils::deserializeString($data, 'transformation', true, 'ConnectorOut'),
+            transformationUpdatedAt: \Svix\Utils::deserializeDt($data, 'transformationUpdatedAt', true, 'ConnectorOut'),
             uid: \Svix\Utils::deserializeString($data, 'uid', false, 'ConnectorOut'),
             updatedAt: \Svix\Utils::deserializeDt($data, 'updatedAt', true, 'ConnectorOut')
         );

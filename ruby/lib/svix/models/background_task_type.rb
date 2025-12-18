@@ -9,6 +9,7 @@ module Svix
     SDK_GENERATE = "sdk.generate".freeze
     EVENT_TYPE_AGGREGATE = "event-type.aggregate".freeze
     APPLICATION_PURGE_CONTENT = "application.purge_content".freeze
+    ENDPOINT_BULK_REPLAY = "endpoint.bulk_replay".freeze
 
     def self.all_vars
       @all_vars ||= [
@@ -18,7 +19,8 @@ module Svix
         MESSAGE_BROADCAST,
         SDK_GENERATE,
         EVENT_TYPE_AGGREGATE,
-        APPLICATION_PURGE_CONTENT
+        APPLICATION_PURGE_CONTENT,
+        ENDPOINT_BULK_REPLAY
       ].freeze
     end
 

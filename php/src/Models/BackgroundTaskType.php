@@ -14,6 +14,7 @@ enum BackgroundTaskType: string implements \JsonSerializable
     case SDK_GENERATE = 'sdk.generate';
     case EVENT_TYPE_AGGREGATE = 'event-type.aggregate';
     case APPLICATION_PURGE_CONTENT = 'application.purge_content';
+    case ENDPOINT_BULK_REPLAY = 'endpoint.bulk_replay';
 
     /**
      * Create an instance from a mixed obj.

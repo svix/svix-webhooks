@@ -6,7 +6,6 @@ module Svix
   class ApiTokenOut
     attr_accessor :created_at
     attr_accessor :expires_at
-    # The GlobalApplicationToken's ID.
     attr_accessor :id
     attr_accessor :name
     attr_accessor :scopes

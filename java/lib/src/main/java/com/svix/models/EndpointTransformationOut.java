@@ -11,6 +11,8 @@ import com.svix.Utils;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+import java.time.OffsetDateTime;
+
 @ToString
 @EqualsAndHashCode
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -18,6 +20,7 @@ import lombok.ToString;
 public class EndpointTransformationOut {
     @JsonProperty private String code;
     @JsonProperty private Boolean enabled;
+    @JsonProperty private OffsetDateTime updatedAt;
 
     public EndpointTransformationOut() {}
 
@@ -57,6 +60,25 @@ public class EndpointTransformationOut {
 
     public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public EndpointTransformationOut updatedAt(OffsetDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+        return this;
+    }
+
+    /**
+     * Get updatedAt
+     *
+     * @return updatedAt
+     */
+    @javax.annotation.Nullable
+    public OffsetDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(OffsetDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     /**

@@ -33,6 +33,7 @@ public class ConnectorOut {
     @JsonProperty private String orgId;
     @JsonProperty private ConnectorProduct productType;
     @JsonProperty private String transformation;
+    @JsonProperty private OffsetDateTime transformationUpdatedAt;
     @JsonProperty private String uid;
     @JsonProperty private OffsetDateTime updatedAt;
 
@@ -282,6 +283,25 @@ public class ConnectorOut {
 
     public void setTransformation(String transformation) {
         this.transformation = transformation;
+    }
+
+    public ConnectorOut transformationUpdatedAt(OffsetDateTime transformationUpdatedAt) {
+        this.transformationUpdatedAt = transformationUpdatedAt;
+        return this;
+    }
+
+    /**
+     * Get transformationUpdatedAt
+     *
+     * @return transformationUpdatedAt
+     */
+    @javax.annotation.Nonnull
+    public OffsetDateTime getTransformationUpdatedAt() {
+        return transformationUpdatedAt;
+    }
+
+    public void setTransformationUpdatedAt(OffsetDateTime transformationUpdatedAt) {
+        this.transformationUpdatedAt = transformationUpdatedAt;
     }
 
     public ConnectorOut uid(String uid) {

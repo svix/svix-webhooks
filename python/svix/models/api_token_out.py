@@ -11,7 +11,6 @@ class ApiTokenOut(BaseModel):
     expires_at: t.Optional[datetime] = None
 
     id: str
-    """The GlobalApplicationToken's ID."""
 
     name: t.Optional[str] = None
 

@@ -17,6 +17,7 @@ export interface ConnectorOut {
   orgId: string;
   productType: ConnectorProduct;
   transformation: string;
+  transformationUpdatedAt: Date;
   /** The Connector's UID. */
   uid?: string | null;
   updatedAt: Date;
@@ -37,6 +38,7 @@ export const ConnectorOutSerializer = {
       orgId: object["orgId"],
       productType: ConnectorProductSerializer._fromJsonObject(object["productType"]),
       transformation: object["transformation"],
+      transformationUpdatedAt: new Date(object["transformationUpdatedAt"]),
       uid: object["uid"],
       updatedAt: new Date(object["updatedAt"]),
     };
@@ -56,6 +58,7 @@ export const ConnectorOutSerializer = {
       orgId: self.orgId,
       productType: ConnectorProductSerializer._toJsonObject(self.productType),
       transformation: self.transformation,
+      transformationUpdatedAt: self.transformationUpdatedAt,
       uid: self.uid,
       updatedAt: self.updatedAt,
     };

@@ -8,6 +8,10 @@ pub struct EndpointTransformationOut {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub enabled: Option<bool>,
+
+    #[serde(rename = "updatedAt")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub updated_at: Option<String>,
 }
 
 impl EndpointTransformationOut {
@@ -15,6 +19,7 @@ impl EndpointTransformationOut {
         Self {
             code: None,
             enabled: None,
+            updated_at: None,
         }
     }
 }
