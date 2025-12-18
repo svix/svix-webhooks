@@ -10,7 +10,6 @@ class ApiTokenOut implements \JsonSerializable
     private array $setFields = [];
 
     /**
-     * @param string            $id     the GlobalApplicationToken's ID
      * @param list<string>|null $scopes
      */
     private function __construct(

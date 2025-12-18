@@ -17,6 +17,7 @@ const (
 	BACKGROUNDTASKTYPE_SDK_GENERATE              BackgroundTaskType = "sdk.generate"
 	BACKGROUNDTASKTYPE_EVENT_TYPE_AGGREGATE      BackgroundTaskType = "event-type.aggregate"
 	BACKGROUNDTASKTYPE_APPLICATION_PURGE_CONTENT BackgroundTaskType = "application.purge_content"
+	BACKGROUNDTASKTYPE_ENDPOINT_BULK_REPLAY      BackgroundTaskType = "endpoint.bulk_replay"
 )
 
 var allowedBackgroundTaskType = []BackgroundTaskType{
@@ -27,6 +28,7 @@ var allowedBackgroundTaskType = []BackgroundTaskType{
 	"sdk.generate",
 	"event-type.aggregate",
 	"application.purge_content",
+	"endpoint.bulk_replay",
 }
 
 func (v *BackgroundTaskType) UnmarshalJSON(src []byte) error {
@@ -52,4 +54,5 @@ var BackgroundTaskTypeFromString = map[string]BackgroundTaskType{
 	"sdk.generate":              BACKGROUNDTASKTYPE_SDK_GENERATE,
 	"event-type.aggregate":      BACKGROUNDTASKTYPE_EVENT_TYPE_AGGREGATE,
 	"application.purge_content": BACKGROUNDTASKTYPE_APPLICATION_PURGE_CONTENT,
+	"endpoint.bulk_replay":      BACKGROUNDTASKTYPE_ENDPOINT_BULK_REPLAY,
 }

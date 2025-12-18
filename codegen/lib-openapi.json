@@ -224,11 +224,6 @@
                         "type": "string"
                     },
                     "id": {
-                        "description": "The ApplicationToken's ID.",
-                        "example": "key_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                        "maxLength": 31,
-                        "minLength": 31,
-                        "pattern": "^key_[A-Za-z0-9]{27}$",
                         "type": "string"
                     },
                     "name": {
@@ -293,11 +288,6 @@
                         "type": "string"
                     },
                     "id": {
-                        "description": "The GlobalApplicationToken's ID.",
-                        "example": "global_key_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                        "maxLength": 38,
-                        "minLength": 38,
-                        "pattern": "^global_key_[A-Za-z0-9]{27}$",
                         "type": "string"
                     },
                     "name": {
@@ -891,7 +881,8 @@
                     "message.broadcast",
                     "sdk.generate",
                     "event-type.aggregate",
-                    "application.purge_content"
+                    "application.purge_content",
+                    "endpoint.bulk_replay"
                 ],
                 "type": "string"
             },
@@ -922,262 +913,46 @@
                 ],
                 "type": "string"
             },
-            "BrandColor": {
+            "BulkReplayIn": {
                 "properties": {
-                    "hex": {
+                    "channel": {
+                        "example": "project_1337",
+                        "maxLength": 128,
+                        "nullable": true,
+                        "pattern": "^[a-zA-Z0-9\\-_.:]+$",
                         "type": "string"
                     },
-                    "type": {
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "hex",
-                    "type"
-                ],
-                "type": "object"
-            },
-            "BrandCompany": {
-                "properties": {
-                    "employees": {
-                        "format": "uint64",
-                        "minimum": 0,
-                        "nullable": true,
-                        "type": "integer"
-                    },
-                    "financialIdentifiers": {
-                        "$ref": "#/components/schemas/FinancialIdentifiers",
-                        "nullable": true
-                    },
-                    "foundedYear": {
-                        "format": "uint64",
-                        "minimum": 0,
-                        "nullable": true,
-                        "type": "integer"
-                    },
-                    "industries": {
+                    "eventTypes": {
                         "items": {
-                            "$ref": "#/components/schemas/Industry"
+                            "description": "The event type's name",
+                            "example": "user.signup",
+                            "maxLength": 256,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
                         },
-                        "type": "array"
-                    },
-                    "kind": {
                         "nullable": true,
+                        "type": "array",
+                        "uniqueItems": true
+                    },
+                    "since": {
+                        "format": "date-time",
                         "type": "string"
                     },
-                    "location": {
-                        "$ref": "#/components/schemas/CompanyLocation",
-                        "nullable": true
-                    }
-                },
-                "required": [
-                    "industries"
-                ],
-                "type": "object"
-            },
-            "BrandFont": {
-                "properties": {
-                    "name": {
+                    "tag": {
+                        "example": "project_1337",
+                        "maxLength": 128,
                         "nullable": true,
+                        "pattern": "^[a-zA-Z0-9\\-_./\\\\#]+$",
                         "type": "string"
                     },
-                    "origin": {
+                    "until": {
+                        "format": "date-time",
                         "nullable": true,
-                        "type": "string"
-                    },
-                    "originId": {
-                        "nullable": true,
-                        "type": "string"
-                    },
-                    "type": {
                         "type": "string"
                     }
                 },
                 "required": [
-                    "type"
-                ],
-                "type": "object"
-            },
-            "BrandFormat": {
-                "properties": {
-                    "background": {
-                        "nullable": true,
-                        "type": "string"
-                    },
-                    "format": {
-                        "type": "string"
-                    },
-                    "height": {
-                        "format": "uint64",
-                        "minimum": 0,
-                        "nullable": true,
-                        "type": "integer"
-                    },
-                    "size": {
-                        "format": "uint64",
-                        "minimum": 0,
-                        "type": "integer"
-                    },
-                    "src": {
-                        "type": "string"
-                    },
-                    "width": {
-                        "format": "uint64",
-                        "minimum": 0,
-                        "nullable": true,
-                        "type": "integer"
-                    }
-                },
-                "required": [
-                    "format",
-                    "size",
-                    "src"
-                ],
-                "type": "object"
-            },
-            "BrandImage": {
-                "properties": {
-                    "formats": {
-                        "items": {
-                            "$ref": "#/components/schemas/BrandFormat"
-                        },
-                        "type": "array"
-                    },
-                    "type": {
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "formats",
-                    "type"
-                ],
-                "type": "object"
-            },
-            "BrandLink": {
-                "properties": {
-                    "name": {
-                        "type": "string"
-                    },
-                    "url": {
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "name",
-                    "url"
-                ],
-                "type": "object"
-            },
-            "BrandLogo": {
-                "properties": {
-                    "formats": {
-                        "items": {
-                            "$ref": "#/components/schemas/BrandFormat"
-                        },
-                        "type": "array"
-                    },
-                    "theme": {
-                        "nullable": true,
-                        "type": "string"
-                    },
-                    "type": {
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "formats",
-                    "type"
-                ],
-                "type": "object"
-            },
-            "BrandSearchRequest": {
-                "properties": {
-                    "identifier": {
-                        "maxLength": 255,
-                        "minLength": 1,
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "identifier"
-                ],
-                "type": "object"
-            },
-            "BrandfetchResponse": {
-                "properties": {
-                    "claimed": {
-                        "type": "boolean"
-                    },
-                    "colors": {
-                        "items": {
-                            "$ref": "#/components/schemas/BrandColor"
-                        },
-                        "type": "array"
-                    },
-                    "company": {
-                        "$ref": "#/components/schemas/BrandCompany",
-                        "nullable": true
-                    },
-                    "description": {
-                        "nullable": true,
-                        "type": "string"
-                    },
-                    "domain": {
-                        "type": "string"
-                    },
-                    "fonts": {
-                        "items": {
-                            "$ref": "#/components/schemas/BrandFont"
-                        },
-                        "type": "array"
-                    },
-                    "id": {
-                        "type": "string"
-                    },
-                    "images": {
-                        "items": {
-                            "$ref": "#/components/schemas/BrandImage"
-                        },
-                        "type": "array"
-                    },
-                    "isNsfw": {
-                        "type": "boolean"
-                    },
-                    "links": {
-                        "items": {
-                            "$ref": "#/components/schemas/BrandLink"
-                        },
-                        "type": "array"
-                    },
-                    "logos": {
-                        "items": {
-                            "$ref": "#/components/schemas/BrandLogo"
-                        },
-                        "type": "array"
-                    },
-                    "longDescription": {
-                        "nullable": true,
-                        "type": "string"
-                    },
-                    "name": {
-                        "nullable": true,
-                        "type": "string"
-                    },
-                    "urn": {
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "claimed",
-                    "colors",
-                    "domain",
-                    "fonts",
-                    "id",
-                    "images",
-                    "isNsfw",
-                    "links",
-                    "logos",
-                    "urn"
+                    "since"
                 ],
                 "type": "object"
             },
@@ -1222,35 +997,6 @@
                     "secretBase64",
                     "signingAlgorithm"
                 ],
-                "type": "object"
-            },
-            "CompanyLocation": {
-                "properties": {
-                    "city": {
-                        "nullable": true,
-                        "type": "string"
-                    },
-                    "country": {
-                        "nullable": true,
-                        "type": "string"
-                    },
-                    "countryCode": {
-                        "nullable": true,
-                        "type": "string"
-                    },
-                    "region": {
-                        "nullable": true,
-                        "type": "string"
-                    },
-                    "state": {
-                        "nullable": true,
-                        "type": "string"
-                    },
-                    "subregion": {
-                        "nullable": true,
-                        "type": "string"
-                    }
-                },
                 "type": "object"
             },
             "CompletionChoice": {
@@ -1736,6 +1482,10 @@
                     "transformation": {
                         "type": "string"
                     },
+                    "transformationUpdatedAt": {
+                        "format": "date-time",
+                        "type": "string"
+                    },
                     "uid": {
                         "description": "The Connector's UID.",
                         "example": "unique-identifier",
@@ -1760,6 +1510,7 @@
                     "orgId",
                     "productType",
                     "transformation",
+                    "transformationUpdatedAt",
                     "updatedAt"
                 ],
                 "type": "object"
@@ -2186,6 +1937,19 @@
                         },
                         "required": [
                             "messages_purged"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "messages_sent": {
+                                "format": "uint",
+                                "minimum": 0,
+                                "type": "integer"
+                            }
+                        },
+                        "required": [
+                            "messages_sent"
                         ],
                         "type": "object"
                     }
@@ -3134,6 +2898,12 @@
                 "properties": {
                     "status": {
                         "$ref": "#/components/schemas/EndpointRateLimitStatus"
+                    },
+                    "throttledSince": {
+                        "description": "When throttling started for this endpoint, if currently throttled.",
+                        "format": "date-time",
+                        "nullable": true,
+                        "type": "string"
                     }
                 },
                 "required": [
@@ -3206,6 +2976,11 @@
                     "enabled": {
                         "default": false,
                         "type": "boolean"
+                    },
+                    "updatedAt": {
+                        "format": "date-time",
+                        "nullable": true,
+                        "type": "string"
                     }
                 },
                 "type": "object"
@@ -3714,25 +3489,6 @@
                 ],
                 "type": "object"
             },
-            "EventTypeExampleOut": {
-                "properties": {
-                    "example": {
-                        "additionalProperties": true,
-                        "example": {
-                            "data": {
-                                "email": "test@example.com",
-                                "username": "test_user"
-                            },
-                            "type": "user.created"
-                        },
-                        "type": "object"
-                    }
-                },
-                "required": [
-                    "example"
-                ],
-                "type": "object"
-            },
             "EventTypeFromOpenApi": {
                 "properties": {
                     "deprecated": {
@@ -4160,37 +3916,6 @@
                 },
                 "type": "object"
             },
-            "EventTypeSchemaIn": {
-                "properties": {
-                    "schema": {
-                        "additionalProperties": true,
-                        "example": {
-                            "description": "An invoice was paid by a user",
-                            "properties": {
-                                "invoiceId": {
-                                    "description": "The invoice id",
-                                    "type": "string"
-                                },
-                                "userId": {
-                                    "description": "The user id",
-                                    "type": "string"
-                                }
-                            },
-                            "required": [
-                                "invoiceId",
-                                "userId"
-                            ],
-                            "title": "Invoice Paid Event",
-                            "type": "object"
-                        },
-                        "type": "object"
-                    }
-                },
-                "required": [
-                    "schema"
-                ],
-                "type": "object"
-            },
             "EventTypeUpdate": {
                 "properties": {
                     "archived": {
@@ -4318,27 +4043,6 @@
                 ],
                 "type": "object"
             },
-            "FinancialIdentifiers": {
-                "properties": {
-                    "isin": {
-                        "items": {
-                            "type": "string"
-                        },
-                        "type": "array"
-                    },
-                    "ticker": {
-                        "items": {
-                            "type": "string"
-                        },
-                        "type": "array"
-                    }
-                },
-                "required": [
-                    "isin",
-                    "ticker"
-                ],
-                "type": "object"
-            },
             "FontSizeConfig": {
                 "properties": {
                     "base": {
@@ -4415,11 +4119,6 @@
                         "type": "string"
                     },
                     "id": {
-                        "description": "The GlobalApplicationToken's ID.",
-                        "example": "global_key_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                        "maxLength": 38,
-                        "minLength": 38,
-                        "pattern": "^global_key_[A-Za-z0-9]{27}$",
                         "type": "string"
                     },
                     "name": {
@@ -4603,29 +4302,6 @@
                         "type": "string"
                     }
                 },
-                "type": "object"
-            },
-            "Industry": {
-                "properties": {
-                    "emoji": {
-                        "type": "string"
-                    },
-                    "id": {
-                        "type": "string"
-                    },
-                    "name": {
-                        "type": "string"
-                    },
-                    "slug": {
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "emoji",
-                    "id",
-                    "name",
-                    "slug"
-                ],
                 "type": "object"
             },
             "IngestEndpointDisabledEvent": {
@@ -10527,46 +10203,6 @@
                 ],
                 "type": "string"
             },
-            "StatisticsPeriod2": {
-                "enum": [
-                    "oneHour",
-                    "oneDay",
-                    "oneWeek"
-                ],
-                "type": "string"
-            },
-            "StatisticsResponse": {
-                "properties": {
-                    "dates": {
-                        "items": {
-                            "format": "date-time",
-                            "type": "string"
-                        },
-                        "type": "array"
-                    },
-                    "messageCountsByEventType": {
-                        "additionalProperties": {
-                            "items": {
-                                "format": "uint64",
-                                "minimum": 0,
-                                "type": "integer"
-                            },
-                            "type": "array"
-                        },
-                        "description": "For each event type, a vector of counts for each period.",
-                        "type": "object"
-                    },
-                    "period": {
-                        "$ref": "#/components/schemas/StatisticsPeriod2"
-                    }
-                },
-                "required": [
-                    "dates",
-                    "messageCountsByEventType",
-                    "period"
-                ],
-                "type": "object"
-            },
             "StatusCodeClass": {
                 "description": "The different classes of HTTP status codes:\n\n- CodeNone = 0\n- Code1xx = 100\n- Code2xx = 200\n- Code3xx = 300\n- Code4xx = 400\n- Code5xx = 500",
                 "enum": [
@@ -11427,62 +11063,6 @@
             "StripeConfigOut": {
                 "type": "object"
             },
-            "SurveyIn": {
-                "properties": {
-                    "content": {
-                        "additionalProperties": true,
-                        "type": "object"
-                    },
-                    "title": {
-                        "example": "Welcome Questionnaire",
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "content",
-                    "title"
-                ],
-                "type": "object"
-            },
-            "SurveyOut": {
-                "properties": {
-                    "content": {
-                        "additionalProperties": true,
-                        "type": "object"
-                    },
-                    "createdAt": {
-                        "format": "date-time",
-                        "type": "string"
-                    },
-                    "id": {
-                        "description": "The Survey's ID.",
-                        "example": "srvy_2yZwUhtgs5Ai8T9yRQJXA",
-                        "maxLength": 27,
-                        "minLength": 27,
-                        "pattern": "^srvy_[A-Za-z0-9]{22}$",
-                        "type": "string"
-                    },
-                    "title": {
-                        "type": "string"
-                    },
-                    "userId": {
-                        "description": "The User's ID.",
-                        "example": "usr_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                        "maxLength": 31,
-                        "minLength": 31,
-                        "pattern": "^usr_[A-Za-z0-9]{27}$",
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "content",
-                    "createdAt",
-                    "id",
-                    "title",
-                    "userId"
-                ],
-                "type": "object"
-            },
             "SvixConfig": {
                 "properties": {
                     "secret": {
@@ -11516,37 +11096,6 @@
                 },
                 "required": [
                     "publicKey"
-                ],
-                "type": "object"
-            },
-            "TopApplicationOut": {
-                "properties": {
-                    "app": {
-                        "$ref": "#/components/schemas/ApplicationOut"
-                    },
-                    "messageCount": {
-                        "format": "uint64",
-                        "minimum": 0,
-                        "type": "integer"
-                    }
-                },
-                "required": [
-                    "app",
-                    "messageCount"
-                ],
-                "type": "object"
-            },
-            "TopApplicationsOut": {
-                "properties": {
-                    "topApplications": {
-                        "items": {
-                            "$ref": "#/components/schemas/TopApplicationOut"
-                        },
-                        "type": "array"
-                    }
-                },
-                "required": [
-                    "topApplications"
                 ],
                 "type": "object"
             },
@@ -11716,7 +11265,7 @@
     "info": {
         "description": "Welcome to the Svix API documentation!\n\nUseful links: [Homepage](https://www.svix.com) | [Support email](mailto:support+docs@svix.com) | [Blog](https://www.svix.com/blog/) | [Slack Community](https://www.svix.com/slack/)\n\n# Introduction\n\nThis is the reference documentation and schemas for the [Svix webhook service](https://www.svix.com) API. For tutorials and other documentation please refer to [the documentation](https://docs.svix.com).\n\n## Main concepts\n\nIn Svix you have four important entities you will be interacting with:\n\n- `messages`: these are the webhooks being sent. They can have contents and a few other properties.\n- `application`: this is where `messages` are sent to. Usually you want to create one application for each user on your platform.\n- `endpoint`: endpoints are the URLs messages will be sent to. Each application can have multiple `endpoints` and each message sent to that application will be sent to all of them (unless they are not subscribed to the sent event type).\n- `event-type`: event types are identifiers denoting the type of the message being sent. Event types are primarily used to decide which events are sent to which endpoint.\n\n\n## Authentication\n\nGet your authentication token (`AUTH_TOKEN`) from the [Svix dashboard](https://dashboard.svix.com) and use it as part of the `Authorization` header as such: `Authorization: Bearer ${AUTH_TOKEN}`. For more information on authentication, please refer to the [authentication token docs](https://docs.svix.com/api-keys).\n\n<SecurityDefinitions />\n\n\n## Code samples\n\nThe code samples assume you already have the respective libraries installed and you know how to use them. For the latest information on how to do that, please refer to [the documentation](https://docs.svix.com/).\n\n\n## Idempotency\n\nSvix supports [idempotency](https://en.wikipedia.org/wiki/Idempotence) for safely retrying requests without accidentally performing the same operation twice. This is useful when an API call is disrupted in transit and you do not receive a response.\n\nTo perform an idempotent request, pass the idempotency key in the `Idempotency-Key` header to the request. The idempotency key should be a unique value generated by the client. You can create the key in however way you like, though we suggest using UUID v4, or any other string with enough entropy to avoid collisions.\n\nSvix's idempotency works by saving the resulting status code and body of the first request made for any given idempotency key for any successful request. Subsequent requests with the same key return the same result for a period of up to 12 hours.\n\nPlease note that idempotency is only supported for `POST` requests.\n\n\n## Cross-Origin Resource Sharing\n\nThis API features Cross-Origin Resource Sharing (CORS) implemented in compliance with [W3C spec](https://www.w3.org/TR/cors/). And that allows cross-domain communication from the browser. All responses have a wildcard same-origin which makes them completely public and accessible to everyone, including any code on any site.\n",
         "title": "Svix API",
-        "version": "1.83.0",
+        "version": "1.81.0",
         "x-logo": {
             "altText": "Svix Logo",
             "url": "https://www.svix.com/static/img/brand-padded.svg"
@@ -11934,6 +11483,11 @@
                         "source": "var response = svix.Application.List();"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->application->list();"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix application list"
@@ -12133,6 +11687,11 @@
                         "source": "var response = svix.Application.Create(\n    new ApplicationIn\n    {\n        Name = \"My first application\",\n        RateLimit = 1,\n        Uid = \"unique-identifier\",\n        Metadata = [],\n    }\n);"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->application->create(\n    ApplicationIn::create(\n        name: \"My first application\"\n    )\n    ->withRateLimit(1)\n    ->withUid(\"unique-identifier\")\n    ->withMetadata([])\n);"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix application create '{\n    \"metadata\": {},\n    \"name\": \"My first application\",\n    \"rateLimit\": 1,\n    \"uid\": \"unique-identifier\"\n  }'"
@@ -12300,6 +11859,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Application.Delete(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\");"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$svix->application->delete(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\"\n);"
                     },
                     {
                         "label": "CLI",
@@ -12474,6 +12038,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Application.Get(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\");"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->application->get(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\"\n);"
                     },
                     {
                         "label": "CLI",
@@ -12658,6 +12227,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Application.Patch(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    new ApplicationPatch\n    {\n        Name = \"sample string\",\n        RateLimit = 1,\n        Uid = \"unique-identifier\",\n        Metadata = [],\n    }\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->application->patch(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    ApplicationPatch::create()\n    ->withName(\"sample string\")\n    ->withRateLimit(1)\n    ->withUid(\"unique-identifier\")\n    ->withMetadata([])\n);"
                     },
                     {
                         "label": "CLI",
@@ -12852,6 +12426,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Application.Update(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    new ApplicationIn\n    {\n        Name = \"My first application\",\n        RateLimit = 1,\n        Uid = \"unique-identifier\",\n        Metadata = [],\n    }\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->application->update(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    ApplicationIn::create(\n        name: \"My first application\"\n    )\n    ->withRateLimit(1)\n    ->withUid(\"unique-identifier\")\n    ->withMetadata([])\n);"
                     },
                     {
                         "label": "CLI",
@@ -13188,6 +12767,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.MessageAttempt.ListByEndpoint(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->messageAttempt->listByEndpoint(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
                     },
                     {
                         "label": "CLI",
@@ -13755,6 +13339,11 @@
                         "source": "var response = svix.MessageAttempt.ListByMsg(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"msg_33ZHzkmDazsPr4mDUsdzXJrGQ1f\"\n);"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->messageAttempt->listByMsg(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"msg_33ZHzkmDazsPr4mDUsdzXJrGQ1f\"\n);"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix message-attempt list-by-msg \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" \"msg_33ZHzkmDazsPr4mDUsdzXJrGQ1f\""
@@ -13970,6 +13559,11 @@
                         "source": "var response = svix.Endpoint.List(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\");"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->endpoint->list(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\"\n);"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix endpoint list \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\""
@@ -14163,6 +13757,11 @@
                         "source": "var response = svix.Endpoint.Create(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    new EndpointIn\n    {\n        Description = \"An example endpoint name\",\n        RateLimit = 1,\n        Uid = \"unique-identifier\",\n        Url = \"https://example.com/webhook/\",\n        Headers = new() { { \"X-Example\", \"123\" }, { \"X-Foobar\", \"Bar\" } },\n        Disabled = true,\n        FilterTypes = [\"user.signup\", \"user.deleted\"],\n        Channels = [\"project_123\", \"group_2\"],\n        Secret = \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n        Metadata = [],\n    }\n);"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->endpoint->create(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    EndpointIn::create(\n        url: \"https://example.com/webhook/\"\n    )\n    ->withDescription(\"An example endpoint name\")\n    ->withRateLimit(1)\n    ->withUid(\"unique-identifier\")\n    ->withHeaders([\"X-Example\" => \"123\", \"X-Foobar\" => \"Bar\"])\n    ->withDisabled(true)\n    ->withFilterTypes([\"user.signup\",\"user.deleted\"])\n    ->withChannels([\"project_123\",\"group_2\"])\n    ->withSecret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n    ->withMetadata([])\n);"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix endpoint create \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" '{\n    \"channels\": [\n      \"project_123\",\n      \"group_2\"\n    ],\n    \"description\": \"An example endpoint name\",\n    \"disabled\": true,\n    \"filterTypes\": [\n      \"user.signup\",\n      \"user.deleted\"\n    ],\n    \"headers\": {\n      \"X-Example\": \"123\",\n      \"X-Foobar\": \"Bar\"\n    },\n    \"metadata\": {},\n    \"rateLimit\": 1,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    \"uid\": \"unique-identifier\",\n    \"url\": \"https://example.com/webhook/\"\n  }'"
@@ -14345,6 +13944,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Endpoint.Delete(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$svix->endpoint->delete(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
                     },
                     {
                         "label": "CLI",
@@ -14534,6 +14138,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Endpoint.Get(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->endpoint->get(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
                     },
                     {
                         "label": "CLI",
@@ -14733,6 +14342,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Endpoint.Patch(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    new EndpointPatch\n    {\n        Description = \"sample string\",\n        RateLimit = 1,\n        Uid = \"unique-identifier\",\n        Url = \"sample string\",\n        Metadata = [],\n        Disabled = true,\n        FilterTypes = MaybeUnset<List<string>?>.Set([]),\n        Channels = MaybeUnset<List<string>?>.Set([]),\n    }\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->endpoint->patch(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointPatch::create()\n    ->withDescription(\"sample string\")\n    ->withRateLimit(1)\n    ->withUid(\"unique-identifier\")\n    ->withUrl(\"sample string\")\n    ->withMetadata([])\n    ->withDisabled(true)\n    ->withFilterTypes([])\n    ->withChannels([])\n);"
                     },
                     {
                         "label": "CLI",
@@ -14944,6 +14558,11 @@
                         "source": "var response = svix.Endpoint.Update(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    new EndpointUpdate\n    {\n        Description = \"An example endpoint name\",\n        RateLimit = 1,\n        Uid = \"unique-identifier\",\n        Url = \"https://example.com/webhook/\",\n        Metadata = [],\n        Disabled = true,\n        FilterTypes = [\"user.signup\", \"user.deleted\"],\n        Channels = [\"project_123\", \"group_2\"],\n    }\n);"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->endpoint->update(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointUpdate::create(\n        url: \"https://example.com/webhook/\"\n    )\n    ->withDescription(\"An example endpoint name\")\n    ->withRateLimit(1)\n    ->withUid(\"unique-identifier\")\n    ->withMetadata([])\n    ->withDisabled(true)\n    ->withFilterTypes([\"user.signup\",\"user.deleted\"])\n    ->withChannels([\"project_123\",\"group_2\"])\n);"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix endpoint update \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\" '{\n    \"channels\": [\n      \"project_123\",\n      \"group_2\"\n    ],\n    \"description\": \"An example endpoint name\",\n    \"disabled\": true,\n    \"filterTypes\": [\n      \"user.signup\",\n      \"user.deleted\"\n    ],\n    \"metadata\": {},\n    \"rateLimit\": 1,\n    \"uid\": \"unique-identifier\",\n    \"url\": \"https://example.com/webhook/\"\n  }'"
@@ -14954,6 +14573,288 @@
                         "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/app/app_1srOrx2ZWZBpBUvZwXKQmoEYga2/endpoint/ep_33ZIBDmz66FcPG35FnsbM6Ie4X1' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"channels\": [\n      \"project_123\",\n      \"group_2\"\n    ],\n    \"description\": \"An example endpoint name\",\n    \"disabled\": true,\n    \"filterTypes\": [\n      \"user.signup\",\n      \"user.deleted\"\n    ],\n    \"metadata\": {},\n    \"rateLimit\": 1,\n    \"uid\": \"unique-identifier\",\n    \"url\": \"https://example.com/webhook/\"\n  }'"
                     }
                 ]
+            }
+        },
+        "/api/v1/app/{app_id}/endpoint/{endpoint_id}/bulk-replay": {
+            "post": {
+                "description": "Bulk replay messages",
+                "operationId": "v1.endpoint.bulk-replay",
+                "parameters": [
+                    {
+                        "description": "The Application's ID or UID.",
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The Application's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The Endpoint's ID or UID.",
+                        "in": "path",
+                        "name": "endpoint_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The Endpoint's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/BulkReplayIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "202": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ReplayOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Bulk Replay Webhooks",
+                "tags": [
+                    "Endpoint"
+                ],
+                "x-internal": true
+            }
+        },
+        "/api/v1/app/{app_id}/endpoint/{endpoint_id}/connector": {
+            "get": {
+                "description": "Get the connector associated with an endpoint.",
+                "operationId": "v1.endpoint.get_connector",
+                "parameters": [
+                    {
+                        "description": "The Application's ID or UID.",
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The Application's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The Endpoint's ID or UID.",
+                        "in": "path",
+                        "name": "endpoint_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The Endpoint's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ConnectorOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "204": {
+                        "description": "no content"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Get Endpoint Connector",
+                "tags": [
+                    "Endpoint"
+                ],
+                "x-internal": true
             }
         },
         "/api/v1/app/{app_id}/endpoint/{endpoint_id}/connector/oauth/hubspot": {
@@ -15268,6 +15169,11 @@
                         "source": "var response = svix.Endpoint.GetHeaders(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->endpoint->getHeaders(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix endpoint get-headers \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\""
@@ -15460,6 +15366,11 @@
                         "source": "var response = svix.Endpoint.PatchHeaders(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    new EndpointHeadersPatchIn\n    {\n        Headers = new() { { \"X-Example\", \"123\" }, { \"X-Foobar\", \"Bar\" } },\n        DeleteHeaders = [],\n    }\n);"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$svix->endpoint->patchHeaders(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointHeadersPatchIn::create(\n        headers: [\"X-Example\" => \"123\", \"X-Foobar\" => \"Bar\"]\n    )\n    ->withDeleteHeaders([])\n);"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix endpoint patch-headers \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\" '{\n    \"deleteHeaders\": [],\n    \"headers\": {\n      \"X-Example\": \"123\",\n      \"X-Foobar\": \"Bar\"\n    }\n  }'"
@@ -15650,6 +15561,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Endpoint.UpdateHeaders(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    new EndpointHeadersIn\n    {\n        Headers = new() { { \"X-Example\", \"123\" }, { \"X-Foobar\", \"Bar\" } },\n    }\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$svix->endpoint->updateHeaders(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointHeadersIn::create(\n        headers: [\"X-Example\" => \"123\", \"X-Foobar\" => \"Bar\"]\n    )\n\n);"
                     },
                     {
                         "label": "CLI",
@@ -15963,6 +15879,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.MessageAttempt.ListAttemptedMessages(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->messageAttempt->listAttemptedMessages(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
                     },
                     {
                         "label": "CLI",
@@ -17478,6 +17399,11 @@
                         "source": "var response = svix.Endpoint.Recover(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    new RecoverIn\n    {\n        Since = DateTime.Parse(\"2025-10-02T20:28:42+00:00\"),\n        Until = DateTime.Parse(\"2025-10-02T20:28:42+00:00\"),\n    }\n);"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->endpoint->recover(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    RecoverIn::create(\n        since: new DateTimeImmutable(\"2025-10-02T20:28:42+00:00\")\n    )\n    ->withUntil(new DateTimeImmutable(\"2025-10-02T20:28:42+00:00\"))\n);"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix endpoint recover \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\" '{\n    \"since\": \"2025-10-02T20:28:42+00:00\",\n    \"until\": \"2025-10-02T20:28:42+00:00\"\n  }'"
@@ -17688,6 +17614,11 @@
                         "source": "var response = svix.Endpoint.ReplayMissing(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    new ReplayIn\n    {\n        Since = DateTime.Parse(\"2025-10-02T20:28:42+00:00\"),\n        Until = DateTime.Parse(\"2025-10-02T20:28:42+00:00\"),\n    }\n);"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->endpoint->replayMissing(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    ReplayIn::create(\n        since: new DateTimeImmutable(\"2025-10-02T20:28:42+00:00\")\n    )\n    ->withUntil(new DateTimeImmutable(\"2025-10-02T20:28:42+00:00\"))\n);"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix endpoint replay-missing \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\" '{\n    \"since\": \"2025-10-02T20:28:42+00:00\",\n    \"until\": \"2025-10-02T20:28:42+00:00\"\n  }'"
@@ -17877,6 +17808,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Endpoint.GetSecret(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->endpoint->getSecret(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
                     },
                     {
                         "label": "CLI",
@@ -18080,6 +18016,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Endpoint.RotateSecret(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    new EndpointSecretRotateIn { Key = \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\" }\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$svix->endpoint->rotateSecret(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointSecretRotateIn::create()\n    ->withKey(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n);"
                     },
                     {
                         "label": "CLI",
@@ -18290,6 +18231,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Endpoint.SendExample(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    new EventExampleIn { EventType = \"user.signup\", ExampleIndex = 1 }\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->endpoint->sendExample(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EventExampleIn::create(\n        eventType: \"user.signup\"\n    )\n    ->withExampleIndex(1)\n);"
                     },
                     {
                         "label": "CLI",
@@ -18507,6 +18453,11 @@
                         "source": "var response = svix.Endpoint.GetStats(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->endpoint->getStats(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix endpoint get-stats \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\""
@@ -18696,6 +18647,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Endpoint.TransformationGet(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->endpoint->transformationGet(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
                     },
                     {
                         "label": "CLI",
@@ -18888,6 +18844,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Endpoint.PatchTransformation(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    new EndpointTransformationPatch\n    {\n        Code = \"function handler(webhook) { /* ... */ }\",\n        Enabled = true,\n    }\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$svix->endpoint->patchTransformation(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointTransformationPatch::create()\n    ->withCode(\"function handler(webhook) { /* ... */ }\")\n    ->withEnabled(true)\n);"
                     },
                     {
                         "label": "CLI",
@@ -19721,6 +19682,11 @@
                         "source": "var response = svix.Integration.List(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\");"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->integration->list(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\"\n);"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix integration list \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\""
@@ -19914,6 +19880,11 @@
                         "source": "var response = svix.Integration.Create(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    new IntegrationIn { Name = \"Example Integration\", FeatureFlags = [] }\n);"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->integration->create(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    IntegrationIn::create(\n        name: \"Example Integration\"\n    )\n    ->withFeatureFlags([])\n);"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix integration create \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" '{\n    \"featureFlags\": [],\n    \"name\": \"Example Integration\"\n  }'"
@@ -20096,6 +20067,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Integration.Delete(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"integ_1srOrx2ZWZBpBUvZwXKQmoEYga2\"\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$svix->integration->delete(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"integ_1srOrx2ZWZBpBUvZwXKQmoEYga2\"\n);"
                     },
                     {
                         "label": "CLI",
@@ -20285,6 +20261,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Integration.Get(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"integ_1srOrx2ZWZBpBUvZwXKQmoEYga2\"\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->integration->get(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"integ_1srOrx2ZWZBpBUvZwXKQmoEYga2\"\n);"
                     },
                     {
                         "label": "CLI",
@@ -20486,6 +20467,11 @@
                         "source": "var response = svix.Integration.Update(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"integ_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    new IntegrationUpdate { Name = \"Example Integration\", FeatureFlags = [] }\n);"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->integration->update(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"integ_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    IntegrationUpdate::create(\n        name: \"Example Integration\"\n    )\n    ->withFeatureFlags([])\n);"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix integration update \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" \"integ_1srOrx2ZWZBpBUvZwXKQmoEYga2\" '{\n    \"featureFlags\": [],\n    \"name\": \"Example Integration\"\n  }'"
@@ -20676,6 +20662,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Integration.GetKey(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"integ_1srOrx2ZWZBpBUvZwXKQmoEYga2\"\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->integration->getKey(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"integ_1srOrx2ZWZBpBUvZwXKQmoEYga2\"\n);"
                     },
                     {
                         "label": "CLI",
@@ -20876,6 +20867,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Integration.RotateKey(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"integ_1srOrx2ZWZBpBUvZwXKQmoEYga2\"\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->integration->rotateKey(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"integ_1srOrx2ZWZBpBUvZwXKQmoEYga2\"\n);"
                     },
                     {
                         "label": "CLI",
@@ -21164,6 +21160,11 @@
                         "source": "var response = svix.Message.List(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\");"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->message->list(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\"\n);"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix message list \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\""
@@ -21378,6 +21379,11 @@
                         "source": "var response = svix.Message.Create(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    new MessageIn\n    {\n        EventId = \"unique-identifier\",\n        EventType = \"user.signup\",\n        Payload = new Dictionary<string, string>\n        {\n            { \"email\", \"test@example.com\" },\n            { \"type\", \"user.created\" },\n            { \"username\", \"test_user\" },\n        },\n        Channels = [\"project_123\", \"group_2\"],\n        Application = new ApplicationIn\n        {\n            Name = \"My first application\",\n            RateLimit = 1,\n            Uid = \"unique-identifier\",\n            Metadata = [],\n        },\n        Tags = [\"my_tag\", \"other\"],\n        TransformationsParams = new Dictionary<string, string> { },\n        DeliverAt = DateTime.Parse(\"2025-10-02T20:28:42+00:00\"),\n        PayloadRetentionPeriod = 90,\n        PayloadRetentionHours = 1,\n    }\n);\n\n// Alternatively, with a raw string payload.\nvar response = await svix.Message.CreateAsync(\n    \"app_id\",\n    svix.Message.messageInRaw(\n        eventType: \"user.signup\",\n        payload: \"This is a raw body.\",\n        contentType: \"text/plain\"\n    )\n);"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->message->create(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    MessageIn::create(\n        eventType: \"user.signup\",\n        payload: [\"email\" => \"test@example.com\", \"type\" => \"user.created\", \"username\" => \"test_user\"]\n    )\n    ->withEventId(\"unique-identifier\")\n    ->withChannels([\"project_123\",\"group_2\"])\n    ->withApplication(ApplicationIn::create(\n        name: \"My first application\"\n    )\n    ->withRateLimit(1)\n    ->withUid(\"unique-identifier\")\n    ->withMetadata([]))\n    ->withTags([\"my_tag\",\"other\"])\n    ->withDeliverAt(new DateTimeImmutable(\"2025-10-02T20:28:42+00:00\"))\n    ->withPayloadRetentionPeriod(90)\n    ->withPayloadRetentionHours(1)\n);\n\n// Alternatively, with a raw string payload.\n$response = $svix->message->create(\n    \"app_id\",\n    MessageIn::createRaw(\n        \"user.signup\",\n        \"This is a raw body.\",\n        \"text/plain\"\n    )\n);"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix message create \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" '{\n    \"application\": {\n      \"metadata\": {},\n      \"name\": \"My first application\",\n      \"rateLimit\": 1,\n      \"uid\": \"unique-identifier\"\n    },\n    \"channels\": [\n      \"project_123\",\n      \"group_2\"\n    ],\n    \"deliverAt\": \"2025-10-02T20:28:42+00:00\",\n    \"eventId\": \"unique-identifier\",\n    \"eventType\": \"user.signup\",\n    \"payload\": {\n      \"email\": \"test@example.com\",\n      \"type\": \"user.created\",\n      \"username\": \"test_user\"\n    },\n    \"payloadRetentionHours\": 1,\n    \"payloadRetentionPeriod\": 90,\n    \"tags\": [\n      \"my_tag\",\n      \"other\"\n    ],\n    \"transformationsParams\": {}\n  }'"
@@ -21561,6 +21567,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Message.ExpungeAllContents(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\");"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->message->expungeAllContents(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\"\n);"
                     },
                     {
                         "label": "CLI",
@@ -21899,6 +21910,11 @@
                         "source": "var response = svix.Message.Get(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"msg_33ZHzkmDazsPr4mDUsdzXJrGQ1f\"\n);"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->message->get(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"msg_33ZHzkmDazsPr4mDUsdzXJrGQ1f\"\n);"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix message get \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" \"msg_33ZHzkmDazsPr4mDUsdzXJrGQ1f\""
@@ -22105,6 +22121,11 @@
                         "source": "var response = svix.MessageAttempt.Get(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"msg_33ZHzkmDazsPr4mDUsdzXJrGQ1f\",\n    \"atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2\"\n);"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->messageAttempt->get(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"msg_33ZHzkmDazsPr4mDUsdzXJrGQ1f\",\n    \"atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2\"\n);"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix message-attempt get \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" \"msg_33ZHzkmDazsPr4mDUsdzXJrGQ1f\" \"atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2\""
@@ -22302,6 +22323,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.MessageAttempt.ExpungeContent(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"msg_33ZHzkmDazsPr4mDUsdzXJrGQ1f\",\n    \"atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2\"\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$svix->messageAttempt->expungeContent(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"msg_33ZHzkmDazsPr4mDUsdzXJrGQ1f\",\n    \"atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2\"\n);"
                     },
                     {
                         "label": "CLI",
@@ -22633,6 +22659,11 @@
                         "source": "var response = svix.Message.ExpungeContent(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"msg_33ZHzkmDazsPr4mDUsdzXJrGQ1f\"\n);"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$svix->message->expungeContent(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"msg_33ZHzkmDazsPr4mDUsdzXJrGQ1f\"\n);"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix message expunge-content \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" \"msg_33ZHzkmDazsPr4mDUsdzXJrGQ1f\""
@@ -22852,6 +22883,11 @@
                         "source": "var response = svix.MessageAttempt.ListAttemptedDestinations(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"msg_33ZHzkmDazsPr4mDUsdzXJrGQ1f\"\n);"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->messageAttempt->listAttemptedDestinations(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"msg_33ZHzkmDazsPr4mDUsdzXJrGQ1f\"\n);"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix message-attempt list-attempted-destinations \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" \"msg_33ZHzkmDazsPr4mDUsdzXJrGQ1f\""
@@ -23065,6 +23101,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.MessageAttempt.Resend(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"msg_33ZHzkmDazsPr4mDUsdzXJrGQ1f\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->messageAttempt->resend(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"msg_33ZHzkmDazsPr4mDUsdzXJrGQ1f\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
                     },
                     {
                         "label": "CLI",
@@ -23568,6 +23609,11 @@
                         "source": "var response = svix.Message.Poller.Poll(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\"\n);"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->message->poller->poll(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\"\n);"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix message poller poll \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" \"sink_31Dc11sPYY9aLDkwPuGMa\""
@@ -23792,6 +23838,11 @@
                         "source": "var response = svix.Message.Poller.ConsumerPoll(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    \"consumer_id\"\n);"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->message->poller->consumerPoll(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    \"consumer_id\"\n);"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix message poller consumer-poll \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" \"sink_31Dc11sPYY9aLDkwPuGMa\" \"consumer_id\""
@@ -24009,6 +24060,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Message.Poller.ConsumerSeek(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    \"consumer_id\",\n    new PollingEndpointConsumerSeekIn { After = DateTime.Parse(\"2025-10-02T20:28:42+00:00\") }\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->message->poller->consumerSeek(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    \"consumer_id\",\n    PollingEndpointConsumerSeekIn::create(\n        after: new DateTimeImmutable(\"2025-10-02T20:28:42+00:00\")\n    )\n\n);"
                     },
                     {
                         "label": "CLI",
@@ -26789,6 +26845,11 @@
                         "source": "var response = svix.Authentication.AppPortalAccess(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    new AppPortalAccessIn\n    {\n        Application = new ApplicationIn\n        {\n            Name = \"My first application\",\n            RateLimit = 1,\n            Uid = \"unique-identifier\",\n            Metadata = [],\n        },\n        ReadOnly = true,\n        Capabilities = [AppPortalCapability.ViewBase, AppPortalCapability.ViewEndpointSecret],\n        FeatureFlags = [],\n        Expiry = 1,\n        SessionId = \"user_1FB8\",\n    }\n);"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->authentication->appPortalAccess(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    AppPortalAccessIn::create()\n    ->withApplication(ApplicationIn::create(\n        name: \"My first application\"\n    )\n    ->withRateLimit(1)\n    ->withUid(\"unique-identifier\")\n    ->withMetadata([]))\n    ->withReadOnly(true)\n    ->withCapabilities([])\n    ->withFeatureFlags([])\n    ->withExpiry(1)\n    ->withSessionId(\"user_1FB8\")\n);"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix authentication app-portal-access \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" '{\n    \"application\": {\n      \"metadata\": {},\n      \"name\": \"My first application\",\n      \"rateLimit\": 1,\n      \"uid\": \"unique-identifier\"\n    },\n    \"capabilities\": [\n      \"ViewBase\",\n      \"ViewEndpointSecret\"\n    ],\n    \"expiry\": 1,\n    \"featureFlags\": [],\n    \"readOnly\": true,\n    \"sessionId\": \"user_1FB8\"\n  }'"
@@ -27109,6 +27170,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Authentication.ExpireAll(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    new ApplicationTokenExpireIn { Expiry = 60, SessionIds = [] }\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$svix->authentication->expireAll(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    ApplicationTokenExpireIn::create()\n    ->withExpiry(60)\n    ->withSessionIds([])\n);"
                     },
                     {
                         "label": "CLI",
@@ -27551,6 +27617,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Authentication.Logout();"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$svix->authentication->logout();"
                     },
                     {
                         "label": "CLI",
@@ -28374,6 +28445,11 @@
                         "source": "var response = svix.Authentication.StreamPortalAccess(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    new StreamPortalAccessIn\n    {\n        FeatureFlags = [],\n        Expiry = 1,\n        SessionId = \"user_1FB8\",\n    }\n);"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->authentication->streamPortalAccess(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    StreamPortalAccessIn::create()\n    ->withFeatureFlags([])\n    ->withExpiry(1)\n    ->withSessionId(\"user_1FB8\")\n);"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix authentication stream-portal-access \"strm_31Dc0DD72P5AddYUguyBd\" '{\n    \"expiry\": 1,\n    \"featureFlags\": [],\n    \"sessionId\": \"user_1FB8\"\n  }'"
@@ -28561,6 +28637,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Authentication.GetStreamPollerToken(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\"\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->authentication->getStreamPollerToken(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\"\n);"
                     },
                     {
                         "label": "CLI",
@@ -28769,6 +28850,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Authentication.RotateStreamPollerToken(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    new RotatePollerTokenIn { Expiry = 1, OldTokenExpiry = 1 }\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->authentication->rotateStreamPollerToken(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    RotatePollerTokenIn::create()\n    ->withExpiry(1)\n    ->withOldTokenExpiry(1)\n);"
                     },
                     {
                         "label": "CLI",
@@ -28993,6 +29079,11 @@
                         "source": "var response = svix.BackgroundTask.List();"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->backgroundTask->list();"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix background-task list"
@@ -29167,6 +29258,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.BackgroundTask.Get(\"qtask_1srOrx2ZWZBpBUvZwXKQmoEYga2\");"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->backgroundTask->get(\n    \"qtask_1srOrx2ZWZBpBUvZwXKQmoEYga2\"\n);"
                     },
                     {
                         "label": "CLI",
@@ -29378,6 +29474,11 @@
                         "source": "var response = svix.Connector.List();"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->connector->list();"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix connector list"
@@ -29554,6 +29655,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Connector.Create(\n    new ConnectorIn\n    {\n        Name = \"My first connector\",\n        Uid = \"unique-identifier\",\n        Logo = \"https://example.com/logo.png\",\n        Description = \"Example connector description\",\n        Kind = ConnectorKind.Custom,\n        Instructions = \"Markdown-formatted instructions\",\n        AllowedEventTypes = [\"user.signup\", \"user.deleted\"],\n        Transformation = \"function handler(webhook) { /* ... */ }\",\n        FeatureFlags = [],\n        ProductType = ConnectorProduct.Dispatch,\n    }\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->connector->create(\n    ConnectorIn::create(\n        name: \"My first connector\",\n        transformation: \"function handler(webhook) { /* ... */ }\"\n    )\n    ->withUid(\"unique-identifier\")\n    ->withLogo(\"https://example.com/logo.png\")\n    ->withDescription(\"Example connector description\")\n    ->withKind(ConnectorKind::CUSTOM)\n    ->withInstructions(\"Markdown-formatted instructions\")\n    ->withAllowedEventTypes([\"user.signup\",\"user.deleted\"])\n    ->withFeatureFlags([])\n    ->withProductType(ConnectorProduct::DISPATCH)\n);"
                     },
                     {
                         "label": "CLI",
@@ -30320,6 +30426,11 @@
                         "source": "var response = svix.Connector.Delete(\"connector_id\");"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$svix->connector->delete(\n    \"connector_id\"\n);"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix connector delete \"connector_id\""
@@ -30492,6 +30603,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Connector.Get(\"connector_id\");"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->connector->get(\n    \"connector_id\"\n);"
                     },
                     {
                         "label": "CLI",
@@ -30676,6 +30792,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Connector.Patch(\n    \"connector_id\",\n    new ConnectorPatch\n    {\n        Name = \"sample string\",\n        Logo = \"sample string\",\n        Description = \"sample string\",\n        Kind = ConnectorKind.Custom,\n        Instructions = \"sample string\",\n        AllowedEventTypes = MaybeUnset<List<string>?>.Set([\"user.signup\", \"user.deleted\"]),\n        Transformation = \"sample string\",\n        FeatureFlags = MaybeUnset<List<string>?>.Set([\"cool-new-feature\"]),\n    }\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->connector->patch(\n    \"connector_id\",\n    ConnectorPatch::create()\n    ->withName(\"sample string\")\n    ->withLogo(\"sample string\")\n    ->withDescription(\"sample string\")\n    ->withKind(ConnectorKind::CUSTOM)\n    ->withInstructions(\"sample string\")\n    ->withAllowedEventTypes([\"user.signup\",\"user.deleted\"])\n    ->withTransformation(\"sample string\")\n    ->withFeatureFlags([\"cool-new-feature\"])\n);"
                     },
                     {
                         "label": "CLI",
@@ -30870,6 +30991,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Connector.Update(\n    \"connector_id\",\n    new ConnectorUpdate\n    {\n        Name = \"My first connector\",\n        Logo = \"https://example.com/logo.png\",\n        Description = \"Example connector description\",\n        Kind = ConnectorKind.Custom,\n        Instructions = \"Markdown-formatted instructions\",\n        AllowedEventTypes = [\"user.signup\", \"user.deleted\"],\n        Transformation = \"function handler(webhook) { /* ... */ }\",\n        FeatureFlags = [\"cool-new-feature\"],\n    }\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->connector->update(\n    \"connector_id\",\n    ConnectorUpdate::create(\n        transformation: \"function handler(webhook) { /* ... */ }\"\n    )\n    ->withName(\"My first connector\")\n    ->withLogo(\"https://example.com/logo.png\")\n    ->withDescription(\"Example connector description\")\n    ->withKind(ConnectorKind::CUSTOM)\n    ->withInstructions(\"Markdown-formatted instructions\")\n    ->withAllowedEventTypes([\"user.signup\",\"user.deleted\"])\n    ->withFeatureFlags([\"cool-new-feature\"])\n);"
                     },
                     {
                         "label": "CLI",
@@ -31283,6 +31409,11 @@
                         "source": "var response = svix.Environment.Export();"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->environment->export();"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix environment export"
@@ -31454,6 +31585,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Environment.Import(\n    new EnvironmentIn\n    {\n        EventTypes = [],\n        Settings = new Dictionary<string, string> { },\n        Connectors = [],\n    }\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$svix->environment->import(\n    EnvironmentIn::create()\n    ->withEventTypes([])\n    ->withConnectors([])\n);"
                     },
                     {
                         "label": "CLI",
@@ -31775,6 +31911,11 @@
                         "source": "var response = svix.EventType.List();"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->eventType->list();"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix event-type list"
@@ -31951,6 +32092,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.EventType.Create(\n    new EventTypeIn\n    {\n        Name = \"user.signup\",\n        Description = \"A user has signed up\",\n        Archived = true,\n        Deprecated = true,\n        Schemas = new Dictionary<string, string> { },\n        GroupName = \"user\",\n        FeatureFlags = [\"cool-new-feature\"],\n        FeatureFlag = \"sample string\",\n    }\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->eventType->create(\n    EventTypeIn::create(\n        name: \"user.signup\",\n        description: \"A user has signed up\"\n    )\n    ->withArchived(true)\n    ->withDeprecated(true)\n    ->withGroupName(\"user\")\n    ->withFeatureFlags([\"cool-new-feature\"])\n    ->withFeatureFlag(\"sample string\")\n);"
                     },
                     {
                         "label": "CLI",
@@ -32243,6 +32389,11 @@
                         "source": "var response = svix.EventType.ImportOpenapi(\n    new EventTypeImportOpenApiIn\n    {\n        DryRun = true,\n        ReplaceAll = true,\n        Spec = new Dictionary<string, string> { },\n        SpecRaw = \"sample string\",\n    }\n);"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->eventType->importOpenapi(\n    EventTypeImportOpenApiIn::create()\n    ->withDryRun(true)\n    ->withReplaceAll(true)\n    ->withSpecRaw(\"sample string\")\n);"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix event-type import-openapi '{\n    \"dryRun\": true,\n    \"replaceAll\": true,\n    \"spec\": {\n      \"info\": {\n        \"title\": \"Webhook Example\",\n        \"version\": \"1.0.0\"\n      },\n      \"openapi\": \"3.1.0\",\n      \"webhooks\": {\n        \"pet.new\": {\n          \"post\": {\n            \"requestBody\": {\n              \"content\": {\n                \"application/json\": {\n                  \"schema\": {\n                    \"properties\": {\n                      \"id\": {\n                        \"format\": \"int64\",\n                        \"type\": \"integer\"\n                      },\n                      \"name\": {\n                        \"type\": \"string\"\n                      },\n                      \"tag\": {\n                        \"type\": \"string\"\n                      }\n                    },\n                    \"required\": [\n                      \"id\",\n                      \"name\"\n                    ]\n                  }\n                }\n              },\n              \"description\": \"Information about a new pet in the system\"\n            },\n            \"responses\": {\n              \"200\": {\n                \"description\": \"Return a 200 status to indicate that the data was received successfully\"\n              }\n            }\n          }\n        }\n      }\n    },\n    \"specRaw\": \"sample string\"\n  }'"
@@ -32253,125 +32404,6 @@
                         "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/event-type/import/openapi' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"dryRun\": true,\n    \"replaceAll\": true,\n    \"spec\": {\n      \"info\": {\n        \"title\": \"Webhook Example\",\n        \"version\": \"1.0.0\"\n      },\n      \"openapi\": \"3.1.0\",\n      \"webhooks\": {\n        \"pet.new\": {\n          \"post\": {\n            \"requestBody\": {\n              \"content\": {\n                \"application/json\": {\n                  \"schema\": {\n                    \"properties\": {\n                      \"id\": {\n                        \"format\": \"int64\",\n                        \"type\": \"integer\"\n                      },\n                      \"name\": {\n                        \"type\": \"string\"\n                      },\n                      \"tag\": {\n                        \"type\": \"string\"\n                      }\n                    },\n                    \"required\": [\n                      \"id\",\n                      \"name\"\n                    ]\n                  }\n                }\n              },\n              \"description\": \"Information about a new pet in the system\"\n            },\n            \"responses\": {\n              \"200\": {\n                \"description\": \"Return a 200 status to indicate that the data was received successfully\"\n              }\n            }\n          }\n        }\n      }\n    },\n    \"specRaw\": \"sample string\"\n  }'"
                     }
                 ]
-            }
-        },
-        "/api/v1/event-type/schema/generate-example": {
-            "post": {
-                "description": "Generates a fake example from the given JSONSchema.",
-                "operationId": "v1.event-type.generate-example",
-                "parameters": [
-                    {
-                        "description": "The request's idempotency key",
-                        "in": "header",
-                        "name": "idempotency-key",
-                        "schema": {
-                            "type": "string"
-                        },
-                        "style": "simple"
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/EventTypeSchemaIn"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/EventTypeExampleOut"
-                                }
-                            }
-                        },
-                        "description": ""
-                    },
-                    "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Bad request"
-                    },
-                    "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Forbidden"
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Not Found"
-                    },
-                    "409": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Conflict"
-                    },
-                    "422": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        },
-                        "description": "Validation Error"
-                    },
-                    "429": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Too Many Requests"
-                    }
-                },
-                "security": [
-                    {
-                        "HTTPBearer": []
-                    }
-                ],
-                "summary": "Generate Schema Example",
-                "tags": [
-                    "Event Type"
-                ],
-                "x-internal": true
             }
         },
         "/api/v1/event-type/{event_type_name}": {
@@ -32539,6 +32571,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.EventType.Delete(\"user.signup\");"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$svix->eventType->delete(\n    \"user.signup\"\n);"
                     },
                     {
                         "label": "CLI",
@@ -32712,6 +32749,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.EventType.Get(\"user.signup\");"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->eventType->get(\n    \"user.signup\"\n);"
                     },
                     {
                         "label": "CLI",
@@ -32895,6 +32937,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.EventType.Patch(\n    \"user.signup\",\n    new EventTypePatch\n    {\n        Description = \"sample string\",\n        Archived = true,\n        Deprecated = true,\n        Schemas = new Dictionary<string, string> { },\n        FeatureFlags = MaybeUnset<List<string>?>.Set([\"cool-new-feature\"]),\n        FeatureFlag = \"sample string\",\n        GroupName = \"user\",\n    }\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->eventType->patch(\n    \"user.signup\",\n    EventTypePatch::create()\n    ->withDescription(\"sample string\")\n    ->withArchived(true)\n    ->withDeprecated(true)\n    ->withFeatureFlags([\"cool-new-feature\"])\n    ->withFeatureFlag(\"sample string\")\n    ->withGroupName(\"user\")\n);"
                     },
                     {
                         "label": "CLI",
@@ -33088,6 +33135,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.EventType.Update(\n    \"user.signup\",\n    new EventTypeUpdate\n    {\n        Description = \"A user has signed up\",\n        Archived = true,\n        Deprecated = true,\n        Schemas = new Dictionary<string, string> { },\n        FeatureFlags = [\"cool-new-feature\"],\n        FeatureFlag = \"sample string\",\n        GroupName = \"user\",\n    }\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->eventType->update(\n    \"user.signup\",\n    EventTypeUpdate::create(\n        description: \"A user has signed up\"\n    )\n    ->withArchived(true)\n    ->withDeprecated(true)\n    ->withFeatureFlags([\"cool-new-feature\"])\n    ->withFeatureFlag(\"sample string\")\n    ->withGroupName(\"user\")\n);"
                     },
                     {
                         "label": "CLI",
@@ -35793,6 +35845,11 @@
                         "source": "var response = svix.OperationalWebhook.Endpoint.List();"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->operationalWebhook->endpoint->list();"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix operational-webhook endpoint list"
@@ -35971,6 +36028,11 @@
                         "source": "var response = svix.OperationalWebhook.Endpoint.Create(\n    new OperationalWebhookEndpointIn\n    {\n        Description = \"An example endpoint name\",\n        RateLimit = 1,\n        Uid = \"unique-identifier\",\n        Url = \"https://example.com/webhook/\",\n        Disabled = true,\n        FilterTypes = [\"message.attempt.failing\"],\n        Secret = \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n        Metadata = [],\n    }\n);"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->operationalWebhook->endpoint->create(\n    OperationalWebhookEndpointIn::create(\n        url: \"https://example.com/webhook/\"\n    )\n    ->withDescription(\"An example endpoint name\")\n    ->withRateLimit(1)\n    ->withUid(\"unique-identifier\")\n    ->withDisabled(true)\n    ->withFilterTypes([\"message.attempt.failing\"])\n    ->withSecret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n    ->withMetadata([])\n);"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix operational-webhook endpoint create '{\n    \"description\": \"An example endpoint name\",\n    \"disabled\": true,\n    \"filterTypes\": [\n      \"message.attempt.failing\"\n    ],\n    \"metadata\": {},\n    \"rateLimit\": 1,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    \"uid\": \"unique-identifier\",\n    \"url\": \"https://example.com/webhook/\"\n  }'"
@@ -36138,6 +36200,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.OperationalWebhook.Endpoint.Delete(\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\");"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$svix->operationalWebhook->endpoint->delete(\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
                     },
                     {
                         "label": "CLI",
@@ -36312,6 +36379,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.OperationalWebhook.Endpoint.Get(\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\");"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->operationalWebhook->endpoint->get(\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
                     },
                     {
                         "label": "CLI",
@@ -36498,6 +36570,11 @@
                         "source": "var response = svix.OperationalWebhook.Endpoint.Update(\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    new OperationalWebhookEndpointUpdate\n    {\n        Description = \"An example endpoint name\",\n        RateLimit = 1,\n        Uid = \"unique-identifier\",\n        Url = \"https://example.com/webhook/\",\n        Disabled = true,\n        FilterTypes = [\"message.attempt.failing\"],\n        Metadata = [],\n    }\n);"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->operationalWebhook->endpoint->update(\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    OperationalWebhookEndpointUpdate::create(\n        url: \"https://example.com/webhook/\"\n    )\n    ->withDescription(\"An example endpoint name\")\n    ->withRateLimit(1)\n    ->withUid(\"unique-identifier\")\n    ->withDisabled(true)\n    ->withFilterTypes([\"message.attempt.failing\"])\n    ->withMetadata([])\n);"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix operational-webhook endpoint update \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\" '{\n    \"description\": \"An example endpoint name\",\n    \"disabled\": true,\n    \"filterTypes\": [\n      \"message.attempt.failing\"\n    ],\n    \"metadata\": {},\n    \"rateLimit\": 1,\n    \"uid\": \"unique-identifier\",\n    \"url\": \"https://example.com/webhook/\"\n  }'"
@@ -36672,6 +36749,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.OperationalWebhook.Endpoint.GetHeaders(\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\");"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->operationalWebhook->endpoint->getHeaders(\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
                     },
                     {
                         "label": "CLI",
@@ -36851,6 +36933,11 @@
                         "source": "var response = svix.OperationalWebhook.Endpoint.UpdateHeaders(\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    new OperationalWebhookEndpointHeadersIn\n    {\n        Headers = new() { { \"X-Example\", \"123\" }, { \"X-Foobar\", \"Bar\" } },\n    }\n);"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$svix->operationalWebhook->endpoint->updateHeaders(\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    OperationalWebhookEndpointHeadersIn::create(\n        headers: [\"X-Example\" => \"123\", \"X-Foobar\" => \"Bar\"]\n    )\n\n);"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix operational-webhook endpoint update-headers \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\" '{\n    \"headers\": {\n      \"X-Example\": \"123\",\n      \"X-Foobar\": \"Bar\"\n    }\n  }'"
@@ -37025,6 +37112,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.OperationalWebhook.Endpoint.GetSecret(\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\");"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->operationalWebhook->endpoint->getSecret(\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
                     },
                     {
                         "label": "CLI",
@@ -37213,6 +37305,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.OperationalWebhook.Endpoint.RotateSecret(\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    new OperationalWebhookEndpointSecretIn { Key = \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\" }\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$svix->operationalWebhook->endpoint->rotateSecret(\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    OperationalWebhookEndpointSecretIn::create()\n    ->withKey(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n);"
                     },
                     {
                         "label": "CLI",
@@ -37534,6 +37631,11 @@
                         "source": "var response = svix.Statistics.AggregateAppStats(\n    new AppUsageStatsIn\n    {\n        Since = DateTime.Parse(\"2025-10-02T20:28:42+00:00\"),\n        Until = DateTime.Parse(\"2025-10-02T20:28:42+00:00\"),\n        AppIds = [],\n    }\n);"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->statistics->aggregateAppStats(\n    AppUsageStatsIn::create(\n        since: new DateTimeImmutable(\"2025-10-02T20:28:42+00:00\"),\n        until: new DateTimeImmutable(\"2025-10-02T20:28:42+00:00\")\n    )\n    ->withAppIds([])\n);"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix statistics aggregate-app-stats '{\n    \"appIds\": [],\n    \"since\": \"2025-10-02T20:28:42+00:00\",\n    \"until\": \"2025-10-02T20:28:42+00:00\"\n  }'"
@@ -37691,6 +37793,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Statistics.AggregateEventTypes();"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->statistics->aggregateEventTypes();"
                     },
                     {
                         "label": "CLI",
@@ -37893,6 +38000,11 @@
                         "source": "var response = svix.Streaming.Stream.List();"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->streaming->stream->list();"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix streaming stream list"
@@ -38069,6 +38181,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Streaming.Stream.Create(\n    new StreamIn\n    {\n        Name = \"sample string\",\n        Uid = \"unique-identifier\",\n        Metadata = [],\n    }\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->streaming->stream->create(\n    StreamIn::create(\n        name: \"sample string\"\n    )\n    ->withUid(\"unique-identifier\")\n    ->withMetadata([])\n);"
                     },
                     {
                         "label": "CLI",
@@ -38281,6 +38398,11 @@
                         "source": "var response = svix.Streaming.EventType.List();"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->streaming->eventType->list();"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix streaming event-type list"
@@ -38457,6 +38579,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Streaming.EventType.Create(\n    new StreamEventTypeIn\n    {\n        Name = \"user.signup\",\n        Description = \"sample string\",\n        FeatureFlags = [\"cool-new-feature\"],\n        Deprecated = true,\n        Archived = true,\n    }\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->streaming->eventType->create(\n    StreamEventTypeIn::create(\n        name: \"user.signup\"\n    )\n    ->withDescription(\"sample string\")\n    ->withFeatureFlags([\"cool-new-feature\"])\n    ->withDeprecated(true)\n    ->withArchived(true)\n);"
                     },
                     {
                         "label": "CLI",
@@ -38638,6 +38765,11 @@
                         "source": "var response = svix.Streaming.EventType.Delete(\"name\");"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$svix->streaming->eventType->delete(\n    \"name\"\n);"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix streaming event-type delete \"name\""
@@ -38809,6 +38941,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Streaming.EventType.Get(\"name\");"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->streaming->eventType->get(\n    \"name\"\n);"
                     },
                     {
                         "label": "CLI",
@@ -38992,6 +39129,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Streaming.EventType.Patch(\n    \"name\",\n    new StreamEventTypePatch\n    {\n        Name = \"user.signup\",\n        Description = \"sample string\",\n        FeatureFlags = MaybeUnset<List<string>?>.Set([\"cool-new-feature\"]),\n        Deprecated = true,\n        Archived = true,\n    }\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->streaming->eventType->patch(\n    \"name\",\n    StreamEventTypePatch::create()\n    ->withName(\"user.signup\")\n    ->withDescription(\"sample string\")\n    ->withFeatureFlags([\"cool-new-feature\"])\n    ->withDeprecated(true)\n    ->withArchived(true)\n);"
                     },
                     {
                         "label": "CLI",
@@ -39185,6 +39327,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Streaming.EventType.Update(\n    \"name\",\n    new StreamEventTypeIn\n    {\n        Name = \"user.signup\",\n        Description = \"sample string\",\n        FeatureFlags = [\"cool-new-feature\"],\n        Deprecated = true,\n        Archived = true,\n    }\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->streaming->eventType->update(\n    \"name\",\n    StreamEventTypeIn::create(\n        name: \"user.signup\"\n    )\n    ->withDescription(\"sample string\")\n    ->withFeatureFlags([\"cool-new-feature\"])\n    ->withDeprecated(true)\n    ->withArchived(true)\n);"
                     },
                     {
                         "label": "CLI",
@@ -39474,6 +39621,11 @@
                         "source": "var response = svix.Streaming.Stream.Delete(\"strm_31Dc0DD72P5AddYUguyBd\");"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$svix->streaming->stream->delete(\n    \"strm_31Dc0DD72P5AddYUguyBd\"\n);"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix streaming stream delete \"strm_31Dc0DD72P5AddYUguyBd\""
@@ -39645,6 +39797,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Streaming.Stream.Get(\"strm_31Dc0DD72P5AddYUguyBd\");"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->streaming->stream->get(\n    \"strm_31Dc0DD72P5AddYUguyBd\"\n);"
                     },
                     {
                         "label": "CLI",
@@ -39828,6 +39985,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Streaming.Stream.Patch(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    new StreamPatch\n    {\n        Description = \"sample string\",\n        Uid = \"unique-identifier\",\n        Metadata = [],\n    }\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->streaming->stream->patch(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    StreamPatch::create()\n    ->withDescription(\"sample string\")\n    ->withUid(\"unique-identifier\")\n    ->withMetadata([])\n);"
                     },
                     {
                         "label": "CLI",
@@ -40021,6 +40183,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Streaming.Stream.Update(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    new StreamIn\n    {\n        Name = \"sample string\",\n        Uid = \"unique-identifier\",\n        Metadata = [],\n    }\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->streaming->stream->update(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    StreamIn::create(\n        name: \"sample string\"\n    )\n    ->withUid(\"unique-identifier\")\n    ->withMetadata([])\n);"
                     },
                     {
                         "label": "CLI",
@@ -40679,6 +40846,11 @@
                         "source": "var response = svix.Streaming.Sink.List(\"strm_31Dc0DD72P5AddYUguyBd\");"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->streaming->sink->list(\n    \"strm_31Dc0DD72P5AddYUguyBd\"\n);"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix streaming sink list \"strm_31Dc0DD72P5AddYUguyBd\""
@@ -40871,6 +41043,11 @@
                         "source": "var response = svix.Streaming.Sink.Create(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    new StreamSinkIn\n    {\n        Uid = \"unique-identifier\",\n        Status = SinkStatusIn.Enabled,\n        BatchSize = 100,\n        MaxWaitSecs = 1,\n        EventTypes = [],\n        Metadata = [],\n        Config = StreamSinkInConfig.AzureBlobStorage(\n            (\n                new AzureBlobStorageConfig\n                {\n                    Container = \"sample string\",\n                    Account = \"sample string\",\n                    AccessKey = \"sample string\",\n                }\n            )\n        ),\n    }\n);"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->streaming->sink->create(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    StreamSinkIn::create()\n    ->withUid(\"unique-identifier\")\n    ->withStatus(SinkStatusIn::ENABLED)\n    ->withBatchSize(100)\n    ->withMaxWaitSecs(1)\n    ->withEventTypes([])\n    ->withMetadata([])\n);"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix streaming sink create \"strm_31Dc0DD72P5AddYUguyBd\" '{\n    \"batchSize\": 100,\n    \"config\": {\n      \"accessKey\": \"sample string\",\n      \"account\": \"sample string\",\n      \"container\": \"sample string\"\n    },\n    \"eventTypes\": [],\n    \"maxWaitSecs\": 1,\n    \"metadata\": {},\n    \"status\": \"enabled\",\n    \"type\": \"azureBlobStorage\",\n    \"uid\": \"unique-identifier\"\n  }'"
@@ -41051,6 +41228,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Streaming.Sink.Delete(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\"\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$svix->streaming->sink->delete(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\"\n);"
                     },
                     {
                         "label": "CLI",
@@ -41238,6 +41420,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Streaming.Sink.Get(\"strm_31Dc0DD72P5AddYUguyBd\", \"sink_31Dc11sPYY9aLDkwPuGMa\");"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->streaming->sink->get(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\"\n);"
                     },
                     {
                         "label": "CLI",
@@ -41435,6 +41622,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Streaming.Sink.Patch(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    new StreamSinkPatch\n    {\n        Uid = \"unique-identifier\",\n        Status = SinkStatusIn.Enabled,\n        BatchSize = 100,\n        MaxWaitSecs = 1,\n        EventTypes = [],\n        Metadata = [],\n        Config = StreamSinkPatchConfig.AzureBlobStorage(\n            (\n                new AzureBlobStoragePatchConfig\n                {\n                    Container = \"sample string\",\n                    Account = \"sample string\",\n                    AccessKey = \"sample string\",\n                }\n            )\n        ),\n    }\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->streaming->sink->patch(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    StreamSinkPatch::create()\n    ->withUid(\"unique-identifier\")\n    ->withStatus(SinkStatusIn::ENABLED)\n    ->withBatchSize(100)\n    ->withMaxWaitSecs(1)\n    ->withEventTypes([])\n    ->withMetadata([])\n);"
                     },
                     {
                         "label": "CLI",
@@ -41642,6 +41834,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Streaming.Sink.Update(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    new StreamSinkIn\n    {\n        Uid = \"unique-identifier\",\n        Status = SinkStatusIn.Enabled,\n        BatchSize = 100,\n        MaxWaitSecs = 1,\n        EventTypes = [],\n        Metadata = [],\n        Config = StreamSinkInConfig.AzureBlobStorage(\n            (\n                new AzureBlobStorageConfig\n                {\n                    Container = \"sample string\",\n                    Account = \"sample string\",\n                    AccessKey = \"sample string\",\n                }\n            )\n        ),\n    }\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->streaming->sink->update(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    StreamSinkIn::create()\n    ->withUid(\"unique-identifier\")\n    ->withStatus(SinkStatusIn::ENABLED)\n    ->withBatchSize(100)\n    ->withMaxWaitSecs(1)\n    ->withEventTypes([])\n    ->withMetadata([])\n);"
                     },
                     {
                         "label": "CLI",
@@ -41865,6 +42062,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Streaming.Events.Get(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\"\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->streaming->events->get(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\"\n);"
                     },
                     {
                         "label": "CLI",
@@ -42186,6 +42388,11 @@
                         "source": "var response = svix.Streaming.SinkHeadersGet(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\"\n);"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->streaming->sinkHeadersGet(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\"\n);"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix streaming sink-headers-get \"strm_31Dc0DD72P5AddYUguyBd\" \"sink_31Dc11sPYY9aLDkwPuGMa\""
@@ -42381,6 +42588,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Streaming.SinkHeadersPatch(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    new HttpSinkHeadersPatchIn\n    {\n        Headers = new() { { \"X-Example\", \"123\" }, { \"X-Foobar\", \"Bar\" } },\n    }\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->streaming->sinkHeadersPatch(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    HttpSinkHeadersPatchIn::create(\n        headers: [\"X-Example\" => \"123\", \"X-Foobar\" => \"Bar\"]\n    )\n\n);"
                     },
                     {
                         "label": "CLI",
@@ -42828,6 +43040,11 @@
                         "source": "var response = svix.Streaming.Sink.GetSecret(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\"\n);"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->streaming->sink->getSecret(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\"\n);"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix streaming sink get-secret \"strm_31Dc0DD72P5AddYUguyBd\" \"sink_31Dc11sPYY9aLDkwPuGMa\""
@@ -43034,6 +43251,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Streaming.Sink.RotateSecret(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    new EndpointSecretRotateIn { Key = \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\" }\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->streaming->sink->rotateSecret(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    EndpointSecretRotateIn::create()\n    ->withKey(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n);"
                     },
                     {
                         "label": "CLI",
@@ -43374,6 +43596,11 @@
                         "source": "var response = svix.Streaming.SinkTransformationGet(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\"\n);"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->streaming->sinkTransformationGet(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\"\n);"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix streaming sink-transformation-get \"strm_31Dc0DD72P5AddYUguyBd\" \"sink_31Dc11sPYY9aLDkwPuGMa\""
@@ -43571,6 +43798,11 @@
                         "source": "var response = svix.Streaming.Sink.TransformationPartialUpdate(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    new SinkTransformIn { Code = \"sample string\" }\n);"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->streaming->sink->transformationPartialUpdate(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    SinkTransformIn::create()\n    ->withCode(\"sample string\")\n);"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix streaming sink transformation-partial-update \"strm_31Dc0DD72P5AddYUguyBd\" \"sink_31Dc11sPYY9aLDkwPuGMa\" '{\n    \"code\": \"sample string\"\n  }'"
@@ -43581,517 +43813,6 @@
                         "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/stream/strm_31Dc0DD72P5AddYUguyBd/sink/sink_31Dc11sPYY9aLDkwPuGMa/transformation' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"code\": \"sample string\"\n  }'"
                     }
                 ]
-            }
-        },
-        "/dashboard/survey": {
-            "post": {
-                "description": "Submit a survey entry for a user",
-                "operationId": "v1.dashboard.survey.submit",
-                "parameters": [
-                    {
-                        "description": "The request's idempotency key",
-                        "in": "header",
-                        "name": "idempotency-key",
-                        "schema": {
-                            "type": "string"
-                        },
-                        "style": "simple"
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/SurveyIn"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "201": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/SurveyOut"
-                                }
-                            }
-                        },
-                        "description": ""
-                    },
-                    "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Bad request"
-                    },
-                    "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Forbidden"
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Not Found"
-                    },
-                    "409": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Conflict"
-                    },
-                    "422": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        },
-                        "description": "Validation Error"
-                    },
-                    "429": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Too Many Requests"
-                    }
-                },
-                "security": [
-                    {
-                        "HTTPBearer": []
-                    }
-                ],
-                "summary": "Submit Survey",
-                "tags": [
-                    "Survey"
-                ],
-                "x-internal": true
-            }
-        },
-        "/dashboard/v2/brand/search": {
-            "post": {
-                "description": "Search for brand information using Brandfetch API",
-                "operationId": "v1.dashboard.brand-search",
-                "parameters": [
-                    {
-                        "description": "The request's idempotency key",
-                        "in": "header",
-                        "name": "idempotency-key",
-                        "schema": {
-                            "type": "string"
-                        },
-                        "style": "simple"
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/BrandSearchRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/BrandfetchResponse"
-                                }
-                            }
-                        },
-                        "description": ""
-                    },
-                    "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Bad request"
-                    },
-                    "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Forbidden"
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Not Found"
-                    },
-                    "409": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Conflict"
-                    },
-                    "422": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        },
-                        "description": "Validation Error"
-                    },
-                    "429": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Too Many Requests"
-                    }
-                },
-                "security": [
-                    {
-                        "HTTPBearer": []
-                    }
-                ],
-                "summary": "Search Brand",
-                "tags": [
-                    "Branding"
-                ],
-                "x-internal": true
-            }
-        },
-        "/dashboard/v2/usage/organization/messages": {
-            "get": {
-                "description": "Get the number of messages sent by the organization",
-                "operationId": "v1.dashboard.organization.message-count",
-                "parameters": [
-                    {
-                        "in": "query",
-                        "name": "after",
-                        "schema": {
-                            "format": "date-time",
-                            "nullable": true,
-                            "type": "string"
-                        },
-                        "style": "form"
-                    },
-                    {
-                        "in": "query",
-                        "name": "before",
-                        "schema": {
-                            "format": "date-time",
-                            "nullable": true,
-                            "type": "string"
-                        },
-                        "style": "form"
-                    },
-                    {
-                        "in": "query",
-                        "name": "period",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/components/schemas/StatisticsPeriod2"
-                        },
-                        "style": "form"
-                    },
-                    {
-                        "in": "query",
-                        "name": "num_top_event_types",
-                        "schema": {
-                            "default": 8,
-                            "format": "uint64",
-                            "maximum": 50,
-                            "minimum": 1,
-                            "type": "integer"
-                        },
-                        "style": "form"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/StatisticsResponse"
-                                }
-                            }
-                        },
-                        "description": ""
-                    },
-                    "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Bad request"
-                    },
-                    "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Forbidden"
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Not Found"
-                    },
-                    "409": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Conflict"
-                    },
-                    "422": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        },
-                        "description": "Validation Error"
-                    },
-                    "429": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Too Many Requests"
-                    }
-                },
-                "security": [
-                    {
-                        "HTTPBearer": []
-                    }
-                ],
-                "summary": "Get Message Count",
-                "tags": [
-                    "Stats"
-                ],
-                "x-internal": true
-            }
-        },
-        "/dashboard/v2/usage/organization/top-applications": {
-            "get": {
-                "description": "Get the top applications by message count",
-                "operationId": "v1.dashboard.organization.top-applications",
-                "parameters": [
-                    {
-                        "in": "query",
-                        "name": "after",
-                        "schema": {
-                            "format": "date-time",
-                            "nullable": true,
-                            "type": "string"
-                        },
-                        "style": "form"
-                    },
-                    {
-                        "in": "query",
-                        "name": "before",
-                        "schema": {
-                            "format": "date-time",
-                            "nullable": true,
-                            "type": "string"
-                        },
-                        "style": "form"
-                    },
-                    {
-                        "in": "query",
-                        "name": "limit",
-                        "schema": {
-                            "default": 10,
-                            "format": "uint64",
-                            "maximum": 50,
-                            "minimum": 1,
-                            "type": "integer"
-                        },
-                        "style": "form"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/TopApplicationsOut"
-                                }
-                            }
-                        },
-                        "description": ""
-                    },
-                    "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Bad request"
-                    },
-                    "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Forbidden"
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Not Found"
-                    },
-                    "409": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Conflict"
-                    },
-                    "422": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        },
-                        "description": "Validation Error"
-                    },
-                    "429": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Too Many Requests"
-                    }
-                },
-                "security": [
-                    {
-                        "HTTPBearer": []
-                    }
-                ],
-                "summary": "Get Top Applications",
-                "tags": [
-                    "Stats"
-                ],
-                "x-internal": true
             }
         },
         "/ingest/api/v1/source": {
@@ -44282,6 +44003,11 @@
                         "source": "var response = svix.Ingest.Source.List();"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->ingest->source->list();"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix ingest source list"
@@ -44460,6 +44186,11 @@
                         "source": "var response = svix.Ingest.Source.Create(\n    new IngestSourceIn\n    {\n        Name = \"sample string\",\n        Uid = \"unique-identifier\",\n        Metadata = [],\n        Config = IngestSourceInConfig.Cron(\n            (\n                new CronConfig\n                {\n                    Schedule = \"sample string\",\n                    Payload = \"sample string\",\n                    ContentType = \"sample string\",\n                }\n            )\n        ),\n    }\n);"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->ingest->source->create(\n    IngestSourceIn::create(\n        name: \"sample string\"\n    )\n    ->withUid(\"unique-identifier\")\n    ->withMetadata([])\n);"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix ingest source create '{\n    \"config\": {\n      \"contentType\": \"sample string\",\n      \"payload\": \"sample string\",\n      \"schedule\": \"sample string\"\n    },\n    \"metadata\": {},\n    \"name\": \"sample string\",\n    \"type\": \"cron\",\n    \"uid\": \"unique-identifier\"\n  }'"
@@ -44626,6 +44357,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Ingest.Source.Delete(\"src_31Dc4Mx7vQVLfxFgArIhq\");"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$svix->ingest->source->delete(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\"\n);"
                     },
                     {
                         "label": "CLI",
@@ -44799,6 +44535,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Ingest.Source.Get(\"src_31Dc4Mx7vQVLfxFgArIhq\");"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->ingest->source->get(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\"\n);"
                     },
                     {
                         "label": "CLI",
@@ -45116,6 +44857,11 @@
                         "source": "var response = svix.Ingest.Source.Update(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    new IngestSourceIn\n    {\n        Name = \"sample string\",\n        Uid = \"unique-identifier\",\n        Metadata = [],\n        Config = IngestSourceInConfig.Cron(\n            (\n                new CronConfig\n                {\n                    Schedule = \"sample string\",\n                    Payload = \"sample string\",\n                    ContentType = \"sample string\",\n                }\n            )\n        ),\n    }\n);"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->ingest->source->update(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    IngestSourceIn::create(\n        name: \"sample string\"\n    )\n    ->withUid(\"unique-identifier\")\n    ->withMetadata([])\n);"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix ingest source update \"src_31Dc4Mx7vQVLfxFgArIhq\" '{\n    \"config\": {\n      \"contentType\": \"sample string\",\n      \"payload\": \"sample string\",\n      \"schedule\": \"sample string\"\n    },\n    \"metadata\": {},\n    \"name\": \"sample string\",\n    \"type\": \"cron\",\n    \"uid\": \"unique-identifier\"\n  }'"
@@ -45308,6 +45054,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Ingest.Dashboard(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    new IngestSourceConsumerPortalAccessIn { Expiry = 1, ReadOnly = true }\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->ingest->dashboard(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    IngestSourceConsumerPortalAccessIn::create()\n    ->withExpiry(1)\n    ->withReadOnly(true)\n);"
                     },
                     {
                         "label": "CLI",
@@ -45524,6 +45275,11 @@
                         "source": "var response = svix.Ingest.Endpoint.List(\"src_31Dc4Mx7vQVLfxFgArIhq\");"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->ingest->endpoint->list(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\"\n);"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix ingest endpoint list \"src_31Dc4Mx7vQVLfxFgArIhq\""
@@ -45716,6 +45472,11 @@
                         "source": "var response = svix.Ingest.Endpoint.Create(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    new IngestEndpointIn\n    {\n        Description = \"An example endpoint name\",\n        RateLimit = 1,\n        Uid = \"unique-identifier\",\n        Url = \"https://example.com/webhook/\",\n        Disabled = true,\n        Secret = \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n        Metadata = [],\n    }\n);"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->ingest->endpoint->create(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    IngestEndpointIn::create(\n        url: \"https://example.com/webhook/\"\n    )\n    ->withDescription(\"An example endpoint name\")\n    ->withRateLimit(1)\n    ->withUid(\"unique-identifier\")\n    ->withDisabled(true)\n    ->withSecret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n    ->withMetadata([])\n);"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix ingest endpoint create \"src_31Dc4Mx7vQVLfxFgArIhq\" '{\n    \"description\": \"An example endpoint name\",\n    \"disabled\": true,\n    \"metadata\": {},\n    \"rateLimit\": 1,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    \"uid\": \"unique-identifier\",\n    \"url\": \"https://example.com/webhook/\"\n  }'"
@@ -45897,6 +45658,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Ingest.Endpoint.Delete(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$svix->ingest->endpoint->delete(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
                     },
                     {
                         "label": "CLI",
@@ -46085,6 +45851,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Ingest.Endpoint.Get(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->ingest->endpoint->get(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
                     },
                     {
                         "label": "CLI",
@@ -46285,6 +46056,11 @@
                         "source": "var response = svix.Ingest.Endpoint.Update(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    new IngestEndpointUpdate\n    {\n        Description = \"An example endpoint name\",\n        RateLimit = 1,\n        Uid = \"unique-identifier\",\n        Url = \"https://example.com/webhook/\",\n        Disabled = true,\n        Metadata = [],\n    }\n);"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->ingest->endpoint->update(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    IngestEndpointUpdate::create(\n        url: \"https://example.com/webhook/\"\n    )\n    ->withDescription(\"An example endpoint name\")\n    ->withRateLimit(1)\n    ->withUid(\"unique-identifier\")\n    ->withDisabled(true)\n    ->withMetadata([])\n);"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix ingest endpoint update \"src_31Dc4Mx7vQVLfxFgArIhq\" \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\" '{\n    \"description\": \"An example endpoint name\",\n    \"disabled\": true,\n    \"metadata\": {},\n    \"rateLimit\": 1,\n    \"uid\": \"unique-identifier\",\n    \"url\": \"https://example.com/webhook/\"\n  }'"
@@ -46473,6 +46249,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Ingest.Endpoint.GetHeaders(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->ingest->endpoint->getHeaders(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
                     },
                     {
                         "label": "CLI",
@@ -46666,6 +46447,11 @@
                         "source": "var response = svix.Ingest.Endpoint.UpdateHeaders(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    new IngestEndpointHeadersIn\n    {\n        Headers = new() { { \"X-Example\", \"123\" }, { \"X-Foobar\", \"Bar\" } },\n    }\n);"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$svix->ingest->endpoint->updateHeaders(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    IngestEndpointHeadersIn::create(\n        headers: [\"X-Example\" => \"123\", \"X-Foobar\" => \"Bar\"]\n    )\n\n);"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix ingest endpoint update-headers \"src_31Dc4Mx7vQVLfxFgArIhq\" \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\" '{\n    \"headers\": {\n      \"X-Example\": \"123\",\n      \"X-Foobar\": \"Bar\"\n    }\n  }'"
@@ -46854,6 +46640,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Ingest.Endpoint.GetSecret(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->ingest->endpoint->getSecret(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
                     },
                     {
                         "label": "CLI",
@@ -47058,6 +46849,11 @@
                         "source": "var response = svix.Ingest.Endpoint.RotateSecret(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    new IngestEndpointSecretIn { Key = \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\" }\n);"
                     },
                     {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$svix->ingest->endpoint->rotateSecret(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    IngestEndpointSecretIn::create()\n    ->withKey(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n);"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "CLI",
                         "source": "svix ingest endpoint rotate-secret \"src_31Dc4Mx7vQVLfxFgArIhq\" \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\" '{\n    \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n  }'"
@@ -47246,6 +47042,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Ingest.Endpoint.GetTransformation(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->ingest->endpoint->getTransformation(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
                     },
                     {
                         "label": "CLI",
@@ -47437,6 +47238,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Ingest.Endpoint.SetTransformation(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    new IngestEndpointTransformationPatch { Code = \"sample string\", Enabled = true }\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$svix->ingest->endpoint->setTransformation(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    IngestEndpointTransformationPatch::create()\n    ->withCode(\"sample string\")\n    ->withEnabled(true)\n);"
                     },
                     {
                         "label": "CLI",
@@ -47900,6 +47706,11 @@
                         "label": "C#",
                         "lang": "C#",
                         "source": "var response = svix.Ingest.Source.RotateToken(\"src_31Dc4Mx7vQVLfxFgArIhq\");"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->ingest->source->rotateToken(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\"\n);"
                     },
                     {
                         "label": "CLI",

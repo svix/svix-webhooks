@@ -34,6 +34,8 @@ class ConnectorOut(BaseModel):
 
     transformation: str
 
+    transformation_updated_at: datetime
+
     uid: t.Optional[str] = None
     """The Connector's UID."""
 

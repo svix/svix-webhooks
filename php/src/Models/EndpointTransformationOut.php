@@ -12,6 +12,7 @@ class EndpointTransformationOut implements \JsonSerializable
     private function __construct(
         public readonly ?string $code = null,
         public readonly ?bool $enabled = null,
+        public readonly ?\DateTimeImmutable $updatedAt = null,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -25,6 +26,7 @@ class EndpointTransformationOut implements \JsonSerializable
         return new self(
             code: null,
             enabled: null,
+            updatedAt: null,
             setFields: []
         );
     }
@@ -37,6 +39,7 @@ class EndpointTransformationOut implements \JsonSerializable
         return new self(
             code: $code,
             enabled: $this->enabled,
+            updatedAt: $this->updatedAt,
             setFields: $setFields
         );
     }
@@ -49,6 +52,20 @@ class EndpointTransformationOut implements \JsonSerializable
         return new self(
             code: $this->code,
             enabled: $enabled,
+            updatedAt: $this->updatedAt,
+            setFields: $setFields
+        );
+    }
+
+    public function withUpdatedAt(?\DateTimeImmutable $updatedAt): self
+    {
+        $setFields = $this->setFields;
+        $setFields['updatedAt'] = true;
+
+        return new self(
+            code: $this->code,
+            enabled: $this->enabled,
+            updatedAt: $updatedAt,
             setFields: $setFields
         );
     }
@@ -64,6 +81,9 @@ class EndpointTransformationOut implements \JsonSerializable
         if (null !== $this->enabled) {
             $data['enabled'] = $this->enabled;
         }
+        if (isset($this->setFields['updatedAt'])) {
+            $data['updatedAt'] = $this->updatedAt->format('c');
+        }
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
@@ -75,7 +95,8 @@ class EndpointTransformationOut implements \JsonSerializable
     {
         return new self(
             code: \Svix\Utils::deserializeString($data, 'code', false, 'EndpointTransformationOut'),
-            enabled: \Svix\Utils::deserializeBool($data, 'enabled', false, 'EndpointTransformationOut')
+            enabled: \Svix\Utils::deserializeBool($data, 'enabled', false, 'EndpointTransformationOut'),
+            updatedAt: \Svix\Utils::deserializeDt($data, 'updatedAt', false, 'EndpointTransformationOut')
         );
     }
 

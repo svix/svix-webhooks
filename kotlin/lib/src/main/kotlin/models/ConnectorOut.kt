@@ -20,6 +20,7 @@ data class ConnectorOut(
     val orgId: String,
     val productType: ConnectorProduct,
     val transformation: String,
+    val transformationUpdatedAt: Instant,
     /** The Connector's UID. */
     val uid: String? = null,
     val updatedAt: Instant,

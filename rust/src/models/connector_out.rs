@@ -39,6 +39,9 @@ pub struct ConnectorOut {
 
     pub transformation: String,
 
+    #[serde(rename = "transformationUpdatedAt")]
+    pub transformation_updated_at: String,
+
     /// The Connector's UID.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub uid: Option<String>,
@@ -58,6 +61,7 @@ impl ConnectorOut {
         org_id: String,
         product_type: ConnectorProduct,
         transformation: String,
+        transformation_updated_at: String,
         updated_at: String,
     ) -> Self {
         Self {
@@ -73,6 +77,7 @@ impl ConnectorOut {
             org_id,
             product_type,
             transformation,
+            transformation_updated_at,
             uid: None,
             updated_at,
         }
