@@ -123,3 +123,11 @@ worker_max_tasks = 500
 
 # Maximum seconds of queue long-poll
 queue_max_poll_secs = 20
+
+# Optional address of socks5 or http/https proxy server.
+# proxy_addr = socks5://localhost:1080
+
+# Optional comma-separated list of IPV4/IPV6 addresses, CIDR blocks, and URLs that should bypass proxy server. Hostnames
+# may or may not contain a leading "." and include all subdomains. Note that IP addresses are not resolved prior
+# to executing the request, so IP-based exceptions will only apply if endpoint URLs are actually defined as IP addresses.
+# noproxy = "10.0.0.0/8, .example.com, 0ec2:1652:6021:693b:f928:565d:5a0e:de9f"
