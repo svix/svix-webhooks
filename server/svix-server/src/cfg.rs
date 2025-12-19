@@ -251,6 +251,9 @@ pub struct ConfigurationInner {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+pub struct ProxyBypassCfg(pub String);
+
+#[derive(Clone, Debug, Deserialize)]
 pub struct ProxyConfig {
     /// Proxy address.
     ///
@@ -261,6 +264,9 @@ pub struct ProxyConfig {
     ///   both HTTP and HTTPS targets are supported
     #[serde(rename = "proxy_addr")]
     pub addr: ProxyAddr,
+
+    #[serde(default)]
+    pub noproxy: Option<ProxyBypassCfg>,
 }
 
 #[derive(Clone, Debug)]
