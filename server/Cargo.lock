@@ -4605,6 +4605,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "socks5-proto"
+version = "0.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3d91431c4672e25e372ef46bc554be8f315068c03608f99267a71ad32a12e8c4"
+dependencies = [
+ "bytes",
+ "thiserror 1.0.69",
+ "tokio",
+]
+
+[[package]]
 name = "spin"
 version = "0.9.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4971,6 +4982,7 @@ dependencies = [
  "serde",
  "serde_json",
  "serde_path_to_error",
+ "socks5-proto",
  "sqlx",
  "svix",
  "svix-ksuid 0.5.3",
