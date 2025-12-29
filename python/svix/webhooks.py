@@ -11,12 +11,15 @@ class Webhook:
         self._inner = StdWh(whsecret)
 
     def verify(self, data: t.Union[bytes, str], headers: t.Dict[str, str]) -> t.Any:
-        for h in ["id", "signature", "timestamp"]:
-            if (
-                headers.get(f"svix-{h}") is not None
-                and headers.get(f"webhook-{h}") is None
-            ):
-                headers[f"webhook-{h}"] = headers[f"svix-{h}"]
+        headers = {k.lower(): v for k, v in headers.items()}
+
+        headers["webhook-id"] = headers.get("svix-id", headers.get("webhook-id", ""))
+        headers["webhook-signature"] = headers.get(
+            "svix-signature", headers.get("webhook-signature", "")
+        )
+        headers["webhook-timestamp"] = headers.get(
+            "svix-timestamp", headers.get("webhook-timestamp", "")
+        )
 
         return self._inner.verify(data, headers)
 

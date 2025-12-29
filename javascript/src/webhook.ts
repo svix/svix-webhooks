@@ -1,26 +1,5 @@
-import { timingSafeEqual } from "./timing_safe_equal";
-import * as base64 from "@stablelib/base64";
-import * as sha256 from "fast-sha256";
-
-const WEBHOOK_TOLERANCE_IN_SECONDS = 5 * 60; // 5 minutes
-
-class ExtendableError extends Error {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  constructor(message: any) {
-    super(message);
-    Object.setPrototypeOf(this, ExtendableError.prototype);
-    this.name = "ExtendableError";
-    this.stack = new Error(message).stack;
-  }
-}
-
-export class WebhookVerificationError extends ExtendableError {
-  constructor(message: string) {
-    super(message);
-    Object.setPrototypeOf(this, WebhookVerificationError.prototype);
-    this.name = "WebhookVerificationError";
-  }
-}
+import { Webhook as StdWh } from "standardwebhooks";
+export { WebhookVerificationError } from "standardwebhooks";
 
 export interface WebhookRequiredHeaders {
   "svix-id": string;
@@ -39,28 +18,10 @@ export interface WebhookOptions {
 }
 
 export class Webhook {
-  private static prefix = "whsec_";
-  private readonly key: Uint8Array;
+  private readonly inner: StdWh;
 
   constructor(secret: string | Uint8Array, options?: WebhookOptions) {
-    if (!secret) {
-      throw new Error("Secret can't be empty.");
-    }
-    if (options?.format === "raw") {
-      if (secret instanceof Uint8Array) {
-        this.key = secret;
-      } else {
-        this.key = Uint8Array.from(secret, (c) => c.charCodeAt(0));
-      }
-    } else {
-      if (typeof secret !== "string") {
-        throw new Error("Expected secret to be of type string");
-      }
-      if (secret.startsWith(Webhook.prefix)) {
-        secret = secret.substring(Webhook.prefix.length);
-      }
-      this.key = base64.decode(secret);
-    }
+    this.inner = new StdWh(secret, options);
   }
 
   public verify(
@@ -75,72 +36,16 @@ export class Webhook {
       headers[key.toLowerCase()] = (headers_ as Record<string, string>)[key];
     }
 
-    let msgId = headers["svix-id"];
-    let msgSignature = headers["svix-signature"];
-    let msgTimestamp = headers["svix-timestamp"];
+    headers["webhook-id"] = headers["svix-id"] ?? headers["webhook-id"] ?? "";
+    headers["webhook-signature"] =
+      headers["svix-signature"] ?? headers["webhook-signature"] ?? "";
+    headers["webhook-timestamp"] =
+      headers["svix-timestamp"] ?? headers["webhook-timestamp"] ?? "";
 
-    if (!msgSignature || !msgId || !msgTimestamp) {
-      msgId = headers["webhook-id"];
-      msgSignature = headers["webhook-signature"];
-      msgTimestamp = headers["webhook-timestamp"];
-
-      if (!msgSignature || !msgId || !msgTimestamp) {
-        throw new WebhookVerificationError("Missing required headers");
-      }
-    }
-
-    const timestamp = this.verifyTimestamp(msgTimestamp);
-
-    const computedSignature = this.sign(msgId, timestamp, payload);
-    const expectedSignature = computedSignature.split(",")[1];
-
-    const passedSignatures = msgSignature.split(" ");
-
-    const encoder = new globalThis.TextEncoder();
-    for (const versionedSignature of passedSignatures) {
-      const [version, signature] = versionedSignature.split(",");
-      if (version !== "v1") {
-        continue;
-      }
-
-      if (timingSafeEqual(encoder.encode(signature), encoder.encode(expectedSignature))) {
-        return JSON.parse(payload.toString());
-      }
-    }
-    throw new WebhookVerificationError("No matching signature found");
+    return this.inner.verify(payload, headers);
   }
 
   public sign(msgId: string, timestamp: Date, payload: string | Buffer): string {
-    if (typeof payload === "string") {
-      // Do nothing, already a string
-    } else if (payload.constructor.name === "Buffer") {
-      payload = payload.toString();
-    } else {
-      throw new Error(
-        "Expected payload to be of type string or Buffer. Please refer to https://docs.svix.com/receiving/verifying-payloads/how for more information."
-      );
-    }
-
-    const encoder = new TextEncoder();
-    const timestampNumber = Math.floor(timestamp.getTime() / 1000);
-    const toSign = encoder.encode(`${msgId}.${timestampNumber}.${payload}`);
-    const expectedSignature = base64.encode(sha256.hmac(this.key, toSign));
-    return `v1,${expectedSignature}`;
-  }
-
-  private verifyTimestamp(timestampHeader: string): Date {
-    const now = Math.floor(Date.now() / 1000);
-    const timestamp = parseInt(timestampHeader, 10);
-    if (Number.isNaN(timestamp)) {
-      throw new WebhookVerificationError("Invalid Signature Headers");
-    }
-
-    if (now - timestamp > WEBHOOK_TOLERANCE_IN_SECONDS) {
-      throw new WebhookVerificationError("Message timestamp too old");
-    }
-    if (timestamp > now + WEBHOOK_TOLERANCE_IN_SECONDS) {
-      throw new WebhookVerificationError("Message timestamp too new");
-    }
-    return new Date(timestamp * 1000);
+    return this.inner.sign(msgId, timestamp, payload);
   }
 }
