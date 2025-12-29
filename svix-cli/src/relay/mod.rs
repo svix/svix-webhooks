@@ -215,6 +215,7 @@ pub async fn listen(
     relay_token: String,
     relay_debug_url: Option<&str>,
     relay_disable_security: bool,
+    disable_tls_verification: bool,
 ) -> Result<()> {
     let scheme = if relay_disable_security { "ws" } else { "wss" };
     let api_host = relay_debug_url.unwrap_or(DEFAULT_API_HOST);
@@ -222,11 +223,15 @@ pub async fn listen(
 
     let websocket_url = format!("{scheme}://{api_host}/{API_PREFIX}/listen/").parse()?;
 
+    let http_client = HttpClient::builder()
+        .danger_accept_invalid_certs(disable_tls_verification)
+        .build()?;
+
     let mut client = Client {
         token,
         websocket_url,
         local_url,
-        http_client: HttpClient::new(),
+        http_client,
     };
 
     const MAX_BACKOFF: Duration = Duration::from_millis(5000);
