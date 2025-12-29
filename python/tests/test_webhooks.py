@@ -1,16 +1,22 @@
 import pytest
 import base64
 import typing as t
+import hmac
+import hashlib
 from math import floor
 from datetime import datetime, timedelta, timezone
 
-from svix.webhooks import hmac_data, Webhook, WebhookVerificationError
+from svix.webhooks import Webhook, WebhookVerificationError
 
 defaultMsgID = "msg_p5jXN8AQM9LWM0D4loKWxJek"
 defaultPayload = '{"test": 2432232314}'
 defaultSecret = "MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw"
 
 tolerance = timedelta(minutes=5)
+
+
+def hmac_data(key: bytes, data: bytes) -> bytes:
+    return hmac.new(key, data, hashlib.sha256).digest()
 
 
 class PayloadForTesting:
