@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 1.84.0
+* Libs/(JavaScript Python): Updated webhook verification logic to use official standard webhooks packages
+* Cli: support disabling TLS verification when relaying requests (`svix listen`)
+
+
 ## Version 1.83.0
 * Server: Add `status_text` field to `MessageAttemptOut` to match Svix Cloud
   * Makes current versions of the SDKs work with endpoints using this type again
