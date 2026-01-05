@@ -63,6 +63,30 @@ jobs:
           echo "DOCKER_TAGS=${DOCKER_TAGS}" >> "$GITHUB_ENV"
           echo "Generated Tags: ${DOCKER_TAGS}"
 
+      - name: Build Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./server
+          file: ./server/Dockerfile
+          push: false
+          tags: ${{ env.DOCKER_TAGS }}
+          platforms: linux/amd64
+          load: true
+
+      - name: Scan image with Grype
+        id: scan
+        uses: anchore/scan-action@v6
+        with:
+          image: "${{ env.DOCKER_TAGS }}"
+          fail-build: true
+          severity-cutoff: high
+          only-fixed: true
+          output-file: grype.sarif
+
+      - name: Inspect action SARIF report
+        if: ${{ !cancelled() && hashFiles('grype.sarif') != '' }}
+        run: cat ${{ steps.scan.outputs.sarif }}
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
