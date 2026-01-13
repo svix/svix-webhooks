@@ -22,8 +22,8 @@ default-features = false
 features = ["gcp_pubsub", "rabbitmq", "redis", "sqs"]
 
 [dev-dependencies]
-aws-config = "1.1.5"
-aws-sdk-sqs = "1.13.0"
+aws-config = "1.8.12"
+aws-sdk-sqs = "1.91.0"
 fastrand = "2.0.1"
 gcloud-googleapis = "1.2.0"
 gcloud-pubsub = "1.3.0"
