@@ -2,7 +2,7 @@
 name = "svix-bridge-plugin-kafka"
 version.workspace = true
 edition = "2021"
-rust-version = "1.85"
+rust-version = "1.88"
 publish = false
 
 [dependencies]
