@@ -40,6 +40,7 @@ packaging==24.1
     # via
     #   build
     #   pytest
+    #   wheel
 pip==25.3
     # via pip-tools
 pip-tools==7.4.1
@@ -78,5 +79,5 @@ werkzeug==3.1.5
     # via
     #   -r requirements.in/development.txt
     #   pytest-httpserver
-wheel==0.44.0
+wheel==0.46.3
     # via pip-tools
