@@ -33,6 +33,7 @@ jobs:
           gs=$(git status -s)
           if [[ -n "$gs" ]]; then
             echo 'there are uncommitted changes!'
+            echo 'please rerun `regen_openapi.py` and commit the result'
             git status
             exit 1
           else
