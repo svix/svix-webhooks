@@ -7,10 +7,11 @@
   },
   "devDependencies": {
     "axios": "^1.0",
-    "openapi-to-postmanv2": "^5.4.1",
+    "openapi-to-postmanv2": "^5.8.0",
     "semver": "^7.5.2"
   },
   "resolutions": {
-     "js-yaml": "4.1.1"
+    "js-yaml": "4.1.1",
+    "lodash": "4.17.23"
   }
 }

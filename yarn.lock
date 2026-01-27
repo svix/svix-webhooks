@@ -364,10 +364,10 @@ liquid-json@0.3.1:
   resolved "https://registry.yarnpkg.com/liquid-json/-/liquid-json-0.3.1.tgz#9155a18136d8a6b2615e5f16f9a2448ab6b50eea"
   integrity sha512-wUayTU8MS827Dam6MxgD72Ui+KOSF+u/eIqpatOtjnvgJ0+mnDq33uC2M7J0tPK+upe/DpUAuK4JUU89iBoNKQ==
 
-lodash@4.17.21, lodash@^4.17.15, lodash@^4.17.20, lodash@^4.17.4:
-  version "4.17.21"
-  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
-  integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
+lodash@4.17.21, lodash@4.17.23, lodash@^4.17.15, lodash@^4.17.20, lodash@^4.17.4:
+  version "4.17.23"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.23.tgz#f113b0378386103be4f6893388c73d0bde7f2c5a"
+  integrity sha512-LgVTMpQtIopCi79SJeDiP0TfWi5CNEc/L/aRdTh3yIvmZXTnheWpKjSZhnvMl8iXbC1tFg9gdHHDMLoV7CnG+w==
 
 math-intrinsics@^1.1.0:
   version "1.1.0"
@@ -487,10 +487,10 @@ object-hash@3.0.0:
   resolved "https://registry.yarnpkg.com/object-hash/-/object-hash-3.0.0.tgz#73f97f753e7baffc0e2cc9d6e079079744ac82e9"
   integrity sha512-RSn9F68PjH9HqtltsSnqYC1XXoWe9Bju5+213R98cNGttag9q9yAOTzdbsqvIa7aNm5WffBZFpWYr2aWrklWAw==
 
-openapi-to-postmanv2@^5.4.1:
-  version "5.4.1"
-  resolved "https://registry.yarnpkg.com/openapi-to-postmanv2/-/openapi-to-postmanv2-5.4.1.tgz#ce3804c889cd3f0bd5f442905173795c92b95397"
-  integrity sha512-cuPnRZphMS6QsjKa+ktJ9wYXYvAHtl5WyTCodtraASOp4pe6wVcoA9mEs8VHDFZvzYeZ8t7wAQ2faYiw9PsWhQ==
+openapi-to-postmanv2@^5.8.0:
+  version "5.8.0"
+  resolved "https://registry.yarnpkg.com/openapi-to-postmanv2/-/openapi-to-postmanv2-5.8.0.tgz#d4dd2d5aa25b34cf767fb02011431cdadfd18a34"
+  integrity sha512-7f02ypBlAx4G9z3bP/uDk8pBwRbYt97Eoso8XJLyclfyRvCC+CvERLUl0MD0x+GoumpkJYnQ0VGdib/kwtUdUw==
   dependencies:
     ajv "^8.11.0"
     ajv-draft-04 "1.0.0"
