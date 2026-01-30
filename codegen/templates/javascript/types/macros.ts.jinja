@@ -11,7 +11,7 @@
             {{ field_expr }}
         {% else -%}
             {%- if not field_required -%}
-                {{ field_expr }} ? {{ type.to_js() }}Serializer._fromJsonObject({{ field_expr }}): undefined
+                {{ field_expr }} != null ? {{ type.to_js() }}Serializer._fromJsonObject({{ field_expr }}): undefined
             {%- else -%}
                 {{ type.to_js() }}Serializer._fromJsonObject({{ field_expr }})
             {%- endif %}
@@ -52,7 +52,7 @@
             {{ field_expr }}
         {% else -%}
             {%- if not field_required -%}
-            {{ field_expr }} ? {{ type.to_js() }}Serializer._toJsonObject({{ field_expr }}) : undefined
+            {{ field_expr }} != null ? {{ type.to_js() }}Serializer._toJsonObject({{ field_expr }}) : undefined
             {%- else -%}
             {{ type.to_js() }}Serializer._toJsonObject({{ field_expr }})
             {%- endif -%}

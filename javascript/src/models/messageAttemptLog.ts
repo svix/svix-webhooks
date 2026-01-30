@@ -39,9 +39,10 @@ export const MessageAttemptLogSerializer = {
       attemptStart: new Date(object["attemptStart"]),
       endpointId: object["endpointId"],
       eventType: object["eventType"],
-      httpTimes: object["httpTimes"]
-        ? HttpAttemptTimesSerializer._fromJsonObject(object["httpTimes"])
-        : undefined,
+      httpTimes:
+        object["httpTimes"] != null
+          ? HttpAttemptTimesSerializer._fromJsonObject(object["httpTimes"])
+          : undefined,
       msgCreated: new Date(object["msgCreated"]),
       msgEventId: object["msgEventId"],
       msgId: object["msgId"],
@@ -61,9 +62,10 @@ export const MessageAttemptLogSerializer = {
       attemptStart: self.attemptStart,
       endpointId: self.endpointId,
       eventType: self.eventType,
-      httpTimes: self.httpTimes
-        ? HttpAttemptTimesSerializer._toJsonObject(self.httpTimes)
-        : undefined,
+      httpTimes:
+        self.httpTimes != null
+          ? HttpAttemptTimesSerializer._toJsonObject(self.httpTimes)
+          : undefined,
       msgCreated: self.msgCreated,
       msgEventId: self.msgEventId,
       msgId: self.msgId,

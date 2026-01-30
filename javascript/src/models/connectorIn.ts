@@ -23,14 +23,16 @@ export const ConnectorInSerializer = {
       description: object["description"],
       featureFlags: object["featureFlags"],
       instructions: object["instructions"],
-      kind: object["kind"]
-        ? ConnectorKindSerializer._fromJsonObject(object["kind"])
-        : undefined,
+      kind:
+        object["kind"] != null
+          ? ConnectorKindSerializer._fromJsonObject(object["kind"])
+          : undefined,
       logo: object["logo"],
       name: object["name"],
-      productType: object["productType"]
-        ? ConnectorProductSerializer._fromJsonObject(object["productType"])
-        : undefined,
+      productType:
+        object["productType"] != null
+          ? ConnectorProductSerializer._fromJsonObject(object["productType"])
+          : undefined,
       transformation: object["transformation"],
       uid: object["uid"],
     };
@@ -42,12 +44,14 @@ export const ConnectorInSerializer = {
       description: self.description,
       featureFlags: self.featureFlags,
       instructions: self.instructions,
-      kind: self.kind ? ConnectorKindSerializer._toJsonObject(self.kind) : undefined,
+      kind:
+        self.kind != null ? ConnectorKindSerializer._toJsonObject(self.kind) : undefined,
       logo: self.logo,
       name: self.name,
-      productType: self.productType
-        ? ConnectorProductSerializer._toJsonObject(self.productType)
-        : undefined,
+      productType:
+        self.productType != null
+          ? ConnectorProductSerializer._toJsonObject(self.productType)
+          : undefined,
       transformation: self.transformation,
       uid: self.uid,
     };

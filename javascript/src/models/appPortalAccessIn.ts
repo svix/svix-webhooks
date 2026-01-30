@@ -57,9 +57,10 @@ export interface AppPortalAccessIn {
 export const AppPortalAccessInSerializer = {
   _fromJsonObject(object: any): AppPortalAccessIn {
     return {
-      application: object["application"]
-        ? ApplicationInSerializer._fromJsonObject(object["application"])
-        : undefined,
+      application:
+        object["application"] != null
+          ? ApplicationInSerializer._fromJsonObject(object["application"])
+          : undefined,
       capabilities: object["capabilities"]?.map((item: AppPortalCapability) =>
         AppPortalCapabilitySerializer._fromJsonObject(item)
       ),
@@ -72,9 +73,10 @@ export const AppPortalAccessInSerializer = {
 
   _toJsonObject(self: AppPortalAccessIn): any {
     return {
-      application: self.application
-        ? ApplicationInSerializer._toJsonObject(self.application)
-        : undefined,
+      application:
+        self.application != null
+          ? ApplicationInSerializer._toJsonObject(self.application)
+          : undefined,
       capabilities: self.capabilities?.map((item) =>
         AppPortalCapabilitySerializer._toJsonObject(item)
       ),

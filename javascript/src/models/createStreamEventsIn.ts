@@ -18,16 +18,18 @@ export const CreateStreamEventsInSerializer = {
       events: object["events"].map((item: EventIn) =>
         EventInSerializer._fromJsonObject(item)
       ),
-      stream: object["stream"]
-        ? StreamInSerializer._fromJsonObject(object["stream"])
-        : undefined,
+      stream:
+        object["stream"] != null
+          ? StreamInSerializer._fromJsonObject(object["stream"])
+          : undefined,
     };
   },
 
   _toJsonObject(self: CreateStreamEventsIn): any {
     return {
       events: self.events.map((item) => EventInSerializer._toJsonObject(item)),
-      stream: self.stream ? StreamInSerializer._toJsonObject(self.stream) : undefined,
+      stream:
+        self.stream != null ? StreamInSerializer._toJsonObject(self.stream) : undefined,
     };
   },
 };
