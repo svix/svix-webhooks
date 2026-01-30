@@ -101,9 +101,10 @@ export const StreamSinkPatchSerializer = {
       eventTypes: object["eventTypes"],
       maxWaitSecs: object["maxWaitSecs"],
       metadata: object["metadata"],
-      status: object["status"]
-        ? SinkStatusInSerializer._fromJsonObject(object["status"])
-        : undefined,
+      status:
+        object["status"] != null
+          ? SinkStatusInSerializer._fromJsonObject(object["status"])
+          : undefined,
       uid: object["uid"],
     };
   },
@@ -139,7 +140,10 @@ export const StreamSinkPatchSerializer = {
       eventTypes: self.eventTypes,
       maxWaitSecs: self.maxWaitSecs,
       metadata: self.metadata,
-      status: self.status ? SinkStatusInSerializer._toJsonObject(self.status) : undefined,
+      status:
+        self.status != null
+          ? SinkStatusInSerializer._toJsonObject(self.status)
+          : undefined,
       uid: self.uid,
     };
   },

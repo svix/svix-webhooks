@@ -19,9 +19,10 @@ export const ConnectorPatchSerializer = {
       description: object["description"],
       featureFlags: object["featureFlags"],
       instructions: object["instructions"],
-      kind: object["kind"]
-        ? ConnectorKindSerializer._fromJsonObject(object["kind"])
-        : undefined,
+      kind:
+        object["kind"] != null
+          ? ConnectorKindSerializer._fromJsonObject(object["kind"])
+          : undefined,
       logo: object["logo"],
       name: object["name"],
       transformation: object["transformation"],
@@ -34,7 +35,8 @@ export const ConnectorPatchSerializer = {
       description: self.description,
       featureFlags: self.featureFlags,
       instructions: self.instructions,
-      kind: self.kind ? ConnectorKindSerializer._toJsonObject(self.kind) : undefined,
+      kind:
+        self.kind != null ? ConnectorKindSerializer._toJsonObject(self.kind) : undefined,
       logo: self.logo,
       name: self.name,
       transformation: self.transformation,

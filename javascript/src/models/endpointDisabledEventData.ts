@@ -26,9 +26,10 @@ export const EndpointDisabledEventDataSerializer = {
       endpointId: object["endpointId"],
       endpointUid: object["endpointUid"],
       failSince: object["failSince"] ? new Date(object["failSince"]) : null,
-      trigger: object["trigger"]
-        ? EndpointDisabledTriggerSerializer._fromJsonObject(object["trigger"])
-        : undefined,
+      trigger:
+        object["trigger"] != null
+          ? EndpointDisabledTriggerSerializer._fromJsonObject(object["trigger"])
+          : undefined,
     };
   },
 
@@ -39,9 +40,10 @@ export const EndpointDisabledEventDataSerializer = {
       endpointId: self.endpointId,
       endpointUid: self.endpointUid,
       failSince: self.failSince,
-      trigger: self.trigger
-        ? EndpointDisabledTriggerSerializer._toJsonObject(self.trigger)
-        : undefined,
+      trigger:
+        self.trigger != null
+          ? EndpointDisabledTriggerSerializer._toJsonObject(self.trigger)
+          : undefined,
     };
   },
 };
