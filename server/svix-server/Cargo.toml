@@ -27,7 +27,7 @@ base64 = "0.22"
 bb8 = "0.9.0"
 bb8-redis = "0.24.0"
 blake2 = "0.10.4"
-bytes = "1.1.0"
+bytes = "1.11.1"
 chacha20poly1305 = "0.10.1"
 chrono = { version = "0.4.26", features = ["serde"] }
 clap = { version = "4.1.8", features = ["derive"] }
