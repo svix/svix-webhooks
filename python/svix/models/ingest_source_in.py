@@ -56,6 +56,7 @@ class IngestSourceIn(BaseModel):
         t.Literal["panda-doc"],
         t.Literal["port-io"],
         t.Literal["pleo"],
+        t.Literal["psi-fi"],
         t.Literal["replicate"],
         t.Literal["resend"],
         t.Literal["rutter"],
@@ -145,6 +146,8 @@ class IngestSourceIn(BaseModel):
         elif output.type == "port-io":
             output.config = PortIoConfig.model_validate(data.get("config", {}))
         elif output.type == "pleo":
+            output.config = SvixConfig.model_validate(data.get("config", {}))
+        elif output.type == "psi-fi":
             output.config = SvixConfig.model_validate(data.get("config", {}))
         elif output.type == "replicate":
             output.config = SvixConfig.model_validate(data.get("config", {}))

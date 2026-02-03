@@ -22,6 +22,7 @@ export { BackgroundTaskFinishedEvent2 } from "./backgroundTaskFinishedEvent2";
 export { BackgroundTaskOut } from "./backgroundTaskOut";
 export { BackgroundTaskStatus } from "./backgroundTaskStatus";
 export { BackgroundTaskType } from "./backgroundTaskType";
+export { BulkReplayIn } from "./bulkReplayIn";
 export { CheckbookConfig } from "./checkbookConfig";
 export { CheckbookConfigOut } from "./checkbookConfigOut";
 export { ConnectorIn } from "./connectorIn";

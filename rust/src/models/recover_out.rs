@@ -13,10 +13,23 @@ pub struct RecoverOut {
     pub status: BackgroundTaskStatus,
 
     pub task: BackgroundTaskType,
+
+    #[serde(rename = "updatedAt")]
+    pub updated_at: String,
 }
 
 impl RecoverOut {
-    pub fn new(id: String, status: BackgroundTaskStatus, task: BackgroundTaskType) -> Self {
-        Self { id, status, task }
+    pub fn new(
+        id: String,
+        status: BackgroundTaskStatus,
+        task: BackgroundTaskType,
+        updated_at: String,
+    ) -> Self {
+        Self {
+            id,
+            status,
+            task,
+            updated_at,
+        }
     }
 }

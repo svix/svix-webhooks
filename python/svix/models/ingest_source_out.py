@@ -65,6 +65,7 @@ class IngestSourceOut(BaseModel):
         t.Literal["orum-io"],
         t.Literal["panda-doc"],
         t.Literal["port-io"],
+        t.Literal["psi-fi"],
         t.Literal["pleo"],
         t.Literal["replicate"],
         t.Literal["resend"],
@@ -154,6 +155,8 @@ class IngestSourceOut(BaseModel):
             output.config = PandaDocConfigOut.model_validate(data.get("config", {}))
         elif output.type == "port-io":
             output.config = PortIoConfigOut.model_validate(data.get("config", {}))
+        elif output.type == "psi-fi":
+            output.config = SvixConfigOut.model_validate(data.get("config", {}))
         elif output.type == "pleo":
             output.config = SvixConfigOut.model_validate(data.get("config", {}))
         elif output.type == "replicate":

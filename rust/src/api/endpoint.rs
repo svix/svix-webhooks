@@ -19,6 +19,11 @@ pub struct EndpointCreateOptions {
 }
 
 #[derive(Default)]
+pub struct EndpointBulkReplayOptions {
+    pub idempotency_key: Option<String>,
+}
+
+#[derive(Default)]
 pub struct EndpointRecoverOptions {
     pub idempotency_key: Option<String>,
 }
@@ -158,6 +163,43 @@ impl<'a> Endpoint<'a> {
         .with_path_param("app_id", app_id)
         .with_path_param("endpoint_id", endpoint_id)
         .with_body_param(endpoint_patch)
+        .execute(self.cfg)
+        .await
+    }
+
+    /// Bulk replay messages sent to the endpoint.
+    ///
+    /// Only messages that were created after `since` will be sent.
+    /// This will replay both successful, and failed messages
+    ///
+    /// A completed task will return a payload like the following:
+    /// ```json
+    /// {
+    ///   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+    ///   "status": "finished",
+    ///   "task": "endpoint.bulk-replay",
+    ///   "data": {
+    ///     "messagesSent": 2
+    ///   }
+    /// }
+    /// ```
+    pub async fn bulk_replay(
+        &self,
+        app_id: String,
+        endpoint_id: String,
+        bulk_replay_in: BulkReplayIn,
+        options: Option<EndpointBulkReplayOptions>,
+    ) -> Result<ReplayOut> {
+        let EndpointBulkReplayOptions { idempotency_key } = options.unwrap_or_default();
+
+        crate::request::Request::new(
+            http1::Method::POST,
+            "/api/v1/app/{app_id}/endpoint/{endpoint_id}/bulk-replay",
+        )
+        .with_path_param("app_id", app_id)
+        .with_path_param("endpoint_id", endpoint_id)
+        .with_optional_header_param("idempotency-key", idempotency_key)
+        .with_body_param(bulk_replay_in)
         .execute(self.cfg)
         .await
     }

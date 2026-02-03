@@ -18,6 +18,9 @@ namespace Svix.Models
         [JsonProperty("unresolvedAppIds", Required = Required.Always)]
         public required List<string> UnresolvedAppIds { get; set; }
 
+        [JsonProperty("updatedAt", Required = Required.Always)]
+        public required DateTime UpdatedAt { get; set; }
+
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
@@ -27,6 +30,7 @@ namespace Svix.Models
             sb.Append("  Status: ").Append(Status).Append('\n');
             sb.Append("  Task: ").Append(Task).Append('\n');
             sb.Append("  UnresolvedAppIds: ").Append(UnresolvedAppIds).Append('\n');
+            sb.Append("  UpdatedAt: ").Append(UpdatedAt).Append('\n');
             sb.Append("}\n");
             return sb.ToString();
         }

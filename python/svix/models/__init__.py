@@ -23,6 +23,7 @@ from .background_task_finished_event2 import BackgroundTaskFinishedEvent2
 from .background_task_out import BackgroundTaskOut
 from .background_task_status import BackgroundTaskStatus
 from .background_task_type import BackgroundTaskType
+from .bulk_replay_in import BulkReplayIn
 from .checkbook_config import CheckbookConfig
 from .checkbook_config_out import CheckbookConfigOut
 from .connector_in import ConnectorIn
@@ -245,6 +246,7 @@ __all__ = [
     "BackgroundTaskOut",
     "BackgroundTaskStatus",
     "BackgroundTaskType",
+    "BulkReplayIn",
     "CheckbookConfig",
     "CheckbookConfigOut",
     "ConnectorIn",

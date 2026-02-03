@@ -9,7 +9,7 @@ data class EventTypeIn(
     val archived: Boolean? = null,
     val deprecated: Boolean? = null,
     val description: String,
-    /** Deprecated - prefer featureFlags instead. */
+    /** Deprecated, use `featureFlags` instead. */
     val featureFlag: String? = null,
     val featureFlags: Set<String>? = null,
     /** The event type group's name */

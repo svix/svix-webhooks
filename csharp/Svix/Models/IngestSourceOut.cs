@@ -146,6 +146,9 @@ namespace Svix.Models
         public static IngestSourceOutConfig PortIo(PortIoConfigOut portIoConfigOut) =>
             new(portIoConfigOut, ConfigType.PortIo);
 
+        public static IngestSourceOutConfig PsiFi(SvixConfigOut svixConfigOut) =>
+            new(svixConfigOut, ConfigType.PsiFi);
+
         public static IngestSourceOutConfig Pleo(SvixConfigOut svixConfigOut) =>
             new(svixConfigOut, ConfigType.Pleo);
 
@@ -259,6 +262,9 @@ namespace Svix.Models
             [EnumMember(Value = "port-io")]
             PortIo,
 
+            [EnumMember(Value = "psi-fi")]
+            PsiFi,
+
             [EnumMember(Value = "pleo")]
             Pleo,
 
@@ -336,6 +342,7 @@ namespace Svix.Models
             Func<OrumIoConfigOut, TResult> onOrumIo,
             Func<PandaDocConfigOut, TResult> onPandaDoc,
             Func<PortIoConfigOut, TResult> onPortIo,
+            Func<SvixConfigOut, TResult> onPsiFi,
             Func<SvixConfigOut, TResult> onPleo,
             Func<SvixConfigOut, TResult> onReplicate,
             Func<SvixConfigOut, TResult> onResend,
@@ -377,6 +384,7 @@ namespace Svix.Models
                 ConfigType.OrumIo => onOrumIo((OrumIoConfigOut)_value),
                 ConfigType.PandaDoc => onPandaDoc((PandaDocConfigOut)_value),
                 ConfigType.PortIo => onPortIo((PortIoConfigOut)_value),
+                ConfigType.PsiFi => onPsiFi((SvixConfigOut)_value),
                 ConfigType.Pleo => onPleo((SvixConfigOut)_value),
                 ConfigType.Replicate => onReplicate((SvixConfigOut)_value),
                 ConfigType.Resend => onResend((SvixConfigOut)_value),
@@ -420,6 +428,7 @@ namespace Svix.Models
             Action<OrumIoConfigOut> onOrumIo,
             Action<PandaDocConfigOut> onPandaDoc,
             Action<PortIoConfigOut> onPortIo,
+            Action<SvixConfigOut> onPsiFi,
             Action<SvixConfigOut> onPleo,
             Action<SvixConfigOut> onReplicate,
             Action<SvixConfigOut> onResend,
@@ -496,6 +505,9 @@ namespace Svix.Models
                     break;
                 case ConfigType.PortIo:
                     onPortIo((PortIoConfigOut)_value);
+                    break;
+                case ConfigType.PsiFi:
+                    onPsiFi((SvixConfigOut)_value);
                     break;
                 case ConfigType.Pleo:
                     onPleo((SvixConfigOut)_value);
@@ -681,6 +693,7 @@ namespace Svix.Models
             ["orum-io"] = c => IngestSourceOutConfig.OrumIo(ToObj<OrumIoConfigOut>(c)),
             ["panda-doc"] = c => IngestSourceOutConfig.PandaDoc(ToObj<PandaDocConfigOut>(c)),
             ["port-io"] = c => IngestSourceOutConfig.PortIo(ToObj<PortIoConfigOut>(c)),
+            ["psi-fi"] = c => IngestSourceOutConfig.PsiFi(ToObj<SvixConfigOut>(c)),
             ["pleo"] = c => IngestSourceOutConfig.Pleo(ToObj<SvixConfigOut>(c)),
             ["replicate"] = c => IngestSourceOutConfig.Replicate(ToObj<SvixConfigOut>(c)),
             ["resend"] = c => IngestSourceOutConfig.Resend(ToObj<SvixConfigOut>(c)),

@@ -44,6 +44,19 @@ impl From<EndpointCreateOptions> for svix::api::EndpointCreateOptions {
 }
 
 #[derive(Args, Clone)]
+pub struct EndpointBulkReplayOptions {
+    #[arg(long)]
+    pub idempotency_key: Option<String>,
+}
+
+impl From<EndpointBulkReplayOptions> for svix::api::EndpointBulkReplayOptions {
+    fn from(value: EndpointBulkReplayOptions) -> Self {
+        let EndpointBulkReplayOptions { idempotency_key } = value;
+        Self { idempotency_key }
+    }
+}
+
+#[derive(Args, Clone)]
 pub struct EndpointRecoverOptions {
     #[arg(long)]
     pub idempotency_key: Option<String>,
@@ -154,6 +167,29 @@ pub enum EndpointCommands {
         app_id: String,
         id: String,
         endpoint_patch: Option<crate::json::JsonOf<EndpointPatch>>,
+    },
+    /// Bulk replay messages sent to the endpoint.
+    ///
+    /// Only messages that were created after `since` will be sent.
+    /// This will replay both successful, and failed messages
+    ///
+    /// A completed task will return a payload like the following:
+    /// ```json
+    /// {
+    ///   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+    ///   "status": "finished",
+    ///   "task": "endpoint.bulk-replay",
+    ///   "data": {
+    ///     "messagesSent": 2
+    ///   }
+    /// }
+    /// ```
+    BulkReplay {
+        app_id: String,
+        id: String,
+        bulk_replay_in: crate::json::JsonOf<BulkReplayIn>,
+        #[clap(flatten)]
+        options: EndpointBulkReplayOptions,
     },
     /// Get the additional headers to be sent with the webhook.
     GetHeaders { app_id: String, id: String },
@@ -308,6 +344,23 @@ impl EndpointCommands {
                 let resp = client
                     .endpoint()
                     .patch(app_id, id, endpoint_patch.unwrap_or_default().into_inner())
+                    .await?;
+                crate::json::print_json_output(&resp, color_mode)?;
+            }
+            Self::BulkReplay {
+                app_id,
+                id,
+                bulk_replay_in,
+                options,
+            } => {
+                let resp = client
+                    .endpoint()
+                    .bulk_replay(
+                        app_id,
+                        id,
+                        bulk_replay_in.into_inner(),
+                        Some(options.into()),
+                    )
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }

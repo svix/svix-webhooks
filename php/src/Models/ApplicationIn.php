@@ -11,12 +11,18 @@ class ApplicationIn implements \JsonSerializable
 
     /**
      * @param array<string, string>|null $metadata
-     * @param string|null                $uid      optional unique identifier for the application
+     * @param string                     $name         application name for human consumption
+     * @param int|null                   $rateLimit    deprecated, use `throttleRate` instead
+     * @param int|null                   $throttleRate Maximum messages per second to send to this application.
+     *
+     * Outgoing messages will be throttled to this rate.
+     * @param string|null $uid optional unique identifier for the application
      */
     private function __construct(
         public readonly string $name,
         public readonly ?array $metadata = null,
         public readonly ?int $rateLimit = null,
+        public readonly ?int $throttleRate = null,
         public readonly ?string $uid = null,
         array $setFields = [],
     ) {
@@ -33,6 +39,7 @@ class ApplicationIn implements \JsonSerializable
             metadata: null,
             name: $name,
             rateLimit: null,
+            throttleRate: null,
             uid: null,
             setFields: ['name' => true]
         );
@@ -47,6 +54,7 @@ class ApplicationIn implements \JsonSerializable
             metadata: $metadata,
             name: $this->name,
             rateLimit: $this->rateLimit,
+            throttleRate: $this->throttleRate,
             uid: $this->uid,
             setFields: $setFields
         );
@@ -61,6 +69,22 @@ class ApplicationIn implements \JsonSerializable
             metadata: $this->metadata,
             name: $this->name,
             rateLimit: $rateLimit,
+            throttleRate: $this->throttleRate,
+            uid: $this->uid,
+            setFields: $setFields
+        );
+    }
+
+    public function withThrottleRate(?int $throttleRate): self
+    {
+        $setFields = $this->setFields;
+        $setFields['throttleRate'] = true;
+
+        return new self(
+            metadata: $this->metadata,
+            name: $this->name,
+            rateLimit: $this->rateLimit,
+            throttleRate: $throttleRate,
             uid: $this->uid,
             setFields: $setFields
         );
@@ -75,6 +99,7 @@ class ApplicationIn implements \JsonSerializable
             metadata: $this->metadata,
             name: $this->name,
             rateLimit: $this->rateLimit,
+            throttleRate: $this->throttleRate,
             uid: $uid,
             setFields: $setFields
         );
@@ -90,6 +115,9 @@ class ApplicationIn implements \JsonSerializable
         }
         if (isset($this->setFields['rateLimit'])) {
             $data['rateLimit'] = $this->rateLimit;
+        }
+        if (isset($this->setFields['throttleRate'])) {
+            $data['throttleRate'] = $this->throttleRate;
         }
         if (isset($this->setFields['uid'])) {
             $data['uid'] = $this->uid;
@@ -107,6 +135,7 @@ class ApplicationIn implements \JsonSerializable
             metadata: \Svix\Utils::getValFromJson($data, 'metadata', false, 'ApplicationIn'),
             name: \Svix\Utils::deserializeString($data, 'name', true, 'ApplicationIn'),
             rateLimit: \Svix\Utils::deserializeInt($data, 'rateLimit', false, 'ApplicationIn'),
+            throttleRate: \Svix\Utils::deserializeInt($data, 'throttleRate', false, 'ApplicationIn'),
             uid: \Svix\Utils::deserializeString($data, 'uid', false, 'ApplicationIn')
         );
     }

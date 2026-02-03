@@ -33,6 +33,10 @@ type EndpointCreateOptions struct {
 	IdempotencyKey *string
 }
 
+type EndpointBulkReplayOptions struct {
+	IdempotencyKey *string
+}
+
 type EndpointRecoverOptions struct {
 	IdempotencyKey *string
 }
@@ -207,6 +211,55 @@ func (endpoint *Endpoint) Patch(
 		nil,
 		nil,
 		&endpointPatch,
+	)
+}
+
+// Bulk replay messages sent to the endpoint.
+//
+// Only messages that were created after `since` will be sent.
+// This will replay both successful, and failed messages
+//
+// A completed task will return a payload like the following:
+// ```json
+//
+//	{
+//	  "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+//	  "status": "finished",
+//	  "task": "endpoint.bulk-replay",
+//	  "data": {
+//	    "messagesSent": 2
+//	  }
+//	}
+//
+// ```
+func (endpoint *Endpoint) BulkReplay(
+	ctx context.Context,
+	appId string,
+	endpointId string,
+	bulkReplayIn models.BulkReplayIn,
+	o *EndpointBulkReplayOptions,
+) (*models.ReplayOut, error) {
+	pathMap := map[string]string{
+		"app_id":      appId,
+		"endpoint_id": endpointId,
+	}
+	headerMap := map[string]string{}
+	var err error
+	if o != nil {
+		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return internal.ExecuteRequest[models.BulkReplayIn, models.ReplayOut](
+		ctx,
+		endpoint.client,
+		"POST",
+		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/bulk-replay",
+		pathMap,
+		nil,
+		headerMap,
+		&bulkReplayIn,
 	)
 }
 

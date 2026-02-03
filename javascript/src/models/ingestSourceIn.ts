@@ -125,6 +125,11 @@ interface IngestSourceInPleo {
   config: SvixConfig;
 }
 
+interface IngestSourceInPsiFi {
+  type: "psi-fi";
+  config: SvixConfig;
+}
+
 interface IngestSourceInReplicate {
   type: "replicate";
   config: SvixConfig;
@@ -236,6 +241,7 @@ export type IngestSourceIn = _IngestSourceInFields &
     | IngestSourceInPandaDoc
     | IngestSourceInPortIo
     | IngestSourceInPleo
+    | IngestSourceInPsiFi
     | IngestSourceInReplicate
     | IngestSourceInResend
     | IngestSourceInRutter
@@ -299,6 +305,8 @@ export const IngestSourceInSerializer = {
         case "port-io":
           return PortIoConfigSerializer._fromJsonObject(object["config"]);
         case "pleo":
+          return SvixConfigSerializer._fromJsonObject(object["config"]);
+        case "psi-fi":
           return SvixConfigSerializer._fromJsonObject(object["config"]);
         case "replicate":
           return SvixConfigSerializer._fromJsonObject(object["config"]);
@@ -408,6 +416,9 @@ export const IngestSourceInSerializer = {
         config = PortIoConfigSerializer._toJsonObject(self.config);
         break;
       case "pleo":
+        config = SvixConfigSerializer._toJsonObject(self.config);
+        break;
+      case "psi-fi":
         config = SvixConfigSerializer._toJsonObject(self.config);
         break;
       case "replicate":

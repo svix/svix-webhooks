@@ -17,6 +17,7 @@ class BackgroundTaskOut implements \JsonSerializable
         public readonly string $id,
         public readonly BackgroundTaskStatus $status,
         public readonly BackgroundTaskType $task,
+        public readonly \DateTimeImmutable $updatedAt,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -30,13 +31,15 @@ class BackgroundTaskOut implements \JsonSerializable
         string $id,
         BackgroundTaskStatus $status,
         BackgroundTaskType $task,
+        \DateTimeImmutable $updatedAt,
     ): self {
         return new self(
             data: $data,
             id: $id,
             status: $status,
             task: $task,
-            setFields: ['data' => true, 'id' => true, 'status' => true, 'task' => true]
+            updatedAt: $updatedAt,
+            setFields: ['data' => true, 'id' => true, 'status' => true, 'task' => true, 'updatedAt' => true]
         );
     }
 
@@ -46,7 +49,8 @@ class BackgroundTaskOut implements \JsonSerializable
             'data' => $this->data,
             'id' => $this->id,
             'status' => $this->status,
-            'task' => $this->task];
+            'task' => $this->task,
+            'updatedAt' => $this->updatedAt->format('c')];
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
@@ -60,7 +64,8 @@ class BackgroundTaskOut implements \JsonSerializable
             data: \Svix\Utils::getValFromJson($data, 'data', true, 'BackgroundTaskOut'),
             id: \Svix\Utils::deserializeString($data, 'id', true, 'BackgroundTaskOut'),
             status: \Svix\Utils::deserializeObject($data, 'status', true, 'BackgroundTaskOut', [BackgroundTaskStatus::class, 'fromMixed']),
-            task: \Svix\Utils::deserializeObject($data, 'task', true, 'BackgroundTaskOut', [BackgroundTaskType::class, 'fromMixed'])
+            task: \Svix\Utils::deserializeObject($data, 'task', true, 'BackgroundTaskOut', [BackgroundTaskType::class, 'fromMixed']),
+            updatedAt: \Svix\Utils::deserializeDt($data, 'updatedAt', true, 'BackgroundTaskOut')
         );
     }
 

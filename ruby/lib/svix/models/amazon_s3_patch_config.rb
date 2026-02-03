@@ -6,10 +6,11 @@ module Svix
   class AmazonS3PatchConfig
     attr_accessor :access_key_id
     attr_accessor :bucket
+    attr_accessor :endpoint_url
     attr_accessor :region
     attr_accessor :secret_access_key
 
-    ALL_FIELD ||= ["access_key_id", "bucket", "region", "secret_access_key"].freeze
+    ALL_FIELD ||= ["access_key_id", "bucket", "endpoint_url", "region", "secret_access_key"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -32,6 +33,7 @@ module Svix
       attrs = Hash.new
       attrs["access_key_id"] = attributes["accessKeyId"]
       attrs["bucket"] = attributes["bucket"]
+      attrs["endpoint_url"] = attributes["endpointUrl"]
       attrs["region"] = attributes["region"]
       attrs["secret_access_key"] = attributes["secretAccessKey"]
       new(attrs)
@@ -41,6 +43,7 @@ module Svix
       out = Hash.new
       out["accessKeyId"] = Svix::serialize_primitive(@access_key_id) if @access_key_id
       out["bucket"] = Svix::serialize_primitive(@bucket) if @bucket
+      out["endpointUrl"] = Svix::serialize_primitive(@endpoint_url) if @endpoint_url
       out["region"] = Svix::serialize_primitive(@region) if @region
       out["secretAccessKey"] = Svix::serialize_primitive(@secret_access_key) if @secret_access_key
       out

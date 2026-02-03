@@ -11,6 +11,8 @@ import com.svix.Utils;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+import java.time.OffsetDateTime;
+
 @ToString
 @EqualsAndHashCode
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -20,6 +22,7 @@ public class BackgroundTaskOut {
     @JsonProperty private String id;
     @JsonProperty private BackgroundTaskStatus status;
     @JsonProperty private BackgroundTaskType task;
+    @JsonProperty private OffsetDateTime updatedAt;
 
     public BackgroundTaskOut() {}
 
@@ -97,6 +100,25 @@ public class BackgroundTaskOut {
 
     public void setTask(BackgroundTaskType task) {
         this.task = task;
+    }
+
+    public BackgroundTaskOut updatedAt(OffsetDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+        return this;
+    }
+
+    /**
+     * Get updatedAt
+     *
+     * @return updatedAt
+     */
+    @javax.annotation.Nonnull
+    public OffsetDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(OffsetDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     /**

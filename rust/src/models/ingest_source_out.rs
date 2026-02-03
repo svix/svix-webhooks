@@ -81,6 +81,8 @@ pub enum IngestSourceOutConfig {
     PandaDoc(PandaDocConfigOut),
     #[serde(rename = "port-io")]
     PortIo(PortIoConfigOut),
+    #[serde(rename = "psi-fi")]
+    PsiFi(SvixConfigOut),
     #[serde(rename = "pleo")]
     Pleo(SvixConfigOut),
     #[serde(rename = "replicate")]

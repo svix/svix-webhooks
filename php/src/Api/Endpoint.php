@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace Svix\Api;
 
+use Svix\Models\BulkReplayIn;
 use Svix\Models\EndpointHeadersIn;
 use Svix\Models\EndpointHeadersOut;
 use Svix\Models\EndpointHeadersPatchIn;
@@ -114,6 +115,40 @@ class Endpoint
         $res = $this->client->send($request);
 
         return EndpointOut::fromJson($res);
+    }
+
+    /**
+     * Bulk replay messages sent to the endpoint.
+     *
+     * Only messages that were created after `since` will be sent.
+     * This will replay both successful, and failed messages
+     *
+     * A completed task will return a payload like the following:
+     * ```json
+     * {
+     *   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+     *   "status": "finished",
+     *   "task": "endpoint.bulk-replay",
+     *   "data": {
+     *     "messagesSent": 2
+     *   }
+     * }
+     * ```
+     */
+    public function bulkReplay(
+        string $appId,
+        string $endpointId,
+        BulkReplayIn $bulkReplayIn,
+        ?EndpointBulkReplayOptions $options = null,
+    ): ReplayOut {
+        $request = $this->client->newReq('POST', "/api/v1/app/{$appId}/endpoint/{$endpointId}/bulk-replay");
+        if (null !== $options) {
+            $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
+        }
+        $request->setBody(json_encode($bulkReplayIn));
+        $res = $this->client->send($request);
+
+        return ReplayOut::fromJson($res);
     }
 
     /** Get the additional headers to be sent with the webhook. */
