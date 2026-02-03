@@ -133,6 +133,11 @@ sealed class IngestSourceOutConfig {
             Json.encodeToJsonElement(PortIoConfigOut.serializer(), portIo)
     }
 
+    @VariantName("psi-fi")
+    data class PsiFi(val psiFi: SvixConfigOut) : IngestSourceOutConfig() {
+        override fun toJsonElement() = Json.encodeToJsonElement(SvixConfigOut.serializer(), psiFi)
+    }
+
     @VariantName("pleo")
     data class Pleo(val pleo: SvixConfigOut) : IngestSourceOutConfig() {
         override fun toJsonElement() = Json.encodeToJsonElement(SvixConfigOut.serializer(), pleo)
@@ -312,6 +317,10 @@ sealed class IngestSourceOutConfig {
                 "port-io" to
                     { config ->
                         PortIo(Json.decodeFromJsonElement(PortIoConfigOut.serializer(), config))
+                    },
+                "psi-fi" to
+                    { config ->
+                        PsiFi(Json.decodeFromJsonElement(SvixConfigOut.serializer(), config))
                     },
                 "pleo" to
                     { config ->

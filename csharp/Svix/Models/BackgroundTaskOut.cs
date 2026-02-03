@@ -18,6 +18,9 @@ namespace Svix.Models
         [JsonProperty("task", Required = Required.Always)]
         public required BackgroundTaskType Task { get; set; }
 
+        [JsonProperty("updatedAt", Required = Required.Always)]
+        public required DateTime UpdatedAt { get; set; }
+
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
@@ -27,6 +30,7 @@ namespace Svix.Models
             sb.Append("  Id: ").Append(Id).Append('\n');
             sb.Append("  Status: ").Append(Status).Append('\n');
             sb.Append("  Task: ").Append(Task).Append('\n');
+            sb.Append("  UpdatedAt: ").Append(UpdatedAt).Append('\n');
             sb.Append("}\n");
             return sb.ToString();
         }

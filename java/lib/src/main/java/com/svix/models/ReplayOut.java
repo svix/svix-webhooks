@@ -11,6 +11,8 @@ import com.svix.Utils;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+import java.time.OffsetDateTime;
+
 @ToString
 @EqualsAndHashCode
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -19,6 +21,7 @@ public class ReplayOut {
     @JsonProperty private String id;
     @JsonProperty private BackgroundTaskStatus status;
     @JsonProperty private BackgroundTaskType task;
+    @JsonProperty private OffsetDateTime updatedAt;
 
     public ReplayOut() {}
 
@@ -77,6 +80,25 @@ public class ReplayOut {
 
     public void setTask(BackgroundTaskType task) {
         this.task = task;
+    }
+
+    public ReplayOut updatedAt(OffsetDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+        return this;
+    }
+
+    /**
+     * Get updatedAt
+     *
+     * @return updatedAt
+     */
+    @javax.annotation.Nonnull
+    public OffsetDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(OffsetDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     /**

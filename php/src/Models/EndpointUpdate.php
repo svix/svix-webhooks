@@ -10,10 +10,14 @@ class EndpointUpdate implements \JsonSerializable
     private array $setFields = [];
 
     /**
-     * @param list<string>|null          $channels    list of message channels this endpoint listens to (omit for all)
+     * @param list<string>|null          $channels     list of message channels this endpoint listens to (omit for all)
      * @param list<string>|null          $filterTypes
      * @param array<string, string>|null $metadata
-     * @param string|null                $uid         optional unique identifier for the endpoint
+     * @param int|null                   $rateLimit    deprecated, use `throttleRate` instead
+     * @param int|null                   $throttleRate Maximum messages per second to send to this endpoint.
+     *
+     * Outgoing messages will be throttled to this rate.
+     * @param string|null $uid optional unique identifier for the endpoint
      */
     private function __construct(
         public readonly string $url,
@@ -23,6 +27,7 @@ class EndpointUpdate implements \JsonSerializable
         public readonly ?array $filterTypes = null,
         public readonly ?array $metadata = null,
         public readonly ?int $rateLimit = null,
+        public readonly ?int $throttleRate = null,
         public readonly ?string $uid = null,
         public readonly ?int $version = null,
         array $setFields = [],
@@ -43,6 +48,7 @@ class EndpointUpdate implements \JsonSerializable
             filterTypes: null,
             metadata: null,
             rateLimit: null,
+            throttleRate: null,
             uid: null,
             url: $url,
             version: null,
@@ -62,6 +68,7 @@ class EndpointUpdate implements \JsonSerializable
             filterTypes: $this->filterTypes,
             metadata: $this->metadata,
             rateLimit: $this->rateLimit,
+            throttleRate: $this->throttleRate,
             uid: $this->uid,
             url: $this->url,
             version: $this->version,
@@ -81,6 +88,7 @@ class EndpointUpdate implements \JsonSerializable
             filterTypes: $this->filterTypes,
             metadata: $this->metadata,
             rateLimit: $this->rateLimit,
+            throttleRate: $this->throttleRate,
             uid: $this->uid,
             url: $this->url,
             version: $this->version,
@@ -100,6 +108,7 @@ class EndpointUpdate implements \JsonSerializable
             filterTypes: $this->filterTypes,
             metadata: $this->metadata,
             rateLimit: $this->rateLimit,
+            throttleRate: $this->throttleRate,
             uid: $this->uid,
             url: $this->url,
             version: $this->version,
@@ -119,6 +128,7 @@ class EndpointUpdate implements \JsonSerializable
             filterTypes: $filterTypes,
             metadata: $this->metadata,
             rateLimit: $this->rateLimit,
+            throttleRate: $this->throttleRate,
             uid: $this->uid,
             url: $this->url,
             version: $this->version,
@@ -138,6 +148,7 @@ class EndpointUpdate implements \JsonSerializable
             filterTypes: $this->filterTypes,
             metadata: $metadata,
             rateLimit: $this->rateLimit,
+            throttleRate: $this->throttleRate,
             uid: $this->uid,
             url: $this->url,
             version: $this->version,
@@ -157,6 +168,27 @@ class EndpointUpdate implements \JsonSerializable
             filterTypes: $this->filterTypes,
             metadata: $this->metadata,
             rateLimit: $rateLimit,
+            throttleRate: $this->throttleRate,
+            uid: $this->uid,
+            url: $this->url,
+            version: $this->version,
+            setFields: $setFields
+        );
+    }
+
+    public function withThrottleRate(?int $throttleRate): self
+    {
+        $setFields = $this->setFields;
+        $setFields['throttleRate'] = true;
+
+        return new self(
+            channels: $this->channels,
+            description: $this->description,
+            disabled: $this->disabled,
+            filterTypes: $this->filterTypes,
+            metadata: $this->metadata,
+            rateLimit: $this->rateLimit,
+            throttleRate: $throttleRate,
             uid: $this->uid,
             url: $this->url,
             version: $this->version,
@@ -176,6 +208,7 @@ class EndpointUpdate implements \JsonSerializable
             filterTypes: $this->filterTypes,
             metadata: $this->metadata,
             rateLimit: $this->rateLimit,
+            throttleRate: $this->throttleRate,
             uid: $uid,
             url: $this->url,
             version: $this->version,
@@ -195,6 +228,7 @@ class EndpointUpdate implements \JsonSerializable
             filterTypes: $this->filterTypes,
             metadata: $this->metadata,
             rateLimit: $this->rateLimit,
+            throttleRate: $this->throttleRate,
             uid: $this->uid,
             url: $this->url,
             version: $version,
@@ -225,6 +259,9 @@ class EndpointUpdate implements \JsonSerializable
         if (isset($this->setFields['rateLimit'])) {
             $data['rateLimit'] = $this->rateLimit;
         }
+        if (isset($this->setFields['throttleRate'])) {
+            $data['throttleRate'] = $this->throttleRate;
+        }
         if (isset($this->setFields['uid'])) {
             $data['uid'] = $this->uid;
         }
@@ -247,6 +284,7 @@ class EndpointUpdate implements \JsonSerializable
             filterTypes: \Svix\Utils::getValFromJson($data, 'filterTypes', false, 'EndpointUpdate'),
             metadata: \Svix\Utils::getValFromJson($data, 'metadata', false, 'EndpointUpdate'),
             rateLimit: \Svix\Utils::deserializeInt($data, 'rateLimit', false, 'EndpointUpdate'),
+            throttleRate: \Svix\Utils::deserializeInt($data, 'throttleRate', false, 'EndpointUpdate'),
             uid: \Svix\Utils::deserializeString($data, 'uid', false, 'EndpointUpdate'),
             url: \Svix\Utils::getValFromJson($data, 'url', true, 'EndpointUpdate'),
             version: \Svix\Utils::deserializeInt($data, 'version', false, 'EndpointUpdate')

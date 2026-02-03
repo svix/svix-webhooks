@@ -29,7 +29,7 @@ namespace Svix.Models
         [EnumMember(Value = "application.purge_content")]
         ApplicationPurgeContent = 7,
 
-        [EnumMember(Value = "endpoint.bulk_replay")]
+        [EnumMember(Value = "endpoint.bulk-replay")]
         EndpointBulkReplay = 8,
     }
 }

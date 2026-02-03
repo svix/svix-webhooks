@@ -1,6 +1,7 @@
 // this file is @generated
 package com.svix.kotlin
 
+import com.svix.kotlin.models.BulkReplayIn
 import com.svix.kotlin.models.EndpointHeadersIn
 import com.svix.kotlin.models.EndpointHeadersOut
 import com.svix.kotlin.models.EndpointHeadersPatchIn
@@ -35,6 +36,8 @@ data class EndpointListOptions(
 )
 
 data class EndpointCreateOptions(val idempotencyKey: String? = null)
+
+data class EndpointBulkReplayOptions(val idempotencyKey: String? = null)
 
 data class EndpointRecoverOptions(val idempotencyKey: String? = null)
 
@@ -125,6 +128,45 @@ class Endpoint(private val client: SvixHttpClient) {
             "PATCH",
             url.build(),
             reqBody = endpointPatch,
+        )
+    }
+
+    /**
+     * Bulk replay messages sent to the endpoint.
+     *
+     * Only messages that were created after `since` will be sent. This will replay both successful,
+     * and failed messages
+     *
+     * A completed task will return a payload like the following:
+     * ```json
+     * {
+     *   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+     *   "status": "finished",
+     *   "task": "endpoint.bulk-replay",
+     *   "data": {
+     *     "messagesSent": 2
+     *   }
+     * }
+     * ```
+     */
+    suspend fun bulkReplay(
+        appId: String,
+        endpointId: String,
+        bulkReplayIn: BulkReplayIn,
+        options: EndpointBulkReplayOptions = EndpointBulkReplayOptions(),
+    ): ReplayOut {
+        val url =
+            client
+                .newUrlBuilder()
+                .encodedPath("/api/v1/app/$appId/endpoint/$endpointId/bulk-replay")
+        val headers = Headers.Builder()
+        options.idempotencyKey?.let { headers.add("idempotency-key", it) }
+
+        return client.executeRequest<BulkReplayIn, ReplayOut>(
+            "POST",
+            url.build(),
+            headers = headers.build(),
+            reqBody = bulkReplayIn,
         )
     }
 

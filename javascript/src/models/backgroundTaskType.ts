@@ -8,7 +8,7 @@ export enum BackgroundTaskType {
   SdkGenerate = "sdk.generate",
   EventTypeAggregate = "event-type.aggregate",
   ApplicationPurgeContent = "application.purge_content",
-  EndpointBulkReplay = "endpoint.bulk_replay",
+  EndpointBulkReplay = "endpoint.bulk-replay",
 }
 
 export const BackgroundTaskTypeSerializer = {

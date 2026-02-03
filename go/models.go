@@ -27,6 +27,7 @@ type (
 	BackgroundTaskOut                         = models.BackgroundTaskOut
 	BackgroundTaskStatus                      = models.BackgroundTaskStatus
 	BackgroundTaskType                        = models.BackgroundTaskType
+	BulkReplayIn                              = models.BulkReplayIn
 	CheckbookConfig                           = models.CheckbookConfig
 	CheckbookConfigOut                        = models.CheckbookConfigOut
 	ConnectorIn                               = models.ConnectorIn

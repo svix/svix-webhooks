@@ -127,6 +127,11 @@ sealed class IngestSourceInConfig {
         override fun toJsonElement() = Json.encodeToJsonElement(SvixConfig.serializer(), pleo)
     }
 
+    @VariantName("psi-fi")
+    data class PsiFi(val psiFi: SvixConfig) : IngestSourceInConfig() {
+        override fun toJsonElement() = Json.encodeToJsonElement(SvixConfig.serializer(), psiFi)
+    }
+
     @VariantName("replicate")
     data class Replicate(val replicate: SvixConfig) : IngestSourceInConfig() {
         override fun toJsonElement() = Json.encodeToJsonElement(SvixConfig.serializer(), replicate)
@@ -293,6 +298,10 @@ sealed class IngestSourceInConfig {
                 "pleo" to
                     { config ->
                         Pleo(Json.decodeFromJsonElement(SvixConfig.serializer(), config))
+                    },
+                "psi-fi" to
+                    { config ->
+                        PsiFi(Json.decodeFromJsonElement(SvixConfig.serializer(), config))
                     },
                 "replicate" to
                     { config ->

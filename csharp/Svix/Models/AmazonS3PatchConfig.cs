@@ -12,6 +12,9 @@ namespace Svix.Models
         [JsonProperty("bucket")]
         public string? Bucket { get; set; } = null;
 
+        [JsonProperty("endpointUrl")]
+        public string? EndpointUrl { get; set; } = null;
+
         [JsonProperty("region")]
         public string? Region { get; set; } = null;
 
@@ -25,6 +28,7 @@ namespace Svix.Models
             sb.Append("class AmazonS3PatchConfig {\n");
             sb.Append("  AccessKeyId: ").Append(AccessKeyId).Append('\n');
             sb.Append("  Bucket: ").Append(Bucket).Append('\n');
+            sb.Append("  EndpointUrl: ").Append(EndpointUrl).Append('\n');
             sb.Append("  Region: ").Append(Region).Append('\n');
             sb.Append("  SecretAccessKey: ").Append(SecretAccessKey).Append('\n');
             sb.Append("}\n");

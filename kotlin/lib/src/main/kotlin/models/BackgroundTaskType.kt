@@ -17,7 +17,7 @@ enum class BackgroundTaskType : ToQueryParam {
     @SerialName("sdk.generate") SDK_GENERATE,
     @SerialName("event-type.aggregate") EVENT_TYPE_AGGREGATE,
     @SerialName("application.purge_content") APPLICATION_PURGE_CONTENT,
-    @SerialName("endpoint.bulk_replay") ENDPOINT_BULK_REPLAY;
+    @SerialName("endpoint.bulk-replay") ENDPOINT_BULK_REPLAY;
 
     override fun toQueryParam() = Json.encodeToJsonElement(this).jsonPrimitive.content
 }
