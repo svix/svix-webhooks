@@ -2,8 +2,6 @@ use std::time::Duration;
 
 use svix_server::cfg::load;
 
-#![allow(result_large_err)]
-
 // Using a single test in its own integration test binary such that
 // `figment::Jail` can't influence other tests.
 //
@@ -17,6 +15,7 @@ fn test_environment_parsing() {
     test_proxy_addr_from_env_parsing();
 }
 
+#[allow(result_large_err)]
 fn test_retry_schedule_parsing() {
     figment::Jail::expect_with(|jail| {
         jail.set_env("SVIX_JWT_SECRET", "x");
@@ -46,6 +45,7 @@ fn test_retry_schedule_parsing() {
     });
 }
 
+#[allow(result_large_err)]
 fn test_retry_schedule_parsing_legacy() {
     figment::Jail::expect_with(|jail| {
         jail.set_env("SVIX_JWT_SECRET", "x");
@@ -65,6 +65,7 @@ fn test_retry_schedule_parsing_legacy() {
     });
 }
 
+#[allow(result_large_err)]
 fn test_proxy_addr_from_env_parsing() {
     figment::Jail::expect_with(|jail| {
         jail.set_env("SVIX_QUEUE_TYPE", "memory");
