@@ -2,6 +2,8 @@ use std::time::Duration;
 
 use svix_server::cfg::load;
 
+#![allow(result_large_err)]
+
 // Using a single test in its own integration test binary such that
 // `figment::Jail` can't influence other tests.
 //
