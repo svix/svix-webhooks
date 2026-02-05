@@ -137,7 +137,7 @@ fn run_script_inner(
                 }
             }
         }
-        Err(err) => Err(anyhow::format_err!("Evaling error: {:?}", err)),
+        Err(err) => Err(anyhow::format_err!("Evaling error: {err:?}")),
     }
 }
 
