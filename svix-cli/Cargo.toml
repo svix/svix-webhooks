@@ -11,7 +11,7 @@ categories = ["development-tools", "asynchronous", "network-programming", "web-p
 repository = "https://github.com/svix/svix-webhooks"
 publish = false
 # update .github/workflows/cli-lint.yml when changing this
-rust-version = "1.85"
+rust-version = "1.88"
 
 [package.metadata.dist]
 dist = true

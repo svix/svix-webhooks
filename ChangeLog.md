@@ -1,5 +1,10 @@
 # Changelog
 
+## Upcoming
+* Server: Bump MSRV to 1.88.0
+* Libs/Rust: Bump MSRV to 1.88.0
+* Cli: Bump MSRV to 1.88.0
+
 ## Version 1.84.0
 * Libs/(JavaScript Python): Updated webhook verification logic to use official standard webhooks packages
 * Cli: support disabling TLS verification when relaying requests (`svix listen`)

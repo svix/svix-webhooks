@@ -17,7 +17,7 @@ categories = [
 ]
 include = ["src/**/*", "README.md"]
 # bump .github/workflows/rust-link.yml when changing this
-rust-version = "1.85"
+rust-version = "1.88"
 
 [features]
 # openssl-sys keeps showing up in the CLI dep graph, breaking the build, even when
