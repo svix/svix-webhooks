@@ -78,7 +78,7 @@ svix = "1.17.0"
 svix-ksuid = "^0.5.1"
 svix-server-derive = { path = "../svix-server-derive" }
 thiserror = "2.0.11"
-time = { version = "0.3.9", features = [ "std" ] }
+time = { version = "0.3.47", features = [ "std" ] }
 tokio = { version = "1.24.2", features = ["full"] }
 tokio-util = "0.7"
 tower = "0.5.1"
