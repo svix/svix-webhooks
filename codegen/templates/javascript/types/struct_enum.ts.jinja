@@ -60,8 +60,8 @@ export const {{ type.name | to_upper_camel_case }}Serializer = {
                 default:
                     throw new Error(`Unexpected {{ type.discriminator_field }}: ${ {{ disc_field_name}} }`);
             }
-
         }
+
         return {
             {{ disc_field_name }},
             {{ content_field_name }}:get{{ content_field_name | to_upper_camel_case }}({{ disc_field_name }}),
