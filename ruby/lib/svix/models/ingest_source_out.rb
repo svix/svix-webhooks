@@ -93,6 +93,9 @@ module Svix
     class PortIo < PortIoConfigOut
     end
 
+    class PsiFi < SvixConfigOut
+    end
+
     class Pleo < SvixConfigOut
     end
 
@@ -184,6 +187,7 @@ module Svix
       IngestSourceOutConfig::OrumIo => "orum-io",
       IngestSourceOutConfig::PandaDoc => "panda-doc",
       IngestSourceOutConfig::PortIo => "port-io",
+      IngestSourceOutConfig::PsiFi => "psi-fi",
       IngestSourceOutConfig::Pleo => "pleo",
       IngestSourceOutConfig::Replicate => "replicate",
       IngestSourceOutConfig::Resend => "resend",

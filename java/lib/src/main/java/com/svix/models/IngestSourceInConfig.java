@@ -307,6 +307,21 @@ public abstract class IngestSourceInConfig {
     @AllArgsConstructor
     @ToString
     @EqualsAndHashCode(callSuper = false)
+    @VariantName("psi-fi")
+    public static class PsiFi extends IngestSourceInConfig {
+        private final SvixConfig psiFi;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(psiFi);
+        }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
     @VariantName("replicate")
     public static class Replicate extends IngestSourceInConfig {
         private final SvixConfig replicate;
@@ -600,6 +615,7 @@ public abstract class IngestSourceInConfig {
         TY_M.put("panda-doc", c -> new PandaDoc(m.convertValue(c, PandaDocConfig.class)));
         TY_M.put("port-io", c -> new PortIo(m.convertValue(c, PortIoConfig.class)));
         TY_M.put("pleo", c -> new Pleo(m.convertValue(c, SvixConfig.class)));
+        TY_M.put("psi-fi", c -> new PsiFi(m.convertValue(c, SvixConfig.class)));
         TY_M.put("replicate", c -> new Replicate(m.convertValue(c, SvixConfig.class)));
         TY_M.put("resend", c -> new Resend(m.convertValue(c, SvixConfig.class)));
         TY_M.put("rutter", c -> new Rutter(m.convertValue(c, RutterConfig.class)));

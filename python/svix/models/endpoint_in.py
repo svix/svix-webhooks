@@ -19,12 +19,18 @@ class EndpointIn(BaseModel):
     metadata: t.Optional[t.Dict[str, str]] = None
 
     rate_limit: t.Optional[int] = None
+    """Deprecated, use `throttleRate` instead."""
 
     secret: t.Optional[str] = None
     """The endpoint's verification secret.
 
     Format: `base64` encoded random bytes optionally prefixed with `whsec_`.
     It is recommended to not set this and let the server generate the secret."""
+
+    throttle_rate: t.Optional[int] = None
+    """Maximum messages per second to send to this endpoint.
+
+    Outgoing messages will be throttled to this rate."""
 
     uid: t.Optional[str] = None
     """Optional unique identifier for the endpoint."""

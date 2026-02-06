@@ -10,6 +10,7 @@ class EventTypePatch implements \JsonSerializable
     private array $setFields = [];
 
     /**
+     * @param string|null       $featureFlag  deprecated, use `featureFlags` instead
      * @param list<string>|null $featureFlags
      * @param string|null       $groupName    The event type group's name
      */

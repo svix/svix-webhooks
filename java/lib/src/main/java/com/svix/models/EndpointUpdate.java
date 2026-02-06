@@ -28,6 +28,7 @@ public class EndpointUpdate {
     @JsonProperty private Set<String> filterTypes;
     @JsonProperty private Map<String, String> metadata;
     @JsonProperty private Long rateLimit;
+    @JsonProperty private Long throttleRate;
     @JsonProperty private String uid;
     @JsonProperty private URI url;
     @JsonProperty private Long version;
@@ -156,23 +157,47 @@ public class EndpointUpdate {
         this.metadata = metadata;
     }
 
+    @Deprecated
     public EndpointUpdate rateLimit(Long rateLimit) {
         this.rateLimit = rateLimit;
         return this;
     }
 
     /**
-     * Get rateLimit
+     * Deprecated, use `throttleRate` instead.
      *
      * @return rateLimit
      */
     @javax.annotation.Nullable
+    @Deprecated
     public Long getRateLimit() {
         return rateLimit;
     }
 
+    @Deprecated
     public void setRateLimit(Long rateLimit) {
         this.rateLimit = rateLimit;
+    }
+
+    public EndpointUpdate throttleRate(Long throttleRate) {
+        this.throttleRate = throttleRate;
+        return this;
+    }
+
+    /**
+     * Maximum messages per second to send to this endpoint.
+     *
+     * <p>Outgoing messages will be throttled to this rate.
+     *
+     * @return throttleRate
+     */
+    @javax.annotation.Nullable
+    public Long getThrottleRate() {
+        return throttleRate;
+    }
+
+    public void setThrottleRate(Long throttleRate) {
+        this.throttleRate = throttleRate;
     }
 
     public EndpointUpdate uid(String uid) {

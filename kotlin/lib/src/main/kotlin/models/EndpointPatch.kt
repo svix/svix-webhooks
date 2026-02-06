@@ -11,6 +11,7 @@ data class EndpointPatch(
     val disabled: Boolean? = null,
     val filterTypes: MaybeUnset<Set<String>> = MaybeUnset.Unset,
     val metadata: Map<String, String>? = null,
+    /** Deprecated, use `throttleRate` instead. */
     val rateLimit: MaybeUnset<UShort> = MaybeUnset.Unset,
     /**
      * The endpoint's verification secret.
@@ -19,6 +20,12 @@ data class EndpointPatch(
      * not set this and let the server generate the secret.
      */
     val secret: MaybeUnset<String> = MaybeUnset.Unset,
+    /**
+     * Maximum messages per second to send to this endpoint.
+     *
+     * Outgoing messages will be throttled to this rate.
+     */
+    val throttleRate: MaybeUnset<UShort> = MaybeUnset.Unset,
     /** The Endpoint's UID. */
     val uid: MaybeUnset<String> = MaybeUnset.Unset,
     val url: String? = null,

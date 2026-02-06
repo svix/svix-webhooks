@@ -68,6 +68,8 @@ pub enum IngestSourceInConfig {
     PortIo(PortIoConfig),
     #[serde(rename = "pleo")]
     Pleo(SvixConfig),
+    #[serde(rename = "psi-fi")]
+    PsiFi(SvixConfig),
     #[serde(rename = "replicate")]
     Replicate(SvixConfig),
     #[serde(rename = "resend")]

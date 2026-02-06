@@ -10,6 +10,10 @@ pub struct AmazonS3PatchConfig {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub bucket: Option<String>,
 
+    #[serde(rename = "endpointUrl")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub endpoint_url: Option<String>,
+
     #[serde(skip_serializing_if = "Option::is_none")]
     pub region: Option<String>,
 
@@ -23,6 +27,7 @@ impl AmazonS3PatchConfig {
         Self {
             access_key_id: None,
             bucket: None,
+            endpoint_url: None,
             region: None,
             secret_access_key: None,
         }

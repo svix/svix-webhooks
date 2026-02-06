@@ -13,6 +13,7 @@ export interface ReplayOut {
   id: string;
   status: BackgroundTaskStatus;
   task: BackgroundTaskType;
+  updatedAt: Date;
 }
 
 export const ReplayOutSerializer = {
@@ -21,6 +22,7 @@ export const ReplayOutSerializer = {
       id: object["id"],
       status: BackgroundTaskStatusSerializer._fromJsonObject(object["status"]),
       task: BackgroundTaskTypeSerializer._fromJsonObject(object["task"]),
+      updatedAt: new Date(object["updatedAt"]),
     };
   },
 
@@ -29,6 +31,7 @@ export const ReplayOutSerializer = {
       id: self.id,
       status: BackgroundTaskStatusSerializer._toJsonObject(self.status),
       task: BackgroundTaskTypeSerializer._toJsonObject(self.task),
+      updatedAt: self.updatedAt,
     };
   },
 };
