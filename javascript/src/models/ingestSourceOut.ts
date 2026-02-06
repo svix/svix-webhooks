@@ -354,6 +354,7 @@ export const IngestSourceOutSerializer = {
           throw new Error(`Unexpected type: ${type}`);
       }
     }
+
     return {
       type,
       config: getConfig(type),
