@@ -226,6 +226,18 @@ fn generate_msg_headers(
     );
     if let Some(configured_headers) = configured_headers {
         for (k, v) in &configured_headers.0 {
+            if k.eq_ignore_ascii_case("user-agent") {
+                continue;
+            }
+
+            if let Some(existing_key) = headers
+                .keys()
+                .find(|existing| existing.eq_ignore_ascii_case(k))
+                .cloned()
+            {
+                headers.remove(&existing_key);
+            }
+
             match v.parse() {
                 Ok(v) => {
                     headers.insert(k.clone(), v);
@@ -1134,6 +1146,35 @@ mod tests {
         .unwrap();
 
         assert_eq!(expected, actual);
+    }
+
+    #[test]
+    fn test_generate_msg_headers_ignores_user_agent_override() {
+        let mut headers = HashMap::new();
+        headers.insert("User-Agent".to_owned(), "Custom-UA".to_owned());
+
+        let (expected, id) = mock_headers();
+
+        let signatures = sign_msg(
+            &Encryption::new_noop(),
+            TIMESTAMP,
+            BODY,
+            &id,
+            ENDPOINT_SIGNING_KEYS,
+        );
+
+        let actual = generate_msg_headers(
+            TIMESTAMP,
+            &id,
+            signatures,
+            WHITELABEL_HEADERS,
+            Some(&EndpointHeaders(headers)),
+            ENDPOINT_URL,
+        )
+        .unwrap();
+
+        assert_eq!(expected.get("user-agent"), actual.get("user-agent"));
+        assert!(actual.get("User-Agent").is_none());
     }
 
     // Tests endpoint signing keys -- expected values are fetched from the Svix documentation for a
