@@ -1174,7 +1174,7 @@ mod tests {
         .unwrap();
 
         assert_eq!(expected.get("user-agent"), actual.get("user-agent"));
-        assert!(actual.get("User-Agent").is_none());
+        assert!(!actual.contains_key("User-Agent"));
     }
 
     // Tests endpoint signing keys -- expected values are fetched from the Svix documentation for a
