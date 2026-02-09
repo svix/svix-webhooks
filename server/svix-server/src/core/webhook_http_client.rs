@@ -1,5 +1,4 @@
 use std::{
-    collections::HashMap,
     future::Future,
     net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr},
     pin::Pin,
@@ -14,7 +13,7 @@ use axum_extra::headers::{authorization::Credentials, Authorization};
 use bytes::Bytes;
 use futures::{future::BoxFuture, FutureExt};
 use hickory_resolver::{lookup_ip::LookupIpIntoIter, ResolveError, Resolver, TokioResolver};
-use http::{header::HeaderName, HeaderMap, HeaderValue, Method, StatusCode, Version};
+use http::{HeaderMap, HeaderValue, Method, StatusCode, Version};
 use http_body_util::Full;
 use hyper::{body::Incoming, ext::HeaderCaseMap, Uri};
 use hyper_openssl::client::legacy::{HttpsConnector, MaybeHttpsStream};
@@ -39,9 +38,13 @@ use thiserror::Error;
 use tokio::{net::TcpStream, sync::Mutex};
 use tower::Service;
 
-use crate::cfg::{ProxyAddr, ProxyBypassCfg, ProxyConfig};
+use crate::{
+    cfg::{ProxyAddr, ProxyBypassCfg, ProxyConfig},
+    core::types::CasePreservingHeaderMap,
+};
 
-pub type CaseSensitiveHeaderMap = HashMap<String, HeaderValue>;
+const APPLICATION_JSON: HeaderValue = HeaderValue::from_static("application/json");
+const STAR_SLASH_STAR: HeaderValue = HeaderValue::from_static("*/*");
 
 #[derive(Debug, Error)]
 pub enum Error {
@@ -318,26 +321,13 @@ impl RequestBuilder {
     }
 
     fn build_headers(
-        headers: CaseSensitiveHeaderMap,
+        headers: CasePreservingHeaderMap,
     ) -> (hyper::HeaderMap, hyper::ext::HeaderCaseMap) {
-        let mut hdr_map = hyper::HeaderMap::with_capacity(headers.len());
-        let mut case_sensitive_hdrs: hyper::HeaderMap<Bytes> =
-            hyper::HeaderMap::with_capacity(headers.len());
-        for (k, v) in headers.into_iter() {
-            match HeaderName::from_str(&k) {
-                Ok(key) => {
-                    hdr_map.insert(key.clone(), v);
-                    case_sensitive_hdrs.insert(key, Bytes::copy_from_slice(k.as_bytes()));
-                }
-                Err(e) => {
-                    tracing::error!("Failed to parse header {} {}", k, e);
-                }
-            }
-        }
+        let (hdr_map, case_sensitive_hdrs) = headers.into_maps();
         (hdr_map, case_sensitive_hdrs.into())
     }
 
-    pub fn headers(mut self, headers: CaseSensitiveHeaderMap) -> Self {
+    pub fn headers(mut self, headers: CasePreservingHeaderMap) -> Self {
         let (hdrs, case_map) = Self::build_headers(headers);
         self.headers = Some(hdrs);
         self.header_names = Some(case_map);
@@ -352,7 +342,7 @@ impl RequestBuilder {
 
     pub fn json_body<T: Serialize>(self, body: T) -> Result<Self, serde_json::Error> {
         let body = serde_json::to_vec(&body)?;
-        Ok(self.body(body, HeaderValue::from_static("application/json")))
+        Ok(self.body(body, APPLICATION_JSON))
     }
 
     pub fn version(mut self, version: Version) -> Self {
@@ -412,21 +402,17 @@ impl RequestBuilder {
         // Ensure that host header is first -- even though this is technically
         // not required by HTTP spec, some clients fail if it's not first:
         headers.insert(http::header::HOST, host);
-        headers.insert(
-            http::header::ACCEPT,
-            self.accept.unwrap_or(HeaderValue::from_static("*/*")),
-        );
+        headers.insert(http::header::ACCEPT, self.accept.unwrap_or(STAR_SLASH_STAR));
         headers.insert(
             http::header::CONTENT_TYPE,
-            self.content_type
-                .unwrap_or(HeaderValue::from_static("application/json")),
+            self.content_type.unwrap_or(APPLICATION_JSON),
         );
-
-        headers.extend(custom_headers);
 
         if let Some(user_agent) = self.user_agent {
             headers.insert(http::header::USER_AGENT, user_agent);
         }
+
+        headers.extend(custom_headers);
 
         if let Some(auth_header) = self.basic_auth {
             if !headers.contains_key(http::header::AUTHORIZATION) {
@@ -746,10 +732,11 @@ mod tests {
 
     use axum::{routing, Router};
     use axum_server::tls_openssl::{OpenSSLAcceptor, OpenSSLConfig};
-    use http::{HeaderValue, Method, Version};
+    use http::{header::AUTHORIZATION, HeaderValue, Method, Version};
     use ipnet::IpNet;
 
-    use super::{is_allowed, CaseSensitiveHeaderMap, RequestBuilder, WebhookClient};
+    use super::{is_allowed, RequestBuilder, WebhookClient};
+    use crate::core::types::CasePreservingHeaderMap;
 
     #[test]
     fn is_allowed_test() {
@@ -805,10 +792,9 @@ mod tests {
 
     #[test]
     fn test_header_casings() {
-        let hdrs = CaseSensitiveHeaderMap::from([(
-            "tEsT-header-1".to_owned(),
-            HeaderValue::from_static("value"),
-        )]);
+        let mut hdrs = CasePreservingHeaderMap::new();
+        hdrs.try_insert("tEsT-header-1", HeaderValue::from_static("value"))
+            .unwrap();
 
         let req = RequestBuilder::new()
             .uri(url::Url::from_str("http://127.0.0.1/").unwrap())
@@ -838,10 +824,7 @@ mod tests {
             .build()
             .unwrap();
 
-        assert_eq!(
-            req.headers.get("authorization").unwrap(),
-            "Basic dGVzdDoxMjM=".as_bytes()
-        );
+        assert_eq!(req.headers[&AUTHORIZATION], "Basic dGVzdDoxMjM=".as_bytes());
 
         let req_user_only = RequestBuilder::new()
             .uri(url::Url::from_str("http://test:@127.0.0.1/").unwrap())

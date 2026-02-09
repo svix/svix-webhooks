@@ -100,6 +100,7 @@ tikv-jemallocator = { version = "0.6", optional = true }
 assert_matches = "1.5.0"
 axum-server = { version = "0.7.1", features = ["tls-openssl"] }
 ctor = "0.2.7"
+maplit = "1"
 socks5-proto = "0.4.1"
 wiremock = { version = "=0.6.4" }
 
