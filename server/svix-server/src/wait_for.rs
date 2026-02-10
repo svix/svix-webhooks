@@ -29,7 +29,9 @@ pub async fn wait_for_dsn(
                 Ok(Ok(_)) => break,
                 // Connection failed before the timeout was reached _or_ timed out
                 Ok(Err(_)) | Err(_) => {
-                    tracing::debug!("{dependency_name} connection attempt failed, retrying in {RETRY_WAIT:?}...");
+                    tracing::debug!(
+                        "{dependency_name} connection attempt failed, retrying in {RETRY_WAIT:?}..."
+                    );
                     tokio::time::sleep(RETRY_WAIT).await;
                     continue;
                 }

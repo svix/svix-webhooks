@@ -1,5 +1,5 @@
 use aide::openapi::{self, OpenApi, Parameter, ReferenceOr};
-use schemars::{visit::Visitor, JsonSchema};
+use schemars::{JsonSchema, visit::Visitor};
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 

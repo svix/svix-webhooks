@@ -6,13 +6,13 @@ use axum::{
 };
 
 use super::{
-    security::{permissions_from_bearer, AccessLevel, Permissions},
+    security::{AccessLevel, Permissions, permissions_from_bearer},
     types::{ApplicationId, ApplicationIdOrUid, FeatureFlagSet, OrganizationId},
 };
 use crate::{
+    AppState,
     db::models::{application, applicationmetadata},
     error::{Error, HttpError, Result, Traceable},
-    AppState,
 };
 
 pub struct ReadAll {

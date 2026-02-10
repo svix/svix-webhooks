@@ -78,7 +78,7 @@ mod tests {
     use serde::{Deserialize, Serialize};
 
     use super::{
-        super::{kv_def, string_kv_def, CacheValue},
+        super::{CacheValue, kv_def, string_kv_def},
         *,
     };
     use crate::cfg::Configuration;
@@ -138,18 +138,24 @@ mod tests {
         );
 
         // Create
-        assert!(cache
-            .set(&first_key, &first_val_a, Duration::from_secs(30),)
-            .await
-            .is_ok());
-        assert!(cache
-            .set(&second_key, &second_val_a, Duration::from_secs(30),)
-            .await
-            .is_ok());
-        assert!(cache
-            .set_string(&third_key, &third_val_a, Duration::from_secs(30),)
-            .await
-            .is_ok());
+        assert!(
+            cache
+                .set(&first_key, &first_val_a, Duration::from_secs(30),)
+                .await
+                .is_ok()
+        );
+        assert!(
+            cache
+                .set(&second_key, &second_val_a, Duration::from_secs(30),)
+                .await
+                .is_ok()
+        );
+        assert!(
+            cache
+                .set_string(&third_key, &third_val_a, Duration::from_secs(30),)
+                .await
+                .is_ok()
+        );
 
         // Read
         assert_eq!(cache.get(&first_key).await.unwrap(), Some(first_val_a));
@@ -160,18 +166,24 @@ mod tests {
         );
 
         // Update (overwrite)
-        assert!(cache
-            .set(&first_key, &first_val_b, Duration::from_secs(30),)
-            .await
-            .is_ok());
-        assert!(cache
-            .set(&second_key, &second_val_b, Duration::from_secs(30),)
-            .await
-            .is_ok());
-        assert!(cache
-            .set_string(&third_key, &third_val_b, Duration::from_secs(30),)
-            .await
-            .is_ok());
+        assert!(
+            cache
+                .set(&first_key, &first_val_b, Duration::from_secs(30),)
+                .await
+                .is_ok()
+        );
+        assert!(
+            cache
+                .set(&second_key, &second_val_b, Duration::from_secs(30),)
+                .await
+                .is_ok()
+        );
+        assert!(
+            cache
+                .set_string(&third_key, &third_val_b, Duration::from_secs(30),)
+                .await
+                .is_ok()
+        );
 
         // Confirm update
         assert_eq!(cache.get(&first_key).await.unwrap(), Some(first_val_b));
@@ -203,10 +215,12 @@ mod tests {
 
         let key = TestKeyA::new("key".to_owned());
 
-        assert!(cache
-            .set(&key, &TestValA(1), Duration::from_secs(1),)
-            .await
-            .is_ok());
+        assert!(
+            cache
+                .set(&key, &TestValA(1), Duration::from_secs(1),)
+                .await
+                .is_ok()
+        );
         tokio::time::sleep(std::time::Duration::from_millis(1200)).await;
         assert_eq!(cache.get::<TestValA>(&key).await.unwrap(), None);
     }
@@ -222,16 +236,20 @@ mod tests {
 
         let key = TestKeyA::new("nx_status_test_key".to_owned());
 
-        assert!(cache
-            .set_if_not_exists(&key, &TestValA(1), Duration::from_secs(30),)
-            .await
-            .unwrap());
+        assert!(
+            cache
+                .set_if_not_exists(&key, &TestValA(1), Duration::from_secs(30),)
+                .await
+                .unwrap()
+        );
         assert_eq!(cache.get(&key).await.unwrap(), Some(TestValA(1)));
 
-        assert!(!cache
-            .set_if_not_exists(&key, &TestValA(2), Duration::from_secs(30),)
-            .await
-            .unwrap());
+        assert!(
+            !cache
+                .set_if_not_exists(&key, &TestValA(2), Duration::from_secs(30),)
+                .await
+                .unwrap()
+        );
         assert_eq!(cache.get(&key).await.unwrap(), Some(TestValA(1)));
 
         assert!(cache.delete(&key).await.is_ok());

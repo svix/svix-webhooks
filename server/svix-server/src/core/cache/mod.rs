@@ -6,7 +6,7 @@ use std::{string::FromUtf8Error, time::Duration};
 use ::redis::RedisError;
 use axum::async_trait;
 use enum_dispatch::enum_dispatch;
-use serde::{de::DeserializeOwned, Serialize};
+use serde::{Serialize, de::DeserializeOwned};
 
 use crate::core::retry::run_with_retries;
 

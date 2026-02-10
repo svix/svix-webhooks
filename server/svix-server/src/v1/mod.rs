@@ -5,8 +5,8 @@ use aide::axum::ApiRouter;
 use tower_http::trace::TraceLayer;
 
 use crate::{
-    core::otel_spans::{AxumOtelOnFailure, AxumOtelOnResponse, AxumOtelSpanCreator},
     AppState,
+    core::otel_spans::{AxumOtelOnFailure, AxumOtelOnResponse, AxumOtelSpanCreator},
 };
 
 pub mod endpoints;
@@ -39,13 +39,13 @@ pub fn router() -> ApiRouter<AppState> {
 
 #[cfg(debug_assertions)]
 mod development {
-    use axum::{async_trait, extract::FromRequestParts, routing::get, Json, Router};
+    use axum::{Json, Router, async_trait, extract::FromRequestParts, routing::get};
     use http::request::Parts;
 
     use crate::{
+        AppState,
         error::{Error, Result},
         v1::utils::EmptyResponse,
-        AppState,
     };
 
     struct EchoData {

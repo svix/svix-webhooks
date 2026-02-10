@@ -1,10 +1,10 @@
 use aide::{
-    axum::{routing::post_with, ApiRouter},
+    axum::{ApiRouter, routing::post_with},
     transform::TransformOperation,
 };
 use axum::{
-    extract::{Path, State},
     Json,
+    extract::{Path, State},
 };
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -12,17 +12,17 @@ use svix_server_derive::aide_annotate;
 use validator::Validate;
 
 use crate::{
+    AppState,
     core::{permissions, security::generate_app_token, types::FeatureFlagSet},
     db::models::application,
     error::{HttpError, Result},
     v1::{
         endpoints::{
-            application::{create_app_from_app_in, ApplicationIn},
+            application::{ApplicationIn, create_app_from_app_in},
             message::validate_create_app_uid,
         },
-        utils::{api_not_implemented, openapi_tag, ApplicationPath, ValidatedJson},
+        utils::{ApplicationPath, ValidatedJson, api_not_implemented, openapi_tag},
     },
-    AppState,
 };
 
 fn login_url_example() -> &'static str {

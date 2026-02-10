@@ -1,17 +1,17 @@
 use axum::{
-    extract::{Path, State},
     Json,
+    extract::{Path, State},
 };
 use sea_orm::ActiveModelTrait;
 use svix_server_derive::aide_annotate;
 
 use super::{EndpointHeadersIn, EndpointHeadersOut, EndpointHeadersPatchIn};
 use crate::{
+    AppState,
     core::permissions,
     db::models::endpoint,
     error::{HttpError, Result},
     v1::utils::{ApplicationEndpointPath, ModelIn, NoContent, ValidatedJson},
-    AppState,
 };
 
 /// Get the additional headers to be sent with the webhook

@@ -17,8 +17,9 @@ use svix_server::{
 };
 
 use crate::utils::{
+    TestReceiver,
     common_calls::{create_test_app, create_test_endpoint, create_test_message, message_in},
-    get_default_test_config, start_svix_server_with_cfg_and_org_id, TestReceiver,
+    get_default_test_config, start_svix_server_with_cfg_and_org_id,
 };
 
 /// Ensures that a deleted application returns `None` when using [`layered_fetch`]

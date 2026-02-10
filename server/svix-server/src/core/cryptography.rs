@@ -3,10 +3,10 @@
 
 use std::fmt::Debug;
 
-use base64::{engine::general_purpose::STANDARD, Engine};
+use base64::{Engine, engine::general_purpose::STANDARD};
 use chacha20poly1305::{
-    aead::{Aead, KeyInit},
     Key, XChaCha20Poly1305, XNonce,
+    aead::{Aead, KeyInit},
 };
 use ed25519_compact::*;
 use rand::Rng;

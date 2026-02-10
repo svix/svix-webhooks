@@ -23,7 +23,7 @@ use tower_http::{
     cors::{AllowHeaders, Any, CorsLayer},
     normalize_path::NormalizePath,
 };
-use tracing_subscriber::{layer::SubscriberExt as _, Layer as _};
+use tracing_subscriber::{Layer as _, layer::SubscriberExt as _};
 
 use crate::{
     cfg::{CacheBackend, Configuration},

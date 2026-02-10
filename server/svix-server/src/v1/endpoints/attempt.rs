@@ -4,23 +4,24 @@
 use std::collections::HashMap;
 
 use aide::axum::{
-    routing::{delete_with, get_with, post_with},
     ApiRouter,
+    routing::{delete_with, get_with, post_with},
 };
 use axum::{
-    extract::{Path, State},
     Json,
+    extract::{Path, State},
 };
 use chrono::{DateTime, Duration, Utc};
 use hyper::StatusCode;
 use schemars::JsonSchema;
-use sea_orm::{entity::prelude::*, IntoActiveModel, QueryOrder, QuerySelect, QueryTrait};
+use sea_orm::{IntoActiveModel, QueryOrder, QuerySelect, QueryTrait, entity::prelude::*};
 use serde::{Deserialize, Deserializer, Serialize};
 use serde_json::value::RawValue;
-use svix_server_derive::{aide_annotate, ModelOut};
+use svix_server_derive::{ModelOut, aide_annotate};
 use validator::Validate;
 
 use crate::{
+    AppState,
     core::{
         permissions,
         types::{
@@ -39,13 +40,12 @@ use crate::{
     v1::{
         endpoints::message::MessageOut,
         utils::{
-            filter_and_paginate_time_limited, openapi_tag, ApplicationEndpointPath,
-            ApplicationMsgAttemptPath, ApplicationMsgEndpointPath, ApplicationMsgPath,
-            EventTypesQueryParams, IteratorDirection, ListResponse, ModelOut, NoContentWithCode,
-            PaginationDescending, PaginationLimit, ReversibleIterator, ValidatedQuery,
+            ApplicationEndpointPath, ApplicationMsgAttemptPath, ApplicationMsgEndpointPath,
+            ApplicationMsgPath, EventTypesQueryParams, IteratorDirection, ListResponse, ModelOut,
+            NoContentWithCode, PaginationDescending, PaginationLimit, ReversibleIterator,
+            ValidatedQuery, filter_and_paginate_time_limited, openapi_tag,
         },
     },
-    AppState,
 };
 
 fn example_status_code() -> i16 {

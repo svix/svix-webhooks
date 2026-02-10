@@ -2,39 +2,38 @@
 // SPDX-License-Identifier: MIT
 
 use aide::axum::{
-    routing::{get_with, post_with},
     ApiRouter,
+    routing::{get_with, post_with},
 };
 use axum::{
-    extract::{Path, State},
     Json,
+    extract::{Path, State},
 };
 use chrono::{DateTime, Utc};
 use schemars::JsonSchema;
-use sea_orm::{entity::prelude::*, ActiveValue::Set};
+use sea_orm::{ActiveValue::Set, entity::prelude::*};
 use serde::{Deserialize, Serialize};
-use svix_server_derive::{aide_annotate, ModelIn, ModelOut};
+use svix_server_derive::{ModelIn, ModelOut, aide_annotate};
 use validator::Validate;
 
 use crate::{
+    AppState,
     core::{
         permissions,
         types::{EventTypeName, FeatureFlag},
     },
     db::models::eventtype,
-    error::{http_error_on_conflict, HttpError, Result},
+    error::{HttpError, Result, http_error_on_conflict},
     v1::utils::{
-        apply_pagination, openapi_tag,
-        patch::{
-            patch_field_non_nullable, patch_field_nullable, UnrequiredField,
-            UnrequiredNullableField,
-        },
-        validate_no_control_characters, validate_no_control_characters_unrequired,
         EventTypeNamePath, IteratorDirection, JsonStatus, JsonStatusUpsert, ListResponse, ModelIn,
         ModelOut, NoContent, Ordering, Pagination, PaginationLimit, ReversibleIterator,
-        ValidatedJson, ValidatedQuery,
+        ValidatedJson, ValidatedQuery, apply_pagination, openapi_tag,
+        patch::{
+            UnrequiredField, UnrequiredNullableField, patch_field_non_nullable,
+            patch_field_nullable,
+        },
+        validate_no_control_characters, validate_no_control_characters_unrequired,
     },
-    AppState,
 };
 
 fn example_event_archived() -> bool {

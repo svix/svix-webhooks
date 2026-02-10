@@ -29,7 +29,7 @@
 
 use std::{num::NonZeroUsize, sync::Arc, time::Duration};
 
-use omniqueue::backends::{redis::DeadLetterQueueConfig, RedisBackend, RedisConfig};
+use omniqueue::backends::{RedisBackend, RedisConfig, redis::DeadLetterQueueConfig};
 use redis::{AsyncCommands as _, RedisResult};
 
 use super::{QueueTask, TaskQueueConsumer, TaskQueueProducer};
@@ -407,7 +407,7 @@ pub mod tests {
     use std::time::Duration;
 
     use chrono::Utc;
-    use redis::{streams::StreamReadReply, AsyncCommands as _, Direction};
+    use redis::{AsyncCommands as _, Direction, streams::StreamReadReply};
     use tokio::time::timeout;
 
     use super::{migrate_list, migrate_list_to_stream, migrate_sset, new_pair_inner};
@@ -545,12 +545,13 @@ pub mod tests {
             .get()
             .await
             .expect("Error retrieving connection from Redis pool");
-        assert!(conn
-            .xread::<_, _, StreamReadReply>(&[main_queue], &[0])
-            .await
-            .unwrap()
-            .keys
-            .is_empty());
+        assert!(
+            conn.xread::<_, _, StreamReadReply>(&[main_queue], &[0])
+                .await
+                .unwrap()
+                .keys
+                .is_empty()
+        );
     }
 
     #[tokio::test]
@@ -597,12 +598,13 @@ pub mod tests {
             .await
             .expect("Error retrieving connection from Redis pool");
         // And assert that the task has been deleted
-        assert!(conn
-            .xread::<_, _, StreamReadReply>(&[main_queue], &[0])
-            .await
-            .unwrap()
-            .keys
-            .is_empty());
+        assert!(
+            conn.xread::<_, _, StreamReadReply>(&[main_queue], &[0])
+                .await
+                .unwrap()
+                .keys
+                .is_empty()
+        );
     }
 
     #[tokio::test]

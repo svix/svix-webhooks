@@ -7,7 +7,7 @@ use std::{
     sync::LazyLock,
 };
 
-use base64::{engine::general_purpose::STANDARD, Engine};
+use base64::{Engine, engine::general_purpose::STANDARD};
 use chrono::{DateTime, Utc};
 use num_enum::{IntoPrimitive, TryFromPrimitive};
 use rand::Rng;
@@ -1422,12 +1422,12 @@ pub type FeatureFlagSet = HashSet<FeatureFlag>;
 mod tests {
     use std::collections::HashMap;
 
-    use base64::{engine::general_purpose::STANDARD, Engine};
+    use base64::{Engine, engine::general_purpose::STANDARD};
     use validator::Validate;
 
     use super::{
-        validate_header_map, ApplicationId, ApplicationUid, EndpointHeaders, EndpointHeadersPatch,
-        EndpointSecret, EventChannel, EventTypeName,
+        ApplicationId, ApplicationUid, EndpointHeaders, EndpointHeadersPatch, EndpointSecret,
+        EventChannel, EventTypeName, validate_header_map,
     };
     use crate::core::cryptography::AsymmetricKey;
 

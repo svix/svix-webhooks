@@ -3,11 +3,11 @@
 //
 use std::{
     borrow::Cow,
-    collections::{hash_map::IntoValues, HashMap},
+    collections::{HashMap, hash_map::IntoValues},
 };
 
 use bytes::Bytes;
-use http::{header::InvalidHeaderName, HeaderMap, HeaderName, HeaderValue};
+use http::{HeaderMap, HeaderName, HeaderValue, header::InvalidHeaderName};
 
 /// A map from String -> T that preserves insertion case,
 /// but doesn't allow duplicates.
@@ -229,8 +229,8 @@ mod tests {
     use std::collections::HashSet;
 
     use http::{
-        header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE},
         HeaderMap, HeaderName, HeaderValue,
+        header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE},
     };
     use maplit::hashset;
 

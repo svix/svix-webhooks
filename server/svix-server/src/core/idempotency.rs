@@ -18,14 +18,14 @@ use axum::{
     http::StatusCode,
     response::{IntoResponse, Response},
 };
-use base64::{engine::general_purpose::STANDARD, Engine};
+use base64::{Engine, engine::general_purpose::STANDARD};
 use blake2::{Blake2b512, Digest};
 use http::request::Parts;
 use http_body_util::BodyExt as _;
 use serde::{Deserialize, Serialize};
 use tower::Service;
 
-use super::cache::{kv_def, Cache, CacheBehavior, CacheKey, CacheValue};
+use super::cache::{Cache, CacheBehavior, CacheKey, CacheValue, kv_def};
 use crate::error::Error;
 
 /// Returns the default expiry period for cached responses
@@ -193,7 +193,9 @@ where
                             return Ok(finished_serialized_response_to_response(
                                 code, headers, body,
                             )
-                            .unwrap_or_else(|_| StatusCode::INTERNAL_SERVER_ERROR.into_response()))
+                            .unwrap_or_else(|_| {
+                                StatusCode::INTERNAL_SERVER_ERROR.into_response()
+                            }));
                         }
 
                         Ok(Some(SerializedResponse::Start)) | Ok(None) => {
@@ -354,7 +356,7 @@ where
 mod tests {
     use std::sync::Arc;
 
-    use axum::{extract::State, routing::post, serve, Router};
+    use axum::{Router, extract::State, routing::post, serve};
     use http::StatusCode;
     use reqwest::Client;
     use tokio::{net::TcpListener, sync::Mutex, task::JoinHandle};

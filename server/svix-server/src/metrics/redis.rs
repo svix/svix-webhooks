@@ -1,5 +1,5 @@
 use opentelemetry::metrics::{Meter, ObservableGauge};
-use redis::{streams::StreamPendingReply, AsyncCommands as _};
+use redis::{AsyncCommands as _, streams::StreamPendingReply};
 
 use super::init_metric;
 use crate::{

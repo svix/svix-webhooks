@@ -3,10 +3,10 @@
 
 use std::{borrow::Cow, collections::HashMap, fmt, net::SocketAddr, sync::Arc, time::Duration};
 
-use anyhow::{bail, Context};
+use anyhow::{Context, bail};
 use figment::{
-    providers::{Env, Format, Toml},
     Figment,
+    providers::{Env, Format, Toml},
 };
 use ipnet::IpNet;
 use serde::{Deserialize, Deserializer};
@@ -309,7 +309,7 @@ fn validate_config_complete(config: &ConfigurationInner) -> Result<(), Validatio
                 return Err(ValidationError {
                     code: Cow::from("missing field"),
                     message: Some(Cow::from(
-                        "The redis_dsn or cache_dsn field must be set if the cache_type is `redis` or `rediscluster`"
+                        "The redis_dsn or cache_dsn field must be set if the cache_type is `redis` or `rediscluster`",
                     )),
                     params: HashMap::new(),
                 });
@@ -320,7 +320,7 @@ fn validate_config_complete(config: &ConfigurationInner) -> Result<(), Validatio
                 return Err(ValidationError {
                     code: Cow::from("missing field"),
                     message: Some(Cow::from(
-                        "The redis_dsn or cache_dsn field must be set if the cache_type is `redissentinel`"
+                        "The redis_dsn or cache_dsn field must be set if the cache_type is `redissentinel`",
                     )),
                     params: HashMap::new(),
                 });
@@ -345,7 +345,7 @@ fn validate_config_complete(config: &ConfigurationInner) -> Result<(), Validatio
                 return Err(ValidationError {
                     code: Cow::from("missing field"),
                     message: Some(Cow::from(
-                        "The redis_dsn or queue_dsn field must be set if the queue_type is `redis` or `rediscluster`"
+                        "The redis_dsn or queue_dsn field must be set if the queue_type is `redis` or `rediscluster`",
                     )),
                     params: HashMap::new(),
                 });
@@ -367,7 +367,7 @@ fn validate_config_complete(config: &ConfigurationInner) -> Result<(), Validatio
                 return Err(ValidationError {
                     code: Cow::from("missing field"),
                     message: Some(Cow::from(
-                        "The redis_dsn or queue_dsn field must be set if the queue_type is `redissentinel`"
+                        "The redis_dsn or queue_dsn field must be set if the queue_type is `redissentinel`",
                     )),
                     params: HashMap::new(),
                 });
@@ -618,11 +618,11 @@ mod tests {
     use std::sync::Arc;
 
     use figment::{
-        providers::{Format as _, Toml},
         Figment,
+        providers::{Format as _, Toml},
     };
 
-    use super::{load, try_extract, CacheBackend, CacheType, QueueBackend, QueueType};
+    use super::{CacheBackend, CacheType, QueueBackend, QueueType, load, try_extract};
     use crate::core::security::{JWTAlgorithm, JwtSigningConfig};
 
     #[test]

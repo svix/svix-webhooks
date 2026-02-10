@@ -1,7 +1,7 @@
 use lapin::{
+    ConnectionProperties,
     options::{BasicConsumeOptions, ExchangeDeclareOptions, QueueBindOptions, QueueDeclareOptions},
     types::{AMQPValue, FieldTable},
-    ConnectionProperties,
 };
 use omniqueue::backends::{RabbitMqBackend, RabbitMqConfig};
 use svix_ksuid::{KsuidLike, KsuidMs};

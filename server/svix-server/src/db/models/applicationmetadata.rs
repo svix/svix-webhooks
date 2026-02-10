@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: MIT
 
 use chrono::Utc;
-use sea_orm::{entity::prelude::*, sea_query::OnConflict, ActiveValue::Set, TryIntoModel};
+use sea_orm::{ActiveValue::Set, TryIntoModel, entity::prelude::*, sea_query::OnConflict};
 
 use crate::{
-    core::types::{metadata::Metadata, ApplicationId},
+    core::types::{ApplicationId, metadata::Metadata},
     error,
 };
 

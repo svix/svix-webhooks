@@ -272,11 +272,7 @@ async fn sporadically_failing_route(
     let mut count = count.lock().await;
     *count += 1;
 
-    if *count % 2 == 0 {
-        resp_ok
-    } else {
-        resp_fail
-    }
+    if *count % 2 == 0 { resp_ok } else { resp_fail }
 }
 
 /// This tests that if an endpoint succeeds, that its record is cleared in the cache and it is not

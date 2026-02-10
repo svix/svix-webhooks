@@ -1,8 +1,8 @@
 use std::iter;
 
 use axum::{
-    extract::{Path, State},
     Json,
+    extract::{Path, State},
 };
 use chrono::{Duration, Utc};
 use sea_orm::{ActiveModelTrait, ActiveValue::Set};
@@ -10,6 +10,7 @@ use svix_server_derive::aide_annotate;
 
 use super::{EndpointSecretOut, EndpointSecretRotateIn};
 use crate::{
+    AppState,
     cfg::DefaultSignatureType,
     core::{
         cryptography::Encryption,
@@ -20,7 +21,6 @@ use crate::{
     db::models::endpoint,
     error::{HttpError, Result},
     v1::utils::{ApplicationEndpointPath, NoContent, ValidatedJson},
-    AppState,
 };
 
 pub(super) fn generate_secret(

@@ -11,23 +11,23 @@ use std::{
 };
 
 use aide::{
-    transform::{TransformOperation, TransformPathItem},
     OperationInput, OperationIo, OperationOutput,
+    transform::{TransformOperation, TransformPathItem},
 };
 use axum::{
     async_trait,
     extract::{
-        rejection::{BytesRejection, FailedToBufferBody},
         FromRequest, FromRequestParts, Query, Request,
+        rejection::{BytesRejection, FailedToBufferBody},
     },
     response::IntoResponse,
 };
 use chrono::{DateTime, Utc};
-use http::{request::Parts, StatusCode};
+use http::{StatusCode, request::Parts};
 use regex::Regex;
 use schemars::JsonSchema;
 use sea_orm::{ColumnTrait, QueryFilter, QueryOrder, QuerySelect};
-use serde::{de::DeserializeOwned, Deserialize, Serialize};
+use serde::{Deserialize, Serialize, de::DeserializeOwned};
 use validator::{Validate, ValidationError};
 
 use crate::{
@@ -110,11 +110,7 @@ impl Validate for PaginationLimit {
             );
         }
 
-        if errs.is_empty() {
-            Ok(())
-        } else {
-            Err(errs)
-        }
+        if errs.is_empty() { Ok(()) } else { Err(errs) }
     }
 }
 
@@ -862,7 +858,7 @@ mod tests {
     use serde_json::json;
     use validator::Validate;
 
-    use super::{default_limit, validate_no_control_characters, validation_errors, Pagination};
+    use super::{Pagination, default_limit, validate_no_control_characters, validation_errors};
     use crate::{core::types::ApplicationUid, error::ValidationErrorItem};
 
     #[derive(Debug, Validate)]
