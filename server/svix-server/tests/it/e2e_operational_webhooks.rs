@@ -14,8 +14,8 @@ use svix_server::{
     core::{
         security::{generate_org_token, management_org_id},
         types::{
-            metadata::Metadata, ApplicationId, ApplicationUid, BaseId, EndpointId, EndpointUid,
-            MessageAttemptId, MessageId, MessageUid, OrganizationId,
+            ApplicationId, ApplicationUid, BaseId, EndpointId, EndpointUid, MessageAttemptId,
+            MessageId, MessageUid, OrganizationId, metadata::Metadata,
         },
     },
     v1::endpoints::{
@@ -25,10 +25,11 @@ use svix_server::{
 };
 
 use crate::utils::{
+    TestClient, TestReceiver,
     common_calls::{
         create_test_app, create_test_endpoint, create_test_message, default_test_endpoint,
     },
-    get_default_test_config, TestClient, TestReceiver,
+    get_default_test_config,
 };
 
 /// Sent when an endpoint has been automatically disabled after continuous failures.

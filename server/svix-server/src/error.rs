@@ -5,9 +5,9 @@ use std::{error, fmt, panic::Location};
 
 use aide::OperationOutput;
 use axum::{
+    Json,
     extract::rejection::{ExtensionRejection, PathRejection},
     response::{IntoResponse, Response},
-    Json,
 };
 use hyper::StatusCode;
 use schemars::JsonSchema;

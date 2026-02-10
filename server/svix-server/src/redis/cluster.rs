@@ -1,7 +1,7 @@
 use redis::{
+    ErrorKind, FromRedisValue, IntoConnectionInfo, RedisError,
     cluster::{ClusterClient, ClusterClientBuilder},
     cluster_routing::{MultipleNodeRoutingInfo, ResponsePolicy, RoutingInfo},
-    ErrorKind, FromRedisValue, IntoConnectionInfo, RedisError,
 };
 
 /// ConnectionManager that implements `bb8::ManageConnection` and supports

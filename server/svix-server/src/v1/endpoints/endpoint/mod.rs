@@ -8,32 +8,33 @@ mod secrets;
 use std::collections::{HashMap, HashSet};
 
 use aide::axum::{
-    routing::{get_with, post_with},
     ApiRouter,
+    routing::{get_with, post_with},
 };
 use axum::{
-    extract::{Path, Query, State},
     Json,
+    extract::{Path, Query, State},
 };
 use chrono::{DateTime, Duration, Utc};
 use schemars::JsonSchema;
 use sea_orm::{ActiveValue::Set, ColumnTrait, FromQueryResult, QuerySelect};
 use serde::{Deserialize, Serialize};
-use svix_server_derive::{aide_annotate, ModelIn, ModelOut};
+use svix_server_derive::{ModelIn, ModelOut, aide_annotate};
 use url::Url;
 use validator::{Validate, ValidationError};
 
 use self::secrets::generate_secret;
-use super::message::{create_message_inner, MessageIn, MessageOut, RawPayload};
+use super::message::{MessageIn, MessageOut, RawPayload, create_message_inner};
 use crate::{
+    AppState,
     cfg::DefaultSignatureType,
     core::{
         cryptography::Encryption,
         permissions,
         types::{
-            metadata::Metadata, ApplicationIdOrUid, EndpointHeaders, EndpointHeadersPatch,
-            EndpointId, EndpointSecret, EndpointSecretInternal, EndpointUid, EventChannelSet,
-            EventTypeName, EventTypeNameSet, MessageStatus,
+            ApplicationIdOrUid, EndpointHeaders, EndpointHeadersPatch, EndpointId, EndpointSecret,
+            EndpointSecretInternal, EndpointUid, EventChannelSet, EventTypeName, EventTypeNameSet,
+            MessageStatus, metadata::Metadata,
         },
     },
     db::models::{
@@ -42,15 +43,14 @@ use crate::{
     },
     error::{self, HttpError},
     v1::utils::{
-        openapi_tag,
+        ApplicationEndpointPath, ModelIn, ValidatedJson, openapi_tag,
         patch::{
-            patch_field_non_nullable, patch_field_nullable, UnrequiredField,
-            UnrequiredNullableField,
+            UnrequiredField, UnrequiredNullableField, patch_field_non_nullable,
+            patch_field_nullable,
         },
         validate_no_control_characters, validate_no_control_characters_unrequired,
-        validation_error, ApplicationEndpointPath, ModelIn, ValidatedJson,
+        validation_error,
     },
-    AppState,
 };
 
 pub fn validate_event_types_ids(event_types_ids: &EventTypeNameSet) -> Result<(), ValidationError> {
@@ -890,7 +890,7 @@ mod tests {
     use serde_json::json;
     use validator::Validate;
 
-    use super::{validate_url, EndpointHeadersOut, EndpointHeadersPatchIn, EndpointIn};
+    use super::{EndpointHeadersOut, EndpointHeadersPatchIn, EndpointIn, validate_url};
     use crate::core::types::EndpointHeaders;
 
     const URL_VALID: &str = "https://www.example.com";

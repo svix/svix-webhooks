@@ -4,7 +4,7 @@
 use chrono::{Duration, Utc};
 use rand::distributions::DistString;
 use reqwest::StatusCode;
-use sea_orm::{sea_query::Expr, ColumnTrait, EntityTrait, QueryFilter};
+use sea_orm::{ColumnTrait, EntityTrait, QueryFilter, sea_query::Expr};
 use serde::de::IgnoredAny;
 use serde_json::json;
 use svix_server::{
@@ -24,8 +24,9 @@ fn rand_str(len: usize) -> String {
 }
 
 use crate::utils::{
+    TestReceiver,
     common_calls::{create_test_app, create_test_endpoint, create_test_msg_with, message_in},
-    run_with_retries, start_svix_server, TestReceiver,
+    run_with_retries, start_svix_server,
 };
 
 #[tokio::test]

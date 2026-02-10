@@ -1,6 +1,6 @@
 use redis::{
-    sentinel::{SentinelClient, SentinelNodeConnectionInfo, SentinelServerType},
     ErrorKind, IntoConnectionInfo, RedisError,
+    sentinel::{SentinelClient, SentinelNodeConnectionInfo, SentinelServerType},
 };
 use tokio::sync::Mutex;
 

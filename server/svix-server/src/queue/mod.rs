@@ -1,14 +1,14 @@
 use std::{marker::PhantomData, num::NonZeroUsize, sync::Arc, time::Duration};
 
 use omniqueue::{
-    backends::InMemoryBackend, Delivery, DynConsumer, QueueConsumer, ScheduledQueueProducer,
+    Delivery, DynConsumer, QueueConsumer, ScheduledQueueProducer, backends::InMemoryBackend,
 };
-use serde::{de::DeserializeOwned, Deserialize, Serialize};
+use serde::{Deserialize, Serialize, de::DeserializeOwned};
 
 use crate::{
     cfg::{Configuration, QueueBackend},
     core::{
-        retry::{run_with_retries, Retry},
+        retry::{Retry, run_with_retries},
         types::{ApplicationId, EndpointId, MessageAttemptTriggerType, MessageId},
     },
     error::{Error, ErrorType, Result, Traceable},

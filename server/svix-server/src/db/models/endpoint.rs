@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 use chrono::Utc;
-use sea_orm::{entity::prelude::*, ActiveValue::Set, Condition, IntoActiveModel, QuerySelect};
+use sea_orm::{ActiveValue::Set, Condition, IntoActiveModel, QuerySelect, entity::prelude::*};
 
 use super::endpointmetadata;
 use crate::{

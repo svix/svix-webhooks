@@ -4,28 +4,28 @@ use std::{
     pin::Pin,
     str::FromStr,
     sync::Arc,
-    task::{ready, Poll},
+    task::{Poll, ready},
     time::{Duration, Instant},
 };
 
 use axum::{body::Body, response::Response};
-use axum_extra::headers::{authorization::Credentials, Authorization};
+use axum_extra::headers::{Authorization, authorization::Credentials};
 use bytes::Bytes;
-use futures::{future::BoxFuture, FutureExt};
-use hickory_resolver::{lookup_ip::LookupIpIntoIter, ResolveError, Resolver, TokioResolver};
+use futures::{FutureExt, future::BoxFuture};
+use hickory_resolver::{ResolveError, Resolver, TokioResolver, lookup_ip::LookupIpIntoIter};
 use http::{HeaderMap, HeaderValue, Method, StatusCode, Version};
 use http_body_util::Full;
-use hyper::{body::Incoming, ext::HeaderCaseMap, Uri};
+use hyper::{Uri, body::Incoming, ext::HeaderCaseMap};
 use hyper_openssl::client::legacy::{HttpsConnector, MaybeHttpsStream};
 use hyper_util::{
     client::{
         legacy::{
+            Client,
             connect::{
+                HttpConnector,
                 dns::Name,
                 proxy::{SocksV5, Tunnel},
-                HttpConnector,
             },
-            Client,
         },
         proxy::matcher::Matcher,
     },
@@ -730,12 +730,12 @@ mod tests {
         sync::Arc,
     };
 
-    use axum::{routing, Router};
+    use axum::{Router, routing};
     use axum_server::tls_openssl::{OpenSSLAcceptor, OpenSSLConfig};
-    use http::{header::AUTHORIZATION, HeaderValue, Method, Version};
+    use http::{HeaderValue, Method, Version, header::AUTHORIZATION};
     use ipnet::IpNet;
 
-    use super::{is_allowed, RequestBuilder, WebhookClient};
+    use super::{RequestBuilder, WebhookClient, is_allowed};
     use crate::core::types::CasePreservingHeaderMap;
 
     #[test]
@@ -778,16 +778,20 @@ mod tests {
             Ok(_) => panic!(),
         }
 
-        assert!(RequestBuilder::new()
-            .version(Version::HTTP_11)
-            .build()
-            .is_err());
+        assert!(
+            RequestBuilder::new()
+                .version(Version::HTTP_11)
+                .build()
+                .is_err()
+        );
 
-        assert!(RequestBuilder::new()
-            .uri(url::Url::from_str("http://127.0.0.1/").unwrap())
-            .version(Version::HTTP_11)
-            .build()
-            .is_ok());
+        assert!(
+            RequestBuilder::new()
+                .uri(url::Url::from_str("http://127.0.0.1/").unwrap())
+                .version(Version::HTTP_11)
+                .build()
+                .is_ok()
+        );
     }
 
     #[test]

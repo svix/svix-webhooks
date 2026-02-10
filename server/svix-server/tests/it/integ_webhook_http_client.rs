@@ -1,7 +1,7 @@
 use std::{net::TcpListener, sync::Arc};
 
 use axum::{body::Body, extract::State};
-use http::{header::USER_AGENT, HeaderValue, Request, StatusCode, Version};
+use http::{HeaderValue, Request, StatusCode, Version, header::USER_AGENT};
 use http_body_util::BodyExt as _;
 use serde::{Deserialize, Serialize};
 use svix_server::core::webhook_http_client::{Error, RequestBuilder, WebhookClient};

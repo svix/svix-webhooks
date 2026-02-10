@@ -5,8 +5,8 @@ use std::fmt::{Debug, Formatter};
 
 use axum::extract::FromRequestParts;
 use axum_extra::{
-    headers::{authorization::Bearer, Authorization},
     TypedHeader,
+    headers::{Authorization, authorization::Bearer},
 };
 use http::request::Parts;
 use jwt_simple::prelude::*;
@@ -15,8 +15,8 @@ use validator::Validate;
 
 use super::types::{ApplicationId, FeatureFlagSet, OrganizationId};
 use crate::{
-    error::{Error, HttpError, Result},
     AppState,
+    error::{Error, HttpError, Result},
 };
 
 /// The default org_id we use (useful for generating JWTs when testing).
@@ -69,7 +69,7 @@ pub struct CustomClaim {
 }
 
 pub const INVALID_TOKEN_ERR: &str = "Invalid token";
-pub const JWT_SECRET_ERR : &str = "Authentication failed. JWT signing secrets can not be used as tokens, please refer to https://github.com/svix/svix-webhooks#authentication for more information.";
+pub const JWT_SECRET_ERR: &str = "Authentication failed. JWT signing secrets can not be used as tokens, please refer to https://github.com/svix/svix-webhooks#authentication for more information.";
 
 pub async fn permissions_from_bearer(parts: &mut Parts, state: &AppState) -> Result<Permissions> {
     let TypedHeader(Authorization(bearer)) =

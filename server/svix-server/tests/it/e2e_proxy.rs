@@ -17,8 +17,9 @@ use tokio::{
 };
 
 use crate::utils::{
+    TestClient, TestReceiver,
     common_calls::{create_test_app, create_test_endpoint, message_in},
-    get_default_test_config, start_svix_server_with_cfg, TestClient, TestReceiver,
+    get_default_test_config, start_svix_server_with_cfg,
 };
 
 #[ignore] // works with microsocks running at the specified address
@@ -162,11 +163,11 @@ impl MockProxyServer {
         matched_hosts: Arc<Mutex<HashSet<String>>>,
     ) {
         use socks5_proto::{
+            Address, Reply, Request as SocksRequest, Response as SocksResponse,
             handshake::{
                 Method as HandshakeMethod, Request as HandshakeRequest,
                 Response as HandshakeResponse,
             },
-            Address, Reply, Request as SocksRequest, Response as SocksResponse,
         };
         loop {
             let (mut stream, _) = match listener.accept().await {
@@ -304,9 +305,11 @@ async fn test_proxy_exceptions(listener: MockProxyServer) {
     assert!(listener.matches().contains("8.8.4.4"));
     assert!(!listener.matches().contains("8.8.8.8"));
     assert!(!listener.matches().contains("10.0.0.1"));
-    assert!(!listener
-        .matches()
-        .contains("[0ec2:1652:6021:693b:f928:565d:5a0e:de9f]"));
+    assert!(
+        !listener
+            .matches()
+            .contains("[0ec2:1652:6021:693b:f928:565d:5a0e:de9f]")
+    );
     match listener.variant {
         MockProxyVariant::Http => {
             assert!(listener.matches().contains("play.svix.com"));

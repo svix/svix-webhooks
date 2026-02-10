@@ -8,7 +8,7 @@ use std::{
 };
 
 use anyhow::Result;
-use base64::{engine::general_purpose::STANDARD, Engine};
+use base64::{Engine, engine::general_purpose::STANDARD};
 use chrono::{DateTime, Utc};
 use ed25519_compact::Signature;
 use reqwest::{StatusCode, Url};
@@ -16,7 +16,7 @@ use sea_orm::{
     ActiveModelBehavior, ActiveModelTrait, ConnectionTrait, DatabaseBackend, QueryResult, Set,
     Statement,
 };
-use serde::{de::IgnoredAny, Deserialize};
+use serde::{Deserialize, de::IgnoredAny};
 use serde_json::json;
 use svix::webhooks::Webhook;
 use svix_server::{
@@ -45,6 +45,7 @@ use svix_server::{
 };
 
 use crate::utils::{
+    TestClient, TestReceiver,
     common_calls::{
         common_test_list, create_test_app, create_test_endpoint, create_test_message,
         default_test_endpoint, delete_test_app, endpoint_in, event_type_in,
@@ -52,7 +53,7 @@ use crate::utils::{
         recover_webhooks,
     },
     get_default_test_config, start_svix_server, start_svix_server_with_cfg,
-    start_svix_server_with_cfg_and_org_id, TestClient, TestReceiver,
+    start_svix_server_with_cfg_and_org_id,
 };
 
 async fn get_endpoint(

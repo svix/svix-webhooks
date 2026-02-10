@@ -1,16 +1,17 @@
 use std::{collections::HashSet, mem};
 
 use axum::{
-    extract::{Path, State},
     Json,
+    extract::{Path, State},
 };
-use sea_orm::{entity::prelude::*, ActiveValue::Set, QuerySelect, TransactionTrait};
+use sea_orm::{ActiveValue::Set, QuerySelect, TransactionTrait, entity::prelude::*};
 use svix_server_derive::aide_annotate;
 use url::Url;
 
 use self::hack::EventTypeNameResult;
 use super::{EndpointIn, EndpointOut, EndpointPatch, EndpointUpdate};
 use crate::{
+    AppState,
     cfg::Configuration,
     core::{
         operational_webhooks::{EndpointEvent, OperationalWebhook, OperationalWebhookSender},
@@ -18,15 +19,13 @@ use crate::{
         types::{EndpointId, EventTypeName, EventTypeNameSet, OrganizationId},
     },
     db::models::{application, endpoint, endpointmetadata, eventtype},
-    error::{http_error_on_conflict, HttpError, Result, Traceable, ValidationErrorItem},
+    error::{HttpError, Result, Traceable, ValidationErrorItem, http_error_on_conflict},
     v1::utils::{
-        apply_pagination,
-        patch::{patch_field_non_nullable, UnrequiredField, UnrequiredNullableField},
         ApplicationEndpointPath, ApplicationPath, IteratorDirection, JsonStatus, JsonStatusUpsert,
         ListResponse, ModelIn, ModelOut, NoContent, Ordering, Pagination, PaginationLimit,
-        ReversibleIterator, ValidatedJson, ValidatedQuery,
+        ReversibleIterator, ValidatedJson, ValidatedQuery, apply_pagination,
+        patch::{UnrequiredField, UnrequiredNullableField, patch_field_non_nullable},
     },
-    AppState,
 };
 
 /// List the application's endpoints.

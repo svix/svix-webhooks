@@ -6,8 +6,8 @@ use std::{sync::Arc, time::Duration};
 use bb8::{Pool, RunError};
 use bb8_redis::RedisConnectionManager;
 use redis::{
-    aio::ConnectionManagerConfig, sentinel::SentinelNodeConnectionInfo, AsyncConnectionConfig,
-    ProtocolVersion, RedisConnectionInfo, RedisError, TlsMode,
+    AsyncConnectionConfig, ProtocolVersion, RedisConnectionInfo, RedisError, TlsMode,
+    aio::ConnectionManagerConfig, sentinel::SentinelNodeConnectionInfo,
 };
 use sentinel::RedisSentinelConnectionManager;
 use tokio::sync::Mutex;

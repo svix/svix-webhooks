@@ -12,7 +12,7 @@ use anyhow::{Context, Result};
 use axum::response::IntoResponse;
 use http::HeaderMap;
 use reqwest::{Client, RequestBuilder, StatusCode};
-use serde::{de::DeserializeOwned, Serialize};
+use serde::{Serialize, de::DeserializeOwned};
 use svix_ksuid::KsuidLike;
 use svix_server::{
     cfg::ConfigurationInner,

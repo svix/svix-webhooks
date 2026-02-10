@@ -6,7 +6,7 @@ use std::collections::HashMap;
 use chrono::Utc;
 use jsonschema::Draft;
 use schemars::JsonSchema;
-use sea_orm::{entity::prelude::*, ActiveValue::Set};
+use sea_orm::{ActiveValue::Set, entity::prelude::*};
 use serde::{Deserialize, Serialize};
 
 use crate::{

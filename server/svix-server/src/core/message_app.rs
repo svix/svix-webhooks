@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use super::types::EventTypeName;
 use crate::{
     core::{
-        cache::{kv_def, Cache, CacheBehavior, CacheKey, CacheValue},
+        cache::{Cache, CacheBehavior, CacheKey, CacheValue, kv_def},
         types::{
             ApplicationId, ApplicationUid, EndpointHeaders, EndpointId, EndpointSecretInternal,
             EventChannelSet, EventTypeNameSet, ExpiringSigningKeys, MessageAttemptTriggerType,
@@ -215,7 +215,7 @@ impl AppEndpointKey {
 
 #[cfg(test)]
 mod tests {
-    use base64::{engine::general_purpose::STANDARD, Engine};
+    use base64::{Engine, engine::general_purpose::STANDARD};
     use chrono::Utc;
 
     use super::CreateMessageEndpoint;

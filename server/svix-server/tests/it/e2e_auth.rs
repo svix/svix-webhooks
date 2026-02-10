@@ -5,7 +5,7 @@
 use rand::distributions::DistString;
 use reqwest::StatusCode;
 use serde::de::IgnoredAny;
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 use svix_server::{
     core::{
         security::{INVALID_TOKEN_ERR, JWT_SECRET_ERR},

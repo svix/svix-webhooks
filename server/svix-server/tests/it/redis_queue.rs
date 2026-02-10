@@ -15,7 +15,7 @@ use svix_server::{
         ApplicationId, BaseId, EndpointId, MessageAttemptTriggerType, MessageId, OrganizationId,
     },
     queue::{
-        new_pair, MessageTask, QueueTask, TaskQueueConsumer, TaskQueueDelivery, TaskQueueProducer,
+        MessageTask, QueueTask, TaskQueueConsumer, TaskQueueDelivery, TaskQueueProducer, new_pair,
     },
     redis::RedisManager,
     v1::endpoints::message::MessageOut,

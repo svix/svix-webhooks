@@ -18,15 +18,15 @@ use svix_server::{
         utils::ListResponse,
     },
 };
-use wiremock::{matchers, Mock, MockServer, Respond, ResponseTemplate};
+use wiremock::{Mock, MockServer, Respond, ResponseTemplate, matchers};
 
 use crate::utils::{
+    TestReceiver,
     common_calls::{
         create_test_app, create_test_endpoint, create_test_message, create_test_msg_with,
         endpoint_in, get_msg_attempt_list_and_assert_count,
     },
     get_default_test_config, run_with_retries, start_svix_server, start_svix_server_with_cfg,
-    TestReceiver,
 };
 
 #[tokio::test]

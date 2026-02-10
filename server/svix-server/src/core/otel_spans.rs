@@ -13,7 +13,7 @@ use tower_http::{
     classify::ServerErrorsFailureClass,
     trace::{MakeSpan, OnFailure, OnResponse},
 };
-use tracing::field::{debug, Empty};
+use tracing::field::{Empty, debug};
 use tracing_opentelemetry::OpenTelemetrySpanExt;
 
 /// An implementor of [`MakeSpan`] which creates `tracing` spans populated with information about

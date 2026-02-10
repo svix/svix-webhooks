@@ -3,25 +3,25 @@
 
 use std::{
     sync::{
-        atomic::{AtomicU64, AtomicUsize, Ordering},
         Arc, LazyLock,
+        atomic::{AtomicU64, AtomicUsize, Ordering},
     },
     time::Duration,
 };
 
-use base64::{engine::general_purpose::STANDARD, Engine};
+use base64::{Engine, engine::general_purpose::STANDARD};
 use chrono::Utc;
 use futures::future;
 use http::{
-    header::{CONTENT_TYPE, USER_AGENT},
     HeaderName, HeaderValue, StatusCode, Version,
+    header::{CONTENT_TYPE, USER_AGENT},
 };
 use http_body_util::BodyExt as _;
 use itertools::Itertools;
 use rand::Rng;
 use sea_orm::{
-    prelude::DateTimeUtc, ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait,
-    QueryFilter, QueryOrder, Set,
+    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, QueryOrder, Set,
+    prelude::DateTimeUtc,
 };
 use serde::{Deserialize, Serialize};
 use tokio::time::sleep;
@@ -30,7 +30,7 @@ use tracing::Instrument;
 use crate::{
     cfg::Configuration,
     core::{
-        cache::{kv_def, Cache, CacheBehavior, CacheKey, CacheValue},
+        cache::{Cache, CacheBehavior, CacheKey, CacheValue, kv_def},
         cryptography::Encryption,
         message_app::{CreateMessageApp, CreateMessageEndpoint},
         operational_webhooks::{
@@ -1067,12 +1067,12 @@ pub async fn queue_handler(
 mod tests {
     use std::collections::HashMap;
 
-    use base64::{engine::general_purpose::STANDARD, Engine};
+    use base64::{Engine, engine::general_purpose::STANDARD};
     use bytes::Bytes;
     use ed25519_compact::Signature;
 
     use super::{
-        bytes_to_string, generate_msg_headers, sign_msg, CasePreservingHeaderMap, SVIX_SIGNATURE,
+        CasePreservingHeaderMap, SVIX_SIGNATURE, bytes_to_string, generate_msg_headers, sign_msg,
     };
     use crate::core::{
         cryptography::{AsymmetricKey, Encryption},
@@ -1213,7 +1213,10 @@ mod tests {
         )
         .unwrap();
         asym_key.0.pk.verify(to_sign.as_bytes(), &sig).unwrap();
-        assert_eq!(signatures, "v1a,hnO3f9T8Ytu9HwrXslvumlUpqtNVqkhqw/enGzPCXe5BdqzCInXqYXFymVJaA7AZdpXwVLPo3mNl8EM+m7TBAg==");
+        assert_eq!(
+            signatures,
+            "v1a,hnO3f9T8Ytu9HwrXslvumlUpqtNVqkhqw/enGzPCXe5BdqzCInXqYXFymVJaA7AZdpXwVLPo3mNl8EM+m7TBAg=="
+        );
     }
 
     #[test]

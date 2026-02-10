@@ -1,6 +1,6 @@
 use proc_macro2::TokenStream;
-use quote::{format_ident, quote, ToTokens as _};
-use syn::{punctuated::Punctuated, Token};
+use quote::{ToTokens as _, format_ident, quote};
+use syn::{Token, punctuated::Punctuated};
 
 pub type AideAnnotateArgumentList = Punctuated<syn::MetaNameValue, Token![,]>;
 

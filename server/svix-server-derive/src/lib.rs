@@ -1,9 +1,9 @@
 use quote::quote;
-use syn::{parse_macro_input, parse_quote, DeriveInput, GenericParam, Generics, ItemFn};
+use syn::{DeriveInput, GenericParam, Generics, ItemFn, parse_macro_input, parse_quote};
 
 mod aide;
 
-use self::aide::{expand_aide_annotate, AideAnnotateArgumentList};
+use self::aide::{AideAnnotateArgumentList, expand_aide_annotate};
 
 #[proc_macro_derive(ModelIn)]
 pub fn derive_model_in(input: proc_macro::TokenStream) -> proc_macro::TokenStream {

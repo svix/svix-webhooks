@@ -120,7 +120,9 @@ async fn has_message_payloads_pending_expiry(pool: &DatabaseConnection) -> Resul
 pub async fn expired_message_cleaner_loop(pool: &DatabaseConnection) -> Result<()> {
     let message_table_needs_cleaning = has_message_payloads_pending_expiry(pool).await?;
     if !message_table_needs_cleaning {
-        tracing::info!("No payloads pending expiry found in `message` table. Skipping the cleaner for this table.");
+        tracing::info!(
+            "No payloads pending expiry found in `message` table. Skipping the cleaner for this table."
+        );
     }
 
     // When fewer rows than the batch size have been updated, take a nap for this long.

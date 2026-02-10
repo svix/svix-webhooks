@@ -204,7 +204,9 @@ async fn main() -> anyhow::Result<()> {
             if yes_i_know_what_im_doing {
                 wipe_org(&cfg, org_id).await;
             } else {
-                println!("Please confirm you wish to wipe this organization with the `--yes-i-know-what-im-doing` flag");
+                println!(
+                    "Please confirm you wish to wipe this organization with the `--yes-i-know-what-im-doing` flag"
+                );
             }
         }
         Some(Commands::GenerateOpenapi) => {

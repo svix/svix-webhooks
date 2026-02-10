@@ -2,40 +2,40 @@
 // SPDX-License-Identifier: MIT
 
 use aide::axum::{
-    routing::{get_with, post_with},
     ApiRouter,
+    routing::{get_with, post_with},
 };
 use axum::{
-    extract::{Path, State},
     Json,
+    extract::{Path, State},
 };
 use chrono::{DateTime, Utc};
 use futures::FutureExt;
 use schemars::JsonSchema;
 use sea_orm::{ActiveModelTrait, ActiveValue::Set, DatabaseConnection, TransactionTrait};
 use serde::{Deserialize, Serialize};
-use svix_server_derive::{aide_annotate, ModelOut};
+use svix_server_derive::{ModelOut, aide_annotate};
 use validator::{Validate, ValidationError};
 
 use crate::{
+    AppState,
     core::{
         permissions,
-        types::{metadata::Metadata, ApplicationId, ApplicationUid, OrganizationId},
+        types::{ApplicationId, ApplicationUid, OrganizationId, metadata::Metadata},
     },
     db::models::{application, applicationmetadata},
-    error::{http_error_on_conflict, HttpError, Result, Traceable},
+    error::{HttpError, Result, Traceable, http_error_on_conflict},
     v1::utils::{
-        apply_pagination, openapi_tag,
+        ApplicationPath, IteratorDirection, JsonStatusUpsert, ListResponse, ModelIn, ModelOut,
+        NoContent, Ordering, Pagination, PaginationLimit, ReversibleIterator, ValidatedJson,
+        ValidatedQuery, apply_pagination, openapi_tag,
         patch::{
-            patch_field_non_nullable, patch_field_nullable, UnrequiredField,
-            UnrequiredNullableField,
+            UnrequiredField, UnrequiredNullableField, patch_field_non_nullable,
+            patch_field_nullable,
         },
         validate_no_control_characters, validate_no_control_characters_unrequired,
-        validation_error, ApplicationPath, IteratorDirection, JsonStatusUpsert, ListResponse,
-        ModelIn, ModelOut, NoContent, Ordering, Pagination, PaginationLimit, ReversibleIterator,
-        ValidatedJson, ValidatedQuery,
+        validation_error,
     },
-    AppState,
 };
 
 fn application_name_example() -> &'static str {
