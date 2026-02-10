@@ -2,7 +2,6 @@
 // SPDX-Licensepub(crate) -Identifier: MIT
 
 use std::{
-    collections::HashMap,
     sync::{
         atomic::{AtomicU64, AtomicUsize, Ordering},
         Arc, LazyLock,
@@ -13,7 +12,10 @@ use std::{
 use base64::{engine::general_purpose::STANDARD, Engine};
 use chrono::Utc;
 use futures::future;
-use http::{HeaderValue, StatusCode, Version};
+use http::{
+    header::{CONTENT_TYPE, USER_AGENT},
+    HeaderName, HeaderValue, StatusCode, Version,
+};
 use http_body_util::BodyExt as _;
 use itertools::Itertools;
 use rand::Rng;
@@ -36,8 +38,8 @@ use crate::{
             OperationalWebhookSender,
         },
         types::{
-            ApplicationId, ApplicationUid, BaseId, EndpointHeaders, EndpointId,
-            EndpointSecretInternal, EndpointSecretType, MessageAttemptId,
+            ApplicationId, ApplicationUid, BaseId, CasePreservingHeaderMap, EndpointHeaders,
+            EndpointId, EndpointSecretInternal, EndpointSecretType, MessageAttemptId,
             MessageAttemptTriggerType, MessageId, MessageStatus, MessageUid, OrganizationId,
         },
         webhook_http_client::{Error as WebhookClientError, RequestBuilder, WebhookClient},
@@ -48,14 +50,22 @@ use crate::{
     v1::utils::get_unix_timestamp,
 };
 
-pub type CaseSensitiveHeaderMap = HashMap<String, HeaderValue>;
-
 // The maximum variation from the retry schedule when applying jitter to a resent webhook event in
 // percent deviation
 const JITTER_DELTA: f32 = 0.2;
 const OVERLOAD_PENALTY_SECS: u64 = 60;
 
-const USER_AGENT: &str = concat!("Svix-Webhooks/", env!("CARGO_PKG_VERSION"));
+const OUR_USER_AGENT: HeaderValue =
+    HeaderValue::from_static(concat!("Svix-Webhooks/", env!("CARGO_PKG_VERSION")));
+const APPLICATION_JSON: HeaderValue = HeaderValue::from_static("application/json");
+
+pub const WEBHOOK_ID: HeaderName = HeaderName::from_static("webhook-id");
+pub const WEBHOOK_TIMESTAMP: HeaderName = HeaderName::from_static("webhook-timestamp");
+pub const WEBHOOK_SIGNATURE: HeaderName = HeaderName::from_static("webhook-signature");
+
+pub const SVIX_ID: HeaderName = HeaderName::from_static("svix-id");
+pub const SVIX_TIMESTAMP: HeaderName = HeaderName::from_static("svix-timestamp");
+pub const SVIX_SIGNATURE: HeaderName = HeaderName::from_static("svix-signature");
 
 /// Send the MessageAttemptFailingEvent after exceeding this number of failed attempts
 const OP_WEBHOOKS_SEND_FAILING_EVENT_AFTER: usize = 4;
@@ -194,8 +204,8 @@ fn generate_msg_headers(
     whitelabel_headers: bool,
     configured_headers: Option<&EndpointHeaders>,
     _endpoint_url: &str,
-) -> Result<CaseSensitiveHeaderMap> {
-    let mut headers = CaseSensitiveHeaderMap::new();
+) -> Result<CasePreservingHeaderMap> {
+    let mut headers = CasePreservingHeaderMap::new();
     let id_hdr = msg_id
         .0
         .parse()
@@ -208,27 +218,23 @@ fn generate_msg_headers(
         .parse()
         .map_err(|e| Error::generic(format_args!("Error parsing message signatures: {e:?}")))?;
     if whitelabel_headers {
-        headers.insert("webhook-id".to_owned(), id_hdr);
-        headers.insert("webhook-timestamp".to_owned(), timestamp);
-        headers.insert("webhook-signature".to_owned(), signatures_str);
+        headers.insert(WEBHOOK_ID, id_hdr);
+        headers.insert(WEBHOOK_TIMESTAMP, timestamp);
+        headers.insert(WEBHOOK_SIGNATURE, signatures_str);
     } else {
-        headers.insert("svix-id".to_owned(), id_hdr);
-        headers.insert("svix-timestamp".to_owned(), timestamp);
-        headers.insert("svix-signature".to_owned(), signatures_str);
+        headers.insert(SVIX_ID, id_hdr);
+        headers.insert(SVIX_TIMESTAMP, timestamp);
+        headers.insert(SVIX_SIGNATURE, signatures_str);
     }
-    headers.insert(
-        "user-agent".to_owned(),
-        USER_AGENT.to_string().parse().unwrap(),
-    );
-    headers.insert(
-        "content-type".to_owned(),
-        "application/json".parse().unwrap(),
-    );
+    headers.insert(USER_AGENT, OUR_USER_AGENT);
+    headers.insert(CONTENT_TYPE, APPLICATION_JSON);
     if let Some(configured_headers) = configured_headers {
         for (k, v) in &configured_headers.0 {
             match v.parse() {
                 Ok(v) => {
-                    headers.insert(k.clone(), v);
+                    if let Err(e) = headers.try_insert(k, v) {
+                        tracing::error!("Invalid HeaderName {}: {}", k, e);
+                    }
                 }
                 Err(e) => {
                     tracing::error!("Invalid HeaderValue {}: {}", v, e);
@@ -263,7 +269,7 @@ enum IncompleteDispatch {
 struct PendingDispatch {
     method: http::Method,
     url: String,
-    headers: CaseSensitiveHeaderMap,
+    headers: CasePreservingHeaderMap,
     payload: String,
     request_timeout: u64,
     created_at: DateTimeUtc,
@@ -1065,7 +1071,9 @@ mod tests {
     use bytes::Bytes;
     use ed25519_compact::Signature;
 
-    use super::{bytes_to_string, generate_msg_headers, sign_msg, CaseSensitiveHeaderMap};
+    use super::{
+        bytes_to_string, generate_msg_headers, sign_msg, CasePreservingHeaderMap, SVIX_SIGNATURE,
+    };
     use crate::core::{
         cryptography::{AsymmetricKey, Encryption},
         types::{BaseId, EndpointHeaders, EndpointSecret, EndpointSecretInternal, MessageId},
@@ -1080,7 +1088,7 @@ mod tests {
 
     /// Utility function that returns the default set of headers before configurable header are
     /// accounted for
-    fn mock_headers() -> (CaseSensitiveHeaderMap, MessageId) {
+    fn mock_headers() -> (CasePreservingHeaderMap, MessageId) {
         let id = MessageId::new(None, None);
 
         let signatures = sign_msg(
@@ -1113,7 +1121,9 @@ mod tests {
 
         // The invalid key should be skipped over so it is not included in the expected
         let (mut expected, id) = mock_headers();
-        let _ = expected.insert("test_key".to_owned(), "value".parse().unwrap());
+        expected
+            .try_insert("test_key".to_owned(), "value".parse().unwrap())
+            .unwrap();
 
         let signatures = sign_msg(
             &Encryption::new_noop(),
@@ -1169,10 +1179,7 @@ mod tests {
         )
         .unwrap();
 
-        assert_eq!(
-            actual.get("svix-signature").unwrap(),
-            expected_signature_str
-        );
+        assert_eq!(actual[&SVIX_SIGNATURE], expected_signature_str);
     }
 
     // Tests asymmetric signing keys

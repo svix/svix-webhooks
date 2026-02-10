@@ -19,7 +19,10 @@ use validator::{Validate, ValidationErrors};
 
 use crate::v1::utils::validation_error;
 
+mod case_preserving_header_map;
 pub mod metadata;
+
+pub use case_preserving_header_map::CasePreservingHeaderMap;
 
 use super::cryptography::{AsymmetricKey, Encryption};
 
