@@ -10,11 +10,11 @@ use bytes::Bytes;
 use http::{header::InvalidHeaderName, HeaderMap, HeaderName, HeaderValue};
 
 /// A map from String -> T that preserves insertion case,
-/// but doesn't allow duplicates (that is to say, inserting
-/// "foo" -> "bar", and "Foo" -> "baz" will only result in one key:
-/// "Foo" -> "baz"
+/// but doesn't allow duplicates.
 ///
-/// Intended use case is really for storing headers (hence the name)
+/// That is to say, inserting "foo" -> "bar", and "Foo" -> "baz" will
+/// only result in one key: "Foo" -> "baz".
+/// Intended use case is really for storing headers, hence the name.
 #[derive(Debug, Clone)]
 pub struct CasePreservingHeaderMap<T = HeaderValue> {
     /// We implement this as a map from normalized key to (real key, value).
@@ -118,8 +118,8 @@ impl<T> CasePreservingHeaderMap<T> {
 
     /// Iterate over all key-value pairs. The key is returned in
     /// non-normalized (original) form
-    pub fn iter(&self) -> impl Iterator<Item = &(String, T)> {
-        self.inner.values()
+    pub fn iter(&self) -> impl Iterator<Item = (&str, &T)> {
+        self.inner.values().map(|(k, v)| (k.as_str(), v))
     }
 
     /// Convert into two maps: one from HeaderName -> T, and one from HeaderName -> Raw Name
@@ -156,11 +156,12 @@ impl<T> IntoIterator for CasePreservingHeaderMap<T> {
     }
 }
 
+/// CasePreservingHeaderMaps are only Eq if the case-sensitive version of the headers
+/// are equal, as well as the values being equal
 impl<T: Clone + PartialEq> PartialEq<Self> for CasePreservingHeaderMap<T> {
     // this is terrible but it's only used for tests
     fn eq(&self, other: &Self) -> bool {
-        self.iter().cloned().collect::<HashMap<String, T>>()
-            == other.iter().cloned().collect::<HashMap<String, T>>()
+        self.iter().collect::<HashMap<_, _>>() == other.iter().collect::<HashMap<_, _>>()
     }
 }
 
@@ -211,9 +212,9 @@ impl<V> Extend<(HeaderName, V)> for CasePreservingHeaderMap<V> {
     fn extend<T: IntoIterator<Item = (HeaderName, V)>>(&mut self, iter: T) {
         let iter = iter.into_iter();
         self.inner.reserve(iter.size_hint().0);
-        iter.for_each(move |(k, v)| {
+        for (k, v) in iter {
             self.insert(k, v);
-        });
+        }
     }
 }
 
