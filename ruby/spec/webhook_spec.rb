@@ -9,18 +9,16 @@ TOLERANCE = 5 * 60
 
 class TestPayload
 
-  def initialize(timestamp = Time.now.to_i)
-    @secret = DEFAULT_SECRET
-
-    @id = DEFAULT_MSG_ID
+  def initialize(id: DEFAULT_MSG_ID, timestamp: Time.now.to_i, payload: DEFAULT_PAYLOAD, secret: DEFAULT_SECRET)
+    @id = id
     @timestamp = timestamp
 
-    @payload = DEFAULT_PAYLOAD
-    @secret = DEFAULT_SECRET
+    @payload = payload
+    @secret = secret
 
     toSign = "#{@id}.#{@timestamp}.#{@payload}"
     @signature = Base64
-      .encode64(OpenSSL::HMAC.digest(OpenSSL::Digest.new("sha256"), Base64.decode64(DEFAULT_SECRET), toSign))
+      .encode64(OpenSSL::HMAC.digest(OpenSSL::Digest.new("sha256"), Base64.decode64(@secret), toSign))
       .strip
 
     @headers = {
@@ -99,7 +97,7 @@ describe Svix::Webhook do
   end
 
   it "old timestamp raises error" do
-    testPayload = TestPayload.new(Time.now.to_i - TOLERANCE - 1)
+    testPayload = TestPayload.new(timestamp: Time.now.to_i - TOLERANCE - 1)
 
     wh = Svix::Webhook.new(testPayload.secret)
 
@@ -107,7 +105,7 @@ describe Svix::Webhook do
   end
 
   it "new timestamp raises error" do
-    testPayload = TestPayload.new(Time.now.to_i + TOLERANCE + 1)
+    testPayload = TestPayload.new(timestamp: Time.now.to_i + TOLERANCE + 1)
 
     wh = Svix::Webhook.new(testPayload.secret)
 
@@ -115,14 +113,14 @@ describe Svix::Webhook do
   end
 
   it "invalid timestamp raises error" do
-    testPayload = TestPayload.new("teadwd")
+    testPayload = TestPayload.new(timestamp: "teadwd")
 
     wh = Svix::Webhook.new(testPayload.secret)
 
     expect { wh.verify(testPayload.payload, testPayload.headers) }.to(raise_error(Svix::WebhookVerificationError))
   end
 
-  it "multi sig pyload is valid" do
+  it "multi sig payload is valid" do
     testPayload = TestPayload.new
     sigs = [
       "v1,Ceo5qEr07ixe2NLpvHk3FH9bwy/WavXrAFQ/9tdO6mc=",
@@ -164,8 +162,8 @@ describe Svix::Webhook do
   end
 
   it "returns empty json when payload is empty" do
-    testPayload = TestPayload.new
-    testPayload.payload = ''
+    testPayload = TestPayload.new(payload: '')
+
     wh = Svix::Webhook.new(testPayload.secret)
 
     json = wh.verify(testPayload.payload, testPayload.headers)
