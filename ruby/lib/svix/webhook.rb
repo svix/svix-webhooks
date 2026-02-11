@@ -40,6 +40,7 @@ module Svix
         end
 
         if ::Svix::secure_compare(signature, expectedSignature)
+          return {} if payload.empty?
           return JSON.parse(payload, symbolize_names: true)
         end
       end

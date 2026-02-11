@@ -162,4 +162,13 @@ describe Svix::Webhook do
     signature = wh.sign(msg_id, timestamp, payload)
     expect(signature).to(eq(expected))
   end
+
+  it "returns empty json when payload is empty" do
+    testPayload = TestPayload.new
+    testPayload.payload = ''
+    wh = Svix::Webhook.new(testPayload.secret)
+
+    json = wh.verify(testPayload.payload, testPayload.headers)
+    expect(json).to(eq({}))
+  end
 end
