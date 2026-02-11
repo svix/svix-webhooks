@@ -167,6 +167,6 @@ describe Svix::Webhook do
     wh = Svix::Webhook.new(testPayload.secret)
 
     json = wh.verify(testPayload.payload, testPayload.headers)
-    expect(json).to(eq({}))
+    expect(json).to(eq(nil))
   end
 end
