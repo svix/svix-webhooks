@@ -1,14 +1,20 @@
 # Changelog
 
-## Upcoming
+## Version 1.85.0
+* Server: Fix non-determinism with regards to overrides of specific header names
 * Server: Bump MSRV to 1.88.0
+* Libs/Ruby: Return nil if payload is empty, instead of attempting to parse as JSON (thanks [@donovanlopez])
 * Libs/Rust: Bump MSRV to 1.88.0
-* Cli: Bump MSRV to 1.88.0
+* CLI: Bump MSRV to 1.88.0
+
+[@donovanlopez]: https://github.com/donovanlopez
+
+## Version 1.84.1
+* Libs/JavaScript: Updated webhook verification logic to use official standard webhooks packages
 
 ## Version 1.84.0
-* Libs/(JavaScript Python): Updated webhook verification logic to use official standard webhooks packages
-* Cli: support disabling TLS verification when relaying requests (`svix listen`)
-
+* Libs/Python: Updated webhook verification logic to use official standard webhooks packages
+* CLI: support disabling TLS verification when relaying requests (`svix listen`)
 
 ## Version 1.83.0
 * Server: Add `status_text` field to `MessageAttemptOut` to match Svix Cloud
