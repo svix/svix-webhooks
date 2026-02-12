@@ -10,6 +10,7 @@ class EventTypeUpdate implements \JsonSerializable
     private array $setFields = [];
 
     /**
+     * @param string|null       $featureFlag  deprecated, use `featureFlags` instead
      * @param list<string>|null $featureFlags
      * @param string|null       $groupName    The event type group's name
      * @param array|null        $schemas      the schema for the event type for a specific version as a JSON schema

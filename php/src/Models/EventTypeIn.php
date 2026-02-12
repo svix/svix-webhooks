@@ -10,7 +10,7 @@ class EventTypeIn implements \JsonSerializable
     private array $setFields = [];
 
     /**
-     * @param string|null       $featureFlag  deprecated - prefer featureFlags instead
+     * @param string|null       $featureFlag  deprecated, use `featureFlags` instead
      * @param list<string>|null $featureFlags
      * @param string|null       $groupName    The event type group's name
      * @param string            $name         The event type's name

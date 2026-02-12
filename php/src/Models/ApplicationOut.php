@@ -10,9 +10,14 @@ class ApplicationOut implements \JsonSerializable
     private array $setFields = [];
 
     /**
-     * @param string                $id       the Application's ID
+     * @param string                $id           the Application's ID
      * @param array<string, string> $metadata
-     * @param string|null           $uid      the Application's UID
+     * @param string                $name         application name for human consumption
+     * @param int|null              $rateLimit    deprecated, use `throttleRate` instead
+     * @param int|null              $throttleRate Maximum messages per second to send to this application.
+     *
+     * Outgoing messages will be throttled to this rate.
+     * @param string|null $uid optional unique identifier for the application
      */
     private function __construct(
         public readonly \DateTimeImmutable $createdAt,
@@ -21,6 +26,7 @@ class ApplicationOut implements \JsonSerializable
         public readonly string $name,
         public readonly \DateTimeImmutable $updatedAt,
         public readonly ?int $rateLimit = null,
+        public readonly ?int $throttleRate = null,
         public readonly ?string $uid = null,
         array $setFields = [],
     ) {
@@ -43,6 +49,7 @@ class ApplicationOut implements \JsonSerializable
             metadata: $metadata,
             name: $name,
             rateLimit: null,
+            throttleRate: null,
             uid: null,
             updatedAt: $updatedAt,
             setFields: ['createdAt' => true, 'id' => true, 'metadata' => true, 'name' => true, 'updatedAt' => true]
@@ -60,6 +67,25 @@ class ApplicationOut implements \JsonSerializable
             metadata: $this->metadata,
             name: $this->name,
             rateLimit: $rateLimit,
+            throttleRate: $this->throttleRate,
+            uid: $this->uid,
+            updatedAt: $this->updatedAt,
+            setFields: $setFields
+        );
+    }
+
+    public function withThrottleRate(?int $throttleRate): self
+    {
+        $setFields = $this->setFields;
+        $setFields['throttleRate'] = true;
+
+        return new self(
+            createdAt: $this->createdAt,
+            id: $this->id,
+            metadata: $this->metadata,
+            name: $this->name,
+            rateLimit: $this->rateLimit,
+            throttleRate: $throttleRate,
             uid: $this->uid,
             updatedAt: $this->updatedAt,
             setFields: $setFields
@@ -77,6 +103,7 @@ class ApplicationOut implements \JsonSerializable
             metadata: $this->metadata,
             name: $this->name,
             rateLimit: $this->rateLimit,
+            throttleRate: $this->throttleRate,
             uid: $uid,
             updatedAt: $this->updatedAt,
             setFields: $setFields
@@ -94,6 +121,9 @@ class ApplicationOut implements \JsonSerializable
 
         if (isset($this->setFields['rateLimit'])) {
             $data['rateLimit'] = $this->rateLimit;
+        }
+        if (isset($this->setFields['throttleRate'])) {
+            $data['throttleRate'] = $this->throttleRate;
         }
         if (isset($this->setFields['uid'])) {
             $data['uid'] = $this->uid;
@@ -113,6 +143,7 @@ class ApplicationOut implements \JsonSerializable
             metadata: \Svix\Utils::getValFromJson($data, 'metadata', true, 'ApplicationOut'),
             name: \Svix\Utils::deserializeString($data, 'name', true, 'ApplicationOut'),
             rateLimit: \Svix\Utils::deserializeInt($data, 'rateLimit', false, 'ApplicationOut'),
+            throttleRate: \Svix\Utils::deserializeInt($data, 'throttleRate', false, 'ApplicationOut'),
             uid: \Svix\Utils::deserializeString($data, 'uid', false, 'ApplicationOut'),
             updatedAt: \Svix\Utils::deserializeDt($data, 'updatedAt', true, 'ApplicationOut')
         );

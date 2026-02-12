@@ -292,6 +292,21 @@ public abstract class IngestSourceOutConfig {
     @AllArgsConstructor
     @ToString
     @EqualsAndHashCode(callSuper = false)
+    @VariantName("psi-fi")
+    public static class PsiFi extends IngestSourceOutConfig {
+        private final SvixConfigOut psiFi;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(psiFi);
+        }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
     @VariantName("pleo")
     public static class Pleo extends IngestSourceOutConfig {
         private final SvixConfigOut pleo;
@@ -599,6 +614,7 @@ public abstract class IngestSourceOutConfig {
         TY_M.put("orum-io", c -> new OrumIo(m.convertValue(c, OrumIoConfigOut.class)));
         TY_M.put("panda-doc", c -> new PandaDoc(m.convertValue(c, PandaDocConfigOut.class)));
         TY_M.put("port-io", c -> new PortIo(m.convertValue(c, PortIoConfigOut.class)));
+        TY_M.put("psi-fi", c -> new PsiFi(m.convertValue(c, SvixConfigOut.class)));
         TY_M.put("pleo", c -> new Pleo(m.convertValue(c, SvixConfigOut.class)));
         TY_M.put("replicate", c -> new Replicate(m.convertValue(c, SvixConfigOut.class)));
         TY_M.put("resend", c -> new Resend(m.convertValue(c, SvixConfigOut.class)));

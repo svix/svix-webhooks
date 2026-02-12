@@ -1,5 +1,6 @@
 // this file is @generated
 
+import { type BulkReplayIn, BulkReplayInSerializer } from "../models/bulkReplayIn";
 import {
   type EndpointHeadersIn,
   EndpointHeadersInSerializer,
@@ -60,6 +61,10 @@ export interface EndpointListOptions {
 }
 
 export interface EndpointCreateOptions {
+  idempotencyKey?: string;
+}
+
+export interface EndpointBulkReplayOptions {
   idempotencyKey?: string;
 }
 
@@ -188,6 +193,43 @@ export class Endpoint {
     request.setBody(EndpointPatchSerializer._toJsonObject(endpointPatch));
 
     return request.send(this.requestCtx, EndpointOutSerializer._fromJsonObject);
+  }
+
+  /**
+   * Bulk replay messages sent to the endpoint.
+   *
+   * Only messages that were created after `since` will be sent.
+   * This will replay both successful, and failed messages
+   *
+   * A completed task will return a payload like the following:
+   * ```json
+   * {
+   *   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+   *   "status": "finished",
+   *   "task": "endpoint.bulk-replay",
+   *   "data": {
+   *     "messagesSent": 2
+   *   }
+   * }
+   * ```
+   */
+  public bulkReplay(
+    appId: string,
+    endpointId: string,
+    bulkReplayIn: BulkReplayIn,
+    options?: EndpointBulkReplayOptions
+  ): Promise<ReplayOut> {
+    const request = new SvixRequest(
+      HttpMethod.POST,
+      "/api/v1/app/{app_id}/endpoint/{endpoint_id}/bulk-replay"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("endpoint_id", endpointId);
+    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
+    request.setBody(BulkReplayInSerializer._toJsonObject(bulkReplayIn));
+
+    return request.send(this.requestCtx, ReplayOutSerializer._fromJsonObject);
   }
 
   /** Get the additional headers to be sent with the webhook. */

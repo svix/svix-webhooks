@@ -16,7 +16,13 @@ data class EndpointOut(
     /** The Endpoint's ID. */
     val id: String,
     val metadata: Map<String, String>,
+    /** Deprecated, use `throttleRate` instead. */
     val rateLimit: UShort? = null,
+    /**
+     * Maximum messages per second to send to this endpoint. Outgoing messages will be throttled to
+     * this rate.
+     */
+    val throttleRate: UShort? = null,
     /** Optional unique identifier for the endpoint. */
     val uid: String? = null,
     val updatedAt: Instant,

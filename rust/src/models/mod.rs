@@ -24,6 +24,7 @@ pub mod background_task_finished_event2;
 pub mod background_task_out;
 pub mod background_task_status;
 pub mod background_task_type;
+pub mod bulk_replay_in;
 pub mod checkbook_config;
 pub mod checkbook_config_out;
 pub mod connector_in;
@@ -242,6 +243,7 @@ pub use self::{
     background_task_out::BackgroundTaskOut,
     background_task_status::BackgroundTaskStatus,
     background_task_type::BackgroundTaskType,
+    bulk_replay_in::BulkReplayIn,
     checkbook_config::CheckbookConfig,
     checkbook_config_out::CheckbookConfigOut,
     connector_in::ConnectorIn,

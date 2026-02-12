@@ -16,6 +16,7 @@ class ExpungeAllContentsOut implements \JsonSerializable
         public readonly string $id,
         public readonly BackgroundTaskStatus $status,
         public readonly BackgroundTaskType $task,
+        public readonly \DateTimeImmutable $updatedAt,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -28,12 +29,14 @@ class ExpungeAllContentsOut implements \JsonSerializable
         string $id,
         BackgroundTaskStatus $status,
         BackgroundTaskType $task,
+        \DateTimeImmutable $updatedAt,
     ): self {
         return new self(
             id: $id,
             status: $status,
             task: $task,
-            setFields: ['id' => true, 'status' => true, 'task' => true]
+            updatedAt: $updatedAt,
+            setFields: ['id' => true, 'status' => true, 'task' => true, 'updatedAt' => true]
         );
     }
 
@@ -42,7 +45,8 @@ class ExpungeAllContentsOut implements \JsonSerializable
         $data = [
             'id' => $this->id,
             'status' => $this->status,
-            'task' => $this->task];
+            'task' => $this->task,
+            'updatedAt' => $this->updatedAt->format('c')];
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
@@ -55,7 +59,8 @@ class ExpungeAllContentsOut implements \JsonSerializable
         return new self(
             id: \Svix\Utils::deserializeString($data, 'id', true, 'ExpungeAllContentsOut'),
             status: \Svix\Utils::deserializeObject($data, 'status', true, 'ExpungeAllContentsOut', [BackgroundTaskStatus::class, 'fromMixed']),
-            task: \Svix\Utils::deserializeObject($data, 'task', true, 'ExpungeAllContentsOut', [BackgroundTaskType::class, 'fromMixed'])
+            task: \Svix\Utils::deserializeObject($data, 'task', true, 'ExpungeAllContentsOut', [BackgroundTaskType::class, 'fromMixed']),
+            updatedAt: \Svix\Utils::deserializeDt($data, 'updatedAt', true, 'ExpungeAllContentsOut')
         );
     }
 

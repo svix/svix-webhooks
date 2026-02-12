@@ -36,6 +36,18 @@ namespace Svix
         }
     }
 
+    public class EndpointBulkReplayOptions : SvixOptionsBase
+    {
+        public string? IdempotencyKey { get; set; }
+
+        public new Dictionary<string, string> HeaderParams()
+        {
+            return SerializeParams(
+                new Dictionary<string, object?> { { "idempotency-key", IdempotencyKey } }
+            );
+        }
+    }
+
     public class EndpointRecoverOptions : SvixOptionsBase
     {
         public string? IdempotencyKey { get; set; }
@@ -456,6 +468,108 @@ namespace Svix
             catch (ApiException e)
             {
                 _client.Logger?.LogError(e, $"{nameof(Patch)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Bulk replay messages sent to the endpoint.
+        ///
+        /// Only messages that were created after `since` will be sent.
+        /// This will replay both successful, and failed messages
+        ///
+        /// A completed task will return a payload like the following:
+        /// ```json
+        /// {
+        ///   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+        ///   "status": "finished",
+        ///   "task": "endpoint.bulk-replay",
+        ///   "data": {
+        ///     "messagesSent": 2
+        ///   }
+        /// }
+        /// ```
+        /// </summary>
+        public async Task<ReplayOut> BulkReplayAsync(
+            string appId,
+            string endpointId,
+            BulkReplayIn bulkReplayIn,
+            EndpointBulkReplayOptions? options = null,
+            CancellationToken cancellationToken = default
+        )
+        {
+            bulkReplayIn = bulkReplayIn ?? throw new ArgumentNullException(nameof(bulkReplayIn));
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<ReplayOut>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/bulk-replay",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    content: bulkReplayIn,
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(BulkReplayAsync)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Bulk replay messages sent to the endpoint.
+        ///
+        /// Only messages that were created after `since` will be sent.
+        /// This will replay both successful, and failed messages
+        ///
+        /// A completed task will return a payload like the following:
+        /// ```json
+        /// {
+        ///   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+        ///   "status": "finished",
+        ///   "task": "endpoint.bulk-replay",
+        ///   "data": {
+        ///     "messagesSent": 2
+        ///   }
+        /// }
+        /// ```
+        /// </summary>
+        public ReplayOut BulkReplay(
+            string appId,
+            string endpointId,
+            BulkReplayIn bulkReplayIn,
+            EndpointBulkReplayOptions? options = null
+        )
+        {
+            bulkReplayIn = bulkReplayIn ?? throw new ArgumentNullException(nameof(bulkReplayIn));
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<ReplayOut>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/bulk-replay",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    content: bulkReplayIn
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(BulkReplay)} failed");
 
                 throw;
             }

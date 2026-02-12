@@ -19,6 +19,9 @@ pub struct AppUsageStatsOut {
     /// Stats will be produced for all the others.
     #[serde(rename = "unresolvedAppIds")]
     pub unresolved_app_ids: Vec<String>,
+
+    #[serde(rename = "updatedAt")]
+    pub updated_at: String,
 }
 
 impl AppUsageStatsOut {
@@ -27,12 +30,14 @@ impl AppUsageStatsOut {
         status: BackgroundTaskStatus,
         task: BackgroundTaskType,
         unresolved_app_ids: Vec<String>,
+        updated_at: String,
     ) -> Self {
         Self {
             id,
             status,
             task,
             unresolved_app_ids,
+            updated_at,
         }
     }
 }

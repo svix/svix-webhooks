@@ -25,6 +25,7 @@ public class ApplicationOut {
     @JsonProperty private Map<String, String> metadata;
     @JsonProperty private String name;
     @JsonProperty private Long rateLimit;
+    @JsonProperty private Long throttleRate;
     @JsonProperty private String uid;
     @JsonProperty private OffsetDateTime updatedAt;
 
@@ -102,7 +103,7 @@ public class ApplicationOut {
     }
 
     /**
-     * Get name
+     * Application name for human consumption.
      *
      * @return name
      */
@@ -115,23 +116,47 @@ public class ApplicationOut {
         this.name = name;
     }
 
+    @Deprecated
     public ApplicationOut rateLimit(Long rateLimit) {
         this.rateLimit = rateLimit;
         return this;
     }
 
     /**
-     * Get rateLimit
+     * Deprecated, use `throttleRate` instead.
      *
      * @return rateLimit
      */
     @javax.annotation.Nullable
+    @Deprecated
     public Long getRateLimit() {
         return rateLimit;
     }
 
+    @Deprecated
     public void setRateLimit(Long rateLimit) {
         this.rateLimit = rateLimit;
+    }
+
+    public ApplicationOut throttleRate(Long throttleRate) {
+        this.throttleRate = throttleRate;
+        return this;
+    }
+
+    /**
+     * Maximum messages per second to send to this application.
+     *
+     * <p>Outgoing messages will be throttled to this rate.
+     *
+     * @return throttleRate
+     */
+    @javax.annotation.Nullable
+    public Long getThrottleRate() {
+        return throttleRate;
+    }
+
+    public void setThrottleRate(Long throttleRate) {
+        this.throttleRate = throttleRate;
     }
 
     public ApplicationOut uid(String uid) {
@@ -140,7 +165,7 @@ public class ApplicationOut {
     }
 
     /**
-     * The Application's UID.
+     * Optional unique identifier for the application.
      *
      * @return uid
      */

@@ -93,7 +93,7 @@ public class EventTypeUpdate {
     }
 
     /**
-     * Get featureFlag
+     * Deprecated, use `featureFlags` instead.
      *
      * @return featureFlag
      */

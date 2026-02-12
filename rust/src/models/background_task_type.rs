@@ -22,7 +22,7 @@ pub enum BackgroundTaskType {
     EventTypeAggregate,
     #[serde(rename = "application.purge_content")]
     ApplicationPurgeContent,
-    #[serde(rename = "endpoint.bulk_replay")]
+    #[serde(rename = "endpoint.bulk-replay")]
     EndpointBulkReplay,
 }
 
@@ -36,7 +36,7 @@ impl fmt::Display for BackgroundTaskType {
             Self::SdkGenerate => "sdk.generate",
             Self::EventTypeAggregate => "event-type.aggregate",
             Self::ApplicationPurgeContent => "application.purge_content",
-            Self::EndpointBulkReplay => "endpoint.bulk_replay",
+            Self::EndpointBulkReplay => "endpoint.bulk-replay",
         };
         f.write_str(value)
     }

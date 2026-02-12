@@ -12,6 +12,7 @@ class EventTypeUpdate(BaseModel):
     description: str
 
     feature_flag: t.Optional[str] = None
+    """Deprecated, use `featureFlags` instead."""
 
     feature_flags: t.Optional[t.List[str]] = None
 

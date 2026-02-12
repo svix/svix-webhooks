@@ -43,9 +43,9 @@ pub use self::{
     connector::{Connector, ConnectorCreateOptions, ConnectorListOptions},
     deprecated::*,
     endpoint::{
-        Endpoint, EndpointCreateOptions, EndpointGetStatsOptions, EndpointListOptions,
-        EndpointRecoverOptions, EndpointReplayMissingOptions, EndpointRotateSecretOptions,
-        EndpointSendExampleOptions,
+        Endpoint, EndpointBulkReplayOptions, EndpointCreateOptions, EndpointGetStatsOptions,
+        EndpointListOptions, EndpointRecoverOptions, EndpointReplayMissingOptions,
+        EndpointRotateSecretOptions, EndpointSendExampleOptions,
     },
     environment::{Environment, EnvironmentExportOptions, EnvironmentImportOptions},
     event_type::{

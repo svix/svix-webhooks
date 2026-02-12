@@ -20,6 +20,8 @@ pub struct EndpointPatch {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub metadata: Option<std::collections::HashMap<String, String>>,
 
+    /// Deprecated, use `throttleRate` instead.
+    #[deprecated]
     #[serde(rename = "rateLimit")]
     #[serde(default, skip_serializing_if = "JsOption::is_undefined")]
     pub rate_limit: JsOption<u16>,
@@ -32,6 +34,13 @@ pub struct EndpointPatch {
     #[deprecated]
     #[serde(default, skip_serializing_if = "JsOption::is_undefined")]
     pub secret: JsOption<String>,
+
+    /// Maximum messages per second to send to this endpoint.
+    ///
+    /// Outgoing messages will be throttled to this rate.
+    #[serde(rename = "throttleRate")]
+    #[serde(default, skip_serializing_if = "JsOption::is_undefined")]
+    pub throttle_rate: JsOption<u16>,
 
     /// The Endpoint's UID.
     #[serde(default, skip_serializing_if = "JsOption::is_undefined")]
@@ -56,6 +65,7 @@ impl EndpointPatch {
             metadata: None,
             rate_limit: JsOption::Undefined,
             secret: JsOption::Undefined,
+            throttle_rate: JsOption::Undefined,
             uid: JsOption::Undefined,
             url: None,
             version: None,

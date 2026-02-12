@@ -96,6 +96,9 @@ module Svix
     class Pleo < SvixConfig
     end
 
+    class PsiFi < SvixConfig
+    end
+
     class Replicate < SvixConfig
     end
 
@@ -180,6 +183,7 @@ module Svix
       IngestSourceInConfig::PandaDoc => "panda-doc",
       IngestSourceInConfig::PortIo => "port-io",
       IngestSourceInConfig::Pleo => "pleo",
+      IngestSourceInConfig::PsiFi => "psi-fi",
       IngestSourceInConfig::Replicate => "replicate",
       IngestSourceInConfig::Resend => "resend",
       IngestSourceInConfig::Rutter => "rutter",

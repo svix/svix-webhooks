@@ -5,7 +5,7 @@ export interface EventTypeIn {
   deprecated?: boolean;
   description: string;
   /**
-   * Deprecated - prefer featureFlags instead.
+   * Deprecated, use `featureFlags` instead.
    *
    * @deprecated
    */

@@ -11,7 +11,7 @@ pub struct EventTypeIn {
 
     pub description: String,
 
-    /// Deprecated - prefer featureFlags instead.
+    /// Deprecated, use `featureFlags` instead.
     #[deprecated]
     #[serde(rename = "featureFlag")]
     #[serde(skip_serializing_if = "Option::is_none")]

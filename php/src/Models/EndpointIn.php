@@ -14,10 +14,14 @@ class EndpointIn implements \JsonSerializable
      * @param list<string>|null          $filterTypes
      * @param array<string, string>|null $headers
      * @param array<string, string>|null $metadata
+     * @param int|null                   $rateLimit   deprecated, use `throttleRate` instead
      * @param string|null                $secret      The endpoint's verification secret.
      *
      * Format: `base64` encoded random bytes optionally prefixed with `whsec_`.
      * It is recommended to not set this and let the server generate the secret.
+     * @param int|null $throttleRate Maximum messages per second to send to this endpoint.
+     *
+     * Outgoing messages will be throttled to this rate.
      * @param string|null $uid optional unique identifier for the endpoint
      */
     private function __construct(
@@ -30,6 +34,7 @@ class EndpointIn implements \JsonSerializable
         public readonly ?array $metadata = null,
         public readonly ?int $rateLimit = null,
         public readonly ?string $secret = null,
+        public readonly ?int $throttleRate = null,
         public readonly ?string $uid = null,
         public readonly ?int $version = null,
         array $setFields = [],
@@ -52,6 +57,7 @@ class EndpointIn implements \JsonSerializable
             metadata: null,
             rateLimit: null,
             secret: null,
+            throttleRate: null,
             uid: null,
             url: $url,
             version: null,
@@ -73,6 +79,7 @@ class EndpointIn implements \JsonSerializable
             metadata: $this->metadata,
             rateLimit: $this->rateLimit,
             secret: $this->secret,
+            throttleRate: $this->throttleRate,
             uid: $this->uid,
             url: $this->url,
             version: $this->version,
@@ -94,6 +101,7 @@ class EndpointIn implements \JsonSerializable
             metadata: $this->metadata,
             rateLimit: $this->rateLimit,
             secret: $this->secret,
+            throttleRate: $this->throttleRate,
             uid: $this->uid,
             url: $this->url,
             version: $this->version,
@@ -115,6 +123,7 @@ class EndpointIn implements \JsonSerializable
             metadata: $this->metadata,
             rateLimit: $this->rateLimit,
             secret: $this->secret,
+            throttleRate: $this->throttleRate,
             uid: $this->uid,
             url: $this->url,
             version: $this->version,
@@ -136,6 +145,7 @@ class EndpointIn implements \JsonSerializable
             metadata: $this->metadata,
             rateLimit: $this->rateLimit,
             secret: $this->secret,
+            throttleRate: $this->throttleRate,
             uid: $this->uid,
             url: $this->url,
             version: $this->version,
@@ -157,6 +167,7 @@ class EndpointIn implements \JsonSerializable
             metadata: $this->metadata,
             rateLimit: $this->rateLimit,
             secret: $this->secret,
+            throttleRate: $this->throttleRate,
             uid: $this->uid,
             url: $this->url,
             version: $this->version,
@@ -178,6 +189,7 @@ class EndpointIn implements \JsonSerializable
             metadata: $metadata,
             rateLimit: $this->rateLimit,
             secret: $this->secret,
+            throttleRate: $this->throttleRate,
             uid: $this->uid,
             url: $this->url,
             version: $this->version,
@@ -199,6 +211,7 @@ class EndpointIn implements \JsonSerializable
             metadata: $this->metadata,
             rateLimit: $rateLimit,
             secret: $this->secret,
+            throttleRate: $this->throttleRate,
             uid: $this->uid,
             url: $this->url,
             version: $this->version,
@@ -220,6 +233,29 @@ class EndpointIn implements \JsonSerializable
             metadata: $this->metadata,
             rateLimit: $this->rateLimit,
             secret: $secret,
+            throttleRate: $this->throttleRate,
+            uid: $this->uid,
+            url: $this->url,
+            version: $this->version,
+            setFields: $setFields
+        );
+    }
+
+    public function withThrottleRate(?int $throttleRate): self
+    {
+        $setFields = $this->setFields;
+        $setFields['throttleRate'] = true;
+
+        return new self(
+            channels: $this->channels,
+            description: $this->description,
+            disabled: $this->disabled,
+            filterTypes: $this->filterTypes,
+            headers: $this->headers,
+            metadata: $this->metadata,
+            rateLimit: $this->rateLimit,
+            secret: $this->secret,
+            throttleRate: $throttleRate,
             uid: $this->uid,
             url: $this->url,
             version: $this->version,
@@ -241,6 +277,7 @@ class EndpointIn implements \JsonSerializable
             metadata: $this->metadata,
             rateLimit: $this->rateLimit,
             secret: $this->secret,
+            throttleRate: $this->throttleRate,
             uid: $uid,
             url: $this->url,
             version: $this->version,
@@ -262,6 +299,7 @@ class EndpointIn implements \JsonSerializable
             metadata: $this->metadata,
             rateLimit: $this->rateLimit,
             secret: $this->secret,
+            throttleRate: $this->throttleRate,
             uid: $this->uid,
             url: $this->url,
             version: $version,
@@ -298,6 +336,9 @@ class EndpointIn implements \JsonSerializable
         if (isset($this->setFields['secret'])) {
             $data['secret'] = $this->secret;
         }
+        if (isset($this->setFields['throttleRate'])) {
+            $data['throttleRate'] = $this->throttleRate;
+        }
         if (isset($this->setFields['uid'])) {
             $data['uid'] = $this->uid;
         }
@@ -322,6 +363,7 @@ class EndpointIn implements \JsonSerializable
             metadata: \Svix\Utils::getValFromJson($data, 'metadata', false, 'EndpointIn'),
             rateLimit: \Svix\Utils::deserializeInt($data, 'rateLimit', false, 'EndpointIn'),
             secret: \Svix\Utils::deserializeString($data, 'secret', false, 'EndpointIn'),
+            throttleRate: \Svix\Utils::deserializeInt($data, 'throttleRate', false, 'EndpointIn'),
             uid: \Svix\Utils::deserializeString($data, 'uid', false, 'EndpointIn'),
             url: \Svix\Utils::getValFromJson($data, 'url', true, 'EndpointIn'),
             version: \Svix\Utils::deserializeInt($data, 'version', false, 'EndpointIn')
