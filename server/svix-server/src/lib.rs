@@ -130,8 +130,6 @@ fn warn_if_risky_redis_pending_timeout(cfg: &Configuration) {
         );
     }
 }
-
-
 #[derive(Clone)]
 pub struct AppState {
     db: DatabaseConnection,
