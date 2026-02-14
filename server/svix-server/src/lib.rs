@@ -108,12 +108,11 @@ fn warn_if_risky_redis_pending_timeout(cfg: &Configuration) {
     const BUFFER_SECS: u64 = 5;
 
     if !matches!(
-    cfg.queue_type,
-    QueueType::Redis | QueueType::RedisCluster | QueueType::RedisSentinel
-) {
-    return;
-}
-
+        cfg.queue_type,
+        QueueType::Redis | QueueType::RedisCluster | QueueType::RedisSentinel
+    ) {
+        return;
+    }
 
     let http_timeout = cfg.worker_request_timeout as u64;
     let pending = cfg.redis_pending_duration_secs;
