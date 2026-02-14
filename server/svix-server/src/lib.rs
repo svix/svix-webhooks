@@ -26,7 +26,7 @@ use tower_http::{
 use tracing_subscriber::{Layer as _, layer::SubscriberExt as _};
 
 use crate::{
-    cfg::{CacheBackend, Configuration},
+    cfg::{CacheBackend, Configuration, QueueType},
     core::{
         cache,
         cache::Cache,
@@ -104,6 +104,30 @@ pub async fn run(cfg: Configuration) {
     run_with_prefix(cfg.queue_prefix.clone(), cfg, None).await
 }
 
+fn warn_if_risky_redis_pending_timeout(cfg: &Configuration) {
+    const BUFFER_SECS: u64 = 5;
+
+    if !matches!(
+        cfg.queue_type,
+        QueueType::Redis | QueueType::RedisCluster | QueueType::RedisSentinel
+    ) {
+        return;
+    }
+
+    let http_timeout = cfg.worker_request_timeout as u64;
+    let pending = cfg.redis_pending_duration_secs;
+
+    if pending < http_timeout + BUFFER_SECS {
+        tracing::warn!(
+            redis_pending_duration_secs = pending,
+            worker_request_timeout = http_timeout,
+            buffer_secs = BUFFER_SECS,
+            "redis_pending_duration_secs is shorter than worker_request_timeout \
+             (plus safety buffer); slow deliveries may be re-queued while still in-flight, \
+             causing overlapping webhook deliveries for the same message."
+        );
+    }
+}
 #[derive(Clone)]
 pub struct AppState {
     db: DatabaseConnection,
@@ -120,6 +144,8 @@ pub async fn run_with_prefix(
     cfg: Configuration,
     listener: Option<TcpListener>,
 ) {
+    warn_if_risky_redis_pending_timeout(&cfg);
+
     tracing::debug!("DB: Initializing pool");
     let pool = init_db(&cfg).await;
     tracing::debug!("DB: Started");
