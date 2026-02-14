@@ -107,9 +107,8 @@ pub async fn run(cfg: Configuration) {
 fn warn_if_risky_redis_pending_timeout(cfg: &Configuration) {
     const BUFFER_SECS: u64 = 5;
 
-    match cfg.queue_type {
-        QueueType::Redis | QueueType::RedisCluster | QueueType::RedisSentinel => {}
-        _ => return,
+    if !matches(cfg.queue_type, QueueType::Redis | QueueType::RedisCluster | QueueType::RedisSentinel) {
+      return;
     }
 
     let http_timeout = cfg.worker_request_timeout as u64;
