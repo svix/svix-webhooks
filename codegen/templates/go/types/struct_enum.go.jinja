@@ -1,6 +1,6 @@
-{% set ty_name =  type.name | to_upper_camel_case -%}
-{% set discriminator_field =  type.discriminator_field | to_upper_camel_case -%}
-{% set content_field =  type.content_field | to_upper_camel_case -%}
+{% set ty_name = type.name | to_upper_camel_case -%}
+{% set discriminator_field = type.discriminator_field | to_upper_camel_case -%}
+{% set content_field = type.content_field | to_upper_camel_case -%}
 {% set has_variant_with_no_schema_ref = type.variants | selectattr("schema_ref") | length != type.variants | length -%}
 // Package svix this file is @generated DO NOT EDIT
 package models
@@ -63,7 +63,7 @@ func (i *{{ ty_name }}) UnmarshalJSON(data []byte) error {
 	}
 
 	var err error
-	switch i.Type {
+	switch i.{{ discriminator_field }} {
 	{% for schema_ref, vars in type.variants | groupby("schema_ref") -%}
 		case {% for v in vars %}"{{ v.name }}"{%if not loop.last%},{% endif %}{% endfor %}:
 			{% if schema_ref is defined -%}
@@ -74,7 +74,7 @@ func (i *{{ ty_name }}) UnmarshalJSON(data []byte) error {
 	{% endfor -%}
 	default:
 		// should be unreachable
-		return fmt.Errorf("unexpected type %s", i.Type)
+		return fmt.Errorf("unexpected type %s", i.{{ discriminator_field }})
 	}
 	return err
 }
