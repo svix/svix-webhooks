@@ -112,7 +112,7 @@ public class {{ resource_type_name }} {
     ) {{ throws }}  {
         {# path params -#}
         {% if op.path_params | length > 0 -%}
-        HttpUrl.Builder url =  this.client.newUrlBuilder().encodedPath(String.format("{{ op.path | generate_java_path_str(op.path_params) }}"
+        HttpUrl.Builder url = this.client.newUrlBuilder().encodedPath(String.format("{{ op.path | generate_java_path_str(op.path_params) }}"
             {%- for p in op.path_params -%}
             ,{{ p | to_lower_camel_case }}
             {%- endfor -%}
