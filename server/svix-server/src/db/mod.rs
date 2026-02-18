@@ -3,12 +3,13 @@
 
 use sea_orm::{
     ColumnTrait, DatabaseConnection, DbBackend, DeleteResult, EntityTrait, QueryFilter,
-    SqlxPostgresConnector,
+    SqlxPostgresConnector, sqlx::migrate::Migrate,
 };
 use sqlx::postgres::PgPoolOptions;
 
-use crate::{cfg::Configuration, core::types::OrganizationId};
+use crate::{cfg::Configuration, core::types::OrganizationId, db::migrator::TxnOptionalMigrator};
 
+pub mod migrator;
 pub mod models;
 use models::{application, endpoint, eventtype, message, messageattempt};
 
@@ -32,7 +33,30 @@ pub async fn init_db(cfg: &Configuration) -> DatabaseConnection {
 
 pub async fn run_migrations(cfg: &Configuration) {
     let db = connect(&cfg.db_dsn, cfg.db_pool_max_size).await;
-    MIGRATIONS.run(&db).await.unwrap();
+    let (version, description) = MIGRATIONS
+        .migrations
+        .last()
+        .map(|m| (m.version, &m.description))
+        .expect("Where the migrations at?");
+
+    tracing::info!("Migrations: starting (most recent in source: {version} '{description}')");
+
+    // sqlx::Pool only runs migrations in a transaction, which prevents us from doing things
+    // like CREATE INDEX CONCURRENTLY . . .
+    // So we wrap our pools in a special migrator type that avoids transactions.
+    let mut migrator = TxnOptionalMigrator::new("db", &db).await;
+
+    tracing::info!("Migrating database");
+    migrator
+        .ensure_migrations_table()
+        .await
+        .expect("Failed to ensure db");
+    MIGRATIONS
+        .run_direct(&mut migrator)
+        .await
+        .expect("Unable to migrate db");
+
+    tracing::info!("Migrations: Done!");
 }
 
 /// Wipe an organization from existence in a way that ensures the operation can be tried again on
