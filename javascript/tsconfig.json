@@ -20,14 +20,10 @@
     "noLib": false,
     "lib": ["es6", "dom"]
   },
-  "exclude": [
-    "dist",
-    "test_build",
-    "node_modules",
-    "templates",
-    "jest.config.js",
-    "src/**/*.test.ts",
-    "eslint.config.mjs"
+  "include": [
+    "src/**/*.ts"
   ],
-  "filesGlob": ["./src/**/*.ts"]
+  "exclude": [
+    "src/**/*.test.ts"
+  ],
 }
