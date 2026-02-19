@@ -23,7 +23,7 @@ final class TestPayload
         $this->secret = self::DEFAULT_SECRET;
 
         $toSign = "{$this->id}.{$this->timestamp}.{$this->payload}";
-        $signature =  base64_encode(pack('H*', hash_hmac('sha256', $toSign, base64_decode($this->secret))));
+        $signature = base64_encode(pack('H*', hash_hmac('sha256', $toSign, base64_decode($this->secret))));
 
         $this->header = array(
             "svix-id" => $this->id,
