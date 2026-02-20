@@ -38,7 +38,7 @@ jobs:
           context: ./server
           file: ./server/Dockerfile
           push: false
-          tags: ${{ steps.gen_docker_tags.docker_tags }}
+          tags: ${{ steps.gen_docker_tags.outputs.docker_tags }}
           platforms: linux/amd64
           load: true
 
@@ -46,7 +46,7 @@ jobs:
         id: scan
         uses: anchore/scan-action@v6
         with:
-          image: "${{ steps.gen_docker_tags.latest_tag }}"
+          image: "${{ steps.gen_docker_tags.outputs.latest_tag }}"
           fail-build: true
           severity-cutoff: high
           only-fixed: true
