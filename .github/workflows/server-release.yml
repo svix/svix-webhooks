@@ -63,6 +63,11 @@ jobs:
           echo "DOCKER_TAGS=${DOCKER_TAGS}" >> "$GITHUB_ENV"
           echo "Generated Tags: ${DOCKER_TAGS}"
 
+      - name: Extract first tag
+        id: extract
+        run: |
+          echo "SVIX_TAG=${DOCKER_TAGS%%,*}" >> "$GITHUB_OUTPUT"
+
       - name: Build Docker image
         uses: docker/build-push-action@v6
         with:
@@ -77,7 +82,7 @@ jobs:
         id: scan
         uses: anchore/scan-action@v6
         with:
-          image: "${{ env.DOCKER_TAGS }}"
+          image: "${{ steps.extract.outputs.SVIX_TAG }}"
           fail-build: true
           severity-cutoff: high
           only-fixed: true
