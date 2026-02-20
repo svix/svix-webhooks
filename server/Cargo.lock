@@ -4963,7 +4963,6 @@ dependencies = [
  "figment",
  "form_urlencoded",
  "futures",
- "futures-util",
  "hex",
  "hickory-resolver",
  "hmac-sha256",
