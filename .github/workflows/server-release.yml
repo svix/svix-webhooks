@@ -61,6 +61,7 @@ jobs:
           export REPO="${{ secrets.DOCKERHUB_USERNAME }}/svix-server"
           export GIT_TAG="$(git describe --tags --abbrev=0)"
           export DOCKER_TAGS=$(echo "${GIT_TAG}" | sed -E "s#v([0-9]+)\.([0-9]+)\.([0-9]+)#${REPO}:latest,${REPO}:v\1.\2.\3,${REPO}:v\1.\2,${REPO}:v\1#")
+          echo "latest_tag=${REPO}:latest" >> "$GITHUB_OUTPUT"
           echo "docker_tags=${DOCKER_TAGS}" >> "$GITHUB_OUTPUT"
           echo "Generated Tags: ${DOCKER_TAGS}"
 
@@ -78,7 +79,7 @@ jobs:
         id: scan
         uses: anchore/scan-action@v6
         with:
-          image: "${{ steps.gen_docker_tags.docker_tags }}"
+          image: "${{ steps.gen_docker_tags.latest_tag }}"
           fail-build: true
           severity-cutoff: high
           only-fixed: true
