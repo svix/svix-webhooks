@@ -8,6 +8,8 @@ from ..models import (
     ListResponseMessageOut,
     MessageIn,
     MessageOut,
+    MessagePrecheckIn,
+    MessagePrecheckOut,
 )
 from .common import ApiBase, BaseOptions, serialize_params
 from .message_poller import (
@@ -73,6 +75,18 @@ class MessageCreateOptions(BaseOptions):
 
 @dataclass
 class MessageExpungeAllContentsOptions(BaseOptions):
+    idempotency_key: t.Optional[str] = None
+
+    def _header_params(self) -> t.Dict[str, str]:
+        return serialize_params(
+            {
+                "idempotency-key": self.idempotency_key,
+            }
+        )
+
+
+@dataclass
+class MessagePrecheckOptions(BaseOptions):
     idempotency_key: t.Optional[str] = None
 
     def _header_params(self) -> t.Dict[str, str]:
@@ -214,6 +228,32 @@ class MessageAsync(ApiBase):
         )
         return ExpungeAllContentsOut.model_validate(response.json())
 
+    async def precheck(
+        self,
+        app_id: str,
+        message_precheck_in: MessagePrecheckIn,
+        options: MessagePrecheckOptions = MessagePrecheckOptions(),
+    ) -> MessagePrecheckOut:
+        """A pre-check call for `message.create` that checks whether any active endpoints are
+        listening to this message.
+
+        Note: most people shouldn't be using this API. Svix doesn't bill you for
+        messages not actually sent, so using this API doesn't save money.
+        If unsure, please ask Svix support before using this API."""
+        response = await self._request_asyncio(
+            method="post",
+            path="/api/v1/app/{app_id}/msg/precheck/active",
+            path_params={
+                "app_id": app_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
+            json_body=message_precheck_in.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
+        )
+        return MessagePrecheckOut.model_validate(response.json())
+
     async def get(
         self, app_id: str, msg_id: str, options: MessageGetOptions = MessageGetOptions()
     ) -> MessageOut:
@@ -330,6 +370,32 @@ class Message(ApiBase):
             header_params=options._header_params(),
         )
         return ExpungeAllContentsOut.model_validate(response.json())
+
+    def precheck(
+        self,
+        app_id: str,
+        message_precheck_in: MessagePrecheckIn,
+        options: MessagePrecheckOptions = MessagePrecheckOptions(),
+    ) -> MessagePrecheckOut:
+        """A pre-check call for `message.create` that checks whether any active endpoints are
+        listening to this message.
+
+        Note: most people shouldn't be using this API. Svix doesn't bill you for
+        messages not actually sent, so using this API doesn't save money.
+        If unsure, please ask Svix support before using this API."""
+        response = self._request_sync(
+            method="post",
+            path="/api/v1/app/{app_id}/msg/precheck/active",
+            path_params={
+                "app_id": app_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
+            json_body=message_precheck_in.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
+        )
+        return MessagePrecheckOut.model_validate(response.json())
 
     def get(
         self, app_id: str, msg_id: str, options: MessageGetOptions = MessageGetOptions()

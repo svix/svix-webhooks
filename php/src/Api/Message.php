@@ -9,6 +9,8 @@ use Svix\Models\ExpungeAllContentsOut;
 use Svix\Models\ListResponseMessageOut;
 use Svix\Models\MessageIn;
 use Svix\Models\MessageOut;
+use Svix\Models\MessagePrecheckIn;
+use Svix\Models\MessagePrecheckOut;
 use Svix\Request\SvixHttpClient;
 
 class Message
@@ -107,6 +109,29 @@ class Message
         $res = $this->client->send($request);
 
         return ExpungeAllContentsOut::fromJson($res);
+    }
+
+    /**
+     * A pre-check call for `message.create` that checks whether any active endpoints are
+     * listening to this message.
+     *
+     * Note: most people shouldn't be using this API. Svix doesn't bill you for
+     * messages not actually sent, so using this API doesn't save money.
+     * If unsure, please ask Svix support before using this API.
+     */
+    public function precheck(
+        string $appId,
+        MessagePrecheckIn $messagePrecheckIn,
+        ?MessagePrecheckOptions $options = null,
+    ): MessagePrecheckOut {
+        $request = $this->client->newReq('POST', "/api/v1/app/{$appId}/msg/precheck/active");
+        if (null !== $options) {
+            $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
+        }
+        $request->setBody(json_encode($messagePrecheckIn));
+        $res = $this->client->send($request);
+
+        return MessagePrecheckOut::fromJson($res);
     }
 
     /** Get a message by its ID or eventID. */

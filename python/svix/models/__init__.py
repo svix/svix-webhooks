@@ -151,6 +151,8 @@ from .message_attempt_trigger_type import MessageAttemptTriggerType
 from .message_endpoint_out import MessageEndpointOut
 from .message_in import MessageIn
 from .message_out import MessageOut
+from .message_precheck_in import MessagePrecheckIn
+from .message_precheck_out import MessagePrecheckOut
 from .message_status import MessageStatus
 from .message_status_text import MessageStatusText
 from .operational_webhook_endpoint_headers_in import OperationalWebhookEndpointHeadersIn
@@ -365,6 +367,8 @@ __all__ = [
     "MessageEndpointOut",
     "MessageIn",
     "MessageOut",
+    "MessagePrecheckIn",
+    "MessagePrecheckOut",
     "MessageStatus",
     "MessageStatusText",
     "OperationalWebhookEndpointHeadersIn",

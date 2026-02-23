@@ -147,6 +147,8 @@ type (
 	MessageEndpointOut                        = models.MessageEndpointOut
 	MessageIn                                 = models.MessageIn
 	MessageOut                                = models.MessageOut
+	MessagePrecheckIn                         = models.MessagePrecheckIn
+	MessagePrecheckOut                        = models.MessagePrecheckOut
 	MessageStatus                             = models.MessageStatus
 	MessageStatusText                         = models.MessageStatusText
 	OperationalWebhookEndpointHeadersIn       = models.OperationalWebhookEndpointHeadersIn
