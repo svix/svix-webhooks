@@ -86,6 +86,19 @@ module Svix
       ExpungeAllContentsOut.deserialize(res)
     end
 
+    def precheck(app_id, message_precheck_in, options = {})
+      options = options.transform_keys(&:to_s)
+      res = @client.execute_request(
+        "POST",
+        "/api/v1/app/#{app_id}/msg/precheck/active",
+        headers: {
+          "idempotency-key" => options["idempotency-key"]
+        },
+        body: message_precheck_in
+      )
+      MessagePrecheckOut.deserialize(res)
+    end
+
     def get(app_id, msg_id, options = {})
       options = options.transform_keys(&:to_s)
       res = @client.execute_request(

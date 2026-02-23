@@ -50,6 +50,10 @@ type MessageExpungeAllContentsOptions struct {
 	IdempotencyKey *string
 }
 
+type MessagePrecheckOptions struct {
+	IdempotencyKey *string
+}
+
 type MessageGetOptions struct {
 	// When `true` message payloads are included in the response.
 	WithContent *bool
@@ -181,6 +185,41 @@ func (message *Message) ExpungeAllContents(
 		nil,
 		headerMap,
 		nil,
+	)
+}
+
+// A pre-check call for `message.create` that checks whether any active endpoints are
+// listening to this message.
+//
+// Note: most people shouldn't be using this API. Svix doesn't bill you for
+// messages not actually sent, so using this API doesn't save money.
+// If unsure, please ask Svix support before using this API.
+func (message *Message) Precheck(
+	ctx context.Context,
+	appId string,
+	messagePrecheckIn models.MessagePrecheckIn,
+	o *MessagePrecheckOptions,
+) (*models.MessagePrecheckOut, error) {
+	pathMap := map[string]string{
+		"app_id": appId,
+	}
+	headerMap := map[string]string{}
+	var err error
+	if o != nil {
+		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return internal.ExecuteRequest[models.MessagePrecheckIn, models.MessagePrecheckOut](
+		ctx,
+		message.client,
+		"POST",
+		"/api/v1/app/{app_id}/msg/precheck/active",
+		pathMap,
+		nil,
+		headerMap,
+		&messagePrecheckIn,
 	)
 }
 

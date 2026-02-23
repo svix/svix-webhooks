@@ -142,6 +142,8 @@ export { MessageAttemptTriggerType } from "./messageAttemptTriggerType";
 export { MessageEndpointOut } from "./messageEndpointOut";
 export { MessageIn } from "./messageIn";
 export { MessageOut } from "./messageOut";
+export { MessagePrecheckIn } from "./messagePrecheckIn";
+export { MessagePrecheckOut } from "./messagePrecheckOut";
 export { MessageStatus } from "./messageStatus";
 export { MessageStatusText } from "./messageStatusText";
 export { OperationalWebhookEndpointHeadersIn } from "./operationalWebhookEndpointHeadersIn";

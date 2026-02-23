@@ -145,6 +145,8 @@ from ..models import (
     MessageEndpointOut,
     MessageIn,
     MessageOut,
+    MessagePrecheckIn,
+    MessagePrecheckOut,
     MessageStatus,
     MessageStatusText,
     OperationalWebhookEndpointHeadersIn,
@@ -272,6 +274,7 @@ from .message import (
     MessageExpungeAllContentsOptions,
     MessageGetOptions,
     MessageListOptions,
+    MessagePrecheckOptions,
 )
 from .message_attempt import (
     MessageAttempt,
@@ -375,6 +378,7 @@ __all__ = [
     "MessageListOptions",
     "MessageCreateOptions",
     "MessageExpungeAllContentsOptions",
+    "MessagePrecheckOptions",
     "MessageGetOptions",
     "MessagePoller",
     "MessagePollerAsync",
@@ -560,6 +564,8 @@ __all__ = [
     "MessageEndpointOut",
     "MessageIn",
     "MessageOut",
+    "MessagePrecheckIn",
+    "MessagePrecheckOut",
     "MessageStatus",
     "MessageStatusText",
     "OperationalWebhookEndpointHeadersIn",

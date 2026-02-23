@@ -66,7 +66,7 @@ pub use self::{
     },
     message::{
         Message, MessageCreateOptions, MessageExpungeAllContentsOptions, MessageGetOptions,
-        MessageListOptions,
+        MessageListOptions, MessagePrecheckOptions,
     },
     message_attempt::{
         MessageAttempt, MessageAttemptListAttemptedDestinationsOptions,

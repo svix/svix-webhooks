@@ -66,6 +66,18 @@ namespace Svix
         }
     }
 
+    public class MessagePrecheckOptions : SvixOptionsBase
+    {
+        public string? IdempotencyKey { get; set; }
+
+        public new Dictionary<string, string> HeaderParams()
+        {
+            return SerializeParams(
+                new Dictionary<string, object?> { { "idempotency-key", IdempotencyKey } }
+            );
+        }
+    }
+
     public class MessageGetOptions : SvixOptionsBase
     {
         public bool? WithContent { get; set; }
@@ -367,6 +379,80 @@ namespace Svix
             catch (ApiException e)
             {
                 _client.Logger?.LogError(e, $"{nameof(ExpungeAllContents)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// A pre-check call for `message.create` that checks whether any active endpoints are
+        /// listening to this message.
+        ///
+        /// Note: most people shouldn't be using this API. Svix doesn't bill you for
+        /// messages not actually sent, so using this API doesn't save money.
+        /// If unsure, please ask Svix support before using this API.
+        /// </summary>
+        public async Task<MessagePrecheckOut> PrecheckAsync(
+            string appId,
+            MessagePrecheckIn messagePrecheckIn,
+            MessagePrecheckOptions? options = null,
+            CancellationToken cancellationToken = default
+        )
+        {
+            messagePrecheckIn =
+                messagePrecheckIn ?? throw new ArgumentNullException(nameof(messagePrecheckIn));
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<MessagePrecheckOut>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/app/{app_id}/msg/precheck/active",
+                    pathParams: new Dictionary<string, string> { { "app_id", appId } },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    content: messagePrecheckIn,
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(PrecheckAsync)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// A pre-check call for `message.create` that checks whether any active endpoints are
+        /// listening to this message.
+        ///
+        /// Note: most people shouldn't be using this API. Svix doesn't bill you for
+        /// messages not actually sent, so using this API doesn't save money.
+        /// If unsure, please ask Svix support before using this API.
+        /// </summary>
+        public MessagePrecheckOut Precheck(
+            string appId,
+            MessagePrecheckIn messagePrecheckIn,
+            MessagePrecheckOptions? options = null
+        )
+        {
+            messagePrecheckIn =
+                messagePrecheckIn ?? throw new ArgumentNullException(nameof(messagePrecheckIn));
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<MessagePrecheckOut>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/app/{app_id}/msg/precheck/active",
+                    pathParams: new Dictionary<string, string> { { "app_id", appId } },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    content: messagePrecheckIn
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(Precheck)} failed");
 
                 throw;
             }

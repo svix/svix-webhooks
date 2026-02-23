@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+* Libs/All: Add support for `v1.message.create-precheck` (Svix Cloud exclusive endpoint)
+
 ## Version 1.85.0
 * Server: Fix non-determinism with regards to overrides of specific header names
 * Server: Bump MSRV to 1.88.0

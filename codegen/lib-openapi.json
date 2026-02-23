@@ -8251,6 +8251,7 @@
             "MessagePrecheckOut": {
                 "properties": {
                     "active": {
+                        "description": "Whether there are any active endpoint that would get sent such a message.",
                         "type": "boolean"
                     }
                 },
@@ -21588,7 +21589,7 @@
         },
         "/api/v1/app/{app_id}/msg/precheck/active": {
             "post": {
-                "description": "A pre-check call for `create.message` that checks whether endpoints are actively listening to\nthis message.",
+                "description": "A pre-check call for `message.create` that checks whether any active endpoints are\nlistening to this message.\n\nNote: most people shouldn't be using this API. Svix doesn't bill you for\nmessages not actually sent, so using this API doesn't save money.\nIf unsure, please ask Svix support before using this API.",
                 "operationId": "v1.message.precheck",
                 "parameters": [
                     {
@@ -21717,7 +21718,73 @@
                 "tags": [
                     "Message"
                 ],
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const response = await svix.message.precheck(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", {\n  eventType: \"user.signup\",\n  channels: [\"project_123\", \"group_2\"],\n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "TypeScript",
+                        "source": "const response = await svix.message.precheck(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", {\n  eventType: \"user.signup\",\n  channels: [\"project_123\", \"group_2\"],\n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "response = svix.message.precheck(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    MessagePrecheckIn(\n        event_type=\"user.signup\",\n        channels=[\n            \"project_123\",\n            \"group_2\",\n        ],\n    ),\n)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python (Async)",
+                        "source": "response = await svix.message.precheck(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    MessagePrecheckIn(\n        event_type=\"user.signup\",\n        channels=[\n            \"project_123\",\n            \"group_2\",\n        ],\n    ),\n)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "response, err := svix.Message.Precheck(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\tMessagePrecheckIn{EventType: \"user.signup\", Channels: []string{\"project_123\", \"group_2\"}},\n\tnil,\n)"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val response =\n    svix.message.precheck(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n        MessagePrecheckIn(eventType = \"user.signup\", channels = setOf(\"project_123\", \"group_2\")),\n    )"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "var response = svix.getMessage()\n        .precheck(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            new MessagePrecheckIn()\n                .eventType(\"user.signup\")\n                .channels(Set.of(\"project_123\", \"group_2\")));"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "response = svix\n  .message\n  .precheck(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", {eventType: \"user.signup\", channels: [\"project_123\", \"group_2\"]})"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let response = svix\n    .message()\n    .precheck(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n        MessagePrecheckIn {\n            event_type: \"user.signup\".to_string(),\n            channels: Some(vec![\"project_123\".to_string(), \"group_2\".to_string()]),\n        },\n        None,\n    )\n    .await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var response = svix.Message.Precheck(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    new MessagePrecheckIn { EventType = \"user.signup\", Channels = [\"project_123\", \"group_2\"] }\n);"
+                    },
+                    {
+                        "label": "PHP",
+                        "lang": "PHP",
+                        "source": "$response = $svix->message->precheck(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    MessagePrecheckIn::create(\n        eventType: \"user.signup\"\n    )\n    ->withChannels([\"project_123\",\"group_2\"])\n);"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "CLI",
+                        "source": "svix message precheck \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" '{\n    \"channels\": [\n      \"project_123\",\n      \"group_2\"\n    ],\n    \"eventType\": \"user.signup\"\n  }'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "cURL",
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/app_1srOrx2ZWZBpBUvZwXKQmoEYga2/msg/precheck/active' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"channels\": [\n      \"project_123\",\n      \"group_2\"\n    ],\n    \"eventType\": \"user.signup\"\n  }'"
+                    }
+                ]
             }
         },
         "/api/v1/app/{app_id}/msg/{msg_id}": {

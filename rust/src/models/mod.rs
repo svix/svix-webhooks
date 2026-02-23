@@ -144,6 +144,8 @@ pub mod message_attempt_trigger_type;
 pub mod message_endpoint_out;
 pub mod message_in;
 pub mod message_out;
+pub mod message_precheck_in;
+pub mod message_precheck_out;
 pub mod message_status;
 pub mod message_status_text;
 pub mod operational_webhook_endpoint_headers_in;
@@ -362,6 +364,8 @@ pub use self::{
     message_endpoint_out::MessageEndpointOut,
     message_in::MessageIn,
     message_out::MessageOut,
+    message_precheck_in::MessagePrecheckIn,
+    message_precheck_out::MessagePrecheckOut,
     message_status::MessageStatus,
     message_status_text::MessageStatusText,
     operational_webhook_endpoint_headers_in::OperationalWebhookEndpointHeadersIn,

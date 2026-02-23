@@ -6,6 +6,8 @@ import com.svix.kotlin.models.ExpungeAllContentsOut
 import com.svix.kotlin.models.ListResponseMessageOut
 import com.svix.kotlin.models.MessageIn
 import com.svix.kotlin.models.MessageOut
+import com.svix.kotlin.models.MessagePrecheckIn
+import com.svix.kotlin.models.MessagePrecheckOut
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
@@ -39,6 +41,8 @@ data class MessageCreateOptions(
 )
 
 data class MessageExpungeAllContentsOptions(val idempotencyKey: String? = null)
+
+data class MessagePrecheckOptions(val idempotencyKey: String? = null)
 
 data class MessageGetOptions(
     /** When `true` message payloads are included in the response. */
@@ -163,6 +167,31 @@ class Message(private val client: SvixHttpClient) {
             "POST",
             url.build(),
             headers = headers.build(),
+        )
+    }
+
+    /**
+     * A pre-check call for `message.create` that checks whether any active endpoints are listening
+     * to this message.
+     *
+     * Note: most people shouldn't be using this API. Svix doesn't bill you for messages not
+     * actually sent, so using this API doesn't save money. If unsure, please ask Svix support
+     * before using this API.
+     */
+    suspend fun precheck(
+        appId: String,
+        messagePrecheckIn: MessagePrecheckIn,
+        options: MessagePrecheckOptions = MessagePrecheckOptions(),
+    ): MessagePrecheckOut {
+        val url = client.newUrlBuilder().encodedPath("/api/v1/app/$appId/msg/precheck/active")
+        val headers = Headers.Builder()
+        options.idempotencyKey?.let { headers.add("idempotency-key", it) }
+
+        return client.executeRequest<MessagePrecheckIn, MessagePrecheckOut>(
+            "POST",
+            url.build(),
+            headers = headers.build(),
+            reqBody = messagePrecheckIn,
         )
     }
 

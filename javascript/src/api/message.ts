@@ -9,6 +9,14 @@ import {
   ListResponseMessageOutSerializer,
 } from "../models/listResponseMessageOut";
 import { type MessageOut, MessageOutSerializer } from "../models/messageOut";
+import {
+  type MessagePrecheckIn,
+  MessagePrecheckInSerializer,
+} from "../models/messagePrecheckIn";
+import {
+  type MessagePrecheckOut,
+  MessagePrecheckOutSerializer,
+} from "../models/messagePrecheckOut";
 import { MessagePoller } from "./messagePoller";
 import { HttpMethod, SvixRequest, type SvixRequestContext } from "../request";
 import { type MessageIn, MessageInSerializer } from "../models/messageIn";
@@ -39,6 +47,10 @@ export interface MessageCreateOptions {
 }
 
 export interface MessageExpungeAllContentsOptions {
+  idempotencyKey?: string;
+}
+
+export interface MessagePrecheckOptions {
   idempotencyKey?: string;
 }
 
@@ -147,6 +159,31 @@ export class Message {
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
 
     return request.send(this.requestCtx, ExpungeAllContentsOutSerializer._fromJsonObject);
+  }
+
+  /**
+   * A pre-check call for `message.create` that checks whether any active endpoints are
+   * listening to this message.
+   *
+   * Note: most people shouldn't be using this API. Svix doesn't bill you for
+   * messages not actually sent, so using this API doesn't save money.
+   * If unsure, please ask Svix support before using this API.
+   */
+  public precheck(
+    appId: string,
+    messagePrecheckIn: MessagePrecheckIn,
+    options?: MessagePrecheckOptions
+  ): Promise<MessagePrecheckOut> {
+    const request = new SvixRequest(
+      HttpMethod.POST,
+      "/api/v1/app/{app_id}/msg/precheck/active"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
+    request.setBody(MessagePrecheckInSerializer._toJsonObject(messagePrecheckIn));
+
+    return request.send(this.requestCtx, MessagePrecheckOutSerializer._fromJsonObject);
   }
 
   /** Get a message by its ID or eventID. */

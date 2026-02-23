@@ -11,6 +11,8 @@ import com.svix.models.ExpungeAllContentsOut;
 import com.svix.models.ListResponseMessageOut;
 import com.svix.models.MessageIn;
 import com.svix.models.MessageOut;
+import com.svix.models.MessagePrecheckIn;
+import com.svix.models.MessagePrecheckOut;
 
 import lombok.*;
 import lombok.Getter;
@@ -203,6 +205,49 @@ public class Message {
         }
         return this.client.executeRequest(
                 "POST", url.build(), Headers.of(headers), null, ExpungeAllContentsOut.class);
+    }
+
+    /**
+     * A pre-check call for `message.create` that checks whether any active endpoints are listening
+     * to this message.
+     *
+     * <p>Note: most people shouldn't be using this API. Svix doesn't bill you for messages not
+     * actually sent, so using this API doesn't save money. If unsure, please ask Svix support
+     * before using this API.
+     */
+    public MessagePrecheckOut precheck(
+            final String appId, final MessagePrecheckIn messagePrecheckIn)
+            throws IOException, ApiException {
+        return this.precheck(appId, messagePrecheckIn, new MessagePrecheckOptions());
+    }
+
+    /**
+     * A pre-check call for `message.create` that checks whether any active endpoints are listening
+     * to this message.
+     *
+     * <p>Note: most people shouldn't be using this API. Svix doesn't bill you for messages not
+     * actually sent, so using this API doesn't save money. If unsure, please ask Svix support
+     * before using this API.
+     */
+    public MessagePrecheckOut precheck(
+            final String appId,
+            final MessagePrecheckIn messagePrecheckIn,
+            final MessagePrecheckOptions options)
+            throws IOException, ApiException {
+        HttpUrl.Builder url =
+                this.client
+                        .newUrlBuilder()
+                        .encodedPath(String.format("/api/v1/app/%s/msg/precheck/active", appId));
+        Map<String, String> headers = new HashMap<>();
+        if (options.idempotencyKey != null) {
+            headers.put("idempotency-key", options.idempotencyKey);
+        }
+        return this.client.executeRequest(
+                "POST",
+                url.build(),
+                Headers.of(headers),
+                messagePrecheckIn,
+                MessagePrecheckOut.class);
     }
 
     /** Get a message by its ID or eventID. */

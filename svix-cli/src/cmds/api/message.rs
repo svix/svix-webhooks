@@ -94,6 +94,19 @@ impl From<MessageExpungeAllContentsOptions> for svix::api::MessageExpungeAllCont
 }
 
 #[derive(Args, Clone)]
+pub struct MessagePrecheckOptions {
+    #[arg(long)]
+    pub idempotency_key: Option<String>,
+}
+
+impl From<MessagePrecheckOptions> for svix::api::MessagePrecheckOptions {
+    fn from(value: MessagePrecheckOptions) -> Self {
+        let MessagePrecheckOptions { idempotency_key } = value;
+        Self { idempotency_key }
+    }
+}
+
+#[derive(Args, Clone)]
 pub struct MessageGetOptions {
     /// When `true` message payloads are included in the response.
     #[arg(long)]
@@ -166,6 +179,18 @@ pub enum MessageCommands {
         #[clap(flatten)]
         options: MessageExpungeAllContentsOptions,
     },
+    /// A pre-check call for `message.create` that checks whether any active endpoints are
+    /// listening to this message.
+    ///
+    /// Note: most people shouldn't be using this API. Svix doesn't bill you for
+    /// messages not actually sent, so using this API doesn't save money.
+    /// If unsure, please ask Svix support before using this API.
+    Precheck {
+        app_id: String,
+        message_precheck_in: crate::json::JsonOf<MessagePrecheckIn>,
+        #[clap(flatten)]
+        options: MessagePrecheckOptions,
+    },
     /// Get a message by its ID or eventID.
     Get {
         app_id: String,
@@ -212,6 +237,21 @@ impl MessageCommands {
                 let resp = client
                     .message()
                     .expunge_all_contents(app_id, Some(options.into()))
+                    .await?;
+                crate::json::print_json_output(&resp, color_mode)?;
+            }
+            Self::Precheck {
+                app_id,
+                message_precheck_in,
+                options,
+            } => {
+                let resp = client
+                    .message()
+                    .precheck(
+                        app_id,
+                        message_precheck_in.into_inner(),
+                        Some(options.into()),
+                    )
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
