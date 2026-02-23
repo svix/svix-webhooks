@@ -1,6 +1,6 @@
 [package]
 name = "svix"
-version = "1.85.0"
+version = "1.86.0"
 authors = ["Svix Inc. <oss@svix.com>"]
 edition = "2021"
 description = "Svix webhooks API client and webhook verification library"
