@@ -275,6 +275,19 @@ pub fn setup_tracing(
             .tonic()
             .with_endpoint(addr);
 
+        let resources: Vec<opentelemetry::KeyValue> = [
+            Some(opentelemetry::KeyValue::new(
+                "service.name",
+                cfg.opentelemetry_service_name.clone(),
+            )),
+            cfg.opentelemetry_deployment_env
+                .as_ref()
+                .map(|name| opentelemetry::KeyValue::new("deployment.environment", name.clone())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+
         let provider = opentelemetry_otlp::new_pipeline()
             .tracing()
             .with_exporter(exporter)
@@ -285,12 +298,7 @@ pub fn setup_tracing(
                             .map(opentelemetry_sdk::trace::Sampler::TraceIdRatioBased)
                             .unwrap_or(opentelemetry_sdk::trace::Sampler::AlwaysOn),
                     )
-                    .with_resource(opentelemetry_sdk::Resource::new(vec![
-                        opentelemetry::KeyValue::new(
-                            "service.name",
-                            cfg.opentelemetry_service_name.clone(),
-                        ),
-                    ])),
+                    .with_resource(opentelemetry_sdk::Resource::new(resources)),
             )
             .install_batch(Tokio)
             .unwrap();
@@ -352,21 +360,32 @@ pub fn setup_metrics(cfg: &ConfigurationInner) -> Option<SdkMeterProvider> {
             .tonic()
             .with_endpoint(addr);
 
+        let resources: Vec<opentelemetry::KeyValue> = [
+            Some(opentelemetry::KeyValue::new(
+                "service.name",
+                cfg.opentelemetry_service_name.clone(),
+            )),
+            cfg.opentelemetry_deployment_env
+                .as_ref()
+                .map(|name| opentelemetry::KeyValue::new("deployment.environment", name.clone())),
+            Some(opentelemetry::KeyValue::new(
+                "instance_id",
+                INSTANCE_ID.to_owned(),
+            )),
+            Some(opentelemetry::KeyValue::new(
+                "service.version",
+                option_env!("GITHUB_SHA").unwrap_or("unknown"),
+            )),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+
         opentelemetry_otlp::new_pipeline()
             .metrics(Tokio)
             .with_delta_temporality()
             .with_exporter(exporter)
-            .with_resource(opentelemetry_sdk::Resource::new(vec![
-                opentelemetry::KeyValue::new(
-                    "service.name",
-                    cfg.opentelemetry_service_name.clone(),
-                ),
-                opentelemetry::KeyValue::new("instance_id", INSTANCE_ID.to_owned()),
-                opentelemetry::KeyValue::new(
-                    "service.version",
-                    option_env!("GITHUB_SHA").unwrap_or("unknown"),
-                ),
-            ]))
+            .with_resource(opentelemetry_sdk::Resource::new(resources))
             .build()
             .unwrap()
     })

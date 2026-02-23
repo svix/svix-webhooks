@@ -149,6 +149,8 @@ pub struct ConfigurationInner {
     pub opentelemetry_sample_ratio: Option<f64>,
     /// The service name to use for OpenTelemetry. If not provided, it defaults to "svix_server".
     pub opentelemetry_service_name: String,
+    /// The deployment environment to use for OpenTelemetry. It will be translated to "deployment.environment" resource if provided
+    pub opentelemetry_deployment_env: Option<String>,
     /// Whether to enable the logging of the databases at the configured log level. This may be
     /// useful for analyzing their response times.
     pub db_tracing: bool,
