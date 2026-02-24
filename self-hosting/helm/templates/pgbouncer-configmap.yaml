@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "svix.fullname" . }}-pgbouncer-config
+  labels:
+    {{- include "svix.labels" . | nindent 4 }}
+    app.kubernetes.io/component: pgbouncer
+data:
+  pgbouncer.ini: |
+    [databases]
+    * = host={{ include "svix.fullname" . }}-{{ .Values.postgres.name }} port=5432 user=postgres password={{ .Values.postgres.env.POSTGRES_PASSWORD }}
+
+    [pgbouncer]
+    listen_addr = 0.0.0.0
+    listen_port = 5432
+    auth_type = trust
+    ignore_startup_parameters = extra_float_digits
+    pool_mode = session
+    max_client_conn = {{ .Values.pgbouncer.env.MAX_CLIENT_CONN }}
+    default_pool_size = 25
+    auth_file = /tmp/userlist.txt
+  
+  userlist.txt: |
+    "postgres" ""
