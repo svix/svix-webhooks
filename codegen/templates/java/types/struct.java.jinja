@@ -83,7 +83,7 @@ public class {{ type.name | to_upper_camel_case }} {
         return this;
     }
 
-    {% if field.type.is_set() or  field.type.is_list() -%}
+    {% if field.type.is_set() or field.type.is_list() -%}
     {{ f_deprecated }} public {{ class_ty }} add{{ f_varname | to_upper_camel_case }}Item ({{ field.type.inner_type().to_java() }} {{ f_varname }}Item) {
         if (this.{{ f_varname }} == null) {
             {% if field.type.is_set() -%}

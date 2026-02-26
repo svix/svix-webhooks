@@ -11,7 +11,7 @@ import kotlinx.serialization.json.jsonPrimitive
 
 
 @Serializable
-enum class  {{ type.name | to_upper_camel_case }} : ToQueryParam {
+enum class {{ type.name | to_upper_camel_case }} : ToQueryParam {
     {% for value in type.values -%}
     @SerialName("{{ value }}")
     {{ value | to_upper_snake_case }} {% if loop.last %};{% else %},{% endif %}

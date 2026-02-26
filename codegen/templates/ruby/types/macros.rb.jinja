@@ -5,7 +5,7 @@
         {% set not_nil_check %}if {{ val_expr }}{% endset -%}
     {% endif -%}
 
-    {% if (field.type.is_set() or  field.type.is_list()) and field.type.inner_type().is_schema_ref() -%}
+    {% if (field.type.is_set() or field.type.is_list()) and field.type.inner_type().is_schema_ref() -%}
         {% set val_expr -%}
             attributes['{{ field.name }}'].map { | v | Svix::{{ field.type.inner_type().to_ruby() }}.deserialize v } {{ not_nil_check }}
         {%- endset -%}
@@ -25,7 +25,7 @@
 {% macro serialize_field(field) -%}
     {% set val_expr %}@{{ field.name | to_snake_case }}{% endset -%}
 
-    {% if (field.type.is_set() or  field.type.is_list()) and field.type.inner_type().is_schema_ref() -%}
+    {% if (field.type.is_set() or field.type.is_list()) and field.type.inner_type().is_schema_ref() -%}
         {% set val_expr %}{{ val_expr }}.map { | v | v.serialize }{% endset -%}
     {% elif field.type.is_schema_ref() -%}
         {# TODO(10055): the schema called "Data" does not exist -#}
