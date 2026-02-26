@@ -15,7 +15,7 @@ type {{ ty_name }} int64
 
 const (
 {% for varname, val in type.variants -%}
-	{{ type.name | to_upper_snake_case | replace("_", "") }}_{{ varname | to_upper_snake_case }}  {{ ty_name }} = {{ val }}
+	{{ type.name | to_upper_snake_case | replace("_", "") }}_{{ varname | to_upper_snake_case }} {{ ty_name }} = {{ val }}
 {% endfor -%}
 )
 

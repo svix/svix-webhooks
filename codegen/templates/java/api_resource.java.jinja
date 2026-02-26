@@ -73,7 +73,7 @@ public class {{ resource_type_name }} {
             {% endif -%}
         {% endset -%}
         {{ func_args | strip_trailing_comma }}
-        ) {{ throws }}  {
+        ) {{ throws }} {
             {% if res_type != "void" %}return{% endif %} this.{{ op_name }}(
             {# path parameters -#}
             {% for p in op.path_params -%}
@@ -109,7 +109,7 @@ public class {{ resource_type_name }} {
         {% endif -%}
     {% endset -%}
     {{ func_args | strip_trailing_comma }}
-    ) {{ throws }}  {
+    ) {{ throws }} {
         {# path params -#}
         {% if op.path_params | length > 0 -%}
         HttpUrl.Builder url = this.client.newUrlBuilder().encodedPath(String.format("{{ op.path | generate_java_path_str(op.path_params) }}"
@@ -134,7 +134,7 @@ public class {{ resource_type_name }} {
         }
         {% endfor -%}
         {# header params -#}
-        {% if op.header_params | length  >0 -%}
+        {% if op.header_params | length > 0 -%}
         Map<String, String> headers = new HashMap<>();
             {% for p in op.header_params -%}
             if (options.{{ p.name | to_lower_camel_case }} != null){
@@ -147,7 +147,8 @@ public class {{ resource_type_name }} {
             {% include "api_extra/message_create_body.java" -%}
         {% endif -%}
 
-        {% if res_type != "void" %}return{% endif %}  this.client.executeRequest(
+        {% if res_type != "void" %}return {% endif -%}
+        this.client.executeRequest(
             "{{ op.method | upper }}",
             url.build(),
             {# headers -#}

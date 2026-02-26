@@ -26,7 +26,7 @@ data class {{ type_name }}(
 
 
 @Serializable
-sealed  class {{ enum_type_name }} {
+sealed class {{ enum_type_name }} {
     val variantName: String get() = this::class.annotations.filterIsInstance<VariantName>().first().name
     abstract fun toJsonElement(): JsonElement
 

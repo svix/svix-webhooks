@@ -15,7 +15,7 @@ import com.svix.kotlin.ToQueryParam
 
 
 @Serializable(with = {{ ty_name }}Serializer::class)
-enum class  {{ ty_name }} : ToQueryParam {
+enum class {{ ty_name }} : ToQueryParam {
     {% for varname, value in type.variants -%}
     {{ varname | to_upper_snake_case }} {% if loop.last %};{% else %},{% endif %}
     {% endfor -%}

@@ -5,7 +5,7 @@
     * to be JSON, and Svix will minify the payload before sending the webhook
     * (for example, by removing extraneous whitespace or unnecessarily escaped
     * characters in strings). With this function, the payload will be sent
-    * "as is", without  any minification or other processing.
+    * "as is", without any minification or other processing.
     *
     * @param string      $eventType   The event type's name Example: `user.signup`.
     * @param string      $payload     Serialized message payload.
