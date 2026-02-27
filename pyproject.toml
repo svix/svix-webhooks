@@ -1,0 +1,10 @@
+[project]
+name = "coyote"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "attrs>=25.4.0,<26.0.0",
+    "httpx>=0.28.1,<0.29.0",
+    "msgpack>=1.1.2,<2.0.0",
+    "pydantic>=2.12.5,<3.0.0",
+]
