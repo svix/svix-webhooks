@@ -10,11 +10,11 @@ use std::{
 };
 
 use base64::{Engine, engine::general_purpose::STANDARD};
-use chrono::Utc;
+use chrono::{DateTime, Utc};
 use futures::future;
 use http::{
-    HeaderName, HeaderValue, StatusCode, Version,
-    header::{CONTENT_TYPE, USER_AGENT},
+    HeaderMap, HeaderName, HeaderValue, StatusCode, Version,
+    header::{CONTENT_TYPE, RETRY_AFTER, USER_AGENT},
 };
 use http_body_util::BodyExt as _;
 use itertools::Itertools;
@@ -256,7 +256,8 @@ struct WorkerContext<'a> {
     webhook_client: &'a WebhookClient,
 }
 
-struct FailedDispatch(messageattempt::ActiveModel, Error);
+struct FailedDispatch(messageattempt::ActiveModel, Error, Option<DateTime<Utc>>);
+
 struct SuccessfulDispatch(messageattempt::ActiveModel);
 
 #[allow(clippy::large_enum_variant)]
@@ -382,6 +383,15 @@ async fn make_http_call(
                 MessageStatus::Fail
             };
 
+            let retry_after = if matches!(
+                res.status(),
+                StatusCode::TOO_MANY_REQUESTS | StatusCode::SERVICE_UNAVAILABLE
+            ) {
+                retry_after(res.headers())
+            } else {
+                None
+            };
+
             let http_error = if !res.status().is_success() {
                 Some(WebhookClientError::FailureStatus(res.status()))
             } else {
@@ -412,6 +422,7 @@ async fn make_http_call(
                 Some(err) => Ok(CompletedDispatch::Failed(FailedDispatch(
                     attempt,
                     Error::generic(err),
+                    retry_after,
                 ))),
                 None => Ok(CompletedDispatch::Successful(SuccessfulDispatch(attempt))),
             }
@@ -429,6 +440,7 @@ async fn make_http_call(
                     ..attempt
                 },
                 err.into(),
+                None,
             )))
         }
     }
@@ -487,7 +499,33 @@ async fn handle_successful_dispatch(
     Ok(())
 }
 
-fn calculate_retry_delay(duration: Duration, err: &Error) -> Duration {
+fn retry_after(hdr_map: &HeaderMap) -> Option<DateTime<Utc>> {
+    let retry_after = hdr_map.get(RETRY_AFTER)?;
+    let retry_after_str = retry_after.to_str().ok()?;
+
+    if let Ok(date) = DateTime::parse_from_rfc2822(retry_after_str) {
+        return Some(date.with_timezone(&Utc));
+    }
+
+    if let Ok(seconds_f64) = retry_after_str.parse::<f64>() {
+        let seconds = seconds_f64.ceil() as i64;
+        return Some(Utc::now() + chrono::Duration::seconds(seconds));
+    }
+
+    tracing::warn!("Failed to parse retry-after header: {retry_after_str}");
+    None
+}
+
+fn limit_retry_delay(base: Duration, retry_after: Duration) -> Duration {
+    let cap = base.saturating_add(Duration::from_secs(2 * 60 * 60));
+    std::cmp::min(std::cmp::max(base, retry_after), cap)
+}
+
+fn calculate_retry_delay(
+    duration: Duration,
+    err: &Error,
+    retry_after: Option<DateTime<Utc>>,
+) -> Duration {
     let duration = if matches!(err.typ, ErrorType::Timeout(_))
         || matches!(err.typ, ErrorType::Http(HttpError { status, .. }) if status == StatusCode::TOO_MANY_REQUESTS)
     {
@@ -495,6 +533,16 @@ fn calculate_retry_delay(duration: Duration, err: &Error) -> Duration {
     } else {
         duration
     };
+
+    let duration = if let Some(retry_after) = retry_after {
+        let retry_after = (retry_after - Utc::now())
+            .to_std()
+            .unwrap_or(Duration::from_secs(0));
+        limit_retry_delay(duration, retry_after)
+    } else {
+        duration
+    };
+
     // Apply jitter with a maximum variation of JITTER_DELTA
     rand::thread_rng()
         .gen_range(duration.mul_f32(1.0 - JITTER_DELTA)..=duration.mul_f32(1.0 + JITTER_DELTA))
@@ -519,7 +567,7 @@ async fn handle_failed_dispatch(
         msg_task,
         ..
     }: DispatchContext<'_>,
-    FailedDispatch(mut attempt, err): FailedDispatch,
+    FailedDispatch(mut attempt, err, retry_after): FailedDispatch,
 ) -> Result<()> {
     attempt.ended_at = Set(Some(Utc::now().into()));
 
@@ -535,7 +583,7 @@ async fn handle_failed_dispatch(
         attempt.insert(*db).await?;
         Ok(())
     } else if attempt_count < retry_schedule.len() {
-        let retry_delay = calculate_retry_delay(retry_schedule[attempt_count], &err);
+        let retry_delay = calculate_retry_delay(retry_schedule[attempt_count], &err, retry_after);
         let next_attempt_time =
             Utc::now() + chrono::Duration::from_std(retry_delay).expect("Error parsing duration");
 
@@ -1069,10 +1117,13 @@ mod tests {
 
     use base64::{Engine, engine::general_purpose::STANDARD};
     use bytes::Bytes;
+    use chrono::{DateTime, Utc};
     use ed25519_compact::Signature;
+    use http::HeaderMap;
 
     use super::{
-        CasePreservingHeaderMap, SVIX_SIGNATURE, bytes_to_string, generate_msg_headers, sign_msg,
+        CasePreservingHeaderMap, SVIX_SIGNATURE, bytes_to_string, generate_msg_headers,
+        retry_after, sign_msg,
     };
     use crate::core::{
         cryptography::{AsymmetricKey, Encryption},
@@ -1223,5 +1274,49 @@ mod tests {
     fn test_bytes_to_string() {
         let b = Bytes::from_static(b"Hello, world.");
         assert_eq!(bytes_to_string(b), "Hello, world.");
+    }
+
+    #[test]
+    fn test_retry_after() {
+        let mut headers = HeaderMap::new();
+
+        headers.insert(
+            "retry-after",
+            "Wed, 21 Oct 2015 07:28:00 GMT".parse().unwrap(),
+        );
+        let result = retry_after(&headers).unwrap();
+        assert_eq!(
+            result,
+            DateTime::parse_from_rfc2822("Wed, 21 Oct 2015 07:28:00 GMT")
+                .unwrap()
+                .with_timezone(&Utc)
+        );
+
+        headers.insert("retry-after", "120".parse().unwrap());
+        let result = retry_after(&headers).unwrap();
+        let expected = Utc::now() + chrono::Duration::seconds(120);
+        assert!((result - expected).num_seconds().abs() < 2);
+
+        headers.insert("retry-after", "120.1".parse().unwrap());
+        let result = retry_after(&headers).unwrap();
+        let expected = Utc::now() + chrono::Duration::seconds(121);
+        assert!((result - expected).num_seconds().abs() < 2);
+
+        headers.insert("retry-after", "120.6".parse().unwrap());
+        let result = retry_after(&headers).unwrap();
+        let expected = Utc::now() + chrono::Duration::seconds(121);
+        assert!((result - expected).num_seconds().abs() < 2);
+
+        headers.insert("retry-after", "120.0".parse().unwrap());
+        let result = retry_after(&headers).unwrap();
+        let expected = Utc::now() + chrono::Duration::seconds(120);
+        assert!((result - expected).num_seconds().abs() < 2);
+
+        headers.clear();
+        headers.insert("retry-after", "invalid".parse().unwrap());
+        assert!(retry_after(&headers).is_none());
+
+        headers.clear();
+        assert!(retry_after(&headers).is_none());
     }
 }
