@@ -6,6 +6,7 @@ Here is a quick overview for how to use it:
 ## Updating the SDKs
 
 To regenerate the code after updating `lib-openapi.json`, run `regen_openapi.py` from the repository root.
+At the time of writing, this script requires Python 3.11+ and depends on podman or docker being available.
 
 ## openapi-codegen
 
