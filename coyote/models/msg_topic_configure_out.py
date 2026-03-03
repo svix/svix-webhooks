@@ -3,5 +3,5 @@
 from ..internal.base_model import BaseModel
 
 
-class RedriveOut(BaseModel):
-    pass
+class MsgTopicConfigureOut(BaseModel):
+    partitions: int

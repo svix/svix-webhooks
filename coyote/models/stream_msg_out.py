@@ -5,11 +5,13 @@ from datetime import datetime
 from ..internal.base_model import BaseModel
 
 
-class MsgOut(BaseModel):
-    headers: t.Dict[str, str]
+class StreamMsgOut(BaseModel):
+    offset: int
 
-    id: int
+    topic: str
 
-    payload: t.List[int]
+    value: bytes
+
+    headers: t.Optional[t.Dict[str, str]] = None
 
     timestamp: datetime

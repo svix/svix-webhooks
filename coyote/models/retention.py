@@ -5,6 +5,6 @@ from ..internal.base_model import BaseModel
 
 
 class Retention(BaseModel):
-    bytes: t.Optional[int] = None
-
     millis: t.Optional[int] = None
+
+    bytes: t.Optional[int] = None

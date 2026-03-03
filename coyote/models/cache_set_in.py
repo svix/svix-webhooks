@@ -1,13 +1,19 @@
 # this file is @generated
-import typing as t
 
 from ..internal.base_model import BaseModel
 
 
 class CacheSetIn(BaseModel):
-    key: str
+    value: bytes
 
     ttl: int
     """Time to live in milliseconds"""
 
-    value: t.List[int]
+
+class _CacheSetIn(BaseModel):
+    key: str
+
+    value: bytes
+
+    ttl: int
+    """Time to live in milliseconds"""

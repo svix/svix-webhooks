@@ -4,7 +4,13 @@ from pydantic import Field
 from ..internal.base_model import BaseModel
 
 
-class RedriveIn(BaseModel):
+class MsgStreamCommitIn(BaseModel):
+    offset: int
+
+
+class _MsgStreamCommitIn(BaseModel):
+    topic: str
+
     consumer_group: str = Field(alias="consumer_group")
 
-    name: str
+    offset: int

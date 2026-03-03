@@ -3,5 +3,9 @@
 from ..internal.base_model import BaseModel
 
 
-class GetNamespaceIn(BaseModel):
+class MsgNamespaceGetIn(BaseModel):
+    pass
+
+
+class _MsgNamespaceGetIn(BaseModel):
     name: str

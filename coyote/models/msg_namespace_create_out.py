@@ -8,13 +8,13 @@ from .retention import Retention
 from .storage_type import StorageType
 
 
-class GetNamespaceOut(BaseModel):
-    created: datetime
-
+class MsgNamespaceCreateOut(BaseModel):
     name: str
 
     retention: Retention
 
     storage_type: StorageType = Field(alias="storage_type")
+
+    created: datetime
 
     updated: datetime

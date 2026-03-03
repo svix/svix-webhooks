@@ -11,6 +11,7 @@ class HealthAsync(ApiBase):
         self,
     ) -> PingOut:
         """Verify the server is up and running."""
+
         return await self._request_asyncio(
             method="get",
             path="/api/v1/health/ping",
@@ -23,6 +24,7 @@ class Health(ApiBase):
         self,
     ) -> PingOut:
         """Verify the server is up and running."""
+
         return self._request_sync(
             method="get",
             path="/api/v1/health/ping",

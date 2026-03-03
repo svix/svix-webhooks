@@ -3,5 +3,5 @@
 from ..internal.base_model import BaseModel
 
 
-class AckMsgRangeOut(BaseModel):
+class MsgStreamCommitOut(BaseModel):
     pass

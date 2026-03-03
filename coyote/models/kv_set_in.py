@@ -7,11 +7,20 @@ from .operation_behavior import OperationBehavior
 
 
 class KvSetIn(BaseModel):
-    behavior: t.Optional[OperationBehavior] = None
-
-    key: str
+    value: bytes
 
     ttl: t.Optional[int] = None
     """Time to live in milliseconds"""
 
-    value: t.List[int]
+    behavior: t.Optional[OperationBehavior] = None
+
+
+class _KvSetIn(BaseModel):
+    key: str
+
+    value: bytes
+
+    ttl: t.Optional[int] = None
+    """Time to live in milliseconds"""
+
+    behavior: t.Optional[OperationBehavior] = None

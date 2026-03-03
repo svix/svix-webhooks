@@ -1,5 +1,5 @@
 # TODO - remove this special case when we fix the generated code for empty openapi structs
-from typing import Any, Dict, List, Type, TypeVar
+from typing import Any, Dict, List
 
 import attr
 
@@ -19,7 +19,9 @@ class HttpValidationError(Exception):
     status_code: int = 0
 
     @classmethod
-    def init_exception(cls, response: Dict[str, str], status_code: int) -> "HttpValidationError":
+    def init_exception(
+        cls, response: Dict[str, str], status_code: int
+    ) -> "HttpValidationError":
         ret = cls.from_dict(response)
         ret.status_code = status_code
         return ret

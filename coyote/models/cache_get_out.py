@@ -6,9 +6,9 @@ from ..internal.base_model import BaseModel
 
 
 class CacheGetOut(BaseModel):
+    key: str
+
     expiry: t.Optional[datetime] = None
     """Time of expiry"""
 
-    key: str
-
-    value: t.List[int]
+    value: bytes

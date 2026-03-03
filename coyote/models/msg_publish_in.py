@@ -6,7 +6,11 @@ from ..internal.base_model import BaseModel
 from .msg_in import MsgIn
 
 
-class AppendToStreamIn(BaseModel):
+class MsgPublishIn(BaseModel):
     msgs: t.List[MsgIn]
 
-    name: str
+
+class _MsgPublishIn(BaseModel):
+    topic: str
+
+    msgs: t.List[MsgIn]
