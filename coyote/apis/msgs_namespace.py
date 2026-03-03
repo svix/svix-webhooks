@@ -16,7 +16,7 @@ class MsgsNamespaceAsync(ApiBase):
     async def create(
         self,
         name: str,
-        msg_namespace_create_in: MsgNamespaceCreateIn,
+        msg_namespace_create_in: MsgNamespaceCreateIn = MsgNamespaceCreateIn(),
     ) -> MsgNamespaceCreateOut:
         """Creates or updates a msgs namespace with the given name."""
         body = _MsgNamespaceCreateIn(
@@ -35,7 +35,7 @@ class MsgsNamespaceAsync(ApiBase):
     async def get(
         self,
         name: str,
-        msg_namespace_get_in: MsgNamespaceGetIn,
+        msg_namespace_get_in: MsgNamespaceGetIn = MsgNamespaceGetIn(),
     ) -> MsgNamespaceGetOut:
         """Gets a msgs namespace by name."""
         body = _MsgNamespaceGetIn(
@@ -54,7 +54,7 @@ class MsgsNamespace(ApiBase):
     def create(
         self,
         name: str,
-        msg_namespace_create_in: MsgNamespaceCreateIn,
+        msg_namespace_create_in: MsgNamespaceCreateIn = MsgNamespaceCreateIn(),
     ) -> MsgNamespaceCreateOut:
         """Creates or updates a msgs namespace with the given name."""
         body = _MsgNamespaceCreateIn(
@@ -73,7 +73,7 @@ class MsgsNamespace(ApiBase):
     def get(
         self,
         name: str,
-        msg_namespace_get_in: MsgNamespaceGetIn,
+        msg_namespace_get_in: MsgNamespaceGetIn = MsgNamespaceGetIn(),
     ) -> MsgNamespaceGetOut:
         """Gets a msgs namespace by name."""
         body = _MsgNamespaceGetIn(

@@ -17,7 +17,7 @@ class MsgsStreamAsync(ApiBase):
         self,
         topic: str,
         consumer_group: str,
-        msg_stream_receive_in: MsgStreamReceiveIn,
+        msg_stream_receive_in: MsgStreamReceiveIn = MsgStreamReceiveIn(),
     ) -> MsgStreamReceiveOut:
         """Receives messages from a topic using a consumer group.
 
@@ -66,7 +66,7 @@ class MsgsStream(ApiBase):
         self,
         topic: str,
         consumer_group: str,
-        msg_stream_receive_in: MsgStreamReceiveIn,
+        msg_stream_receive_in: MsgStreamReceiveIn = MsgStreamReceiveIn(),
     ) -> MsgStreamReceiveOut:
         """Receives messages from a topic using a consumer group.
 

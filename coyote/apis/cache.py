@@ -40,7 +40,7 @@ class CacheAsync(ApiBase):
     async def get(
         self,
         key: str,
-        cache_get_in: CacheGetIn,
+        cache_get_in: CacheGetIn = CacheGetIn(),
     ) -> CacheGetOut:
         """Cache Get"""
         body = _CacheGetIn(
@@ -71,7 +71,7 @@ class CacheAsync(ApiBase):
     async def delete(
         self,
         key: str,
-        cache_delete_in: CacheDeleteIn,
+        cache_delete_in: CacheDeleteIn = CacheDeleteIn(),
     ) -> CacheDeleteOut:
         """Cache Delete"""
         body = _CacheDeleteIn(
@@ -109,7 +109,7 @@ class Cache(ApiBase):
     def get(
         self,
         key: str,
-        cache_get_in: CacheGetIn,
+        cache_get_in: CacheGetIn = CacheGetIn(),
     ) -> CacheGetOut:
         """Cache Get"""
         body = _CacheGetIn(
@@ -140,7 +140,7 @@ class Cache(ApiBase):
     def delete(
         self,
         key: str,
-        cache_delete_in: CacheDeleteIn,
+        cache_delete_in: CacheDeleteIn = CacheDeleteIn(),
     ) -> CacheDeleteOut:
         """Cache Delete"""
         body = _CacheDeleteIn(
