@@ -3,37 +3,36 @@ use serde::{Deserialize, Serialize};
 
 use super::{eviction_policy::EvictionPolicy, storage_type::StorageType};
 
-#[non_exhaustive]
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct CacheGetNamespaceOut {
-    pub created_at: jiff::Timestamp,
-
-    pub eviction_policy: EvictionPolicy,
+    pub name: String,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub max_storage_bytes: Option<u64>,
 
-    pub name: String,
-
     pub storage_type: StorageType,
+
+    pub eviction_policy: EvictionPolicy,
+
+    pub created_at: jiff::Timestamp,
 
     pub updated_at: jiff::Timestamp,
 }
 
 impl CacheGetNamespaceOut {
     pub fn new(
-        created_at: jiff::Timestamp,
-        eviction_policy: EvictionPolicy,
         name: String,
         storage_type: StorageType,
+        eviction_policy: EvictionPolicy,
+        created_at: jiff::Timestamp,
         updated_at: jiff::Timestamp,
     ) -> Self {
         Self {
-            created_at,
-            eviction_policy,
-            max_storage_bytes: None,
             name,
+            max_storage_bytes: None,
             storage_type,
+            eviction_policy,
+            created_at,
             updated_at,
         }
     }

@@ -3,33 +3,32 @@ use serde::{Deserialize, Serialize};
 
 use super::{retention::Retention, storage_type::StorageType};
 
-#[non_exhaustive]
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct CreateNamespaceOut {
-    pub created: jiff::Timestamp,
-
+pub struct MsgNamespaceCreateOut {
     pub name: String,
 
     pub retention: Retention,
 
     pub storage_type: StorageType,
 
+    pub created: jiff::Timestamp,
+
     pub updated: jiff::Timestamp,
 }
 
-impl CreateNamespaceOut {
+impl MsgNamespaceCreateOut {
     pub fn new(
-        created: jiff::Timestamp,
         name: String,
         retention: Retention,
         storage_type: StorageType,
+        created: jiff::Timestamp,
         updated: jiff::Timestamp,
     ) -> Self {
         Self {
-            created,
             name,
             retention,
             storage_type,
+            created,
             updated,
         }
     }

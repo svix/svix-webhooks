@@ -1,14 +1,16 @@
 // this file is @generated
 use serde::{Deserialize, Serialize};
 
-#[non_exhaustive]
-#[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct CacheDeleteIn {
-    pub key: String,
-}
+#[derive(Clone, Debug, Deserialize)]
+pub struct CacheDeleteIn {}
 
 impl CacheDeleteIn {
-    pub fn new(key: String) -> Self {
-        Self { key }
+    pub fn new() -> Self {
+        Self {}
     }
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub(crate) struct CacheDeleteIn_ {
+    pub key: String,
 }

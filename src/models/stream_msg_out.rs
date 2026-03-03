@@ -2,23 +2,27 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct MsgIn {
+pub struct StreamMsgOut {
+    pub offset: u64,
+
+    pub topic: String,
+
     pub value: Vec<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub headers: Option<std::collections::HashMap<String, String>>,
 
-    /// Optional partition key. Messages with the same key are routed to the same partition.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub key: Option<String>,
+    pub timestamp: jiff::Timestamp,
 }
 
-impl MsgIn {
-    pub fn new(value: Vec<u8>) -> Self {
+impl StreamMsgOut {
+    pub fn new(offset: u64, topic: String, value: Vec<u8>, timestamp: jiff::Timestamp) -> Self {
         Self {
+            offset,
+            topic,
             value,
             headers: None,
-            key: None,
+            timestamp,
         }
     }
 }

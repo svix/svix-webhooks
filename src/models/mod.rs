@@ -1,12 +1,6 @@
 // this file is @generated
 #![allow(clippy::too_many_arguments)]
 
-mod ack;
-mod ack_msg_range_in;
-mod ack_msg_range_out;
-mod ack_out;
-mod append_to_stream_in;
-mod append_to_stream_out;
 mod cache_delete_in;
 mod cache_delete_out;
 mod cache_get_in;
@@ -15,15 +9,7 @@ mod cache_get_namespace_out;
 mod cache_get_out;
 mod cache_set_in;
 mod cache_set_out;
-mod create_namespace_in;
-mod create_namespace_out;
-mod dlq_in;
-mod dlq_out;
 mod eviction_policy;
-mod fetch_from_stream_in;
-mod fetch_from_stream_out;
-mod get_namespace_in;
-mod get_namespace_out;
 mod idempotency_abort_in;
 mod idempotency_abort_out;
 mod idempotency_get_namespace_in;
@@ -37,13 +23,21 @@ mod kv_get_out;
 mod kv_set_in;
 mod kv_set_out;
 mod msg_in;
-mod msg_in2;
-mod msg_out;
+mod msg_namespace_create_in;
+mod msg_namespace_create_out;
+mod msg_namespace_get_in;
+mod msg_namespace_get_out;
+mod msg_publish_in;
+mod msg_publish_out;
+mod msg_publish_out_topic;
+mod msg_stream_commit_in;
+mod msg_stream_commit_out;
+mod msg_stream_receive_in;
+mod msg_stream_receive_out;
+mod msg_topic_configure_in;
+mod msg_topic_configure_out;
 mod operation_behavior;
 mod ping_out;
-mod publish_in;
-mod publish_out;
-mod publish_out_msg;
 mod rate_limit_status;
 mod rate_limiter_check_in;
 mod rate_limiter_check_out;
@@ -51,18 +45,11 @@ mod rate_limiter_fixed_window_config;
 mod rate_limiter_get_remaining_in;
 mod rate_limiter_get_remaining_out;
 mod rate_limiter_token_bucket_config;
-mod redrive_in;
-mod redrive_out;
 mod retention;
 mod storage_type;
+mod stream_msg_out;
 
 pub use self::{
-    ack::Ack,
-    ack_msg_range_in::AckMsgRangeIn,
-    ack_msg_range_out::AckMsgRangeOut,
-    ack_out::AckOut,
-    append_to_stream_in::AppendToStreamIn,
-    append_to_stream_out::AppendToStreamOut,
     cache_delete_in::CacheDeleteIn,
     cache_delete_out::CacheDeleteOut,
     cache_get_in::CacheGetIn,
@@ -71,15 +58,7 @@ pub use self::{
     cache_get_out::CacheGetOut,
     cache_set_in::CacheSetIn,
     cache_set_out::CacheSetOut,
-    create_namespace_in::CreateNamespaceIn,
-    create_namespace_out::CreateNamespaceOut,
-    dlq_in::DlqIn,
-    dlq_out::DlqOut,
     eviction_policy::EvictionPolicy,
-    fetch_from_stream_in::FetchFromStreamIn,
-    fetch_from_stream_out::FetchFromStreamOut,
-    get_namespace_in::GetNamespaceIn,
-    get_namespace_out::GetNamespaceOut,
     idempotency_abort_in::IdempotencyAbortIn,
     idempotency_abort_out::IdempotencyAbortOut,
     idempotency_get_namespace_in::IdempotencyGetNamespaceIn,
@@ -93,13 +72,21 @@ pub use self::{
     kv_set_in::KvSetIn,
     kv_set_out::KvSetOut,
     msg_in::MsgIn,
-    msg_in2::MsgIn2,
-    msg_out::MsgOut,
+    msg_namespace_create_in::MsgNamespaceCreateIn,
+    msg_namespace_create_out::MsgNamespaceCreateOut,
+    msg_namespace_get_in::MsgNamespaceGetIn,
+    msg_namespace_get_out::MsgNamespaceGetOut,
+    msg_publish_in::MsgPublishIn,
+    msg_publish_out::MsgPublishOut,
+    msg_publish_out_topic::MsgPublishOutTopic,
+    msg_stream_commit_in::MsgStreamCommitIn,
+    msg_stream_commit_out::MsgStreamCommitOut,
+    msg_stream_receive_in::MsgStreamReceiveIn,
+    msg_stream_receive_out::MsgStreamReceiveOut,
+    msg_topic_configure_in::MsgTopicConfigureIn,
+    msg_topic_configure_out::MsgTopicConfigureOut,
     operation_behavior::OperationBehavior,
     ping_out::PingOut,
-    publish_in::PublishIn,
-    publish_out::PublishOut,
-    publish_out_msg::PublishOutMsg,
     rate_limit_status::RateLimitStatus,
     rate_limiter_check_in::{RateLimiterCheckIn, RateLimiterCheckInConfig},
     rate_limiter_check_out::RateLimiterCheckOut,
@@ -107,8 +94,16 @@ pub use self::{
     rate_limiter_get_remaining_in::{RateLimiterGetRemainingIn, RateLimiterGetRemainingInConfig},
     rate_limiter_get_remaining_out::RateLimiterGetRemainingOut,
     rate_limiter_token_bucket_config::RateLimiterTokenBucketConfig,
-    redrive_in::RedriveIn,
-    redrive_out::RedriveOut,
     retention::Retention,
     storage_type::StorageType,
+    stream_msg_out::StreamMsgOut,
+};
+
+pub(crate) use self::{
+    cache_delete_in::CacheDeleteIn_, cache_get_in::CacheGetIn_, cache_set_in::CacheSetIn_,
+    idempotency_abort_in::IdempotencyAbortIn_, kv_delete_in::KvDeleteIn_, kv_get_in::KvGetIn_,
+    kv_set_in::KvSetIn_, msg_namespace_create_in::MsgNamespaceCreateIn_,
+    msg_namespace_get_in::MsgNamespaceGetIn_, msg_publish_in::MsgPublishIn_,
+    msg_stream_commit_in::MsgStreamCommitIn_, msg_stream_receive_in::MsgStreamReceiveIn_,
+    msg_topic_configure_in::MsgTopicConfigureIn_,
 };

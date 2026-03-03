@@ -1,14 +1,16 @@
 // this file is @generated
 use serde::{Deserialize, Serialize};
 
-#[non_exhaustive]
-#[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct IdempotencyAbortIn {
-    pub key: String,
-}
+#[derive(Clone, Debug, Deserialize)]
+pub struct IdempotencyAbortIn {}
 
 impl IdempotencyAbortIn {
-    pub fn new(key: String) -> Self {
-        Self { key }
+    pub fn new() -> Self {
+        Self {}
     }
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub(crate) struct IdempotencyAbortIn_ {
+    pub key: String,
 }

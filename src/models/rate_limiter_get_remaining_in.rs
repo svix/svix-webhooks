@@ -6,7 +6,6 @@ use super::{
     rate_limiter_token_bucket_config::RateLimiterTokenBucketConfig,
 };
 
-#[non_exhaustive]
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct RateLimiterGetRemainingIn {
     pub key: String,
