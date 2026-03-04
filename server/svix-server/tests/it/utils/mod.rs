@@ -69,8 +69,7 @@ impl TestClient {
 
         if resp.status() != expected_code {
             anyhow::bail!(
-                "assertion failed: expected status {}, actual status {}",
-                expected_code,
+                "assertion failed: expected status {expected_code}, actual status {}",
                 resp.status()
             );
         }
@@ -92,8 +91,7 @@ impl TestClient {
 
         if resp.status() != expected_code {
             anyhow::bail!(
-                "assertion failed: expected status {}, actual status {}",
-                expected_code,
+                "assertion failed: expected status {expected_code}, actual status {}",
                 resp.status()
             );
         }
@@ -118,8 +116,7 @@ impl TestClient {
             Ok(resp) => {
                 if resp.status() != expected_code {
                     anyhow::bail!(
-                        "assertion failed: expected status {}, actual status {}",
-                        expected_code,
+                        "assertion failed: expected status {expected_code}, actual status {}",
                         resp.status()
                     );
                 }
@@ -149,8 +146,7 @@ impl TestClient {
             Ok(resp) => {
                 if resp.status() != expected_code {
                     anyhow::bail!(
-                        "assertion failed: expected status {}, actual status {}",
-                        expected_code,
+                        "assertion failed: expected status {expected_code}, actual status {}",
                         resp.status()
                     );
                 }
@@ -181,8 +177,7 @@ impl TestClient {
 
         if resp.status() != expected_code {
             anyhow::bail!(
-                "assertion failed: expected status {}, actual status {}",
-                expected_code,
+                "assertion failed: expected status {expected_code}, actual status {}",
                 resp.status()
             );
         }
@@ -203,8 +198,7 @@ impl TestClient {
 
         if resp.status() != expected_code {
             anyhow::bail!(
-                "assertion failed: expected status {}, actual status {}",
-                expected_code,
+                "assertion failed: expected status {expected_code}, actual status {}",
                 resp.status()
             );
         }
@@ -227,8 +221,7 @@ impl TestClient {
 
         if resp.status() != expected_code {
             anyhow::bail!(
-                "assertion failed: expected status {}, actual status {}",
-                expected_code,
+                "assertion failed: expected status {expected_code}, actual status {}",
                 resp.status()
             );
         }
@@ -247,8 +240,7 @@ impl TestClient {
 
         if resp.status() != expected_code {
             anyhow::bail!(
-                "assertion failed: expected status {}, actual status {}",
-                expected_code,
+                "assertion failed: expected status {expected_code}, actual status {}",
                 resp.status()
             );
         }
@@ -274,8 +266,7 @@ impl TestClient {
 
         if resp.status() != expected_code {
             anyhow::bail!(
-                "assertion failed: expected status {}, actual status {}",
-                expected_code,
+                "assertion failed: expected status {expected_code}, actual status {}",
                 resp.status()
             );
         }
@@ -298,8 +289,7 @@ impl TestClient {
 
         if resp.status() != expected_code {
             anyhow::bail!(
-                "assertion failed: expected status {}, actual status {}",
-                expected_code,
+                "assertion failed: expected status {expected_code}, actual status {}",
                 resp.status()
             );
         }

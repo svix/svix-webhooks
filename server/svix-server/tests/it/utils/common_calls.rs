@@ -392,9 +392,8 @@ pub async fn get_msg_attempt_list_and_assert_count(
 
         if list.data.len() != expected_count {
             anyhow::bail!(
-                "Attempt count {} does not match expected length {}",
+                "Attempt count {} does not match expected length {expected_count}",
                 list.data.len(),
-                expected_count
             );
         }
         Ok(list)
