@@ -68,6 +68,8 @@ pub(crate) fn make_connector(proxy_addr: Option<String>) -> Connector {
         http.enforce_http(false);
     }
 
+    http.set_nodelay(true);
+
     let Some(proxy_addr) = proxy_addr else {
         return Connector::Regular(wrap_connector(http));
     };
