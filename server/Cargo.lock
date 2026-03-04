@@ -2156,8 +2156,8 @@ checksum = "df3b46402a9d5adb4c86a0cf463f42e19994e3ee891101b1841f30a545cb49a9"
 
 [[package]]
 name = "hyper"
-version = "1.7.0"
-source = "git+https://github.com/svix/hyper.git?rev=18c04c321e1a9a4958ad14b880f7403acbe1c914#18c04c321e1a9a4958ad14b880f7403acbe1c914"
+version = "1.8.1"
+source = "git+https://github.com/svix/hyper.git?rev=30ae7e19512c346303196087c4a68b73945dc472#30ae7e19512c346303196087c4a68b73945dc472"
 dependencies = [
  "atomic-waker",
  "bytes",

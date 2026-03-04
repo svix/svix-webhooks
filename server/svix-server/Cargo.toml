@@ -43,7 +43,7 @@ hmac-sha256 = "1"
 http = "1.1.0"
 http-body-util = "0.1.2"
 http02 = { package = "http", version = "0.2.12" }
-hyper = { version = "=1.7.0", features = ["full"] }
+hyper = { version = "=1.8.1", features = ["full"] }
 hyper-openssl = { version = "0.10.2", features = ["client-legacy", "tokio"] }
 hyper-util = { version = "0.1.16", features = ["client-legacy", "client-proxy", "tokio"] }
 # Reduce compile times for idna (we don't need the fastest possible impl of UTS 46)
