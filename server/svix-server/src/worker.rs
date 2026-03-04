@@ -383,20 +383,12 @@ async fn make_http_call(
                 MessageStatus::Fail
             };
 
-            let retry_after = if matches!(
-                res.status(),
-                StatusCode::TOO_MANY_REQUESTS | StatusCode::SERVICE_UNAVAILABLE
-            ) {
-                retry_after(res.headers())
-            } else {
-                None
-            };
-
             let http_error = if !res.status().is_success() {
                 Some(WebhookClientError::FailureStatus(res.status()))
             } else {
                 None
             };
+            let response_headers = res.headers().clone();
 
             let body = match res.into_body().collect().await {
                 Ok(collected) => {
@@ -419,11 +411,14 @@ async fn make_http_call(
             };
 
             match http_error {
-                Some(err) => Ok(CompletedDispatch::Failed(FailedDispatch(
-                    attempt,
-                    Error::generic(err),
-                    retry_after,
-                ))),
+                Some(err) => {
+                    let retry_after = retry_after(&response_headers);
+                    Ok(CompletedDispatch::Failed(FailedDispatch(
+                        attempt,
+                        Error::generic(err),
+                        retry_after,
+                    )))
+                }
                 None => Ok(CompletedDispatch::Successful(SuccessfulDispatch(attempt))),
             }
         }
@@ -517,8 +512,7 @@ fn retry_after(hdr_map: &HeaderMap) -> Option<DateTime<Utc>> {
 }
 
 fn limit_retry_delay(base: Duration, retry_after: Duration) -> Duration {
-    let cap = base.saturating_add(Duration::from_secs(2 * 60 * 60));
-    std::cmp::min(std::cmp::max(base, retry_after), cap)
+    retry_after.clamp(base, base * 2)
 }
 
 fn calculate_retry_delay(
