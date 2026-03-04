@@ -8,7 +8,7 @@ from ..internal.base_model import BaseModel
 from .storage_type import StorageType
 
 
-class IdempotencyGetNamespaceOut(BaseModel):
+class IdempotencyCreateNamespaceOut(BaseModel):
     name: str
 
     max_storage_bytes: t.Optional[int] = Field(default=None, alias="max_storage_bytes")

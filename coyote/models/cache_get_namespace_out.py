@@ -18,6 +18,6 @@ class CacheGetNamespaceOut(BaseModel):
 
     eviction_policy: EvictionPolicy = Field(alias="eviction_policy")
 
-    created_at: datetime = Field(alias="created_at")
+    created: datetime
 
-    updated_at: datetime = Field(alias="updated_at")
+    updated: datetime

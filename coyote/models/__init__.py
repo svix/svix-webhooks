@@ -1,4 +1,6 @@
 # this file is @generated
+from .cache_create_namespace_in import CacheCreateNamespaceIn
+from .cache_create_namespace_out import CacheCreateNamespaceOut
 from .cache_delete_in import CacheDeleteIn
 from .cache_delete_out import CacheDeleteOut
 from .cache_get_in import CacheGetIn
@@ -10,8 +12,12 @@ from .cache_set_out import CacheSetOut
 from .eviction_policy import EvictionPolicy
 from .idempotency_abort_in import IdempotencyAbortIn
 from .idempotency_abort_out import IdempotencyAbortOut
+from .idempotency_create_namespace_in import IdempotencyCreateNamespaceIn
+from .idempotency_create_namespace_out import IdempotencyCreateNamespaceOut
 from .idempotency_get_namespace_in import IdempotencyGetNamespaceIn
 from .idempotency_get_namespace_out import IdempotencyGetNamespaceOut
+from .kv_create_namespace_in import KvCreateNamespaceIn
+from .kv_create_namespace_out import KvCreateNamespaceOut
 from .kv_delete_in import KvDeleteIn
 from .kv_delete_out import KvDeleteOut
 from .kv_get_in import KvGetIn
@@ -49,6 +55,8 @@ from .stream_msg_out import StreamMsgOut
 
 
 __all__ = [
+    "CacheCreateNamespaceIn",
+    "CacheCreateNamespaceOut",
     "CacheDeleteIn",
     "CacheDeleteOut",
     "CacheGetIn",
@@ -60,8 +68,12 @@ __all__ = [
     "EvictionPolicy",
     "IdempotencyAbortIn",
     "IdempotencyAbortOut",
+    "IdempotencyCreateNamespaceIn",
+    "IdempotencyCreateNamespaceOut",
     "IdempotencyGetNamespaceIn",
     "IdempotencyGetNamespaceOut",
+    "KvCreateNamespaceIn",
+    "KvCreateNamespaceOut",
     "KvDeleteIn",
     "KvDeleteOut",
     "KvGetIn",

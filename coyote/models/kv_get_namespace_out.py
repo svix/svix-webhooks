@@ -15,6 +15,6 @@ class KvGetNamespaceOut(BaseModel):
 
     storage_type: StorageType = Field(alias="storage_type")
 
-    created_at: datetime = Field(alias="created_at")
+    created: datetime
 
-    updated_at: datetime = Field(alias="updated_at")
+    updated: datetime
