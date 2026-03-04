@@ -54,9 +54,9 @@ ipnet = { version = "2.5", features = ["serde"] }
 itertools = "0.14"
 jsonschema = "0.33.0"
 jwt-simple = "0.11.6"
-lapin = "2.1.1"
+lapin = "3.7.2"
 num_enum = "0.7.2"
-omniqueue = { git = "https://github.com/svix/omniqueue-rs", rev = "e7e328a576f921ca58d0bdb56b8df69fd996172d", default-features = false, features = ["in_memory", "rabbitmq-with-message-ids", "redis_cluster", "redis_sentinel", "beta"] }
+omniqueue = { git = "https://github.com/svix/omniqueue-rs", rev = "4b1f3a056a0391c2d18bb85cd16a75ee9eddd640", default-features = false, features = ["in_memory", "rabbitmq-with-message-ids", "redis_cluster", "redis_sentinel", "beta"] }
 openssl = "0.10.72"
 opentelemetry = { version = "0.26.0", features = ["metrics"] }
 opentelemetry-http = "0.26.0"
