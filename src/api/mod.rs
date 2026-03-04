@@ -2,9 +2,12 @@
 use crate::CoyoteClient;
 
 mod cache;
+mod cache_namespace;
 mod health;
 mod idempotency;
+mod idempotency_namespace;
 mod kv;
+mod kv_namespace;
 mod msgs;
 mod msgs_namespace;
 mod msgs_stream;
@@ -12,7 +15,8 @@ mod msgs_topic;
 mod rate_limiter;
 
 pub use self::{
-    cache::Cache, health::Health, idempotency::Idempotency, kv::Kv, msgs::Msgs,
+    cache::Cache, cache_namespace::CacheNamespace, health::Health, idempotency::Idempotency,
+    idempotency_namespace::IdempotencyNamespace, kv::Kv, kv_namespace::KvNamespace, msgs::Msgs,
     msgs_namespace::MsgsNamespace, msgs_stream::MsgsStream, msgs_topic::MsgsTopic,
     rate_limiter::RateLimiter,
 };

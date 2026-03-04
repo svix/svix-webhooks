@@ -1,4 +1,5 @@
 // this file is @generated
+use super::IdempotencyNamespace;
 use crate::{Configuration, error::Result, models::*};
 
 pub struct Idempotency<'a> {
@@ -8,6 +9,10 @@ pub struct Idempotency<'a> {
 impl<'a> Idempotency<'a> {
     pub(super) fn new(cfg: &'a Configuration) -> Self {
         Self { cfg }
+    }
+
+    pub fn namespace(&self) -> IdempotencyNamespace<'a> {
+        IdempotencyNamespace::new(self.cfg)
     }
 
     /// Abandon an idempotent request (remove lock without saving response)
@@ -21,17 +26,6 @@ impl<'a> Idempotency<'a> {
 
         crate::request::Request::new(http::Method::POST, "/api/v1/idempotency/abort")
             .with_body(idempotency_abort_in)
-            .execute(self.cfg)
-            .await
-    }
-
-    /// Get idempotency namespace
-    pub async fn get_namespace(
-        &self,
-        idempotency_get_namespace_in: IdempotencyGetNamespaceIn,
-    ) -> Result<IdempotencyGetNamespaceOut> {
-        crate::request::Request::new(http::Method::POST, "/api/v1/idempotency/get-namespace")
-            .with_body(idempotency_get_namespace_in)
             .execute(self.cfg)
             .await
     }

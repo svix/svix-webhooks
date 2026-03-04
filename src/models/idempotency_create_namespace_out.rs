@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use super::storage_type::StorageType;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct KvGetNamespaceOut {
+pub struct IdempotencyCreateNamespaceOut {
     pub name: String,
 
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -17,7 +17,7 @@ pub struct KvGetNamespaceOut {
     pub updated: jiff::Timestamp,
 }
 
-impl KvGetNamespaceOut {
+impl IdempotencyCreateNamespaceOut {
     pub fn new(
         name: String,
         storage_type: StorageType,

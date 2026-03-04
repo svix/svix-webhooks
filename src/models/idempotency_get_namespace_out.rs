@@ -1,6 +1,8 @@
 // this file is @generated
 use serde::{Deserialize, Serialize};
 
+use super::storage_type::StorageType;
+
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct IdempotencyGetNamespaceOut {
     pub name: String,
@@ -8,18 +10,26 @@ pub struct IdempotencyGetNamespaceOut {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub max_storage_bytes: Option<u64>,
 
-    pub created_at: jiff::Timestamp,
+    pub storage_type: StorageType,
 
-    pub updated_at: jiff::Timestamp,
+    pub created: jiff::Timestamp,
+
+    pub updated: jiff::Timestamp,
 }
 
 impl IdempotencyGetNamespaceOut {
-    pub fn new(name: String, created_at: jiff::Timestamp, updated_at: jiff::Timestamp) -> Self {
+    pub fn new(
+        name: String,
+        storage_type: StorageType,
+        created: jiff::Timestamp,
+        updated: jiff::Timestamp,
+    ) -> Self {
         Self {
             name,
             max_storage_bytes: None,
-            created_at,
-            updated_at,
+            storage_type,
+            created,
+            updated,
         }
     }
 }

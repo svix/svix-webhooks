@@ -1,6 +1,8 @@
 // this file is @generated
 #![allow(clippy::too_many_arguments)]
 
+mod cache_create_namespace_in;
+mod cache_create_namespace_out;
 mod cache_delete_in;
 mod cache_delete_out;
 mod cache_get_in;
@@ -12,8 +14,12 @@ mod cache_set_out;
 mod eviction_policy;
 mod idempotency_abort_in;
 mod idempotency_abort_out;
+mod idempotency_create_namespace_in;
+mod idempotency_create_namespace_out;
 mod idempotency_get_namespace_in;
 mod idempotency_get_namespace_out;
+mod kv_create_namespace_in;
+mod kv_create_namespace_out;
 mod kv_delete_in;
 mod kv_delete_out;
 mod kv_get_in;
@@ -50,6 +56,8 @@ mod storage_type;
 mod stream_msg_out;
 
 pub use self::{
+    cache_create_namespace_in::CacheCreateNamespaceIn,
+    cache_create_namespace_out::CacheCreateNamespaceOut,
     cache_delete_in::CacheDeleteIn,
     cache_delete_out::CacheDeleteOut,
     cache_get_in::CacheGetIn,
@@ -61,8 +69,12 @@ pub use self::{
     eviction_policy::EvictionPolicy,
     idempotency_abort_in::IdempotencyAbortIn,
     idempotency_abort_out::IdempotencyAbortOut,
+    idempotency_create_namespace_in::IdempotencyCreateNamespaceIn,
+    idempotency_create_namespace_out::IdempotencyCreateNamespaceOut,
     idempotency_get_namespace_in::IdempotencyGetNamespaceIn,
     idempotency_get_namespace_out::IdempotencyGetNamespaceOut,
+    kv_create_namespace_in::KvCreateNamespaceIn,
+    kv_create_namespace_out::KvCreateNamespaceOut,
     kv_delete_in::KvDeleteIn,
     kv_delete_out::KvDeleteOut,
     kv_get_in::KvGetIn,

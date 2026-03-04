@@ -1,4 +1,5 @@
 // this file is @generated
+use super::CacheNamespace;
 use crate::{Configuration, error::Result, models::*};
 
 pub struct Cache<'a> {
@@ -8,6 +9,10 @@ pub struct Cache<'a> {
 impl<'a> Cache<'a> {
     pub(super) fn new(cfg: &'a Configuration) -> Self {
         Self { cfg }
+    }
+
+    pub fn namespace(&self) -> CacheNamespace<'a> {
+        CacheNamespace::new(self.cfg)
     }
 
     /// Cache Set
@@ -31,17 +36,6 @@ impl<'a> Cache<'a> {
 
         crate::request::Request::new(http::Method::POST, "/api/v1/cache/get")
             .with_body(cache_get_in)
-            .execute(self.cfg)
-            .await
-    }
-
-    /// Get cache namespace
-    pub async fn get_namespace(
-        &self,
-        cache_get_namespace_in: CacheGetNamespaceIn,
-    ) -> Result<CacheGetNamespaceOut> {
-        crate::request::Request::new(http::Method::POST, "/api/v1/cache/get-namespace")
-            .with_body(cache_get_namespace_in)
             .execute(self.cfg)
             .await
     }

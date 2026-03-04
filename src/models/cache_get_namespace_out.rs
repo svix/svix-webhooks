@@ -14,9 +14,9 @@ pub struct CacheGetNamespaceOut {
 
     pub eviction_policy: EvictionPolicy,
 
-    pub created_at: jiff::Timestamp,
+    pub created: jiff::Timestamp,
 
-    pub updated_at: jiff::Timestamp,
+    pub updated: jiff::Timestamp,
 }
 
 impl CacheGetNamespaceOut {
@@ -24,16 +24,16 @@ impl CacheGetNamespaceOut {
         name: String,
         storage_type: StorageType,
         eviction_policy: EvictionPolicy,
-        created_at: jiff::Timestamp,
-        updated_at: jiff::Timestamp,
+        created: jiff::Timestamp,
+        updated: jiff::Timestamp,
     ) -> Self {
         Self {
             name,
             max_storage_bytes: None,
             storage_type,
             eviction_policy,
-            created_at,
-            updated_at,
+            created,
+            updated,
         }
     }
 }
