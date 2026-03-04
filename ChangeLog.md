@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+* Server: Respect `retry-after` header on error responses (within limits) (thanks [@vinay0826])
+
+[@vinay0826]: https://github.com/vinay0826
+
 ## Version 1.86.0
 * Server: Fix non-determinism with regards to overrides of specific header names
 * Server: Bump MSRV to 1.88.0
