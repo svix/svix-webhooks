@@ -392,9 +392,9 @@ async fn make_http_call(
             } else {
                 None
             };
-            let response_headers = res.headers().clone();
 
-            let body = match res.into_body().collect().await {
+            let (res_parts, body) = res.into_parts();
+            let body = match body.collect().await {
                 Ok(collected) => {
                     let bytes = collected.to_bytes();
                     if bytes.len() > RESPONSE_MAX_SIZE {
@@ -416,7 +416,7 @@ async fn make_http_call(
 
             match http_error {
                 Some(err) => {
-                    let retry_after = retry_after(&response_headers);
+                    let retry_after = retry_after(&res_parts.headers);
                     Ok(CompletedDispatch::Failed(FailedDispatch {
                         attempt,
                         err: Error::generic(err),
