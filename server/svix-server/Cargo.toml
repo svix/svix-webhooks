@@ -43,7 +43,7 @@ hmac-sha256 = "1"
 http = "1.1.0"
 http-body-util = "0.1.2"
 http02 = { package = "http", version = "0.2.12" }
-hyper = { version = "=1.7.0", features = ["full"] }
+hyper = { version = "=1.8.1", features = ["full"] }
 hyper-openssl = { version = "0.10.2", features = ["client-legacy", "tokio"] }
 hyper-util = { version = "0.1.16", features = ["client-legacy", "client-proxy", "tokio"] }
 # Reduce compile times for idna (we don't need the fastest possible impl of UTS 46)
@@ -52,17 +52,17 @@ idna_adapter = "=1.1.0"
 indexmap = "2.6.0"
 ipnet = { version = "2.5", features = ["serde"] }
 itertools = "0.14"
-jsonschema = "0.33.0"
+jsonschema = "0.38.1"
 jwt-simple = "0.11.6"
-lapin = "2.1.1"
+lapin = "3.7.2"
 num_enum = "0.7.2"
-omniqueue = { git = "https://github.com/svix/omniqueue-rs", rev = "e7e328a576f921ca58d0bdb56b8df69fd996172d", default-features = false, features = ["in_memory", "rabbitmq-with-message-ids", "redis_cluster", "redis_sentinel", "beta"] }
+omniqueue = { git = "https://github.com/svix/omniqueue-rs", rev = "4b1f3a056a0391c2d18bb85cd16a75ee9eddd640", default-features = false, features = ["in_memory", "rabbitmq-with-message-ids", "redis_cluster", "redis_sentinel", "beta"] }
 openssl = "0.10.72"
-opentelemetry = { version = "0.26.0", features = ["metrics"] }
-opentelemetry-http = "0.26.0"
-opentelemetry-otlp = { version = "0.26.0", features = ["metrics"] }
-opentelemetry-semantic-conventions = "0.26.0"
-opentelemetry_sdk = { version = "0.26.0", features = ["rt-tokio"] }
+opentelemetry = { version = "0.29.0", features = ["metrics"] }
+opentelemetry-http = "0.29.0"
+opentelemetry-otlp = { version = "0.29.0", default-features = false, features = ["grpc-tonic", "internal-logs", "metrics", "trace"] }
+opentelemetry-semantic-conventions = "0.29.0"
+opentelemetry_sdk = { version = "0.29.0", features = ["rt-tokio", "experimental_metrics_periodicreader_with_async_runtime", "experimental_trace_batch_span_processor_with_async_runtime"] }
 rand = "0.8.5"
 redis = { version = "0.32.5", features = ["tokio-comp", "tokio-native-tls-comp", "streams", "cluster-async", "tcp_nodelay", "connection-manager", "sentinel"] }
 regex = "1.5.5"
@@ -84,7 +84,7 @@ tokio-util = "0.7"
 tower = "0.5.1"
 tower-http = { version = "0.6.1", features = ["trace", "cors", "normalize-path", "request-id"] }
 tracing = "0.1.35"
-tracing-opentelemetry = "0.27.0"
+tracing-opentelemetry = "0.30.0"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
 url = { version = "2.2.2", features = ["serde"] }
 urlencoding = "2.1.2"

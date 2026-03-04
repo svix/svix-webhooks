@@ -1,7 +1,6 @@
-use opentelemetry::metrics::{Meter, ObservableGauge};
+use opentelemetry::metrics::{Gauge, Meter};
 use redis::{AsyncCommands as _, streams::StreamPendingReply};
 
-use super::init_metric;
 use crate::{
     error::{Error, Result},
     redis::RedisManager,
@@ -40,37 +39,18 @@ impl RedisQueueType<'_> {
 
 #[derive(Clone)]
 pub struct RedisQueueMetrics {
-    main_queue: Option<ObservableGauge<u64>>,
-    pending_queue: Option<ObservableGauge<u64>>,
-    delayed_queue: Option<ObservableGauge<u64>>,
-    deadletter_queue: Option<ObservableGauge<u64>>,
+    main_queue: Gauge<u64>,
+    pending_queue: Gauge<u64>,
+    delayed_queue: Gauge<u64>,
+    deadletter_queue: Gauge<u64>,
 }
 
 impl RedisQueueMetrics {
     pub fn new(meter: &Meter) -> Self {
-        let main_queue = init_metric(
-            meter
-                .u64_observable_gauge("svix.queue.depth_main")
-                .try_init(),
-        );
-
-        let pending_queue = init_metric(
-            meter
-                .u64_observable_gauge("svix.queue.pending_msgs")
-                .try_init(),
-        );
-
-        let delayed_queue = init_metric(
-            meter
-                .u64_observable_gauge("svix.queue.depth_delayed")
-                .try_init(),
-        );
-
-        let deadletter_queue = init_metric(
-            meter
-                .u64_observable_gauge("svix.queue.depth_dlq")
-                .try_init(),
-        );
+        let main_queue = meter.u64_gauge("svix.queue.depth_main").build();
+        let pending_queue = meter.u64_gauge("svix.queue.pending_msgs").build();
+        let delayed_queue = meter.u64_gauge("svix.queue.depth_delayed").build();
+        let deadletter_queue = meter.u64_gauge("svix.queue.depth_dlq").build();
 
         Self {
             main_queue,
@@ -118,23 +98,18 @@ impl RedisQueueMetrics {
     }
 
     fn record_main_queue_depth(&self, value: u64) {
-        if let Some(recorder) = &self.main_queue {
-            recorder.observe(value, &[]);
-        }
+        self.main_queue.record(value, &[]);
     }
+
     fn record_pending_queue_depth(&self, value: u64) {
-        if let Some(recorder) = &self.pending_queue {
-            recorder.observe(value, &[]);
-        }
+        self.pending_queue.record(value, &[]);
     }
+
     fn record_delayed_queue_depth(&self, value: u64) {
-        if let Some(recorder) = &self.delayed_queue {
-            recorder.observe(value, &[]);
-        }
+        self.delayed_queue.record(value, &[]);
     }
+
     fn record_deadletter_queue_depth(&self, value: u64) {
-        if let Some(recorder) = &self.deadletter_queue {
-            recorder.observe(value, &[]);
-        }
+        self.deadletter_queue.record(value, &[]);
     }
 }
