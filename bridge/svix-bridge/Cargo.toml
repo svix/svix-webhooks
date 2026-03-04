@@ -13,9 +13,9 @@ enum_dispatch = "0.3"
 indexmap = { version = "2.10.0", features = ["serde"] }
 itertools = "0.14.0"
 once_cell = "1.18.0"
-opentelemetry = "0.26.0"
-opentelemetry_sdk = { version = "0.26.0", features = ["metrics", "rt-tokio"] }
-opentelemetry-otlp = { version = "0.26.0", features = ["metrics", "grpc-tonic", "http-proto", "reqwest-client"] }
+opentelemetry.workspace = true
+opentelemetry_sdk.workspace = true
+opentelemetry-otlp.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 serde_yaml = "0.9"
@@ -25,7 +25,7 @@ svix-bridge-plugin-kafka = { optional = true, path = "../svix-bridge-plugin-kafk
 svix-bridge-types.workspace = true
 tokio.workspace = true
 tracing.workspace = true
-tracing-opentelemetry = "0.27.0"
+tracing-opentelemetry = "0.30.0"
 tracing-subscriber = { workspace = true, features = ["fmt", "json"] }
 deno_core = "0.352.1"
 deno_ast = "0.53.0"

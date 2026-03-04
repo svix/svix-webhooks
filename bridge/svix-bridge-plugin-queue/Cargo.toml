@@ -13,7 +13,7 @@ thiserror.workspace = true
 tokio.workspace = true
 tokio-executor-trait = "2.1"
 tokio-reactor-trait = "1.1"
-tracing = "0.1"
+tracing.workspace = true
 
 [dependencies.omniqueue]
 git = "https://github.com/svix/omniqueue-rs"
