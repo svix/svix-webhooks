@@ -7,11 +7,11 @@ use std::{
 use clap::Parser;
 use itertools::{Either, Itertools};
 use once_cell::sync::Lazy;
-use opentelemetry::trace::TracerProvider as _;
-use opentelemetry_otlp::WithExportConfig;
+use opentelemetry::{trace::TracerProvider as _, InstrumentationScope};
+use opentelemetry_otlp::WithExportConfig as _;
 use opentelemetry_sdk::{
-    metrics::{data::Temporality, reader::TemporalitySelector, InstrumentKind, SdkMeterProvider},
-    runtime::Tokio,
+    metrics::{periodic_reader_with_async_runtime::PeriodicReader, SdkMeterProvider},
+    trace::{span_processor_with_async_runtime::BatchSpanProcessor, SdkTracerProvider},
 };
 use svix_bridge_types::{PollerInput, SenderInput, TransformerJob};
 use svix_ksuid::{KsuidLike as _, KsuidMs};
@@ -47,20 +47,22 @@ compile_error!("jemalloc cannot be enabled on msvc");
 static INSTANCE_ID: Lazy<String> = Lazy::new(|| KsuidMs::new(None, None).to_string());
 
 fn get_svc_identifiers(cfg: &Config) -> opentelemetry_sdk::Resource {
-    opentelemetry_sdk::Resource::new(vec![
-        opentelemetry::KeyValue::new(
-            "service.name",
+    opentelemetry_sdk::Resource::builder()
+        .with_service_name(
             cfg.opentelemetry
                 .as_ref()
                 .and_then(|x| x.service_name.as_deref())
                 .unwrap_or("svix-bridge")
                 .to_owned(),
-        ),
-        opentelemetry::KeyValue::new("instance_id", INSTANCE_ID.to_owned()),
-    ])
+        )
+        .with_attribute(opentelemetry::KeyValue::new(
+            "instance_id",
+            INSTANCE_ID.as_str(),
+        ))
+        .build()
 }
 
-fn setup_tracing(cfg: &Config) {
+fn setup_tracing(cfg: &Config) -> Option<SdkTracerProvider> {
     let filter_directives = std::env::var("RUST_LOG").unwrap_or_else(|e| {
         if let std::env::VarError::NotUnicode(_) = e {
             eprintln!("RUST_LOG environment variable has non-utf8 contents, ignoring!");
@@ -76,35 +78,40 @@ fn setup_tracing(cfg: &Config) {
         var.join(",")
     });
 
-    let otel_layer = cfg.opentelemetry.as_ref().map(|otel_cfg| {
+    let mapped = cfg.opentelemetry.as_ref().map(|otel_cfg| {
         // Configure the OpenTelemetry tracing layer
         opentelemetry::global::set_text_map_propagator(
             opentelemetry_sdk::propagation::TraceContextPropagator::new(),
         );
 
-        let exporter = opentelemetry_otlp::new_exporter()
-            .tonic()
-            .with_endpoint(&otel_cfg.address);
+        let exporter = opentelemetry_otlp::SpanExporter::builder()
+            .with_tonic()
+            .with_endpoint(&otel_cfg.address)
+            .build()
+            .unwrap();
 
-        let tracer = opentelemetry_otlp::new_pipeline()
-            .tracing()
-            .with_exporter(exporter)
-            .with_trace_config(
-                opentelemetry_sdk::trace::Config::default()
-                    .with_sampler(
-                        otel_cfg
-                            .sample_ratio
-                            .map(opentelemetry_sdk::trace::Sampler::TraceIdRatioBased)
-                            .unwrap_or(opentelemetry_sdk::trace::Sampler::AlwaysOn),
-                    )
-                    .with_resource(get_svc_identifiers(cfg)),
+        let provider = SdkTracerProvider::builder()
+            .with_span_processor(
+                BatchSpanProcessor::builder(exporter, opentelemetry_sdk::runtime::Tokio).build(),
             )
-            .install_batch(Tokio)
-            .unwrap()
-            .tracer("svix_bridge");
+            .with_sampler(
+                otel_cfg
+                    .sample_ratio
+                    .map(opentelemetry_sdk::trace::Sampler::TraceIdRatioBased)
+                    .unwrap_or(opentelemetry_sdk::trace::Sampler::AlwaysOn),
+            )
+            .with_resource(get_svc_identifiers(cfg))
+            .build();
 
-        tracing_opentelemetry::layer().with_tracer(tracer)
+        let layer = tracing_opentelemetry::layer().with_tracer(
+            provider.tracer_with_scope(InstrumentationScope::builder("svix_bridge").build()),
+        );
+
+        _ = opentelemetry::global::set_tracer_provider(provider.clone());
+        (layer, provider)
     });
+
+    let (otel_layer, otel_tracer_provider) = mapped.unzip();
 
     // Then create a subscriber with an additional layer printing to stdout.
     // This additional layer is either formatted normally or in JSON format.
@@ -132,36 +139,28 @@ fn setup_tracing(cfg: &Config) {
                 .init()
         }
     };
+
+    otel_tracer_provider
 }
 
-/// Delta temporality selector as recommended by upstream:
-/// https://github.com/open-telemetry/opentelemetry-rust/discussions/1511#discussioncomment-8386721
-struct DeltaTemporalitySelector;
-
-impl TemporalitySelector for DeltaTemporalitySelector {
-    fn temporality(&self, kind: InstrumentKind) -> Temporality {
-        match kind {
-            InstrumentKind::UpDownCounter => Temporality::Cumulative,
-            InstrumentKind::ObservableUpDownCounter => Temporality::Cumulative,
-            _ => Temporality::Delta,
-        }
-    }
-}
-
-pub fn setup_metrics(cfg: &Config) -> Option<SdkMeterProvider> {
-    cfg.opentelemetry.as_ref().map(|otel_cfg| {
-        let exporter = opentelemetry_otlp::new_exporter()
-            .tonic()
-            .with_endpoint(&otel_cfg.address);
-
-        opentelemetry_otlp::new_pipeline()
-            .metrics(Tokio)
-            .with_temporality_selector(DeltaTemporalitySelector)
-            .with_exporter(exporter)
-            .with_resource(get_svc_identifiers(cfg))
+pub fn setup_metrics(cfg: &Config) {
+    if let Some(otel_cfg) = &cfg.opentelemetry {
+        let exporter = opentelemetry_otlp::MetricExporter::builder()
+            .with_tonic()
+            .with_endpoint(&otel_cfg.address)
+            .with_temporality(opentelemetry_sdk::metrics::Temporality::Delta)
             .build()
-            .unwrap()
-    })
+            .unwrap();
+
+        let reader = PeriodicReader::builder(exporter, opentelemetry_sdk::runtime::Tokio).build();
+
+        let provider = SdkMeterProvider::builder()
+            .with_reader(reader)
+            .with_resource(get_svc_identifiers(cfg))
+            .build();
+
+        opentelemetry::global::set_meter_provider(provider);
+    }
 }
 
 async fn supervise_senders(inputs: Vec<Box<dyn SenderInput>>) -> Result<()> {
@@ -275,8 +274,8 @@ async fn main() -> Result<()> {
 
     let vars = std::env::vars().collect();
     let cfg = Config::from_src(&cfg_source, Some(vars).as_ref())?;
-    setup_tracing(&cfg);
-    let _metrics = setup_metrics(&cfg);
+    let otel_tracer_provider = setup_tracing(&cfg);
+    setup_metrics(&cfg);
     tracing::info!("starting");
 
     tokio::spawn(async move {
@@ -385,5 +384,13 @@ async fn main() -> Result<()> {
     }
 
     tracing::info!("exiting...");
+
+    if let Some(provider) = otel_tracer_provider {
+        _ = tokio::task::spawn_blocking(move || {
+            _ = provider.shutdown();
+        })
+        .await;
+    }
+
     Ok(())
 }

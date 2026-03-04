@@ -30,10 +30,13 @@ nonstandard_macro_braces = "warn"
 uninlined_format_args = "warn"
 
 [workspace.dependencies]
+opentelemetry = "0.29.0"
+opentelemetry_sdk = { version = "0.29.0", features = ["metrics", "rt-tokio", "experimental_metrics_periodicreader_with_async_runtime", "experimental_trace_batch_span_processor_with_async_runtime"] }
+opentelemetry-otlp = { version = "0.29.0", features = ["metrics", "grpc-tonic", "reqwest-client"] }
 serde = { version = "1.0.203", features = ["derive"] }
 serde_json = "1.0.117"
 svix-bridge-types = { path = "svix-bridge-types" }
-thiserror = "1.0.61"
+thiserror = "2.0.18"
 tokio = { version = "1.38.0", features = ["macros", "time", "rt-multi-thread", "sync"] }
 tracing = "0.1.40"
 tracing-subscriber = { version = "0.3.20", features = ["env-filter"] }

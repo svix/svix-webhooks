@@ -2,7 +2,7 @@
 name = "svix-bridge-plugin-queue"
 version.workspace = true
 edition = "2021"
-rust-version = "1.88"
+rust-version = "1.91"
 publish = false
 
 [dependencies]
@@ -13,7 +13,7 @@ thiserror.workspace = true
 tokio.workspace = true
 tokio-executor-trait = "2.1"
 tokio-reactor-trait = "1.1"
-tracing = "0.1"
+tracing.workspace = true
 
 [dependencies.omniqueue]
 git = "https://github.com/svix/omniqueue-rs"
