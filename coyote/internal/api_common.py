@@ -41,10 +41,10 @@ class ApiBase:
             async_proxy_mounts = None
 
         self._httpx_client = httpx.Client(
-            mounts=proxy_mounts, cookies=self._client.get_cookies()
+            mounts=proxy_mounts, cookies=self._client.get_cookies(), http2=True
         )
         self._httpx_async_client = httpx.AsyncClient(
-            mounts=async_proxy_mounts, cookies=self._client.get_cookies()
+            mounts=async_proxy_mounts, cookies=self._client.get_cookies(), http2=True
         )
 
     def _get_httpx_kwargs(
