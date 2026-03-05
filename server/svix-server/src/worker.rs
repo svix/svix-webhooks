@@ -256,7 +256,11 @@ struct WorkerContext<'a> {
     webhook_client: &'a WebhookClient,
 }
 
-struct FailedDispatch(messageattempt::ActiveModel, Error, Option<DateTime<Utc>>);
+struct FailedDispatch {
+    attempt: messageattempt::ActiveModel,
+    err: Error,
+    retry_after: Option<DateTime<Utc>>,
+}
 
 struct SuccessfulDispatch(messageattempt::ActiveModel);
 
@@ -388,9 +392,9 @@ async fn make_http_call(
             } else {
                 None
             };
-            let response_headers = res.headers().clone();
 
-            let body = match res.into_body().collect().await {
+            let (res_parts, body) = res.into_parts();
+            let body = match body.collect().await {
                 Ok(collected) => {
                     let bytes = collected.to_bytes();
                     if bytes.len() > RESPONSE_MAX_SIZE {
@@ -412,12 +416,12 @@ async fn make_http_call(
 
             match http_error {
                 Some(err) => {
-                    let retry_after = retry_after(&response_headers);
-                    Ok(CompletedDispatch::Failed(FailedDispatch(
+                    let retry_after = retry_after(&res_parts.headers);
+                    Ok(CompletedDispatch::Failed(FailedDispatch {
                         attempt,
-                        Error::generic(err),
+                        err: Error::generic(err),
                         retry_after,
-                    )))
+                    }))
                 }
                 None => Ok(CompletedDispatch::Successful(SuccessfulDispatch(attempt))),
             }
@@ -426,17 +430,17 @@ async fn make_http_call(
             // For errors, we still calculate the duration
             let duration_ms = (Utc::now() - created_at).num_milliseconds();
 
-            Ok(CompletedDispatch::Failed(FailedDispatch(
-                messageattempt::ActiveModel {
+            Ok(CompletedDispatch::Failed(FailedDispatch {
+                attempt: messageattempt::ActiveModel {
                     response_status_code: Set(0),
                     response: Set(err.to_string()),
                     status: Set(MessageStatus::Fail),
                     response_duration_ms: Set(duration_ms),
                     ..attempt
                 },
-                err.into(),
-                None,
-            )))
+                err: err.into(),
+                retry_after: None,
+            }))
         }
     }
 }
@@ -561,7 +565,11 @@ async fn handle_failed_dispatch(
         msg_task,
         ..
     }: DispatchContext<'_>,
-    FailedDispatch(mut attempt, err, retry_after): FailedDispatch,
+    FailedDispatch {
+        mut attempt,
+        err,
+        retry_after,
+    }: FailedDispatch,
 ) -> Result<()> {
     attempt.ended_at = Set(Some(Utc::now().into()));
 
