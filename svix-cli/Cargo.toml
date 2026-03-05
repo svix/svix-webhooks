@@ -34,7 +34,7 @@ clap = { version = "4.5.23", features = ["derive"] }
 clap_complete = "4.5.38"
 colored_json = "5.0.0"
 concolor-clap = "0.1.0"
-dialoguer = "0.11.0"
+dialoguer = "0.12.0"
 dirs = "6.0.0"
 figment = { version = "0.10.19", features = ["toml", "env"] }
 fs-err = "3.2.0"
@@ -46,15 +46,15 @@ idna_adapter = "=1.1.0"
 indoc = "2.0.5"
 open = "5.3.1"
 rand = "0.8.5"
-reqwest = { version = "0.12.9", features = ["rustls-tls", "json", "charset", "http2", "macos-system-configuration"], default-features = false }
+reqwest = { version = "0.13.2", features = ["rustls", "json", "charset", "http2"], default-features = false }
 rustls = "0.23.34"
 serde = { version = "1.0.215", features = ["derive"] }
 serde_json = "1.0.133"
 svix = { path = "../rust" }
 tokio = { version = "1.42.0", features = ["macros", "time", "rt-multi-thread"] }
-tokio-tungstenite = { version = "0.26.0", features = ["rustls-tls-native-roots"] }
+tokio-tungstenite = { version = "0.28.0", features = ["rustls-tls-native-roots"] }
 tracing = "0.1"
-tracing-subscriber = { version = "0.3", features=["std", "ansi", "fmt", "registry", "local-time"], default-features = false }
+tracing-subscriber = { version = "0.3", default-features = false, features = ["std", "ansi", "fmt", "registry", "local-time"] }
 toml = "0.8.19"
 url = "2.5.4"
 
