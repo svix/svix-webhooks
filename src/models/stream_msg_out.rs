@@ -25,4 +25,12 @@ impl StreamMsgOut {
             timestamp,
         }
     }
+
+    pub fn with_headers(
+        mut self,
+        value: impl Into<Option<std::collections::HashMap<String, String>>>,
+    ) -> Self {
+        self.headers = value.into();
+        self
+    }
 }

@@ -22,4 +22,9 @@ impl RateLimiterTokenBucketConfig {
             refill_interval: None,
         }
     }
+
+    pub fn with_refill_interval(mut self, value: impl Into<Option<u64>>) -> Self {
+        self.refill_interval = value.into();
+        self
+    }
 }

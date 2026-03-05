@@ -20,4 +20,9 @@ impl CacheGetOut {
             value,
         }
     }
+
+    pub fn with_expiry(mut self, value: impl Into<Option<jiff::Timestamp>>) -> Self {
+        self.expiry = value.into();
+        self
+    }
 }

@@ -17,6 +17,16 @@ impl MsgStreamReceiveIn {
             lease_duration_millis: None,
         }
     }
+
+    pub fn with_batch_size(mut self, value: impl Into<Option<u16>>) -> Self {
+        self.batch_size = value.into();
+        self
+    }
+
+    pub fn with_lease_duration_millis(mut self, value: impl Into<Option<u64>>) -> Self {
+        self.lease_duration_millis = value.into();
+        self
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]

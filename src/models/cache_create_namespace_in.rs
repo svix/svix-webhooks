@@ -26,4 +26,19 @@ impl CacheCreateNamespaceIn {
             eviction_policy: None,
         }
     }
+
+    pub fn with_storage_type(mut self, value: impl Into<Option<StorageType>>) -> Self {
+        self.storage_type = value.into();
+        self
+    }
+
+    pub fn with_max_storage_bytes(mut self, value: impl Into<Option<u64>>) -> Self {
+        self.max_storage_bytes = value.into();
+        self
+    }
+
+    pub fn with_eviction_policy(mut self, value: impl Into<Option<EvictionPolicy>>) -> Self {
+        self.eviction_policy = value.into();
+        self
+    }
 }

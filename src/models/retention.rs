@@ -17,4 +17,14 @@ impl Retention {
             bytes: None,
         }
     }
+
+    pub fn with_millis(mut self, value: impl Into<Option<u64>>) -> Self {
+        self.millis = value.into();
+        self
+    }
+
+    pub fn with_bytes(mut self, value: impl Into<Option<u64>>) -> Self {
+        self.bytes = value.into();
+        self
+    }
 }

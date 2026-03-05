@@ -19,6 +19,16 @@ impl MsgNamespaceCreateIn {
             storage_type: None,
         }
     }
+
+    pub fn with_retention(mut self, value: impl Into<Option<Retention>>) -> Self {
+        self.retention = value.into();
+        self
+    }
+
+    pub fn with_storage_type(mut self, value: impl Into<Option<StorageType>>) -> Self {
+        self.storage_type = value.into();
+        self
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]

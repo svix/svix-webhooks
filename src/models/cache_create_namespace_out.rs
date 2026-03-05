@@ -36,4 +36,9 @@ impl CacheCreateNamespaceOut {
             updated,
         }
     }
+
+    pub fn with_max_storage_bytes(mut self, value: impl Into<Option<u64>>) -> Self {
+        self.max_storage_bytes = value.into();
+        self
+    }
 }

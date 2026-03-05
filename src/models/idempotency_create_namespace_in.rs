@@ -22,4 +22,14 @@ impl IdempotencyCreateNamespaceIn {
             max_storage_bytes: None,
         }
     }
+
+    pub fn with_storage_type(mut self, value: impl Into<Option<StorageType>>) -> Self {
+        self.storage_type = value.into();
+        self
+    }
+
+    pub fn with_max_storage_bytes(mut self, value: impl Into<Option<u64>>) -> Self {
+        self.max_storage_bytes = value.into();
+        self
+    }
 }

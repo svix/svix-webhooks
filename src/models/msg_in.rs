@@ -21,4 +21,17 @@ impl MsgIn {
             key: None,
         }
     }
+
+    pub fn with_headers(
+        mut self,
+        value: impl Into<Option<std::collections::HashMap<String, String>>>,
+    ) -> Self {
+        self.headers = value.into();
+        self
+    }
+
+    pub fn with_key(mut self, value: impl Into<Option<String>>) -> Self {
+        self.key = value.into();
+        self
+    }
 }

@@ -18,4 +18,9 @@ impl RateLimiterGetRemainingOut {
             retry_after: None,
         }
     }
+
+    pub fn with_retry_after(mut self, value: impl Into<Option<u64>>) -> Self {
+        self.retry_after = value.into();
+        self
+    }
 }

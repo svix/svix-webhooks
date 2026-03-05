@@ -23,6 +23,16 @@ impl KvSetIn {
             behavior: None,
         }
     }
+
+    pub fn with_ttl(mut self, value: impl Into<Option<u64>>) -> Self {
+        self.ttl = value.into();
+        self
+    }
+
+    pub fn with_behavior(mut self, value: impl Into<Option<OperationBehavior>>) -> Self {
+        self.behavior = value.into();
+        self
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
