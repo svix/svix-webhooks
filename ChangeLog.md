@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## Version 1.87.0
 * Server: Respect `retry-after` header on error responses (within limits) (thanks [@vinay0826])
 
 [@vinay0826]: https://github.com/vinay0826
