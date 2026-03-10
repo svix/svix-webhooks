@@ -14,10 +14,11 @@ import (
 
 type (
 	SvixOptions struct {
-		ServerUrl     *url.URL
-		HTTPClient    *http.Client
-		RetrySchedule *[]time.Duration
-		Debug         bool
+		ServerUrl        *url.URL
+		HTTPClient       *http.Client
+		TransportWrapper func(http.RoundTripper) http.RoundTripper
+		RetrySchedule    *[]time.Duration
+		Debug            bool
 	}
 	Svix struct {
 		// hidden field. allows me to override the user agent in `SvixHttpClient.DefaultHeaders["User-Agent"]`
@@ -58,6 +59,9 @@ func New(token string, options *SvixOptions) (*Svix, error) {
 		}
 		if options.HTTPClient != nil {
 			svixHttpClient.HTTPClient = options.HTTPClient
+		}
+		if options.TransportWrapper != nil {
+			svixHttpClient.HTTPClient.Transport = options.TransportWrapper(svixHttpClient.HTTPClient.Transport)
 		}
 		svixHttpClient.Debug = options.Debug
 
