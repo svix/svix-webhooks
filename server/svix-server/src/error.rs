@@ -9,6 +9,7 @@ use axum::{
     extract::rejection::{ExtensionRejection, PathRejection},
     response::{IntoResponse, Response},
 };
+use http::{HeaderValue, header};
 use hyper::StatusCode;
 use schemars::JsonSchema;
 use sea_orm::{DbErr, RuntimeErr, TransactionError};
@@ -419,7 +420,14 @@ impl fmt::Display for HttpError {
 
 impl IntoResponse for HttpError {
     fn into_response(self) -> Response {
-        (self.status, Json(self.body)).into_response()
+        let mut resp = (self.status, Json(self.body)).into_response();
+        if self.status == StatusCode::PAYLOAD_TOO_LARGE {
+            resp.headers_mut().insert(
+                header::CONNECTION,
+                HeaderValue::from_static("close"),
+            );
+        }
+        resp
     }
 }
 

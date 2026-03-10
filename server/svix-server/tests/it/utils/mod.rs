@@ -54,7 +54,11 @@ impl TestClient {
     }
 
     fn add_headers(&self, request: RequestBuilder) -> RequestBuilder {
-        request.header("Authorization", &self.auth_header)
+        // Use "Connection: close" to avoid Windows WSAECONNABORTED (os error 10053)
+        // when the server closes the connection mid-receive (e.g. on 413 responses).
+        request
+            .header("Authorization", &self.auth_header)
+            .header("Connection", "close")
     }
 
     pub async fn get<O: DeserializeOwned>(
