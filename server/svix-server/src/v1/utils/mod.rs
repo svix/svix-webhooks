@@ -16,12 +16,11 @@ use aide::{
 };
 use axum::{
     async_trait,
-    extract::{
-        FromRequest, FromRequestParts, Query, Request,
-        rejection::{BytesRejection, FailedToBufferBody},
-    },
+    body::Body,
+    extract::{FromRequest, FromRequestParts, Query, Request},
     response::IntoResponse,
 };
+use http_body_util::BodyExt as _;
 use chrono::{DateTime, Utc};
 use http::{StatusCode, request::Parts};
 use regex::Regex;
@@ -555,21 +554,42 @@ where
 {
     type Rejection = Error;
 
-    async fn from_request(req: Request, state: &S) -> Result<Self> {
-        let b = bytes::Bytes::from_request(req, state).await.map_err(|e| {
-            tracing::error!("Error reading body as bytes: {}", e);
+    async fn from_request(req: Request, _state: &S) -> Result<Self> {
+        // Enforce body size limit manually (same 2 MiB default as axum) so that
+        // when the limit is exceeded we can drain the remaining bytes before
+        // returning 413. Without draining, Windows aborts the client's TCP
+        // connection with WSAECONNABORTED (os error 10053).
+        const LIMIT: usize = 2 * 1024 * 1024; // 2 MiB, matches axum's DEFAULT_LIMIT
 
-            match e {
-                BytesRejection::FailedToBufferBody(FailedToBufferBody::LengthLimitError(_)) => {
-                    HttpError::too_large(None, None)
+        let mut body: Body = req.into_body();
+        let mut buf = bytes::BytesMut::with_capacity(LIMIT);
+
+        loop {
+            match body.frame().await {
+                None => break,
+                Some(Err(e)) => {
+                    tracing::error!("Error reading body frame: {}", e);
+                    return Err(HttpError::internal_server_error(
+                        None,
+                        Some("Failed to read request body".to_owned()),
+                    )
+                    .into());
                 }
-
-                _ => HttpError::internal_server_error(
-                    None,
-                    Some("Failed to read request body".to_owned()),
-                ),
+                Some(Ok(frame)) => {
+                    if let Ok(data) = frame.into_data() {
+                        if buf.len() + data.len() > LIMIT {
+                            // Drain remaining frames so the TCP connection can be
+                            // cleanly reused rather than aborted on Windows.
+                            while let Some(_) = body.frame().await {}
+                            return Err(HttpError::too_large(None, None).into());
+                        }
+                        buf.extend_from_slice(&data);
+                    }
+                }
             }
-        })?;
+        }
+
+        let b = buf.freeze();
         let mut de = serde_json::Deserializer::from_slice(&b);
 
         let value: T = serde_path_to_error::deserialize(&mut de).map_err(|e| {

@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(export PATH=\"$PATH:/c/Users/jchoi/.cargo/bin\")",
+      "Bash(cargo --version)",
+      "Bash(rustup --version)",
+      "Bash(cmd /c \"rustup --version\")",
+      "Bash(docker compose -f \"c:/Users/jchoi/source/privateRepos/svix-webhooks/server/testing-docker-compose.yml\" ps)",
+      "Bash(cmd /c \"sqlx --version\")",
+      "Bash(cmd /c \"rustup --version && cargo --version && cargo sqlx --version\")",
+      "Bash(powershell -Command \"Get-Command rustup, cargo, sqlx -ErrorAction SilentlyContinue | Select-Object Name, Source\")",
+      "Bash(powershell -NoProfile -Command \"rustup --version; cargo --version\")",
+      "Bash(powershell -NoProfile -Command \"rustup show; rustup toolchain list\")",
+      "Bash(powershell -NoProfile -Command \"cl.exe\")",
+      "Bash(powershell -NoProfile -Command \"link.exe\")",
+      "Bash(powershell -NoProfile -Command \"Get-ChildItem ''C:\\\\Program Files\\\\Microsoft Visual Studio'' -ErrorAction SilentlyContinue | Select Name; Get-ChildItem ''C:\\\\Program Files \\(x86\\)\\\\Microsoft Visual Studio'' -ErrorAction SilentlyContinue | Select Name\")",
+      "Bash(powershell -NoProfile -Command \"Get-ChildItem ''C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022'' | Select Name\")",
+      "Bash(powershell -NoProfile -Command \"Get-ChildItem ''C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Professional\\\\VC\\\\Tools\\\\MSVC'' -ErrorAction SilentlyContinue | Select Name\")",
+      "Bash(powershell -NoProfile -Command \"Get-ChildItem ''C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Professional'' | Select Name\")",
+      "Bash(powershell -NoProfile -Command \"Get-ChildItem ''C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Professional\\\\VC'' | Select Name\")"
+    ]
+  }
+}
