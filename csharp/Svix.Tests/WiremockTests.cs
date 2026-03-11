@@ -98,7 +98,8 @@ namespace Svix.Tests
         [Fact]
         public void StringEnumCorrectlyDeserialized()
         {
-            string raw_json = """"{"id":"asd","status":"finished","task":"application.stats","updatedAt":"2024-01-01T00:00:00Z"}"""";
+            string raw_json =
+                """"{"id":"asd","status":"finished","task":"application.stats","updatedAt":"2024-01-01T00:00:00Z"}"""";
             var loaded_from_str = JsonConvert.DeserializeObject<ReplayOut>(raw_json);
             var expected = new ReplayOut
             {
