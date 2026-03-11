@@ -56,6 +56,29 @@ func (managementAuthentication *ManagementAuthentication) CreateApiToken(
 	)
 }
 
+// Patch an API token
+func (managementAuthentication *ManagementAuthentication) PatchApiToken(
+	ctx context.Context,
+	envId string,
+	keyId string,
+	apiTokenPatch models.ApiTokenPatch,
+) (*models.ApiTokenCensoredOut, error) {
+	pathMap := map[string]string{
+		"env_id": envId,
+		"key_id": keyId,
+	}
+	return internal.ExecuteRequest[models.ApiTokenPatch, models.ApiTokenCensoredOut](
+		ctx,
+		managementAuthentication.client,
+		"PATCH",
+		"/api/v1/management/authentication/{env_id}/api-token/{key_id}",
+		pathMap,
+		nil,
+		nil,
+		&apiTokenPatch,
+	)
+}
+
 // Expire the selected API Token.
 func (managementAuthentication *ManagementAuthentication) ExpireApiToken(
 	ctx context.Context,

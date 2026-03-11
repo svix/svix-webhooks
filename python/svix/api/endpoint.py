@@ -7,6 +7,7 @@ from deprecated import deprecated
 
 from .. import models
 from ..models import (
+    BulkReplayIn,
     EndpointHeadersIn,
     EndpointHeadersOut,
     EndpointHeadersPatchIn,
@@ -52,6 +53,18 @@ class EndpointListOptions(BaseOptions):
 
 @dataclass
 class EndpointCreateOptions(BaseOptions):
+    idempotency_key: t.Optional[str] = None
+
+    def _header_params(self) -> t.Dict[str, str]:
+        return serialize_params(
+            {
+                "idempotency-key": self.idempotency_key,
+            }
+        )
+
+
+@dataclass
+class EndpointBulkReplayOptions(BaseOptions):
     idempotency_key: t.Optional[str] = None
 
     def _header_params(self) -> t.Dict[str, str]:
@@ -217,6 +230,42 @@ class EndpointAsync(ApiBase):
             json_body=endpoint_patch.model_dump_json(exclude_unset=True, by_alias=True),
         )
         return EndpointOut.model_validate(response.json())
+
+    async def bulk_replay(
+        self,
+        app_id: str,
+        endpoint_id: str,
+        bulk_replay_in: BulkReplayIn,
+        options: EndpointBulkReplayOptions = EndpointBulkReplayOptions(),
+    ) -> ReplayOut:
+        """Bulk replay messages sent to the endpoint.
+
+        Only messages that were created after `since` will be sent.
+        This will replay both successful, and failed messages
+
+        A completed task will return a payload like the following:
+        ```json
+        {
+          "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+          "status": "finished",
+          "task": "endpoint.bulk-replay",
+          "data": {
+            "messagesSent": 2
+          }
+        }
+        ```"""
+        response = await self._request_asyncio(
+            method="post",
+            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/bulk-replay",
+            path_params={
+                "app_id": app_id,
+                "endpoint_id": endpoint_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
+            json_body=bulk_replay_in.model_dump_json(exclude_unset=True, by_alias=True),
+        )
+        return ReplayOut.model_validate(response.json())
 
     async def get_headers(self, app_id: str, endpoint_id: str) -> EndpointHeadersOut:
         """Get the additional headers to be sent with the webhook."""
@@ -562,6 +611,42 @@ class Endpoint(ApiBase):
             json_body=endpoint_patch.model_dump_json(exclude_unset=True, by_alias=True),
         )
         return EndpointOut.model_validate(response.json())
+
+    def bulk_replay(
+        self,
+        app_id: str,
+        endpoint_id: str,
+        bulk_replay_in: BulkReplayIn,
+        options: EndpointBulkReplayOptions = EndpointBulkReplayOptions(),
+    ) -> ReplayOut:
+        """Bulk replay messages sent to the endpoint.
+
+        Only messages that were created after `since` will be sent.
+        This will replay both successful, and failed messages
+
+        A completed task will return a payload like the following:
+        ```json
+        {
+          "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+          "status": "finished",
+          "task": "endpoint.bulk-replay",
+          "data": {
+            "messagesSent": 2
+          }
+        }
+        ```"""
+        response = self._request_sync(
+            method="post",
+            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/bulk-replay",
+            path_params={
+                "app_id": app_id,
+                "endpoint_id": endpoint_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
+            json_body=bulk_replay_in.model_dump_json(exclude_unset=True, by_alias=True),
+        )
+        return ReplayOut.model_validate(response.json())
 
     def get_headers(self, app_id: str, endpoint_id: str) -> EndpointHeadersOut:
         """Get the additional headers to be sent with the webhook."""

@@ -13,6 +13,7 @@ pub struct EventTypePatch {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
 
+    /// Deprecated, use `featureFlags` instead.
     #[deprecated]
     #[serde(rename = "featureFlag")]
     #[serde(default, skip_serializing_if = "JsOption::is_undefined")]

@@ -110,6 +110,11 @@ sealed class IngestSourceOutConfig {
         override fun toJsonElement() = Json.encodeToJsonElement(SvixConfigOut.serializer(), lithic)
     }
 
+    @VariantName("meta")
+    data class Meta(val meta: MetaConfigOut) : IngestSourceOutConfig() {
+        override fun toJsonElement() = Json.encodeToJsonElement(MetaConfigOut.serializer(), meta)
+    }
+
     @VariantName("nash")
     data class Nash(val nash: SvixConfigOut) : IngestSourceOutConfig() {
         override fun toJsonElement() = Json.encodeToJsonElement(SvixConfigOut.serializer(), nash)
@@ -131,6 +136,11 @@ sealed class IngestSourceOutConfig {
     data class PortIo(val portIo: PortIoConfigOut) : IngestSourceOutConfig() {
         override fun toJsonElement() =
             Json.encodeToJsonElement(PortIoConfigOut.serializer(), portIo)
+    }
+
+    @VariantName("psi-fi")
+    data class PsiFi(val psiFi: SvixConfigOut) : IngestSourceOutConfig() {
+        override fun toJsonElement() = Json.encodeToJsonElement(SvixConfigOut.serializer(), psiFi)
     }
 
     @VariantName("pleo")
@@ -297,6 +307,10 @@ sealed class IngestSourceOutConfig {
                     { config ->
                         Lithic(Json.decodeFromJsonElement(SvixConfigOut.serializer(), config))
                     },
+                "meta" to
+                    { config ->
+                        Meta(Json.decodeFromJsonElement(MetaConfigOut.serializer(), config))
+                    },
                 "nash" to
                     { config ->
                         Nash(Json.decodeFromJsonElement(SvixConfigOut.serializer(), config))
@@ -312,6 +326,10 @@ sealed class IngestSourceOutConfig {
                 "port-io" to
                     { config ->
                         PortIo(Json.decodeFromJsonElement(PortIoConfigOut.serializer(), config))
+                    },
+                "psi-fi" to
+                    { config ->
+                        PsiFi(Json.decodeFromJsonElement(SvixConfigOut.serializer(), config))
                     },
                 "pleo" to
                     { config ->

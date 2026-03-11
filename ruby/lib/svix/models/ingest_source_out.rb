@@ -10,6 +10,7 @@ require_relative "./docusign_config_out"
 require_relative "./easypost_config_out"
 require_relative "./github_config_out"
 require_relative "./hubspot_config_out"
+require_relative "./meta_config_out"
 require_relative "./orum_io_config_out"
 require_relative "./panda_doc_config_out"
 require_relative "./port_io_config_out"
@@ -81,6 +82,9 @@ module Svix
     class Lithic < SvixConfigOut
     end
 
+    class Meta < MetaConfigOut
+    end
+
     class Nash < SvixConfigOut
     end
 
@@ -91,6 +95,9 @@ module Svix
     end
 
     class PortIo < PortIoConfigOut
+    end
+
+    class PsiFi < SvixConfigOut
     end
 
     class Pleo < SvixConfigOut
@@ -180,10 +187,12 @@ module Svix
       IngestSourceOutConfig::Hubspot => "hubspot",
       IngestSourceOutConfig::IncidentIo => "incident-io",
       IngestSourceOutConfig::Lithic => "lithic",
+      IngestSourceOutConfig::Meta => "meta",
       IngestSourceOutConfig::Nash => "nash",
       IngestSourceOutConfig::OrumIo => "orum-io",
       IngestSourceOutConfig::PandaDoc => "panda-doc",
       IngestSourceOutConfig::PortIo => "port-io",
+      IngestSourceOutConfig::PsiFi => "psi-fi",
       IngestSourceOutConfig::Pleo => "pleo",
       IngestSourceOutConfig::Replicate => "replicate",
       IngestSourceOutConfig::Resend => "resend",

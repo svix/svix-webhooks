@@ -30,7 +30,15 @@ type AuthenticationLogoutOptions struct {
 	IdempotencyKey *string
 }
 
+type AuthenticationStreamLogoutOptions struct {
+	IdempotencyKey *string
+}
+
 type AuthenticationStreamPortalAccessOptions struct {
+	IdempotencyKey *string
+}
+
+type AuthenticationStreamExpireAllOptions struct {
 	IdempotencyKey *string
 }
 
@@ -156,6 +164,34 @@ func (authentication *Authentication) Logout(
 	return err
 }
 
+// Logout a stream token.
+//
+// Trying to log out other tokens will fail.
+func (authentication *Authentication) StreamLogout(
+	ctx context.Context,
+	o *AuthenticationStreamLogoutOptions,
+) error {
+	headerMap := map[string]string{}
+	var err error
+	if o != nil {
+		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		if err != nil {
+			return err
+		}
+	}
+	_, err = internal.ExecuteRequest[any, any](
+		ctx,
+		authentication.client,
+		"POST",
+		"/api/v1/auth/stream-logout",
+		nil,
+		nil,
+		headerMap,
+		nil,
+	)
+	return err
+}
+
 // Use this function to get magic links (and authentication codes) for connecting your users to the Stream Consumer Portal.
 func (authentication *Authentication) StreamPortalAccess(
 	ctx context.Context,
@@ -184,6 +220,37 @@ func (authentication *Authentication) StreamPortalAccess(
 		headerMap,
 		&streamPortalAccessIn,
 	)
+}
+
+// Expire all of the tokens associated with a specific stream.
+func (authentication *Authentication) StreamExpireAll(
+	ctx context.Context,
+	streamId string,
+	streamTokenExpireIn models.StreamTokenExpireIn,
+	o *AuthenticationStreamExpireAllOptions,
+) error {
+	pathMap := map[string]string{
+		"stream_id": streamId,
+	}
+	headerMap := map[string]string{}
+	var err error
+	if o != nil {
+		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		if err != nil {
+			return err
+		}
+	}
+	_, err = internal.ExecuteRequest[models.StreamTokenExpireIn, any](
+		ctx,
+		authentication.client,
+		"POST",
+		"/api/v1/auth/stream/{stream_id}/expire-all",
+		pathMap,
+		nil,
+		headerMap,
+		&streamTokenExpireIn,
+	)
+	return err
 }
 
 // Get the current auth token for the stream poller.

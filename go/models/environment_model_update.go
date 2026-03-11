@@ -2,5 +2,5 @@
 package models
 
 type EnvironmentModelUpdate struct {
-	Name string `json:"name"`
+	Name string `json:"name"` // Environment name for human consumption.
 }

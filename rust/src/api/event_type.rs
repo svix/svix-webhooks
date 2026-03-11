@@ -91,8 +91,8 @@ impl<'a> EventType<'a> {
     }
 
     /// Given an OpenAPI spec, create new or update existing event types.
-    /// If an existing `archived` event type is updated, it will be unarchived.
     ///
+    /// If an existing `archived` event type is updated, it will be unarchived.
     /// The importer will convert all webhooks found in the either the
     /// `webhooks` or `x-webhooks` top-level.
     pub async fn import_openapi(

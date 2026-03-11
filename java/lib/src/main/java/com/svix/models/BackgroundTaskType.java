@@ -12,7 +12,7 @@ public enum BackgroundTaskType implements ToQueryParam {
     SDK_GENERATE("sdk.generate"),
     EVENT_TYPE_AGGREGATE("event-type.aggregate"),
     APPLICATION_PURGE_CONTENT("application.purge_content"),
-    ENDPOINT_BULK_REPLAY("endpoint.bulk_replay");
+    ENDPOINT_BULK_REPLAY("endpoint.bulk-replay");
     private final String value;
 
     BackgroundTaskType(String value) {

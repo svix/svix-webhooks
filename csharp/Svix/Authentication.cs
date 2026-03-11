@@ -41,7 +41,31 @@ namespace Svix
         }
     }
 
+    public class AuthenticationStreamLogoutOptions : SvixOptionsBase
+    {
+        public string? IdempotencyKey { get; set; }
+
+        public new Dictionary<string, string> HeaderParams()
+        {
+            return SerializeParams(
+                new Dictionary<string, object?> { { "idempotency-key", IdempotencyKey } }
+            );
+        }
+    }
+
     public class AuthenticationStreamPortalAccessOptions : SvixOptionsBase
+    {
+        public string? IdempotencyKey { get; set; }
+
+        public new Dictionary<string, string> HeaderParams()
+        {
+            return SerializeParams(
+                new Dictionary<string, object?> { { "idempotency-key", IdempotencyKey } }
+            );
+        }
+    }
+
+    public class AuthenticationStreamExpireAllOptions : SvixOptionsBase
     {
         public string? IdempotencyKey { get; set; }
 
@@ -306,6 +330,60 @@ namespace Svix
         }
 
         /// <summary>
+        /// Logout a stream token.
+        ///
+        /// Trying to log out other tokens will fail.
+        /// </summary>
+        public async Task<bool> StreamLogoutAsync(
+            AuthenticationStreamLogoutOptions? options = null,
+            CancellationToken cancellationToken = default
+        )
+        {
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/auth/stream-logout",
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(StreamLogoutAsync)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Logout a stream token.
+        ///
+        /// Trying to log out other tokens will fail.
+        /// </summary>
+        public bool StreamLogout(AuthenticationStreamLogoutOptions? options = null)
+        {
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<bool>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/auth/stream-logout",
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams()
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(StreamLogout)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
         /// Use this function to get magic links (and authentication codes) for connecting your users to the Stream Consumer Portal.
         /// </summary>
         public async Task<AppPortalAccessOut> StreamPortalAccessAsync(
@@ -366,6 +444,70 @@ namespace Svix
             catch (ApiException e)
             {
                 _client.Logger?.LogError(e, $"{nameof(StreamPortalAccess)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Expire all of the tokens associated with a specific stream.
+        /// </summary>
+        public async Task<bool> StreamExpireAllAsync(
+            string streamId,
+            StreamTokenExpireIn streamTokenExpireIn,
+            AuthenticationStreamExpireAllOptions? options = null,
+            CancellationToken cancellationToken = default
+        )
+        {
+            streamTokenExpireIn =
+                streamTokenExpireIn ?? throw new ArgumentNullException(nameof(streamTokenExpireIn));
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/auth/stream/{stream_id}/expire-all",
+                    pathParams: new Dictionary<string, string> { { "stream_id", streamId } },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    content: streamTokenExpireIn,
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(StreamExpireAllAsync)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Expire all of the tokens associated with a specific stream.
+        /// </summary>
+        public bool StreamExpireAll(
+            string streamId,
+            StreamTokenExpireIn streamTokenExpireIn,
+            AuthenticationStreamExpireAllOptions? options = null
+        )
+        {
+            streamTokenExpireIn =
+                streamTokenExpireIn ?? throw new ArgumentNullException(nameof(streamTokenExpireIn));
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<bool>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/auth/stream/{stream_id}/expire-all",
+                    pathParams: new Dictionary<string, string> { { "stream_id", streamId } },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    content: streamTokenExpireIn
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(StreamExpireAll)} failed");
 
                 throw;
             }
