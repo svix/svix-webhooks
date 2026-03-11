@@ -10,6 +10,7 @@ data class EventTypePatch(
     val archived: Boolean? = null,
     val deprecated: Boolean? = null,
     val description: String? = null,
+    /** Deprecated, use `featureFlags` instead. */
     val featureFlag: MaybeUnset<String> = MaybeUnset.Unset,
     val featureFlags: MaybeUnset<Set<String>> = MaybeUnset.Unset,
     /** The event type group's name */

@@ -10,11 +10,13 @@ class MessageEndpointOut implements \JsonSerializable
     private array $setFields = [];
 
     /**
-     * @param list<string>|null $channels    list of message channels this endpoint listens to (omit for all)
-     * @param string            $description an example endpoint name
+     * @param list<string>|null $channels     list of message channels this endpoint listens to (omit for all)
+     * @param string            $description  an example endpoint name
      * @param list<string>|null $filterTypes
-     * @param string            $id          the Endpoint's ID
-     * @param string|null       $uid         optional unique identifier for the endpoint
+     * @param string            $id           the Endpoint's ID
+     * @param int|null          $rateLimit    deprecated, use `throttleRate` instead
+     * @param int|null          $throttleRate Maximum messages per second to send to this endpoint. Outgoing messages will be throttled to this rate.
+     * @param string|null       $uid          optional unique identifier for the endpoint
      */
     private function __construct(
         public readonly \DateTimeImmutable $createdAt,
@@ -30,6 +32,7 @@ class MessageEndpointOut implements \JsonSerializable
         public readonly ?array $filterTypes = null,
         public readonly ?\DateTimeImmutable $nextAttempt = null,
         public readonly ?int $rateLimit = null,
+        public readonly ?int $throttleRate = null,
         public readonly ?string $uid = null,
         array $setFields = [],
     ) {
@@ -60,6 +63,7 @@ class MessageEndpointOut implements \JsonSerializable
             rateLimit: null,
             status: $status,
             statusText: $statusText,
+            throttleRate: null,
             uid: null,
             updatedAt: $updatedAt,
             url: $url,
@@ -84,6 +88,7 @@ class MessageEndpointOut implements \JsonSerializable
             rateLimit: $this->rateLimit,
             status: $this->status,
             statusText: $this->statusText,
+            throttleRate: $this->throttleRate,
             uid: $this->uid,
             updatedAt: $this->updatedAt,
             url: $this->url,
@@ -108,6 +113,7 @@ class MessageEndpointOut implements \JsonSerializable
             rateLimit: $this->rateLimit,
             status: $this->status,
             statusText: $this->statusText,
+            throttleRate: $this->throttleRate,
             uid: $this->uid,
             updatedAt: $this->updatedAt,
             url: $this->url,
@@ -132,6 +138,7 @@ class MessageEndpointOut implements \JsonSerializable
             rateLimit: $this->rateLimit,
             status: $this->status,
             statusText: $this->statusText,
+            throttleRate: $this->throttleRate,
             uid: $this->uid,
             updatedAt: $this->updatedAt,
             url: $this->url,
@@ -156,6 +163,7 @@ class MessageEndpointOut implements \JsonSerializable
             rateLimit: $this->rateLimit,
             status: $this->status,
             statusText: $this->statusText,
+            throttleRate: $this->throttleRate,
             uid: $this->uid,
             updatedAt: $this->updatedAt,
             url: $this->url,
@@ -180,6 +188,32 @@ class MessageEndpointOut implements \JsonSerializable
             rateLimit: $rateLimit,
             status: $this->status,
             statusText: $this->statusText,
+            throttleRate: $this->throttleRate,
+            uid: $this->uid,
+            updatedAt: $this->updatedAt,
+            url: $this->url,
+            version: $this->version,
+            setFields: $setFields
+        );
+    }
+
+    public function withThrottleRate(?int $throttleRate): self
+    {
+        $setFields = $this->setFields;
+        $setFields['throttleRate'] = true;
+
+        return new self(
+            channels: $this->channels,
+            createdAt: $this->createdAt,
+            description: $this->description,
+            disabled: $this->disabled,
+            filterTypes: $this->filterTypes,
+            id: $this->id,
+            nextAttempt: $this->nextAttempt,
+            rateLimit: $this->rateLimit,
+            status: $this->status,
+            statusText: $this->statusText,
+            throttleRate: $throttleRate,
             uid: $this->uid,
             updatedAt: $this->updatedAt,
             url: $this->url,
@@ -204,6 +238,7 @@ class MessageEndpointOut implements \JsonSerializable
             rateLimit: $this->rateLimit,
             status: $this->status,
             statusText: $this->statusText,
+            throttleRate: $this->throttleRate,
             uid: $uid,
             updatedAt: $this->updatedAt,
             url: $this->url,
@@ -239,6 +274,9 @@ class MessageEndpointOut implements \JsonSerializable
         if (isset($this->setFields['rateLimit'])) {
             $data['rateLimit'] = $this->rateLimit;
         }
+        if (isset($this->setFields['throttleRate'])) {
+            $data['throttleRate'] = $this->throttleRate;
+        }
         if (isset($this->setFields['uid'])) {
             $data['uid'] = $this->uid;
         }
@@ -262,6 +300,7 @@ class MessageEndpointOut implements \JsonSerializable
             rateLimit: \Svix\Utils::deserializeInt($data, 'rateLimit', false, 'MessageEndpointOut'),
             status: \Svix\Utils::deserializeObject($data, 'status', true, 'MessageEndpointOut', [MessageStatus::class, 'fromMixed']),
             statusText: \Svix\Utils::deserializeObject($data, 'statusText', true, 'MessageEndpointOut', [MessageStatusText::class, 'fromMixed']),
+            throttleRate: \Svix\Utils::deserializeInt($data, 'throttleRate', false, 'MessageEndpointOut'),
             uid: \Svix\Utils::deserializeString($data, 'uid', false, 'MessageEndpointOut'),
             updatedAt: \Svix\Utils::deserializeDt($data, 'updatedAt', true, 'MessageEndpointOut'),
             url: \Svix\Utils::getValFromJson($data, 'url', true, 'MessageEndpointOut'),

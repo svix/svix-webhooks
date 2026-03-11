@@ -3,6 +3,7 @@
 export interface AmazonS3PatchConfig {
   accessKeyId?: string;
   bucket?: string;
+  endpointUrl?: string;
   region?: string;
   secretAccessKey?: string;
 }
@@ -12,6 +13,7 @@ export const AmazonS3PatchConfigSerializer = {
     return {
       accessKeyId: object["accessKeyId"],
       bucket: object["bucket"],
+      endpointUrl: object["endpointUrl"],
       region: object["region"],
       secretAccessKey: object["secretAccessKey"],
     };
@@ -21,6 +23,7 @@ export const AmazonS3PatchConfigSerializer = {
     return {
       accessKeyId: self.accessKeyId,
       bucket: self.bucket,
+      endpointUrl: self.endpointUrl,
       region: self.region,
       secretAccessKey: self.secretAccessKey,
     };

@@ -8,6 +8,10 @@ pub struct S3Config {
 
     pub bucket: String,
 
+    #[serde(rename = "endpointUrl")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub endpoint_url: Option<String>,
+
     pub region: String,
 
     #[serde(rename = "secretAccessKey")]
@@ -24,6 +28,7 @@ impl S3Config {
         Self {
             access_key_id,
             bucket,
+            endpoint_url: None,
             region,
             secret_access_key,
         }

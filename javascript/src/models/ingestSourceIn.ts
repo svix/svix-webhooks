@@ -7,6 +7,7 @@ import { type DocusignConfig, DocusignConfigSerializer } from "./docusignConfig"
 import { type EasypostConfig, EasypostConfigSerializer } from "./easypostConfig";
 import { type GithubConfig, GithubConfigSerializer } from "./githubConfig";
 import { type HubspotConfig, HubspotConfigSerializer } from "./hubspotConfig";
+import { type MetaConfig, MetaConfigSerializer } from "./metaConfig";
 import { type OrumIoConfig, OrumIoConfigSerializer } from "./orumIoConfig";
 import { type PandaDocConfig, PandaDocConfigSerializer } from "./pandaDocConfig";
 import { type PortIoConfig, PortIoConfigSerializer } from "./portIoConfig";
@@ -100,6 +101,11 @@ interface IngestSourceInLithic {
   config: SvixConfig;
 }
 
+interface IngestSourceInMeta {
+  type: "meta";
+  config: MetaConfig;
+}
+
 interface IngestSourceInNash {
   type: "nash";
   config: SvixConfig;
@@ -122,6 +128,11 @@ interface IngestSourceInPortIo {
 
 interface IngestSourceInPleo {
   type: "pleo";
+  config: SvixConfig;
+}
+
+interface IngestSourceInPsiFi {
+  type: "psi-fi";
   config: SvixConfig;
 }
 
@@ -231,11 +242,13 @@ export type IngestSourceIn = _IngestSourceInFields &
     | IngestSourceInHubspot
     | IngestSourceInIncidentIo
     | IngestSourceInLithic
+    | IngestSourceInMeta
     | IngestSourceInNash
     | IngestSourceInOrumIo
     | IngestSourceInPandaDoc
     | IngestSourceInPortIo
     | IngestSourceInPleo
+    | IngestSourceInPsiFi
     | IngestSourceInReplicate
     | IngestSourceInResend
     | IngestSourceInRutter
@@ -290,6 +303,8 @@ export const IngestSourceInSerializer = {
           return SvixConfigSerializer._fromJsonObject(object["config"]);
         case "lithic":
           return SvixConfigSerializer._fromJsonObject(object["config"]);
+        case "meta":
+          return MetaConfigSerializer._fromJsonObject(object["config"]);
         case "nash":
           return SvixConfigSerializer._fromJsonObject(object["config"]);
         case "orum-io":
@@ -299,6 +314,8 @@ export const IngestSourceInSerializer = {
         case "port-io":
           return PortIoConfigSerializer._fromJsonObject(object["config"]);
         case "pleo":
+          return SvixConfigSerializer._fromJsonObject(object["config"]);
+        case "psi-fi":
           return SvixConfigSerializer._fromJsonObject(object["config"]);
         case "replicate":
           return SvixConfigSerializer._fromJsonObject(object["config"]);
@@ -396,6 +413,9 @@ export const IngestSourceInSerializer = {
       case "lithic":
         config = SvixConfigSerializer._toJsonObject(self.config);
         break;
+      case "meta":
+        config = MetaConfigSerializer._toJsonObject(self.config);
+        break;
       case "nash":
         config = SvixConfigSerializer._toJsonObject(self.config);
         break;
@@ -409,6 +429,9 @@ export const IngestSourceInSerializer = {
         config = PortIoConfigSerializer._toJsonObject(self.config);
         break;
       case "pleo":
+        config = SvixConfigSerializer._toJsonObject(self.config);
+        break;
+      case "psi-fi":
         config = SvixConfigSerializer._toJsonObject(self.config);
         break;
       case "replicate":

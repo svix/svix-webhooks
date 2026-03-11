@@ -20,6 +20,7 @@ class AppUsageStatsOut implements \JsonSerializable
         public readonly BackgroundTaskStatus $status,
         public readonly BackgroundTaskType $task,
         public readonly array $unresolvedAppIds,
+        public readonly \DateTimeImmutable $updatedAt,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -33,13 +34,15 @@ class AppUsageStatsOut implements \JsonSerializable
         BackgroundTaskStatus $status,
         BackgroundTaskType $task,
         array $unresolvedAppIds,
+        \DateTimeImmutable $updatedAt,
     ): self {
         return new self(
             id: $id,
             status: $status,
             task: $task,
             unresolvedAppIds: $unresolvedAppIds,
-            setFields: ['id' => true, 'status' => true, 'task' => true, 'unresolvedAppIds' => true]
+            updatedAt: $updatedAt,
+            setFields: ['id' => true, 'status' => true, 'task' => true, 'unresolvedAppIds' => true, 'updatedAt' => true]
         );
     }
 
@@ -49,7 +52,8 @@ class AppUsageStatsOut implements \JsonSerializable
             'id' => $this->id,
             'status' => $this->status,
             'task' => $this->task,
-            'unresolvedAppIds' => $this->unresolvedAppIds];
+            'unresolvedAppIds' => $this->unresolvedAppIds,
+            'updatedAt' => $this->updatedAt->format('c')];
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
@@ -63,7 +67,8 @@ class AppUsageStatsOut implements \JsonSerializable
             id: \Svix\Utils::deserializeString($data, 'id', true, 'AppUsageStatsOut'),
             status: \Svix\Utils::deserializeObject($data, 'status', true, 'AppUsageStatsOut', [BackgroundTaskStatus::class, 'fromMixed']),
             task: \Svix\Utils::deserializeObject($data, 'task', true, 'AppUsageStatsOut', [BackgroundTaskType::class, 'fromMixed']),
-            unresolvedAppIds: \Svix\Utils::getValFromJson($data, 'unresolvedAppIds', true, 'AppUsageStatsOut')
+            unresolvedAppIds: \Svix\Utils::getValFromJson($data, 'unresolvedAppIds', true, 'AppUsageStatsOut'),
+            updatedAt: \Svix\Utils::deserializeDt($data, 'updatedAt', true, 'AppUsageStatsOut')
         );
     }
 

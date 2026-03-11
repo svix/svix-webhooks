@@ -11,7 +11,7 @@ type EventTypePatch struct {
 	Archived     *bool                          `json:"archived,omitempty"`
 	Deprecated   *bool                          `json:"deprecated,omitempty"`
 	Description  *string                        `json:"description,omitempty"`
-	FeatureFlag  utils.Nullable[string]         `json:"featureFlag"`
+	FeatureFlag  utils.Nullable[string]         `json:"featureFlag"` // Deprecated, use `featureFlags` instead.
 	FeatureFlags utils.Nullable[[]string]       `json:"featureFlags"`
 	GroupName    utils.Nullable[string]         `json:"groupName"` // The event type group's name
 	Schemas      utils.Nullable[map[string]any] `json:"schemas"`

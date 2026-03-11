@@ -12,6 +12,7 @@ class AmazonS3PatchConfig implements \JsonSerializable
     private function __construct(
         public readonly ?string $accessKeyId = null,
         public readonly ?string $bucket = null,
+        public readonly ?string $endpointUrl = null,
         public readonly ?string $region = null,
         public readonly ?string $secretAccessKey = null,
         array $setFields = [],
@@ -27,6 +28,7 @@ class AmazonS3PatchConfig implements \JsonSerializable
         return new self(
             accessKeyId: null,
             bucket: null,
+            endpointUrl: null,
             region: null,
             secretAccessKey: null,
             setFields: []
@@ -41,6 +43,7 @@ class AmazonS3PatchConfig implements \JsonSerializable
         return new self(
             accessKeyId: $accessKeyId,
             bucket: $this->bucket,
+            endpointUrl: $this->endpointUrl,
             region: $this->region,
             secretAccessKey: $this->secretAccessKey,
             setFields: $setFields
@@ -55,6 +58,22 @@ class AmazonS3PatchConfig implements \JsonSerializable
         return new self(
             accessKeyId: $this->accessKeyId,
             bucket: $bucket,
+            endpointUrl: $this->endpointUrl,
+            region: $this->region,
+            secretAccessKey: $this->secretAccessKey,
+            setFields: $setFields
+        );
+    }
+
+    public function withEndpointUrl(?string $endpointUrl): self
+    {
+        $setFields = $this->setFields;
+        $setFields['endpointUrl'] = true;
+
+        return new self(
+            accessKeyId: $this->accessKeyId,
+            bucket: $this->bucket,
+            endpointUrl: $endpointUrl,
             region: $this->region,
             secretAccessKey: $this->secretAccessKey,
             setFields: $setFields
@@ -69,6 +88,7 @@ class AmazonS3PatchConfig implements \JsonSerializable
         return new self(
             accessKeyId: $this->accessKeyId,
             bucket: $this->bucket,
+            endpointUrl: $this->endpointUrl,
             region: $region,
             secretAccessKey: $this->secretAccessKey,
             setFields: $setFields
@@ -83,6 +103,7 @@ class AmazonS3PatchConfig implements \JsonSerializable
         return new self(
             accessKeyId: $this->accessKeyId,
             bucket: $this->bucket,
+            endpointUrl: $this->endpointUrl,
             region: $this->region,
             secretAccessKey: $secretAccessKey,
             setFields: $setFields
@@ -99,6 +120,9 @@ class AmazonS3PatchConfig implements \JsonSerializable
         }
         if (null !== $this->bucket) {
             $data['bucket'] = $this->bucket;
+        }
+        if (null !== $this->endpointUrl) {
+            $data['endpointUrl'] = $this->endpointUrl;
         }
         if (null !== $this->region) {
             $data['region'] = $this->region;
@@ -118,6 +142,7 @@ class AmazonS3PatchConfig implements \JsonSerializable
         return new self(
             accessKeyId: \Svix\Utils::deserializeString($data, 'accessKeyId', false, 'AmazonS3PatchConfig'),
             bucket: \Svix\Utils::deserializeString($data, 'bucket', false, 'AmazonS3PatchConfig'),
+            endpointUrl: \Svix\Utils::getValFromJson($data, 'endpointUrl', false, 'AmazonS3PatchConfig'),
             region: \Svix\Utils::deserializeString($data, 'region', false, 'AmazonS3PatchConfig'),
             secretAccessKey: \Svix\Utils::deserializeString($data, 'secretAccessKey', false, 'AmazonS3PatchConfig')
         );

@@ -30,6 +30,7 @@ public class EndpointPatch {
     @JsonProperty private Map<String, String> metadata;
     @JsonProperty private MaybeUnset<Long> rateLimit;
     @JsonProperty private MaybeUnset<String> secret;
+    @JsonProperty private MaybeUnset<Long> throttleRate;
     @JsonProperty private MaybeUnset<String> uid;
     @JsonProperty private URI url;
     @JsonProperty private Long version;
@@ -164,17 +165,19 @@ public class EndpointPatch {
         this.metadata = metadata;
     }
 
+    @Deprecated
     public EndpointPatch rateLimit(Long rateLimit) {
         this.rateLimit = new MaybeUnset<>(rateLimit);
         return this;
     }
 
     /**
-     * Get rateLimit
+     * Deprecated, use `throttleRate` instead.
      *
      * @return rateLimit
      */
     @javax.annotation.Nullable
+    @Deprecated
     public Long getRateLimit() {
         if (rateLimit == null) {
             return null;
@@ -182,6 +185,7 @@ public class EndpointPatch {
         return rateLimit.getValue();
     }
 
+    @Deprecated
     public void setRateLimit(Long rateLimit) {
         this.rateLimit = new MaybeUnset<>(rateLimit);
     }
@@ -212,6 +216,30 @@ public class EndpointPatch {
     @Deprecated
     public void setSecret(String secret) {
         this.secret = new MaybeUnset<>(secret);
+    }
+
+    public EndpointPatch throttleRate(Long throttleRate) {
+        this.throttleRate = new MaybeUnset<>(throttleRate);
+        return this;
+    }
+
+    /**
+     * Maximum messages per second to send to this endpoint.
+     *
+     * <p>Outgoing messages will be throttled to this rate.
+     *
+     * @return throttleRate
+     */
+    @javax.annotation.Nullable
+    public Long getThrottleRate() {
+        if (throttleRate == null) {
+            return null;
+        }
+        return throttleRate.getValue();
+    }
+
+    public void setThrottleRate(Long throttleRate) {
+        this.throttleRate = new MaybeUnset<>(throttleRate);
     }
 
     public EndpointPatch uid(String uid) {
