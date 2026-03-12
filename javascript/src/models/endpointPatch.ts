@@ -6,11 +6,6 @@ export interface EndpointPatch {
   disabled?: boolean;
   filterTypes?: string[] | null;
   metadata?: { [key: string]: string };
-  /**
-   * Deprecated, use `throttleRate` instead.
-   *
-   * @deprecated
-   */
   rateLimit?: number | null;
   /**
    * The endpoint's verification secret.
@@ -21,12 +16,6 @@ export interface EndpointPatch {
    * @deprecated
    */
   secret?: string | null;
-  /**
-   * Maximum messages per second to send to this endpoint.
-   *
-   * Outgoing messages will be throttled to this rate.
-   */
-  throttleRate?: number | null;
   /** The Endpoint's UID. */
   uid?: string | null;
   url?: string;
@@ -43,7 +32,6 @@ export const EndpointPatchSerializer = {
       metadata: object["metadata"],
       rateLimit: object["rateLimit"],
       secret: object["secret"],
-      throttleRate: object["throttleRate"],
       uid: object["uid"],
       url: object["url"],
       version: object["version"],
@@ -59,7 +47,6 @@ export const EndpointPatchSerializer = {
       metadata: self.metadata,
       rateLimit: self.rateLimit,
       secret: self.secret,
-      throttleRate: self.throttleRate,
       uid: self.uid,
       url: self.url,
       version: self.version,

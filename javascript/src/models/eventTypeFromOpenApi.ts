@@ -3,11 +3,6 @@
 export interface EventTypeFromOpenApi {
   deprecated: boolean;
   description: string;
-  /**
-   * Deprecated, use `featureFlags` instead.
-   *
-   * @deprecated
-   */
   featureFlag?: string | null;
   featureFlags?: string[] | null;
   /** The event type group's name */

@@ -2,6 +2,6 @@
 package models
 
 type EnvironmentModelIn struct {
-	Name string          `json:"name"` // Environment name for human consumption.
+	Name string          `json:"name"`
 	Type EnvironmentType `json:"type"`
 }

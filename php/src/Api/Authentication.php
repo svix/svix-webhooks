@@ -11,7 +11,6 @@ use Svix\Models\AppPortalAccessIn;
 use Svix\Models\AppPortalAccessOut;
 use Svix\Models\RotatePollerTokenIn;
 use Svix\Models\StreamPortalAccessIn;
-use Svix\Models\StreamTokenExpireIn;
 use Svix\Request\SvixHttpClient;
 
 class Authentication
@@ -66,21 +65,6 @@ class Authentication
         $res = $this->client->sendNoResponseBody($request);
     }
 
-    /**
-     * Logout a stream token.
-     *
-     * Trying to log out other tokens will fail.
-     */
-    public function streamLogout(
-        ?AuthenticationStreamLogoutOptions $options = null,
-    ): void {
-        $request = $this->client->newReq('POST', '/api/v1/auth/stream-logout');
-        if (null !== $options) {
-            $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
-        }
-        $res = $this->client->sendNoResponseBody($request);
-    }
-
     /** Use this function to get magic links (and authentication codes) for connecting your users to the Stream Consumer Portal. */
     public function streamPortalAccess(
         string $streamId,
@@ -95,20 +79,6 @@ class Authentication
         $res = $this->client->send($request);
 
         return AppPortalAccessOut::fromJson($res);
-    }
-
-    /** Expire all of the tokens associated with a specific stream. */
-    public function streamExpireAll(
-        string $streamId,
-        StreamTokenExpireIn $streamTokenExpireIn,
-        ?AuthenticationStreamExpireAllOptions $options = null,
-    ): void {
-        $request = $this->client->newReq('POST', "/api/v1/auth/stream/{$streamId}/expire-all");
-        if (null !== $options) {
-            $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
-        }
-        $request->setBody(json_encode($streamTokenExpireIn));
-        $res = $this->client->sendNoResponseBody($request);
     }
 
     /** Get the current auth token for the stream poller. */

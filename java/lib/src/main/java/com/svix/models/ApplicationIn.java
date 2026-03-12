@@ -22,7 +22,6 @@ public class ApplicationIn {
     @JsonProperty private Map<String, String> metadata;
     @JsonProperty private String name;
     @JsonProperty private Long rateLimit;
-    @JsonProperty private Long throttleRate;
     @JsonProperty private String uid;
 
     public ApplicationIn() {}
@@ -61,7 +60,7 @@ public class ApplicationIn {
     }
 
     /**
-     * Application name for human consumption.
+     * Get name
      *
      * @return name
      */
@@ -74,47 +73,23 @@ public class ApplicationIn {
         this.name = name;
     }
 
-    @Deprecated
     public ApplicationIn rateLimit(Long rateLimit) {
         this.rateLimit = rateLimit;
         return this;
     }
 
     /**
-     * Deprecated, use `throttleRate` instead.
+     * Get rateLimit
      *
      * @return rateLimit
      */
     @javax.annotation.Nullable
-    @Deprecated
     public Long getRateLimit() {
         return rateLimit;
     }
 
-    @Deprecated
     public void setRateLimit(Long rateLimit) {
         this.rateLimit = rateLimit;
-    }
-
-    public ApplicationIn throttleRate(Long throttleRate) {
-        this.throttleRate = throttleRate;
-        return this;
-    }
-
-    /**
-     * Maximum messages per second to send to this application.
-     *
-     * <p>Outgoing messages will be throttled to this rate.
-     *
-     * @return throttleRate
-     */
-    @javax.annotation.Nullable
-    public Long getThrottleRate() {
-        return throttleRate;
-    }
-
-    public void setThrottleRate(Long throttleRate) {
-        this.throttleRate = throttleRate;
     }
 
     public ApplicationIn uid(String uid) {

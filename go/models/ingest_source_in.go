@@ -16,7 +16,6 @@ import (
 //   - "easypost": Use EasypostConfig
 //   - "github": Use GithubConfig
 //   - "hubspot": Use HubspotConfig
-//   - "meta": Use MetaConfig
 //   - "orum-io": Use OrumIoConfig
 //   - "panda-doc": Use PandaDocConfig
 //   - "port-io": Use PortIoConfig
@@ -25,7 +24,7 @@ import (
 //   - "shopify": Use ShopifyConfig
 //   - "slack": Use SlackConfig
 //   - "stripe": Use StripeConfig
-//   - "beehiiv","brex","clerk","guesty","incident-io","lithic","nash","pleo","psi-fi","replicate","resend","safebase","sardine","stych","svix","open-ai","render": Use SvixConfig
+//   - "beehiiv","brex","clerk","guesty","incident-io","lithic","nash","pleo","replicate","resend","safebase","sardine","stych","svix","open-ai","render": Use SvixConfig
 //   - "telnyx": Use TelnyxConfig
 //   - "vapi": Use VapiConfig
 //   - "veriff": Use VeriffConfig
@@ -55,13 +54,11 @@ const (
 	IngestSourceInTypeHubspot        IngestSourceInType = "hubspot"
 	IngestSourceInTypeIncidentIo     IngestSourceInType = "incident-io"
 	IngestSourceInTypeLithic         IngestSourceInType = "lithic"
-	IngestSourceInTypeMeta           IngestSourceInType = "meta"
 	IngestSourceInTypeNash           IngestSourceInType = "nash"
 	IngestSourceInTypeOrumIo         IngestSourceInType = "orum-io"
 	IngestSourceInTypePandaDoc       IngestSourceInType = "panda-doc"
 	IngestSourceInTypePortIo         IngestSourceInType = "port-io"
 	IngestSourceInTypePleo           IngestSourceInType = "pleo"
-	IngestSourceInTypePsiFi          IngestSourceInType = "psi-fi"
 	IngestSourceInTypeReplicate      IngestSourceInType = "replicate"
 	IngestSourceInTypeResend         IngestSourceInType = "resend"
 	IngestSourceInTypeRutter         IngestSourceInType = "rutter"
@@ -95,7 +92,6 @@ func (DocusignConfig) isIngestSourceInConfig()  {}
 func (EasypostConfig) isIngestSourceInConfig()  {}
 func (GithubConfig) isIngestSourceInConfig()    {}
 func (HubspotConfig) isIngestSourceInConfig()   {}
-func (MetaConfig) isIngestSourceInConfig()      {}
 func (OrumIoConfig) isIngestSourceInConfig()    {}
 func (PandaDocConfig) isIngestSourceInConfig()  {}
 func (PortIoConfig) isIngestSourceInConfig()    {}
@@ -156,10 +152,6 @@ func (i *IngestSourceIn) UnmarshalJSON(data []byte) error {
 		var c HubspotConfig
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
-	case "meta":
-		var c MetaConfig
-		err = json.Unmarshal(aux.Config, &c)
-		i.Config = c
 	case "orum-io":
 		var c OrumIoConfig
 		err = json.Unmarshal(aux.Config, &c)
@@ -192,7 +184,7 @@ func (i *IngestSourceIn) UnmarshalJSON(data []byte) error {
 		var c StripeConfig
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
-	case "beehiiv", "brex", "clerk", "guesty", "incident-io", "lithic", "nash", "pleo", "psi-fi", "replicate", "resend", "safebase", "sardine", "stych", "svix", "open-ai", "render":
+	case "beehiiv", "brex", "clerk", "guesty", "incident-io", "lithic", "nash", "pleo", "replicate", "resend", "safebase", "sardine", "stych", "svix", "open-ai", "render":
 		var c SvixConfig
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
@@ -246,13 +238,11 @@ var IngestSourceInTypeFromString = map[string]IngestSourceInType{
 	"hubspot":         IngestSourceInTypeHubspot,
 	"incident-io":     IngestSourceInTypeIncidentIo,
 	"lithic":          IngestSourceInTypeLithic,
-	"meta":            IngestSourceInTypeMeta,
 	"nash":            IngestSourceInTypeNash,
 	"orum-io":         IngestSourceInTypeOrumIo,
 	"panda-doc":       IngestSourceInTypePandaDoc,
 	"port-io":         IngestSourceInTypePortIo,
 	"pleo":            IngestSourceInTypePleo,
-	"psi-fi":          IngestSourceInTypePsiFi,
 	"replicate":       IngestSourceInTypeReplicate,
 	"resend":          IngestSourceInTypeResend,
 	"rutter":          IngestSourceInTypeRutter,

@@ -19,7 +19,6 @@ export interface AppUsageStatsOut {
    * Stats will be produced for all the others.
    */
   unresolvedAppIds: string[];
-  updatedAt: Date;
 }
 
 export const AppUsageStatsOutSerializer = {
@@ -29,7 +28,6 @@ export const AppUsageStatsOutSerializer = {
       status: BackgroundTaskStatusSerializer._fromJsonObject(object["status"]),
       task: BackgroundTaskTypeSerializer._fromJsonObject(object["task"]),
       unresolvedAppIds: object["unresolvedAppIds"],
-      updatedAt: new Date(object["updatedAt"]),
     };
   },
 
@@ -39,7 +37,6 @@ export const AppUsageStatsOutSerializer = {
       status: BackgroundTaskStatusSerializer._toJsonObject(self.status),
       task: BackgroundTaskTypeSerializer._toJsonObject(self.task),
       unresolvedAppIds: self.unresolvedAppIds,
-      updatedAt: self.updatedAt,
     };
   },
 };

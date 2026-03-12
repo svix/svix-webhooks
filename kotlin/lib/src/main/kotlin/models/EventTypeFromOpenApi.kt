@@ -8,7 +8,6 @@ import kotlinx.serialization.Serializable
 data class EventTypeFromOpenApi(
     val deprecated: Boolean,
     val description: String,
-    /** Deprecated, use `featureFlags` instead. */
     val featureFlag: String? = null,
     val featureFlags: Set<String>? = null,
     /** The event type group's name */

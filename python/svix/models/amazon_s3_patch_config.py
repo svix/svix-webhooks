@@ -9,8 +9,6 @@ class AmazonS3PatchConfig(BaseModel):
 
     bucket: t.Optional[str] = None
 
-    endpoint_url: t.Optional[str] = None
-
     region: t.Optional[str] = None
 
     secret_access_key: t.Optional[str] = None

@@ -37,16 +37,15 @@ pub use self::{
     authentication::{
         Authentication, AuthenticationAppPortalAccessOptions, AuthenticationExpireAllOptions,
         AuthenticationLogoutOptions, AuthenticationRotateStreamPollerTokenOptions,
-        AuthenticationStreamExpireAllOptions, AuthenticationStreamLogoutOptions,
         AuthenticationStreamPortalAccessOptions,
     },
     background_task::{BackgroundTask, BackgroundTaskListOptions},
     connector::{Connector, ConnectorCreateOptions, ConnectorListOptions},
     deprecated::*,
     endpoint::{
-        Endpoint, EndpointBulkReplayOptions, EndpointCreateOptions, EndpointGetStatsOptions,
-        EndpointListOptions, EndpointRecoverOptions, EndpointReplayMissingOptions,
-        EndpointRotateSecretOptions, EndpointSendExampleOptions,
+        Endpoint, EndpointCreateOptions, EndpointGetStatsOptions, EndpointListOptions,
+        EndpointRecoverOptions, EndpointReplayMissingOptions, EndpointRotateSecretOptions,
+        EndpointSendExampleOptions,
     },
     environment::{Environment, EnvironmentExportOptions, EnvironmentImportOptions},
     event_type::{

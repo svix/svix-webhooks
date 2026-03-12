@@ -1,5 +1,4 @@
 # this file is @generated
-from datetime import datetime
 
 from .background_task_status import BackgroundTaskStatus
 from .background_task_type import BackgroundTaskType
@@ -13,5 +12,3 @@ class AggregateEventTypesOut(BaseModel):
     status: BackgroundTaskStatus
 
     task: BackgroundTaskType
-
-    updated_at: datetime

@@ -13,7 +13,6 @@ export interface RecoverOut {
   id: string;
   status: BackgroundTaskStatus;
   task: BackgroundTaskType;
-  updatedAt: Date;
 }
 
 export const RecoverOutSerializer = {
@@ -22,7 +21,6 @@ export const RecoverOutSerializer = {
       id: object["id"],
       status: BackgroundTaskStatusSerializer._fromJsonObject(object["status"]),
       task: BackgroundTaskTypeSerializer._fromJsonObject(object["task"]),
-      updatedAt: new Date(object["updatedAt"]),
     };
   },
 
@@ -31,7 +29,6 @@ export const RecoverOutSerializer = {
       id: self.id,
       status: BackgroundTaskStatusSerializer._toJsonObject(self.status),
       task: BackgroundTaskTypeSerializer._toJsonObject(self.task),
-      updatedAt: self.updatedAt,
     };
   },
 };

@@ -13,16 +13,9 @@ export interface MessageEndpointOut {
   /** The Endpoint's ID. */
   id: string;
   nextAttempt?: Date | null;
-  /**
-   * Deprecated, use `throttleRate` instead.
-   *
-   * @deprecated
-   */
   rateLimit?: number | null;
   status: MessageStatus;
   statusText: MessageStatusText;
-  /** Maximum messages per second to send to this endpoint. Outgoing messages will be throttled to this rate. */
-  throttleRate?: number | null;
   /** Optional unique identifier for the endpoint. */
   uid?: string | null;
   updatedAt: Date;
@@ -43,7 +36,6 @@ export const MessageEndpointOutSerializer = {
       rateLimit: object["rateLimit"],
       status: MessageStatusSerializer._fromJsonObject(object["status"]),
       statusText: MessageStatusTextSerializer._fromJsonObject(object["statusText"]),
-      throttleRate: object["throttleRate"],
       uid: object["uid"],
       updatedAt: new Date(object["updatedAt"]),
       url: object["url"],
@@ -63,7 +55,6 @@ export const MessageEndpointOutSerializer = {
       rateLimit: self.rateLimit,
       status: MessageStatusSerializer._toJsonObject(self.status),
       statusText: MessageStatusTextSerializer._toJsonObject(self.statusText),
-      throttleRate: self.throttleRate,
       uid: self.uid,
       updatedAt: self.updatedAt,
       url: self.url,

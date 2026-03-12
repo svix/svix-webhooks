@@ -14,7 +14,6 @@ from .docusign_config_out import DocusignConfigOut
 from .easypost_config_out import EasypostConfigOut
 from .github_config_out import GithubConfigOut
 from .hubspot_config_out import HubspotConfigOut
-from .meta_config_out import MetaConfigOut
 from .orum_io_config_out import OrumIoConfigOut
 from .panda_doc_config_out import PandaDocConfigOut
 from .port_io_config_out import PortIoConfigOut
@@ -62,12 +61,10 @@ class IngestSourceOut(BaseModel):
         t.Literal["hubspot"],
         t.Literal["incident-io"],
         t.Literal["lithic"],
-        t.Literal["meta"],
         t.Literal["nash"],
         t.Literal["orum-io"],
         t.Literal["panda-doc"],
         t.Literal["port-io"],
-        t.Literal["psi-fi"],
         t.Literal["pleo"],
         t.Literal["replicate"],
         t.Literal["resend"],
@@ -98,7 +95,6 @@ class IngestSourceOut(BaseModel):
         EasypostConfigOut,
         GithubConfigOut,
         HubspotConfigOut,
-        MetaConfigOut,
         OrumIoConfigOut,
         PandaDocConfigOut,
         PortIoConfigOut,
@@ -150,8 +146,6 @@ class IngestSourceOut(BaseModel):
             output.config = SvixConfigOut.model_validate(data.get("config", {}))
         elif output.type == "lithic":
             output.config = SvixConfigOut.model_validate(data.get("config", {}))
-        elif output.type == "meta":
-            output.config = MetaConfigOut.model_validate(data.get("config", {}))
         elif output.type == "nash":
             output.config = SvixConfigOut.model_validate(data.get("config", {}))
         elif output.type == "orum-io":
@@ -160,8 +154,6 @@ class IngestSourceOut(BaseModel):
             output.config = PandaDocConfigOut.model_validate(data.get("config", {}))
         elif output.type == "port-io":
             output.config = PortIoConfigOut.model_validate(data.get("config", {}))
-        elif output.type == "psi-fi":
-            output.config = SvixConfigOut.model_validate(data.get("config", {}))
         elif output.type == "pleo":
             output.config = SvixConfigOut.model_validate(data.get("config", {}))
         elif output.type == "replicate":

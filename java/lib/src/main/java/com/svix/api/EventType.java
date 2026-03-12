@@ -86,10 +86,11 @@ public class EventType {
     }
 
     /**
-     * Given an OpenAPI spec, create new or update existing event types.
+     * Given an OpenAPI spec, create new or update existing event types. If an existing `archived`
+     * event type is updated, it will be unarchived.
      *
-     * <p>If an existing `archived` event type is updated, it will be unarchived. The importer will
-     * convert all webhooks found in the either the `webhooks` or `x-webhooks` top-level.
+     * <p>The importer will convert all webhooks found in the either the `webhooks` or `x-webhooks`
+     * top-level.
      */
     public EventTypeImportOpenApiOut importOpenapi(
             final EventTypeImportOpenApiIn eventTypeImportOpenApiIn)
@@ -98,10 +99,11 @@ public class EventType {
     }
 
     /**
-     * Given an OpenAPI spec, create new or update existing event types.
+     * Given an OpenAPI spec, create new or update existing event types. If an existing `archived`
+     * event type is updated, it will be unarchived.
      *
-     * <p>If an existing `archived` event type is updated, it will be unarchived. The importer will
-     * convert all webhooks found in the either the `webhooks` or `x-webhooks` top-level.
+     * <p>The importer will convert all webhooks found in the either the `webhooks` or `x-webhooks`
+     * top-level.
      */
     public EventTypeImportOpenApiOut importOpenapi(
             final EventTypeImportOpenApiIn eventTypeImportOpenApiIn,

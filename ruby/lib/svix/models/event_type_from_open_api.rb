@@ -6,7 +6,6 @@ module Svix
   class EventTypeFromOpenApi
     attr_accessor :deprecated
     attr_accessor :description
-    # Deprecated, use `featureFlags` instead.
     attr_accessor :feature_flag
     attr_accessor :feature_flags
     # The event type group's name

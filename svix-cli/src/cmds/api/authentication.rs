@@ -44,19 +44,6 @@ impl From<AuthenticationLogoutOptions> for svix::api::AuthenticationLogoutOption
 }
 
 #[derive(Args, Clone)]
-pub struct AuthenticationStreamLogoutOptions {
-    #[arg(long)]
-    pub idempotency_key: Option<String>,
-}
-
-impl From<AuthenticationStreamLogoutOptions> for svix::api::AuthenticationStreamLogoutOptions {
-    fn from(value: AuthenticationStreamLogoutOptions) -> Self {
-        let AuthenticationStreamLogoutOptions { idempotency_key } = value;
-        Self { idempotency_key }
-    }
-}
-
-#[derive(Args, Clone)]
 pub struct AuthenticationStreamPortalAccessOptions {
     #[arg(long)]
     pub idempotency_key: Option<String>,
@@ -67,21 +54,6 @@ impl From<AuthenticationStreamPortalAccessOptions>
 {
     fn from(value: AuthenticationStreamPortalAccessOptions) -> Self {
         let AuthenticationStreamPortalAccessOptions { idempotency_key } = value;
-        Self { idempotency_key }
-    }
-}
-
-#[derive(Args, Clone)]
-pub struct AuthenticationStreamExpireAllOptions {
-    #[arg(long)]
-    pub idempotency_key: Option<String>,
-}
-
-impl From<AuthenticationStreamExpireAllOptions>
-    for svix::api::AuthenticationStreamExpireAllOptions
-{
-    fn from(value: AuthenticationStreamExpireAllOptions) -> Self {
-        let AuthenticationStreamExpireAllOptions { idempotency_key } = value;
         Self { idempotency_key }
     }
 }
@@ -131,26 +103,12 @@ pub enum AuthenticationCommands {
         #[clap(flatten)]
         options: AuthenticationLogoutOptions,
     },
-    /// Logout a stream token.
-    ///
-    /// Trying to log out other tokens will fail.
-    StreamLogout {
-        #[clap(flatten)]
-        options: AuthenticationStreamLogoutOptions,
-    },
     /// Use this function to get magic links (and authentication codes) for connecting your users to the Stream Consumer Portal.
     StreamPortalAccess {
         stream_id: String,
         stream_portal_access_in: Option<crate::json::JsonOf<StreamPortalAccessIn>>,
         #[clap(flatten)]
         options: AuthenticationStreamPortalAccessOptions,
-    },
-    /// Expire all of the tokens associated with a specific stream.
-    StreamExpireAll {
-        stream_id: String,
-        stream_token_expire_in: Option<crate::json::JsonOf<StreamTokenExpireIn>>,
-        #[clap(flatten)]
-        options: AuthenticationStreamExpireAllOptions,
     },
     /// Get the current auth token for the stream poller.
     GetStreamPollerToken { stream_id: String, sink_id: String },
@@ -203,12 +161,6 @@ impl AuthenticationCommands {
             Self::Logout { options } => {
                 client.authentication().logout(Some(options.into())).await?;
             }
-            Self::StreamLogout { options } => {
-                client
-                    .authentication()
-                    .stream_logout(Some(options.into()))
-                    .await?;
-            }
             Self::StreamPortalAccess {
                 stream_id,
                 stream_portal_access_in,
@@ -223,20 +175,6 @@ impl AuthenticationCommands {
                     )
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
-            }
-            Self::StreamExpireAll {
-                stream_id,
-                stream_token_expire_in,
-                options,
-            } => {
-                client
-                    .authentication()
-                    .stream_expire_all(
-                        stream_id,
-                        stream_token_expire_in.unwrap_or_default().into_inner(),
-                        Some(options.into()),
-                    )
-                    .await?;
             }
             Self::GetStreamPollerToken { stream_id, sink_id } => {
                 let resp = client

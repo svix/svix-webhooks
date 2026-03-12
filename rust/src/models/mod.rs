@@ -24,7 +24,6 @@ pub mod background_task_finished_event2;
 pub mod background_task_out;
 pub mod background_task_status;
 pub mod background_task_type;
-pub mod bulk_replay_in;
 pub mod checkbook_config;
 pub mod checkbook_config_out;
 pub mod connector_in;
@@ -149,8 +148,6 @@ pub mod message_precheck_in;
 pub mod message_precheck_out;
 pub mod message_status;
 pub mod message_status_text;
-pub mod meta_config;
-pub mod meta_config_out;
 pub mod operational_webhook_endpoint_headers_in;
 pub mod operational_webhook_endpoint_headers_out;
 pub mod operational_webhook_endpoint_in;
@@ -203,7 +200,6 @@ pub mod stream_portal_access_in;
 pub mod stream_sink_in;
 pub mod stream_sink_out;
 pub mod stream_sink_patch;
-pub mod stream_token_expire_in;
 pub mod stripe_config;
 pub mod stripe_config_out;
 pub mod svix_config;
@@ -248,7 +244,6 @@ pub use self::{
     background_task_out::BackgroundTaskOut,
     background_task_status::BackgroundTaskStatus,
     background_task_type::BackgroundTaskType,
-    bulk_replay_in::BulkReplayIn,
     checkbook_config::CheckbookConfig,
     checkbook_config_out::CheckbookConfigOut,
     connector_in::ConnectorIn,
@@ -373,8 +368,6 @@ pub use self::{
     message_precheck_out::MessagePrecheckOut,
     message_status::MessageStatus,
     message_status_text::MessageStatusText,
-    meta_config::MetaConfig,
-    meta_config_out::MetaConfigOut,
     operational_webhook_endpoint_headers_in::OperationalWebhookEndpointHeadersIn,
     operational_webhook_endpoint_headers_out::OperationalWebhookEndpointHeadersOut,
     operational_webhook_endpoint_in::OperationalWebhookEndpointIn,
@@ -427,7 +420,6 @@ pub use self::{
     stream_sink_in::{StreamSinkIn, StreamSinkInConfig},
     stream_sink_out::{StreamSinkOut, StreamSinkOutConfig},
     stream_sink_patch::{StreamSinkPatch, StreamSinkPatchConfig},
-    stream_token_expire_in::StreamTokenExpireIn,
     stripe_config::StripeConfig,
     stripe_config_out::StripeConfigOut,
     svix_config::SvixConfig,

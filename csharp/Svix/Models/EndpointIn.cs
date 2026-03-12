@@ -30,9 +30,6 @@ namespace Svix.Models
         [JsonProperty("secret")]
         public string? Secret { get; set; } = null;
 
-        [JsonProperty("throttleRate")]
-        public ushort? ThrottleRate { get; set; } = null;
-
         [JsonProperty("uid")]
         public string? Uid { get; set; } = null;
 
@@ -55,7 +52,6 @@ namespace Svix.Models
             sb.Append("  Metadata: ").Append(Metadata).Append('\n');
             sb.Append("  RateLimit: ").Append(RateLimit).Append('\n');
             sb.Append("  Secret: ").Append(Secret).Append('\n');
-            sb.Append("  ThrottleRate: ").Append(ThrottleRate).Append('\n');
             sb.Append("  Uid: ").Append(Uid).Append('\n');
             sb.Append("  Url: ").Append(Url).Append('\n');
             sb.Append("  Version: ").Append(Version).Append('\n');

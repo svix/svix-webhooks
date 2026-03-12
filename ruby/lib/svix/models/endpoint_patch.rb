@@ -9,17 +9,12 @@ module Svix
     attr_accessor :disabled
     attr_accessor :filter_types
     attr_accessor :metadata
-    # Deprecated, use `throttleRate` instead.
     attr_accessor :rate_limit
     # The endpoint's verification secret.
     #
     # Format: `base64` encoded random bytes optionally prefixed with `whsec_`.
     # It is recommended to not set this and let the server generate the secret.
     attr_accessor :secret
-    # Maximum messages per second to send to this endpoint.
-    #
-    # Outgoing messages will be throttled to this rate.
-    attr_accessor :throttle_rate
     # The Endpoint's UID.
     attr_accessor :uid
     attr_accessor :url
@@ -33,7 +28,6 @@ module Svix
       "metadata",
       "rate_limit",
       "secret",
-      "throttle_rate",
       "uid",
       "url",
       "version"
@@ -65,7 +59,6 @@ module Svix
       attrs["metadata"] = attributes["metadata"]
       attrs["rate_limit"] = attributes["rateLimit"]
       attrs["secret"] = attributes["secret"]
-      attrs["throttle_rate"] = attributes["throttleRate"]
       attrs["uid"] = attributes["uid"]
       attrs["url"] = attributes["url"]
       attrs["version"] = attributes["version"]
@@ -81,7 +74,6 @@ module Svix
       out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
       out["rateLimit"] = Svix::serialize_primitive(@rate_limit) if @__rate_limit_is_defined
       out["secret"] = Svix::serialize_primitive(@secret) if @__secret_is_defined
-      out["throttleRate"] = Svix::serialize_primitive(@throttle_rate) if @__throttle_rate_is_defined
       out["uid"] = Svix::serialize_primitive(@uid) if @__uid_is_defined
       out["url"] = Svix::serialize_primitive(@url) if @url
       out["version"] = Svix::serialize_primitive(@version) if @version

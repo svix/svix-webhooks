@@ -232,21 +232,6 @@ public abstract class IngestSourceOutConfig {
     @AllArgsConstructor
     @ToString
     @EqualsAndHashCode(callSuper = false)
-    @VariantName("meta")
-    public static class Meta extends IngestSourceOutConfig {
-        private final MetaConfigOut meta;
-
-        @Override
-        public JsonNode toJsonNode() {
-            return Utils.getObjectMapper().valueToTree(meta);
-        }
-    }
-
-    @Getter
-    @Setter
-    @AllArgsConstructor
-    @ToString
-    @EqualsAndHashCode(callSuper = false)
     @VariantName("nash")
     public static class Nash extends IngestSourceOutConfig {
         private final SvixConfigOut nash;
@@ -299,21 +284,6 @@ public abstract class IngestSourceOutConfig {
         @Override
         public JsonNode toJsonNode() {
             return Utils.getObjectMapper().valueToTree(portIo);
-        }
-    }
-
-    @Getter
-    @Setter
-    @AllArgsConstructor
-    @ToString
-    @EqualsAndHashCode(callSuper = false)
-    @VariantName("psi-fi")
-    public static class PsiFi extends IngestSourceOutConfig {
-        private final SvixConfigOut psiFi;
-
-        @Override
-        public JsonNode toJsonNode() {
-            return Utils.getObjectMapper().valueToTree(psiFi);
         }
     }
 
@@ -625,12 +595,10 @@ public abstract class IngestSourceOutConfig {
         TY_M.put("hubspot", c -> new Hubspot(m.convertValue(c, HubspotConfigOut.class)));
         TY_M.put("incident-io", c -> new IncidentIo(m.convertValue(c, SvixConfigOut.class)));
         TY_M.put("lithic", c -> new Lithic(m.convertValue(c, SvixConfigOut.class)));
-        TY_M.put("meta", c -> new Meta(m.convertValue(c, MetaConfigOut.class)));
         TY_M.put("nash", c -> new Nash(m.convertValue(c, SvixConfigOut.class)));
         TY_M.put("orum-io", c -> new OrumIo(m.convertValue(c, OrumIoConfigOut.class)));
         TY_M.put("panda-doc", c -> new PandaDoc(m.convertValue(c, PandaDocConfigOut.class)));
         TY_M.put("port-io", c -> new PortIo(m.convertValue(c, PortIoConfigOut.class)));
-        TY_M.put("psi-fi", c -> new PsiFi(m.convertValue(c, SvixConfigOut.class)));
         TY_M.put("pleo", c -> new Pleo(m.convertValue(c, SvixConfigOut.class)));
         TY_M.put("replicate", c -> new Replicate(m.convertValue(c, SvixConfigOut.class)));
         TY_M.put("resend", c -> new Resend(m.convertValue(c, SvixConfigOut.class)));

@@ -16,7 +16,6 @@ class RecoverOut implements \JsonSerializable
         public readonly string $id,
         public readonly BackgroundTaskStatus $status,
         public readonly BackgroundTaskType $task,
-        public readonly \DateTimeImmutable $updatedAt,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -29,14 +28,12 @@ class RecoverOut implements \JsonSerializable
         string $id,
         BackgroundTaskStatus $status,
         BackgroundTaskType $task,
-        \DateTimeImmutable $updatedAt,
     ): self {
         return new self(
             id: $id,
             status: $status,
             task: $task,
-            updatedAt: $updatedAt,
-            setFields: ['id' => true, 'status' => true, 'task' => true, 'updatedAt' => true]
+            setFields: ['id' => true, 'status' => true, 'task' => true]
         );
     }
 
@@ -45,8 +42,7 @@ class RecoverOut implements \JsonSerializable
         $data = [
             'id' => $this->id,
             'status' => $this->status,
-            'task' => $this->task,
-            'updatedAt' => $this->updatedAt->format('c')];
+            'task' => $this->task];
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
@@ -59,8 +55,7 @@ class RecoverOut implements \JsonSerializable
         return new self(
             id: \Svix\Utils::deserializeString($data, 'id', true, 'RecoverOut'),
             status: \Svix\Utils::deserializeObject($data, 'status', true, 'RecoverOut', [BackgroundTaskStatus::class, 'fromMixed']),
-            task: \Svix\Utils::deserializeObject($data, 'task', true, 'RecoverOut', [BackgroundTaskType::class, 'fromMixed']),
-            updatedAt: \Svix\Utils::deserializeDt($data, 'updatedAt', true, 'RecoverOut')
+            task: \Svix\Utils::deserializeObject($data, 'task', true, 'RecoverOut', [BackgroundTaskType::class, 'fromMixed'])
         );
     }
 

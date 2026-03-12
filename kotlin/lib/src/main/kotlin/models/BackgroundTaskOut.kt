@@ -2,7 +2,6 @@
 package com.svix.kotlin.models
 
 import com.svix.kotlin.StringAnyMapSerializer
-import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -12,5 +11,4 @@ data class BackgroundTaskOut(
     val id: String,
     val status: BackgroundTaskStatus,
     val task: BackgroundTaskType,
-    val updatedAt: Instant,
 )

@@ -57,17 +57,6 @@ module Svix
       )
     end
 
-    def stream_logout(options = {})
-      options = options.transform_keys(&:to_s)
-      @client.execute_request(
-        "POST",
-        "/api/v1/auth/stream-logout",
-        headers: {
-          "idempotency-key" => options["idempotency-key"]
-        }
-      )
-    end
-
     def stream_portal_access(stream_id, stream_portal_access_in, options = {})
       options = options.transform_keys(&:to_s)
       res = @client.execute_request(
@@ -79,18 +68,6 @@ module Svix
         body: stream_portal_access_in
       )
       AppPortalAccessOut.deserialize(res)
-    end
-
-    def stream_expire_all(stream_id, stream_token_expire_in, options = {})
-      options = options.transform_keys(&:to_s)
-      @client.execute_request(
-        "POST",
-        "/api/v1/auth/stream/#{stream_id}/expire-all",
-        headers: {
-          "idempotency-key" => options["idempotency-key"]
-        },
-        body: stream_token_expire_in
-      )
     end
 
     def get_stream_poller_token(stream_id, sink_id)

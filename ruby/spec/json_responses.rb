@@ -60,8 +60,7 @@ ReplayOut_JSON = '
 {
   "id": "qtask_1srOrx2ZWZBpBUvZwXKQmoEYga2",
   "status": "running",
-  "task": "endpoint.replay",
-  "updatedAt": "2019-08-24T14:15:22Z"
+  "task": "endpoint.replay"
 }'
 ListResponseMessageOut_JSON = '{
   "data": [
@@ -136,8 +135,7 @@ ListResponseBackgroundTaskOut_JSON='{
       "data": {},
       "id": "qtask_1srOrx2ZWZBpBUvZwXKQmoEYga2",
       "status": "running",
-      "task": "endpoint.replay",
-      "updatedAt": "2019-08-24T14:15:22Z"
+      "task": "endpoint.replay"
     }
   ],
   "iterator": "iterator",

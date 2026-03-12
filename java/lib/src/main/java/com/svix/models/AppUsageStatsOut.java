@@ -11,7 +11,6 @@ import com.svix.Utils;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-import java.time.OffsetDateTime;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -24,7 +23,6 @@ public class AppUsageStatsOut {
     @JsonProperty private BackgroundTaskStatus status;
     @JsonProperty private BackgroundTaskType task;
     @JsonProperty private Set<String> unresolvedAppIds;
-    @JsonProperty private OffsetDateTime updatedAt;
 
     public AppUsageStatsOut() {}
 
@@ -113,25 +111,6 @@ public class AppUsageStatsOut {
 
     public void setUnresolvedAppIds(Set<String> unresolvedAppIds) {
         this.unresolvedAppIds = unresolvedAppIds;
-    }
-
-    public AppUsageStatsOut updatedAt(OffsetDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-        return this;
-    }
-
-    /**
-     * Get updatedAt
-     *
-     * @return updatedAt
-     */
-    @javax.annotation.Nonnull
-    public OffsetDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(OffsetDateTime updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     /**
