@@ -484,9 +484,11 @@
         "go/models/zoom_config_out.go"
     ],
     [
+        "go/models/api_token_censored_out.go",
         "go/models/api_token_expire_in.go",
         "go/models/api_token_in.go",
         "go/models/api_token_out.go",
+        "go/models/api_token_patch.go",
         "go/models/application_alert_event.go",
         "go/models/border_radius_config.go",
         "go/models/border_radius_enum.go",

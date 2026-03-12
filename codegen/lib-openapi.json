@@ -312,6 +312,23 @@
                 ],
                 "type": "object"
             },
+            "ApiTokenPatch": {
+                "properties": {
+                    "name": {
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "scopes": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "minItems": 1,
+                        "nullable": true,
+                        "type": "array"
+                    }
+                },
+                "type": "object"
+            },
             "ApiTokenUpdate": {
                 "properties": {
                     "name": {
@@ -34123,6 +34140,144 @@
                     }
                 ],
                 "summary": "Get Api Token",
+                "tags": [
+                    "Authentication"
+                ],
+                "x-internal": true
+            },
+            "patch": {
+                "description": "Patch an API token",
+                "operationId": "v1.management.authentication.patch-api-token",
+                "parameters": [
+                    {
+                        "description": "The Environment's ID.",
+                        "in": "path",
+                        "name": "env_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The Environment's ID.",
+                            "example": "org_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 31,
+                            "minLength": 31,
+                            "pattern": "^org_[A-Za-z0-9]{27}$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The ApplicationToken's ID.",
+                        "in": "path",
+                        "name": "key_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The ApplicationToken's ID.",
+                            "example": "key_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 31,
+                            "minLength": 31,
+                            "pattern": "^key_[A-Za-z0-9]{27}$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiTokenPatch"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiTokenCensoredOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Patch Api Token",
                 "tags": [
                     "Authentication"
                 ],
