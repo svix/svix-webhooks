@@ -712,6 +712,53 @@ func TestAbleToPassNilAsSvixOptions(t *testing.T) {
 
 }
 
+type roundTripper func(*http.Request) (*http.Response, error)
+
+func (f roundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
+	return f(req)
+}
+
+func TestTransportWrapperCanModifyRequests(t *testing.T) {
+	svx, err := svix.New("token.eu", &svix.SvixOptions{
+		ServerUrl:  mustParseURL("http://testapi.test"),
+		HTTPClient: http.DefaultClient,
+		TransportWrapper: func(rt http.RoundTripper) http.RoundTripper {
+			return roundTripper(func(req *http.Request) (*http.Response, error) {
+				req.Header.Set("X-Custom-Header", "test-value")
+				return http.DefaultTransport.RoundTrip(req)
+			})
+		},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	httpmock.Activate()
+	defer httpmock.DeactivateAndReset()
+
+	httpmock.RegisterResponder("GET", "http://testapi.test/api/v1/app",
+		func(r *http.Request) (*http.Response, error) {
+			if r.Header.Get("X-Custom-Header") != "test-value" {
+				t.Errorf("Expected X-Custom-Header to be 'test-value', got '%s'", r.Header.Get("X-Custom-Header"))
+			}
+			return httpmock.NewStringResponse(200, `{"data":[],"done":true,"iterator":null,"prevIterator":null}`), nil
+		},
+	)
+
+	_, err = svx.Application.List(context.Background(), nil)
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+func mustParseURL(raw string) *url.URL {
+	u, err := url.Parse(raw)
+	if err != nil {
+		panic(err)
+	}
+	return u
+}
+
 func TestListResponseOutModels(t *testing.T) {
 	ctx := context.Background()
 	svx := newMockClient()
