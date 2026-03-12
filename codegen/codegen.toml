@@ -134,6 +134,7 @@ extra_codegen_args = [
    "--include-op-id=v1.management.environment-settings.patch",
    "--include-op-id=v1.management.authentication.create-api-token",
    "--include-op-id=v1.management.authentication.expire-api-token",
+   "--include-op-id=v1.management.authentication.patch-api-token",
 ]
 [[go.task]]
 template = "templates/go/component_type.go.jinja"
@@ -151,6 +152,7 @@ extra_codegen_args = [
    "--include-op-id=v1.management.environment-settings.patch",
    "--include-op-id=v1.management.authentication.create-api-token",
    "--include-op-id=v1.management.authentication.expire-api-token",
+   "--include-op-id=v1.management.authentication.patch-api-token",
 ]
 
 
