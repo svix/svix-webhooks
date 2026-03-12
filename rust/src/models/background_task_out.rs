@@ -15,9 +15,6 @@ pub struct BackgroundTaskOut {
     pub status: BackgroundTaskStatus,
 
     pub task: BackgroundTaskType,
-
-    #[serde(rename = "updatedAt")]
-    pub updated_at: String,
 }
 
 impl BackgroundTaskOut {
@@ -26,14 +23,12 @@ impl BackgroundTaskOut {
         id: String,
         status: BackgroundTaskStatus,
         task: BackgroundTaskType,
-        updated_at: String,
     ) -> Self {
         Self {
             data,
             id,
             status,
             task,
-            updated_at,
         }
     }
 }

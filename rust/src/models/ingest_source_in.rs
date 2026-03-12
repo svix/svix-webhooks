@@ -5,11 +5,11 @@ use super::{
     adobe_sign_config::AdobeSignConfig, airwallex_config::AirwallexConfig,
     checkbook_config::CheckbookConfig, cron_config::CronConfig, docusign_config::DocusignConfig,
     easypost_config::EasypostConfig, github_config::GithubConfig, hubspot_config::HubspotConfig,
-    meta_config::MetaConfig, orum_io_config::OrumIoConfig, panda_doc_config::PandaDocConfig,
-    port_io_config::PortIoConfig, rutter_config::RutterConfig, segment_config::SegmentConfig,
-    shopify_config::ShopifyConfig, slack_config::SlackConfig, stripe_config::StripeConfig,
-    svix_config::SvixConfig, telnyx_config::TelnyxConfig, vapi_config::VapiConfig,
-    veriff_config::VeriffConfig, zoom_config::ZoomConfig,
+    orum_io_config::OrumIoConfig, panda_doc_config::PandaDocConfig, port_io_config::PortIoConfig,
+    rutter_config::RutterConfig, segment_config::SegmentConfig, shopify_config::ShopifyConfig,
+    slack_config::SlackConfig, stripe_config::StripeConfig, svix_config::SvixConfig,
+    telnyx_config::TelnyxConfig, vapi_config::VapiConfig, veriff_config::VeriffConfig,
+    zoom_config::ZoomConfig,
 };
 
 #[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
@@ -58,8 +58,6 @@ pub enum IngestSourceInConfig {
     IncidentIo(SvixConfig),
     #[serde(rename = "lithic")]
     Lithic(SvixConfig),
-    #[serde(rename = "meta")]
-    Meta(MetaConfig),
     #[serde(rename = "nash")]
     Nash(SvixConfig),
     #[serde(rename = "orum-io")]
@@ -70,8 +68,6 @@ pub enum IngestSourceInConfig {
     PortIo(PortIoConfig),
     #[serde(rename = "pleo")]
     Pleo(SvixConfig),
-    #[serde(rename = "psi-fi")]
-    PsiFi(SvixConfig),
     #[serde(rename = "replicate")]
     Replicate(SvixConfig),
     #[serde(rename = "resend")]

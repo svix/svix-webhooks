@@ -9,7 +9,6 @@ import com.svix.models.AppPortalAccessOut;
 import com.svix.models.ApplicationTokenExpireIn;
 import com.svix.models.RotatePollerTokenIn;
 import com.svix.models.StreamPortalAccessIn;
-import com.svix.models.StreamTokenExpireIn;
 
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
@@ -143,31 +142,6 @@ public class Authentication {
     }
 
     /**
-     * Logout a stream token.
-     *
-     * <p>Trying to log out other tokens will fail.
-     */
-    public void streamLogout() throws IOException, ApiException {
-
-        this.streamLogout(new AuthenticationStreamLogoutOptions());
-    }
-
-    /**
-     * Logout a stream token.
-     *
-     * <p>Trying to log out other tokens will fail.
-     */
-    public void streamLogout(final AuthenticationStreamLogoutOptions options)
-            throws IOException, ApiException {
-        HttpUrl.Builder url = this.client.newUrlBuilder().encodedPath("/api/v1/auth/stream-logout");
-        Map<String, String> headers = new HashMap<>();
-        if (options.idempotencyKey != null) {
-            headers.put("idempotency-key", options.idempotencyKey);
-        }
-        this.client.executeRequest("POST", url.build(), Headers.of(headers), null, null);
-    }
-
-    /**
      * Use this function to get magic links (and authentication codes) for connecting your users to
      * the Stream Consumer Portal.
      */
@@ -202,32 +176,6 @@ public class Authentication {
                 Headers.of(headers),
                 streamPortalAccessIn,
                 AppPortalAccessOut.class);
-    }
-
-    /** Expire all of the tokens associated with a specific stream. */
-    public void streamExpireAll(
-            final String streamId, final StreamTokenExpireIn streamTokenExpireIn)
-            throws IOException, ApiException {
-        this.streamExpireAll(
-                streamId, streamTokenExpireIn, new AuthenticationStreamExpireAllOptions());
-    }
-
-    /** Expire all of the tokens associated with a specific stream. */
-    public void streamExpireAll(
-            final String streamId,
-            final StreamTokenExpireIn streamTokenExpireIn,
-            final AuthenticationStreamExpireAllOptions options)
-            throws IOException, ApiException {
-        HttpUrl.Builder url =
-                this.client
-                        .newUrlBuilder()
-                        .encodedPath(String.format("/api/v1/auth/stream/%s/expire-all", streamId));
-        Map<String, String> headers = new HashMap<>();
-        if (options.idempotencyKey != null) {
-            headers.put("idempotency-key", options.idempotencyKey);
-        }
-        this.client.executeRequest(
-                "POST", url.build(), Headers.of(headers), streamTokenExpireIn, null);
     }
 
     /** Get the current auth token for the stream poller. */

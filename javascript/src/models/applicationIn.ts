@@ -2,20 +2,8 @@
 
 export interface ApplicationIn {
   metadata?: { [key: string]: string };
-  /** Application name for human consumption. */
   name: string;
-  /**
-   * Deprecated, use `throttleRate` instead.
-   *
-   * @deprecated
-   */
   rateLimit?: number | null;
-  /**
-   * Maximum messages per second to send to this application.
-   *
-   * Outgoing messages will be throttled to this rate.
-   */
-  throttleRate?: number | null;
   /** Optional unique identifier for the application. */
   uid?: string | null;
 }
@@ -26,7 +14,6 @@ export const ApplicationInSerializer = {
       metadata: object["metadata"],
       name: object["name"],
       rateLimit: object["rateLimit"],
-      throttleRate: object["throttleRate"],
       uid: object["uid"],
     };
   },
@@ -36,7 +23,6 @@ export const ApplicationInSerializer = {
       metadata: self.metadata,
       name: self.name,
       rateLimit: self.rateLimit,
-      throttleRate: self.throttleRate,
       uid: self.uid,
     };
   },

@@ -12,7 +12,6 @@ data class EndpointIn(
     val filterTypes: Set<String>? = null,
     val headers: Map<String, String>? = null,
     val metadata: Map<String, String>? = null,
-    /** Deprecated, use `throttleRate` instead. */
     val rateLimit: UShort? = null,
     /**
      * The endpoint's verification secret.
@@ -21,12 +20,6 @@ data class EndpointIn(
      * not set this and let the server generate the secret.
      */
     val secret: String? = null,
-    /**
-     * Maximum messages per second to send to this endpoint.
-     *
-     * Outgoing messages will be throttled to this rate.
-     */
-    val throttleRate: UShort? = null,
     /** Optional unique identifier for the endpoint. */
     val uid: String? = null,
     val url: String,

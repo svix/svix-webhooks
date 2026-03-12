@@ -101,11 +101,6 @@ sealed class IngestSourceInConfig {
         override fun toJsonElement() = Json.encodeToJsonElement(SvixConfig.serializer(), lithic)
     }
 
-    @VariantName("meta")
-    data class Meta(val meta: MetaConfig) : IngestSourceInConfig() {
-        override fun toJsonElement() = Json.encodeToJsonElement(MetaConfig.serializer(), meta)
-    }
-
     @VariantName("nash")
     data class Nash(val nash: SvixConfig) : IngestSourceInConfig() {
         override fun toJsonElement() = Json.encodeToJsonElement(SvixConfig.serializer(), nash)
@@ -130,11 +125,6 @@ sealed class IngestSourceInConfig {
     @VariantName("pleo")
     data class Pleo(val pleo: SvixConfig) : IngestSourceInConfig() {
         override fun toJsonElement() = Json.encodeToJsonElement(SvixConfig.serializer(), pleo)
-    }
-
-    @VariantName("psi-fi")
-    data class PsiFi(val psiFi: SvixConfig) : IngestSourceInConfig() {
-        override fun toJsonElement() = Json.encodeToJsonElement(SvixConfig.serializer(), psiFi)
     }
 
     @VariantName("replicate")
@@ -284,10 +274,6 @@ sealed class IngestSourceInConfig {
                     { config ->
                         Lithic(Json.decodeFromJsonElement(SvixConfig.serializer(), config))
                     },
-                "meta" to
-                    { config ->
-                        Meta(Json.decodeFromJsonElement(MetaConfig.serializer(), config))
-                    },
                 "nash" to
                     { config ->
                         Nash(Json.decodeFromJsonElement(SvixConfig.serializer(), config))
@@ -307,10 +293,6 @@ sealed class IngestSourceInConfig {
                 "pleo" to
                     { config ->
                         Pleo(Json.decodeFromJsonElement(SvixConfig.serializer(), config))
-                    },
-                "psi-fi" to
-                    { config ->
-                        PsiFi(Json.decodeFromJsonElement(SvixConfig.serializer(), config))
                     },
                 "replicate" to
                     { config ->

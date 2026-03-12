@@ -22,10 +22,6 @@ import {
   StreamPortalAccessInSerializer,
 } from "../models/streamPortalAccessIn";
 import {
-  type StreamTokenExpireIn,
-  StreamTokenExpireInSerializer,
-} from "../models/streamTokenExpireIn";
-import {
   type DashboardAccessOut,
   DashboardAccessOutSerializer,
 } from "../models/dashboardAccessOut";
@@ -43,15 +39,7 @@ export interface AuthenticationLogoutOptions {
   idempotencyKey?: string;
 }
 
-export interface AuthenticationStreamLogoutOptions {
-  idempotencyKey?: string;
-}
-
 export interface AuthenticationStreamPortalAccessOptions {
-  idempotencyKey?: string;
-}
-
-export interface AuthenticationStreamExpireAllOptions {
   idempotencyKey?: string;
 }
 
@@ -134,19 +122,6 @@ export class Authentication {
     return request.sendNoResponseBody(this.requestCtx);
   }
 
-  /**
-   * Logout a stream token.
-   *
-   * Trying to log out other tokens will fail.
-   */
-  public streamLogout(options?: AuthenticationStreamLogoutOptions): Promise<void> {
-    const request = new SvixRequest(HttpMethod.POST, "/api/v1/auth/stream-logout");
-
-    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
-
-    return request.sendNoResponseBody(this.requestCtx);
-  }
-
   /** Use this function to get magic links (and authentication codes) for connecting your users to the Stream Consumer Portal. */
   public streamPortalAccess(
     streamId: string,
@@ -163,24 +138,6 @@ export class Authentication {
     request.setBody(StreamPortalAccessInSerializer._toJsonObject(streamPortalAccessIn));
 
     return request.send(this.requestCtx, AppPortalAccessOutSerializer._fromJsonObject);
-  }
-
-  /** Expire all of the tokens associated with a specific stream. */
-  public streamExpireAll(
-    streamId: string,
-    streamTokenExpireIn: StreamTokenExpireIn,
-    options?: AuthenticationStreamExpireAllOptions
-  ): Promise<void> {
-    const request = new SvixRequest(
-      HttpMethod.POST,
-      "/api/v1/auth/stream/{stream_id}/expire-all"
-    );
-
-    request.setPathParam("stream_id", streamId);
-    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
-    request.setBody(StreamTokenExpireInSerializer._toJsonObject(streamTokenExpireIn));
-
-    return request.sendNoResponseBody(this.requestCtx);
   }
 
   /** Get the current auth token for the stream poller. */

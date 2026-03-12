@@ -94,7 +94,7 @@ public class EventTypePatch {
     }
 
     /**
-     * Deprecated, use `featureFlags` instead.
+     * Get featureFlag
      *
      * @return featureFlag
      */

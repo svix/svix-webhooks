@@ -13,7 +13,6 @@ export interface AggregateEventTypesOut {
   id: string;
   status: BackgroundTaskStatus;
   task: BackgroundTaskType;
-  updatedAt: Date;
 }
 
 export const AggregateEventTypesOutSerializer = {
@@ -22,7 +21,6 @@ export const AggregateEventTypesOutSerializer = {
       id: object["id"],
       status: BackgroundTaskStatusSerializer._fromJsonObject(object["status"]),
       task: BackgroundTaskTypeSerializer._fromJsonObject(object["task"]),
-      updatedAt: new Date(object["updatedAt"]),
     };
   },
 
@@ -31,7 +29,6 @@ export const AggregateEventTypesOutSerializer = {
       id: self.id,
       status: BackgroundTaskStatusSerializer._toJsonObject(self.status),
       task: BackgroundTaskTypeSerializer._toJsonObject(self.task),
-      updatedAt: self.updatedAt,
     };
   },
 };

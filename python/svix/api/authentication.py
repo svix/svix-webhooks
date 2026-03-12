@@ -12,7 +12,6 @@ from ..models import (
     DashboardAccessOut,
     RotatePollerTokenIn,
     StreamPortalAccessIn,
-    StreamTokenExpireIn,
 )
 from .common import ApiBase, BaseOptions, serialize_params
 
@@ -54,31 +53,7 @@ class AuthenticationLogoutOptions(BaseOptions):
 
 
 @dataclass
-class AuthenticationStreamLogoutOptions(BaseOptions):
-    idempotency_key: t.Optional[str] = None
-
-    def _header_params(self) -> t.Dict[str, str]:
-        return serialize_params(
-            {
-                "idempotency-key": self.idempotency_key,
-            }
-        )
-
-
-@dataclass
 class AuthenticationStreamPortalAccessOptions(BaseOptions):
-    idempotency_key: t.Optional[str] = None
-
-    def _header_params(self) -> t.Dict[str, str]:
-        return serialize_params(
-            {
-                "idempotency-key": self.idempotency_key,
-            }
-        )
-
-
-@dataclass
-class AuthenticationStreamExpireAllOptions(BaseOptions):
     idempotency_key: t.Optional[str] = None
 
     def _header_params(self) -> t.Dict[str, str]:
@@ -187,21 +162,6 @@ class AuthenticationAsync(ApiBase):
             header_params=options._header_params(),
         )
 
-    async def stream_logout(
-        self,
-        options: AuthenticationStreamLogoutOptions = AuthenticationStreamLogoutOptions(),
-    ) -> None:
-        """Logout a stream token.
-
-        Trying to log out other tokens will fail."""
-        await self._request_asyncio(
-            method="post",
-            path="/api/v1/auth/stream-logout",
-            path_params={},
-            query_params=options._query_params(),
-            header_params=options._header_params(),
-        )
-
     async def stream_portal_access(
         self,
         stream_id: str,
@@ -222,26 +182,6 @@ class AuthenticationAsync(ApiBase):
             ),
         )
         return AppPortalAccessOut.model_validate(response.json())
-
-    async def stream_expire_all(
-        self,
-        stream_id: str,
-        stream_token_expire_in: StreamTokenExpireIn,
-        options: AuthenticationStreamExpireAllOptions = AuthenticationStreamExpireAllOptions(),
-    ) -> None:
-        """Expire all of the tokens associated with a specific stream."""
-        await self._request_asyncio(
-            method="post",
-            path="/api/v1/auth/stream/{stream_id}/expire-all",
-            path_params={
-                "stream_id": stream_id,
-            },
-            query_params=options._query_params(),
-            header_params=options._header_params(),
-            json_body=stream_token_expire_in.model_dump_json(
-                exclude_unset=True, by_alias=True
-            ),
-        )
 
     async def get_stream_poller_token(
         self, stream_id: str, sink_id: str
@@ -355,21 +295,6 @@ class Authentication(ApiBase):
             header_params=options._header_params(),
         )
 
-    def stream_logout(
-        self,
-        options: AuthenticationStreamLogoutOptions = AuthenticationStreamLogoutOptions(),
-    ) -> None:
-        """Logout a stream token.
-
-        Trying to log out other tokens will fail."""
-        self._request_sync(
-            method="post",
-            path="/api/v1/auth/stream-logout",
-            path_params={},
-            query_params=options._query_params(),
-            header_params=options._header_params(),
-        )
-
     def stream_portal_access(
         self,
         stream_id: str,
@@ -390,26 +315,6 @@ class Authentication(ApiBase):
             ),
         )
         return AppPortalAccessOut.model_validate(response.json())
-
-    def stream_expire_all(
-        self,
-        stream_id: str,
-        stream_token_expire_in: StreamTokenExpireIn,
-        options: AuthenticationStreamExpireAllOptions = AuthenticationStreamExpireAllOptions(),
-    ) -> None:
-        """Expire all of the tokens associated with a specific stream."""
-        self._request_sync(
-            method="post",
-            path="/api/v1/auth/stream/{stream_id}/expire-all",
-            path_params={
-                "stream_id": stream_id,
-            },
-            query_params=options._query_params(),
-            header_params=options._header_params(),
-            json_body=stream_token_expire_in.model_dump_json(
-                exclude_unset=True, by_alias=True
-            ),
-        )
 
     def get_stream_poller_token(self, stream_id: str, sink_id: str) -> ApiTokenOut:
         """Get the current auth token for the stream poller."""

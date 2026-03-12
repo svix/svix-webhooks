@@ -94,7 +94,7 @@ public class EventTypeIn {
     }
 
     /**
-     * Deprecated, use `featureFlags` instead.
+     * Deprecated - prefer featureFlags instead.
      *
      * @return featureFlag
      */

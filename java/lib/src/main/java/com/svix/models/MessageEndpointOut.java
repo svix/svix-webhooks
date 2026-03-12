@@ -31,7 +31,6 @@ public class MessageEndpointOut {
     @JsonProperty private Long rateLimit;
     @JsonProperty private MessageStatus status;
     @JsonProperty private MessageStatusText statusText;
-    @JsonProperty private Long throttleRate;
     @JsonProperty private String uid;
     @JsonProperty private OffsetDateTime updatedAt;
     @JsonProperty private URI url;
@@ -190,24 +189,21 @@ public class MessageEndpointOut {
         this.nextAttempt = nextAttempt;
     }
 
-    @Deprecated
     public MessageEndpointOut rateLimit(Long rateLimit) {
         this.rateLimit = rateLimit;
         return this;
     }
 
     /**
-     * Deprecated, use `throttleRate` instead.
+     * Get rateLimit
      *
      * @return rateLimit
      */
     @javax.annotation.Nullable
-    @Deprecated
     public Long getRateLimit() {
         return rateLimit;
     }
 
-    @Deprecated
     public void setRateLimit(Long rateLimit) {
         this.rateLimit = rateLimit;
     }
@@ -248,26 +244,6 @@ public class MessageEndpointOut {
 
     public void setStatusText(MessageStatusText statusText) {
         this.statusText = statusText;
-    }
-
-    public MessageEndpointOut throttleRate(Long throttleRate) {
-        this.throttleRate = throttleRate;
-        return this;
-    }
-
-    /**
-     * Maximum messages per second to send to this endpoint. Outgoing messages will be throttled to
-     * this rate.
-     *
-     * @return throttleRate
-     */
-    @javax.annotation.Nullable
-    public Long getThrottleRate() {
-        return throttleRate;
-    }
-
-    public void setThrottleRate(Long throttleRate) {
-        this.throttleRate = throttleRate;
     }
 
     public MessageEndpointOut uid(String uid) {

@@ -11,8 +11,6 @@ import com.svix.Utils;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-import java.net.URI;
-
 @ToString
 @EqualsAndHashCode
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -20,7 +18,6 @@ import java.net.URI;
 public class AmazonS3PatchConfig {
     @JsonProperty private String accessKeyId;
     @JsonProperty private String bucket;
-    @JsonProperty private URI endpointUrl;
     @JsonProperty private String region;
     @JsonProperty private String secretAccessKey;
 
@@ -62,25 +59,6 @@ public class AmazonS3PatchConfig {
 
     public void setBucket(String bucket) {
         this.bucket = bucket;
-    }
-
-    public AmazonS3PatchConfig endpointUrl(URI endpointUrl) {
-        this.endpointUrl = endpointUrl;
-        return this;
-    }
-
-    /**
-     * Get endpointUrl
-     *
-     * @return endpointUrl
-     */
-    @javax.annotation.Nullable
-    public URI getEndpointUrl() {
-        return endpointUrl;
-    }
-
-    public void setEndpointUrl(URI endpointUrl) {
-        this.endpointUrl = endpointUrl;
     }
 
     public AmazonS3PatchConfig region(String region) {

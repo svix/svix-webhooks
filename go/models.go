@@ -27,7 +27,6 @@ type (
 	BackgroundTaskOut                         = models.BackgroundTaskOut
 	BackgroundTaskStatus                      = models.BackgroundTaskStatus
 	BackgroundTaskType                        = models.BackgroundTaskType
-	BulkReplayIn                              = models.BulkReplayIn
 	CheckbookConfig                           = models.CheckbookConfig
 	CheckbookConfigOut                        = models.CheckbookConfigOut
 	ConnectorIn                               = models.ConnectorIn
@@ -152,8 +151,6 @@ type (
 	MessagePrecheckOut                        = models.MessagePrecheckOut
 	MessageStatus                             = models.MessageStatus
 	MessageStatusText                         = models.MessageStatusText
-	MetaConfig                                = models.MetaConfig
-	MetaConfigOut                             = models.MetaConfigOut
 	OperationalWebhookEndpointHeadersIn       = models.OperationalWebhookEndpointHeadersIn
 	OperationalWebhookEndpointHeadersOut      = models.OperationalWebhookEndpointHeadersOut
 	OperationalWebhookEndpointIn              = models.OperationalWebhookEndpointIn
@@ -206,7 +203,6 @@ type (
 	StreamSinkIn                              = models.StreamSinkIn
 	StreamSinkOut                             = models.StreamSinkOut
 	StreamSinkPatch                           = models.StreamSinkPatch
-	StreamTokenExpireIn                       = models.StreamTokenExpireIn
 	StripeConfig                              = models.StripeConfig
 	StripeConfigOut                           = models.StripeConfigOut
 	SvixConfig                                = models.SvixConfig

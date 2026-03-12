@@ -74,7 +74,7 @@ public class EventTypeFromOpenApi {
     }
 
     /**
-     * Deprecated, use `featureFlags` instead.
+     * Get featureFlag
      *
      * @return featureFlag
      */
