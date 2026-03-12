@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 1.88.0
+* Libs/Go: Add support for `v1.management.authentication.patch-api-token` (Internal endpoint)
+* Libs/All: Add support for `v1.endpoint.bulk-replay` (Svix Cloud exclusive endpoint)
+
 ## Version 1.87.0
 * Server: Respect `retry-after` header on error responses (within limits) (thanks [@vinay0826])
 
