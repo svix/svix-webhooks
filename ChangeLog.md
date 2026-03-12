@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 1.88.0
+* Libs/Go: Add support for `v1.management.authentication.patch-api-token` (Internal endpoint)
+* Libs/Go: Add TransportWrapper option to SvixOptions (thanks [@piotrdomagalski])
+
+[@piotrdomagalski]: https://github.com/piotrdomagalski
+
 ## Version 1.87.0
 * Server: Respect `retry-after` header on error responses (within limits) (thanks [@vinay0826])
 
