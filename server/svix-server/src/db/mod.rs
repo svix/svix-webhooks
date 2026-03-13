@@ -1,13 +1,17 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
+use chrono::{DateTime, Utc};
 use sea_orm::{
-    ColumnTrait, DatabaseConnection, DbBackend, DeleteResult, EntityTrait, QueryFilter,
-    SqlxPostgresConnector,
+    ColumnTrait, ConnectionTrait, DatabaseConnection, DbBackend, DbErr, DeleteResult, EntityTrait,
+    ExecResult, QueryFilter, SqlxPostgresConnector, Statement, TransactionTrait,
 };
 use sqlx::postgres::PgPoolOptions;
 
-use crate::{cfg::Configuration, core::types::OrganizationId};
+use crate::{
+    cfg::Configuration,
+    core::types::{BaseId, MessageId, OrganizationId},
+};
 
 pub mod models;
 use models::{application, endpoint, eventtype, message, messageattempt};
@@ -33,6 +37,78 @@ pub async fn init_db(cfg: &Configuration) -> DatabaseConnection {
 pub async fn run_migrations(cfg: &Configuration) {
     let db = connect(&cfg.db_dsn, cfg.db_pool_max_size).await;
     MIGRATIONS.run(&db).await.unwrap();
+}
+
+async fn exec_without_timeout(
+    db: &DatabaseConnection,
+    stmt: Statement,
+) -> Result<ExecResult, DbErr> {
+    let tx = db.begin().await?;
+    tx.execute(Statement::from_string(
+        db.get_database_backend(),
+        "SET LOCAL statement_timeout=0",
+    ))
+    .await?;
+    let res = tx.execute(stmt).await?;
+    tx.commit().await?;
+    Ok(res)
+}
+
+/// Prune messages (and their attempts) older than `older_than` in batches.
+///
+/// `messagecontent` is intentionally skipped: the background cleaner expires it at 90 days,
+/// so anything old enough to prune here will already be gone.
+pub async fn prune_messages(
+    cfg: &Configuration,
+    older_than: DateTime<Utc>,
+    batch_size: u64,
+) -> anyhow::Result<()> {
+    let db = init_db(cfg).await;
+    let cutoff_id = MessageId::start_id(older_than);
+    let cutoff_str = cutoff_id.to_string();
+
+    // Step 1: messageattempt
+    let mut total_attempts: u64 = 0;
+    loop {
+        let stmt = Statement::from_sql_and_values(
+            db.get_database_backend(),
+            r#"DELETE FROM messageattempt WHERE id IN (
+                SELECT id FROM messageattempt WHERE msg_id < $1 ORDER BY msg_id LIMIT $2
+            )"#,
+            [cutoff_str.clone().into(), (batch_size as i64).into()],
+        );
+        let rows = exec_without_timeout(&db, stmt).await?.rows_affected();
+        total_attempts += rows;
+        tracing::info!("Pruned batch of {} messageattempt row(s)", rows);
+        if rows < batch_size {
+            break;
+        }
+    }
+
+    // Step 2: message
+    let mut total_messages: u64 = 0;
+    loop {
+        let stmt = Statement::from_sql_and_values(
+            db.get_database_backend(),
+            r#"DELETE FROM message WHERE id IN (
+                SELECT id FROM message WHERE id < $1 ORDER BY id LIMIT $2
+            )"#,
+            [cutoff_str.clone().into(), (batch_size as i64).into()],
+        );
+        let rows = exec_without_timeout(&db, stmt).await?.rows_affected();
+        total_messages += rows;
+        tracing::info!(
+            "Pruned batch of {} message row(s) (messagedestination rows cascade automatically)",
+            rows
+        );
+        if rows < batch_size {
+            break;
+        }
+    }
+
+    eprintln!("Done. Pruned {total_attempts} messageattempt(s) and {total_messages} message(s).");
+
+    Ok(())
 }
 
 /// Wipe an organization from existence in a way that ensures the operation can be tried again on
