@@ -31,8 +31,10 @@ impl<'a> Cache<'a> {
 
     /// Cache Get
     pub async fn get(&self, key: String, cache_get_in: CacheGetIn) -> Result<CacheGetOut> {
-        let _unused = cache_get_in;
-        let cache_get_in = CacheGetIn_ { key };
+        let cache_get_in = CacheGetIn_ {
+            key,
+            consistency: cache_get_in.consistency,
+        };
 
         crate::request::Request::new(http::Method::POST, "/api/v1/cache/get")
             .with_body(cache_get_in)

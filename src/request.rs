@@ -6,7 +6,6 @@ use std::{collections::HashMap, time::Duration};
 use http::header::{ACCEPT, AUTHORIZATION, CONTENT_LENGTH, CONTENT_TYPE, HeaderValue, USER_AGENT};
 use http_body_util::{BodyExt as _, Full};
 use hyper::body::Bytes;
-use percent_encoding::{AsciiSet, CONTROLS, utf8_percent_encode};
 use rand::Rng;
 use serde::de::DeserializeOwned;
 
@@ -29,7 +28,6 @@ pub(crate) struct Request {
     path: &'static str,
     query_params: HashMap<&'static str, String>,
     no_return_type: bool,
-    path_params: HashMap<&'static str, String>,
     header_params: HashMap<&'static str, String>,
     serialized_body: Option<Vec<u8>>,
 }
@@ -40,7 +38,6 @@ impl Request {
             method,
             path,
             query_params: HashMap::new(),
-            path_params: HashMap::new(),
             header_params: HashMap::new(),
             serialized_body: None,
             no_return_type: false,
@@ -142,19 +139,7 @@ impl Request {
     }
 
     fn build_request(self, conf: &Configuration) -> Result<http::Request<Full<Bytes>>, Error> {
-        const FRAGMENT: &AsciiSet = &CONTROLS.add(b' ').add(b'"').add(b'<').add(b'>').add(b'`');
-        const PATH: &AsciiSet = &FRAGMENT.add(b'#').add(b'?').add(b'{').add(b'}');
-        const PATH_SEGMENT: &AsciiSet = &PATH.add(b'/').add(b'%');
-
-        let mut path = self.path.to_owned();
-        for (k, v) in self.path_params {
-            // replace {id} with the value of the id path param
-            let percent_encoded_path_param_value =
-                utf8_percent_encode(&v, PATH_SEGMENT).to_string();
-            path = path.replace(&format!("{{{k}}}"), &percent_encoded_path_param_value);
-        }
-
-        let mut uri = format!("{}{}", conf.base_path, path);
+        let mut uri = format!("{}{}", conf.base_path, self.path);
 
         let mut query_string = form_urlencoded::Serializer::new("".to_owned());
         for (key, val) in self.query_params {

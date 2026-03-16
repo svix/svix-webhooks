@@ -15,11 +15,11 @@ async fn test_kv_set_get() {
 
     client
         .kv()
-        .set(KvSetIn::new(test_key.clone(), test_val.clone()))
+        .set(test_key.clone(), KvSetIn::new(test_val.clone()))
         .await
         .unwrap();
 
-    let resp = client.kv().get(KvGetIn::new(test_key)).await.unwrap();
+    let resp = client.kv().get(test_key, KvGetIn::new()).await.unwrap();
 
-    assert_eq!(resp.value, test_val);
+    assert_eq!(resp.value, Some(test_val));
 }

@@ -10,15 +10,17 @@ mod kv;
 mod kv_namespace;
 mod msgs;
 mod msgs_namespace;
+mod msgs_queue;
 mod msgs_stream;
 mod msgs_topic;
-mod rate_limiter;
+mod rate_limit;
+mod rate_limit_namespace;
 
 pub use self::{
     cache::Cache, cache_namespace::CacheNamespace, health::Health, idempotency::Idempotency,
     idempotency_namespace::IdempotencyNamespace, kv::Kv, kv_namespace::KvNamespace, msgs::Msgs,
-    msgs_namespace::MsgsNamespace, msgs_stream::MsgsStream, msgs_topic::MsgsTopic,
-    rate_limiter::RateLimiter,
+    msgs_namespace::MsgsNamespace, msgs_queue::MsgsQueue, msgs_stream::MsgsStream,
+    msgs_topic::MsgsTopic, rate_limit::RateLimit, rate_limit_namespace::RateLimitNamespace,
 };
 
 impl CoyoteClient {
@@ -42,7 +44,7 @@ impl CoyoteClient {
         Msgs::new(&self.cfg)
     }
 
-    pub fn rate_limiter(&self) -> RateLimiter<'_> {
-        RateLimiter::new(&self.cfg)
+    pub fn rate_limit(&self) -> RateLimit<'_> {
+        RateLimit::new(&self.cfg)
     }
 }

@@ -32,8 +32,10 @@ impl<'a> Kv<'a> {
 
     /// KV Get
     pub async fn get(&self, key: String, kv_get_in: KvGetIn) -> Result<KvGetOut> {
-        let _unused = kv_get_in;
-        let kv_get_in = KvGetIn_ { key };
+        let kv_get_in = KvGetIn_ {
+            key,
+            consistency: kv_get_in.consistency,
+        };
 
         crate::request::Request::new(http::Method::POST, "/api/v1/kv/get")
             .with_body(kv_get_in)

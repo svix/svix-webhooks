@@ -54,4 +54,28 @@ impl<'a> MsgsStream<'a> {
             .execute(self.cfg)
             .await
     }
+
+    /// Repositions a consumer group's read cursor on a topic.
+    ///
+    /// Provide exactly one of `offset` or `position`. When using `offset`, the topic must include a
+    /// partition suffix (e.g. `ns:my-topic~0`). The `position` field accepts `"earliest"` or
+    /// `"latest"` and may be used with or without a partition suffix.
+    pub async fn seek(
+        &self,
+        topic: String,
+        consumer_group: String,
+        msg_stream_seek_in: MsgStreamSeekIn,
+    ) -> Result<MsgStreamSeekOut> {
+        let msg_stream_seek_in = MsgStreamSeekIn_ {
+            topic,
+            consumer_group,
+            offset: msg_stream_seek_in.offset,
+            position: msg_stream_seek_in.position,
+        };
+
+        crate::request::Request::new(http::Method::POST, "/api/v1/msgs/stream/seek")
+            .with_body(msg_stream_seek_in)
+            .execute(self.cfg)
+            .await
+    }
 }
