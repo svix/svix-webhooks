@@ -3,7 +3,7 @@
 # NOTE: this should be built from the root of `svix-webhooks`
 # with `docker build -f svix-cli/Dockerfile .`# Base build
 
-FROM docker.io/rust:1.93-slim-trixie AS build
+FROM docker.io/rust:1.94-slim-trixie AS build
 
 SHELL ["/bin/bash", "-eux", "-o", "pipefail", "-c"]
 RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked --mount=target=/var/cache/apt,type=cache,sharing=locked <<EOF
