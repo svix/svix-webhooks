@@ -79,7 +79,7 @@ pub async fn prune_messages(
         );
         let rows = exec_without_timeout(&db, stmt).await?.rows_affected();
         total_attempts += rows;
-        tracing::info!("Pruned batch of {} messageattempt row(s)", rows);
+        tracing::info!(rows, "Pruned batch of messageattempt row(s)");
         if rows < batch_size {
             break;
         }
@@ -97,10 +97,7 @@ pub async fn prune_messages(
         );
         let rows = exec_without_timeout(&db, stmt).await?.rows_affected();
         total_messages += rows;
-        tracing::info!(
-            "Pruned batch of {} message row(s) (messagedestination rows cascade automatically)",
-            rows
-        );
+        tracing::info!(rows, "Pruned batch of message row(s)");
         if rows < batch_size {
             break;
         }
