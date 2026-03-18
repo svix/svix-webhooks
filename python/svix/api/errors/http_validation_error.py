@@ -75,3 +75,6 @@ class HTTPValidationError(Exception):
 
     def __contains__(self, key: str) -> bool:
         return key in self.additional_properties
+
+    def __str__(self) -> str:
+        return f"HTTP Validation Error: {self.detail}"
