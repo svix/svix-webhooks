@@ -20,6 +20,8 @@ use validator::{Validate, ValidationError};
 use crate::{
     AppState,
     core::{
+        can_fail::CanFail as _,
+        message_app::CreateMessageApp,
         permissions,
         types::{ApplicationId, ApplicationUid, OrganizationId, metadata::Metadata},
     },
@@ -312,21 +314,24 @@ async fn get_application(
 /// Update an application.
 #[aide_annotate(op_id = "v1.application.update")]
 async fn update_application(
-    State(AppState { ref db, .. }): State<AppState>,
+    State(AppState {
+        ref db, ref cache, ..
+    }): State<AppState>,
     Path(ApplicationPath { app_id }): Path<ApplicationPath>,
     permissions::Organization { org_id }: permissions::Organization,
     ValidatedJson(data): ValidatedJson<ApplicationIn>,
 ) -> Result<JsonStatusUpsert<ApplicationOut>> {
-    let (app, metadata, create_models) = if let Some((app, metadata)) =
+    let (app, app_and_org_id, metadata, create_models) = if let Some((app, metadata)) =
         application::Model::fetch_with_metadata(db, org_id.clone(), app_id)
             .await
             .trace()?
     {
-        (app.into(), metadata.into(), false)
+        let ids = Some((app.id.clone(), app.org_id.clone()));
+        (app.into(), ids, metadata.into(), false)
     } else {
         let app = application::ActiveModel::new(org_id);
         let metadata = applicationmetadata::ActiveModel::new(app.id.clone().unwrap(), None);
-        (app, metadata, true)
+        (app, None, metadata, true)
     };
 
     let mut models = (app, metadata);
@@ -348,6 +353,12 @@ async fn update_application(
         })
         .await?;
 
+    if let Some((app_id, org_id)) = app_and_org_id {
+        CreateMessageApp::invalidate(cache, &app_id, &org_id)
+            .await
+            .can_fail("invalidating CMA cache");
+    }
+
     if create_models {
         Ok(JsonStatusUpsert::Created((app, metadata).into()))
     } else {
@@ -358,7 +369,9 @@ async fn update_application(
 /// Partially update an application.
 #[aide_annotate]
 async fn patch_application(
-    State(AppState { ref db, .. }): State<AppState>,
+    State(AppState {
+        ref db, ref cache, ..
+    }): State<AppState>,
     permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
     ValidatedJson(data): ValidatedJson<ApplicationPatch>,
 ) -> Result<Json<ApplicationOut>> {
@@ -380,19 +393,33 @@ async fn patch_application(
         })
         .await?;
 
+    CreateMessageApp::invalidate(cache, &app.id, &app.org_id)
+        .await
+        .can_fail("invalidating CMA cache");
+
     Ok(Json((app, metadata).into()))
 }
 
 /// Delete an application.
 #[aide_annotate(op_id = "v1.application.delete")]
 async fn delete_application(
-    State(AppState { ref db, .. }): State<AppState>,
+    State(AppState {
+        ref db, ref cache, ..
+    }): State<AppState>,
     permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
 ) -> Result<NoContent> {
+    let app_id = app.id.clone();
+    let org_id = app.org_id.clone();
+
     let mut app: application::ActiveModel = app.into();
     app.deleted = Set(true);
     app.uid = Set(None); // We don't want deleted UIDs to clash
     app.update(db).await?;
+
+    CreateMessageApp::invalidate(cache, &app_id, &org_id)
+        .await
+        .can_fail("invalidating CMA cache");
+
     Ok(NoContent)
 }
 

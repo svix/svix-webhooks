@@ -12,8 +12,11 @@ use self::hack::EventTypeNameResult;
 use super::{EndpointIn, EndpointOut, EndpointPatch, EndpointUpdate};
 use crate::{
     AppState,
+    cache::Cache,
     cfg::Configuration,
     core::{
+        can_fail::CanFail as _,
+        message_app::CreateMessageApp,
         operational_webhooks::{EndpointEvent, OperationalWebhook, OperationalWebhookSender},
         permissions,
         types::{EndpointId, EventTypeName, EventTypeNameSet, OrganizationId},
@@ -72,12 +75,13 @@ async fn create_endp_from_data(
     db: &DatabaseConnection,
     cfg: &Configuration,
     op_webhooks: &OperationalWebhookSender,
+    cache: &Cache,
     app: application::Model,
     mut data: EndpointIn,
 ) -> Result<(endpoint::Model, endpointmetadata::Model)> {
     let key = data.key_take_or_generate(&cfg.encryption, &cfg.default_signature_type)?;
 
-    let mut endp = endpoint::ActiveModel::new(app.id, key);
+    let mut endp = endpoint::ActiveModel::new(app.id.clone(), key);
     let metadata =
         endpointmetadata::ActiveModel::new(endp.id.clone().unwrap(), mem::take(&mut data.metadata));
     data.update_model(&mut endp);
@@ -89,6 +93,10 @@ async fn create_endp_from_data(
         txn.commit().await?;
         (endp, metadata)
     };
+
+    CreateMessageApp::invalidate(cache, &app.id, &app.org_id)
+        .await
+        .can_fail("invalidating CMA cache");
 
     op_webhooks
         .send_operational_webhook(
@@ -108,6 +116,7 @@ pub(super) async fn create_endpoint(
     State(AppState {
         ref db,
         ref cfg,
+        ref cache,
         op_webhooks,
         ..
     }): State<AppState>,
@@ -120,7 +129,7 @@ pub(super) async fn create_endpoint(
     }
     validate_endpoint_url(&data.url, cfg.endpoint_https_only)?;
 
-    let (endp, metadata) = create_endp_from_data(db, cfg, &op_webhooks, app, data)
+    let (endp, metadata) = create_endp_from_data(db, cfg, &op_webhooks, cache, app, data)
         .await
         .trace()?;
 
@@ -148,6 +157,7 @@ pub(super) async fn get_endpoint(
 async fn update_endp_from_data(
     db: &DatabaseConnection,
     op_webhooks: &OperationalWebhookSender,
+    cache: &Cache,
     app: application::Model,
     endp: endpoint::ActiveModel,
     metadata: endpointmetadata::ActiveModel,
@@ -159,6 +169,10 @@ async fn update_endp_from_data(
         txn.commit().await?;
         (endp, metadata)
     };
+
+    CreateMessageApp::invalidate(cache, &app.id, &app.org_id)
+        .await
+        .can_fail("invalidating CMA cache");
 
     let app_uid = app.uid;
     op_webhooks
@@ -177,6 +191,7 @@ pub(super) async fn update_endpoint(
     State(AppState {
         ref db,
         ref cfg,
+        ref cache,
         ref op_webhooks,
         ..
     }): State<AppState>,
@@ -196,13 +211,13 @@ pub(super) async fn update_endpoint(
     if let Some((mut endp, mut metadata)) = models {
         metadata.data = Set(mem::take(&mut data.metadata));
         data.update_model(&mut endp);
-        let (endp, metadata) = update_endp_from_data(db, op_webhooks, app, endp, metadata)
+        let (endp, metadata) = update_endp_from_data(db, op_webhooks, cache, app, endp, metadata)
             .await
             .trace()?;
         Ok(JsonStatusUpsert::Updated((endp, metadata.data).into()))
     } else {
         let data = data.into_in_with_default_key();
-        let (endp, metadata) = create_endp_from_data(db, cfg, op_webhooks, app, data)
+        let (endp, metadata) = create_endp_from_data(db, cfg, op_webhooks, cache, app, data)
             .await
             .trace()?;
         Ok(JsonStatusUpsert::Created((endp, metadata.data).into()))
@@ -216,6 +231,7 @@ pub(super) async fn patch_endpoint(
         ref db,
         cfg,
         ref op_webhooks,
+        ref cache,
         ..
     }): State<AppState>,
     Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
@@ -239,7 +255,7 @@ pub(super) async fn patch_endpoint(
     let data = mem::take(&mut patch_data.metadata);
     patch_field_non_nullable!(metadata, data);
     patch_data.update_model(&mut endp);
-    let (endp, metadata) = update_endp_from_data(db, op_webhooks, app, endp, metadata)
+    let (endp, metadata) = update_endp_from_data(db, op_webhooks, cache, app, endp, metadata)
         .await
         .trace()?;
 
@@ -252,6 +268,7 @@ pub(super) async fn delete_endpoint(
     State(AppState {
         ref db,
         ref op_webhooks,
+        ref cache,
         ..
     }): State<AppState>,
     Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
@@ -270,6 +287,10 @@ pub(super) async fn delete_endpoint(
     endp.deleted = Set(true);
     endp.uid = Set(None); // We don't want deleted UIDs to clash
     endp.update(db).await?;
+
+    CreateMessageApp::invalidate(cache, &app.id, &app.org_id)
+        .await
+        .can_fail("invalidating CMA cache");
 
     op_webhooks
         .send_operational_webhook(

@@ -33,6 +33,10 @@ pub struct CreateMessageApp {
 impl CreateMessageApp {
     /// Fetch all requisite information for creating a [`CreateMessageApp`] from the PostgreSQL
     /// database
+    ///
+    /// Note that this can lead to subtle race-conditions of `.fetch_from_pg_by_model`
+    /// is a called from inside a transaction in REPEATABLE_READ that has a snapshot of old
+    /// data and subsequently populates the cache with that old data.
     async fn fetch_from_pg_by_model(
         db: &DatabaseTransaction,
         app: application::Model,
@@ -56,6 +60,16 @@ impl CreateMessageApp {
             endpoints,
             deleted: app.deleted,
         })
+    }
+
+    /// Invalidate the CMA in Redis, if it's cached there
+    pub async fn invalidate(
+        cache: &Cache,
+        app_id: &ApplicationId,
+        org_id: &OrganizationId,
+    ) -> Result<()> {
+        let cache_key = AppEndpointKey::new(org_id, app_id);
+        cache.delete(&cache_key).await.map_err(Error::cache)
     }
 
     /// Fetches all information for creating a [`CreateMessageApp`] from the Redis cache if it

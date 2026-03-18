@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 pub mod cache;
+pub mod can_fail;
 pub mod cryptography;
 pub mod idempotency;
 pub mod message_app;
