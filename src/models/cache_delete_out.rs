@@ -3,11 +3,11 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct CacheDeleteOut {
-    pub deleted: bool,
+    pub success: bool,
 }
 
 impl CacheDeleteOut {
-    pub fn new(deleted: bool) -> Self {
-        Self { deleted }
+    pub fn new(success: bool) -> Self {
+        Self { success }
     }
 }

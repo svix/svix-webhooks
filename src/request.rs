@@ -44,6 +44,11 @@ impl Request {
         }
     }
 
+    pub(crate) fn returns_nothing(mut self) -> Self {
+        self.no_return_type = true;
+        self
+    }
+
     pub(crate) fn with_body<T: serde::Serialize>(mut self, param: T) -> Self {
         self.serialized_body = Some(rmp_serde::to_vec_named(&param).unwrap());
         self

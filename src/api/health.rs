@@ -16,4 +16,12 @@ impl<'a> Health<'a> {
             .execute(self.cfg)
             .await
     }
+
+    /// Intentionally return an error
+    pub async fn error(&self) -> Result<()> {
+        crate::request::Request::new(http::Method::POST, "/api/v1/health/error")
+            .returns_nothing()
+            .execute(self.cfg)
+            .await
+    }
 }

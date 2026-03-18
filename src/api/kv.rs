@@ -22,6 +22,7 @@ impl<'a> Kv<'a> {
             value: kv_set_in.value,
             ttl: kv_set_in.ttl,
             behavior: kv_set_in.behavior,
+            version: kv_set_in.version,
         };
 
         crate::request::Request::new(http::Method::POST, "/api/v1/kv/set")

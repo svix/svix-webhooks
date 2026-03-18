@@ -15,10 +15,15 @@ mod consistency;
 mod eviction_policy;
 mod idempotency_abort_in;
 mod idempotency_abort_out;
+mod idempotency_complete_in;
+mod idempotency_complete_out;
+mod idempotency_completed;
 mod idempotency_create_namespace_in;
 mod idempotency_create_namespace_out;
 mod idempotency_get_namespace_in;
 mod idempotency_get_namespace_out;
+mod idempotency_start_in;
+mod idempotency_start_out;
 mod kv_create_namespace_in;
 mod kv_create_namespace_out;
 mod kv_delete_in;
@@ -81,10 +86,13 @@ pub use self::{
     cache_get_out::CacheGetOut, cache_set_in::CacheSetIn, cache_set_out::CacheSetOut,
     consistency::Consistency, eviction_policy::EvictionPolicy,
     idempotency_abort_in::IdempotencyAbortIn, idempotency_abort_out::IdempotencyAbortOut,
+    idempotency_complete_in::IdempotencyCompleteIn,
+    idempotency_complete_out::IdempotencyCompleteOut, idempotency_completed::IdempotencyCompleted,
     idempotency_create_namespace_in::IdempotencyCreateNamespaceIn,
     idempotency_create_namespace_out::IdempotencyCreateNamespaceOut,
     idempotency_get_namespace_in::IdempotencyGetNamespaceIn,
     idempotency_get_namespace_out::IdempotencyGetNamespaceOut,
+    idempotency_start_in::IdempotencyStartIn, idempotency_start_out::IdempotencyStartOut,
     kv_create_namespace_in::KvCreateNamespaceIn, kv_create_namespace_out::KvCreateNamespaceOut,
     kv_delete_in::KvDeleteIn, kv_delete_out::KvDeleteOut, kv_get_in::KvGetIn,
     kv_get_namespace_in::KvGetNamespaceIn, kv_get_namespace_out::KvGetNamespaceOut,
@@ -117,7 +125,8 @@ pub use self::{
 
 pub(crate) use self::{
     cache_delete_in::CacheDeleteIn_, cache_get_in::CacheGetIn_, cache_set_in::CacheSetIn_,
-    idempotency_abort_in::IdempotencyAbortIn_, kv_delete_in::KvDeleteIn_, kv_get_in::KvGetIn_,
+    idempotency_abort_in::IdempotencyAbortIn_, idempotency_complete_in::IdempotencyCompleteIn_,
+    idempotency_start_in::IdempotencyStartIn_, kv_delete_in::KvDeleteIn_, kv_get_in::KvGetIn_,
     kv_set_in::KvSetIn_, msg_namespace_create_in::MsgNamespaceCreateIn_,
     msg_namespace_get_in::MsgNamespaceGetIn_, msg_publish_in::MsgPublishIn_,
     msg_queue_ack_in::MsgQueueAckIn_, msg_queue_configure_in::MsgQueueConfigureIn_,

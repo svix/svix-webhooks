@@ -9,13 +9,18 @@ pub struct KvGetOut {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub value: Option<Vec<u8>>,
+
+    /// Opaque version token for optimistic concurrency control.
+    /// Pass as `version` in a subsequent `set` to perform a conditional write.
+    pub version: u64,
 }
 
 impl KvGetOut {
-    pub fn new() -> Self {
+    pub fn new(version: u64) -> Self {
         Self {
             expiry: None,
             value: None,
+            version,
         }
     }
 
