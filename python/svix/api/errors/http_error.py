@@ -71,3 +71,6 @@ class HttpError(Exception):
 
     def __contains__(self, key: str) -> bool:
         return key in self.additional_properties
+
+    def __str__(self):
+        return f"HTTP Error ({self.code}): {self.detail}"
