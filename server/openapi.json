@@ -186,6 +186,9 @@
                 ],
                 "type": "object"
             },
+            "EmptyResponse": {
+                "type": "object"
+            },
             "EndpointCreatedEvent": {
                 "description": "Sent when an endpoint is created.",
                 "properties": {
@@ -6493,7 +6496,14 @@
                 ],
                 "responses": {
                     "202": {
-                        "description": "no content"
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EmptyResponse"
+                                }
+                            }
+                        },
+                        "description": ""
                     },
                     "401": {
                         "content": {
