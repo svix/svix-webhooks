@@ -1,5 +1,14 @@
 # Changelog
 
+## Version 1.89.0
+* Server: Add a prune helper command to delete old data
+* Server: Invalidate CMA cache when creating/updating endpoints or apps
+* Server: Return empty JSON object from v1.message-attempt.resend
+* Server: Build Docker image with Rust 1.94
+* Bridge: Add support for PLAIN sasl auth for confluent cloud
+* Bridge: Build Docker image with Rust 1.94
+* Libs/Python: Set `__str__` on errors
+
 ## Version 1.88.0
 * Libs/Go: Add support for `v1.management.authentication.patch-api-token` (Internal endpoint)
 * Libs/Go: Add TransportWrapper option to SvixOptions (thanks [@piotrdomagalski])
