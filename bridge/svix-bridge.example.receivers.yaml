@@ -127,6 +127,8 @@ receivers:
       # Only for SASL
       kafka_sasl_username: "user"
       kafka_sasl_password: "pass"
+      # Optional - valid values: "PLAIN", "SCRAM-SHA-256", "SCRAM-SHA-512". Default: "SCRAM-SHA-512"
+      # kafka_sasl_mechanism: "SCRAM-SHA-512"
 
   - name: "msg-poller-to-rabbitmq-example"
     input:
