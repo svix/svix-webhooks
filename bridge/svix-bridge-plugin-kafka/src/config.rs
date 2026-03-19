@@ -117,6 +117,26 @@ impl KafkaOutputOpts {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+pub enum KafkaSaslMechanism {
+    #[serde(rename = "PLAIN")]
+    Plain,
+    #[serde(rename = "SCRAM-SHA-256")]
+    ScramSha256,
+    #[serde(rename = "SCRAM-SHA-512")]
+    ScramSha512,
+}
+
+impl KafkaSaslMechanism {
+    fn as_str(&self) -> &'static str {
+        match self {
+            KafkaSaslMechanism::Plain => "PLAIN",
+            KafkaSaslMechanism::ScramSha256 => "SCRAM-SHA-256",
+            KafkaSaslMechanism::ScramSha512 => "SCRAM-SHA-512",
+        }
+    }
+}
+
+#[derive(Clone, Debug, Deserialize)]
 #[serde(tag = "kafka_security_protocol", rename_all = "snake_case")]
 pub enum KafkaSecurityProtocol {
     Plaintext,
@@ -126,7 +146,14 @@ pub enum KafkaSecurityProtocol {
         sasl_username: String,
         #[serde(rename = "kafka_sasl_password")]
         sasl_password: String,
+        /// The SASL mechanism to use. Defaults to `SCRAM-SHA-512`.
+        #[serde(rename = "kafka_sasl_mechanism", default = "default_sasl_mechanism")]
+        sasl_mechanism: KafkaSaslMechanism,
     },
+}
+
+fn default_sasl_mechanism() -> KafkaSaslMechanism {
+    KafkaSaslMechanism::ScramSha512
 }
 
 impl KafkaSecurityProtocol {
@@ -141,10 +168,11 @@ impl KafkaSecurityProtocol {
             KafkaSecurityProtocol::SaslSsl {
                 sasl_username,
                 sasl_password,
+                sasl_mechanism,
             } => {
                 config
                     .set("security.protocol", "sasl_ssl")
-                    .set("sasl.mechanisms", "SCRAM-SHA-512")
+                    .set("sasl.mechanisms", sasl_mechanism.as_str())
                     .set("sasl.username", sasl_username)
                     .set("sasl.password", sasl_password);
             }

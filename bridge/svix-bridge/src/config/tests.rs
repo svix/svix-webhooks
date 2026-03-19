@@ -575,6 +575,53 @@ fn test_variable_substitution_in_transformations() {
     xform.source().contains(r#"number: 123 - 10,"#);
 }
 
+#[test]
+fn test_kafka_sasl_mechanism_default() {
+    // When kafka_sasl_mechanism is omitted, it should default to SCRAM-SHA-512
+    let src = r#"
+    senders:
+      - name: "kafka-sasl-default"
+        input:
+          type: "kafka"
+          kafka_bootstrap_brokers: "localhost:9094"
+          kafka_group_id: "group"
+          kafka_topic: "topic"
+          kafka_security_protocol: "sasl_ssl"
+          kafka_sasl_username: "user"
+          kafka_sasl_password: "pass"
+        output:
+          type: "svix"
+          token: "XYZ"
+    "#;
+    Config::from_src(src, None).unwrap();
+}
+
+#[test]
+fn test_kafka_sasl_mechanism_explicit() {
+    for mechanism in ["PLAIN", "SCRAM-SHA-256", "SCRAM-SHA-512"] {
+        let src = format!(
+            r#"
+    senders:
+      - name: "kafka-sasl-explicit"
+        input:
+          type: "kafka"
+          kafka_bootstrap_brokers: "localhost:9094"
+          kafka_group_id: "group"
+          kafka_topic: "topic"
+          kafka_security_protocol: "sasl_ssl"
+          kafka_sasl_username: "user"
+          kafka_sasl_password: "pass"
+          kafka_sasl_mechanism: "{mechanism}"
+        output:
+          type: "svix"
+          token: "XYZ"
+    "#
+        );
+        Config::from_src(&src, None)
+            .unwrap_or_else(|e| panic!("failed to parse mechanism {mechanism}: {e}"));
+    }
+}
+
 /// Check that the config parser validates the JS source fragments in it.
 #[test]
 fn test_transformation_validation_bad_syntax_is_err() {
