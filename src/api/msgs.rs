@@ -34,6 +34,7 @@ impl<'a> Msgs<'a> {
         msg_publish_in: MsgPublishIn,
     ) -> Result<MsgPublishOut> {
         let msg_publish_in = MsgPublishIn_ {
+            namespace: msg_publish_in.namespace,
             topic,
             msgs: msg_publish_in.msgs,
         };

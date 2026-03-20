@@ -21,6 +21,7 @@ impl<'a> MsgsStream<'a> {
         msg_stream_receive_in: MsgStreamReceiveIn,
     ) -> Result<MsgStreamReceiveOut> {
         let msg_stream_receive_in = MsgStreamReceiveIn_ {
+            namespace: msg_stream_receive_in.namespace,
             topic,
             consumer_group,
             batch_size: msg_stream_receive_in.batch_size,
@@ -44,6 +45,7 @@ impl<'a> MsgsStream<'a> {
         msg_stream_commit_in: MsgStreamCommitIn,
     ) -> Result<MsgStreamCommitOut> {
         let msg_stream_commit_in = MsgStreamCommitIn_ {
+            namespace: msg_stream_commit_in.namespace,
             topic,
             consumer_group,
             offset: msg_stream_commit_in.offset,
@@ -67,6 +69,7 @@ impl<'a> MsgsStream<'a> {
         msg_stream_seek_in: MsgStreamSeekIn,
     ) -> Result<MsgStreamSeekOut> {
         let msg_stream_seek_in = MsgStreamSeekIn_ {
+            namespace: msg_stream_seek_in.namespace,
             topic,
             consumer_group,
             offset: msg_stream_seek_in.offset,

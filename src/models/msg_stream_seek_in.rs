@@ -4,6 +4,9 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, Deserialize)]
 pub struct MsgStreamSeekIn {
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub namespace: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub offset: Option<u64>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -13,9 +16,15 @@ pub struct MsgStreamSeekIn {
 impl MsgStreamSeekIn {
     pub fn new() -> Self {
         Self {
+            namespace: None,
             offset: None,
             position: None,
         }
+    }
+
+    pub fn with_namespace(mut self, value: impl Into<Option<String>>) -> Self {
+        self.namespace = value.into();
+        self
     }
 
     pub fn with_offset(mut self, value: impl Into<Option<u64>>) -> Self {
@@ -31,6 +40,9 @@ impl MsgStreamSeekIn {
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub(crate) struct MsgStreamSeekIn_ {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub namespace: Option<String>,
+
     pub topic: String,
 
     pub consumer_group: String,

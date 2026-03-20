@@ -11,6 +11,9 @@ mod cache_get_namespace_out;
 mod cache_get_out;
 mod cache_set_in;
 mod cache_set_out;
+mod cluster_remove_node_in;
+mod cluster_remove_node_out;
+mod cluster_status_out;
 mod consistency;
 mod eviction_policy;
 mod idempotency_abort_in;
@@ -60,6 +63,7 @@ mod msg_stream_seek_in;
 mod msg_stream_seek_out;
 mod msg_topic_configure_in;
 mod msg_topic_configure_out;
+mod node_status_out;
 mod operation_behavior;
 mod ping_out;
 mod queue_msg_out;
@@ -75,6 +79,7 @@ mod rate_limit_reset_in;
 mod rate_limit_reset_out;
 mod rate_limit_token_bucket_config;
 mod retention;
+mod server_state;
 mod storage_type;
 mod stream_msg_out;
 
@@ -84,9 +89,10 @@ pub use self::{
     cache_delete_out::CacheDeleteOut, cache_get_in::CacheGetIn,
     cache_get_namespace_in::CacheGetNamespaceIn, cache_get_namespace_out::CacheGetNamespaceOut,
     cache_get_out::CacheGetOut, cache_set_in::CacheSetIn, cache_set_out::CacheSetOut,
-    consistency::Consistency, eviction_policy::EvictionPolicy,
-    idempotency_abort_in::IdempotencyAbortIn, idempotency_abort_out::IdempotencyAbortOut,
-    idempotency_complete_in::IdempotencyCompleteIn,
+    cluster_remove_node_in::ClusterRemoveNodeIn, cluster_remove_node_out::ClusterRemoveNodeOut,
+    cluster_status_out::ClusterStatusOut, consistency::Consistency,
+    eviction_policy::EvictionPolicy, idempotency_abort_in::IdempotencyAbortIn,
+    idempotency_abort_out::IdempotencyAbortOut, idempotency_complete_in::IdempotencyCompleteIn,
     idempotency_complete_out::IdempotencyCompleteOut, idempotency_completed::IdempotencyCompleted,
     idempotency_create_namespace_in::IdempotencyCreateNamespaceIn,
     idempotency_create_namespace_out::IdempotencyCreateNamespaceOut,
@@ -109,9 +115,9 @@ pub use self::{
     msg_stream_commit_out::MsgStreamCommitOut, msg_stream_receive_in::MsgStreamReceiveIn,
     msg_stream_receive_out::MsgStreamReceiveOut, msg_stream_seek_in::MsgStreamSeekIn,
     msg_stream_seek_out::MsgStreamSeekOut, msg_topic_configure_in::MsgTopicConfigureIn,
-    msg_topic_configure_out::MsgTopicConfigureOut, operation_behavior::OperationBehavior,
-    ping_out::PingOut, queue_msg_out::QueueMsgOut, rate_limit_check_in::RateLimitCheckIn,
-    rate_limit_check_out::RateLimitCheckOut,
+    msg_topic_configure_out::MsgTopicConfigureOut, node_status_out::NodeStatusOut,
+    operation_behavior::OperationBehavior, ping_out::PingOut, queue_msg_out::QueueMsgOut,
+    rate_limit_check_in::RateLimitCheckIn, rate_limit_check_out::RateLimitCheckOut,
     rate_limit_create_namespace_in::RateLimitCreateNamespaceIn,
     rate_limit_create_namespace_out::RateLimitCreateNamespaceOut,
     rate_limit_get_namespace_in::RateLimitGetNamespaceIn,
@@ -120,7 +126,7 @@ pub use self::{
     rate_limit_get_remaining_out::RateLimitGetRemainingOut, rate_limit_reset_in::RateLimitResetIn,
     rate_limit_reset_out::RateLimitResetOut,
     rate_limit_token_bucket_config::RateLimitTokenBucketConfig, retention::Retention,
-    storage_type::StorageType, stream_msg_out::StreamMsgOut,
+    server_state::ServerState, storage_type::StorageType, stream_msg_out::StreamMsgOut,
 };
 
 pub(crate) use self::{

@@ -19,6 +19,7 @@ impl<'a> MsgsTopic<'a> {
         msg_topic_configure_in: MsgTopicConfigureIn,
     ) -> Result<MsgTopicConfigureOut> {
         let msg_topic_configure_in = MsgTopicConfigureIn_ {
+            namespace: msg_topic_configure_in.namespace,
             topic,
             partitions: msg_topic_configure_in.partitions,
         };

@@ -22,6 +22,7 @@ impl<'a> MsgsQueue<'a> {
         msg_queue_receive_in: MsgQueueReceiveIn,
     ) -> Result<MsgQueueReceiveOut> {
         let msg_queue_receive_in = MsgQueueReceiveIn_ {
+            namespace: msg_queue_receive_in.namespace,
             topic,
             consumer_group,
             batch_size: msg_queue_receive_in.batch_size,
@@ -44,6 +45,7 @@ impl<'a> MsgsQueue<'a> {
         msg_queue_ack_in: MsgQueueAckIn,
     ) -> Result<MsgQueueAckOut> {
         let msg_queue_ack_in = MsgQueueAckIn_ {
+            namespace: msg_queue_ack_in.namespace,
             topic,
             consumer_group,
             msg_ids: msg_queue_ack_in.msg_ids,
@@ -66,6 +68,7 @@ impl<'a> MsgsQueue<'a> {
         msg_queue_configure_in: MsgQueueConfigureIn,
     ) -> Result<MsgQueueConfigureOut> {
         let msg_queue_configure_in = MsgQueueConfigureIn_ {
+            namespace: msg_queue_configure_in.namespace,
             topic,
             consumer_group,
             retry_schedule: msg_queue_configure_in.retry_schedule,
@@ -89,6 +92,7 @@ impl<'a> MsgsQueue<'a> {
         msg_queue_nack_in: MsgQueueNackIn,
     ) -> Result<MsgQueueNackOut> {
         let msg_queue_nack_in = MsgQueueNackIn_ {
+            namespace: msg_queue_nack_in.namespace,
             topic,
             consumer_group,
             msg_ids: msg_queue_nack_in.msg_ids,
@@ -107,8 +111,8 @@ impl<'a> MsgsQueue<'a> {
         consumer_group: String,
         msg_queue_redrive_dlq_in: MsgQueueRedriveDlqIn,
     ) -> Result<MsgQueueRedriveDlqOut> {
-        let _unused = msg_queue_redrive_dlq_in;
         let msg_queue_redrive_dlq_in = MsgQueueRedriveDlqIn_ {
+            namespace: msg_queue_redrive_dlq_in.namespace,
             topic,
             consumer_group,
         };
