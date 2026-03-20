@@ -237,22 +237,22 @@ async fn main() -> anyhow::Result<()> {
             batch_size,
             yes_i_know_what_im_doing,
         }) => {
+            let three_months_ago = Utc::now()
+                .checked_sub_months(Months::new(3))
+                .expect("date arithmetic overflow");
+            if older_than >= three_months_ago {
+                println!(
+                    "Warning: pruning messages newer than {} (3 months ago) can be unsafe.",
+                    three_months_ago.to_rfc3339()
+                );
+            }
+
             if !yes_i_know_what_im_doing {
                 println!(
                     "Please confirm you would like to irreversibly delete these messages, and that you confirm you have a backup of your database by passing the \
                      `--yes-i-know-what-im-doing` flag"
                 );
                 return Ok(());
-            }
-
-            let three_months_ago = Utc::now()
-                .checked_sub_months(Months::new(3))
-                .expect("date arithmetic overflow");
-            if older_than >= three_months_ago {
-                bail!(
-                    "--older-than must be at least 3 months in the past (before {})",
-                    three_months_ago.to_rfc3339()
-                );
             }
 
             prune_messages(&cfg, older_than, batch_size).await?;
