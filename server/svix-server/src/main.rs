@@ -241,7 +241,7 @@ async fn main() -> anyhow::Result<()> {
                 .checked_sub_months(Months::new(3))
                 .expect("date arithmetic overflow");
             if older_than >= three_months_ago {
-                println!(
+                eprintln!(
                     "Warning: pruning messages newer than {} (3 months ago) can be unsafe.",
                     three_months_ago.to_rfc3339()
                 );
