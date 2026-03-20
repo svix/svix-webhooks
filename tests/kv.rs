@@ -1,10 +1,11 @@
-use coyote::{
+use coyote_client::{
     CoyoteClient,
     models::{KvGetIn, KvSetIn},
 };
 use rand::{Rng, SeedableRng, rngs::StdRng};
 
 #[tokio::test]
+#[ignore] // as written, requires the server to be running
 async fn test_kv_set_get() {
     let client = CoyoteClient::new("xxxxx".to_owned(), None);
     let mut rng = StdRng::seed_from_u64(0);
