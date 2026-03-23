@@ -26,6 +26,7 @@ impl<'a> MsgsStream<'a> {
             consumer_group,
             batch_size: msg_stream_receive_in.batch_size,
             lease_duration_millis: msg_stream_receive_in.lease_duration_millis,
+            default_starting_position: msg_stream_receive_in.default_starting_position,
         };
 
         crate::request::Request::new(http::Method::POST, "/api/v1/msgs/stream/receive")

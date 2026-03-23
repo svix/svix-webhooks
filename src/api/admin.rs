@@ -1,4 +1,5 @@
 // this file is @generated
+use super::AdminCluster;
 use crate::{Configuration, error::Result, models::*};
 
 pub struct Admin<'a> {
@@ -10,11 +11,8 @@ impl<'a> Admin<'a> {
         Self { cfg }
     }
 
-    /// Get information about the current cluster
-    pub async fn cluster_status(&self) -> Result<ClusterStatusOut> {
-        crate::request::Request::new(http::Method::GET, "/api/v1/admin/cluster/status")
-            .execute(self.cfg)
-            .await
+    pub fn cluster(&self) -> AdminCluster<'a> {
+        AdminCluster::new(self.cfg)
     }
 
     /// Remove a node from the cluster.

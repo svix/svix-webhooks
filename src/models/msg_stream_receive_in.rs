@@ -11,6 +11,9 @@ pub struct MsgStreamReceiveIn {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub lease_duration_millis: Option<u64>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub default_starting_position: Option<String>,
 }
 
 impl MsgStreamReceiveIn {
@@ -19,6 +22,7 @@ impl MsgStreamReceiveIn {
             namespace: None,
             batch_size: None,
             lease_duration_millis: None,
+            default_starting_position: None,
         }
     }
 
@@ -34,6 +38,11 @@ impl MsgStreamReceiveIn {
 
     pub fn with_lease_duration_millis(mut self, value: impl Into<Option<u64>>) -> Self {
         self.lease_duration_millis = value.into();
+        self
+    }
+
+    pub fn with_default_starting_position(mut self, value: impl Into<Option<String>>) -> Self {
+        self.default_starting_position = value.into();
         self
     }
 }
@@ -52,4 +61,7 @@ pub(crate) struct MsgStreamReceiveIn_ {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub lease_duration_millis: Option<u64>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub default_starting_position: Option<String>,
 }

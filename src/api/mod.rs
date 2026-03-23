@@ -2,6 +2,9 @@
 use crate::CoyoteClient;
 
 mod admin;
+mod admin_cluster;
+mod auth_token;
+mod auth_token_namespace;
 mod cache;
 mod cache_namespace;
 mod health;
@@ -18,8 +21,9 @@ mod rate_limit;
 mod rate_limit_namespace;
 
 pub use self::{
-    admin::Admin, cache::Cache, cache_namespace::CacheNamespace, health::Health,
-    idempotency::Idempotency, idempotency_namespace::IdempotencyNamespace, kv::Kv,
+    admin::Admin, admin_cluster::AdminCluster, auth_token::AuthToken,
+    auth_token_namespace::AuthTokenNamespace, cache::Cache, cache_namespace::CacheNamespace,
+    health::Health, idempotency::Idempotency, idempotency_namespace::IdempotencyNamespace, kv::Kv,
     kv_namespace::KvNamespace, msgs::Msgs, msgs_namespace::MsgsNamespace, msgs_queue::MsgsQueue,
     msgs_stream::MsgsStream, msgs_topic::MsgsTopic, rate_limit::RateLimit,
     rate_limit_namespace::RateLimitNamespace,
@@ -28,6 +32,10 @@ pub use self::{
 impl CoyoteClient {
     pub fn admin(&self) -> Admin<'_> {
         Admin::new(&self.cfg)
+    }
+
+    pub fn auth_token(&self) -> AuthToken<'_> {
+        AuthToken::new(&self.cfg)
     }
 
     pub fn cache(&self) -> Cache<'_> {
