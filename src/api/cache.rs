@@ -24,7 +24,7 @@ impl<'a> Cache<'a> {
             ttl: cache_set_in.ttl,
         };
 
-        crate::request::Request::new(http::Method::POST, "/api/v1/cache/set")
+        crate::request::Request::new(http::Method::POST, "/api/v1.cache.set")
             .with_body(cache_set_in)
             .execute(self.cfg)
             .await
@@ -38,7 +38,7 @@ impl<'a> Cache<'a> {
             consistency: cache_get_in.consistency,
         };
 
-        crate::request::Request::new(http::Method::POST, "/api/v1/cache/get")
+        crate::request::Request::new(http::Method::POST, "/api/v1.cache.get")
             .with_body(cache_get_in)
             .execute(self.cfg)
             .await
@@ -55,7 +55,7 @@ impl<'a> Cache<'a> {
             key,
         };
 
-        crate::request::Request::new(http::Method::POST, "/api/v1/cache/delete")
+        crate::request::Request::new(http::Method::POST, "/api/v1.cache.delete")
             .with_body(cache_delete_in)
             .execute(self.cfg)
             .await

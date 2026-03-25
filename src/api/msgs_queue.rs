@@ -29,7 +29,7 @@ impl<'a> MsgsQueue<'a> {
             lease_duration_ms: msg_queue_receive_in.lease_duration_ms,
         };
 
-        crate::request::Request::new(http::Method::POST, "/api/v1/msgs/queue/receive")
+        crate::request::Request::new(http::Method::POST, "/api/v1.msgs.queue.receive")
             .with_body(msg_queue_receive_in)
             .execute(self.cfg)
             .await
@@ -51,7 +51,7 @@ impl<'a> MsgsQueue<'a> {
             msg_ids: msg_queue_ack_in.msg_ids,
         };
 
-        crate::request::Request::new(http::Method::POST, "/api/v1/msgs/queue/ack")
+        crate::request::Request::new(http::Method::POST, "/api/v1.msgs.queue.ack")
             .with_body(msg_queue_ack_in)
             .execute(self.cfg)
             .await
@@ -75,7 +75,7 @@ impl<'a> MsgsQueue<'a> {
             dlq_topic: msg_queue_configure_in.dlq_topic,
         };
 
-        crate::request::Request::new(http::Method::POST, "/api/v1/msgs/queue/configure")
+        crate::request::Request::new(http::Method::POST, "/api/v1.msgs.queue.configure")
             .with_body(msg_queue_configure_in)
             .execute(self.cfg)
             .await
@@ -98,7 +98,7 @@ impl<'a> MsgsQueue<'a> {
             msg_ids: msg_queue_nack_in.msg_ids,
         };
 
-        crate::request::Request::new(http::Method::POST, "/api/v1/msgs/queue/nack")
+        crate::request::Request::new(http::Method::POST, "/api/v1.msgs.queue.nack")
             .with_body(msg_queue_nack_in)
             .execute(self.cfg)
             .await
@@ -117,7 +117,7 @@ impl<'a> MsgsQueue<'a> {
             consumer_group,
         };
 
-        crate::request::Request::new(http::Method::POST, "/api/v1/msgs/queue/redrive-dlq")
+        crate::request::Request::new(http::Method::POST, "/api/v1.msgs.queue.redrive-dlq")
             .with_body(msg_queue_redrive_dlq_in)
             .execute(self.cfg)
             .await

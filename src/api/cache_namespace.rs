@@ -15,7 +15,7 @@ impl<'a> CacheNamespace<'a> {
         &self,
         cache_create_namespace_in: CacheCreateNamespaceIn,
     ) -> Result<CacheCreateNamespaceOut> {
-        crate::request::Request::new(http::Method::POST, "/api/v1/cache/namespace/create")
+        crate::request::Request::new(http::Method::POST, "/api/v1.cache.namespace.create")
             .with_body(cache_create_namespace_in)
             .execute(self.cfg)
             .await
@@ -26,7 +26,7 @@ impl<'a> CacheNamespace<'a> {
         &self,
         cache_get_namespace_in: CacheGetNamespaceIn,
     ) -> Result<CacheGetNamespaceOut> {
-        crate::request::Request::new(http::Method::POST, "/api/v1/cache/namespace/get")
+        crate::request::Request::new(http::Method::POST, "/api/v1.cache.namespace.get")
             .with_body(cache_get_namespace_in)
             .execute(self.cfg)
             .await

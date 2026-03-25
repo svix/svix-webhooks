@@ -39,7 +39,7 @@ impl<'a> Msgs<'a> {
             msgs: msg_publish_in.msgs,
         };
 
-        crate::request::Request::new(http::Method::POST, "/api/v1/msgs/publish")
+        crate::request::Request::new(http::Method::POST, "/api/v1.msgs.publish")
             .with_body(msg_publish_in)
             .execute(self.cfg)
             .await

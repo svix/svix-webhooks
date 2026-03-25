@@ -24,7 +24,7 @@ impl<'a> MsgsTopic<'a> {
             partitions: msg_topic_configure_in.partitions,
         };
 
-        crate::request::Request::new(http::Method::POST, "/api/v1/msgs/topic/configure")
+        crate::request::Request::new(http::Method::POST, "/api/v1.msgs.topic.configure")
             .with_body(msg_topic_configure_in)
             .execute(self.cfg)
             .await

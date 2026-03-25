@@ -17,7 +17,7 @@ impl<'a> RateLimit<'a> {
 
     /// Rate Limiter Check and Consume
     pub async fn limit(&self, rate_limit_check_in: RateLimitCheckIn) -> Result<RateLimitCheckOut> {
-        crate::request::Request::new(http::Method::POST, "/api/v1/rate-limit/limit")
+        crate::request::Request::new(http::Method::POST, "/api/v1.rate-limit.limit")
             .with_body(rate_limit_check_in)
             .execute(self.cfg)
             .await
@@ -28,7 +28,7 @@ impl<'a> RateLimit<'a> {
         &self,
         rate_limit_get_remaining_in: RateLimitGetRemainingIn,
     ) -> Result<RateLimitGetRemainingOut> {
-        crate::request::Request::new(http::Method::POST, "/api/v1/rate-limit/get-remaining")
+        crate::request::Request::new(http::Method::POST, "/api/v1.rate-limit.get-remaining")
             .with_body(rate_limit_get_remaining_in)
             .execute(self.cfg)
             .await
@@ -36,7 +36,7 @@ impl<'a> RateLimit<'a> {
 
     /// Rate Limiter Reset
     pub async fn reset(&self, rate_limit_reset_in: RateLimitResetIn) -> Result<RateLimitResetOut> {
-        crate::request::Request::new(http::Method::POST, "/api/v1/rate-limit/reset")
+        crate::request::Request::new(http::Method::POST, "/api/v1.rate-limit.reset")
             .with_body(rate_limit_reset_in)
             .execute(self.cfg)
             .await

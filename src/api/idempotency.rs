@@ -27,7 +27,7 @@ impl<'a> Idempotency<'a> {
             ttl: idempotency_start_in.ttl,
         };
 
-        crate::request::Request::new(http::Method::POST, "/api/v1/idempotency/start")
+        crate::request::Request::new(http::Method::POST, "/api/v1.idempotency.start")
             .with_body(idempotency_start_in)
             .execute(self.cfg)
             .await
@@ -46,7 +46,7 @@ impl<'a> Idempotency<'a> {
             ttl: idempotency_complete_in.ttl,
         };
 
-        crate::request::Request::new(http::Method::POST, "/api/v1/idempotency/complete")
+        crate::request::Request::new(http::Method::POST, "/api/v1.idempotency.complete")
             .with_body(idempotency_complete_in)
             .execute(self.cfg)
             .await
@@ -63,7 +63,7 @@ impl<'a> Idempotency<'a> {
             key,
         };
 
-        crate::request::Request::new(http::Method::POST, "/api/v1/idempotency/abort")
+        crate::request::Request::new(http::Method::POST, "/api/v1.idempotency.abort")
             .with_body(idempotency_abort_in)
             .execute(self.cfg)
             .await

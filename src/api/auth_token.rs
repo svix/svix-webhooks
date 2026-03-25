@@ -20,7 +20,7 @@ impl<'a> AuthToken<'a> {
         &self,
         auth_token_create_in: AuthTokenCreateIn,
     ) -> Result<AuthTokenCreateOut> {
-        crate::request::Request::new(http::Method::POST, "/api/v1/auth-token/create")
+        crate::request::Request::new(http::Method::POST, "/api/v1.auth-token.create")
             .with_body(auth_token_create_in)
             .execute(self.cfg)
             .await
@@ -31,7 +31,7 @@ impl<'a> AuthToken<'a> {
         &self,
         auth_token_expire_in: AuthTokenExpireIn,
     ) -> Result<AuthTokenExpireOut> {
-        crate::request::Request::new(http::Method::POST, "/api/v1/auth-token/expire")
+        crate::request::Request::new(http::Method::POST, "/api/v1.auth-token.expire")
             .with_body(auth_token_expire_in)
             .execute(self.cfg)
             .await
@@ -42,7 +42,7 @@ impl<'a> AuthToken<'a> {
         &self,
         auth_token_delete_in: AuthTokenDeleteIn,
     ) -> Result<AuthTokenDeleteOut> {
-        crate::request::Request::new(http::Method::POST, "/api/v1/auth-token/delete")
+        crate::request::Request::new(http::Method::POST, "/api/v1.auth-token.delete")
             .with_body(auth_token_delete_in)
             .execute(self.cfg)
             .await
@@ -53,7 +53,7 @@ impl<'a> AuthToken<'a> {
         &self,
         auth_token_verify_in: AuthTokenVerifyIn,
     ) -> Result<AuthTokenVerifyOut> {
-        crate::request::Request::new(http::Method::POST, "/api/v1/auth-token/verify")
+        crate::request::Request::new(http::Method::POST, "/api/v1.auth-token.verify")
             .with_body(auth_token_verify_in)
             .execute(self.cfg)
             .await
@@ -64,7 +64,7 @@ impl<'a> AuthToken<'a> {
         &self,
         auth_token_list_in: AuthTokenListIn,
     ) -> Result<ListResponseAuthTokenOut> {
-        crate::request::Request::new(http::Method::POST, "/api/v1/auth-token/list")
+        crate::request::Request::new(http::Method::POST, "/api/v1.auth-token.list")
             .with_body(auth_token_list_in)
             .execute(self.cfg)
             .await
@@ -75,7 +75,7 @@ impl<'a> AuthToken<'a> {
         &self,
         auth_token_update_in: AuthTokenUpdateIn,
     ) -> Result<AuthTokenUpdateOut> {
-        crate::request::Request::new(http::Method::POST, "/api/v1/auth-token/update")
+        crate::request::Request::new(http::Method::POST, "/api/v1.auth-token.update")
             .with_body(auth_token_update_in)
             .execute(self.cfg)
             .await
@@ -86,7 +86,7 @@ impl<'a> AuthToken<'a> {
         &self,
         auth_token_rotate_in: AuthTokenRotateIn,
     ) -> Result<AuthTokenRotateOut> {
-        crate::request::Request::new(http::Method::POST, "/api/v1/auth-token/rotate")
+        crate::request::Request::new(http::Method::POST, "/api/v1.auth-token.rotate")
             .with_body(auth_token_rotate_in)
             .execute(self.cfg)
             .await

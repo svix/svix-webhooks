@@ -29,7 +29,7 @@ impl<'a> MsgsStream<'a> {
             default_starting_position: msg_stream_receive_in.default_starting_position,
         };
 
-        crate::request::Request::new(http::Method::POST, "/api/v1/msgs/stream/receive")
+        crate::request::Request::new(http::Method::POST, "/api/v1.msgs.stream.receive")
             .with_body(msg_stream_receive_in)
             .execute(self.cfg)
             .await
@@ -52,7 +52,7 @@ impl<'a> MsgsStream<'a> {
             offset: msg_stream_commit_in.offset,
         };
 
-        crate::request::Request::new(http::Method::POST, "/api/v1/msgs/stream/commit")
+        crate::request::Request::new(http::Method::POST, "/api/v1.msgs.stream.commit")
             .with_body(msg_stream_commit_in)
             .execute(self.cfg)
             .await
@@ -77,7 +77,7 @@ impl<'a> MsgsStream<'a> {
             position: msg_stream_seek_in.position,
         };
 
-        crate::request::Request::new(http::Method::POST, "/api/v1/msgs/stream/seek")
+        crate::request::Request::new(http::Method::POST, "/api/v1.msgs.stream.seek")
             .with_body(msg_stream_seek_in)
             .execute(self.cfg)
             .await

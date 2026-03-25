@@ -26,7 +26,7 @@ impl<'a> Kv<'a> {
             version: kv_set_in.version,
         };
 
-        crate::request::Request::new(http::Method::POST, "/api/v1/kv/set")
+        crate::request::Request::new(http::Method::POST, "/api/v1.kv.set")
             .with_body(kv_set_in)
             .execute(self.cfg)
             .await
@@ -40,7 +40,7 @@ impl<'a> Kv<'a> {
             consistency: kv_get_in.consistency,
         };
 
-        crate::request::Request::new(http::Method::POST, "/api/v1/kv/get")
+        crate::request::Request::new(http::Method::POST, "/api/v1.kv.get")
             .with_body(kv_get_in)
             .execute(self.cfg)
             .await
@@ -53,7 +53,7 @@ impl<'a> Kv<'a> {
             key,
         };
 
-        crate::request::Request::new(http::Method::POST, "/api/v1/kv/delete")
+        crate::request::Request::new(http::Method::POST, "/api/v1.kv.delete")
             .with_body(kv_delete_in)
             .execute(self.cfg)
             .await

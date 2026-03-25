@@ -15,7 +15,7 @@ impl<'a> AuthTokenNamespace<'a> {
         &self,
         auth_token_create_namespace_in: AuthTokenCreateNamespaceIn,
     ) -> Result<AuthTokenCreateNamespaceOut> {
-        crate::request::Request::new(http::Method::POST, "/api/v1/auth-token/namespace/create")
+        crate::request::Request::new(http::Method::POST, "/api/v1.auth-token.namespace.create")
             .with_body(auth_token_create_namespace_in)
             .execute(self.cfg)
             .await
@@ -26,7 +26,7 @@ impl<'a> AuthTokenNamespace<'a> {
         &self,
         auth_token_get_namespace_in: AuthTokenGetNamespaceIn,
     ) -> Result<AuthTokenGetNamespaceOut> {
-        crate::request::Request::new(http::Method::POST, "/api/v1/auth-token/namespace/get")
+        crate::request::Request::new(http::Method::POST, "/api/v1.auth-token.namespace.get")
             .with_body(auth_token_get_namespace_in)
             .execute(self.cfg)
             .await

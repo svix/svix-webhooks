@@ -15,7 +15,7 @@ impl<'a> RateLimitNamespace<'a> {
         &self,
         rate_limit_create_namespace_in: RateLimitCreateNamespaceIn,
     ) -> Result<RateLimitCreateNamespaceOut> {
-        crate::request::Request::new(http::Method::POST, "/api/v1/rate-limit/namespace/create")
+        crate::request::Request::new(http::Method::POST, "/api/v1.rate-limit.namespace.create")
             .with_body(rate_limit_create_namespace_in)
             .execute(self.cfg)
             .await
@@ -26,7 +26,7 @@ impl<'a> RateLimitNamespace<'a> {
         &self,
         rate_limit_get_namespace_in: RateLimitGetNamespaceIn,
     ) -> Result<RateLimitGetNamespaceOut> {
-        crate::request::Request::new(http::Method::POST, "/api/v1/rate-limit/namespace/get")
+        crate::request::Request::new(http::Method::POST, "/api/v1.rate-limit.namespace.get")
             .with_body(rate_limit_get_namespace_in)
             .execute(self.cfg)
             .await
