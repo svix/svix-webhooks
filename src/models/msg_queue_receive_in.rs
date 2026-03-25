@@ -10,7 +10,7 @@ pub struct MsgQueueReceiveIn {
     pub batch_size: Option<u16>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub lease_duration_millis: Option<u64>,
+    pub lease_duration_ms: Option<u64>,
 }
 
 impl MsgQueueReceiveIn {
@@ -18,7 +18,7 @@ impl MsgQueueReceiveIn {
         Self {
             namespace: None,
             batch_size: None,
-            lease_duration_millis: None,
+            lease_duration_ms: None,
         }
     }
 
@@ -32,8 +32,8 @@ impl MsgQueueReceiveIn {
         self
     }
 
-    pub fn with_lease_duration_millis(mut self, value: impl Into<Option<u64>>) -> Self {
-        self.lease_duration_millis = value.into();
+    pub fn with_lease_duration_ms(mut self, value: impl Into<Option<u64>>) -> Self {
+        self.lease_duration_ms = value.into();
         self
     }
 }
@@ -51,5 +51,5 @@ pub(crate) struct MsgQueueReceiveIn_ {
     pub batch_size: Option<u16>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub lease_duration_millis: Option<u64>,
+    pub lease_duration_ms: Option<u64>,
 }

@@ -1,6 +1,8 @@
 // this file is @generated
 use serde::{Deserialize, Serialize};
 
+use super::seek_position::SeekPosition;
+
 #[derive(Clone, Debug, Deserialize)]
 pub struct MsgStreamReceiveIn {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -10,10 +12,10 @@ pub struct MsgStreamReceiveIn {
     pub batch_size: Option<u16>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub lease_duration_millis: Option<u64>,
+    pub lease_duration_ms: Option<u64>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub default_starting_position: Option<String>,
+    pub default_starting_position: Option<SeekPosition>,
 }
 
 impl MsgStreamReceiveIn {
@@ -21,7 +23,7 @@ impl MsgStreamReceiveIn {
         Self {
             namespace: None,
             batch_size: None,
-            lease_duration_millis: None,
+            lease_duration_ms: None,
             default_starting_position: None,
         }
     }
@@ -36,12 +38,15 @@ impl MsgStreamReceiveIn {
         self
     }
 
-    pub fn with_lease_duration_millis(mut self, value: impl Into<Option<u64>>) -> Self {
-        self.lease_duration_millis = value.into();
+    pub fn with_lease_duration_ms(mut self, value: impl Into<Option<u64>>) -> Self {
+        self.lease_duration_ms = value.into();
         self
     }
 
-    pub fn with_default_starting_position(mut self, value: impl Into<Option<String>>) -> Self {
+    pub fn with_default_starting_position(
+        mut self,
+        value: impl Into<Option<SeekPosition>>,
+    ) -> Self {
         self.default_starting_position = value.into();
         self
     }
@@ -60,8 +65,8 @@ pub(crate) struct MsgStreamReceiveIn_ {
     pub batch_size: Option<u16>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub lease_duration_millis: Option<u64>,
+    pub lease_duration_ms: Option<u64>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub default_starting_position: Option<String>,
+    pub default_starting_position: Option<SeekPosition>,
 }

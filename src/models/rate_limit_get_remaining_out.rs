@@ -8,19 +8,19 @@ pub struct RateLimitGetRemainingOut {
 
     /// Milliseconds until at least one token is available (only present when remaining is 0)
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub retry_after_millis: Option<u64>,
+    pub retry_after_ms: Option<u64>,
 }
 
 impl RateLimitGetRemainingOut {
     pub fn new(remaining: u64) -> Self {
         Self {
             remaining,
-            retry_after_millis: None,
+            retry_after_ms: None,
         }
     }
 
-    pub fn with_retry_after_millis(mut self, value: impl Into<Option<u64>>) -> Self {
-        self.retry_after_millis = value.into();
+    pub fn with_retry_after_ms(mut self, value: impl Into<Option<u64>>) -> Self {
+        self.retry_after_ms = value.into();
         self
     }
 }

@@ -3,7 +3,6 @@ use serde::{Deserialize, Serialize};
 
 use super::idempotency_completed::IdempotencyCompleted;
 
-#[non_exhaustive]
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(tag = "status", content = "data")]
 pub enum IdempotencyStartOut {

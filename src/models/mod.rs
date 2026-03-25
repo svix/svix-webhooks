@@ -98,8 +98,8 @@ mod rate_limit_reset_in;
 mod rate_limit_reset_out;
 mod rate_limit_token_bucket_config;
 mod retention;
+mod seek_position;
 mod server_state;
-mod storage_type;
 mod stream_msg_out;
 
 pub use self::{
@@ -157,7 +157,7 @@ pub use self::{
     rate_limit_get_remaining_out::RateLimitGetRemainingOut, rate_limit_reset_in::RateLimitResetIn,
     rate_limit_reset_out::RateLimitResetOut,
     rate_limit_token_bucket_config::RateLimitTokenBucketConfig, retention::Retention,
-    server_state::ServerState, storage_type::StorageType, stream_msg_out::StreamMsgOut,
+    seek_position::SeekPosition, server_state::ServerState, stream_msg_out::StreamMsgOut,
 };
 
 pub(crate) use self::{

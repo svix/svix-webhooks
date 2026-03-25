@@ -16,7 +16,7 @@ pub struct AuthTokenCreateIn {
 
     /// Milliseconds from now until the token expires.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub expiry_millis: Option<u64>,
+    pub expiry_ms: Option<u64>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub metadata: Option<std::collections::HashMap<String, String>>,
@@ -38,7 +38,7 @@ impl AuthTokenCreateIn {
             name,
             prefix: None,
             suffix: None,
-            expiry_millis: None,
+            expiry_ms: None,
             metadata: None,
             owner_id,
             scopes: None,
@@ -61,8 +61,8 @@ impl AuthTokenCreateIn {
         self
     }
 
-    pub fn with_expiry_millis(mut self, value: impl Into<Option<u64>>) -> Self {
-        self.expiry_millis = value.into();
+    pub fn with_expiry_ms(mut self, value: impl Into<Option<u64>>) -> Self {
+        self.expiry_ms = value.into();
         self
     }
 

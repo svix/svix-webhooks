@@ -7,7 +7,6 @@ use serde::{Deserialize, Serialize};
 ///
 /// Strong consistency (also known as linearizability) guarantees that a read will see all previous
 /// writes. Weak consistency allows stale reads, but can save one or more round trip to the leader.
-#[non_exhaustive]
 #[derive(Clone, Copy, Debug, Serialize, Deserialize)]
 pub enum Consistency {
     #[serde(rename = "strong")]

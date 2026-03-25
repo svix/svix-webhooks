@@ -26,7 +26,7 @@ impl<'a> MsgsQueue<'a> {
             topic,
             consumer_group,
             batch_size: msg_queue_receive_in.batch_size,
-            lease_duration_millis: msg_queue_receive_in.lease_duration_millis,
+            lease_duration_ms: msg_queue_receive_in.lease_duration_ms,
         };
 
         crate::request::Request::new(http::Method::POST, "/api/v1/msgs/queue/receive")

@@ -11,7 +11,7 @@ pub struct RateLimitCheckOut {
 
     /// Milliseconds until enough tokens are available (only present when allowed is false)
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub retry_after_millis: Option<u64>,
+    pub retry_after_ms: Option<u64>,
 }
 
 impl RateLimitCheckOut {
@@ -19,12 +19,12 @@ impl RateLimitCheckOut {
         Self {
             allowed,
             remaining,
-            retry_after_millis: None,
+            retry_after_ms: None,
         }
     }
 
-    pub fn with_retry_after_millis(mut self, value: impl Into<Option<u64>>) -> Self {
-        self.retry_after_millis = value.into();
+    pub fn with_retry_after_ms(mut self, value: impl Into<Option<u64>>) -> Self {
+        self.retry_after_ms = value.into();
         self
     }
 }

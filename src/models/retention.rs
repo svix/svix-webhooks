@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct Retention {
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub millis: Option<u64>,
+    pub ms: Option<u64>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub bytes: Option<u64>,
@@ -13,13 +13,13 @@ pub struct Retention {
 impl Retention {
     pub fn new() -> Self {
         Self {
-            millis: None,
+            ms: None,
             bytes: None,
         }
     }
 
-    pub fn with_millis(mut self, value: impl Into<Option<u64>>) -> Self {
-        self.millis = value.into();
+    pub fn with_ms(mut self, value: impl Into<Option<u64>>) -> Self {
+        self.ms = value.into();
         self
     }
 

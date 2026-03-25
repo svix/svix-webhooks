@@ -1,6 +1,8 @@
 // this file is @generated
 use serde::{Deserialize, Serialize};
 
+use super::seek_position::SeekPosition;
+
 #[derive(Clone, Debug, Deserialize)]
 pub struct MsgStreamSeekIn {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -10,7 +12,7 @@ pub struct MsgStreamSeekIn {
     pub offset: Option<u64>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub position: Option<String>,
+    pub position: Option<SeekPosition>,
 }
 
 impl MsgStreamSeekIn {
@@ -32,7 +34,7 @@ impl MsgStreamSeekIn {
         self
     }
 
-    pub fn with_position(mut self, value: impl Into<Option<String>>) -> Self {
+    pub fn with_position(mut self, value: impl Into<Option<SeekPosition>>) -> Self {
         self.position = value.into();
         self
     }
@@ -51,5 +53,5 @@ pub(crate) struct MsgStreamSeekIn_ {
     pub offset: Option<u64>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub position: Option<String>,
+    pub position: Option<SeekPosition>,
 }
