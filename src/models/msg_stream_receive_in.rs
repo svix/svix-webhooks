@@ -16,6 +16,10 @@ pub struct MsgStreamReceiveIn {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub default_starting_position: Option<SeekPosition>,
+
+    /// Maximum time (in milliseconds) to wait for messages before returning.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub batch_wait_ms: Option<u64>,
 }
 
 impl MsgStreamReceiveIn {
@@ -25,6 +29,7 @@ impl MsgStreamReceiveIn {
             batch_size: None,
             lease_duration_ms: None,
             default_starting_position: None,
+            batch_wait_ms: None,
         }
     }
 
@@ -50,6 +55,11 @@ impl MsgStreamReceiveIn {
         self.default_starting_position = value.into();
         self
     }
+
+    pub fn with_batch_wait_ms(mut self, value: impl Into<Option<u64>>) -> Self {
+        self.batch_wait_ms = value.into();
+        self
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -69,4 +79,8 @@ pub(crate) struct MsgStreamReceiveIn_ {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub default_starting_position: Option<SeekPosition>,
+
+    /// Maximum time (in milliseconds) to wait for messages before returning.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub batch_wait_ms: Option<u64>,
 }

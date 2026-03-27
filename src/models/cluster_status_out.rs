@@ -5,7 +5,7 @@ use super::{node_status_out::NodeStatusOut, server_state::ServerState};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct ClusterStatusOut {
-    /// The unique ID of this cluster.pub(crate)
+    /// The unique ID of this cluster.
     ///
     /// This value is populated on cluster initialization and will never change.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -26,6 +26,10 @@ pub struct ClusterStatusOut {
     /// The timestamp of the last transaction committed on this node
     pub this_node_last_committed_timestamp: jiff::Timestamp,
 
+    /// The last snapshot taken on this node
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub this_node_last_snapshot_id: Option<String>,
+
     /// A list of all nodes known to be in the cluster
     pub nodes: Vec<NodeStatusOut>,
 }
@@ -43,6 +47,7 @@ impl ClusterStatusOut {
             this_node_id,
             this_node_state,
             this_node_last_committed_timestamp,
+            this_node_last_snapshot_id: None,
             nodes,
         }
     }
@@ -54,6 +59,11 @@ impl ClusterStatusOut {
 
     pub fn with_cluster_name(mut self, value: impl Into<Option<String>>) -> Self {
         self.cluster_name = value.into();
+        self
+    }
+
+    pub fn with_this_node_last_snapshot_id(mut self, value: impl Into<Option<String>>) -> Self {
+        self.this_node_last_snapshot_id = value.into();
         self
     }
 }

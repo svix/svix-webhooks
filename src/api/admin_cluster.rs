@@ -17,6 +17,20 @@ impl<'a> AdminCluster<'a> {
             .await
     }
 
+    /// Initialize this node as the leader of a new cluster
+    ///
+    /// This operation may only be performed against a node which has not been
+    /// initialized and is not currently a member of a cluster.
+    pub async fn initialize(
+        &self,
+        cluster_initialize_in: ClusterInitializeIn,
+    ) -> Result<ClusterInitializeOut> {
+        crate::request::Request::new(http::Method::POST, "/api/v1.admin.cluster.initialize")
+            .with_body(cluster_initialize_in)
+            .execute(self.cfg)
+            .await
+    }
+
     /// Remove a node from the cluster.
     ///
     /// This operation executes immediately and the node must be wiped and reset
@@ -27,6 +41,17 @@ impl<'a> AdminCluster<'a> {
     ) -> Result<ClusterRemoveNodeOut> {
         crate::request::Request::new(http::Method::POST, "/api/v1.admin.cluster.remove-node")
             .with_body(cluster_remove_node_in)
+            .execute(self.cfg)
+            .await
+    }
+
+    /// Force the cluster to take a snapshot immediately
+    pub async fn force_snapshot(
+        &self,
+        cluster_force_snapshot_in: ClusterForceSnapshotIn,
+    ) -> Result<ClusterForceSnapshotOut> {
+        crate::request::Request::new(http::Method::POST, "/api/v1.admin.cluster.force-snapshot")
+            .with_body(cluster_force_snapshot_in)
             .execute(self.cfg)
             .await
     }

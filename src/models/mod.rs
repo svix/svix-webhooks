@@ -1,6 +1,20 @@
 // this file is @generated
 #![allow(clippy::too_many_arguments)]
 
+mod admin_auth_token_create_in;
+mod admin_auth_token_create_out;
+mod admin_auth_token_delete_in;
+mod admin_auth_token_delete_out;
+mod admin_auth_token_expire_in;
+mod admin_auth_token_expire_out;
+mod admin_auth_token_list_in;
+mod admin_auth_token_out;
+mod admin_auth_token_rotate_in;
+mod admin_auth_token_rotate_out;
+mod admin_auth_token_update_in;
+mod admin_auth_token_update_out;
+mod admin_auth_token_whoami_in;
+mod admin_auth_token_whoami_out;
 mod auth_token_create_in;
 mod auth_token_create_namespace_in;
 mod auth_token_create_namespace_out;
@@ -29,6 +43,10 @@ mod cache_get_namespace_out;
 mod cache_get_out;
 mod cache_set_in;
 mod cache_set_out;
+mod cluster_force_snapshot_in;
+mod cluster_force_snapshot_out;
+mod cluster_initialize_in;
+mod cluster_initialize_out;
 mod cluster_remove_node_in;
 mod cluster_remove_node_out;
 mod cluster_status_out;
@@ -55,6 +73,7 @@ mod kv_get_namespace_out;
 mod kv_get_out;
 mod kv_set_in;
 mod kv_set_out;
+mod list_response_admin_auth_token_out;
 mod list_response_auth_token_out;
 mod msg_in;
 mod msg_namespace_create_in;
@@ -103,7 +122,19 @@ mod server_state;
 mod stream_msg_out;
 
 pub use self::{
-    auth_token_create_in::AuthTokenCreateIn,
+    admin_auth_token_create_in::AdminAuthTokenCreateIn,
+    admin_auth_token_create_out::AdminAuthTokenCreateOut,
+    admin_auth_token_delete_in::AdminAuthTokenDeleteIn,
+    admin_auth_token_delete_out::AdminAuthTokenDeleteOut,
+    admin_auth_token_expire_in::AdminAuthTokenExpireIn,
+    admin_auth_token_expire_out::AdminAuthTokenExpireOut,
+    admin_auth_token_list_in::AdminAuthTokenListIn, admin_auth_token_out::AdminAuthTokenOut,
+    admin_auth_token_rotate_in::AdminAuthTokenRotateIn,
+    admin_auth_token_rotate_out::AdminAuthTokenRotateOut,
+    admin_auth_token_update_in::AdminAuthTokenUpdateIn,
+    admin_auth_token_update_out::AdminAuthTokenUpdateOut,
+    admin_auth_token_whoami_in::AdminAuthTokenWhoamiIn,
+    admin_auth_token_whoami_out::AdminAuthTokenWhoamiOut, auth_token_create_in::AuthTokenCreateIn,
     auth_token_create_namespace_in::AuthTokenCreateNamespaceIn,
     auth_token_create_namespace_out::AuthTokenCreateNamespaceOut,
     auth_token_create_out::AuthTokenCreateOut, auth_token_delete_in::AuthTokenDeleteIn,
@@ -119,6 +150,9 @@ pub use self::{
     cache_delete_out::CacheDeleteOut, cache_get_in::CacheGetIn,
     cache_get_namespace_in::CacheGetNamespaceIn, cache_get_namespace_out::CacheGetNamespaceOut,
     cache_get_out::CacheGetOut, cache_set_in::CacheSetIn, cache_set_out::CacheSetOut,
+    cluster_force_snapshot_in::ClusterForceSnapshotIn,
+    cluster_force_snapshot_out::ClusterForceSnapshotOut,
+    cluster_initialize_in::ClusterInitializeIn, cluster_initialize_out::ClusterInitializeOut,
     cluster_remove_node_in::ClusterRemoveNodeIn, cluster_remove_node_out::ClusterRemoveNodeOut,
     cluster_status_out::ClusterStatusOut, consistency::Consistency,
     eviction_policy::EvictionPolicy, idempotency_abort_in::IdempotencyAbortIn,
@@ -133,6 +167,7 @@ pub use self::{
     kv_delete_in::KvDeleteIn, kv_delete_out::KvDeleteOut, kv_get_in::KvGetIn,
     kv_get_namespace_in::KvGetNamespaceIn, kv_get_namespace_out::KvGetNamespaceOut,
     kv_get_out::KvGetOut, kv_set_in::KvSetIn, kv_set_out::KvSetOut,
+    list_response_admin_auth_token_out::ListResponseAdminAuthTokenOut,
     list_response_auth_token_out::ListResponseAuthTokenOut, msg_in::MsgIn,
     msg_namespace_create_in::MsgNamespaceCreateIn, msg_namespace_create_out::MsgNamespaceCreateOut,
     msg_namespace_get_in::MsgNamespaceGetIn, msg_namespace_get_out::MsgNamespaceGetOut,

@@ -13,6 +13,9 @@ pub struct StreamMsgOut {
     pub headers: Option<std::collections::HashMap<String, String>>,
 
     pub timestamp: jiff::Timestamp,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub scheduled_at: Option<jiff::Timestamp>,
 }
 
 impl StreamMsgOut {
@@ -23,6 +26,7 @@ impl StreamMsgOut {
             value,
             headers: None,
             timestamp,
+            scheduled_at: None,
         }
     }
 
@@ -31,6 +35,11 @@ impl StreamMsgOut {
         value: impl Into<Option<std::collections::HashMap<String, String>>>,
     ) -> Self {
         self.headers = value.into();
+        self
+    }
+
+    pub fn with_scheduled_at(mut self, value: impl Into<Option<jiff::Timestamp>>) -> Self {
+        self.scheduled_at = value.into();
         self
     }
 }
