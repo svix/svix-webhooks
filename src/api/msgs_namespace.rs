@@ -19,10 +19,9 @@ impl<'a> MsgsNamespace<'a> {
         let msg_namespace_create_in = MsgNamespaceCreateIn_ {
             name,
             retention: msg_namespace_create_in.retention,
-            storage_type: msg_namespace_create_in.storage_type,
         };
 
-        crate::request::Request::new(http::Method::POST, "/api/v1/msgs/namespace/create")
+        crate::request::Request::new(http::Method::POST, "/api/v1.msgs.namespace.create")
             .with_body(msg_namespace_create_in)
             .execute(self.cfg)
             .await
@@ -37,7 +36,7 @@ impl<'a> MsgsNamespace<'a> {
         let _unused = msg_namespace_get_in;
         let msg_namespace_get_in = MsgNamespaceGetIn_ { name };
 
-        crate::request::Request::new(http::Method::POST, "/api/v1/msgs/namespace/get")
+        crate::request::Request::new(http::Method::POST, "/api/v1.msgs.namespace.get")
             .with_body(msg_namespace_get_in)
             .execute(self.cfg)
             .await

@@ -2,29 +2,29 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct RateLimiterTokenBucketConfig {
+pub struct RateLimitTokenBucketConfig {
     /// Maximum capacity of the bucket
     pub capacity: u64,
 
     /// Number of tokens to add per refill interval
     pub refill_amount: u64,
 
-    /// Interval in seconds between refills (minimum 1 second)
+    /// Interval in milliseconds between refills (minimum 1 millisecond)
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub refill_interval: Option<u64>,
+    pub refill_interval_ms: Option<u64>,
 }
 
-impl RateLimiterTokenBucketConfig {
+impl RateLimitTokenBucketConfig {
     pub fn new(capacity: u64, refill_amount: u64) -> Self {
         Self {
             capacity,
             refill_amount,
-            refill_interval: None,
+            refill_interval_ms: None,
         }
     }
 
-    pub fn with_refill_interval(mut self, value: impl Into<Option<u64>>) -> Self {
-        self.refill_interval = value.into();
+    pub fn with_refill_interval_ms(mut self, value: impl Into<Option<u64>>) -> Self {
+        self.refill_interval_ms = value.into();
         self
     }
 }

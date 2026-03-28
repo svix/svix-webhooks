@@ -15,7 +15,7 @@ impl<'a> IdempotencyNamespace<'a> {
         &self,
         idempotency_create_namespace_in: IdempotencyCreateNamespaceIn,
     ) -> Result<IdempotencyCreateNamespaceOut> {
-        crate::request::Request::new(http::Method::POST, "/api/v1/idempotency/namespace/create")
+        crate::request::Request::new(http::Method::POST, "/api/v1.idempotency.namespace.create")
             .with_body(idempotency_create_namespace_in)
             .execute(self.cfg)
             .await
@@ -26,7 +26,7 @@ impl<'a> IdempotencyNamespace<'a> {
         &self,
         idempotency_get_namespace_in: IdempotencyGetNamespaceIn,
     ) -> Result<IdempotencyGetNamespaceOut> {
-        crate::request::Request::new(http::Method::POST, "/api/v1/idempotency/namespace/get")
+        crate::request::Request::new(http::Method::POST, "/api/v1.idempotency.namespace.get")
             .with_body(idempotency_get_namespace_in)
             .execute(self.cfg)
             .await

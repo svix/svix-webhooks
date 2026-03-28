@@ -18,12 +18,13 @@ impl<'a> Cache<'a> {
     /// Cache Set
     pub async fn set(&self, key: String, cache_set_in: CacheSetIn) -> Result<CacheSetOut> {
         let cache_set_in = CacheSetIn_ {
+            namespace: cache_set_in.namespace,
             key,
             value: cache_set_in.value,
             ttl: cache_set_in.ttl,
         };
 
-        crate::request::Request::new(http::Method::POST, "/api/v1/cache/set")
+        crate::request::Request::new(http::Method::POST, "/api/v1.cache.set")
             .with_body(cache_set_in)
             .execute(self.cfg)
             .await
@@ -31,10 +32,13 @@ impl<'a> Cache<'a> {
 
     /// Cache Get
     pub async fn get(&self, key: String, cache_get_in: CacheGetIn) -> Result<CacheGetOut> {
-        let _unused = cache_get_in;
-        let cache_get_in = CacheGetIn_ { key };
+        let cache_get_in = CacheGetIn_ {
+            namespace: cache_get_in.namespace,
+            key,
+            consistency: cache_get_in.consistency,
+        };
 
-        crate::request::Request::new(http::Method::POST, "/api/v1/cache/get")
+        crate::request::Request::new(http::Method::POST, "/api/v1.cache.get")
             .with_body(cache_get_in)
             .execute(self.cfg)
             .await
@@ -46,10 +50,12 @@ impl<'a> Cache<'a> {
         key: String,
         cache_delete_in: CacheDeleteIn,
     ) -> Result<CacheDeleteOut> {
-        let _unused = cache_delete_in;
-        let cache_delete_in = CacheDeleteIn_ { key };
+        let cache_delete_in = CacheDeleteIn_ {
+            namespace: cache_delete_in.namespace,
+            key,
+        };
 
-        crate::request::Request::new(http::Method::POST, "/api/v1/cache/delete")
+        crate::request::Request::new(http::Method::POST, "/api/v1.cache.delete")
             .with_body(cache_delete_in)
             .execute(self.cfg)
             .await

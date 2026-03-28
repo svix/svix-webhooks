@@ -12,7 +12,7 @@ mod request;
 
 use self::connector::Connector;
 pub use self::{
-    client::{CoyoteClient, CoyoteOptions},
+    client::{CoyoteClient, CoyoteOptions, DEFAULT_URL},
     error::{Error, Result},
 };
 

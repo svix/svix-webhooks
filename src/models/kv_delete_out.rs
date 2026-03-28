@@ -3,11 +3,12 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct KvDeleteOut {
-    pub deleted: bool,
+    /// Whether the operation succeeded or was a noop due to pre-conditions.
+    pub success: bool,
 }
 
 impl KvDeleteOut {
-    pub fn new(deleted: bool) -> Self {
-        Self { deleted }
+    pub fn new(success: bool) -> Self {
+        Self { success }
     }
 }

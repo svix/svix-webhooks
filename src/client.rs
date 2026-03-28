@@ -6,6 +6,8 @@ use crate::{Configuration, connector::make_connector};
 
 const CRATE_VERSION: &str = env!("CARGO_PKG_VERSION");
 
+pub const DEFAULT_URL: &str = "http://localhost:8050";
+
 pub struct CoyoteOptions {
     pub debug: bool,
 
@@ -42,8 +44,9 @@ pub struct CoyoteOptions {
     /// for `socks5h`, but not for `socks5`.
     pub proxy_address: Option<String>,
 
-    /// Use HTTP/1.1 on plaintext connections (otherwise forces HTTP/2 on plaintext,
-    /// and uses standard ALPN on secure connections)
+    /// Use HTTP/1.1 on plaintext connections.
+    ///
+    /// Otherwise forces HTTP/2 on plaintext, and uses standard ALPN on secure connections.
     #[cfg(all(feature = "http1", feature = "http2"))]
     pub http1: bool,
 }
@@ -109,7 +112,7 @@ impl CoyoteClient {
         let base_path = self
             .server_url
             .clone()
-            .unwrap_or_else(|| "http://localhost:8050".to_owned());
+            .unwrap_or_else(|| DEFAULT_URL.to_owned());
         let cfg = Arc::new(Configuration {
             base_path,
             user_agent: self.cfg.user_agent.clone(),

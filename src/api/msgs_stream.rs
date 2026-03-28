@@ -21,13 +21,16 @@ impl<'a> MsgsStream<'a> {
         msg_stream_receive_in: MsgStreamReceiveIn,
     ) -> Result<MsgStreamReceiveOut> {
         let msg_stream_receive_in = MsgStreamReceiveIn_ {
+            namespace: msg_stream_receive_in.namespace,
             topic,
             consumer_group,
             batch_size: msg_stream_receive_in.batch_size,
-            lease_duration_millis: msg_stream_receive_in.lease_duration_millis,
+            lease_duration_ms: msg_stream_receive_in.lease_duration_ms,
+            default_starting_position: msg_stream_receive_in.default_starting_position,
+            batch_wait_ms: msg_stream_receive_in.batch_wait_ms,
         };
 
-        crate::request::Request::new(http::Method::POST, "/api/v1/msgs/stream/receive")
+        crate::request::Request::new(http::Method::POST, "/api/v1.msgs.stream.receive")
             .with_body(msg_stream_receive_in)
             .execute(self.cfg)
             .await
@@ -44,13 +47,39 @@ impl<'a> MsgsStream<'a> {
         msg_stream_commit_in: MsgStreamCommitIn,
     ) -> Result<MsgStreamCommitOut> {
         let msg_stream_commit_in = MsgStreamCommitIn_ {
+            namespace: msg_stream_commit_in.namespace,
             topic,
             consumer_group,
             offset: msg_stream_commit_in.offset,
         };
 
-        crate::request::Request::new(http::Method::POST, "/api/v1/msgs/stream/commit")
+        crate::request::Request::new(http::Method::POST, "/api/v1.msgs.stream.commit")
             .with_body(msg_stream_commit_in)
+            .execute(self.cfg)
+            .await
+    }
+
+    /// Repositions a consumer group's read cursor on a topic.
+    ///
+    /// Provide exactly one of `offset` or `position`. When using `offset`, the topic must include a
+    /// partition suffix (e.g. `ns:my-topic~0`). The `position` field accepts `"earliest"` or
+    /// `"latest"` and may be used with or without a partition suffix.
+    pub async fn seek(
+        &self,
+        topic: String,
+        consumer_group: String,
+        msg_stream_seek_in: MsgStreamSeekIn,
+    ) -> Result<MsgStreamSeekOut> {
+        let msg_stream_seek_in = MsgStreamSeekIn_ {
+            namespace: msg_stream_seek_in.namespace,
+            topic,
+            consumer_group,
+            offset: msg_stream_seek_in.offset,
+            position: msg_stream_seek_in.position,
+        };
+
+        crate::request::Request::new(http::Method::POST, "/api/v1.msgs.stream.seek")
+            .with_body(msg_stream_seek_in)
             .execute(self.cfg)
             .await
     }

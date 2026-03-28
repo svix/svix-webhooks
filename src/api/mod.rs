@@ -1,6 +1,11 @@
 // this file is @generated
 use crate::CoyoteClient;
 
+mod admin;
+mod admin_auth_token;
+mod admin_cluster;
+mod auth_token;
+mod auth_token_namespace;
 mod cache;
 mod cache_namespace;
 mod health;
@@ -10,18 +15,30 @@ mod kv;
 mod kv_namespace;
 mod msgs;
 mod msgs_namespace;
+mod msgs_queue;
 mod msgs_stream;
 mod msgs_topic;
-mod rate_limiter;
+mod rate_limit;
+mod rate_limit_namespace;
 
 pub use self::{
-    cache::Cache, cache_namespace::CacheNamespace, health::Health, idempotency::Idempotency,
+    admin::Admin, admin_auth_token::AdminAuthToken, admin_cluster::AdminCluster,
+    auth_token::AuthToken, auth_token_namespace::AuthTokenNamespace, cache::Cache,
+    cache_namespace::CacheNamespace, health::Health, idempotency::Idempotency,
     idempotency_namespace::IdempotencyNamespace, kv::Kv, kv_namespace::KvNamespace, msgs::Msgs,
-    msgs_namespace::MsgsNamespace, msgs_stream::MsgsStream, msgs_topic::MsgsTopic,
-    rate_limiter::RateLimiter,
+    msgs_namespace::MsgsNamespace, msgs_queue::MsgsQueue, msgs_stream::MsgsStream,
+    msgs_topic::MsgsTopic, rate_limit::RateLimit, rate_limit_namespace::RateLimitNamespace,
 };
 
 impl CoyoteClient {
+    pub fn admin(&self) -> Admin<'_> {
+        Admin::new(&self.cfg)
+    }
+
+    pub fn auth_token(&self) -> AuthToken<'_> {
+        AuthToken::new(&self.cfg)
+    }
+
     pub fn cache(&self) -> Cache<'_> {
         Cache::new(&self.cfg)
     }
@@ -42,7 +59,7 @@ impl CoyoteClient {
         Msgs::new(&self.cfg)
     }
 
-    pub fn rate_limiter(&self) -> RateLimiter<'_> {
-        RateLimiter::new(&self.cfg)
+    pub fn rate_limit(&self) -> RateLimit<'_> {
+        RateLimit::new(&self.cfg)
     }
 }
