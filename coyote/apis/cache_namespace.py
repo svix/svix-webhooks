@@ -19,7 +19,7 @@ class CacheNamespaceAsync(ApiBase):
 
         return await self._request_asyncio(
             method="post",
-            path="/api/v1/cache/namespace/create",
+            path="/api/v1.cache.namespace.create",
             body=body,
             response_type=CacheCreateNamespaceOut,
         )
@@ -33,7 +33,7 @@ class CacheNamespaceAsync(ApiBase):
 
         return await self._request_asyncio(
             method="post",
-            path="/api/v1/cache/namespace/get",
+            path="/api/v1.cache.namespace.get",
             body=body,
             response_type=CacheGetNamespaceOut,
         )
@@ -49,7 +49,7 @@ class CacheNamespace(ApiBase):
 
         return self._request_sync(
             method="post",
-            path="/api/v1/cache/namespace/create",
+            path="/api/v1.cache.namespace.create",
             body=body,
             response_type=CacheCreateNamespaceOut,
         )
@@ -63,7 +63,7 @@ class CacheNamespace(ApiBase):
 
         return self._request_sync(
             method="post",
-            path="/api/v1/cache/namespace/get",
+            path="/api/v1.cache.namespace.get",
             body=body,
             response_type=CacheGetNamespaceOut,
         )

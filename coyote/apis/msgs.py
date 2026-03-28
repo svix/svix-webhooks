@@ -9,6 +9,10 @@ from .msgs_namespace import (
     MsgsNamespace,
     MsgsNamespaceAsync,
 )
+from .msgs_queue import (
+    MsgsQueue,
+    MsgsQueueAsync,
+)
 from .msgs_stream import (
     MsgsStream,
     MsgsStreamAsync,
@@ -27,6 +31,10 @@ class MsgsAsync(ApiBase):
         return MsgsNamespaceAsync(self._client)
 
     @property
+    def queue(self) -> MsgsQueueAsync:
+        return MsgsQueueAsync(self._client)
+
+    @property
     def stream(self) -> MsgsStreamAsync:
         return MsgsStreamAsync(self._client)
 
@@ -41,13 +49,14 @@ class MsgsAsync(ApiBase):
     ) -> MsgPublishOut:
         """Publishes messages to a topic within a namespace."""
         body = _MsgPublishIn(
+            namespace=msg_publish_in.namespace,
             topic=topic,
             msgs=msg_publish_in.msgs,
         ).model_dump(exclude_none=True)
 
         return await self._request_asyncio(
             method="post",
-            path="/api/v1/msgs/publish",
+            path="/api/v1.msgs.publish",
             body=body,
             response_type=MsgPublishOut,
         )
@@ -57,6 +66,10 @@ class Msgs(ApiBase):
     @property
     def namespace(self) -> MsgsNamespace:
         return MsgsNamespace(self._client)
+
+    @property
+    def queue(self) -> MsgsQueue:
+        return MsgsQueue(self._client)
 
     @property
     def stream(self) -> MsgsStream:
@@ -73,13 +86,14 @@ class Msgs(ApiBase):
     ) -> MsgPublishOut:
         """Publishes messages to a topic within a namespace."""
         body = _MsgPublishIn(
+            namespace=msg_publish_in.namespace,
             topic=topic,
             msgs=msg_publish_in.msgs,
         ).model_dump(exclude_none=True)
 
         return self._request_sync(
             method="post",
-            path="/api/v1/msgs/publish",
+            path="/api/v1.msgs.publish",
             body=body,
             response_type=MsgPublishOut,
         )

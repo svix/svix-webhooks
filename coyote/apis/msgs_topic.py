@@ -19,13 +19,14 @@ class MsgsTopicAsync(ApiBase):
 
         Partition count can only be increased, never decreased. The default for a new topic is 1."""
         body = _MsgTopicConfigureIn(
+            namespace=msg_topic_configure_in.namespace,
             topic=topic,
             partitions=msg_topic_configure_in.partitions,
         ).model_dump(exclude_none=True)
 
         return await self._request_asyncio(
             method="post",
-            path="/api/v1/msgs/topic/configure",
+            path="/api/v1.msgs.topic.configure",
             body=body,
             response_type=MsgTopicConfigureOut,
         )
@@ -41,13 +42,14 @@ class MsgsTopic(ApiBase):
 
         Partition count can only be increased, never decreased. The default for a new topic is 1."""
         body = _MsgTopicConfigureIn(
+            namespace=msg_topic_configure_in.namespace,
             topic=topic,
             partitions=msg_topic_configure_in.partitions,
         ).model_dump(exclude_none=True)
 
         return self._request_sync(
             method="post",
-            path="/api/v1/msgs/topic/configure",
+            path="/api/v1.msgs.topic.configure",
             body=body,
             response_type=MsgTopicConfigureOut,
         )

@@ -4,4 +4,5 @@ from ..internal.base_model import BaseModel
 
 
 class KvDeleteOut(BaseModel):
-    deleted: bool
+    success: bool
+    """Whether the operation succeeded or was a noop due to pre-conditions."""

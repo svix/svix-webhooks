@@ -52,12 +52,9 @@ class ApiBase:
         method: str,
         path: str,
         *,
-        path_params: t.Optional[t.Dict[str, str]],
         header_params: t.Optional[t.Dict[str, str]],
         body: t.Optional[t.Any],
     ) -> t.Dict[str, t.Any]:
-        if path_params is not None:
-            path = path.format(**path_params)
         url = f"{self._client.base_url}{path}"
 
         headers: t.Dict[str, str] = {
@@ -92,7 +89,6 @@ class ApiBase:
         method: str,
         path: str,
         *,
-        path_params: t.Optional[t.Dict[str, str]] = None,
         header_params: t.Optional[t.Dict[str, str]] = None,
         body: t.Optional[t.Any] = None,
         response_type: t.Optional[type[T]] = None,
@@ -100,7 +96,6 @@ class ApiBase:
         httpx_kwargs = self._get_httpx_kwargs(
             method,
             path,
-            path_params=path_params,
             header_params=header_params,
             body=body,
         )
@@ -122,7 +117,6 @@ class ApiBase:
         method: str,
         path: str,
         *,
-        path_params: t.Optional[t.Dict[str, str]] = None,
         header_params: t.Optional[t.Dict[str, str]] = None,
         body: t.Optional[t.Any] = None,
         response_type: t.Optional[type[T]] = None,
@@ -130,7 +124,6 @@ class ApiBase:
         httpx_kwargs = self._get_httpx_kwargs(
             method,
             path,
-            path_params=path_params,
             header_params=header_params,
             body=body,
         )

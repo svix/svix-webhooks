@@ -6,15 +6,12 @@ from datetime import datetime
 from ..internal.base_model import BaseModel
 
 from .eviction_policy import EvictionPolicy
-from .storage_type import StorageType
 
 
 class CacheGetNamespaceOut(BaseModel):
     name: str
 
     max_storage_bytes: t.Optional[int] = Field(default=None, alias="max_storage_bytes")
-
-    storage_type: StorageType = Field(alias="storage_type")
 
     eviction_policy: EvictionPolicy = Field(alias="eviction_policy")
 

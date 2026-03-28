@@ -14,8 +14,18 @@ class HealthAsync(ApiBase):
 
         return await self._request_asyncio(
             method="get",
-            path="/api/v1/health/ping",
+            path="/api/v1.health.ping",
             response_type=PingOut,
+        )
+
+    async def error(
+        self,
+    ) -> None:
+        """Intentionally return an error"""
+
+        await self._request_asyncio(
+            method="post",
+            path="/api/v1.health.error",
         )
 
 
@@ -27,6 +37,16 @@ class Health(ApiBase):
 
         return self._request_sync(
             method="get",
-            path="/api/v1/health/ping",
+            path="/api/v1.health.ping",
             response_type=PingOut,
+        )
+
+    def error(
+        self,
+    ) -> None:
+        """Intentionally return an error"""
+
+        self._request_sync(
+            method="post",
+            path="/api/v1.health.error",
         )

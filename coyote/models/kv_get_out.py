@@ -6,9 +6,11 @@ from ..internal.base_model import BaseModel
 
 
 class KvGetOut(BaseModel):
-    key: str
-
     expiry: t.Optional[datetime] = None
     """Time of expiry"""
 
-    value: bytes
+    value: t.Optional[bytes] = None
+
+    version: int
+    """Opaque version token for optimistic concurrency control.
+    Pass as `version` in a subsequent `set` to perform a conditional write."""

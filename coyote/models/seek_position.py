@@ -2,9 +2,9 @@
 from enum import Enum
 
 
-class RateLimitStatus(str, Enum):
-    OK = "ok"
-    BLOCK = "block"
+class SeekPosition(str, Enum):
+    EARLIEST = "earliest"
+    LATEST = "latest"
 
     def __str__(self) -> str:
         return str(self.value)

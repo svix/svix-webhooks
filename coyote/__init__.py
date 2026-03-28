@@ -1,6 +1,10 @@
 # this file is @generated
 
 from .apis import (
+    Admin,
+    AdminAsync,
+    AuthToken,
+    AuthTokenAsync,
     Cache,
     CacheAsync,
     Health,
@@ -11,14 +15,22 @@ from .apis import (
     KvAsync,
     Msgs,
     MsgsAsync,
-    RateLimiter,
-    RateLimiterAsync,
+    RateLimit,
+    RateLimitAsync,
 )
 from .client_base import ClientBase
 from .options import CoyoteOptions
 
 
 class Coyote(ClientBase):
+    @property
+    def admin(self) -> Admin:
+        return Admin(self._client)
+
+    @property
+    def auth_token(self) -> AuthToken:
+        return AuthToken(self._client)
+
     @property
     def cache(self) -> Cache:
         return Cache(self._client)
@@ -40,11 +52,19 @@ class Coyote(ClientBase):
         return Msgs(self._client)
 
     @property
-    def rate_limiter(self) -> RateLimiter:
-        return RateLimiter(self._client)
+    def rate_limit(self) -> RateLimit:
+        return RateLimit(self._client)
 
 
 class CoyoteAsync(ClientBase):
+    @property
+    def admin(self) -> AdminAsync:
+        return AdminAsync(self._client)
+
+    @property
+    def auth_token(self) -> AuthTokenAsync:
+        return AuthTokenAsync(self._client)
+
     @property
     def cache(self) -> CacheAsync:
         return CacheAsync(self._client)
@@ -66,8 +86,8 @@ class CoyoteAsync(ClientBase):
         return MsgsAsync(self._client)
 
     @property
-    def rate_limiter(self) -> RateLimiterAsync:
-        return RateLimiterAsync(self._client)
+    def rate_limit(self) -> RateLimitAsync:
+        return RateLimitAsync(self._client)
 
 
 __all__ = ["Coyote", "CoyoteAsync", "CoyoteOptions"]

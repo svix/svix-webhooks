@@ -19,7 +19,7 @@ class KvNamespaceAsync(ApiBase):
 
         return await self._request_asyncio(
             method="post",
-            path="/api/v1/kv/namespace/create",
+            path="/api/v1.kv.namespace.create",
             body=body,
             response_type=KvCreateNamespaceOut,
         )
@@ -33,7 +33,7 @@ class KvNamespaceAsync(ApiBase):
 
         return await self._request_asyncio(
             method="post",
-            path="/api/v1/kv/namespace/get",
+            path="/api/v1.kv.namespace.get",
             body=body,
             response_type=KvGetNamespaceOut,
         )
@@ -49,7 +49,7 @@ class KvNamespace(ApiBase):
 
         return self._request_sync(
             method="post",
-            path="/api/v1/kv/namespace/create",
+            path="/api/v1.kv.namespace.create",
             body=body,
             response_type=KvCreateNamespaceOut,
         )
@@ -63,7 +63,7 @@ class KvNamespace(ApiBase):
 
         return self._request_sync(
             method="post",
-            path="/api/v1/kv/namespace/get",
+            path="/api/v1.kv.namespace.get",
             body=body,
             response_type=KvGetNamespaceOut,
         )

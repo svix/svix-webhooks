@@ -19,7 +19,7 @@ class IdempotencyNamespaceAsync(ApiBase):
 
         return await self._request_asyncio(
             method="post",
-            path="/api/v1/idempotency/namespace/create",
+            path="/api/v1.idempotency.namespace.create",
             body=body,
             response_type=IdempotencyCreateNamespaceOut,
         )
@@ -33,7 +33,7 @@ class IdempotencyNamespaceAsync(ApiBase):
 
         return await self._request_asyncio(
             method="post",
-            path="/api/v1/idempotency/namespace/get",
+            path="/api/v1.idempotency.namespace.get",
             body=body,
             response_type=IdempotencyGetNamespaceOut,
         )
@@ -49,7 +49,7 @@ class IdempotencyNamespace(ApiBase):
 
         return self._request_sync(
             method="post",
-            path="/api/v1/idempotency/namespace/create",
+            path="/api/v1.idempotency.namespace.create",
             body=body,
             response_type=IdempotencyCreateNamespaceOut,
         )
@@ -63,7 +63,7 @@ class IdempotencyNamespace(ApiBase):
 
         return self._request_sync(
             method="post",
-            path="/api/v1/idempotency/namespace/get",
+            path="/api/v1.idempotency.namespace.get",
             body=body,
             response_type=IdempotencyGetNamespaceOut,
         )

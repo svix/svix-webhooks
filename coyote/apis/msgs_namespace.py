@@ -22,12 +22,11 @@ class MsgsNamespaceAsync(ApiBase):
         body = _MsgNamespaceCreateIn(
             name=name,
             retention=msg_namespace_create_in.retention,
-            storage_type=msg_namespace_create_in.storage_type,
         ).model_dump(exclude_none=True)
 
         return await self._request_asyncio(
             method="post",
-            path="/api/v1/msgs/namespace/create",
+            path="/api/v1.msgs.namespace.create",
             body=body,
             response_type=MsgNamespaceCreateOut,
         )
@@ -44,7 +43,7 @@ class MsgsNamespaceAsync(ApiBase):
 
         return await self._request_asyncio(
             method="post",
-            path="/api/v1/msgs/namespace/get",
+            path="/api/v1.msgs.namespace.get",
             body=body,
             response_type=MsgNamespaceGetOut,
         )
@@ -60,12 +59,11 @@ class MsgsNamespace(ApiBase):
         body = _MsgNamespaceCreateIn(
             name=name,
             retention=msg_namespace_create_in.retention,
-            storage_type=msg_namespace_create_in.storage_type,
         ).model_dump(exclude_none=True)
 
         return self._request_sync(
             method="post",
-            path="/api/v1/msgs/namespace/create",
+            path="/api/v1.msgs.namespace.create",
             body=body,
             response_type=MsgNamespaceCreateOut,
         )
@@ -82,7 +80,7 @@ class MsgsNamespace(ApiBase):
 
         return self._request_sync(
             method="post",
-            path="/api/v1/msgs/namespace/get",
+            path="/api/v1.msgs.namespace.get",
             body=body,
             response_type=MsgNamespaceGetOut,
         )
