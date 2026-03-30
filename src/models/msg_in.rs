@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct MsgIn {
+    #[serde(with = "serde_bytes")]
     pub value: Vec<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]

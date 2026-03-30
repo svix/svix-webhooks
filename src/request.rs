@@ -144,7 +144,7 @@ impl Request {
     }
 
     fn build_request(self, conf: &Configuration) -> Result<http::Request<Full<Bytes>>, Error> {
-        let mut uri = format!("{}{}", conf.base_path, self.path);
+        let mut uri = format!("{}{}", conf.server_url, self.path);
 
         let mut query_string = form_urlencoded::Serializer::new("".to_owned());
         for (key, val) in self.query_params {

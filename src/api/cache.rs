@@ -21,7 +21,7 @@ impl<'a> Cache<'a> {
             namespace: cache_set_in.namespace,
             key,
             value: cache_set_in.value,
-            ttl: cache_set_in.ttl,
+            ttl_ms: cache_set_in.ttl_ms,
         };
 
         crate::request::Request::new(http::Method::POST, "/api/v1.cache.set")

@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use super::consistency::Consistency;
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Default, Deserialize)]
 pub struct CacheGetIn {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub namespace: Option<String>,

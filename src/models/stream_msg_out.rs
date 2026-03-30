@@ -7,6 +7,7 @@ pub struct StreamMsgOut {
 
     pub topic: String,
 
+    #[serde(with = "serde_bytes")]
     pub value: Vec<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]

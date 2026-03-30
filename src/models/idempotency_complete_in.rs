@@ -7,18 +7,19 @@ pub struct IdempotencyCompleteIn {
     pub namespace: Option<String>,
 
     /// The response to cache
+    #[serde(with = "serde_bytes")]
     pub response: Vec<u8>,
 
-    /// TTL in seconds for the cached response
-    pub ttl: u64,
+    /// TTL in milliseconds for the cached response
+    pub ttl_ms: u64,
 }
 
 impl IdempotencyCompleteIn {
-    pub fn new(response: Vec<u8>, ttl: u64) -> Self {
+    pub fn new(response: Vec<u8>, ttl_ms: u64) -> Self {
         Self {
             namespace: None,
             response,
-            ttl,
+            ttl_ms,
         }
     }
 
@@ -36,8 +37,9 @@ pub(crate) struct IdempotencyCompleteIn_ {
     pub key: String,
 
     /// The response to cache
+    #[serde(with = "serde_bytes")]
     pub response: Vec<u8>,
 
-    /// TTL in seconds for the cached response
-    pub ttl: u64,
+    /// TTL in milliseconds for the cached response
+    pub ttl_ms: u64,
 }

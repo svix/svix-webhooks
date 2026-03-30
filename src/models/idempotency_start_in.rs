@@ -6,15 +6,15 @@ pub struct IdempotencyStartIn {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub namespace: Option<String>,
 
-    /// TTL in seconds for the lock/response
-    pub ttl: u64,
+    /// TTL in milliseconds for the lock/response
+    pub ttl_ms: u64,
 }
 
 impl IdempotencyStartIn {
-    pub fn new(ttl: u64) -> Self {
+    pub fn new(ttl_ms: u64) -> Self {
         Self {
             namespace: None,
-            ttl,
+            ttl_ms,
         }
     }
 
@@ -31,6 +31,6 @@ pub(crate) struct IdempotencyStartIn_ {
 
     pub key: String,
 
-    /// TTL in seconds for the lock/response
-    pub ttl: u64,
+    /// TTL in milliseconds for the lock/response
+    pub ttl_ms: u64,
 }

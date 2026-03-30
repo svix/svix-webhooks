@@ -1,7 +1,7 @@
 // this file is @generated
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Default, Deserialize)]
 pub struct MsgQueueConfigureIn {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub namespace: Option<String>,

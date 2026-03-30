@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use super::retention::Retention;
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Default, Deserialize)]
 pub struct MsgNamespaceCreateIn {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub retention: Option<Retention>,

@@ -21,7 +21,7 @@ impl<'a> Kv<'a> {
             namespace: kv_set_in.namespace,
             key,
             value: kv_set_in.value,
-            ttl: kv_set_in.ttl,
+            ttl_ms: kv_set_in.ttl_ms,
             behavior: kv_set_in.behavior,
             version: kv_set_in.version,
         };

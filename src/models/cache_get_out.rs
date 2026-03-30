@@ -7,7 +7,10 @@ pub struct CacheGetOut {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub expiry: Option<jiff::Timestamp>,
 
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(
+        with = "crate::serde_bytes_opt",
+        skip_serializing_if = "Option::is_none"
+    )]
     pub value: Option<Vec<u8>>,
 }
 

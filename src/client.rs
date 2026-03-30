@@ -1,8 +1,9 @@
 use std::{sync::Arc, time::Duration};
 
+use hyper::body::Bytes;
 use hyper_util::{client::legacy::Client as HyperClient, rt::TokioExecutor};
 
-use crate::{Configuration, connector::make_connector};
+use crate::connector::{Connector, make_connector};
 
 const CRATE_VERSION: &str = env!("CARGO_PKG_VERSION");
 
@@ -66,11 +67,22 @@ impl Default for CoyoteOptions {
     }
 }
 
+#[derive(Clone)]
+pub(crate) struct Configuration {
+    pub(crate) server_url: String,
+    pub(crate) user_agent: Option<String>,
+    pub(crate) bearer_access_token: Option<String>,
+    pub(crate) timeout: Option<Duration>,
+    pub(crate) num_retries: u32,
+    pub(crate) retry_schedule: Option<Vec<Duration>>,
+
+    pub(crate) client: HyperClient<Connector, http_body_util::Full<Bytes>>,
+}
+
 /// Coyote API client.
 #[derive(Clone)]
 pub struct CoyoteClient {
     pub(super) cfg: Arc<Configuration>,
-    server_url: Option<String>,
 }
 
 impl CoyoteClient {
@@ -89,16 +101,16 @@ impl CoyoteClient {
             user_agent: Some(format!("coyote-client/{CRATE_VERSION}/rust")),
             client: builder.build(make_connector(options.proxy_address)),
             timeout: options.timeout,
-            // These fields will be set by `with_token` below
-            base_path: String::new(),
+            server_url: match options.server_url {
+                None => DEFAULT_URL.to_owned(),
+                Some(s) if s.ends_with('/') => s.trim_end_matches('/').to_owned(),
+                Some(s) => s,
+            },
             bearer_access_token: None,
             num_retries: options.num_retries.unwrap_or(2),
             retry_schedule: options.retry_schedule,
         });
-        let client = Self {
-            cfg,
-            server_url: options.server_url,
-        };
+        let client = Self { cfg };
         client.with_token(token)
     }
 
@@ -109,24 +121,11 @@ impl CoyoteClient {
     /// This can be used to change the token without incurring
     /// the cost of TLS initialization.
     pub fn with_token(&self, token: String) -> Self {
-        let base_path = self
-            .server_url
-            .clone()
-            .unwrap_or_else(|| DEFAULT_URL.to_owned());
         let cfg = Arc::new(Configuration {
-            base_path,
-            user_agent: self.cfg.user_agent.clone(),
             bearer_access_token: Some(token),
-            client: self.cfg.client.clone(),
-            timeout: self.cfg.timeout,
-            num_retries: self.cfg.num_retries,
-            retry_schedule: self.cfg.retry_schedule.clone(),
+            ..(*self.cfg).clone()
         });
-
-        Self {
-            cfg,
-            server_url: self.server_url.clone(),
-        }
+        Self { cfg }
     }
 }
 
