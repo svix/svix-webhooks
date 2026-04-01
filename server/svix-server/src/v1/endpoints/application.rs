@@ -54,9 +54,21 @@ pub struct ApplicationIn {
     #[schemars(example = "application_name_example")]
     pub name: String,
 
+    /// Deprecated, use `throttleRate` instead.
+    #[deprecated]
     #[validate(range(min = 1, message = "Application rate limits must be at least 1 if set"))]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub rate_limit: Option<u16>,
+
+    /// Maximum messages per second to send to this application's endpoints.
+    ///
+    /// Outgoing messages will be throttled to this rate.
+    #[validate(range(
+        min = 1,
+        message = "Application throttle rate must be at least 1 if set"
+    ))]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub throttle_rate: Option<u16>,
     /// Optional unique identifier for the application
     #[validate]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -70,16 +82,19 @@ pub struct ApplicationIn {
 impl ModelIn for ApplicationIn {
     type ActiveModel = (application::ActiveModel, applicationmetadata::ActiveModel);
 
+    #[allow(deprecated)]
     fn update_model(self, (app, app_metadata): &mut Self::ActiveModel) {
         let ApplicationIn {
             name,
+            #[allow(deprecated)]
             rate_limit,
+            throttle_rate,
             uid,
             metadata,
         } = self;
 
         app.name = Set(name);
-        app.rate_limit = Set(rate_limit.map(|x| x.into()));
+        app.rate_limit = Set(throttle_rate.or(rate_limit).map(|x| x.into()));
         app.uid = Set(uid);
         app_metadata.data = Set(metadata);
     }
@@ -95,9 +110,18 @@ pub struct ApplicationPatch {
     )]
     pub name: UnrequiredField<String>,
 
-    #[serde(default, skip_serializing_if = "UnrequiredNullableField::is_absent")]
+    /// Deprecated, use `throttleRate` instead.
+    #[deprecated]
     #[validate(custom = "validate_rate_limit_patch")]
+    #[serde(default, skip_serializing_if = "UnrequiredNullableField::is_absent")]
     pub rate_limit: UnrequiredNullableField<u16>,
+
+    /// Maximum messages per second to send to this application's endpoints.
+    ///
+    /// Outgoing messages will be throttled to this rate.
+    #[validate(custom = "validate_rate_limit_patch")]
+    #[serde(default, skip_serializing_if = "UnrequiredNullableField::is_absent")]
+    pub throttle_rate: UnrequiredNullableField<u16>,
 
     #[serde(default, skip_serializing_if = "UnrequiredNullableField::is_absent")]
     #[validate]
@@ -110,10 +134,13 @@ pub struct ApplicationPatch {
 impl ModelIn for ApplicationPatch {
     type ActiveModel = (application::ActiveModel, applicationmetadata::ActiveModel);
 
+    #[allow(deprecated)]
     fn update_model(self, (app, app_metadata): &mut Self::ActiveModel) {
         let ApplicationPatch {
             name,
+            #[allow(deprecated)]
             rate_limit,
+            throttle_rate,
             uid,
             metadata,
         } = self;
@@ -124,6 +151,12 @@ impl ModelIn for ApplicationPatch {
 
         patch_field_non_nullable!(app, name);
         patch_field_nullable!(app, rate_limit, rate_limit_map);
+
+        match throttle_rate {
+            UnrequiredNullableField::Some(v) => app.rate_limit = Set(Some(v.into())),
+            UnrequiredNullableField::None => app.rate_limit = Set(None),
+            UnrequiredNullableField::Absent => {}
+        }
         patch_field_nullable!(app, uid);
         patch_field_non_nullable!(app_metadata, data);
     }
@@ -171,8 +204,14 @@ pub struct ApplicationOut {
     pub uid: Option<ApplicationUid>,
     #[schemars(example = "application_name_example")]
     pub name: String,
+    /// Deprecated, use `throttleRate` instead.
+    #[deprecated]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub rate_limit: Option<u16>,
+    /// Maximum messages per second to send to this application's endpoints.
+    ///
+    /// Outgoing messages will be throttled to this rate.
+    pub throttle_rate: Option<u16>,
 
     pub id: ApplicationId,
     pub created_at: DateTime<Utc>,
@@ -181,11 +220,13 @@ pub struct ApplicationOut {
 }
 
 impl From<(application::Model, applicationmetadata::Model)> for ApplicationOut {
+    #[allow(deprecated)]
     fn from((app, metadata): (application::Model, applicationmetadata::Model)) -> Self {
         Self {
             uid: app.uid,
             name: app.name,
             rate_limit: app.rate_limit.map(|x| x as u16),
+            throttle_rate: app.rate_limit.map(|x| x as u16),
             id: app.id,
             created_at: app.created_at.into(),
             updated_at: app.updated_at.into(),
@@ -456,6 +497,7 @@ mod tests {
     const UID_INVALID: &str = "$$invalid-uid";
     const UID_VALID: &str = "valid-uid";
 
+    #[allow(deprecated)]
     #[test]
     fn test_application_in_validation() {
         let invalid_1: ApplicationIn =
@@ -483,6 +525,7 @@ mod tests {
     }
 
     // FIXME: How to eliminate the repetition here?
+    #[allow(deprecated)]
     #[test]
     fn test_application_patch_validation() {
         let invalid_1: ApplicationPatch =
