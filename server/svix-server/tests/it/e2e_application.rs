@@ -18,6 +18,7 @@ use crate::utils::{
 
 // NOTE: PATCHing must be tested exhaustively as if any of the boilerplate is missed then the
 // operation could fail. This should probably be made into a macro if at all possible.
+#[allow(deprecated)]
 #[tokio::test]
 async fn test_patch() {
     let (client, _jh) = start_svix_server().await;

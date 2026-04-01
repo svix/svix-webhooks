@@ -1872,6 +1872,7 @@ async fn test_endpoint_filter_channels() {
     assert_eq!(updated_ep_with_channel.ep.channels.unwrap(), expected_ec);
 }
 
+#[allow(deprecated)]
 #[tokio::test]
 async fn test_rate_limit() {
     let (client, _jh) = start_svix_server().await;

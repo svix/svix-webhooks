@@ -139,6 +139,7 @@ fn start_svix_server_with_operational_webhooks(
     )
 }
 
+#[allow(deprecated)]
 #[tokio::test]
 async fn test_endpoint_create_update_and_delete() {
     let cfg = get_default_test_config();
@@ -152,6 +153,7 @@ async fn test_endpoint_create_update_and_delete() {
             ApplicationIn {
                 name: "TestOperationalWebhookApplication".to_owned(),
                 rate_limit: None,
+                throttle_rate: None,
                 uid: Some(ApplicationUid(org_id.to_string())),
                 metadata: Metadata::default(),
             },
@@ -298,6 +300,7 @@ async fn test_endpoint_create_update_and_delete() {
     };
 }
 
+#[allow(deprecated)]
 #[tokio::test]
 async fn test_message_attempt_operational_webhooks() {
     let mut cfg = get_default_test_config();
@@ -313,6 +316,7 @@ async fn test_message_attempt_operational_webhooks() {
             ApplicationIn {
                 name: "TestOperationalWebhookApplication".to_owned(),
                 rate_limit: None,
+                throttle_rate: None,
                 uid: Some(ApplicationUid(org_id.to_string())),
                 metadata: Metadata::default(),
             },
