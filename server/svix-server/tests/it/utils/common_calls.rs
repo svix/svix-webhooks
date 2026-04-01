@@ -59,6 +59,7 @@ pub fn default_test_endpoint() -> EndpointIn {
     EndpointIn {
         description: Default::default(),
         rate_limit: Default::default(),
+        throttle_rate: Default::default(),
         uid: Default::default(),
         url: Url::parse("http://example.com").unwrap(),
         version: Some(1),
