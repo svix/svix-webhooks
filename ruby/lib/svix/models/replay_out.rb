@@ -8,8 +8,9 @@ module Svix
     attr_accessor :id
     attr_accessor :status
     attr_accessor :task
+    attr_accessor :updated_at
 
-    ALL_FIELD ||= ["id", "status", "task"].freeze
+    ALL_FIELD ||= ["id", "status", "task", "updated_at"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -33,6 +34,7 @@ module Svix
       attrs["id"] = attributes["id"]
       attrs["status"] = Svix::BackgroundTaskStatus.deserialize(attributes["status"])
       attrs["task"] = Svix::BackgroundTaskType.deserialize(attributes["task"])
+      attrs["updated_at"] = DateTime.rfc3339(attributes["updatedAt"]).to_time
       new(attrs)
     end
 
@@ -41,6 +43,7 @@ module Svix
       out["id"] = Svix::serialize_primitive(@id) if @id
       out["status"] = Svix::serialize_schema_ref(@status) if @status
       out["task"] = Svix::serialize_schema_ref(@task) if @task
+      out["updatedAt"] = Svix::serialize_primitive(@updated_at) if @updated_at
       out
     end
 

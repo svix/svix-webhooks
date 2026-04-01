@@ -14,6 +14,7 @@ class S3Config implements \JsonSerializable
         public readonly string $bucket,
         public readonly string $region,
         public readonly string $secretAccessKey,
+        public readonly ?string $endpointUrl = null,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -31,9 +32,25 @@ class S3Config implements \JsonSerializable
         return new self(
             accessKeyId: $accessKeyId,
             bucket: $bucket,
+            endpointUrl: null,
             region: $region,
             secretAccessKey: $secretAccessKey,
             setFields: ['accessKeyId' => true, 'bucket' => true, 'region' => true, 'secretAccessKey' => true]
+        );
+    }
+
+    public function withEndpointUrl(?string $endpointUrl): self
+    {
+        $setFields = $this->setFields;
+        $setFields['endpointUrl'] = true;
+
+        return new self(
+            accessKeyId: $this->accessKeyId,
+            bucket: $this->bucket,
+            endpointUrl: $endpointUrl,
+            region: $this->region,
+            secretAccessKey: $this->secretAccessKey,
+            setFields: $setFields
         );
     }
 
@@ -44,6 +61,10 @@ class S3Config implements \JsonSerializable
             'bucket' => $this->bucket,
             'region' => $this->region,
             'secretAccessKey' => $this->secretAccessKey];
+
+        if (isset($this->setFields['endpointUrl'])) {
+            $data['endpointUrl'] = $this->endpointUrl;
+        }
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
@@ -56,6 +77,7 @@ class S3Config implements \JsonSerializable
         return new self(
             accessKeyId: \Svix\Utils::deserializeString($data, 'accessKeyId', true, 'S3Config'),
             bucket: \Svix\Utils::deserializeString($data, 'bucket', true, 'S3Config'),
+            endpointUrl: \Svix\Utils::getValFromJson($data, 'endpointUrl', false, 'S3Config'),
             region: \Svix\Utils::deserializeString($data, 'region', true, 'S3Config'),
             secretAccessKey: \Svix\Utils::deserializeString($data, 'secretAccessKey', true, 'S3Config')
         );

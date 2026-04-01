@@ -25,7 +25,7 @@ import (
 //   - "shopify": Use ShopifyConfigOut
 //   - "slack": Use SlackConfigOut
 //   - "stripe": Use StripeConfigOut
-//   - "beehiiv","brex","clerk","guesty","incident-io","lithic","nash","pleo","replicate","resend","safebase","sardine","stych","svix","open-ai","render": Use SvixConfigOut
+//   - "beehiiv","brex","clerk","guesty","incident-io","lithic","nash","psi-fi","pleo","replicate","resend","safebase","sardine","stych","svix","open-ai","render": Use SvixConfigOut
 //   - "telnyx": Use TelnyxConfigOut
 //   - "vapi": Use VapiConfigOut
 //   - "veriff": Use VeriffConfigOut
@@ -63,6 +63,7 @@ const (
 	IngestSourceOutTypeOrumIo         IngestSourceOutType = "orum-io"
 	IngestSourceOutTypePandaDoc       IngestSourceOutType = "panda-doc"
 	IngestSourceOutTypePortIo         IngestSourceOutType = "port-io"
+	IngestSourceOutTypePsiFi          IngestSourceOutType = "psi-fi"
 	IngestSourceOutTypePleo           IngestSourceOutType = "pleo"
 	IngestSourceOutTypeReplicate      IngestSourceOutType = "replicate"
 	IngestSourceOutTypeResend         IngestSourceOutType = "resend"
@@ -189,7 +190,7 @@ func (i *IngestSourceOut) UnmarshalJSON(data []byte) error {
 		var c StripeConfigOut
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
-	case "beehiiv", "brex", "clerk", "guesty", "incident-io", "lithic", "nash", "pleo", "replicate", "resend", "safebase", "sardine", "stych", "svix", "open-ai", "render":
+	case "beehiiv", "brex", "clerk", "guesty", "incident-io", "lithic", "nash", "psi-fi", "pleo", "replicate", "resend", "safebase", "sardine", "stych", "svix", "open-ai", "render":
 		var c SvixConfigOut
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
@@ -247,6 +248,7 @@ var IngestSourceOutTypeFromString = map[string]IngestSourceOutType{
 	"orum-io":         IngestSourceOutTypeOrumIo,
 	"panda-doc":       IngestSourceOutTypePandaDoc,
 	"port-io":         IngestSourceOutTypePortIo,
+	"psi-fi":          IngestSourceOutTypePsiFi,
 	"pleo":            IngestSourceOutTypePleo,
 	"replicate":       IngestSourceOutTypeReplicate,
 	"resend":          IngestSourceOutTypeResend,

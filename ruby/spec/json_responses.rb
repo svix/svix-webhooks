@@ -60,7 +60,8 @@ ReplayOut_JSON = '
 {
   "id": "qtask_1srOrx2ZWZBpBUvZwXKQmoEYga2",
   "status": "running",
-  "task": "endpoint.replay"
+  "task": "endpoint.replay",
+  "updatedAt": "2025-03-03T03:03:03.000000Z"
 }'
 ListResponseMessageOut_JSON = '{
   "data": [
@@ -135,7 +136,8 @@ ListResponseBackgroundTaskOut_JSON='{
       "data": {},
       "id": "qtask_1srOrx2ZWZBpBUvZwXKQmoEYga2",
       "status": "running",
-      "task": "endpoint.replay"
+      "task": "endpoint.replay",
+      "updatedAt": "2025-03-03T03:03:03.000000Z"
     }
   ],
   "iterator": "iterator",

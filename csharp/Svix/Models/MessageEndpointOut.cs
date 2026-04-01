@@ -36,6 +36,9 @@ namespace Svix.Models
         [JsonProperty("statusText", Required = Required.Always)]
         public required MessageStatusText StatusText { get; set; }
 
+        [JsonProperty("throttleRate")]
+        public ushort? ThrottleRate { get; set; } = null;
+
         [JsonProperty("uid")]
         public string? Uid { get; set; } = null;
 
@@ -63,6 +66,7 @@ namespace Svix.Models
             sb.Append("  RateLimit: ").Append(RateLimit).Append('\n');
             sb.Append("  Status: ").Append(Status).Append('\n');
             sb.Append("  StatusText: ").Append(StatusText).Append('\n');
+            sb.Append("  ThrottleRate: ").Append(ThrottleRate).Append('\n');
             sb.Append("  Uid: ").Append(Uid).Append('\n');
             sb.Append("  UpdatedAt: ").Append(UpdatedAt).Append('\n');
             sb.Append("  Url: ").Append(Url).Append('\n');

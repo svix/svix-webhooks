@@ -69,6 +69,19 @@ module Svix
       EndpointOut.deserialize(res)
     end
 
+    def bulk_replay(app_id, endpoint_id, bulk_replay_in, options = {})
+      options = options.transform_keys(&:to_s)
+      res = @client.execute_request(
+        "POST",
+        "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/bulk-replay",
+        headers: {
+          "idempotency-key" => options["idempotency-key"]
+        },
+        body: bulk_replay_in
+      )
+      ReplayOut.deserialize(res)
+    end
+
     def get_headers(app_id, endpoint_id)
       res = @client.execute_request(
         "GET",

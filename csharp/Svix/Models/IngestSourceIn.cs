@@ -133,6 +133,9 @@ namespace Svix.Models
         public static IngestSourceInConfig Pleo(SvixConfig svixConfig) =>
             new(svixConfig, ConfigType.Pleo);
 
+        public static IngestSourceInConfig PsiFi(SvixConfig svixConfig) =>
+            new(svixConfig, ConfigType.PsiFi);
+
         public static IngestSourceInConfig Replicate(SvixConfig svixConfig) =>
             new(svixConfig, ConfigType.Replicate);
 
@@ -246,6 +249,9 @@ namespace Svix.Models
             [EnumMember(Value = "pleo")]
             Pleo,
 
+            [EnumMember(Value = "psi-fi")]
+            PsiFi,
+
             [EnumMember(Value = "replicate")]
             Replicate,
 
@@ -321,6 +327,7 @@ namespace Svix.Models
             Func<PandaDocConfig, TResult> onPandaDoc,
             Func<PortIoConfig, TResult> onPortIo,
             Func<SvixConfig, TResult> onPleo,
+            Func<SvixConfig, TResult> onPsiFi,
             Func<SvixConfig, TResult> onReplicate,
             Func<SvixConfig, TResult> onResend,
             Func<RutterConfig, TResult> onRutter,
@@ -362,6 +369,7 @@ namespace Svix.Models
                 ConfigType.PandaDoc => onPandaDoc((PandaDocConfig)_value),
                 ConfigType.PortIo => onPortIo((PortIoConfig)_value),
                 ConfigType.Pleo => onPleo((SvixConfig)_value),
+                ConfigType.PsiFi => onPsiFi((SvixConfig)_value),
                 ConfigType.Replicate => onReplicate((SvixConfig)_value),
                 ConfigType.Resend => onResend((SvixConfig)_value),
                 ConfigType.Rutter => onRutter((RutterConfig)_value),
@@ -405,6 +413,7 @@ namespace Svix.Models
             Action<PandaDocConfig> onPandaDoc,
             Action<PortIoConfig> onPortIo,
             Action<SvixConfig> onPleo,
+            Action<SvixConfig> onPsiFi,
             Action<SvixConfig> onReplicate,
             Action<SvixConfig> onResend,
             Action<RutterConfig> onRutter,
@@ -483,6 +492,9 @@ namespace Svix.Models
                     break;
                 case ConfigType.Pleo:
                     onPleo((SvixConfig)_value);
+                    break;
+                case ConfigType.PsiFi:
+                    onPsiFi((SvixConfig)_value);
                     break;
                 case ConfigType.Replicate:
                     onReplicate((SvixConfig)_value);
@@ -648,6 +660,7 @@ namespace Svix.Models
                 ["panda-doc"] = c => IngestSourceInConfig.PandaDoc(ToObj<PandaDocConfig>(c)),
                 ["port-io"] = c => IngestSourceInConfig.PortIo(ToObj<PortIoConfig>(c)),
                 ["pleo"] = c => IngestSourceInConfig.Pleo(ToObj<SvixConfig>(c)),
+                ["psi-fi"] = c => IngestSourceInConfig.PsiFi(ToObj<SvixConfig>(c)),
                 ["replicate"] = c => IngestSourceInConfig.Replicate(ToObj<SvixConfig>(c)),
                 ["resend"] = c => IngestSourceInConfig.Resend(ToObj<SvixConfig>(c)),
                 ["rutter"] = c => IngestSourceInConfig.Rutter(ToObj<RutterConfig>(c)),

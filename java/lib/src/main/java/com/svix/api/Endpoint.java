@@ -4,6 +4,7 @@ package com.svix.api;
 import com.svix.SvixHttpClient;
 import com.svix.Utils;
 import com.svix.exceptions.ApiException;
+import com.svix.models.BulkReplayIn;
 import com.svix.models.EndpointHeadersIn;
 import com.svix.models.EndpointHeadersOut;
 import com.svix.models.EndpointHeadersPatchIn;
@@ -140,6 +141,53 @@ public class Endpoint {
                                 String.format("/api/v1/app/%s/endpoint/%s", appId, endpointId));
         return this.client.executeRequest(
                 "PATCH", url.build(), null, endpointPatch, EndpointOut.class);
+    }
+
+    /**
+     * Bulk replay messages sent to the endpoint.
+     *
+     * <p>Only messages that were created after `since` will be sent. This will replay both
+     * successful, and failed messages
+     *
+     * <p>A completed task will return a payload like the following: ```json { "id":
+     * "qtask_33qen93MNuelBAq1T9G7eHLJRsF", "status": "finished", "task": "endpoint.bulk-replay",
+     * "data": { "messagesSent": 2 } } ```
+     */
+    public ReplayOut bulkReplay(
+            final String appId, final String endpointId, final BulkReplayIn bulkReplayIn)
+            throws IOException, ApiException {
+        return this.bulkReplay(appId, endpointId, bulkReplayIn, new EndpointBulkReplayOptions());
+    }
+
+    /**
+     * Bulk replay messages sent to the endpoint.
+     *
+     * <p>Only messages that were created after `since` will be sent. This will replay both
+     * successful, and failed messages
+     *
+     * <p>A completed task will return a payload like the following: ```json { "id":
+     * "qtask_33qen93MNuelBAq1T9G7eHLJRsF", "status": "finished", "task": "endpoint.bulk-replay",
+     * "data": { "messagesSent": 2 } } ```
+     */
+    public ReplayOut bulkReplay(
+            final String appId,
+            final String endpointId,
+            final BulkReplayIn bulkReplayIn,
+            final EndpointBulkReplayOptions options)
+            throws IOException, ApiException {
+        HttpUrl.Builder url =
+                this.client
+                        .newUrlBuilder()
+                        .encodedPath(
+                                String.format(
+                                        "/api/v1/app/%s/endpoint/%s/bulk-replay",
+                                        appId, endpointId));
+        Map<String, String> headers = new HashMap<>();
+        if (options.idempotencyKey != null) {
+            headers.put("idempotency-key", options.idempotencyKey);
+        }
+        return this.client.executeRequest(
+                "POST", url.build(), Headers.of(headers), bulkReplayIn, ReplayOut.class);
     }
 
     /** Get the additional headers to be sent with the webhook. */
