@@ -513,6 +513,7 @@ pub struct EndpointOutCommon {
     #[deprecated]
     pub rate_limit: Option<u16>,
     /// Maximum messages per second to send to this endpoint.
+    ///
     /// Outgoing messages will be throttled to this rate.
     pub throttle_rate: Option<u16>,
     /// Optional unique identifier for the endpoint
