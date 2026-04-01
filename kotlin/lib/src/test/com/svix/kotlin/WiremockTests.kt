@@ -345,7 +345,7 @@ class WiremockTests {
                 .willReturn(
                     WireMock.ok()
                         .withBody(
-                            """{"unresolvedAppIds":["unique-identifier"],"id":"qtask_1srOrx2ZWZBpBUvZwXKQmoEYga2","status":"running","task":"endpoint.replay"}"""
+                            """{"unresolvedAppIds":["unique-identifier"],"id":"qtask_1srOrx2ZWZBpBUvZwXKQmoEYga2","status":"running","task":"endpoint.replay","updatedAt":"2025-03-03T03:03:03.000000Z"}"""
                         )
                 )
         )
