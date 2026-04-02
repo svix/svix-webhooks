@@ -4,6 +4,7 @@ from datetime import datetime
 
 from .common import BaseModel
 from .message_status import MessageStatus
+from .status_code_class import StatusCodeClass
 
 
 class BulkReplayIn(BaseModel):
@@ -14,6 +15,8 @@ class BulkReplayIn(BaseModel):
     since: datetime
 
     status: t.Optional[MessageStatus] = None
+
+    status_code_class: t.Optional[StatusCodeClass] = None
 
     tag: t.Optional[str] = None
 

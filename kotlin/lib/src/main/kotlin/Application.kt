@@ -13,6 +13,7 @@ data class ApplicationListOptions(
     val excludeAppsWithNoEndpoints: Boolean? = null,
     /** Exclude applications that have only disabled endpoints. Default is false. */
     val excludeAppsWithDisabledEndpoints: Boolean? = null,
+    val excludeAppsWithSvixPlayEndpoints: Boolean? = null,
     /** Limit the number of returned items */
     val limit: ULong? = null,
     /** The iterator returned from a prior invocation */
@@ -34,6 +35,9 @@ class Application(private val client: SvixHttpClient) {
         }
         options.excludeAppsWithDisabledEndpoints?.let {
             url.addQueryParameter("exclude_apps_with_disabled_endpoints", serializeQueryParam(it))
+        }
+        options.excludeAppsWithSvixPlayEndpoints?.let {
+            url.addQueryParameter("exclude_apps_with_svix_play_endpoints", serializeQueryParam(it))
         }
         options.limit?.let { url.addQueryParameter("limit", serializeQueryParam(it)) }
         options.iterator?.let { url.addQueryParameter("iterator", it) }

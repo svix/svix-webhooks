@@ -17,6 +17,7 @@ module Svix
         query_params: {
           "exclude_apps_with_no_endpoints" => options["exclude_apps_with_no_endpoints"],
           "exclude_apps_with_disabled_endpoints" => options["exclude_apps_with_disabled_endpoints"],
+          "exclude_apps_with_svix_play_endpoints" => options["exclude_apps_with_svix_play_endpoints"],
           "limit" => options["limit"],
           "iterator" => options["iterator"],
           "order" => options["order"]

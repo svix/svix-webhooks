@@ -17,6 +17,7 @@ import (
 //   - "easypost": Use EasypostConfigOut
 //   - "github": Use GithubConfigOut
 //   - "hubspot": Use HubspotConfigOut
+//   - "meta": Use MetaConfigOut
 //   - "orum-io": Use OrumIoConfigOut
 //   - "panda-doc": Use PandaDocConfigOut
 //   - "port-io": Use PortIoConfigOut
@@ -59,6 +60,7 @@ const (
 	IngestSourceOutTypeHubspot        IngestSourceOutType = "hubspot"
 	IngestSourceOutTypeIncidentIo     IngestSourceOutType = "incident-io"
 	IngestSourceOutTypeLithic         IngestSourceOutType = "lithic"
+	IngestSourceOutTypeMeta           IngestSourceOutType = "meta"
 	IngestSourceOutTypeNash           IngestSourceOutType = "nash"
 	IngestSourceOutTypeOrumIo         IngestSourceOutType = "orum-io"
 	IngestSourceOutTypePandaDoc       IngestSourceOutType = "panda-doc"
@@ -98,6 +100,7 @@ func (DocusignConfigOut) isIngestSourceOutConfig()  {}
 func (EasypostConfigOut) isIngestSourceOutConfig()  {}
 func (GithubConfigOut) isIngestSourceOutConfig()    {}
 func (HubspotConfigOut) isIngestSourceOutConfig()   {}
+func (MetaConfigOut) isIngestSourceOutConfig()      {}
 func (OrumIoConfigOut) isIngestSourceOutConfig()    {}
 func (PandaDocConfigOut) isIngestSourceOutConfig()  {}
 func (PortIoConfigOut) isIngestSourceOutConfig()    {}
@@ -156,6 +159,10 @@ func (i *IngestSourceOut) UnmarshalJSON(data []byte) error {
 		i.Config = c
 	case "hubspot":
 		var c HubspotConfigOut
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
+	case "meta":
+		var c MetaConfigOut
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "orum-io":
@@ -244,6 +251,7 @@ var IngestSourceOutTypeFromString = map[string]IngestSourceOutType{
 	"hubspot":         IngestSourceOutTypeHubspot,
 	"incident-io":     IngestSourceOutTypeIncidentIo,
 	"lithic":          IngestSourceOutTypeLithic,
+	"meta":            IngestSourceOutTypeMeta,
 	"nash":            IngestSourceOutTypeNash,
 	"orum-io":         IngestSourceOutTypeOrumIo,
 	"panda-doc":       IngestSourceOutTypePandaDoc,

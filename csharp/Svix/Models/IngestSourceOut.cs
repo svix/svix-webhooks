@@ -134,6 +134,9 @@ namespace Svix.Models
         public static IngestSourceOutConfig Lithic(SvixConfigOut svixConfigOut) =>
             new(svixConfigOut, ConfigType.Lithic);
 
+        public static IngestSourceOutConfig Meta(MetaConfigOut metaConfigOut) =>
+            new(metaConfigOut, ConfigType.Meta);
+
         public static IngestSourceOutConfig Nash(SvixConfigOut svixConfigOut) =>
             new(svixConfigOut, ConfigType.Nash);
 
@@ -250,6 +253,9 @@ namespace Svix.Models
             [EnumMember(Value = "lithic")]
             Lithic,
 
+            [EnumMember(Value = "meta")]
+            Meta,
+
             [EnumMember(Value = "nash")]
             Nash,
 
@@ -338,6 +344,7 @@ namespace Svix.Models
             Func<HubspotConfigOut, TResult> onHubspot,
             Func<SvixConfigOut, TResult> onIncidentIo,
             Func<SvixConfigOut, TResult> onLithic,
+            Func<MetaConfigOut, TResult> onMeta,
             Func<SvixConfigOut, TResult> onNash,
             Func<OrumIoConfigOut, TResult> onOrumIo,
             Func<PandaDocConfigOut, TResult> onPandaDoc,
@@ -380,6 +387,7 @@ namespace Svix.Models
                 ConfigType.Hubspot => onHubspot((HubspotConfigOut)_value),
                 ConfigType.IncidentIo => onIncidentIo((SvixConfigOut)_value),
                 ConfigType.Lithic => onLithic((SvixConfigOut)_value),
+                ConfigType.Meta => onMeta((MetaConfigOut)_value),
                 ConfigType.Nash => onNash((SvixConfigOut)_value),
                 ConfigType.OrumIo => onOrumIo((OrumIoConfigOut)_value),
                 ConfigType.PandaDoc => onPandaDoc((PandaDocConfigOut)_value),
@@ -424,6 +432,7 @@ namespace Svix.Models
             Action<HubspotConfigOut> onHubspot,
             Action<SvixConfigOut> onIncidentIo,
             Action<SvixConfigOut> onLithic,
+            Action<MetaConfigOut> onMeta,
             Action<SvixConfigOut> onNash,
             Action<OrumIoConfigOut> onOrumIo,
             Action<PandaDocConfigOut> onPandaDoc,
@@ -493,6 +502,9 @@ namespace Svix.Models
                     break;
                 case ConfigType.Lithic:
                     onLithic((SvixConfigOut)_value);
+                    break;
+                case ConfigType.Meta:
+                    onMeta((MetaConfigOut)_value);
                     break;
                 case ConfigType.Nash:
                     onNash((SvixConfigOut)_value);
@@ -689,6 +701,7 @@ namespace Svix.Models
             ["hubspot"] = c => IngestSourceOutConfig.Hubspot(ToObj<HubspotConfigOut>(c)),
             ["incident-io"] = c => IngestSourceOutConfig.IncidentIo(ToObj<SvixConfigOut>(c)),
             ["lithic"] = c => IngestSourceOutConfig.Lithic(ToObj<SvixConfigOut>(c)),
+            ["meta"] = c => IngestSourceOutConfig.Meta(ToObj<MetaConfigOut>(c)),
             ["nash"] = c => IngestSourceOutConfig.Nash(ToObj<SvixConfigOut>(c)),
             ["orum-io"] = c => IngestSourceOutConfig.OrumIo(ToObj<OrumIoConfigOut>(c)),
             ["panda-doc"] = c => IngestSourceOutConfig.PandaDoc(ToObj<PandaDocConfigOut>(c)),

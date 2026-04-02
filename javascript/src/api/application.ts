@@ -18,6 +18,7 @@ export interface ApplicationListOptions {
   excludeAppsWithNoEndpoints?: boolean;
   /** Exclude applications that have only disabled endpoints. Default is false. */
   excludeAppsWithDisabledEndpoints?: boolean;
+  excludeAppsWithSvixPlayEndpoints?: boolean;
   /** Limit the number of returned items */
   limit?: number;
   /** The iterator returned from a prior invocation */
@@ -40,6 +41,7 @@ export class Application {
     request.setQueryParams({
       exclude_apps_with_no_endpoints: options?.excludeAppsWithNoEndpoints,
       exclude_apps_with_disabled_endpoints: options?.excludeAppsWithDisabledEndpoints,
+      exclude_apps_with_svix_play_endpoints: options?.excludeAppsWithSvixPlayEndpoints,
       limit: options?.limit,
       iterator: options?.iterator,
       order: options?.order,

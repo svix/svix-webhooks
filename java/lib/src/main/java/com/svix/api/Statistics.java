@@ -22,8 +22,8 @@ public class Statistics {
     }
 
     /**
-     * Creates a background task to calculate the message destinations for all applications in the
-     * environment.
+     * Creates a background task to calculate the number of message attempts (`messageDestinations`)
+     * made for all applications in the environment.
      *
      * <p>Note that this endpoint is asynchronous. You will need to poll the `Get Background Task`
      * endpoint to retrieve the results of the operation.
@@ -39,8 +39,8 @@ public class Statistics {
     }
 
     /**
-     * Creates a background task to calculate the message destinations for all applications in the
-     * environment.
+     * Creates a background task to calculate the number of message attempts (`messageDestinations`)
+     * made for all applications in the environment.
      *
      * <p>Note that this endpoint is asynchronous. You will need to poll the `Get Background Task`
      * endpoint to retrieve the results of the operation.

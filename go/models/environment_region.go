@@ -12,7 +12,6 @@ type EnvironmentRegion string
 const (
 	ENVIRONMENTREGION_EU          EnvironmentRegion = "eu"
 	ENVIRONMENTREGION_US          EnvironmentRegion = "us"
-	ENVIRONMENTREGION_IN          EnvironmentRegion = "in"
 	ENVIRONMENTREGION_AU          EnvironmentRegion = "au"
 	ENVIRONMENTREGION_CA          EnvironmentRegion = "ca"
 	ENVIRONMENTREGION_SELF_HOSTED EnvironmentRegion = "self-hosted"
@@ -21,7 +20,6 @@ const (
 var allowedEnvironmentRegion = []EnvironmentRegion{
 	"eu",
 	"us",
-	"in",
 	"au",
 	"ca",
 	"self-hosted",
@@ -45,7 +43,6 @@ func (v *EnvironmentRegion) UnmarshalJSON(src []byte) error {
 var EnvironmentRegionFromString = map[string]EnvironmentRegion{
 	"eu":          ENVIRONMENTREGION_EU,
 	"us":          ENVIRONMENTREGION_US,
-	"in":          ENVIRONMENTREGION_IN,
 	"au":          ENVIRONMENTREGION_AU,
 	"ca":          ENVIRONMENTREGION_CA,
 	"self-hosted": ENVIRONMENTREGION_SELF_HOSTED,

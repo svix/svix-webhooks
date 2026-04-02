@@ -17,6 +17,7 @@ class BulkReplayIn implements \JsonSerializable
         public readonly ?string $channel = null,
         public readonly ?array $eventTypes = null,
         public readonly ?MessageStatus $status = null,
+        public readonly ?StatusCodeClass $statusCodeClass = null,
         public readonly ?string $tag = null,
         public readonly ?\DateTimeImmutable $until = null,
         array $setFields = [],
@@ -35,6 +36,7 @@ class BulkReplayIn implements \JsonSerializable
             eventTypes: null,
             since: $since,
             status: null,
+            statusCodeClass: null,
             tag: null,
             until: null,
             setFields: ['since' => true]
@@ -51,6 +53,7 @@ class BulkReplayIn implements \JsonSerializable
             eventTypes: $this->eventTypes,
             since: $this->since,
             status: $this->status,
+            statusCodeClass: $this->statusCodeClass,
             tag: $this->tag,
             until: $this->until,
             setFields: $setFields
@@ -67,6 +70,7 @@ class BulkReplayIn implements \JsonSerializable
             eventTypes: $eventTypes,
             since: $this->since,
             status: $this->status,
+            statusCodeClass: $this->statusCodeClass,
             tag: $this->tag,
             until: $this->until,
             setFields: $setFields
@@ -83,6 +87,24 @@ class BulkReplayIn implements \JsonSerializable
             eventTypes: $this->eventTypes,
             since: $this->since,
             status: $status,
+            statusCodeClass: $this->statusCodeClass,
+            tag: $this->tag,
+            until: $this->until,
+            setFields: $setFields
+        );
+    }
+
+    public function withStatusCodeClass(?StatusCodeClass $statusCodeClass): self
+    {
+        $setFields = $this->setFields;
+        $setFields['statusCodeClass'] = true;
+
+        return new self(
+            channel: $this->channel,
+            eventTypes: $this->eventTypes,
+            since: $this->since,
+            status: $this->status,
+            statusCodeClass: $statusCodeClass,
             tag: $this->tag,
             until: $this->until,
             setFields: $setFields
@@ -99,6 +121,7 @@ class BulkReplayIn implements \JsonSerializable
             eventTypes: $this->eventTypes,
             since: $this->since,
             status: $this->status,
+            statusCodeClass: $this->statusCodeClass,
             tag: $tag,
             until: $this->until,
             setFields: $setFields
@@ -115,6 +138,7 @@ class BulkReplayIn implements \JsonSerializable
             eventTypes: $this->eventTypes,
             since: $this->since,
             status: $this->status,
+            statusCodeClass: $this->statusCodeClass,
             tag: $this->tag,
             until: $until,
             setFields: $setFields
@@ -134,6 +158,9 @@ class BulkReplayIn implements \JsonSerializable
         }
         if (isset($this->setFields['status'])) {
             $data['status'] = $this->status;
+        }
+        if (isset($this->setFields['statusCodeClass'])) {
+            $data['statusCodeClass'] = $this->statusCodeClass;
         }
         if (isset($this->setFields['tag'])) {
             $data['tag'] = $this->tag;
@@ -155,6 +182,7 @@ class BulkReplayIn implements \JsonSerializable
             eventTypes: \Svix\Utils::getValFromJson($data, 'eventTypes', false, 'BulkReplayIn'),
             since: \Svix\Utils::deserializeDt($data, 'since', true, 'BulkReplayIn'),
             status: \Svix\Utils::deserializeObject($data, 'status', false, 'BulkReplayIn', [MessageStatus::class, 'fromMixed']),
+            statusCodeClass: \Svix\Utils::deserializeObject($data, 'statusCodeClass', false, 'BulkReplayIn', [StatusCodeClass::class, 'fromMixed']),
             tag: \Svix\Utils::deserializeString($data, 'tag', false, 'BulkReplayIn'),
             until: \Svix\Utils::deserializeDt($data, 'until', false, 'BulkReplayIn')
         );

@@ -10,6 +10,8 @@ pub struct ApplicationListOptions {
     /// Exclude applications that have only disabled endpoints. Default is false.
     #[arg(long)]
     pub exclude_apps_with_disabled_endpoints: Option<bool>,
+    #[arg(long)]
+    pub exclude_apps_with_svix_play_endpoints: Option<bool>,
     /// Limit the number of returned items
     #[arg(long)]
     pub limit: Option<i32>,
@@ -26,6 +28,7 @@ impl From<ApplicationListOptions> for svix::api::ApplicationListOptions {
         let ApplicationListOptions {
             exclude_apps_with_no_endpoints,
             exclude_apps_with_disabled_endpoints,
+            exclude_apps_with_svix_play_endpoints,
             limit,
             iterator,
             order,
@@ -33,6 +36,7 @@ impl From<ApplicationListOptions> for svix::api::ApplicationListOptions {
         Self {
             exclude_apps_with_no_endpoints,
             exclude_apps_with_disabled_endpoints,
+            exclude_apps_with_svix_play_endpoints,
             limit,
             iterator,
             order,

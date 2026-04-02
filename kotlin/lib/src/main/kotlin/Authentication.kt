@@ -7,6 +7,7 @@ import com.svix.kotlin.models.AppPortalAccessOut
 import com.svix.kotlin.models.ApplicationTokenExpireIn
 import com.svix.kotlin.models.RotatePollerTokenIn
 import com.svix.kotlin.models.StreamPortalAccessIn
+import com.svix.kotlin.models.StreamTokenExpireIn
 import okhttp3.Headers
 
 data class AuthenticationAppPortalAccessOptions(val idempotencyKey: String? = null)
@@ -15,7 +16,11 @@ data class AuthenticationExpireAllOptions(val idempotencyKey: String? = null)
 
 data class AuthenticationLogoutOptions(val idempotencyKey: String? = null)
 
+data class AuthenticationStreamLogoutOptions(val idempotencyKey: String? = null)
+
 data class AuthenticationStreamPortalAccessOptions(val idempotencyKey: String? = null)
+
+data class AuthenticationStreamExpireAllOptions(val idempotencyKey: String? = null)
 
 data class AuthenticationRotateStreamPollerTokenOptions(val idempotencyKey: String? = null)
 
@@ -88,6 +93,20 @@ class Authentication(private val client: SvixHttpClient) {
     }
 
     /**
+     * Logout a stream token.
+     *
+     * Trying to log out other tokens will fail.
+     */
+    suspend fun streamLogout(
+        options: AuthenticationStreamLogoutOptions = AuthenticationStreamLogoutOptions()
+    ) {
+        val url = client.newUrlBuilder().encodedPath("/api/v1/auth/stream-logout")
+        val headers = Headers.Builder()
+        options.idempotencyKey?.let { headers.add("idempotency-key", it) }
+        client.executeRequest<Any, Boolean>("POST", url.build(), headers = headers.build())
+    }
+
+    /**
      * Use this function to get magic links (and authentication codes) for connecting your users to
      * the Stream Consumer Portal.
      */
@@ -105,6 +124,24 @@ class Authentication(private val client: SvixHttpClient) {
             url.build(),
             headers = headers.build(),
             reqBody = streamPortalAccessIn,
+        )
+    }
+
+    /** Expire all of the tokens associated with a specific stream. */
+    suspend fun streamExpireAll(
+        streamId: String,
+        streamTokenExpireIn: StreamTokenExpireIn,
+        options: AuthenticationStreamExpireAllOptions = AuthenticationStreamExpireAllOptions(),
+    ) {
+        val url = client.newUrlBuilder().encodedPath("/api/v1/auth/stream/$streamId/expire-all")
+        val headers = Headers.Builder()
+        options.idempotencyKey?.let { headers.add("idempotency-key", it) }
+
+        client.executeRequest<StreamTokenExpireIn, Boolean>(
+            "POST",
+            url.build(),
+            headers = headers.build(),
+            reqBody = streamTokenExpireIn,
         )
     }
 

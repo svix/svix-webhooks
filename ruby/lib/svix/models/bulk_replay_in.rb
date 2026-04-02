@@ -8,10 +8,11 @@ module Svix
     attr_accessor :event_types
     attr_accessor :since
     attr_accessor :status
+    attr_accessor :status_code_class
     attr_accessor :tag
     attr_accessor :until
 
-    ALL_FIELD ||= ["channel", "event_types", "since", "status", "tag", "until"].freeze
+    ALL_FIELD ||= ["channel", "event_types", "since", "status", "status_code_class", "tag", "until"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -36,6 +37,10 @@ module Svix
       attrs["event_types"] = attributes["eventTypes"]
       attrs["since"] = DateTime.rfc3339(attributes["since"]).to_time
       attrs["status"] = Svix::MessageStatus.deserialize(attributes["status"]) if attributes["status"]
+      if attributes["statusCodeClass"]
+        attrs["status_code_class"] = Svix::StatusCodeClass.deserialize(attributes["statusCodeClass"])
+      end
+
       attrs["tag"] = attributes["tag"]
       attrs["until"] = DateTime.rfc3339(attributes["until"]).to_time if attributes["until"]
       new(attrs)
@@ -47,6 +52,7 @@ module Svix
       out["eventTypes"] = Svix::serialize_primitive(@event_types) if @event_types
       out["since"] = Svix::serialize_primitive(@since) if @since
       out["status"] = Svix::serialize_schema_ref(@status) if @status
+      out["statusCodeClass"] = Svix::serialize_schema_ref(@status_code_class) if @status_code_class
       out["tag"] = Svix::serialize_primitive(@tag) if @tag
       out["until"] = Svix::serialize_primitive(@until) if @until
       out

@@ -7,6 +7,7 @@ import { type DocusignConfig, DocusignConfigSerializer } from "./docusignConfig"
 import { type EasypostConfig, EasypostConfigSerializer } from "./easypostConfig";
 import { type GithubConfig, GithubConfigSerializer } from "./githubConfig";
 import { type HubspotConfig, HubspotConfigSerializer } from "./hubspotConfig";
+import { type MetaConfig, MetaConfigSerializer } from "./metaConfig";
 import { type OrumIoConfig, OrumIoConfigSerializer } from "./orumIoConfig";
 import { type PandaDocConfig, PandaDocConfigSerializer } from "./pandaDocConfig";
 import { type PortIoConfig, PortIoConfigSerializer } from "./portIoConfig";
@@ -98,6 +99,11 @@ interface IngestSourceInIncidentIo {
 interface IngestSourceInLithic {
   type: "lithic";
   config: SvixConfig;
+}
+
+interface IngestSourceInMeta {
+  type: "meta";
+  config: MetaConfig;
 }
 
 interface IngestSourceInNash {
@@ -236,6 +242,7 @@ export type IngestSourceIn = _IngestSourceInFields &
     | IngestSourceInHubspot
     | IngestSourceInIncidentIo
     | IngestSourceInLithic
+    | IngestSourceInMeta
     | IngestSourceInNash
     | IngestSourceInOrumIo
     | IngestSourceInPandaDoc
@@ -296,6 +303,8 @@ export const IngestSourceInSerializer = {
           return SvixConfigSerializer._fromJsonObject(object["config"]);
         case "lithic":
           return SvixConfigSerializer._fromJsonObject(object["config"]);
+        case "meta":
+          return MetaConfigSerializer._fromJsonObject(object["config"]);
         case "nash":
           return SvixConfigSerializer._fromJsonObject(object["config"]);
         case "orum-io":
@@ -403,6 +412,9 @@ export const IngestSourceInSerializer = {
         break;
       case "lithic":
         config = SvixConfigSerializer._toJsonObject(self.config);
+        break;
+      case "meta":
+        config = MetaConfigSerializer._toJsonObject(self.config);
         break;
       case "nash":
         config = SvixConfigSerializer._toJsonObject(self.config);

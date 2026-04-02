@@ -37,6 +37,7 @@ pub use self::{
     authentication::{
         Authentication, AuthenticationAppPortalAccessOptions, AuthenticationExpireAllOptions,
         AuthenticationLogoutOptions, AuthenticationRotateStreamPollerTokenOptions,
+        AuthenticationStreamExpireAllOptions, AuthenticationStreamLogoutOptions,
         AuthenticationStreamPortalAccessOptions,
     },
     background_task::{BackgroundTask, BackgroundTaskListOptions},

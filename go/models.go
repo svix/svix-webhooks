@@ -152,6 +152,8 @@ type (
 	MessagePrecheckOut                        = models.MessagePrecheckOut
 	MessageStatus                             = models.MessageStatus
 	MessageStatusText                         = models.MessageStatusText
+	MetaConfig                                = models.MetaConfig
+	MetaConfigOut                             = models.MetaConfigOut
 	OperationalWebhookEndpointHeadersIn       = models.OperationalWebhookEndpointHeadersIn
 	OperationalWebhookEndpointHeadersOut      = models.OperationalWebhookEndpointHeadersOut
 	OperationalWebhookEndpointIn              = models.OperationalWebhookEndpointIn
@@ -204,6 +206,7 @@ type (
 	StreamSinkIn                              = models.StreamSinkIn
 	StreamSinkOut                             = models.StreamSinkOut
 	StreamSinkPatch                           = models.StreamSinkPatch
+	StreamTokenExpireIn                       = models.StreamTokenExpireIn
 	StripeConfig                              = models.StripeConfig
 	StripeConfigOut                           = models.StripeConfigOut
 	SvixConfig                                = models.SvixConfig

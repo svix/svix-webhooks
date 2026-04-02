@@ -18,6 +18,7 @@ class ApplicationListOptions(BaseOptions):
     """Exclude applications that have no endpoints. Default is false."""
     exclude_apps_with_disabled_endpoints: t.Optional[bool] = None
     """Exclude applications that have only disabled endpoints. Default is false."""
+    exclude_apps_with_svix_play_endpoints: t.Optional[bool] = None
     limit: t.Optional[int] = None
     """Limit the number of returned items"""
     iterator: t.Optional[str] = None
@@ -30,6 +31,7 @@ class ApplicationListOptions(BaseOptions):
             {
                 "exclude_apps_with_no_endpoints": self.exclude_apps_with_no_endpoints,
                 "exclude_apps_with_disabled_endpoints": self.exclude_apps_with_disabled_endpoints,
+                "exclude_apps_with_svix_play_endpoints": self.exclude_apps_with_svix_play_endpoints,
                 "limit": self.limit,
                 "iterator": self.iterator,
                 "order": self.order,

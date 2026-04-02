@@ -18,6 +18,9 @@ namespace Svix.Models
         [JsonProperty("status")]
         public MessageStatus? Status { get; set; } = null;
 
+        [JsonProperty("statusCodeClass")]
+        public StatusCodeClass? StatusCodeClass { get; set; } = null;
+
         [JsonProperty("tag")]
         public string? Tag { get; set; } = null;
 
@@ -33,6 +36,7 @@ namespace Svix.Models
             sb.Append("  EventTypes: ").Append(EventTypes).Append('\n');
             sb.Append("  Since: ").Append(Since).Append('\n');
             sb.Append("  Status: ").Append(Status).Append('\n');
+            sb.Append("  StatusCodeClass: ").Append(StatusCodeClass).Append('\n');
             sb.Append("  Tag: ").Append(Tag).Append('\n');
             sb.Append("  Until: ").Append(Until).Append('\n');
             sb.Append("}\n");
