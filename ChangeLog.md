@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 1.90.0
+* Server: Add `throttleRate` to endpoint and application
+  * This replaces `rateLimit` because the name caused some confusion
+    (but is kept as a deprecated field for backwards compatibility)
+* Libs/All: Update to latest Svix Cloud spec
+
 ## Version 1.89.0
 * Server: Add a prune helper command to delete old data
 * Server: Invalidate CMA cache when creating/updating endpoints or apps
