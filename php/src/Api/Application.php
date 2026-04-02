@@ -26,6 +26,7 @@ class Application
         if (null !== $options) {
             $request->setQueryParam('exclude_apps_with_no_endpoints', $options->excludeAppsWithNoEndpoints);
             $request->setQueryParam('exclude_apps_with_disabled_endpoints', $options->excludeAppsWithDisabledEndpoints);
+            $request->setQueryParam('exclude_apps_with_svix_play_endpoints', $options->excludeAppsWithSvixPlayEndpoints);
             $request->setQueryParam('limit', $options->limit);
             $request->setQueryParam('iterator', $options->iterator);
             $request->setQueryParam('order', $options->order);

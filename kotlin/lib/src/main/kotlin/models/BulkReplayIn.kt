@@ -10,6 +10,7 @@ data class BulkReplayIn(
     val eventTypes: Set<String>? = null,
     val since: Instant,
     val status: MessageStatus? = null,
+    val statusCodeClass: StatusCodeClass? = null,
     val tag: String? = null,
     val until: Instant? = null,
 )

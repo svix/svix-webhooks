@@ -9,6 +9,7 @@ namespace Svix
     {
         public bool? ExcludeAppsWithNoEndpoints { get; set; }
         public bool? ExcludeAppsWithDisabledEndpoints { get; set; }
+        public bool? ExcludeAppsWithSvixPlayEndpoints { get; set; }
         public ulong? Limit { get; set; }
         public string? Iterator { get; set; }
         public Ordering? Order { get; set; }
@@ -20,6 +21,7 @@ namespace Svix
                 {
                     { "exclude_apps_with_no_endpoints", ExcludeAppsWithNoEndpoints },
                     { "exclude_apps_with_disabled_endpoints", ExcludeAppsWithDisabledEndpoints },
+                    { "exclude_apps_with_svix_play_endpoints", ExcludeAppsWithSvixPlayEndpoints },
                     { "limit", Limit },
                     { "iterator", Iterator },
                     { "order", Order },

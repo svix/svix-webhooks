@@ -10,8 +10,8 @@ data class StatisticsAggregateAppStatsOptions(val idempotencyKey: String? = null
 
 class Statistics(private val client: SvixHttpClient) {
     /**
-     * Creates a background task to calculate the message destinations for all applications in the
-     * environment.
+     * Creates a background task to calculate the number of message attempts (`messageDestinations`)
+     * made for all applications in the environment.
      *
      * Note that this endpoint is asynchronous. You will need to poll the `Get Background Task`
      * endpoint to retrieve the results of the operation.

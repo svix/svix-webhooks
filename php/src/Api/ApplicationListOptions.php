@@ -12,6 +12,7 @@ class ApplicationListOptions
     public function __construct(
         public readonly ?bool $excludeAppsWithNoEndpoints = null,
         public readonly ?bool $excludeAppsWithDisabledEndpoints = null,
+        public readonly ?bool $excludeAppsWithSvixPlayEndpoints = null,
         public readonly ?int $limit = null,
         public readonly ?string $iterator = null,
         public readonly ?Ordering $order = null,

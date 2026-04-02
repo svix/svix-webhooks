@@ -1,11 +1,13 @@
 // this file is @generated
 import { type MessageStatus, MessageStatusSerializer } from "./messageStatus";
+import { type StatusCodeClass, StatusCodeClassSerializer } from "./statusCodeClass";
 
 export interface BulkReplayIn {
   channel?: string | null;
   eventTypes?: string[] | null;
   since: Date;
   status?: MessageStatus | null;
+  statusCodeClass?: StatusCodeClass | null;
   tag?: string | null;
   until?: Date | null;
 }
@@ -20,6 +22,10 @@ export const BulkReplayInSerializer = {
         object["status"] != null
           ? MessageStatusSerializer._fromJsonObject(object["status"])
           : undefined,
+      statusCodeClass:
+        object["statusCodeClass"] != null
+          ? StatusCodeClassSerializer._fromJsonObject(object["statusCodeClass"])
+          : undefined,
       tag: object["tag"],
       until: object["until"] ? new Date(object["until"]) : null,
     };
@@ -33,6 +39,10 @@ export const BulkReplayInSerializer = {
       status:
         self.status != null
           ? MessageStatusSerializer._toJsonObject(self.status)
+          : undefined,
+      statusCodeClass:
+        self.statusCodeClass != null
+          ? StatusCodeClassSerializer._toJsonObject(self.statusCodeClass)
           : undefined,
       tag: self.tag,
       until: self.until,

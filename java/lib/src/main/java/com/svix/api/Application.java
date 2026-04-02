@@ -43,6 +43,11 @@ public class Application {
                     "exclude_apps_with_disabled_endpoints",
                     Utils.serializeQueryParam(options.excludeAppsWithDisabledEndpoints));
         }
+        if (options.excludeAppsWithSvixPlayEndpoints != null) {
+            url.addQueryParameter(
+                    "exclude_apps_with_svix_play_endpoints",
+                    Utils.serializeQueryParam(options.excludeAppsWithSvixPlayEndpoints));
+        }
         if (options.limit != null) {
             url.addQueryParameter("limit", Utils.serializeQueryParam(options.limit));
         }

@@ -13,6 +13,8 @@ public class ApplicationListOptions {
     /** Exclude applications that have only disabled endpoints. Default is false. */
     Boolean excludeAppsWithDisabledEndpoints;
 
+    Boolean excludeAppsWithSvixPlayEndpoints;
+
     /** Limit the number of returned items */
     Long limit;
 

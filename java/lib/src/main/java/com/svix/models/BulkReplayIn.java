@@ -24,6 +24,7 @@ public class BulkReplayIn {
     @JsonProperty private Set<String> eventTypes;
     @JsonProperty private OffsetDateTime since;
     @JsonProperty private MessageStatus status;
+    @JsonProperty private StatusCodeClass statusCodeClass;
     @JsonProperty private String tag;
     @JsonProperty private OffsetDateTime until;
 
@@ -112,6 +113,25 @@ public class BulkReplayIn {
 
     public void setStatus(MessageStatus status) {
         this.status = status;
+    }
+
+    public BulkReplayIn statusCodeClass(StatusCodeClass statusCodeClass) {
+        this.statusCodeClass = statusCodeClass;
+        return this;
+    }
+
+    /**
+     * Get statusCodeClass
+     *
+     * @return statusCodeClass
+     */
+    @javax.annotation.Nullable
+    public StatusCodeClass getStatusCodeClass() {
+        return statusCodeClass;
+    }
+
+    public void setStatusCodeClass(StatusCodeClass statusCodeClass) {
+        this.statusCodeClass = statusCodeClass;
     }
 
     public BulkReplayIn tag(String tag) {

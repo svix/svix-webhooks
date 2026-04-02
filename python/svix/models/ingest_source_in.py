@@ -13,6 +13,7 @@ from .docusign_config import DocusignConfig
 from .easypost_config import EasypostConfig
 from .github_config import GithubConfig
 from .hubspot_config import HubspotConfig
+from .meta_config import MetaConfig
 from .orum_io_config import OrumIoConfig
 from .panda_doc_config import PandaDocConfig
 from .port_io_config import PortIoConfig
@@ -51,6 +52,7 @@ class IngestSourceIn(BaseModel):
         t.Literal["hubspot"],
         t.Literal["incident-io"],
         t.Literal["lithic"],
+        t.Literal["meta"],
         t.Literal["nash"],
         t.Literal["orum-io"],
         t.Literal["panda-doc"],
@@ -86,6 +88,7 @@ class IngestSourceIn(BaseModel):
         EasypostConfig,
         GithubConfig,
         HubspotConfig,
+        MetaConfig,
         OrumIoConfig,
         PandaDocConfig,
         PortIoConfig,
@@ -137,6 +140,8 @@ class IngestSourceIn(BaseModel):
             output.config = SvixConfig.model_validate(data.get("config", {}))
         elif output.type == "lithic":
             output.config = SvixConfig.model_validate(data.get("config", {}))
+        elif output.type == "meta":
+            output.config = MetaConfig.model_validate(data.get("config", {}))
         elif output.type == "nash":
             output.config = SvixConfig.model_validate(data.get("config", {}))
         elif output.type == "orum-io":

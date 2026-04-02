@@ -10,6 +10,8 @@ pub struct ApplicationListOptions {
     /// false.
     pub exclude_apps_with_disabled_endpoints: Option<bool>,
 
+    pub exclude_apps_with_svix_play_endpoints: Option<bool>,
+
     /// Limit the number of returned items
     pub limit: Option<i32>,
 
@@ -42,6 +44,7 @@ impl<'a> Application<'a> {
         let ApplicationListOptions {
             exclude_apps_with_no_endpoints,
             exclude_apps_with_disabled_endpoints,
+            exclude_apps_with_svix_play_endpoints,
             limit,
             iterator,
             order,
@@ -55,6 +58,10 @@ impl<'a> Application<'a> {
             .with_optional_query_param(
                 "exclude_apps_with_disabled_endpoints",
                 exclude_apps_with_disabled_endpoints,
+            )
+            .with_optional_query_param(
+                "exclude_apps_with_svix_play_endpoints",
+                exclude_apps_with_svix_play_endpoints,
             )
             .with_optional_query_param("limit", limit)
             .with_optional_query_param("iterator", iterator)
