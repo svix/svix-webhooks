@@ -10,8 +10,12 @@ pub struct RateLimitTokenBucketConfig {
     pub refill_amount: u64,
 
     /// Interval in milliseconds between refills (minimum 1 millisecond)
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub refill_interval_ms: Option<u64>,
+    #[serde(
+        rename = "refill_interval_ms",
+        skip_serializing_if = "Option::is_none",
+        with = "crate::duration_ms_serde::optional"
+    )]
+    pub refill_interval: Option<std::time::Duration>,
 }
 
 impl RateLimitTokenBucketConfig {
@@ -19,12 +23,12 @@ impl RateLimitTokenBucketConfig {
         Self {
             capacity,
             refill_amount,
-            refill_interval_ms: None,
+            refill_interval: None,
         }
     }
 
-    pub fn with_refill_interval_ms(mut self, value: impl Into<Option<u64>>) -> Self {
-        self.refill_interval_ms = value.into();
+    pub fn with_refill_interval(mut self, value: impl Into<Option<std::time::Duration>>) -> Self {
+        self.refill_interval = value.into();
         self
     }
 }

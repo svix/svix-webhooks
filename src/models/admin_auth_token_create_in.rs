@@ -8,8 +8,12 @@ pub struct AdminAuthTokenCreateIn {
     pub role: String,
 
     /// Milliseconds from now until the token expires.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub expiry_ms: Option<u64>,
+    #[serde(
+        rename = "expiry_ms",
+        skip_serializing_if = "Option::is_none",
+        with = "crate::duration_ms_serde::optional"
+    )]
+    pub expiry: Option<std::time::Duration>,
 
     /// Whether the token is enabled. Defaults to `true`.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -21,13 +25,13 @@ impl AdminAuthTokenCreateIn {
         Self {
             name,
             role,
-            expiry_ms: None,
+            expiry: None,
             enabled: None,
         }
     }
 
-    pub fn with_expiry_ms(mut self, value: impl Into<Option<u64>>) -> Self {
-        self.expiry_ms = value.into();
+    pub fn with_expiry(mut self, value: impl Into<Option<std::time::Duration>>) -> Self {
+        self.expiry = value.into();
         self
     }
 

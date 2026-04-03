@@ -26,8 +26,8 @@ impl<'a> MsgsQueue<'a> {
             topic,
             consumer_group,
             batch_size: msg_queue_receive_in.batch_size,
-            lease_duration_ms: msg_queue_receive_in.lease_duration_ms,
-            batch_wait_ms: msg_queue_receive_in.batch_wait_ms,
+            lease_duration: msg_queue_receive_in.lease_duration,
+            batch_wait: msg_queue_receive_in.batch_wait,
         };
 
         crate::request::Request::new(http::Method::POST, "/api/v1.msgs.queue.receive")
@@ -54,6 +54,30 @@ impl<'a> MsgsQueue<'a> {
 
         crate::request::Request::new(http::Method::POST, "/api/v1.msgs.queue.ack")
             .with_body(msg_queue_ack_in)
+            .execute(self.cfg)
+            .await
+    }
+
+    /// Extends the lease on in-flight messages.
+    ///
+    /// Consumers that need more processing time can call this before the lease expires to prevent the
+    /// message from being re-delivered to another consumer.
+    pub async fn extend_lease(
+        &self,
+        topic: String,
+        consumer_group: String,
+        msg_queue_extend_lease_in: MsgQueueExtendLeaseIn,
+    ) -> Result<MsgQueueExtendLeaseOut> {
+        let msg_queue_extend_lease_in = MsgQueueExtendLeaseIn_ {
+            namespace: msg_queue_extend_lease_in.namespace,
+            topic,
+            consumer_group,
+            msg_ids: msg_queue_extend_lease_in.msg_ids,
+            lease_duration: msg_queue_extend_lease_in.lease_duration,
+        };
+
+        crate::request::Request::new(http::Method::POST, "/api/v1.msgs.queue.extend-lease")
+            .with_body(msg_queue_extend_lease_in)
             .execute(self.cfg)
             .await
     }

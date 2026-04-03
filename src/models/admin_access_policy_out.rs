@@ -1,29 +1,35 @@
 // this file is @generated
 use serde::{Deserialize, Serialize};
 
+use super::access_rule::AccessRule;
+
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct AuthTokenCreateOut {
+pub struct AdminAccessPolicyOut {
     pub id: String,
+
+    pub description: String,
+
+    pub rules: Vec<AccessRule>,
 
     pub created: jiff::Timestamp,
 
     pub updated: jiff::Timestamp,
-
-    pub token: String,
 }
 
-impl AuthTokenCreateOut {
+impl AdminAccessPolicyOut {
     pub fn new(
         id: String,
+        description: String,
+        rules: Vec<AccessRule>,
         created: jiff::Timestamp,
         updated: jiff::Timestamp,
-        token: String,
     ) -> Self {
         Self {
             id,
+            description,
+            rules,
             created,
             updated,
-            token,
         }
     }
 }

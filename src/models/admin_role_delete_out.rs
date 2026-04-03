@@ -2,11 +2,11 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct AuthTokenDeleteOut {
+pub struct AdminRoleDeleteOut {
     pub success: bool,
 }
 
-impl AuthTokenDeleteOut {
+impl AdminRoleDeleteOut {
     pub fn new(success: bool) -> Self {
         Self { success }
     }

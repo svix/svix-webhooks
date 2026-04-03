@@ -11,15 +11,16 @@ pub struct IdempotencyCompleteIn {
     pub response: Vec<u8>,
 
     /// TTL in milliseconds for the cached response
-    pub ttl_ms: u64,
+    #[serde(rename = "ttl_ms", with = "crate::duration_ms_serde")]
+    pub ttl: std::time::Duration,
 }
 
 impl IdempotencyCompleteIn {
-    pub fn new(response: Vec<u8>, ttl_ms: u64) -> Self {
+    pub fn new(response: Vec<u8>, ttl: std::time::Duration) -> Self {
         Self {
             namespace: None,
             response,
-            ttl_ms,
+            ttl,
         }
     }
 
@@ -41,5 +42,6 @@ pub(crate) struct IdempotencyCompleteIn_ {
     pub response: Vec<u8>,
 
     /// TTL in milliseconds for the cached response
-    pub ttl_ms: u64,
+    #[serde(rename = "ttl_ms", with = "crate::duration_ms_serde")]
+    pub ttl: std::time::Duration,
 }

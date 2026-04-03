@@ -6,20 +6,21 @@ pub struct AdminAuthTokenExpireIn {
     pub id: String,
 
     /// Milliseconds from now until the token expires. `None` means expire immediately.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub expiry_ms: Option<u64>,
+    #[serde(
+        rename = "expiry_ms",
+        skip_serializing_if = "Option::is_none",
+        with = "crate::duration_ms_serde::optional"
+    )]
+    pub expiry: Option<std::time::Duration>,
 }
 
 impl AdminAuthTokenExpireIn {
     pub fn new(id: String) -> Self {
-        Self {
-            id,
-            expiry_ms: None,
-        }
+        Self { id, expiry: None }
     }
 
-    pub fn with_expiry_ms(mut self, value: impl Into<Option<u64>>) -> Self {
-        self.expiry_ms = value.into();
+    pub fn with_expiry(mut self, value: impl Into<Option<std::time::Duration>>) -> Self {
+        self.expiry = value.into();
         self
     }
 }

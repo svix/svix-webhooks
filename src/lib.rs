@@ -1,6 +1,7 @@
 pub mod api;
 mod client;
 mod connector;
+mod duration_ms_serde;
 mod error;
 pub mod models;
 mod request;

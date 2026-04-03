@@ -8,8 +8,12 @@ pub struct AdminAuthTokenUpdateIn {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
 
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub expiry_ms: Option<u64>,
+    #[serde(
+        rename = "expiry_ms",
+        skip_serializing_if = "Option::is_none",
+        with = "crate::duration_ms_serde::optional"
+    )]
+    pub expiry: Option<std::time::Duration>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub enabled: Option<bool>,
@@ -20,7 +24,7 @@ impl AdminAuthTokenUpdateIn {
         Self {
             id,
             name: None,
-            expiry_ms: None,
+            expiry: None,
             enabled: None,
         }
     }
@@ -30,8 +34,8 @@ impl AdminAuthTokenUpdateIn {
         self
     }
 
-    pub fn with_expiry_ms(mut self, value: impl Into<Option<u64>>) -> Self {
-        self.expiry_ms = value.into();
+    pub fn with_expiry(mut self, value: impl Into<Option<std::time::Duration>>) -> Self {
+        self.expiry = value.into();
         self
     }
 

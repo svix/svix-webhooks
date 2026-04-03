@@ -7,20 +7,24 @@ pub struct RateLimitGetRemainingOut {
     pub remaining: u64,
 
     /// Milliseconds until at least one token is available (only present when remaining is 0)
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub retry_after_ms: Option<u64>,
+    #[serde(
+        rename = "retry_after_ms",
+        skip_serializing_if = "Option::is_none",
+        with = "crate::duration_ms_serde::optional"
+    )]
+    pub retry_after: Option<std::time::Duration>,
 }
 
 impl RateLimitGetRemainingOut {
     pub fn new(remaining: u64) -> Self {
         Self {
             remaining,
-            retry_after_ms: None,
+            retry_after: None,
         }
     }
 
-    pub fn with_retry_after_ms(mut self, value: impl Into<Option<u64>>) -> Self {
-        self.retry_after_ms = value.into();
+    pub fn with_retry_after(mut self, value: impl Into<Option<std::time::Duration>>) -> Self {
+        self.retry_after = value.into();
         self
     }
 }

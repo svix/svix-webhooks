@@ -131,6 +131,8 @@ impl CoyoteClient {
 
 #[cfg(test)]
 mod tests {
+    use std::time::Duration;
+
     use super::CoyoteClient;
     use crate::models::CacheSetIn;
 
@@ -142,7 +144,7 @@ mod tests {
         let cache_api = client.cache();
         let fut = cache_api.set(
             "key".to_owned(),
-            CacheSetIn::new("value".as_bytes().to_vec(), 0),
+            CacheSetIn::new("value".as_bytes().to_vec(), Duration::ZERO),
         );
         require_send_sync(fut);
     }

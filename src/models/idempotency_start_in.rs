@@ -7,14 +7,15 @@ pub struct IdempotencyStartIn {
     pub namespace: Option<String>,
 
     /// TTL in milliseconds for the lock/response
-    pub ttl_ms: u64,
+    #[serde(rename = "ttl_ms", with = "crate::duration_ms_serde")]
+    pub ttl: std::time::Duration,
 }
 
 impl IdempotencyStartIn {
-    pub fn new(ttl_ms: u64) -> Self {
+    pub fn new(ttl: std::time::Duration) -> Self {
         Self {
             namespace: None,
-            ttl_ms,
+            ttl,
         }
     }
 
@@ -32,5 +33,6 @@ pub(crate) struct IdempotencyStartIn_ {
     pub key: String,
 
     /// TTL in milliseconds for the lock/response
-    pub ttl_ms: u64,
+    #[serde(rename = "ttl_ms", with = "crate::duration_ms_serde")]
+    pub ttl: std::time::Duration,
 }

@@ -1,11 +1,11 @@
 // this file is @generated
 use serde::{Deserialize, Serialize};
 
-use super::auth_token_out::AuthTokenOut;
+use super::admin_role_out::AdminRoleOut;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct ListResponseAuthTokenOut {
-    pub data: Vec<AuthTokenOut>,
+pub struct ListResponseAdminRoleOut {
+    pub data: Vec<AdminRoleOut>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub iterator: Option<String>,
@@ -16,8 +16,8 @@ pub struct ListResponseAuthTokenOut {
     pub done: bool,
 }
 
-impl ListResponseAuthTokenOut {
-    pub fn new(data: Vec<AuthTokenOut>, done: bool) -> Self {
+impl ListResponseAdminRoleOut {
+    pub fn new(data: Vec<AdminRoleOut>, done: bool) -> Self {
         Self {
             data,
             iterator: None,

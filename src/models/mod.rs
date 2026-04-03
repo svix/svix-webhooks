@@ -1,6 +1,15 @@
 // this file is @generated
 #![allow(clippy::too_many_arguments)]
 
+mod access_rule;
+mod access_rule_effect;
+mod admin_access_policy_delete_in;
+mod admin_access_policy_delete_out;
+mod admin_access_policy_get_in;
+mod admin_access_policy_list_in;
+mod admin_access_policy_out;
+mod admin_access_policy_upsert_in;
+mod admin_access_policy_upsert_out;
 mod admin_auth_token_create_in;
 mod admin_auth_token_create_out;
 mod admin_auth_token_delete_in;
@@ -15,24 +24,13 @@ mod admin_auth_token_update_in;
 mod admin_auth_token_update_out;
 mod admin_auth_token_whoami_in;
 mod admin_auth_token_whoami_out;
-mod auth_token_create_in;
-mod auth_token_create_namespace_in;
-mod auth_token_create_namespace_out;
-mod auth_token_create_out;
-mod auth_token_delete_in;
-mod auth_token_delete_out;
-mod auth_token_expire_in;
-mod auth_token_expire_out;
-mod auth_token_get_namespace_in;
-mod auth_token_get_namespace_out;
-mod auth_token_list_in;
-mod auth_token_out;
-mod auth_token_rotate_in;
-mod auth_token_rotate_out;
-mod auth_token_update_in;
-mod auth_token_update_out;
-mod auth_token_verify_in;
-mod auth_token_verify_out;
+mod admin_role_delete_in;
+mod admin_role_delete_out;
+mod admin_role_get_in;
+mod admin_role_list_in;
+mod admin_role_out;
+mod admin_role_upsert_in;
+mod admin_role_upsert_out;
 mod cache_create_namespace_in;
 mod cache_create_namespace_out;
 mod cache_delete_in;
@@ -73,8 +71,9 @@ mod kv_get_namespace_out;
 mod kv_get_out;
 mod kv_set_in;
 mod kv_set_out;
+mod list_response_admin_access_policy_out;
 mod list_response_admin_auth_token_out;
-mod list_response_auth_token_out;
+mod list_response_admin_role_out;
 mod msg_in;
 mod msg_namespace_create_in;
 mod msg_namespace_create_out;
@@ -87,6 +86,8 @@ mod msg_queue_ack_in;
 mod msg_queue_ack_out;
 mod msg_queue_configure_in;
 mod msg_queue_configure_out;
+mod msg_queue_extend_lease_in;
+mod msg_queue_extend_lease_out;
 mod msg_queue_nack_in;
 mod msg_queue_nack_out;
 mod msg_queue_receive_in;
@@ -122,6 +123,14 @@ mod server_state;
 mod stream_msg_out;
 
 pub use self::{
+    access_rule::AccessRule, access_rule_effect::AccessRuleEffect,
+    admin_access_policy_delete_in::AdminAccessPolicyDeleteIn,
+    admin_access_policy_delete_out::AdminAccessPolicyDeleteOut,
+    admin_access_policy_get_in::AdminAccessPolicyGetIn,
+    admin_access_policy_list_in::AdminAccessPolicyListIn,
+    admin_access_policy_out::AdminAccessPolicyOut,
+    admin_access_policy_upsert_in::AdminAccessPolicyUpsertIn,
+    admin_access_policy_upsert_out::AdminAccessPolicyUpsertOut,
     admin_auth_token_create_in::AdminAuthTokenCreateIn,
     admin_auth_token_create_out::AdminAuthTokenCreateOut,
     admin_auth_token_delete_in::AdminAuthTokenDeleteIn,
@@ -134,18 +143,11 @@ pub use self::{
     admin_auth_token_update_in::AdminAuthTokenUpdateIn,
     admin_auth_token_update_out::AdminAuthTokenUpdateOut,
     admin_auth_token_whoami_in::AdminAuthTokenWhoamiIn,
-    admin_auth_token_whoami_out::AdminAuthTokenWhoamiOut, auth_token_create_in::AuthTokenCreateIn,
-    auth_token_create_namespace_in::AuthTokenCreateNamespaceIn,
-    auth_token_create_namespace_out::AuthTokenCreateNamespaceOut,
-    auth_token_create_out::AuthTokenCreateOut, auth_token_delete_in::AuthTokenDeleteIn,
-    auth_token_delete_out::AuthTokenDeleteOut, auth_token_expire_in::AuthTokenExpireIn,
-    auth_token_expire_out::AuthTokenExpireOut,
-    auth_token_get_namespace_in::AuthTokenGetNamespaceIn,
-    auth_token_get_namespace_out::AuthTokenGetNamespaceOut, auth_token_list_in::AuthTokenListIn,
-    auth_token_out::AuthTokenOut, auth_token_rotate_in::AuthTokenRotateIn,
-    auth_token_rotate_out::AuthTokenRotateOut, auth_token_update_in::AuthTokenUpdateIn,
-    auth_token_update_out::AuthTokenUpdateOut, auth_token_verify_in::AuthTokenVerifyIn,
-    auth_token_verify_out::AuthTokenVerifyOut, cache_create_namespace_in::CacheCreateNamespaceIn,
+    admin_auth_token_whoami_out::AdminAuthTokenWhoamiOut, admin_role_delete_in::AdminRoleDeleteIn,
+    admin_role_delete_out::AdminRoleDeleteOut, admin_role_get_in::AdminRoleGetIn,
+    admin_role_list_in::AdminRoleListIn, admin_role_out::AdminRoleOut,
+    admin_role_upsert_in::AdminRoleUpsertIn, admin_role_upsert_out::AdminRoleUpsertOut,
+    cache_create_namespace_in::CacheCreateNamespaceIn,
     cache_create_namespace_out::CacheCreateNamespaceOut, cache_delete_in::CacheDeleteIn,
     cache_delete_out::CacheDeleteOut, cache_get_in::CacheGetIn,
     cache_get_namespace_in::CacheGetNamespaceIn, cache_get_namespace_out::CacheGetNamespaceOut,
@@ -167,14 +169,17 @@ pub use self::{
     kv_delete_in::KvDeleteIn, kv_delete_out::KvDeleteOut, kv_get_in::KvGetIn,
     kv_get_namespace_in::KvGetNamespaceIn, kv_get_namespace_out::KvGetNamespaceOut,
     kv_get_out::KvGetOut, kv_set_in::KvSetIn, kv_set_out::KvSetOut,
+    list_response_admin_access_policy_out::ListResponseAdminAccessPolicyOut,
     list_response_admin_auth_token_out::ListResponseAdminAuthTokenOut,
-    list_response_auth_token_out::ListResponseAuthTokenOut, msg_in::MsgIn,
+    list_response_admin_role_out::ListResponseAdminRoleOut, msg_in::MsgIn,
     msg_namespace_create_in::MsgNamespaceCreateIn, msg_namespace_create_out::MsgNamespaceCreateOut,
     msg_namespace_get_in::MsgNamespaceGetIn, msg_namespace_get_out::MsgNamespaceGetOut,
     msg_publish_in::MsgPublishIn, msg_publish_out::MsgPublishOut,
     msg_publish_out_topic::MsgPublishOutTopic, msg_queue_ack_in::MsgQueueAckIn,
     msg_queue_ack_out::MsgQueueAckOut, msg_queue_configure_in::MsgQueueConfigureIn,
-    msg_queue_configure_out::MsgQueueConfigureOut, msg_queue_nack_in::MsgQueueNackIn,
+    msg_queue_configure_out::MsgQueueConfigureOut,
+    msg_queue_extend_lease_in::MsgQueueExtendLeaseIn,
+    msg_queue_extend_lease_out::MsgQueueExtendLeaseOut, msg_queue_nack_in::MsgQueueNackIn,
     msg_queue_nack_out::MsgQueueNackOut, msg_queue_receive_in::MsgQueueReceiveIn,
     msg_queue_receive_out::MsgQueueReceiveOut, msg_queue_redrive_dlq_in::MsgQueueRedriveDlqIn,
     msg_queue_redrive_dlq_out::MsgQueueRedriveDlqOut, msg_stream_commit_in::MsgStreamCommitIn,
@@ -202,8 +207,8 @@ pub(crate) use self::{
     kv_set_in::KvSetIn_, msg_namespace_create_in::MsgNamespaceCreateIn_,
     msg_namespace_get_in::MsgNamespaceGetIn_, msg_publish_in::MsgPublishIn_,
     msg_queue_ack_in::MsgQueueAckIn_, msg_queue_configure_in::MsgQueueConfigureIn_,
-    msg_queue_nack_in::MsgQueueNackIn_, msg_queue_receive_in::MsgQueueReceiveIn_,
-    msg_queue_redrive_dlq_in::MsgQueueRedriveDlqIn_, msg_stream_commit_in::MsgStreamCommitIn_,
-    msg_stream_receive_in::MsgStreamReceiveIn_, msg_stream_seek_in::MsgStreamSeekIn_,
-    msg_topic_configure_in::MsgTopicConfigureIn_,
+    msg_queue_extend_lease_in::MsgQueueExtendLeaseIn_, msg_queue_nack_in::MsgQueueNackIn_,
+    msg_queue_receive_in::MsgQueueReceiveIn_, msg_queue_redrive_dlq_in::MsgQueueRedriveDlqIn_,
+    msg_stream_commit_in::MsgStreamCommitIn_, msg_stream_receive_in::MsgStreamReceiveIn_,
+    msg_stream_seek_in::MsgStreamSeekIn_, msg_topic_configure_in::MsgTopicConfigureIn_,
 };

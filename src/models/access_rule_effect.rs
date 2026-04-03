@@ -4,15 +4,18 @@ use std::fmt;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Copy, Debug, Serialize, Deserialize)]
-pub enum EvictionPolicy {
-    #[serde(rename = "NoEviction")]
-    NoEviction,
+pub enum AccessRuleEffect {
+    #[serde(rename = "allow")]
+    Allow,
+    #[serde(rename = "deny")]
+    Deny,
 }
 
-impl fmt::Display for EvictionPolicy {
+impl fmt::Display for AccessRuleEffect {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let value = match self {
-            Self::NoEviction => "NoEviction",
+            Self::Allow => "allow",
+            Self::Deny => "deny",
         };
         f.write_str(value)
     }
