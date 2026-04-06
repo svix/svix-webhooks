@@ -108,6 +108,7 @@ mod ping_out;
 mod queue_msg_out;
 mod rate_limit_check_in;
 mod rate_limit_check_out;
+mod rate_limit_config;
 mod rate_limit_create_namespace_in;
 mod rate_limit_create_namespace_out;
 mod rate_limit_get_namespace_in;
@@ -116,7 +117,6 @@ mod rate_limit_get_remaining_in;
 mod rate_limit_get_remaining_out;
 mod rate_limit_reset_in;
 mod rate_limit_reset_out;
-mod rate_limit_token_bucket_config;
 mod retention;
 mod seek_position;
 mod server_state;
@@ -189,15 +189,14 @@ pub use self::{
     msg_topic_configure_out::MsgTopicConfigureOut, node_status_out::NodeStatusOut,
     operation_behavior::OperationBehavior, ping_out::PingOut, queue_msg_out::QueueMsgOut,
     rate_limit_check_in::RateLimitCheckIn, rate_limit_check_out::RateLimitCheckOut,
-    rate_limit_create_namespace_in::RateLimitCreateNamespaceIn,
+    rate_limit_config::RateLimitConfig, rate_limit_create_namespace_in::RateLimitCreateNamespaceIn,
     rate_limit_create_namespace_out::RateLimitCreateNamespaceOut,
     rate_limit_get_namespace_in::RateLimitGetNamespaceIn,
     rate_limit_get_namespace_out::RateLimitGetNamespaceOut,
     rate_limit_get_remaining_in::RateLimitGetRemainingIn,
     rate_limit_get_remaining_out::RateLimitGetRemainingOut, rate_limit_reset_in::RateLimitResetIn,
-    rate_limit_reset_out::RateLimitResetOut,
-    rate_limit_token_bucket_config::RateLimitTokenBucketConfig, retention::Retention,
-    seek_position::SeekPosition, server_state::ServerState, stream_msg_out::StreamMsgOut,
+    rate_limit_reset_out::RateLimitResetOut, retention::Retention, seek_position::SeekPosition,
+    server_state::ServerState, stream_msg_out::StreamMsgOut,
 };
 
 pub(crate) use self::{

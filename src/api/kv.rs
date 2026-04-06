@@ -16,11 +16,11 @@ impl<'a> Kv<'a> {
     }
 
     /// KV Set
-    pub async fn set(&self, key: String, kv_set_in: KvSetIn) -> Result<KvSetOut> {
+    pub async fn set(&self, key: String, value: Vec<u8>, kv_set_in: KvSetIn) -> Result<KvSetOut> {
         let kv_set_in = KvSetIn_ {
             namespace: kv_set_in.namespace,
             key,
-            value: kv_set_in.value,
+            value,
             ttl: kv_set_in.ttl,
             behavior: kv_set_in.behavior,
             version: kv_set_in.version,

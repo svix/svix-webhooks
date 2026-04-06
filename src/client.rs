@@ -144,7 +144,8 @@ mod tests {
         let cache_api = client.cache();
         let fut = cache_api.set(
             "key".to_owned(),
-            CacheSetIn::new("value".as_bytes().to_vec(), Duration::ZERO),
+            "value".as_bytes().to_vec(),
+            CacheSetIn::new(Duration::ZERO),
         );
         require_send_sync(fut);
     }

@@ -6,16 +6,16 @@ pub struct IdempotencyStartIn {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub namespace: Option<String>,
 
-    /// TTL in milliseconds for the lock/response
-    #[serde(rename = "ttl_ms", with = "crate::duration_ms_serde")]
-    pub ttl: std::time::Duration,
+    /// How long to hold the lock on start before releasing it.
+    #[serde(rename = "lock_period_ms", with = "crate::duration_ms_serde")]
+    pub lock_period: std::time::Duration,
 }
 
 impl IdempotencyStartIn {
-    pub fn new(ttl: std::time::Duration) -> Self {
+    pub fn new(lock_period: std::time::Duration) -> Self {
         Self {
             namespace: None,
-            ttl,
+            lock_period,
         }
     }
 
@@ -32,7 +32,7 @@ pub(crate) struct IdempotencyStartIn_ {
 
     pub key: String,
 
-    /// TTL in milliseconds for the lock/response
-    #[serde(rename = "ttl_ms", with = "crate::duration_ms_serde")]
-    pub ttl: std::time::Duration,
+    /// How long to hold the lock on start before releasing it.
+    #[serde(rename = "lock_period_ms", with = "crate::duration_ms_serde")]
+    pub lock_period: std::time::Duration,
 }

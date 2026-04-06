@@ -6,19 +6,15 @@ pub struct CacheSetIn {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub namespace: Option<String>,
 
-    #[serde(with = "serde_bytes")]
-    pub value: Vec<u8>,
-
     /// Time to live in milliseconds
     #[serde(rename = "ttl_ms", with = "crate::duration_ms_serde")]
     pub ttl: std::time::Duration,
 }
 
 impl CacheSetIn {
-    pub fn new(value: Vec<u8>, ttl: std::time::Duration) -> Self {
+    pub fn new(ttl: std::time::Duration) -> Self {
         Self {
             namespace: None,
-            value,
             ttl,
         }
     }

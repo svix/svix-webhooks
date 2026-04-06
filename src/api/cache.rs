@@ -16,11 +16,16 @@ impl<'a> Cache<'a> {
     }
 
     /// Cache Set
-    pub async fn set(&self, key: String, cache_set_in: CacheSetIn) -> Result<CacheSetOut> {
+    pub async fn set(
+        &self,
+        key: String,
+        value: Vec<u8>,
+        cache_set_in: CacheSetIn,
+    ) -> Result<CacheSetOut> {
         let cache_set_in = CacheSetIn_ {
             namespace: cache_set_in.namespace,
             key,
-            value: cache_set_in.value,
+            value,
             ttl: cache_set_in.ttl,
         };
 

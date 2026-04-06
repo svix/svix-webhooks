@@ -2,7 +2,7 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct RateLimitTokenBucketConfig {
+pub struct RateLimitConfig {
     /// Maximum capacity of the bucket
     pub capacity: u64,
 
@@ -18,7 +18,7 @@ pub struct RateLimitTokenBucketConfig {
     pub refill_interval: Option<std::time::Duration>,
 }
 
-impl RateLimitTokenBucketConfig {
+impl RateLimitConfig {
     pub fn new(capacity: u64, refill_amount: u64) -> Self {
         Self {
             capacity,

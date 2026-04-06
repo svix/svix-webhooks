@@ -3,13 +3,10 @@ use serde::{Deserialize, Serialize};
 
 use super::operation_behavior::OperationBehavior;
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Default, Deserialize)]
 pub struct KvSetIn {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub namespace: Option<String>,
-
-    #[serde(with = "serde_bytes")]
-    pub value: Vec<u8>,
 
     /// Time to live in milliseconds
     #[serde(
@@ -29,10 +26,9 @@ pub struct KvSetIn {
 }
 
 impl KvSetIn {
-    pub fn new(value: Vec<u8>) -> Self {
+    pub fn new() -> Self {
         Self {
             namespace: None,
-            value,
             ttl: None,
             behavior: None,
             version: None,
