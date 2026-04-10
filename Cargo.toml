@@ -18,6 +18,7 @@ rustls-tls = ["dep:hyper-rustls", "dep:rustls", "hyper-rustls?/rustls-native-cer
 
 [dependencies]
 form_urlencoded = "1.2.2"
+headers = "0.4.1"
 http = "1.1.0"
 http-body-util = "0.1.2"
 hyper = "1.8.1"
