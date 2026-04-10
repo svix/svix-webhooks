@@ -1,5 +1,5 @@
 // this file is @generated
-use crate::CoyoteClient;
+use crate::DiomClient;
 
 mod admin;
 mod admin_auth_policy;
@@ -30,7 +30,7 @@ pub use self::{
     msgs_topic::MsgsTopic, rate_limit::RateLimit, rate_limit_namespace::RateLimitNamespace,
 };
 
-impl CoyoteClient {
+impl DiomClient {
     pub fn admin(&self) -> Admin<'_> {
         Admin::new(&self.cfg)
     }

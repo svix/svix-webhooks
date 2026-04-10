@@ -3,6 +3,7 @@
 
 use std::{collections::HashMap, time::Duration};
 
+use headers::{ContentType, Header as _};
 use http::header::{ACCEPT, AUTHORIZATION, CONTENT_LENGTH, CONTENT_TYPE, HeaderValue, USER_AGENT};
 use http_body_util::{BodyExt as _, Full};
 use hyper::body::Bytes;
@@ -88,7 +89,7 @@ impl Request {
         let mut request = self.build_request(conf)?;
         request
             .headers_mut()
-            .insert("svix-req-id", rand::rng().random::<u32>().into());
+            .insert("diom-req-id", rand::rng().random::<u32>().into());
 
         let mut retry_count = 0;
 
@@ -97,7 +98,10 @@ impl Request {
 
             let status = response.status();
             if !status.is_success() {
-                Err(Error::from_response(status, response.into_body()).await)
+                let mut values = response.headers().get_all(CONTENT_TYPE).iter();
+                let content_type =
+                    ContentType::decode(&mut values).unwrap_or_else(|_| ContentType::json());
+                Err(Error::from_response(status, response.into_body(), content_type).await)
             } else if no_return_type {
                 Ok(None)
             } else {
@@ -139,7 +143,7 @@ impl Request {
 
             request
                 .headers_mut()
-                .insert("svix-retry-count", retry_count.into());
+                .insert("diom-retry-count", retry_count.into());
         }
     }
 

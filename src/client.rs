@@ -9,7 +9,7 @@ const CRATE_VERSION: &str = env!("CARGO_PKG_VERSION");
 
 pub const DEFAULT_URL: &str = "http://localhost:8050";
 
-pub struct CoyoteOptions {
+pub struct DiomOptions {
     pub debug: bool,
 
     pub server_url: Option<String>,
@@ -52,7 +52,7 @@ pub struct CoyoteOptions {
     pub http1: bool,
 }
 
-impl Default for CoyoteOptions {
+impl Default for DiomOptions {
     fn default() -> Self {
         Self {
             debug: false,
@@ -79,14 +79,14 @@ pub(crate) struct Configuration {
     pub(crate) client: HyperClient<Connector, http_body_util::Full<Bytes>>,
 }
 
-/// Coyote API client.
+/// Diom API client.
 #[derive(Clone)]
-pub struct CoyoteClient {
+pub struct DiomClient {
     pub(super) cfg: Arc<Configuration>,
 }
 
-impl CoyoteClient {
-    pub fn new(token: String, options: Option<CoyoteOptions>) -> Self {
+impl DiomClient {
+    pub fn new(token: String, options: Option<DiomOptions>) -> Self {
         let options = options.unwrap_or_default();
 
         let mut builder = HyperClient::builder(TokioExecutor::new());
@@ -98,7 +98,7 @@ impl CoyoteClient {
         builder.http2_only(!options.http1);
 
         let cfg = Arc::new(Configuration {
-            user_agent: Some(format!("coyote-client/{CRATE_VERSION}/rust")),
+            user_agent: Some(format!("diom-client/{CRATE_VERSION}/rust")),
             client: builder.build(make_connector(options.proxy_address)),
             timeout: options.timeout,
             server_url: match options.server_url {
@@ -114,9 +114,9 @@ impl CoyoteClient {
         client.with_token(token)
     }
 
-    /// Creates a new `CoyoteClient` API client with a different token,
+    /// Creates a new `DiomClient` API client with a different token,
     /// re-using all of the settings and the Hyper client from
-    /// an existing `CoyoteClient` instance.
+    /// an existing `DiomClient` instance.
     ///
     /// This can be used to change the token without incurring
     /// the cost of TLS initialization.
@@ -133,14 +133,14 @@ impl CoyoteClient {
 mod tests {
     use std::time::Duration;
 
-    use super::CoyoteClient;
+    use super::DiomClient;
     use crate::models::CacheSetIn;
 
     #[test]
     fn test_future_send_sync() {
         fn require_send_sync<T: Send + Sync>(_: T) {}
 
-        let client = CoyoteClient::new(String::new(), None);
+        let client = DiomClient::new(String::new(), None);
         let cache_api = client.cache();
         let fut = cache_api.set(
             "key".to_owned(),
