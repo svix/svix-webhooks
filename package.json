@@ -6,7 +6,7 @@
     "generate": "python3 ./regen_openapi.py"
   },
   "devDependencies": {
-    "axios": "^1.0",
+    "axios": "^1.15",
     "openapi-to-postmanv2": "^5.8.0",
     "semver": "^7.5.2"
   },
