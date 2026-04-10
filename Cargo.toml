@@ -1,5 +1,5 @@
 [package]
-name = "coyote"
+name = "diom"
 version = "0.1.0"
 rust-version = "1.91"
 edition = "2024"
