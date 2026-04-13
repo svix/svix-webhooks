@@ -26,7 +26,9 @@ ignore = [
     # rustls-webpki incorrectly handles CRLs for certificates with multiple distributionPoints;
     # the old versions are used in smithy and we can't upgrade them right now. this will be fixed
     # when smithy drops hyper 0.x support
-    "RUSTSEC-2026-0049"
+    "RUSTSEC-2026-0049",
+    # can't upgrade rand until some dependencies support 0.10
+    "RUSTSEC-2026-0097",
 ]
 
 [licenses]
