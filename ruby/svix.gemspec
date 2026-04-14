@@ -15,6 +15,8 @@ Gem::Specification.new do |spec|
                        "Learn more at https://www.svix.com"
   spec.homepage      = "https://www.svix.com"
 
+  spec.required_ruby_version = ">= 3.2"
+
   spec.post_install_message = <<~MESSAGE
 
     Thank you for installing svix!
@@ -46,6 +48,9 @@ Gem::Specification.new do |spec|
   spec.bindir        = "exe"
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
+
+  spec.add_dependency "base64", "~> 0.3.0"
+  spec.add_dependency "logger", "~> 1.0"
 
   spec.add_development_dependency "rake", "~> 13.0"
   spec.add_development_dependency "rspec", "~> 3.2"
