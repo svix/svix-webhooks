@@ -15,6 +15,8 @@ Gem::Specification.new do |spec|
                        "Learn more at https://www.svix.com"
   spec.homepage      = "https://www.svix.com"
 
+  spec.required_ruby_version = ">= 3.2"
+
   spec.post_install_message = <<~MESSAGE
 
     Thank you for installing svix!
