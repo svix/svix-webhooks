@@ -1,4 +1,3 @@
-const axios = require("axios");
 const Converter = require("openapi-to-postmanv2");
 
 const POSTMAN_COLLECTION_ID =
@@ -18,24 +17,26 @@ const error = function (msg) {
 };
 
 const update_collection = async (collection) => {
-  await axios.put(
+  const res = await fetch(
     `https://api.getpostman.com/collections/${POSTMAN_COLLECTION_ID}`,
     {
-      collection: collection,
-    },
-    {
-      headers: { "x-api-key": POSTMAN_API_KEY },
-      validateStatus: function (status) {
-        return status < 300;
+      method: "PUT",
+      headers: {
+        "x-api-key": POSTMAN_API_KEY,
+        "Content-Type": "application/json",
       },
+      body: JSON.stringify({ collection }),
     },
   );
+  if (!res.ok) {
+    error(`Failed to update collection: ${res.status} ${res.statusText}`);
+  }
 };
 
 (async () => {
   try {
-    const res = await axios.get(openapiUrl);
-    const openapiData = res.data;
+    const res = await fetch(openapiUrl);
+    const openapiData = await res.json();
 
     let collection;
     Converter.convert(
@@ -51,12 +52,6 @@ const update_collection = async (collection) => {
 
     await update_collection(collection);
   } catch (e) {
-    if (e.response !== undefined) {
-      error(e.response);
-    } else if (e.message !== undefined) {
-      error(e.message);
-    } else {
-      error(e);
-    }
+    error(e.message ?? e);
   }
 })();
