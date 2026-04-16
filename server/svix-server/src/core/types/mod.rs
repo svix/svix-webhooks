@@ -643,6 +643,11 @@ json_wrapper!(ExpiringSigningKeys);
 impl ExpiringSigningKeys {
     pub const MAX_OLD_KEYS: usize = 10;
     pub const OLD_KEY_EXPIRY_HOURS: i64 = 24;
+
+    pub fn unexpired_keys(&self) -> impl Iterator<Item = &ExpiringSigningKey> {
+        let now = Utc::now();
+        self.0.iter().filter(move |x| x.expiration > now)
+    }
 }
 
 /// The type of encryption key

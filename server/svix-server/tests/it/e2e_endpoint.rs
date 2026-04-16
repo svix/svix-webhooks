@@ -13,8 +13,8 @@ use chrono::{DateTime, Utc};
 use ed25519_compact::Signature;
 use reqwest::{StatusCode, Url};
 use sea_orm::{
-    ActiveModelBehavior, ActiveModelTrait, ConnectionTrait, DatabaseBackend, QueryResult, Set,
-    Statement,
+    ActiveModelBehavior, ActiveModelTrait, ConnectionTrait, DatabaseBackend, IntoActiveModel,
+    QueryResult, Set, Statement,
 };
 use serde::{Deserialize, de::IgnoredAny};
 use serde_json::json;
@@ -30,7 +30,7 @@ use svix_server::{
             MessageAttemptTriggerType, MessageId, MessageStatus, OrganizationId,
         },
     },
-    db::models::{message, messageattempt},
+    db::models::{endpoint, message, messageattempt},
     v1::{
         endpoints::{
             endpoint::{
@@ -993,6 +993,9 @@ async fn test_recovery_expected_retry_counts() {
 #[tokio::test]
 async fn test_endpoint_rotate_max() {
     let (client, _jh) = start_svix_server().await;
+    let cfg = get_default_test_config();
+    let db = Arc::new(cfg);
+    let db = svix_server::db::init_db(&db).await;
 
     let app_id = create_test_app(&client, "app1").await.unwrap().id;
 
@@ -1012,6 +1015,7 @@ async fn test_endpoint_rotate_max() {
             .unwrap();
     }
 
+    // We now have MAX_OLD_KEYS unexpired keys, so we should be unable to perform a rotation
     let _: IgnoredAny = client
         .post(
             &format!("api/v1/app/{app_id}/endpoint/{endp_id}/secret/rotate/"),
@@ -1020,6 +1024,51 @@ async fn test_endpoint_rotate_max() {
         )
         .await
         .unwrap();
+
+    // Manually expire a key, and verify that we can now perform a rotation
+    let mut endpoint = endpoint::Entity::secure_find_by_id(app_id.clone(), endp_id.clone())
+        .one(&db)
+        .await
+        .unwrap()
+        .unwrap();
+
+    let mut modified_keys = endpoint.old_keys.take();
+    modified_keys
+        .as_mut()
+        .unwrap()
+        .0
+        .last_mut()
+        .unwrap()
+        .expiration = Utc::now() - Duration::from_secs(1);
+    let mut updated_endpoint = endpoint.into_active_model();
+
+    updated_endpoint.old_keys = Set(modified_keys);
+    updated_endpoint.update(&db).await.unwrap();
+
+    // Check that the rotation actually worked
+    let new_secret = EndpointSecretInternal::generate_symmetric(&Encryption::new_noop())
+        .unwrap()
+        .into_endpoint_secret(&Encryption::new_noop())
+        .unwrap();
+
+    client
+        .post_without_response(
+            &format!("api/v1/app/{app_id}/endpoint/{endp_id}/secret/rotate/"),
+            json!({ "key": new_secret }),
+            StatusCode::NO_CONTENT,
+        )
+        .await
+        .unwrap();
+
+    let actual_secret: EndpointSecretOut = client
+        .get(
+            &format!("api/v1/app/{app_id}/endpoint/{endp_id}/secret/"),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(new_secret, actual_secret.key);
 }
 
 #[tokio::test]
