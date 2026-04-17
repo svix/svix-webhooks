@@ -33,9 +33,12 @@ class VersionFile:
 
 
 POST_BUMP_COMMANDS = [
-    "cargo check --manifest-path server/Cargo.toml",
-    "cargo check --manifest-path bridge/Cargo.toml",
-    "cargo check --manifest-path svix-cli/Cargo.toml",
+    # Rust
+    "cargo update --workspace --manifest-path server/Cargo.toml",
+    "cargo update --workspace --manifest-path bridge/Cargo.toml",
+    "cargo update --workspace --manifest-path svix-cli/Cargo.toml",
+    # JavaScript
+    "cd javascript && npm i --package-lock-only",
 ]
 
 VERSION_FILES = [
