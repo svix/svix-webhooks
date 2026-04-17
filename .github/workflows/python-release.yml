@@ -2,11 +2,7 @@ name: Python Release
 
 on:
   workflow_dispatch:
-  workflow_run:
-    workflows:
-      - Mega Releaser
-    types:
-      - completed
+  workflow_call:
 
 jobs:
   build:
