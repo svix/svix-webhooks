@@ -15,6 +15,7 @@ Usage:
 
 import argparse
 import re
+import subprocess
 import sys
 from pathlib import Path
 from dataclasses import dataclass
@@ -31,7 +32,11 @@ class VersionFile:
     pattern_flags: int = 0
 
 
-POST_BUMP_COMMANDS: list[str] = []
+POST_BUMP_COMMANDS = [
+    "cargo check --manifest-path server/Cargo.toml",
+    "cargo check --manifest-path bridge/Cargo.toml",
+    "cargo check --manifest-path svix-cli/Cargo.toml",
+]
 
 VERSION_FILES = [
     # CLI
@@ -248,7 +253,6 @@ def cmd_bump(new_version: str) -> int:
         return rc
 
     for cmd in POST_BUMP_COMMANDS:
-        import subprocess
         print(f"\n$ {cmd}")
         result = subprocess.run(cmd, shell=True, cwd=REPO_ROOT)
         if result.returncode != 0:
