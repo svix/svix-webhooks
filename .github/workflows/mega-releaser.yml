@@ -2,9 +2,54 @@ name: Mega Releaser
 
 on: workflow_dispatch
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
-  kick-off:
-    name: Kick-off Releases
-    runs-on: ubuntu-latest
-    steps:
-      - run: /bin/true
+  bridge:
+    uses: ./.github/workflows/bridge-release.yml
+    secrets: inherit
+
+  cli-docker:
+    uses: ./.github/workflows/cli-docker-release.yml
+    secrets: inherit
+
+  csharp:
+    uses: ./.github/workflows/csharp-release.yml
+    secrets: inherit
+
+  java:
+    uses: ./.github/workflows/java-release.yml
+    secrets: inherit
+
+  javascript:
+    uses: ./.github/workflows/javascript-release.yml
+    secrets: inherit
+
+  kotlin:
+    uses: ./.github/workflows/kotlin-release.yml
+    secrets: inherit
+
+  php:
+    uses: ./.github/workflows/php-release.yml
+    secrets: inherit
+
+  python:
+    uses: ./.github/workflows/python-release.yml
+
+  ruby:
+    uses: ./.github/workflows/ruby-release.yml
+    secrets: inherit
+
+  rust:
+    uses: ./.github/workflows/rust-release.yml
+    secrets: inherit
+
+  server:
+    uses: ./.github/workflows/server-release.yml
+    secrets: inherit
+
+  postman:
+    uses: ./.github/workflows/update-postman.yml
+    secrets: inherit

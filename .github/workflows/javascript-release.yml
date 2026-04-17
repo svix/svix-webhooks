@@ -9,11 +9,7 @@ on:
       - 'javascript/**'
       - '.github/workflows/javascript-release.yml'
   workflow_dispatch:
-  workflow_run:
-    workflows:
-      - Mega Releaser
-    types:
-      - completed
+  workflow_call:
 
 permissions:
   id-token: write
