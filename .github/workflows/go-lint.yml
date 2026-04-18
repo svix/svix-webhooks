@@ -1,19 +1,6 @@
 name: Go Lint
 on:
-  pull_request:
-    paths:
-      - "go/**"
-      - "go.sum"
-      - "go.mod"
-      - "codegen/lib-openapi.json"
-  push:
-    branches:
-      - main
-    paths:
-      - "go/**"
-      - "go.sum"
-      - "go.mod"
-      - "codegen/lib-openapi.json"
+  workflow_call:
 
 jobs:
   build:

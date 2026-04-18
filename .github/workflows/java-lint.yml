@@ -1,15 +1,6 @@
 name: Java Lint
 on:
-  pull_request:
-    paths:
-      - "java/**"
-      - "codegen/lib-openapi.json"
-  push:
-    branches:
-      - main
-    paths:
-      - "java/**"
-      - "codegen/lib-openapi.json"
+  workflow_call:
 
 jobs:
   dotnet:

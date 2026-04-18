@@ -1,18 +1,7 @@
 name: Kotlin Lint
 
 on:
-  pull_request:
-    paths:
-      - "kotlin/**"
-      - "codegen/lib-openapi.json"
-      - '.github/workflows/kotlin-lint.yml'
-  push:
-    branches:
-      - main
-    paths:
-      - "javascript/**"
-      - "codegen/lib-openapi.json"
-      - '.github/workflows/javascript-lint.yml'
+  workflow_call:
 
 jobs:
   kotlin:

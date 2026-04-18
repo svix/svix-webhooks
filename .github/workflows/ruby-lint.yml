@@ -1,18 +1,7 @@
 name: Ruby Lint
 
 on:
-  pull_request:
-    paths:
-      - "ruby/**"
-      - "codegen/lib-openapi.json"
-      - '.github/workflows/ruby-lint.yml'
-  push:
-    branches:
-      - main
-    paths:
-      - "ruby/**"
-      - "codegen/lib-openapi.json"
-      - '.github/workflows/ruby-lint.yml'
+  workflow_call:
 
 jobs:
   ruby:

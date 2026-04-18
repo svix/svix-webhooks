@@ -1,19 +1,6 @@
 name: Python Tests
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "python/**"
-      - "codegen/lib-openapi.json"
-      - "server/**"
-      - ".github/workflows/python-tests.yml"
-  pull_request:
-    paths:
-      - "python/**"
-      - "codegen/lib-openapi.json"
-      - "server/**"
-      - ".github/workflows/python-tests.yml"
+  workflow_call:
 jobs:
   build:
     runs-on: ubuntu-24.04
