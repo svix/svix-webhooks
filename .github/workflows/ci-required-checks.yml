@@ -1,0 +1,251 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+# Single workflow that gates all PR merges. Set "CI Required Checks / all-checks-passed"
+# as the required status check in branch protection rules.
+#
+# Each downstream workflow is called only when the same paths that would trigger
+# it directly have changed. When no relevant paths changed the job is skipped,
+# which counts as a pass for the final gate job.
+
+concurrency:
+  # head_ref is only defined for pull requests, run_id is always unique and defined so if this
+  # workflow was not triggered by a pull request, nothing gets cancelled.
+  group: ci-required-checks-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+permissions:
+  checks: write
+  contents: read
+  issues: write
+  packages: write
+  pull-requests: write
+
+jobs:
+  filter:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      bridge-ci: ${{ steps.filter.outputs.bridge-ci }}
+      cli-lint: ${{ steps.filter.outputs.cli-lint }}
+      csharp-lint: ${{ steps.filter.outputs.csharp-lint }}
+      go-ci: ${{ steps.filter.outputs.go-ci }}
+      go-lint: ${{ steps.filter.outputs.go-lint }}
+      kotlin-lint: ${{ steps.filter.outputs.kotlin-lint }}
+      java-lint: ${{ steps.filter.outputs.java-lint }}
+      javascript-lint: ${{ steps.filter.outputs.javascript-lint }}
+      php-ci: ${{ steps.filter.outputs.php-ci }}
+      python-lint: ${{ steps.filter.outputs.python-lint }}
+      python-tests: ${{ steps.filter.outputs.python-tests }}
+      server-ci: ${{ steps.filter.outputs.server-ci }}
+      rust-lint: ${{ steps.filter.outputs.rust-lint }}
+      ruby-lint: ${{ steps.filter.outputs.ruby-lint }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            bridge-ci:
+              - 'bridge/**'
+              - 'rust/**'
+              - '.github/workflows/bridge-ci.yml'
+              - 'lib-openapi.json'
+            cli-lint:
+              - 'svix-cli/**'
+              - 'rust/**'
+              - '.github/workflows/cli-lint.yml'
+              - 'lib-openapi.json'
+            csharp-lint:
+              - 'csharp/**'
+              - 'codegen/lib-openapi.json'
+              - '.github/workflows/csharp-lint.yml'
+            go-ci:
+              - 'go/**'
+              - 'go.sum'
+              - 'go.mod'
+              - 'codegen/lib-openapi.json'
+              - '.github/workflows/go-ci.yml'
+            go-lint:
+              - 'go/**'
+              - 'go.sum'
+              - 'go.mod'
+              - 'codegen/lib-openapi.json'
+              - '.github/workflows/go-lint.yml'
+            kotlin-lint:
+              - 'kotlin/**'
+              - 'codegen/lib-openapi.json'
+              - '.github/workflows/kotlin-lint.yml'
+            java-lint:
+              - 'java/**'
+              - 'codegen/lib-openapi.json'
+              - '.github/workflows/java-lint.yml'
+            javascript-lint:
+              - 'javascript/**'
+              - 'codegen/lib-openapi.json'
+              - '.github/workflows/javascript-lint.yml'
+            php-ci:
+              - 'php/**'
+              - 'composer.json'
+              - '.github/workflows/php-ci.yml'
+            python-lint:
+              - 'python/**'
+              - 'codegen/lib-openapi.json'
+              - '.github/workflows/python-lint.yml'
+            python-tests:
+              - 'python/**'
+              - 'codegen/lib-openapi.json'
+              - 'server/**'
+              - '.github/workflows/python-tests.yml'
+            server-ci:
+              - 'server/**'
+              - '.github/workflows/server-ci.yml'
+            rust-lint:
+              - 'rust/**'
+              - 'codegen/lib-openapi.json'
+              - '.github/workflows/rust-lint.yml'
+            ruby-lint:
+              - 'ruby/**'
+              - 'codegen/lib-openapi.json'
+              - '.github/workflows/ruby-lint.yml'
+
+  bridge-ci:
+    needs: filter
+    if: needs.filter.outputs.bridge-ci == 'true'
+    uses: ./.github/workflows/bridge-ci.yml
+    secrets: inherit
+
+  cli-lint:
+    needs: filter
+    if: needs.filter.outputs.cli-lint == 'true'
+    uses: ./.github/workflows/cli-lint.yml
+    secrets: inherit
+
+  csharp-lint:
+    needs: filter
+    if: needs.filter.outputs.csharp-lint == 'true'
+    uses: ./.github/workflows/csharp-lint.yml
+    secrets: inherit
+
+  go-ci:
+    needs: filter
+    if: needs.filter.outputs.go-ci == 'true'
+    uses: ./.github/workflows/go-ci.yml
+    secrets: inherit
+
+  go-lint:
+    needs: filter
+    if: needs.filter.outputs.go-lint == 'true'
+    uses: ./.github/workflows/go-lint.yml
+    secrets: inherit
+
+  kotlin-lint:
+    needs: filter
+    if: needs.filter.outputs.kotlin-lint == 'true'
+    uses: ./.github/workflows/kotlin-lint.yml
+    secrets: inherit
+
+  java-lint:
+    needs: filter
+    if: needs.filter.outputs.java-lint == 'true'
+    uses: ./.github/workflows/java-lint.yml
+    secrets: inherit
+
+  javascript-lint:
+    needs: filter
+    if: needs.filter.outputs.javascript-lint == 'true'
+    uses: ./.github/workflows/javascript-lint.yml
+    secrets: inherit
+
+  php-ci:
+    needs: filter
+    if: needs.filter.outputs.php-ci == 'true'
+    uses: ./.github/workflows/php-ci.yml
+    secrets: inherit
+
+  python-lint:
+    needs: filter
+    if: needs.filter.outputs.python-lint == 'true'
+    uses: ./.github/workflows/python-lint.yml
+    secrets: inherit
+
+  python-tests:
+    needs: filter
+    if: needs.filter.outputs.python-tests == 'true'
+    uses: ./.github/workflows/python-tests.yml
+    secrets: inherit
+
+  server-ci:
+    needs: filter
+    if: needs.filter.outputs.server-ci == 'true'
+    uses: ./.github/workflows/server-ci.yml
+    secrets: inherit
+
+  rust-lint:
+    needs: filter
+    if: needs.filter.outputs.rust-lint == 'true'
+    uses: ./.github/workflows/rust-lint.yml
+    secrets: inherit
+
+  ruby-lint:
+    needs: filter
+    if: needs.filter.outputs.ruby-lint == 'true'
+    uses: ./.github/workflows/ruby-lint.yml
+    secrets: inherit
+
+  # pre-commit, typos, and codegen have no path filter — always run them.
+  pre-commit:
+    uses: ./.github/workflows/pre-commit.yml
+    secrets: inherit
+
+  typos:
+    uses: ./.github/workflows/typos.yml
+    secrets: inherit
+
+  codegen:
+    uses: ./.github/workflows/codegen.yml
+    secrets: inherit
+
+  ci-required-checks:
+    name: CI Required Checks
+    needs:
+      - bridge-ci
+      - cli-lint
+      - csharp-lint
+      - go-ci
+      - go-lint
+      - kotlin-lint
+      - java-lint
+      - javascript-lint
+      - php-ci
+      - python-lint
+      - python-tests
+      - server-ci
+      - rust-lint
+      - ruby-lint
+      - pre-commit
+      - typos
+      - codegen
+    if: always()
+    runs-on: ubuntu-24.04
+    # Always run so that this job is a stable required status check: if an
+    # upstream job is skipped (e.g. due to path filters) that is fine; we only
+    # fail if something actually failed or was cancelled.
+    steps:
+      - name: All checks passed
+        run: |
+          results="${{ join(needs.*.result, ' ') }}"
+          for result in $results; do
+            if [[ "$result" == "failure" || "$result" == "cancelled" ]]; then
+              echo "A required check failed or was cancelled (results: $results)"
+              exit 1
+            fi
+          done
+          echo "All required checks passed or were skipped (results: $results)"

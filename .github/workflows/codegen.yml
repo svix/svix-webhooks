@@ -1,12 +1,7 @@
 name: Codegen
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+  workflow_call:
 
 # When pushing to a PR, cancel any jobs still running for the previous head commit of the PR
 concurrency:

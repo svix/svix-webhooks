@@ -1,18 +1,7 @@
 name: PHP CI
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'php/**'
-      - 'composer.json'
-      - '.github/workflows/php-ci.yml'
-  pull_request:
-    paths:
-      - 'composer.json'
-      - 'php/**'
-      - '.github/workflows/php-ci.yml'
+  workflow_call:
 jobs:
   build-test:
     strategy:

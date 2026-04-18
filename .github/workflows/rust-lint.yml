@@ -1,18 +1,7 @@
 name: Rust Lint
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'rust/**'
-      - '.github/workflows/rust-lint.yml'
-      - "codegen/lib-openapi.json"
-  pull_request:
-    paths:
-      - 'rust/**'
-      - '.github/workflows/rust-lint.yml'
-      - "codegen/lib-openapi.json"
+  workflow_call:
 
 # When pushing to a PR, cancel any jobs still running for the previous head commit of the PR
 concurrency:

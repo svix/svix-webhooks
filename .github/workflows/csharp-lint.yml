@@ -1,18 +1,7 @@
 name: C# Lint
 
 on:
-  pull_request:
-    paths:
-      - "csharp/**"
-      - "codegen/lib-openapi.json"
-      - '.github/workflows/csharp-lint.yml'
-  push:
-    branches:
-      - main
-    paths:
-      - "csharp/**"
-      - "codegen/lib-openapi.json"
-      - '.github/workflows/csharp-lint.yml'
+  workflow_call:
 
 jobs:
   dotnet:

@@ -1,18 +1,7 @@
 name: JavaScript Lint
 
 on:
-  pull_request:
-    paths:
-      - "javascript/**"
-      - "codegen/lib-openapi.json"
-      - '.github/workflows/javascript-lint.yml'
-  push:
-    branches:
-      - main
-    paths:
-      - "javascript/**"
-      - "codegen/lib-openapi.json"
-      - '.github/workflows/javascript-lint.yml'
+  workflow_call:
 
 jobs:
   build:
