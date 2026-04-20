@@ -1,6 +1,6 @@
 use anyhow::Context;
 use clap::Args;
-use rand::{rngs::StdRng, seq::SliceRandom, SeedableRng};
+use rand::prelude::*;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use svix::api::*;
@@ -162,10 +162,8 @@ async fn create_endpoint(client: Svix, app_id: String) -> anyhow::Result<Endpoin
 }
 
 async fn create_message(client: Svix, app_id: String) -> anyhow::Result<MessageOut> {
-    let mut rng = StdRng::from_entropy();
-
     let event_type = USER_EVENT_TYPES
-        .choose(&mut rng)
+        .choose(&mut rand::rng())
         .context("Couldn't pick a random event type while creating a message")?;
 
     let message_in = MessageIn {

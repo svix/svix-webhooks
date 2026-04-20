@@ -1,16 +1,16 @@
 use anyhow::Result;
-use rand::distributions::{Distribution, Uniform};
+use rand::distr::Distribution;
 
 const BASE62: &[u8; 62] = b"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
 pub fn generate_token() -> Result<String> {
-    let between = Uniform::from(0..BASE62.len());
-    let mut rng = rand::thread_rng();
-    let mut bytes = [0_u8; 27];
-    for b in &mut bytes {
-        *b = BASE62[between.sample(&mut rng)];
-    }
-    Ok(String::from_utf8(bytes.to_vec())?)
+    let distribution = rand::distr::slice::Choose::new(BASE62)?;
+    let mut rng = rand::rng();
+    Ok(distribution
+        .sample_iter(&mut rng)
+        .take(10)
+        .map(|c| *c as char)
+        .collect::<String>())
 }
 
 #[cfg(test)]
