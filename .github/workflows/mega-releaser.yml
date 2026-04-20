@@ -35,8 +35,9 @@ jobs:
     uses: ./.github/workflows/php-release.yml
     secrets: inherit
 
-  python:
-    uses: ./.github/workflows/python-release.yml
+  # See commit message, Python trusted publishing is broken with sub workflows
+  # python:
+  #   uses: ./.github/workflows/python-release.yml
 
   ruby:
     uses: ./.github/workflows/ruby-release.yml

@@ -3,6 +3,11 @@ name: Python Release
 on:
   workflow_dispatch:
   workflow_call:
+  workflow_run:
+    workflows:
+      - Mega Releaser
+    types:
+      - completed
 
 jobs:
   build:
