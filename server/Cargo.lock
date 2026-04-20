@@ -5203,7 +5203,7 @@ dependencies = [
  "opentelemetry-otlp",
  "opentelemetry-semantic-conventions",
  "opentelemetry_sdk",
- "rand 0.8.6",
+ "rand 0.10.1",
  "redis",
  "regex",
  "reqwest",
