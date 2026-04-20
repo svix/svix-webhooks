@@ -3,6 +3,72 @@ use serde::Deserialize;
 
 use crate::error::{Error, Result};
 
+// wrapper because lapin::BasicConsumeOptions no longer implements Deserialize
+mod consume_options {
+    use omniqueue::backends;
+    use serde::{Deserialize, Deserializer};
+
+    #[derive(Debug, Deserialize, Default)]
+    struct BasicConsumeOptions {
+        pub no_local: bool,
+        pub no_ack: bool,
+        pub exclusive: bool,
+        pub nowait: bool,
+    }
+
+    impl From<BasicConsumeOptions> for backends::rabbitmq::BasicConsumeOptions {
+        fn from(value: BasicConsumeOptions) -> Self {
+            Self {
+                no_local: value.no_local,
+                no_ack: value.no_ack,
+                exclusive: value.exclusive,
+                nowait: value.nowait,
+            }
+        }
+    }
+
+    pub(crate) fn deserialize<'de, D>(
+        deserializer: D,
+    ) -> Result<Option<backends::rabbitmq::BasicConsumeOptions>, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let raw: Option<BasicConsumeOptions> = Deserialize::deserialize(deserializer)?;
+        Ok(raw.map(Into::into))
+    }
+}
+
+// wrapper because lapin::BasicPublishOptions no longer implements Deserialize
+mod publish_options {
+    use omniqueue::backends;
+    use serde::{Deserialize, Deserializer};
+
+    #[derive(Debug, Deserialize, Default)]
+    struct BasicPublishOptions {
+        pub mandatory: bool,
+        pub immediate: bool,
+    }
+
+    impl From<BasicPublishOptions> for backends::rabbitmq::BasicPublishOptions {
+        fn from(value: BasicPublishOptions) -> Self {
+            Self {
+                mandatory: value.mandatory,
+                immediate: value.immediate,
+            }
+        }
+    }
+
+    pub(crate) fn deserialize<'de, D>(
+        deserializer: D,
+    ) -> Result<backends::rabbitmq::BasicPublishOptions, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let raw: BasicPublishOptions = Deserialize::deserialize(deserializer)?;
+        Ok(raw.into())
+    }
+}
+
 #[derive(Debug, Deserialize)]
 pub struct RabbitMqInputOpts {
     /// Connection string for RabbitMQ.
@@ -13,7 +79,7 @@ pub struct RabbitMqInputOpts {
     /// Identifier for the consumer.
     #[serde(default)]
     pub consumer_tag: Option<String>,
-    #[serde(default)]
+    #[serde(default, with = "crate::rabbitmq::consume_options")]
     pub consume_opts: Option<backends::rabbitmq::BasicConsumeOptions>,
     #[serde(default)]
     pub consume_args: Option<backends::rabbitmq::FieldTable>,
@@ -33,7 +99,7 @@ pub struct RabbitMqOutputOpts {
     pub exchange: String,
     /// The routing key to publish messages to.
     pub routing_key: String,
-    #[serde(default)]
+    #[serde(default, with = "crate::rabbitmq::publish_options")]
     pub publish_options: backends::rabbitmq::BasicPublishOptions,
     #[serde(default)]
     pub publish_properties: backends::rabbitmq::BasicProperties,

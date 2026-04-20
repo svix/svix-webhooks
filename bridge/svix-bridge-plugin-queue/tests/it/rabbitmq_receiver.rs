@@ -2,7 +2,7 @@
 //! default guest/guest credentials.
 //! Try using the `testing-docker-compose.yml` in the repo root to get this going.
 
-use std::time::Duration;
+use std::{fmt::Debug, time::Duration};
 
 use lapin::{
     options::QueueDeclareOptions, types::FieldTable, Channel, Connection, ConnectionProperties,
@@ -35,7 +35,7 @@ async fn mq_connection(uri: &str) -> Connection {
     let options = ConnectionProperties::default()
         .with_connection_name("test".into())
         .with_executor(tokio_executor_trait::Tokio::current())
-        .with_reactor(tokio_reactor_trait::Tokio);
+        .with_reactor(tokio_reactor_trait::Tokio::current());
     Connection::connect(uri, options).await.unwrap()
 }
 
@@ -47,11 +47,17 @@ const MQ_URI: &str = "amqp://guest:guest@localhost:5672/%2f";
 /// TCP proxy. Useful for giving us control over the connection to rabbit inside our tests.
 async fn proxy(
     listener: TcpListener,
-    server_addr: impl ToSocketAddrs + Clone + Sync + Send + 'static,
+    server_addr: impl ToSocketAddrs + Debug + Clone + Sync + Send + 'static,
 ) -> Result<JoinHandle<()>, ()> {
     let handle = tokio::task::spawn(async move {
         while let Ok((mut inbound, _)) = listener.accept().await {
-            let mut outbound = TcpStream::connect(server_addr.clone()).await.unwrap();
+            let mut outbound = tokio::time::timeout(
+                std::time::Duration::from_secs(1),
+                TcpStream::connect(server_addr.clone()),
+            )
+            .await
+            .unwrap()
+            .unwrap();
             if let Err(e) = copy_bidirectional(&mut inbound, &mut outbound).await {
                 eprintln!("Failed to transfer; error={e}");
             }
@@ -71,7 +77,7 @@ async fn test_connection_recovery() {
     let proxy_listener = TcpListener::bind(("127.0.0.1", 0)).await.unwrap();
     let port = proxy_listener.local_addr().unwrap().port();
     // Start the proxy
-    let proxy_handle = proxy(proxy_listener, "127.0.0.0:5672").await.unwrap();
+    let proxy_handle = proxy(proxy_listener, "localhost:5672").await.unwrap();
 
     // Configure the receiver output to connect to the proxy so we can interrupt the connection as needed.
     let proxied_mq_uri = format!("amqp://guest:guest@localhost:{port}/%2f");
@@ -109,7 +115,7 @@ async fn test_connection_recovery() {
 
     // Reconnect the proxy on the same port
     let proxy_listener = TcpListener::bind(("127.0.0.1", port)).await.unwrap();
-    let proxy_handle = proxy(proxy_listener, "127.0.0.0:5672").await.unwrap();
+    let proxy_handle = proxy(proxy_listener, "localhost:5672").await.unwrap();
 
     assert!(
         output.handle(req.clone()).await.is_ok(),

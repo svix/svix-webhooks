@@ -71,7 +71,7 @@ async fn mq_connection(uri: &str) -> Connection {
     let options = ConnectionProperties::default()
         .with_connection_name("test".into())
         .with_executor(tokio_executor_trait::Tokio::current())
-        .with_reactor(tokio_reactor_trait::Tokio);
+        .with_reactor(tokio_reactor_trait::Tokio::current());
     Connection::connect(uri, options).await.unwrap()
 }
 
