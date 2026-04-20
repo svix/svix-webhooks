@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 1.91.0
+* Server: Remove old endpoint secrets on rotation
+* Libs/Ruby: various fixes to the ruby sdk
+
 ## Version 1.90.0
 * Server: Add `throttleRate` to endpoint and application
   * This replaces `rateLimit` because the name caused some confusion
