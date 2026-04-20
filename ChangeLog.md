@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 1.91.1
+* Fix docker build
+
 ## Version 1.91.0
 * Server: Remove old endpoint secrets on rotation
 * Libs/Ruby: various fixes to the ruby sdk
