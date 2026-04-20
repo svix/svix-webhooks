@@ -18,3 +18,18 @@ repos:
     rev: v0.17.2
     hooks:
       - id: yamlfmt
+  - repo: https://github.com/crate-ci/typos
+    rev: v1.45.1
+    hooks:
+      - id: typos
+  - repo: https://github.com/scop/pre-commit-shfmt
+    rev: v3.13.1-1
+    hooks:
+      - id: shfmt
+        exclude: gradlew
+        args: ["--write", "-i", "4", "-ci"]
+  - repo: https://github.com/koalaman/shellcheck-precommit
+    rev: v0.11.0
+    hooks:
+      - id: shellcheck
+        exclude: gradlew

@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC2030,SC2031
 
 set -eo pipefail
 
@@ -30,7 +31,7 @@ echo "*********** RUN 1 ***********"
     export SVIX_CACHE_TYPE="redis"
     export SVIX_REDIS_DSN="redis://localhost:6379"
     ${TEST_COMMAND} "$@"
-    if [[ -z "$@" ]]; then
+    if [[ -z "$*" ]]; then
         ${TEST_COMMAND} -- --ignored redis
     fi
 )
@@ -57,7 +58,7 @@ echo "*********** RUN 4 ***********"
     export SVIX_CACHE_TYPE="rediscluster"
     export SVIX_REDIS_DSN="redis://localhost:6380"
     ${TEST_COMMAND} "$@"
-    if [[ -z "$@" ]]; then
+    if [[ -z "$*" ]]; then
         ${TEST_COMMAND} -- --ignored redis
     fi
 )
@@ -76,7 +77,7 @@ echo "*********** RUN 6 ***********"
     export SVIX_REDIS_DSN="redis://localhost:6379"
     export SVIX_RABBIT_DSN="amqp://xivs:xivs@localhost:5672/%2f"
     ${TEST_COMMAND} "$@"
-    if [[ -z "$@" ]]; then
+    if [[ -z "$*" ]]; then
         ${TEST_COMMAND} -- --ignored rabbitmq
     fi
 )
@@ -89,7 +90,7 @@ echo "*********** RUN 7 ***********"
     export SVIX_SENTINEL_SERVICE_NAME="master0"
 
     ${TEST_COMMAND} "$@"
-    if [[ -z "$@" ]]; then
+    if [[ -z "$*" ]]; then
         ${TEST_COMMAND} -- --ignored redis
     fi
 )

@@ -1,4 +1,6 @@
-#!/bin/sh
+#!/bin/bash
+
+set -euo pipefail
 
 cargo build
 
@@ -9,10 +11,10 @@ RUST_LOG="notset" target/debug/svix-bridge --cfg '{}' &
 SVIX_BRIDGE_PID=$!
 echo "Monitoring PID=$SVIX_BRIDGE_PID"
 sleep 15
-ps $SVIX_BRIDGE_PID > /dev/null
-if [ "$?" -ne 0 ]; then
-    echo "fail: process terminated prematurely"
+if ! ps $SVIX_BRIDGE_PID >/dev/null 2>&1; then
+    echo >&2 "fail: process terminated prematurely"
     exit 1
+else
+    echo "success: process stayed up"
+    kill $SVIX_BRIDGE_PID
 fi
-echo "success: process stayed up"
-kill $SVIX_BRIDGE_PID

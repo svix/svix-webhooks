@@ -200,13 +200,9 @@ jobs:
     uses: ./.github/workflows/ruby-lint.yml
     secrets: inherit
 
-  # pre-commit, typos, and codegen have no path filter — always run them.
+  # pre-commit, and codegen have no path filter — always run them.
   pre-commit:
     uses: ./.github/workflows/pre-commit.yml
-    secrets: inherit
-
-  typos:
-    uses: ./.github/workflows/typos.yml
     secrets: inherit
 
   codegen:
@@ -231,7 +227,6 @@ jobs:
       - rust-lint
       - ruby-lint
       - pre-commit
-      - typos
       - codegen
     if: always()
     runs-on: ubuntu-24.04
