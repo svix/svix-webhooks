@@ -10,6 +10,8 @@ targets = [
 db-path = "~/.cargo/advisory-db"
 db-urls = ["https://github.com/rustsec/advisory-db"]
 yanked = "deny"
+# there are multiple projects in here
+unused-ignored-advisory = "allow"
 ignore = [
     # TODO: Update dependencies that use rsa crate
     "RUSTSEC-2023-0071",
@@ -23,12 +25,6 @@ ignore = [
     "RUSTSEC-2025-0134",
     # bincode (depended on by deno) is unmaintained
     "RUSTSEC-2025-0141",
-    # rustls-webpki incorrectly handles CRLs for certificates with multiple distributionPoints;
-    # the old versions are used in smithy and we can't upgrade them right now. this will be fixed
-    # when smithy drops hyper 0.x support
-    "RUSTSEC-2026-0049",
-    # can't upgrade rand until some dependencies support 0.10
-    "RUSTSEC-2026-0097",
 ]
 
 [licenses]
@@ -48,26 +44,11 @@ allow = [
     "CC0-1.0",
     "Zlib",
 ]
+unused-allowed-license = "allow"
+unused-license-exception = "allow"
 confidence-threshold = 0.8
 exceptions = [
-    #{ allow = ["Zlib"], name = "adler32", version = "*" },
     { allow = ["EPL-2.0"], name = "colored_json", version = "*" }
-]
-
-[[licenses.clarify]]
-name = "ring"
-version = "*"
-expression = "MIT AND ISC AND OpenSSL"
-license-files = [
-    { path = "LICENSE", hash = 0xbd0eed23 }
-]
-
-[[licenses.clarify]]
-name = "encoding_rs"
-version = "0.8.30"
-expression = "MIT OR Apache-2.0"
-license-files = [
-    { path = "COPYRIGHT", hash = 0x39f8ad31 }
 ]
 
 # TODO: Include internal crates
@@ -76,7 +57,7 @@ ignore = false
 registries = []
 
 [bans]
-multiple-versions = "warn"
+multiple-versions = "allow"
 wildcards = "allow"
 highlight = "all"
 allow = []
@@ -90,7 +71,13 @@ skip = []
 skip-tree = []
 
 [sources]
-unknown-registry = "warn"
-unknown-git = "warn"
+unknown-registry = "deny"
+unknown-git = "deny"
 allow-registry = ["https://github.com/rust-lang/crates.io-index"]
-allow-git = []
+allow-git = [
+    "https://github.com/svix/hyper.git",
+    "https://github.com/svix/omniqueue-rs.git",
+    "https://github.com/svix/validator.git",
+]
+# there are several projects in here, so it's okay if we don't use them all
+unused-allowed-source = "allow"
