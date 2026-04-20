@@ -13,10 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Install Dependencies
-        run: yarn
-
       - name: Update Postman Collection
-        run: yarn update-postman
+        run: npx --yes -p openapi-to-postmanv2 node tools/update_postman.js
         env:
           POSTMAN_API_KEY: ${{ secrets.POSTMAN_API_KEY }}
