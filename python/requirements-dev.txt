@@ -47,15 +47,17 @@ pip-tools==7.5.3
     # via -r requirements.in/development.txt
 pluggy==1.5.0
     # via pytest
+pygments==2.20.0
+    # via pytest
 pyproject-hooks==1.1.0
     # via
     #   build
     #   pip-tools
-pytest==8.3.3
+pytest==9.0.3
     # via
     #   -r requirements.in/development.txt
     #   pytest-docker
-pytest-docker==3.1.1
+pytest-docker==3.2.5
     # via -r requirements.in/development.txt
 pytest-httpserver==1.1.3
     # via -r requirements.in/development.txt
