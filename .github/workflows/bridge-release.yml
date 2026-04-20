@@ -7,6 +7,11 @@ on:
 env:
   CARGO_TERM_COLOR: always
 
+permissions:
+  contents: read
+  id-token: write
+  packages: write
+
 jobs:
   release:
     name: release x86_64-unknown-linux-gnu
@@ -41,40 +46,88 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  docker:
-    name: release docker
+  get-version:
     runs-on: ubuntu-24.04
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
           filter: tree:0
+      - id: get-version-number
+        run: |
+          echo "tag=$(git describe --tags --abbrev=0)" >> "$GITHUB_OUTPUT"
+    outputs:
+      version: steps.get-version-number.outputs.tag
 
-      - name: Setup QEMU
-        uses: docker/setup-qemu-action@v2
+  build:
+    needs: [get-version]
+    uses: docker/github-builder/.github/workflows/build.yml@v1
+    permissions:
+      contents: read # to fetch the repository content
+      id-token: write # for signing attestation(s) with GitHub OIDC Token
+      packages: write # to push to ghcr
+    with:
+      output: image
+      file: bridge/Dockerfile
+      context: ./
+      push: true
+      platforms: linux/amd64,linux/arm64
+      cache: true
+      cache-scope: svix-bridge-release
+      cache-mode: max
+      meta-images: ghcr.io/svix/svix-bridge-staging
+      meta-flavor: |
+        latest=true
+      meta-tags: |
+        type=semver,pattern={{version}},prefix=v,value=${{needs.get-version.outputs.version}}
+        type=semver,pattern={{major}}.{{minor}},prefix=v,value=${{needs.get-version.outputs.version}}
+        type=semver,pattern={{major}},prefix=v,value=${{needs.get-version.outputs.version}}
+    secrets:
+      registry-auths: |
+        - registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Login Docker
+  release-to-dockerhub:
+    environment: release
+    needs: [get-version, build]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Install regctl
+        uses: iarekylew00t/regctl-installer@v4
+      - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          registry: docker.io
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Setup Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Derive Version Numbers
-        run: |
-          export REPO="${{ secrets.DOCKERHUB_USERNAME }}/svix-bridge"
-          export GIT_TAG="$(git describe --tags --abbrev=0)"
-          export DOCKER_TAGS=$(echo "${GIT_TAG}" | sed -E "s#v([0-9]+)\.([0-9]+)\.([0-9]+)#${REPO}:latest,${REPO}:v\1.\2.\3,${REPO}:v\1.\2,${REPO}:v\1#")
-          echo "DOCKER_TAGS=${DOCKER_TAGS}" >> "$GITHUB_ENV"
-          echo "Generated Tags: ${DOCKER_TAGS}"
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v6
+      - name: Recompute meta tags
+        id: meta
+        uses: docker/metadata-action@v6
         with:
-          context: ./
-          file: ./bridge/Dockerfile
-          push: true
-          tags: ${{ env.DOCKER_TAGS }}
-          platforms: linux/amd64,linux/arm64
+          images: ghcr.io/svix/svix-bridge-staging
+          sep-tags: " "
+          flavor: |
+            latest=true
+          tags: |
+            type=semver,pattern={{version}},prefix=v,value=${{needs.get-version.outputs.version}}
+            type=semver,pattern={{major}}.{{minor}},prefix=v,value=${{needs.get-version.outputs.version}}
+            type=semver,pattern={{major}},prefix=v,value=${{needs.get-version.outputs.version}}
+      - name: "Copy images"
+        run: |
+          for source in ${{ steps.meta.outputs.tags }}; do
+            # shellcheck disable=SC2001
+            dest="$(echo "$source" | sed -e 's,ghcr.io/svix/svix-bridge-staging,docker.io/svix/svix-bridge,')"
+            echo "Copying $source to $dest"
+            regctl image copy "$source" "$dest"
+          done
