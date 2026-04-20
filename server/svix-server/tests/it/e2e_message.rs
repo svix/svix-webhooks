@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 use chrono::{Duration, Utc};
-use rand::distributions::DistString;
+use rand::distr::{Alphanumeric, SampleString};
 use reqwest::StatusCode;
 use sea_orm::{ColumnTrait, EntityTrait, QueryFilter, sea_query::Expr};
 use serde::de::IgnoredAny;
@@ -20,7 +20,7 @@ use svix_server::{
 };
 
 fn rand_str(len: usize) -> String {
-    rand::distributions::Alphanumeric.sample_string(&mut rand::thread_rng(), len)
+    Alphanumeric.sample_string(&mut rand::rng(), len)
 }
 
 use crate::utils::{

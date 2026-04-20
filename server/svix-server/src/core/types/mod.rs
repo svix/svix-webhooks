@@ -10,7 +10,6 @@ use std::{
 use base64::{Engine, engine::general_purpose::STANDARD};
 use chrono::{DateTime, Utc};
 use num_enum::{IntoPrimitive, TryFromPrimitive};
-use rand::Rng;
 use regex::Regex;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -740,7 +739,7 @@ impl EndpointSecretInternal {
     }
 
     pub fn generate_symmetric(encryption: &Encryption) -> crate::error::Result<Self> {
-        let buf: [u8; Self::KEY_SIZE] = rand::thread_rng().gen();
+        let buf: [u8; Self::KEY_SIZE] = rand::random();
         Self::new(encryption, EndpointSecretType::Hmac256, &buf)
     }
 

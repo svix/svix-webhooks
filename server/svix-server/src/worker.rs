@@ -18,7 +18,6 @@ use http::{
 };
 use http_body_util::BodyExt as _;
 use itertools::Itertools;
-use rand::Rng;
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, QueryOrder, Set,
     prelude::DateTimeUtc,
@@ -542,8 +541,7 @@ fn calculate_retry_delay(
     };
 
     // Apply jitter with a maximum variation of JITTER_DELTA
-    rand::thread_rng()
-        .gen_range(duration.mul_f32(1.0 - JITTER_DELTA)..=duration.mul_f32(1.0 + JITTER_DELTA))
+    rand::random_range(duration.mul_f32(1.0 - JITTER_DELTA)..=duration.mul_f32(1.0 + JITTER_DELTA))
 }
 
 #[tracing::instrument(skip_all, fields(response_code))]

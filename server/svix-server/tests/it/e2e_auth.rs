@@ -2,7 +2,7 @@
 //! that the tokens returned by the endpoint have restricted functionality and that the response
 //! from the endpoint is valid in the process.
 
-use rand::distributions::DistString;
+use rand::distr::{Alphanumeric, SampleString};
 use reqwest::StatusCode;
 use serde::de::IgnoredAny;
 use serde_json::{Value, json};
@@ -162,7 +162,7 @@ async fn test_app_portal_access_with_application() {
 
     let app_uid = format!(
         "app-created-in-portal-{}",
-        rand::distributions::Alphanumeric.sample_string(&mut rand::thread_rng(), 15)
+        Alphanumeric.sample_string(&mut rand::rng(), 15)
     );
 
     // app-portal-access without the application field fails
