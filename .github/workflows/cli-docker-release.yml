@@ -26,7 +26,7 @@ jobs:
         run: |
           echo "tag=$(git describe --tags --abbrev=0)" >> "$GITHUB_OUTPUT"
     outputs:
-      version: steps.get-version-number.outputs.tag
+      version: ${{ steps.get-version-number.outputs.tag }}
   build:
     needs: [get-version]
     uses: docker/github-builder/.github/workflows/build.yml@v1
