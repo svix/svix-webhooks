@@ -1,2 +1,7 @@
 allow-mixed-uninlined-format-args = false
 avoid-breaking-exported-api = false
+
+disallowed-macros = [
+    # https://github.com/tokio-rs/tracing/issues/2448
+    "tracing::enabled"
+]
