@@ -1,6 +1,5 @@
 import { ApiException, type XOR } from "./util";
 import type { HttpErrorOut, HTTPValidationError } from "./HttpErrors";
-import { v4 as uuidv4 } from "uuid";
 
 export const LIB_VERSION = "1.91.1";
 const USER_AGENT = `svix-libs/${LIB_VERSION}/javascript`;
@@ -140,7 +139,7 @@ export class SvixRequest {
       this.headerParams["idempotency-key"] === undefined &&
       this.method.toUpperCase() === "POST"
     ) {
-      this.headerParams["idempotency-key"] = `auto_${uuidv4()}`;
+      this.headerParams["idempotency-key"] = `auto_${crypto.randomUUID()}`;
     }
 
     const randomId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
