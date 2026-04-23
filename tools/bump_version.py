@@ -38,7 +38,7 @@ POST_BUMP_COMMANDS = [
     "cargo generate-lockfile --offline --manifest-path=bridge/Cargo.toml",
     "cargo generate-lockfile --offline --manifest-path=svix-cli/Cargo.toml",
     # JavaScript
-    "cd javascript && npm i --package-lock-only",
+    "cd javascript && npm i --package-lock-only --ignore-scripts",
 ]
 
 VERSION_FILES = [
