@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use time::OffsetDateTime;
-
 #[derive(thiserror::Error, Debug)]
 pub enum WebhookError {
     #[error("failed to parse timestamp")]
@@ -41,7 +39,7 @@ const SVIX_MSG_TIMESTAMP_KEY: &str = "svix-timestamp";
 const UNBRANDED_MSG_ID_KEY: &str = "webhook-id";
 const UNBRANDED_MSG_SIGNATURE_KEY: &str = "webhook-signature";
 const UNBRANDED_MSG_TIMESTAMP_KEY: &str = "webhook-timestamp";
-const TOLERANCE_IN_SECONDS: i64 = 5 * 60;
+const TOLERANCE_IN_SECONDS: u64 = 5 * 60;
 const SIGNATURE_VERSION: &str = "v1";
 
 impl Webhook {
@@ -151,10 +149,18 @@ impl Webhook {
     }
 
     fn verify_timestamp(ts: i64) -> Result<(), WebhookError> {
-        let now = OffsetDateTime::now_utc().unix_timestamp();
-        if now - ts > TOLERANCE_IN_SECONDS {
+        let Ok(now) = std::time::UNIX_EPOCH.elapsed() else {
+            // we can't validate timestamps if the clock is before 1970
+            return Err(WebhookError::InvalidTimestamp);
+        };
+        let now = now.as_secs();
+        let Ok(ts) = u64::try_from(ts) else {
+            // we won't honor timestamps before 1970
+            return Err(WebhookError::InvalidTimestamp);
+        };
+        if ts.saturating_add(TOLERANCE_IN_SECONDS) < now {
             Err(WebhookError::TimestampTooOldError)
-        } else if ts > now + TOLERANCE_IN_SECONDS {
+        } else if ts > now.saturating_add(TOLERANCE_IN_SECONDS) {
             Err(WebhookError::FutureTimestampError)
         } else {
             Ok(())
@@ -207,25 +213,21 @@ mod private {
 #[cfg(test)]
 mod tests {
     use http02::HeaderMap;
-    use time::OffsetDateTime;
 
     use super::{
         Webhook, SVIX_MSG_ID_KEY, SVIX_MSG_SIGNATURE_KEY, SVIX_MSG_TIMESTAMP_KEY,
         UNBRANDED_MSG_ID_KEY, UNBRANDED_MSG_SIGNATURE_KEY, UNBRANDED_MSG_TIMESTAMP_KEY,
     };
 
+    fn now() -> i64 {
+        std::time::UNIX_EPOCH.elapsed().unwrap().as_secs() as _
+    }
+
     fn get_svix_headers(msg_id: &str, signature: &str) -> HeaderMap {
         let mut headers = HeaderMap::new();
         headers.insert(SVIX_MSG_ID_KEY, msg_id.parse().unwrap());
         headers.insert(SVIX_MSG_SIGNATURE_KEY, signature.parse().unwrap());
-        headers.insert(
-            SVIX_MSG_TIMESTAMP_KEY,
-            OffsetDateTime::now_utc()
-                .unix_timestamp()
-                .to_string()
-                .parse()
-                .unwrap(),
-        );
+        headers.insert(SVIX_MSG_TIMESTAMP_KEY, now().to_string().parse().unwrap());
         headers
     }
 
@@ -235,11 +237,7 @@ mod tests {
         headers.insert(UNBRANDED_MSG_SIGNATURE_KEY, signature.parse().unwrap());
         headers.insert(
             UNBRANDED_MSG_TIMESTAMP_KEY,
-            OffsetDateTime::now_utc()
-                .unix_timestamp()
-                .to_string()
-                .parse()
-                .unwrap(),
+            now().to_string().parse().unwrap(),
         );
         headers
     }
@@ -265,9 +263,7 @@ mod tests {
         let payload = br#"{"email":"test@example.com","username":"test_user"}"#;
         let wh = Webhook::new(&secret).unwrap();
 
-        let signature = wh
-            .sign(msg_id, OffsetDateTime::now_utc().unix_timestamp(), payload)
-            .unwrap();
+        let signature = wh.sign(msg_id, now(), payload).unwrap();
         for headers in [
             get_svix_headers(msg_id, &signature),
             get_unbranded_headers(msg_id, &signature),
@@ -299,9 +295,7 @@ mod tests {
         let payload = br#"{"email":"test@example.com","username":"test_user"}"#;
         let wh = Webhook::new(&secret).unwrap();
 
-        let signature = wh
-            .sign(msg_id, OffsetDateTime::now_utc().unix_timestamp(), payload)
-            .unwrap();
+        let signature = wh.sign(msg_id, now(), payload).unwrap();
 
         // Just `v1,`
         for mut headers in [
@@ -339,8 +333,8 @@ mod tests {
         // Checks that timestamps that are in the future or too old are rejected by
         // `verify` but okay for `verify_ignoring_timestamp`.
         for ts in [
-            OffsetDateTime::now_utc().unix_timestamp() - (super::TOLERANCE_IN_SECONDS + 1),
-            OffsetDateTime::now_utc().unix_timestamp() + (super::TOLERANCE_IN_SECONDS + 1),
+            now() - (super::TOLERANCE_IN_SECONDS as i64 + 1),
+            now() + (super::TOLERANCE_IN_SECONDS as i64 + 1),
         ] {
             let signature = wh.sign(msg_id, ts, payload).unwrap();
             let mut headers = get_svix_headers(msg_id, &signature);
@@ -354,7 +348,7 @@ mod tests {
             assert!(wh.verify_ignoring_timestamp(payload, &headers,).is_ok());
         }
 
-        let ts = OffsetDateTime::now_utc().unix_timestamp();
+        let ts = now();
         let signature = wh.sign(msg_id, ts, payload).unwrap();
         let mut headers = get_svix_headers(msg_id, &signature);
         headers.insert(
@@ -370,15 +364,33 @@ mod tests {
     }
 
     #[test]
+    fn test_verify_out_of_bounds_timestamp() {
+        let secret = "whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD".to_owned();
+        let msg_id = "msg_27UH4WbU6Z5A5EzD8u03UvzRbpk";
+        let payload = br#"{"email":"test@example.com","username":"test_user"}"#;
+        let wh = Webhook::new(&secret).unwrap();
+
+        let ts = -1;
+        let signature = wh.sign(msg_id, ts, payload).unwrap();
+        let mut headers = get_svix_headers(msg_id, &signature);
+        headers.insert(
+            super::SVIX_MSG_TIMESTAMP_KEY,
+            ts.to_string().parse().unwrap(),
+        );
+
+        wh.verify(payload, &headers)
+            .expect_err("negative timestamp should not be allowed");
+        assert!(wh.verify_ignoring_timestamp(payload, &headers,).is_ok());
+    }
+
+    #[test]
     fn test_verify_with_multiple_signatures() {
         let secret = "whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD".to_owned();
         let msg_id = "msg_27UH4WbU6Z5A5EzD8u03UvzRbpk";
         let payload = br#"{"email":"test@example.com","username":"test_user"}"#;
         let wh = Webhook::new(&secret).unwrap();
 
-        let signature = wh
-            .sign(msg_id, OffsetDateTime::now_utc().unix_timestamp(), payload)
-            .unwrap();
+        let signature = wh.sign(msg_id, now(), payload).unwrap();
 
         let multi_sig = format!(
             "{} {} {} {}",
@@ -419,9 +431,7 @@ mod tests {
         let payload = br#"{"email":"test@example.com","username":"test_user"}"#;
         let wh = Webhook::new(&secret).unwrap();
 
-        let signature = wh
-            .sign(msg_id, OffsetDateTime::now_utc().unix_timestamp(), payload)
-            .unwrap();
+        let signature = wh.sign(msg_id, now(), payload).unwrap();
         for (mut hdr_map, hdrs) in [
             (
                 get_svix_headers(msg_id, &signature),
