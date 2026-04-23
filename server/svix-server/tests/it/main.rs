@@ -1,3 +1,4 @@
+mod background_migrations;
 mod db;
 mod e2e_application;
 mod e2e_attempt;

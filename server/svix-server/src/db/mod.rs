@@ -13,6 +13,7 @@ use crate::{
     core::types::{BaseId, MessageId, OrganizationId},
 };
 
+pub mod background_migrations;
 pub mod models;
 use models::{application, endpoint, eventtype, message, messageattempt};
 

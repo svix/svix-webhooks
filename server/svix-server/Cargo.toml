@@ -31,6 +31,7 @@ bytes = "1.1.0"
 chacha20poly1305 = "0.10.1"
 chrono = { version = "0.4.26", features = ["serde"] }
 clap = { version = "4.1.8", features = ["derive"] }
+crc = "3"
 dotenvy = "0.15.7"
 ed25519-compact = "2.1.1"
 enum_dispatch = "0.3.8"

@@ -246,6 +246,9 @@ pub struct ConfigurationInner {
     #[serde(default = "default_redis_pending_duration_secs")]
     pub redis_pending_duration_secs: u64,
 
+    /// Should this instance run background migrations
+    pub background_migrations_enabled: bool,
+
     #[serde(flatten)]
     pub internal: InternalConfig,
 }

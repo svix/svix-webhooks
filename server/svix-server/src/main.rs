@@ -15,7 +15,7 @@ use svix_server::{
         types::{EndpointSecretInternal, OrganizationId},
     },
     db,
-    db::{prune_messages, wipe_org},
+    db::{background_migrations, prune_messages, wipe_org},
     run, setup_tracing,
 };
 use tracing_subscriber::util::SubscriberInitExt;
@@ -70,6 +70,13 @@ enum Commands {
     /// Run database migrations and exit
     #[clap()]
     Migrate,
+
+    /// Revert a background migration by id
+    #[clap()]
+    RevertBackgroundMigration {
+        /// id of the background migration to revert
+        id: String,
+    },
 
     #[clap()]
     Wipe {
@@ -199,7 +206,22 @@ async fn main() -> anyhow::Result<()> {
     match args.command {
         Some(Commands::Migrate) => {
             db::run_migrations(&cfg).await;
+            background_migrations::run(&cfg).await;
             println!("Migrations: success");
+        }
+        Some(Commands::RevertBackgroundMigration { id }) => {
+            let migration = background_migrations::MIGRATIONS
+                .iter()
+                .find(|m| m.id == id)
+                .ok_or_else(|| anyhow::anyhow!("unknown migration id: '{id}'"))?;
+            let pool = sqlx::postgres::PgPoolOptions::new()
+                .max_connections(cfg.db_pool_max_size.into())
+                .connect(&cfg.db_dsn)
+                .await?;
+            match background_migrations::try_revert(&pool, migration).await? {
+                true => println!("Migration reverted: {id}"),
+                false => println!("Nothing to revert for: {id}"),
+            }
         }
         Some(Commands::Jwt {
             command: JwtCommands::Generate { org_id },

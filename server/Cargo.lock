@@ -5169,6 +5169,7 @@ dependencies = [
  "chacha20poly1305",
  "chrono",
  "clap",
+ "crc",
  "ctor",
  "dotenvy",
  "ed25519-compact",
