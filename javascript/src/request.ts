@@ -1,7 +1,7 @@
 import { ApiException, type XOR } from "./util";
 import type { HttpErrorOut, HTTPValidationError } from "./HttpErrors";
 
-export const LIB_VERSION = "1.91.1";
+export const LIB_VERSION = "1.92.2";
 const USER_AGENT = `svix-libs/${LIB_VERSION}/javascript`;
 
 export enum HttpMethod {

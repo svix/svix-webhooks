@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 1.92.2
+* Libs/JavaScript: Remove dependency on `uuid` (thanks [@ulrichstark])
+
+[@ulrichstark]: https://github.com/ulrichstark
+
 ## Version 1.91.1
 * Fix docker build
 
