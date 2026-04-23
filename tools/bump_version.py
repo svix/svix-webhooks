@@ -34,9 +34,9 @@ class VersionFile:
 
 POST_BUMP_COMMANDS = [
     # Rust
-    "cargo generate-lockfile --offline --manifest-path=server/Cargo.toml",
-    "cargo generate-lockfile --offline --manifest-path=bridge/Cargo.toml",
-    "cargo generate-lockfile --offline --manifest-path=svix-cli/Cargo.toml",
+    "cargo update --workspace --manifest-path=server/Cargo.toml",
+    "cargo update --workspace --manifest-path=bridge/Cargo.toml",
+    "cargo update --workspace --manifest-path=svix-cli/Cargo.toml",
     # JavaScript
     "cd javascript && npm i --package-lock-only --ignore-scripts",
 ]
