@@ -22,6 +22,6 @@ dispatch-releases = true
 # A GitHub repo to push Homebrew formulas to
 tap = "svix/homebrew-svix"
 # Publish jobs to run in CI
-publish-jobs = ["homebrew"]
+publish-jobs = ["homebrew", "npm"]
 # Skip checking whether the specified configuration files are up to date
 allow-dirty = ["ci"]

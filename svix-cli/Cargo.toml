@@ -15,6 +15,7 @@ rust-version = "1.88"
 
 [package.metadata.dist]
 dist = true
+npm-package = "svix-cli"
 
 [package.metadata.wix]
 upgrade-guid = "A64E8E7A-69C1-4C4A-96A6-D0BD11C42AF6"
