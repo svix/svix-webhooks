@@ -10,6 +10,10 @@ jobs:
     runs-on: ubuntu-24.04
     environment: release
 
+    permissions:
+      id-token: write
+      contents: read
+
     steps:
       - uses: actions/checkout@v6
 
@@ -28,14 +32,10 @@ jobs:
           cd ruby
           bundler exec rake build
 
+      - name: Configure RubyGems credentials (trusted publishing)
+        uses: rubygems/configure-rubygems-credentials@main
+
       - name: Publish
         run: |
-          mkdir -p "$HOME/.gem"
-          touch "$HOME/.gem/credentials"
-          chmod 0600 "$HOME/.gem/credentials"
-          printf -- "---\n:rubygems_api_key: %s\n" "$RUBYGEMS_AUTH_TOKEN" > "$HOME/.gem/credentials"
-
           cd ruby
           gem push pkg/*.gem
-        env:
-          RUBYGEMS_AUTH_TOKEN: "${{secrets.RUBYGEMS_AUTH_TOKEN}}"
