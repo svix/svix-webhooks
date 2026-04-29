@@ -112,7 +112,7 @@ async fn apply_inner(pool: &PgPool, migration: &BackgroundMigration) -> Result<b
             tracing::warn!(
                 id = migration.id,
                 attempts,
-                "Background migration previously failed; running cleanup before retry"
+                "Background migration previously failed"
             );
             if let Some(stmts) = migration.cleanup_sql {
                 tracing::info!(id = migration.id, "Running cleanup before retry");
