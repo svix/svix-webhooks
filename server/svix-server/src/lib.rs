@@ -128,8 +128,6 @@ pub async fn run_with_prefix(
     let pool = init_db(&cfg).await;
     tracing::debug!("DB: Started");
 
-    db::background_migrations::check_required_for_startup(&cfg).await;
-
     tracing::debug!("Cache: Initializing {:?}", cfg.cache_type);
     let cache_backend = cfg.cache_backend();
     let cache = match &cache_backend {

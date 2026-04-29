@@ -17,7 +17,6 @@ pub static MIGRATIONS: &[BackgroundMigration] = &[BackgroundMigration {
     "#],
     cleanup_sql: None,
     revert_sql: Some(&["DROP INDEX CONCURRENTLY IF EXISTS messageattempt_per_endp_no_status"]),
-    required_for_startup: false,
 }];
 
 pub struct BackgroundMigration {
@@ -29,12 +28,6 @@ pub struct BackgroundMigration {
     pub cleanup_sql: Option<&'static [&'static str]>,
     /// Optional Sql statements to run for reverting the migration.
     pub revert_sql: Option<&'static [&'static str]>,
-    /// If true, the application will fail to start if this migration is missing.
-    ///
-    /// Ideally you would first add the migration with this field set to false, and only
-    /// set it to true in a subsequent application version after verifying the migration has
-    /// successfully run.
-    pub required_for_startup: bool,
 }
 
 async fn advisory_lock_acquire(
@@ -187,45 +180,6 @@ async fn apply_inner(pool: &PgPool, migration: &BackgroundMigration) -> Result<b
 pub async fn run(cfg: &Configuration) {
     let pool = super::connect(&cfg.db_dsn, cfg.db_pool_max_size).await;
     run_with_pool(&pool, MIGRATIONS).await;
-}
-
-pub async fn check_required_for_startup(cfg: &Configuration) {
-    let pool = super::connect(&cfg.db_dsn, cfg.db_pool_max_size).await;
-    if let Err(e) = check_required_for_startup_with_pool(&pool, MIGRATIONS).await {
-        panic!("{e}");
-    }
-}
-
-pub async fn check_required_for_startup_with_pool(
-    pool: &PgPool,
-    migrations: &[BackgroundMigration],
-) -> Result<(), String> {
-    if let Err(e) = ensure_table(pool).await {
-        return Err(format!("Failed to check required migrations: {e}"));
-    }
-    for migration in migrations.iter().filter(|m| m.required_for_startup) {
-        let success: Result<Option<bool>, sqlx::Error> =
-            sqlx::query_scalar("SELECT success FROM _svix_background_migrations WHERE id = $1")
-                .bind(migration.id)
-                .fetch_optional(pool)
-                .await;
-        match success {
-            Ok(Some(true)) => {}
-            Ok(_) => {
-                return Err(format!(
-                    "Required background migration '{}' has not completed.",
-                    migration.id
-                ));
-            }
-            Err(e) => {
-                return Err(format!(
-                    "Failed to check required migration '{}': {e}",
-                    migration.id
-                ));
-            }
-        }
-    }
-    Ok(())
 }
 
 pub async fn run_with_pool(pool: &PgPool, migrations: &[BackgroundMigration]) {

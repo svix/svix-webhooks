@@ -3,7 +3,7 @@
 use futures::future::join_all;
 use sqlx::PgPool;
 use svix_server::db::background_migrations::{
-    BackgroundMigration, check_required_for_startup_with_pool, ensure_table, try_apply, try_revert,
+    BackgroundMigration, ensure_table, try_apply, try_revert,
 };
 
 use crate::utils::get_default_test_config;
@@ -39,7 +39,6 @@ async fn test_fresh_apply_succeeds() {
         apply_sql: &["SELECT 1"],
         cleanup_sql: None,
         revert_sql: None,
-        required_for_startup: false,
     };
 
     let done = try_apply(&pool, &migration).await.unwrap();
@@ -66,7 +65,6 @@ async fn test_apply_is_idempotent() {
         apply_sql: &["SELECT 1"],
         cleanup_sql: None,
         revert_sql: None,
-        required_for_startup: false,
     };
 
     try_apply(&pool, &migration).await.unwrap();
@@ -111,7 +109,6 @@ async fn test_cleanup_runs_on_retry() {
             "INSERT INTO _test_bgmig_cleanup VALUES ('ran') ON CONFLICT DO NOTHING",
         ]),
         revert_sql: None,
-        required_for_startup: false,
     };
 
     try_apply(&pool, &migration).await.unwrap();
@@ -140,7 +137,6 @@ async fn test_failed_sql_records_error() {
         apply_sql: &["this is not valid sql"],
         cleanup_sql: None,
         revert_sql: None,
-        required_for_startup: false,
     };
 
     let result = try_apply(&pool, &migration).await;
@@ -177,7 +173,6 @@ async fn test_failed_cleanup_records_error() {
         apply_sql: &["SELECT 1"],
         cleanup_sql: Some(&["this is not valid sql"]),
         revert_sql: None,
-        required_for_startup: false,
     };
 
     let result = try_apply(&pool, &migration).await;
@@ -209,7 +204,6 @@ async fn test_revert_succeeds() {
         apply_sql: &["INSERT INTO _test_bgmig_revert VALUES ('applied') ON CONFLICT DO NOTHING"],
         cleanup_sql: None,
         revert_sql: Some(&["DELETE FROM _test_bgmig_revert WHERE id = 'applied'"]),
-        required_for_startup: false,
     };
 
     try_apply(&pool, &migration).await.unwrap();
@@ -254,7 +248,6 @@ async fn test_empty_revert_sql_deletes_row() {
         apply_sql: &["SELECT 1"],
         cleanup_sql: None,
         revert_sql: None,
-        required_for_startup: false,
     };
 
     try_apply(&pool, &migration).await.unwrap();
@@ -289,7 +282,6 @@ async fn test_revert_unapplied_migration_is_noop() {
         apply_sql: &["SELECT 1"],
         cleanup_sql: None,
         revert_sql: Some(&["SELECT 1"]),
-        required_for_startup: false,
     };
 
     let reverted = try_revert(&pool, &migration).await.unwrap();
@@ -311,7 +303,6 @@ async fn test_concurrent_apply() {
         apply_sql: &["INSERT INTO _test_bgmig_concurrent VALUES (gen_random_uuid()::text)"],
         cleanup_sql: Some(&["DELETE FROM _test_bgmig_concurrent"]),
         revert_sql: None,
-        required_for_startup: false,
     };
 
     let results = join_all((0..8).map(|_| try_apply(&pool, &migration))).await;
@@ -342,45 +333,6 @@ async fn test_concurrent_apply() {
 }
 
 #[tokio::test]
-async fn test_required_migration_not_applied_fails_startup_check() {
-    let pool = test_pool().await;
-    ensure_table(&pool).await.unwrap();
-
-    let migration = BackgroundMigration {
-        id: "test_required_not_applied",
-        apply_sql: &["SELECT 1"],
-        cleanup_sql: None,
-        revert_sql: None,
-        required_for_startup: true,
-    };
-
-    let result = check_required_for_startup_with_pool(&pool, &[migration]).await;
-    assert!(result.is_err());
-}
-
-#[tokio::test]
-async fn test_required_migration_applied_passes_startup_check() {
-    let pool = test_pool().await;
-    ensure_table(&pool).await.unwrap();
-
-    let migration = BackgroundMigration {
-        id: "test_required_applied",
-        apply_sql: &["SELECT 1"],
-        cleanup_sql: None,
-        revert_sql: None,
-        required_for_startup: true,
-    };
-    let id = migration.id;
-
-    try_apply(&pool, &migration).await.unwrap();
-
-    let result = check_required_for_startup_with_pool(&pool, &[migration]).await;
-    assert!(result.is_ok());
-
-    cleanup(&pool, id).await;
-}
-
-#[tokio::test]
 async fn test_revert_failed_migration_is_noop() {
     let pool = test_pool().await;
     ensure_table(&pool).await.unwrap();
@@ -399,7 +351,6 @@ async fn test_revert_failed_migration_is_noop() {
         apply_sql: &["SELECT 1"],
         cleanup_sql: None,
         revert_sql: Some(&["SELECT 1"]),
-        required_for_startup: false,
     };
 
     let reverted = try_revert(&pool, &migration).await.unwrap();
