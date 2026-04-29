@@ -7,6 +7,16 @@ use sqlx::{PgPool, Row as _};
 
 use crate::cfg::Configuration;
 
+#[derive(Debug, thiserror::Error)]
+pub enum Error {
+    #[error("database error: {0}")]
+    Db(#[from] sqlx::Error),
+    #[error("{0}")]
+    Migration(String),
+}
+
+const GLOBAL_LOCK_ID: &str = "_svix_background_migrations";
+
 // Background migrations go here:
 pub static MIGRATIONS: &[BackgroundMigration] = &[BackgroundMigration {
     id: "2026_04_1777303796_messageattempt_per_endp_no_status",
@@ -19,6 +29,7 @@ pub static MIGRATIONS: &[BackgroundMigration] = &[BackgroundMigration {
     revert_sql: Some(&["DROP INDEX CONCURRENTLY IF EXISTS messageattempt_per_endp_no_status"]),
 }];
 
+#[derive(Copy, Clone)]
 pub struct BackgroundMigration {
     /// Unique id for the migration.
     pub id: &'static str,
@@ -30,17 +41,16 @@ pub struct BackgroundMigration {
     pub revert_sql: Option<&'static [&'static str]>,
 }
 
-async fn advisory_lock_acquire(
-    conn: &mut sqlx::PgConnection,
-    key: i64,
-) -> Result<bool, sqlx::Error> {
+async fn advisory_lock_acquire(conn: &mut sqlx::PgConnection) -> Result<bool, sqlx::Error> {
+    let key = lock_key(GLOBAL_LOCK_ID);
     sqlx::query_scalar("SELECT pg_try_advisory_lock($1)")
         .bind(key)
         .fetch_one(conn)
         .await
 }
 
-async fn advisory_lock_release(conn: &mut sqlx::PgConnection, key: i64) {
+async fn advisory_lock_release(conn: &mut sqlx::PgConnection) {
+    let key = lock_key(GLOBAL_LOCK_ID);
     if let Err(e) = sqlx::query("SELECT pg_advisory_unlock($1)")
         .bind(key)
         .execute(conn)
@@ -72,29 +82,30 @@ pub async fn ensure_table(pool: &PgPool) -> Result<(), sqlx::Error> {
     Ok(())
 }
 
-pub async fn try_apply(
+pub async fn run_migrations(
     pool: &PgPool,
-    migration: &BackgroundMigration,
+    migrations: &[BackgroundMigration],
 ) -> Result<bool, sqlx::Error> {
-    let key = lock_key(migration.id);
-
     let mut conn = pool.acquire().await?;
 
-    if !advisory_lock_acquire(&mut conn, key).await? {
-        let done: Option<bool> =
-            sqlx::query_scalar("SELECT success FROM _svix_background_migrations WHERE id = $1")
-                .bind(migration.id)
-                .fetch_optional(pool)
-                .await?;
-        return Ok(done.unwrap_or(false));
+    if !advisory_lock_acquire(&mut conn).await? {
+        return Ok(false);
     }
 
-    let result = apply_inner(pool, migration).await;
-    advisory_lock_release(&mut conn, key).await;
-    result
+    let mut apply_result = Ok(());
+    for migration in migrations {
+        if let Err(e) = apply(pool, migration).await {
+            apply_result = Err(e);
+            break;
+        }
+    }
+
+    advisory_lock_release(&mut conn).await;
+    apply_result?;
+    Ok(true)
 }
 
-async fn apply_inner(pool: &PgPool, migration: &BackgroundMigration) -> Result<bool, sqlx::Error> {
+async fn apply(pool: &PgPool, migration: &BackgroundMigration) -> Result<bool, sqlx::Error> {
     let existing =
         sqlx::query("SELECT success, attempts FROM _svix_background_migrations WHERE id = $1")
             .bind(migration.id)
@@ -195,35 +206,23 @@ pub async fn run_with_pool(pool: &PgPool, migrations: &[BackgroundMigration]) {
     let mut backoff = Duration::from_secs(5);
 
     loop {
-        let mut pending = false;
-
-        for migration in migrations {
-            match try_apply(pool, migration).await {
-                Ok(true) => {}
-                Ok(false) => {
-                    pending = true;
-                    break;
-                }
-                Err(e) => {
-                    tracing::error!(
-                        id = migration.id,
-                        error = %e,
-                        "Background migration failed"
-                    );
-                    pending = true;
-                    break;
-                }
+        match run_migrations(pool, migrations).await {
+            Ok(true) => {
+                tracing::debug!("Background migrations complete. Exiting.");
+                return;
             }
-        }
-
-        if !pending {
-            tracing::debug!("Background migration worker exiting.");
-            break;
+            Ok(false) => {
+                tracing::info!("Background migrations are already locked. Exiting.");
+                return;
+            }
+            Err(e) => {
+                tracing::error!(error = %e, "Background migration error");
+            }
         }
 
         tokio::select! {
             _ = tokio::time::sleep(backoff) => {}
-            _ = shutdown.cancelled() => break,
+            _ = shutdown.cancelled() => return,
         }
         backoff = (backoff * 2).min(Duration::from_secs(600));
     }
@@ -231,21 +230,39 @@ pub async fn run_with_pool(pool: &PgPool, migrations: &[BackgroundMigration]) {
 
 pub async fn try_revert(
     pool: &PgPool,
-    migration: &BackgroundMigration,
-) -> Result<bool, sqlx::Error> {
-    if migration.revert_sql.is_none() {
-        tracing::warn!(id = migration.id, "No revert SQl for migration");
-    }
-
-    let key = lock_key(migration.id);
+    migrations: &[BackgroundMigration],
+    id: &str,
+) -> Result<bool, Error> {
     let mut conn = pool.acquire().await?;
 
-    if !advisory_lock_acquire(&mut conn, key).await? {
+    if !advisory_lock_acquire(&mut conn).await? {
         return Ok(false);
     }
 
-    let result = revert_inner(pool, migration, migration.revert_sql).await;
-    advisory_lock_release(&mut conn, key).await;
+    let applied: std::collections::HashSet<String> =
+        sqlx::query_scalar("SELECT id FROM _svix_background_migrations WHERE success = TRUE")
+            .fetch_all(pool)
+            .await?
+            .into_iter()
+            .collect();
+
+    let Some(last_applied) = migrations.iter().rev().find(|m| applied.contains(m.id)) else {
+        return Err(Error::Migration(format!(
+            "migration '{id}' has not been applied"
+        )));
+    };
+    if last_applied.id != id {
+        return Err(Error::Migration(format!(
+            "migration '{id}' is not the last applied migration and cannot be reverted out of order"
+        )));
+    }
+
+    if last_applied.revert_sql.is_none() {
+        tracing::warn!(id, "No revert SQL for migration");
+    }
+
+    let result = revert_inner(pool, last_applied, last_applied.revert_sql).await;
+    advisory_lock_release(&mut conn).await;
     result
 }
 
@@ -255,7 +272,7 @@ async fn revert_inner(
     pool: &PgPool,
     migration: &BackgroundMigration,
     statements: Option<&[&str]>,
-) -> Result<bool, sqlx::Error> {
+) -> Result<bool, Error> {
     let success: Option<bool> =
         sqlx::query_scalar("SELECT success FROM _svix_background_migrations WHERE id = $1")
             .bind(migration.id)
@@ -277,7 +294,7 @@ async fn revert_inner(
                 .bind(migration.id)
                 .execute(pool)
                 .await;
-                return Err(e);
+                return Err(e.into());
             }
         }
     }

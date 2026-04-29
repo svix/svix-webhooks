@@ -1,3 +1,10 @@
 [profile.default]
 retries = 2
 slow-timeout = { period = "30s", terminate-after = 2 }
+
+[[profile.default.overrides]]
+filter = "test(background_migrations)"
+test-group = "background-migrations"
+
+[test-groups]
+background-migrations = { max-threads = 1 }

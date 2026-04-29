@@ -210,15 +210,13 @@ async fn main() -> anyhow::Result<()> {
             println!("Migrations: success");
         }
         Some(Commands::RevertBackgroundMigration { id }) => {
-            let migration = background_migrations::MIGRATIONS
-                .iter()
-                .find(|m| m.id == id)
-                .ok_or_else(|| anyhow::anyhow!("unknown migration id: '{id}'"))?;
             let pool = sqlx::postgres::PgPoolOptions::new()
                 .max_connections(cfg.db_pool_max_size.into())
                 .connect(&cfg.db_dsn)
                 .await?;
-            match background_migrations::try_revert(&pool, migration).await? {
+            match background_migrations::try_revert(&pool, background_migrations::MIGRATIONS, &id)
+                .await?
+            {
                 true => println!("Migration reverted: {id}"),
                 false => println!("Nothing to revert for: {id}"),
             }

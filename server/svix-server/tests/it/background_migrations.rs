@@ -3,7 +3,7 @@
 use futures::future::join_all;
 use sqlx::PgPool;
 use svix_server::db::background_migrations::{
-    BackgroundMigration, ensure_table, try_apply, try_revert,
+    BackgroundMigration, ensure_table, run_migrations, run_with_pool, try_revert,
 };
 
 use crate::utils::get_default_test_config;
@@ -41,8 +41,7 @@ async fn test_fresh_apply_succeeds() {
         revert_sql: None,
     };
 
-    let done = try_apply(&pool, &migration).await.unwrap();
-    assert!(done);
+    run_with_pool(&pool, &[migration]).await;
 
     let success: bool =
         sqlx::query_scalar("SELECT success FROM _svix_background_migrations WHERE id = $1")
@@ -67,9 +66,8 @@ async fn test_apply_is_idempotent() {
         revert_sql: None,
     };
 
-    try_apply(&pool, &migration).await.unwrap();
-    let done = try_apply(&pool, &migration).await.unwrap();
-    assert!(done);
+    run_with_pool(&pool, &[migration]).await;
+    run_with_pool(&pool, &[migration]).await;
 
     let attempts: i32 =
         sqlx::query_scalar("SELECT attempts FROM _svix_background_migrations WHERE id = $1")
@@ -87,7 +85,11 @@ async fn test_cleanup_runs_on_retry() {
     let pool = test_pool().await;
     ensure_table(&pool).await.unwrap();
 
-    sqlx::query("CREATE TABLE IF NOT EXISTS _test_bgmig_cleanup (id TEXT PRIMARY KEY)")
+    sqlx::query("DROP TABLE IF EXISTS _test_bgmig_cleanup")
+        .execute(&pool)
+        .await
+        .unwrap();
+    sqlx::query("CREATE TABLE _test_bgmig_cleanup (id TEXT PRIMARY KEY)")
         .execute(&pool)
         .await
         .unwrap();
@@ -111,7 +113,7 @@ async fn test_cleanup_runs_on_retry() {
         revert_sql: None,
     };
 
-    try_apply(&pool, &migration).await.unwrap();
+    run_with_pool(&pool, &[migration]).await;
 
     let result: Option<String> =
         sqlx::query_scalar("SELECT id FROM _test_bgmig_cleanup WHERE id = 'ran'")
@@ -139,8 +141,7 @@ async fn test_failed_sql_records_error() {
         revert_sql: None,
     };
 
-    let result = try_apply(&pool, &migration).await;
-    assert!(result.is_err());
+    run_migrations(&pool, &[migration]).await.unwrap_err();
 
     let last_error: Option<String> =
         sqlx::query_scalar("SELECT last_error FROM _svix_background_migrations WHERE id = $1")
@@ -175,8 +176,7 @@ async fn test_failed_cleanup_records_error() {
         revert_sql: None,
     };
 
-    let result = try_apply(&pool, &migration).await;
-    assert!(result.is_err());
+    run_migrations(&pool, &[migration]).await.unwrap_err();
 
     let last_error: Option<String> =
         sqlx::query_scalar("SELECT last_error FROM _svix_background_migrations WHERE id = $1")
@@ -194,7 +194,11 @@ async fn test_revert_succeeds() {
     let pool = test_pool().await;
     ensure_table(&pool).await.unwrap();
 
-    sqlx::query("CREATE TABLE IF NOT EXISTS _test_bgmig_revert (id TEXT PRIMARY KEY)")
+    sqlx::query("DROP TABLE IF EXISTS _test_bgmig_revert")
+        .execute(&pool)
+        .await
+        .unwrap();
+    sqlx::query("CREATE TABLE _test_bgmig_revert (id TEXT PRIMARY KEY)")
         .execute(&pool)
         .await
         .unwrap();
@@ -206,7 +210,7 @@ async fn test_revert_succeeds() {
         revert_sql: Some(&["DELETE FROM _test_bgmig_revert WHERE id = 'applied'"]),
     };
 
-    try_apply(&pool, &migration).await.unwrap();
+    run_with_pool(&pool, &[migration]).await;
 
     let row: Option<String> =
         sqlx::query_scalar("SELECT id FROM _test_bgmig_revert WHERE id = 'applied'")
@@ -215,7 +219,7 @@ async fn test_revert_succeeds() {
             .unwrap();
     assert!(row.is_some());
 
-    try_revert(&pool, &migration).await.unwrap();
+    try_revert(&pool, &[migration], migration.id).await.unwrap();
 
     let row: Option<String> =
         sqlx::query_scalar("SELECT id FROM _test_bgmig_revert WHERE id = 'applied'")
@@ -250,7 +254,7 @@ async fn test_empty_revert_sql_deletes_row() {
         revert_sql: None,
     };
 
-    try_apply(&pool, &migration).await.unwrap();
+    run_with_pool(&pool, &[migration]).await;
 
     let tracking_before: Option<bool> =
         sqlx::query_scalar("SELECT success FROM _svix_background_migrations WHERE id = $1")
@@ -260,7 +264,7 @@ async fn test_empty_revert_sql_deletes_row() {
             .unwrap();
     assert!(tracking_before.is_some());
 
-    let reverted = try_revert(&pool, &migration).await.unwrap();
+    let reverted = try_revert(&pool, &[migration], migration.id).await.unwrap();
     assert!(reverted);
 
     let tracking_after: Option<bool> =
@@ -273,7 +277,7 @@ async fn test_empty_revert_sql_deletes_row() {
 }
 
 #[tokio::test]
-async fn test_revert_unapplied_migration_is_noop() {
+async fn test_revert_unapplied_migration_errors() {
     let pool = test_pool().await;
     ensure_table(&pool).await.unwrap();
 
@@ -284,8 +288,8 @@ async fn test_revert_unapplied_migration_is_noop() {
         revert_sql: Some(&["SELECT 1"]),
     };
 
-    let reverted = try_revert(&pool, &migration).await.unwrap();
-    assert!(!reverted);
+    let result = try_revert(&pool, &[migration], migration.id).await;
+    assert!(result.is_err());
 }
 
 #[tokio::test]
@@ -293,7 +297,12 @@ async fn test_concurrent_apply() {
     let pool = test_pool_with_conns(20).await;
     ensure_table(&pool).await.unwrap();
 
-    sqlx::query("CREATE TABLE IF NOT EXISTS _test_bgmig_concurrent (id TEXT PRIMARY KEY)")
+    // Drop and recreate to clear any state left by a previous failed test run.
+    sqlx::query("DROP TABLE IF EXISTS _test_bgmig_concurrent")
+        .execute(&pool)
+        .await
+        .unwrap();
+    sqlx::query("CREATE TABLE _test_bgmig_concurrent (id TEXT PRIMARY KEY)")
         .execute(&pool)
         .await
         .unwrap();
@@ -304,12 +313,12 @@ async fn test_concurrent_apply() {
         cleanup_sql: Some(&["DELETE FROM _test_bgmig_concurrent"]),
         revert_sql: None,
     };
+    cleanup(&pool, migration.id).await;
 
-    let results = join_all((0..8).map(|_| try_apply(&pool, &migration))).await;
-
-    for result in results {
-        assert!(result.is_ok());
-    }
+    // Concurrent callers race on the tracking-table insert; only the one that
+    // wins should execute the migration SQL.
+    let migrations = [migration];
+    join_all((0..8).map(|_| run_with_pool(&pool, &migrations))).await;
 
     let count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM _test_bgmig_concurrent")
         .fetch_one(&pool)
@@ -333,7 +342,7 @@ async fn test_concurrent_apply() {
 }
 
 #[tokio::test]
-async fn test_revert_failed_migration_is_noop() {
+async fn test_revert_failed_migration_errors() {
     let pool = test_pool().await;
     ensure_table(&pool).await.unwrap();
 
@@ -353,8 +362,36 @@ async fn test_revert_failed_migration_is_noop() {
         revert_sql: Some(&["SELECT 1"]),
     };
 
-    let reverted = try_revert(&pool, &migration).await.unwrap();
-    assert!(!reverted);
+    let result = try_revert(&pool, &[migration], migration.id).await;
+    assert!(result.is_err());
 
     cleanup(&pool, migration.id).await;
+}
+
+#[tokio::test]
+async fn test_revert_non_latest_errors() {
+    let pool = test_pool().await;
+    ensure_table(&pool).await.unwrap();
+
+    let m1 = BackgroundMigration {
+        id: "test_revert_non_latest_m1",
+        apply_sql: &["SELECT 1"],
+        cleanup_sql: None,
+        revert_sql: Some(&["SELECT 1"]),
+    };
+    let m2 = BackgroundMigration {
+        id: "test_revert_non_latest_m2",
+        apply_sql: &["SELECT 1"],
+        cleanup_sql: None,
+        revert_sql: Some(&["SELECT 1"]),
+    };
+    let migrations = [m1, m2];
+
+    run_with_pool(&pool, &migrations).await;
+
+    let result = try_revert(&pool, &migrations, migrations[0].id).await;
+    assert!(result.is_err());
+
+    cleanup(&pool, migrations[0].id).await;
+    cleanup(&pool, migrations[1].id).await;
 }
