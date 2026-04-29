@@ -28,10 +28,10 @@ public class MessageEndpointOut {
     @JsonProperty private Set<String> filterTypes;
     @JsonProperty private String id;
     @JsonProperty private OffsetDateTime nextAttempt;
-    @JsonProperty private Long rateLimit;
+    @JsonProperty private Short rateLimit;
     @JsonProperty private MessageStatus status;
     @JsonProperty private MessageStatusText statusText;
-    @JsonProperty private Long throttleRate;
+    @JsonProperty private Short throttleRate;
     @JsonProperty private String uid;
     @JsonProperty private OffsetDateTime updatedAt;
     @JsonProperty private URI url;
@@ -191,7 +191,7 @@ public class MessageEndpointOut {
     }
 
     @Deprecated
-    public MessageEndpointOut rateLimit(Long rateLimit) {
+    public MessageEndpointOut rateLimit(Short rateLimit) {
         this.rateLimit = rateLimit;
         return this;
     }
@@ -203,12 +203,12 @@ public class MessageEndpointOut {
      */
     @javax.annotation.Nullable
     @Deprecated
-    public Long getRateLimit() {
+    public Short getRateLimit() {
         return rateLimit;
     }
 
     @Deprecated
-    public void setRateLimit(Long rateLimit) {
+    public void setRateLimit(Short rateLimit) {
         this.rateLimit = rateLimit;
     }
 
@@ -250,7 +250,7 @@ public class MessageEndpointOut {
         this.statusText = statusText;
     }
 
-    public MessageEndpointOut throttleRate(Long throttleRate) {
+    public MessageEndpointOut throttleRate(Short throttleRate) {
         this.throttleRate = throttleRate;
         return this;
     }
@@ -262,11 +262,11 @@ public class MessageEndpointOut {
      * @return throttleRate
      */
     @javax.annotation.Nullable
-    public Long getThrottleRate() {
+    public Short getThrottleRate() {
         return throttleRate;
     }
 
-    public void setThrottleRate(Long throttleRate) {
+    public void setThrottleRate(Short throttleRate) {
         this.throttleRate = throttleRate;
     }
 

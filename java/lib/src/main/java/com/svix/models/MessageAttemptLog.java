@@ -20,7 +20,7 @@ import java.time.OffsetDateTime;
 public class MessageAttemptLog {
     @JsonProperty private String appId;
     @JsonProperty private String appUid;
-    @JsonProperty private Long attemptCount;
+    @JsonProperty private Short attemptCount;
     @JsonProperty private OffsetDateTime attemptEnd;
     @JsonProperty private String attemptId;
     @JsonProperty private OffsetDateTime attemptStart;
@@ -74,7 +74,7 @@ public class MessageAttemptLog {
         this.appUid = appUid;
     }
 
-    public MessageAttemptLog attemptCount(Long attemptCount) {
+    public MessageAttemptLog attemptCount(Short attemptCount) {
         this.attemptCount = attemptCount;
         return this;
     }
@@ -85,11 +85,11 @@ public class MessageAttemptLog {
      * @return attemptCount
      */
     @javax.annotation.Nonnull
-    public Long getAttemptCount() {
+    public Short getAttemptCount() {
         return attemptCount;
     }
 
-    public void setAttemptCount(Long attemptCount) {
+    public void setAttemptCount(Short attemptCount) {
         this.attemptCount = attemptCount;
     }
 

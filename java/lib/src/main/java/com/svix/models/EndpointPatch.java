@@ -28,12 +28,12 @@ public class EndpointPatch {
     @JsonProperty private Boolean disabled;
     @JsonProperty private MaybeUnset<Set<String>> filterTypes;
     @JsonProperty private Map<String, String> metadata;
-    @JsonProperty private MaybeUnset<Long> rateLimit;
+    @JsonProperty private MaybeUnset<Short> rateLimit;
     @JsonProperty private MaybeUnset<String> secret;
-    @JsonProperty private MaybeUnset<Long> throttleRate;
+    @JsonProperty private MaybeUnset<Short> throttleRate;
     @JsonProperty private MaybeUnset<String> uid;
     @JsonProperty private URI url;
-    @JsonProperty private Long version;
+    @JsonProperty private Short version;
 
     public EndpointPatch() {}
 
@@ -166,7 +166,7 @@ public class EndpointPatch {
     }
 
     @Deprecated
-    public EndpointPatch rateLimit(Long rateLimit) {
+    public EndpointPatch rateLimit(Short rateLimit) {
         this.rateLimit = new MaybeUnset<>(rateLimit);
         return this;
     }
@@ -178,7 +178,7 @@ public class EndpointPatch {
      */
     @javax.annotation.Nullable
     @Deprecated
-    public Long getRateLimit() {
+    public Short getRateLimit() {
         if (rateLimit == null) {
             return null;
         }
@@ -186,7 +186,7 @@ public class EndpointPatch {
     }
 
     @Deprecated
-    public void setRateLimit(Long rateLimit) {
+    public void setRateLimit(Short rateLimit) {
         this.rateLimit = new MaybeUnset<>(rateLimit);
     }
 
@@ -218,7 +218,7 @@ public class EndpointPatch {
         this.secret = new MaybeUnset<>(secret);
     }
 
-    public EndpointPatch throttleRate(Long throttleRate) {
+    public EndpointPatch throttleRate(Short throttleRate) {
         this.throttleRate = new MaybeUnset<>(throttleRate);
         return this;
     }
@@ -231,14 +231,14 @@ public class EndpointPatch {
      * @return throttleRate
      */
     @javax.annotation.Nullable
-    public Long getThrottleRate() {
+    public Short getThrottleRate() {
         if (throttleRate == null) {
             return null;
         }
         return throttleRate.getValue();
     }
 
-    public void setThrottleRate(Long throttleRate) {
+    public void setThrottleRate(Short throttleRate) {
         this.throttleRate = new MaybeUnset<>(throttleRate);
     }
 
@@ -284,7 +284,7 @@ public class EndpointPatch {
     }
 
     @Deprecated
-    public EndpointPatch version(Long version) {
+    public EndpointPatch version(Short version) {
         this.version = version;
         return this;
     }
@@ -296,12 +296,12 @@ public class EndpointPatch {
      */
     @javax.annotation.Nullable
     @Deprecated
-    public Long getVersion() {
+    public Short getVersion() {
         return version;
     }
 
     @Deprecated
-    public void setVersion(Long version) {
+    public void setVersion(Short version) {
         this.version = version;
     }
 

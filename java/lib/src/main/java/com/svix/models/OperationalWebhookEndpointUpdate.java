@@ -26,7 +26,7 @@ public class OperationalWebhookEndpointUpdate {
     @JsonProperty private Boolean disabled;
     @JsonProperty private Set<String> filterTypes;
     @JsonProperty private Map<String, String> metadata;
-    @JsonProperty private Long rateLimit;
+    @JsonProperty private Short rateLimit;
     @JsonProperty private String uid;
     @JsonProperty private URI url;
 
@@ -126,7 +126,7 @@ public class OperationalWebhookEndpointUpdate {
         this.metadata = metadata;
     }
 
-    public OperationalWebhookEndpointUpdate rateLimit(Long rateLimit) {
+    public OperationalWebhookEndpointUpdate rateLimit(Short rateLimit) {
         this.rateLimit = rateLimit;
         return this;
     }
@@ -137,11 +137,11 @@ public class OperationalWebhookEndpointUpdate {
      * @return rateLimit
      */
     @javax.annotation.Nullable
-    public Long getRateLimit() {
+    public Short getRateLimit() {
         return rateLimit;
     }
 
-    public void setRateLimit(Long rateLimit) {
+    public void setRateLimit(Short rateLimit) {
         this.rateLimit = rateLimit;
     }
 

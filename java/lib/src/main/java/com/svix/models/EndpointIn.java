@@ -28,12 +28,12 @@ public class EndpointIn {
     @JsonProperty private Set<String> filterTypes;
     @JsonProperty private Map<String, String> headers;
     @JsonProperty private Map<String, String> metadata;
-    @JsonProperty private Long rateLimit;
+    @JsonProperty private Short rateLimit;
     @JsonProperty private String secret;
-    @JsonProperty private Long throttleRate;
+    @JsonProperty private Short throttleRate;
     @JsonProperty private String uid;
     @JsonProperty private URI url;
-    @JsonProperty private Long version;
+    @JsonProperty private Short version;
 
     public EndpointIn() {}
 
@@ -188,7 +188,7 @@ public class EndpointIn {
     }
 
     @Deprecated
-    public EndpointIn rateLimit(Long rateLimit) {
+    public EndpointIn rateLimit(Short rateLimit) {
         this.rateLimit = rateLimit;
         return this;
     }
@@ -200,12 +200,12 @@ public class EndpointIn {
      */
     @javax.annotation.Nullable
     @Deprecated
-    public Long getRateLimit() {
+    public Short getRateLimit() {
         return rateLimit;
     }
 
     @Deprecated
-    public void setRateLimit(Long rateLimit) {
+    public void setRateLimit(Short rateLimit) {
         this.rateLimit = rateLimit;
     }
 
@@ -231,7 +231,7 @@ public class EndpointIn {
         this.secret = secret;
     }
 
-    public EndpointIn throttleRate(Long throttleRate) {
+    public EndpointIn throttleRate(Short throttleRate) {
         this.throttleRate = throttleRate;
         return this;
     }
@@ -244,11 +244,11 @@ public class EndpointIn {
      * @return throttleRate
      */
     @javax.annotation.Nullable
-    public Long getThrottleRate() {
+    public Short getThrottleRate() {
         return throttleRate;
     }
 
-    public void setThrottleRate(Long throttleRate) {
+    public void setThrottleRate(Short throttleRate) {
         this.throttleRate = throttleRate;
     }
 
@@ -291,7 +291,7 @@ public class EndpointIn {
     }
 
     @Deprecated
-    public EndpointIn version(Long version) {
+    public EndpointIn version(Short version) {
         this.version = version;
         return this;
     }
@@ -303,12 +303,12 @@ public class EndpointIn {
      */
     @javax.annotation.Nullable
     @Deprecated
-    public Long getVersion() {
+    public Short getVersion() {
         return version;
     }
 
     @Deprecated
-    public void setVersion(Long version) {
+    public void setVersion(Short version) {
         this.version = version;
     }
 

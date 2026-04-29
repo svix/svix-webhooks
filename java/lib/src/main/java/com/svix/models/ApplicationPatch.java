@@ -22,7 +22,7 @@ import java.util.Map;
 public class ApplicationPatch {
     @JsonProperty private Map<String, String> metadata;
     @JsonProperty private String name;
-    @JsonProperty private MaybeUnset<Long> rateLimit;
+    @JsonProperty private MaybeUnset<Short> rateLimit;
     @JsonProperty private MaybeUnset<String> uid;
 
     public ApplicationPatch() {}
@@ -74,7 +74,7 @@ public class ApplicationPatch {
         this.name = name;
     }
 
-    public ApplicationPatch rateLimit(Long rateLimit) {
+    public ApplicationPatch rateLimit(Short rateLimit) {
         this.rateLimit = new MaybeUnset<>(rateLimit);
         return this;
     }
@@ -85,14 +85,14 @@ public class ApplicationPatch {
      * @return rateLimit
      */
     @javax.annotation.Nullable
-    public Long getRateLimit() {
+    public Short getRateLimit() {
         if (rateLimit == null) {
             return null;
         }
         return rateLimit.getValue();
     }
 
-    public void setRateLimit(Long rateLimit) {
+    public void setRateLimit(Short rateLimit) {
         this.rateLimit = new MaybeUnset<>(rateLimit);
     }
 

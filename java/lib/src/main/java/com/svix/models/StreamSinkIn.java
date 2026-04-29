@@ -34,15 +34,15 @@ import java.util.Map;
 @JsonSerialize(using = StreamSinkInSerializer.class)
 @JsonDeserialize(using = StreamSinkInDeserializer.class)
 public class StreamSinkIn {
-    private Long batchSize;
+    private Short batchSize;
     private List<String> eventTypes;
-    private Long maxWaitSecs;
+    private Short maxWaitSecs;
     private Map<String, String> metadata;
     private SinkStatusIn status;
     private String uid;
     private StreamSinkInConfig config;
 
-    public StreamSinkIn batchSize(Long batchSize) {
+    public StreamSinkIn batchSize(Short batchSize) {
         this.batchSize = batchSize;
         return this;
     }
@@ -52,7 +52,7 @@ public class StreamSinkIn {
         return this;
     }
 
-    public StreamSinkIn maxWaitSecs(Long maxWaitSecs) {
+    public StreamSinkIn maxWaitSecs(Short maxWaitSecs) {
         this.maxWaitSecs = maxWaitSecs;
         return this;
     }
@@ -90,13 +90,13 @@ public class StreamSinkIn {
 @NoArgsConstructor
 class StreamSinkInSurrogate {
     @JsonProperty("batchSize")
-    Long batchSize;
+    Short batchSize;
 
     @JsonProperty("eventTypes")
     List<String> eventTypes;
 
     @JsonProperty("maxWaitSecs")
-    Long maxWaitSecs;
+    Short maxWaitSecs;
 
     @JsonProperty("metadata")
     Map<String, String> metadata;
@@ -156,9 +156,9 @@ class StreamSinkInDeserializer extends StdDeserializer<StreamSinkIn> {
     @Override
     public StreamSinkIn deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
         StreamSinkInSurrogate surrogate = p.getCodec().readValue(p, StreamSinkInSurrogate.class);
-        Long batchSize = surrogate.getBatchSize();
+        Short batchSize = surrogate.getBatchSize();
         List<String> eventTypes = surrogate.getEventTypes();
-        Long maxWaitSecs = surrogate.getMaxWaitSecs();
+        Short maxWaitSecs = surrogate.getMaxWaitSecs();
         Map<String, String> metadata = surrogate.getMetadata();
         SinkStatusIn status = surrogate.getStatus();
         String uid = surrogate.getUid();

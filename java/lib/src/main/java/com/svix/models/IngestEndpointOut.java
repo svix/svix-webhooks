@@ -26,7 +26,7 @@ public class IngestEndpointOut {
     @JsonProperty private Boolean disabled;
     @JsonProperty private String id;
     @JsonProperty private Map<String, String> metadata;
-    @JsonProperty private Long rateLimit;
+    @JsonProperty private Short rateLimit;
     @JsonProperty private String uid;
     @JsonProperty private OffsetDateTime updatedAt;
     @JsonProperty private URI url;
@@ -137,7 +137,7 @@ public class IngestEndpointOut {
         this.metadata = metadata;
     }
 
-    public IngestEndpointOut rateLimit(Long rateLimit) {
+    public IngestEndpointOut rateLimit(Short rateLimit) {
         this.rateLimit = rateLimit;
         return this;
     }
@@ -148,11 +148,11 @@ public class IngestEndpointOut {
      * @return rateLimit
      */
     @javax.annotation.Nullable
-    public Long getRateLimit() {
+    public Short getRateLimit() {
         return rateLimit;
     }
 
-    public void setRateLimit(Long rateLimit) {
+    public void setRateLimit(Short rateLimit) {
         this.rateLimit = rateLimit;
     }
 
