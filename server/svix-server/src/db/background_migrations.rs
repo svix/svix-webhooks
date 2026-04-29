@@ -41,10 +41,13 @@ async fn advisory_lock_acquire(
 }
 
 async fn advisory_lock_release(conn: &mut sqlx::PgConnection, key: i64) {
-    let _ = sqlx::query("SELECT pg_advisory_unlock($1)")
+    if let Err(e) = sqlx::query("SELECT pg_advisory_unlock($1)")
         .bind(key)
         .execute(conn)
-        .await;
+        .await
+    {
+        tracing::warn!(error = %e, "Failed to release advisory lock");
+    }
 }
 
 // Modeled after sqlx implementation
@@ -184,7 +187,7 @@ pub async fn run(cfg: &Configuration) {
 
 pub async fn run_with_pool(pool: &PgPool, migrations: &[BackgroundMigration]) {
     if let Err(e) = ensure_table(pool).await {
-        tracing::error!("Failed to create _svix_background_migrations table: {e}");
+        tracing::error!(error = %e, "Failed to create _svix_background_migrations table");
         return;
     }
 
@@ -231,8 +234,8 @@ pub async fn try_revert(
     migration: &BackgroundMigration,
 ) -> Result<bool, sqlx::Error> {
     if migration.revert_sql.is_none() {
-        tracing::info!("No revert SQl for migration {}", migration.id);
-    };
+        tracing::warn!(id = migration.id, "No revert SQl for migration");
+    }
 
     let key = lock_key(migration.id);
     let mut conn = pool.acquire().await?;
