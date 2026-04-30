@@ -2123,6 +2123,16 @@
         "rust/src/api/mod.rs"
     ],
     [
+        "rust/src/internal/api/endpoint.rs",
+        "rust/src/internal/api/endpoint_auto_config.rs"
+    ],
+    [
+        "rust/src/internal/models/endpoint_in.rs",
+        "rust/src/internal/models/endpoint_out.rs",
+        "rust/src/internal/models/endpoint_transformation_in.rs",
+        "rust/src/internal/models/subscribe_in.rs"
+    ],
+    [
         "rust/src/models/adobe_sign_config.rs",
         "rust/src/models/adobe_sign_config_out.rs",
         "rust/src/models/aggregate_event_types_out.rs",

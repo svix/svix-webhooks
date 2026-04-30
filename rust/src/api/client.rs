@@ -123,6 +123,10 @@ impl Svix {
     pub fn cfg(&self) -> &Configuration {
         &self.cfg
     }
+
+    pub(crate) fn configuration(&self) -> &Configuration {
+        self.cfg.as_ref()
+    }
 }
 
 #[cfg(test)]
