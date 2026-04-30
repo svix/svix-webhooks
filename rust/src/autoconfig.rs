@@ -1,10 +1,7 @@
 use crate::{
     api::{EndpointIn, EndpointOut, Svix, SvixOptions},
     error::Result,
-    internal::{
-        api::client_endpoint,
-        models::subscribe_in::SubscribeIn,
-    },
+    internal::{api::InternalApi, models::subscribe_in::SubscribeIn},
     webhooks::{HeaderMap, Webhook, WebhookError},
 };
 
@@ -75,7 +72,7 @@ impl AutoConfig {
     }
 
     pub async fn subscribe(&self) -> Result<EndpointOut> {
-        client_endpoint(self.svix.configuration())
+        InternalApi::new(self.svix.configuration_arc())
             .auto_config()
             .update(
                 "-".to_string(),

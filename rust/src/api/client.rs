@@ -124,8 +124,8 @@ impl Svix {
         &self.cfg
     }
 
-    pub(crate) fn configuration(&self) -> &Configuration {
-        self.cfg.as_ref()
+    pub(crate) fn configuration_arc(&self) -> Arc<Configuration> {
+        Arc::clone(&self.cfg)
     }
 }
 
