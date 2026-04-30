@@ -367,6 +367,11 @@
             },
             "AppAttemptEventTypeStats": {
                 "properties": {
+                    "canceled": {
+                        "format": "uint64",
+                        "minimum": 0,
+                        "type": "integer"
+                    },
                     "failure": {
                         "format": "uint64",
                         "minimum": 0,
@@ -379,6 +384,7 @@
                     }
                 },
                 "required": [
+                    "canceled",
                     "failure",
                     "success"
                 ],
@@ -395,6 +401,11 @@
                     "since": {
                         "format": "date-time",
                         "type": "string"
+                    },
+                    "total_canceled": {
+                        "format": "uint64",
+                        "minimum": 0,
+                        "type": "integer"
                     },
                     "total_failure": {
                         "format": "uint64",
@@ -414,6 +425,7 @@
                 "required": [
                     "by_event_type",
                     "since",
+                    "total_canceled",
                     "total_failure",
                     "total_success",
                     "until"
@@ -775,6 +787,15 @@
                         "type": "string"
                     },
                     "rateLimit": {
+                        "deprecated": true,
+                        "description": "Deprecated, use `throttleRate` instead.",
+                        "format": "uint16",
+                        "minimum": 0,
+                        "nullable": true,
+                        "type": "integer"
+                    },
+                    "throttleRate": {
+                        "description": "Maximum messages per second to send to this application.\n\nOutgoing messages will be throttled to this rate.",
                         "format": "uint16",
                         "minimum": 0,
                         "nullable": true,
@@ -850,6 +871,14 @@
             },
             "AttemptStatisticsData": {
                 "properties": {
+                    "canceledCount": {
+                        "items": {
+                            "format": "int",
+                            "type": "integer"
+                        },
+                        "nullable": true,
+                        "type": "array"
+                    },
                     "failureCount": {
                         "items": {
                             "format": "int",
@@ -891,6 +920,67 @@
                     "endDate",
                     "period",
                     "startDate"
+                ],
+                "type": "object"
+            },
+            "AutoConfigCensoredOut": {
+                "properties": {
+                    "endpId": {
+                        "description": "The Endpoint's ID.",
+                        "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "maxLength": 30,
+                        "minLength": 30,
+                        "pattern": "^ep_[A-Za-z0-9]{27}$",
+                        "type": "string"
+                    },
+                    "tokenCensored": {
+                        "type": "string"
+                    },
+                    "updatedAt": {
+                        "format": "date-time",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "endpId",
+                    "tokenCensored",
+                    "updatedAt"
+                ],
+                "type": "object"
+            },
+            "AutoConfigOut": {
+                "properties": {
+                    "endpId": {
+                        "description": "The Endpoint's ID.",
+                        "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "maxLength": 30,
+                        "minLength": 30,
+                        "pattern": "^ep_[A-Za-z0-9]{27}$",
+                        "type": "string"
+                    },
+                    "token": {
+                        "type": "string"
+                    },
+                    "updatedAt": {
+                        "format": "date-time",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "endpId",
+                    "token",
+                    "updatedAt"
+                ],
+                "type": "object"
+            },
+            "AutoConfigSubscribeIn": {
+                "properties": {
+                    "endpoint": {
+                        "$ref": "#/components/schemas/EndpointIn"
+                    }
+                },
+                "required": [
+                    "endpoint"
                 ],
                 "type": "object"
             },
@@ -3048,7 +3138,7 @@
                         "type": "integer"
                     },
                     "throttleRate": {
-                        "description": "Maximum messages per second to send to this endpoint. Outgoing messages will be throttled to this rate.",
+                        "description": "Maximum messages per second to send to this endpoint.\n\nOutgoing messages will be throttled to this rate.",
                         "format": "uint16",
                         "minimum": 0,
                         "nullable": true,
@@ -3249,6 +3339,10 @@
             },
             "EndpointStats": {
                 "properties": {
+                    "canceled": {
+                        "format": "int64",
+                        "type": "integer"
+                    },
                     "fail": {
                         "format": "int64",
                         "type": "integer"
@@ -3267,6 +3361,7 @@
                     }
                 },
                 "required": [
+                    "canceled",
                     "fail",
                     "pending",
                     "sending",
@@ -4721,8 +4816,8 @@
                         "description": "The Source's ID.",
                         "example": "src_2yZwUhtgs5Ai8T9yRQJXA",
                         "maxLength": 26,
-                        "minLength": 26,
-                        "pattern": "^src_[A-Za-z0-9]{22}$",
+                        "minLength": 25,
+                        "pattern": "^src_[A-Za-z0-9]{21,22}$",
                         "type": "string"
                     },
                     "trigger": {
@@ -5025,8 +5120,8 @@
                         "description": "The ErrorLog's ID.",
                         "example": "log2yZwUhtgs5Ai8T9yRQJXA",
                         "maxLength": 25,
-                        "minLength": 25,
-                        "pattern": "^log[A-Za-z0-9]{22}$",
+                        "minLength": 24,
+                        "pattern": "^log[A-Za-z0-9]{21,22}$",
                         "type": "string"
                     },
                     "payload": {
@@ -5036,8 +5131,8 @@
                         "description": "The Source's ID.",
                         "example": "src_2yZwUhtgs5Ai8T9yRQJXA",
                         "maxLength": 26,
-                        "minLength": 26,
-                        "pattern": "^src_[A-Za-z0-9]{22}$",
+                        "minLength": 25,
+                        "pattern": "^src_[A-Za-z0-9]{21,22}$",
                         "type": "string"
                     },
                     "status_code": {
@@ -5116,8 +5211,8 @@
                         "description": "The Source's ID.",
                         "example": "src_2yZwUhtgs5Ai8T9yRQJXA",
                         "maxLength": 26,
-                        "minLength": 26,
-                        "pattern": "^src_[A-Za-z0-9]{22}$",
+                        "minLength": 25,
+                        "pattern": "^src_[A-Za-z0-9]{21,22}$",
                         "type": "string"
                     }
                 },
@@ -5184,8 +5279,8 @@
                         "description": "The Source's ID.",
                         "example": "src_2yZwUhtgs5Ai8T9yRQJXA",
                         "maxLength": 26,
-                        "minLength": 26,
-                        "pattern": "^src_[A-Za-z0-9]{22}$",
+                        "minLength": 25,
+                        "pattern": "^src_[A-Za-z0-9]{21,22}$",
                         "type": "string"
                     }
                 },
@@ -5252,8 +5347,8 @@
                         "description": "The Source's ID.",
                         "example": "src_2yZwUhtgs5Ai8T9yRQJXA",
                         "maxLength": 26,
-                        "minLength": 26,
-                        "pattern": "^src_[A-Za-z0-9]{22}$",
+                        "minLength": 25,
+                        "pattern": "^src_[A-Za-z0-9]{21,22}$",
                         "type": "string"
                     }
                 },
@@ -5271,8 +5366,8 @@
                         "description": "The Source's ID.",
                         "example": "src_2yZwUhtgs5Ai8T9yRQJXA",
                         "maxLength": 26,
-                        "minLength": 26,
-                        "pattern": "^src_[A-Za-z0-9]{22}$",
+                        "minLength": 25,
+                        "pattern": "^src_[A-Za-z0-9]{21,22}$",
                         "type": "string"
                     },
                     "token": {
@@ -5304,8 +5399,8 @@
                                 "description": "The Source's ID.",
                                 "example": "src_2yZwUhtgs5Ai8T9yRQJXA",
                                 "maxLength": 26,
-                                "minLength": 26,
-                                "pattern": "^src_[A-Za-z0-9]{22}$",
+                                "minLength": 25,
+                                "pattern": "^src_[A-Za-z0-9]{21,22}$",
                                 "type": "string"
                             }
                         ],
@@ -6786,8 +6881,8 @@
                         "description": "The Source's ID.",
                         "example": "src_2yZwUhtgs5Ai8T9yRQJXA",
                         "maxLength": 26,
-                        "minLength": 26,
-                        "pattern": "^src_[A-Za-z0-9]{22}$",
+                        "minLength": 25,
+                        "pattern": "^src_[A-Za-z0-9]{21,22}$",
                         "type": "string"
                     },
                     "ingestUrl": {
@@ -8417,7 +8512,7 @@
                         "$ref": "#/components/schemas/MessageStatusText"
                     },
                     "throttleRate": {
-                        "description": "Maximum messages per second to send to this endpoint. Outgoing messages will be throttled to this rate.",
+                        "description": "Maximum messages per second to send to this endpoint.\n\nOutgoing messages will be throttled to this rate.",
                         "format": "uint16",
                         "minimum": 0,
                         "nullable": true,
@@ -8939,6 +9034,8 @@
                         "type": "object"
                     },
                     "rateLimit": {
+                        "deprecated": true,
+                        "description": "Deprecated, use `throttleRate` instead.",
                         "format": "uint16",
                         "minimum": 1,
                         "nullable": true,
@@ -8950,6 +9047,13 @@
                         "nullable": true,
                         "pattern": "^(whsec_)?[a-zA-Z0-9+/=]{32,100}$",
                         "type": "string"
+                    },
+                    "throttleRate": {
+                        "description": "Maximum messages per second to send to this endpoint.\n\nOutgoing messages will be throttled to this rate.",
+                        "format": "uint16",
+                        "minimum": 1,
+                        "nullable": true,
+                        "type": "integer"
                     },
                     "uid": {
                         "description": "Optional unique identifier for the endpoint.",
@@ -9019,6 +9123,15 @@
                         "type": "object"
                     },
                     "rateLimit": {
+                        "deprecated": true,
+                        "description": "Deprecated, use `throttleRate` instead.",
+                        "format": "uint16",
+                        "minimum": 0,
+                        "nullable": true,
+                        "type": "integer"
+                    },
+                    "throttleRate": {
+                        "description": "Maximum messages per second to send to this endpoint.\n\nOutgoing messages will be throttled to this rate.",
                         "format": "uint16",
                         "minimum": 0,
                         "nullable": true,
@@ -9118,6 +9231,15 @@
                         "type": "object"
                     },
                     "rateLimit": {
+                        "deprecated": true,
+                        "description": "Deprecated, use `throttleRate` instead.",
+                        "format": "uint16",
+                        "minimum": 1,
+                        "nullable": true,
+                        "type": "integer"
+                    },
+                    "throttleRate": {
+                        "description": "Maximum messages per second to send to this endpoint.\n\nOutgoing messages will be throttled to this rate.",
                         "format": "uint16",
                         "minimum": 1,
                         "nullable": true,
@@ -10371,6 +10493,20 @@
                             "type"
                         ],
                         "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "type": {
+                                "enum": [
+                                    "autoConfig"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "type"
+                        ],
+                        "type": "object"
                     }
                 ],
                 "properties": {
@@ -10513,6 +10649,20 @@
                             "type"
                         ],
                         "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "type": {
+                                "enum": [
+                                    "autoConfig"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "type"
+                        ],
+                        "type": "object"
                     }
                 ],
                 "properties": {
@@ -10579,6 +10729,15 @@
                         "type": "object"
                     },
                     "rateLimit": {
+                        "deprecated": true,
+                        "description": "Deprecated, use `throttleRate` instead.",
+                        "format": "uint16",
+                        "minimum": 0,
+                        "nullable": true,
+                        "type": "integer"
+                    },
+                    "throttleRate": {
+                        "description": "Maximum messages per second to send to this endpoint.\n\nOutgoing messages will be throttled to this rate.",
                         "format": "uint16",
                         "minimum": 0,
                         "nullable": true,
@@ -10902,8 +11061,8 @@
                         "description": "The stream's ID.",
                         "example": "strm_2yZwUhtgs5Ai8T9yRQJXA",
                         "maxLength": 27,
-                        "minLength": 27,
-                        "pattern": "^strm_[A-Za-z0-9]{22}$",
+                        "minLength": 26,
+                        "pattern": "^strm_[A-Za-z0-9]{21,22}$",
                         "type": "string"
                     },
                     "metadata": {
@@ -11298,8 +11457,8 @@
                         "description": "The sink's ID.",
                         "example": "sink_2yZwUhtgs5Ai8T9yRQJXA",
                         "maxLength": 27,
-                        "minLength": 27,
-                        "pattern": "^sink_[A-Za-z0-9]{22}$",
+                        "minLength": 26,
+                        "pattern": "^sink_[A-Za-z0-9]{21,22}$",
                         "type": "string"
                     },
                     "maxWaitSecs": {
@@ -11794,7 +11953,7 @@
     "info": {
         "description": "Welcome to the Svix API documentation!\n\nUseful links: [Homepage](https://www.svix.com) | [Support email](mailto:support+docs@svix.com) | [Blog](https://www.svix.com/blog/) | [Slack Community](https://www.svix.com/slack/)\n\n# Introduction\n\nThis is the reference documentation and schemas for the [Svix webhook service](https://www.svix.com) API. For tutorials and other documentation please refer to [the documentation](https://docs.svix.com).\n\n## Main concepts\n\nIn Svix you have four important entities you will be interacting with:\n\n- `messages`: these are the webhooks being sent. They can have contents and a few other properties.\n- `application`: this is where `messages` are sent to. Usually you want to create one application for each user on your platform.\n- `endpoint`: endpoints are the URLs messages will be sent to. Each application can have multiple `endpoints` and each message sent to that application will be sent to all of them (unless they are not subscribed to the sent event type).\n- `event-type`: event types are identifiers denoting the type of the message being sent. Event types are primarily used to decide which events are sent to which endpoint.\n\n\n## Authentication\n\nGet your authentication token (`AUTH_TOKEN`) from the [Svix dashboard](https://dashboard.svix.com) and use it as part of the `Authorization` header as such: `Authorization: Bearer ${AUTH_TOKEN}`. For more information on authentication, please refer to the [authentication token docs](https://docs.svix.com/api-keys).\n\n<SecurityDefinitions />\n\n\n## Code samples\n\nThe code samples assume you already have the respective libraries installed and you know how to use them. For the latest information on how to do that, please refer to [the documentation](https://docs.svix.com/).\n\n\n## Idempotency\n\nSvix supports [idempotency](https://en.wikipedia.org/wiki/Idempotence) for safely retrying requests without accidentally performing the same operation twice. This is useful when an API call is disrupted in transit and you do not receive a response.\n\nTo perform an idempotent request, pass the idempotency key in the `Idempotency-Key` header to the request. The idempotency key should be a unique value generated by the client. You can create the key in however way you like, though we suggest using UUID v4, or any other string with enough entropy to avoid collisions. Your idempotency key should not begin with the string `auto_`, which is reserved for internal use by the client libraries.\n\nSvix's idempotency works by saving the resulting status code and body of the first request made for any given idempotency key for any successful request. Subsequent requests with the same key return the same result for a period of up to 12 hours.\n\nPlease note that idempotency is only supported for `POST` requests.\n\n\n## Cross-Origin Resource Sharing\n\nThis API features Cross-Origin Resource Sharing (CORS) implemented in compliance with [W3C spec](https://www.w3.org/TR/cors/). And that allows cross-domain communication from the browser. All responses have a wildcard same-origin which makes them completely public and accessible to everyone, including any code on any site.\n",
         "title": "Svix API",
-        "version": "1.92.2",
+        "version": "1.84.0",
         "x-logo": {
             "altText": "Svix Logo",
             "url": "https://www.svix.com/static/img/brand-padded.svg"
@@ -11830,10 +11989,12 @@
                         "style": "form"
                     },
                     {
+                        "description": "Exclude applications that only have Svix Play endpoints. Default is false.",
                         "in": "query",
                         "name": "exclude_apps_with_svix_play_endpoints",
                         "schema": {
                             "default": false,
+                            "description": "Exclude applications that only have Svix Play endpoints. Default is false.",
                             "type": "boolean"
                         },
                         "style": "form"
@@ -12197,7 +12358,7 @@
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "response, err := svix.Application.Create(\n\tctx,\n\tApplicationIn{\n\t\tName:         \"My first application\",\n\t\tRateLimit:    ptr(uint16(1)),\n\t\tThrottleRate: ptr(uint16(1)),\n\t\tUid:          ptr(\"unique-identifier\"),\n\t\tMetadata:     nil,\n\t},\n\tnil,\n)"
+                        "source": "response, err := svix.Application.Create(\n\tctx,\n\tApplicationIn{\n\t\tName:         \"My first application\",\n\t\tRateLimit:    new(uint16(1)),\n\t\tThrottleRate: new(uint16(1)),\n\t\tUid:          new(\"unique-identifier\"),\n\t\tMetadata:     nil,\n\t},\n\tnil,\n)"
                     },
                     {
                         "label": "Kotlin",
@@ -12719,67 +12880,67 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const response = await svix.application.patch(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", {\n  name: \"sample string\",\n  rateLimit: 1,\n  uid: \"unique-identifier\",\n  metadata: {},\n});"
+                        "source": "const response = await svix.application.patch(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", {\n  name: \"sample string\",\n  rateLimit: 1,\n  throttleRate: 1,\n  uid: \"unique-identifier\",\n  metadata: {},\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "TypeScript",
-                        "source": "const response = await svix.application.patch(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", {\n  name: \"sample string\",\n  rateLimit: 1,\n  uid: \"unique-identifier\",\n  metadata: {},\n});"
+                        "source": "const response = await svix.application.patch(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", {\n  name: \"sample string\",\n  rateLimit: 1,\n  throttleRate: 1,\n  uid: \"unique-identifier\",\n  metadata: {},\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "response = svix.application.patch(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    ApplicationPatch(\n        name=\"sample string\",\n        rate_limit=1,\n        uid=\"unique-identifier\",\n        metadata={},\n    ),\n)"
+                        "source": "response = svix.application.patch(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    ApplicationPatch(\n        name=\"sample string\",\n        rate_limit=1,\n        throttle_rate=1,\n        uid=\"unique-identifier\",\n        metadata={},\n    ),\n)"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python (Async)",
-                        "source": "response = await svix.application.patch(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    ApplicationPatch(\n        name=\"sample string\",\n        rate_limit=1,\n        uid=\"unique-identifier\",\n        metadata={},\n    ),\n)"
+                        "source": "response = await svix.application.patch(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    ApplicationPatch(\n        name=\"sample string\",\n        rate_limit=1,\n        throttle_rate=1,\n        uid=\"unique-identifier\",\n        metadata={},\n    ),\n)"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "response, err := svix.Application.Patch(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\tApplicationPatch{\n\t\tName:      ptr(\"sample string\"),\n\t\tRateLimit: NewNullable(uint16(1)),\n\t\tUid:       NewNullable(\"unique-identifier\"),\n\t\tMetadata:  nil,\n\t},\n)"
+                        "source": "response, err := svix.Application.Patch(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\tApplicationPatch{\n\t\tName:         new(\"sample string\"),\n\t\tRateLimit:    NewNullable(uint16(1)),\n\t\tThrottleRate: NewNullable(uint16(1)),\n\t\tUid:          NewNullable(\"unique-identifier\"),\n\t\tMetadata:     nil,\n\t},\n)"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val response =\n    svix.application.patch(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n        ApplicationPatch(\n            name = \"sample string\",\n            rateLimit = MaybeUnset.Present(1u),\n            uid = MaybeUnset.Present(\"unique-identifier\"),\n            metadata = mapOf(),\n        ),\n    )"
+                        "source": "val response =\n    svix.application.patch(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n        ApplicationPatch(\n            name = \"sample string\",\n            rateLimit = MaybeUnset.Present(1u),\n            throttleRate = MaybeUnset.Present(1u),\n            uid = MaybeUnset.Present(\"unique-identifier\"),\n            metadata = mapOf(),\n        ),\n    )"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "var response = svix.getApplication()\n        .patch(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            new ApplicationPatch()\n                .name(\"sample string\")\n                .rateLimit(1L)\n                .uid(\"unique-identifier\")\n                .metadata(Map.of()));"
+                        "source": "var response = svix.getApplication()\n        .patch(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            new ApplicationPatch()\n                .name(\"sample string\")\n                .rateLimit(1L)\n                .throttleRate(1L)\n                .uid(\"unique-identifier\")\n                .metadata(Map.of()));"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "response = svix\n  .application\n  .patch(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    {name: \"sample string\", rateLimit: 1, uid: \"unique-identifier\", metadata: {}}\n  )"
+                        "source": "response = svix\n  .application\n  .patch(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    {name: \"sample string\", rateLimit: 1, throttleRate: 1, uid: \"unique-identifier\", metadata: {}}\n  )"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let response = svix\n    .application()\n    .patch(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n        ApplicationPatch {\n            name: Some(\"sample string\".to_string()),\n            rate_limit: js_option::JsOption::Some(1),\n            uid: js_option::JsOption::Some(\"unique-identifier\".to_string()),\n            metadata: Some(HashMap::new()),\n        },\n    )\n    .await?;"
+                        "source": "let response = svix\n    .application()\n    .patch(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n        ApplicationPatch {\n            name: Some(\"sample string\".to_string()),\n            rate_limit: js_option::JsOption::Some(1),\n            throttle_rate: js_option::JsOption::Some(1),\n            uid: js_option::JsOption::Some(\"unique-identifier\".to_string()),\n            metadata: Some(HashMap::new()),\n        },\n    )\n    .await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var response = svix.Application.Patch(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    new ApplicationPatch\n    {\n        Name = \"sample string\",\n        RateLimit = 1,\n        Uid = \"unique-identifier\",\n        Metadata = [],\n    }\n);"
+                        "source": "var response = svix.Application.Patch(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    new ApplicationPatch\n    {\n        Name = \"sample string\",\n        RateLimit = 1,\n        ThrottleRate = 1,\n        Uid = \"unique-identifier\",\n        Metadata = [],\n    }\n);"
                     },
                     {
                         "label": "PHP",
                         "lang": "PHP",
-                        "source": "$response = $svix->application->patch(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    ApplicationPatch::create()\n    ->withName(\"sample string\")\n    ->withRateLimit(1)\n    ->withUid(\"unique-identifier\")\n    ->withMetadata([])\n);"
+                        "source": "$response = $svix->application->patch(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    ApplicationPatch::create()\n    ->withName(\"sample string\")\n    ->withRateLimit(1)\n    ->withThrottleRate(1)\n    ->withUid(\"unique-identifier\")\n    ->withMetadata([])\n);"
                     },
                     {
                         "label": "CLI",
                         "lang": "CLI",
-                        "source": "svix application patch \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" '{\n    \"metadata\": {},\n    \"name\": \"sample string\",\n    \"rateLimit\": 1,\n    \"uid\": \"unique-identifier\"\n  }'"
+                        "source": "svix application patch \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" '{\n    \"metadata\": {},\n    \"name\": \"sample string\",\n    \"rateLimit\": 1,\n    \"throttleRate\": 1,\n    \"uid\": \"unique-identifier\"\n  }'"
                     },
                     {
                         "label": "cURL",
                         "lang": "cURL",
-                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/app/app_1srOrx2ZWZBpBUvZwXKQmoEYga2' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"metadata\": {},\n    \"name\": \"sample string\",\n    \"rateLimit\": 1,\n    \"uid\": \"unique-identifier\"\n  }'"
+                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/app/app_1srOrx2ZWZBpBUvZwXKQmoEYga2' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"metadata\": {},\n    \"name\": \"sample string\",\n    \"rateLimit\": 1,\n    \"throttleRate\": 1,\n    \"uid\": \"unique-identifier\"\n  }'"
                     }
                 ]
             },
@@ -12938,7 +13099,7 @@
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "response, err := svix.Application.Update(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\tApplicationIn{\n\t\tName:         \"My first application\",\n\t\tRateLimit:    ptr(uint16(1)),\n\t\tThrottleRate: ptr(uint16(1)),\n\t\tUid:          ptr(\"unique-identifier\"),\n\t\tMetadata:     nil,\n\t},\n)"
+                        "source": "response, err := svix.Application.Update(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\tApplicationIn{\n\t\tName:         \"My first application\",\n\t\tRateLimit:    new(uint16(1)),\n\t\tThrottleRate: new(uint16(1)),\n\t\tUid:          new(\"unique-identifier\"),\n\t\tMetadata:     nil,\n\t},\n)"
                     },
                     {
                         "label": "Kotlin",
@@ -13222,12 +13383,12 @@
                         "style": "form"
                     },
                     {
-                        "description": "When `true`, the message information is included in the response",
+                        "description": "When `true`, the message information is included in the response\n\nNote that message payloads are never included in the response, regardless of this flag.",
                         "in": "query",
                         "name": "with_msg",
                         "schema": {
                             "default": false,
-                            "description": "When `true`, the message information is included in the response",
+                            "description": "When `true`, the message information is included in the response\n\nNote that message payloads are never included in the response, regardless of this flag.",
                             "type": "boolean"
                         },
                         "style": "form"
@@ -14012,6 +14173,130 @@
                 ]
             }
         },
+        "/api/v1/app/{app_id}/auto-config": {
+            "post": {
+                "description": "Create a new auto-config flow (creates an endpoint awaiting configuration).",
+                "operationId": "v1.endpoint.auto-config.create",
+                "parameters": [
+                    {
+                        "description": "The Application's ID or UID.",
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The Application's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AutoConfigOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Create Subscription",
+                "tags": [
+                    "Webhooks AutoConfig"
+                ],
+                "x-internal": true
+            }
+        },
         "/api/v1/app/{app_id}/endpoint": {
             "get": {
                 "description": "List the application's endpoints.",
@@ -14385,7 +14670,7 @@
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "response, err := svix.Endpoint.Create(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\tEndpointIn{\n\t\tDescription:  ptr(\"An example endpoint name\"),\n\t\tRateLimit:    ptr(uint16(1)),\n\t\tThrottleRate: ptr(uint16(1)),\n\t\tUid:          ptr(\"unique-identifier\"),\n\t\tUrl:          \"https://example.com/webhook/\",\n\t\tHeaders:      &map[string]string{\"X-Example\": \"123\", \"X-Foobar\": \"Bar\"},\n\t\tDisabled:     ptr(true),\n\t\tFilterTypes:  []string{\"user.signup\", \"user.deleted\"},\n\t\tChannels:     []string{\"project_123\", \"group_2\"},\n\t\tSecret:       ptr(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"),\n\t\tMetadata:     nil,\n\t},\n\tnil,\n)"
+                        "source": "response, err := svix.Endpoint.Create(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\tEndpointIn{\n\t\tDescription:  new(\"An example endpoint name\"),\n\t\tRateLimit:    new(uint16(1)),\n\t\tThrottleRate: new(uint16(1)),\n\t\tUid:          new(\"unique-identifier\"),\n\t\tUrl:          \"https://example.com/webhook/\",\n\t\tHeaders:      &map[string]string{\"X-Example\": \"123\", \"X-Foobar\": \"Bar\"},\n\t\tDisabled:     new(true),\n\t\tFilterTypes:  []string{\"user.signup\", \"user.deleted\"},\n\t\tChannels:     []string{\"project_123\", \"group_2\"},\n\t\tSecret:       new(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"),\n\t\tMetadata:     nil,\n\t},\n\tnil,\n)"
                     },
                     {
                         "label": "Kotlin",
@@ -14972,7 +15257,7 @@
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "response, err := svix.Endpoint.Patch(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tEndpointPatch{\n\t\tDescription:  ptr(\"sample string\"),\n\t\tRateLimit:    NewNullable(uint16(1)),\n\t\tThrottleRate: NewNullable(uint16(1)),\n\t\tUid:          NewNullable(\"unique-identifier\"),\n\t\tUrl:          ptr(\"sample string\"),\n\t\tMetadata:     nil,\n\t\tDisabled:     ptr(true),\n\t\tFilterTypes:  NewNullable([]string{}),\n\t\tChannels:     NewNullable([]string{}),\n\t},\n)"
+                        "source": "response, err := svix.Endpoint.Patch(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tEndpointPatch{\n\t\tDescription:  new(\"sample string\"),\n\t\tRateLimit:    NewNullable(uint16(1)),\n\t\tThrottleRate: NewNullable(uint16(1)),\n\t\tUid:          NewNullable(\"unique-identifier\"),\n\t\tUrl:          new(\"sample string\"),\n\t\tMetadata:     nil,\n\t\tDisabled:     new(true),\n\t\tFilterTypes:  NewNullable([]string{}),\n\t\tChannels:     NewNullable([]string{}),\n\t},\n)"
                     },
                     {
                         "label": "Kotlin",
@@ -15186,7 +15471,7 @@
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "response, err := svix.Endpoint.Update(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tEndpointUpdate{\n\t\tDescription:  ptr(\"An example endpoint name\"),\n\t\tRateLimit:    ptr(uint16(1)),\n\t\tThrottleRate: ptr(uint16(1)),\n\t\tUid:          ptr(\"unique-identifier\"),\n\t\tUrl:          \"https://example.com/webhook/\",\n\t\tMetadata:     nil,\n\t\tDisabled:     ptr(true),\n\t\tFilterTypes:  []string{\"user.signup\", \"user.deleted\"},\n\t\tChannels:     []string{\"project_123\", \"group_2\"},\n\t},\n)"
+                        "source": "response, err := svix.Endpoint.Update(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tEndpointUpdate{\n\t\tDescription:  new(\"An example endpoint name\"),\n\t\tRateLimit:    new(uint16(1)),\n\t\tThrottleRate: new(uint16(1)),\n\t\tUid:          new(\"unique-identifier\"),\n\t\tUrl:          \"https://example.com/webhook/\",\n\t\tMetadata:     nil,\n\t\tDisabled:     new(true),\n\t\tFilterTypes:  []string{\"user.signup\", \"user.deleted\"},\n\t\tChannels:     []string{\"project_123\", \"group_2\"},\n\t},\n)"
                     },
                     {
                         "label": "Kotlin",
@@ -15229,6 +15514,275 @@
                         "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/app/app_1srOrx2ZWZBpBUvZwXKQmoEYga2/endpoint/ep_33ZIBDmz66FcPG35FnsbM6Ie4X1' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"channels\": [\n      \"project_123\",\n      \"group_2\"\n    ],\n    \"description\": \"An example endpoint name\",\n    \"disabled\": true,\n    \"filterTypes\": [\n      \"user.signup\",\n      \"user.deleted\"\n    ],\n    \"metadata\": {},\n    \"rateLimit\": 1,\n    \"throttleRate\": 1,\n    \"uid\": \"unique-identifier\",\n    \"url\": \"https://example.com/webhook/\"\n  }'"
                     }
                 ]
+            }
+        },
+        "/api/v1/app/{app_id}/endpoint/{endpoint_id}/auto-config": {
+            "get": {
+                "description": "Get the current auto-config token in censored form.",
+                "operationId": "v1.endpoint.auto-config.get",
+                "parameters": [
+                    {
+                        "description": "The Application's ID or UID.",
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The Application's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The Endpoint's ID or UID.",
+                        "in": "path",
+                        "name": "endpoint_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The Endpoint's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AutoConfigCensoredOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Get Subscription",
+                "tags": [
+                    "Webhooks AutoConfig"
+                ],
+                "x-internal": true
+            }
+        },
+        "/api/v1/app/{app_id}/endpoint/{endpoint_id}/auto-config/rotate": {
+            "post": {
+                "description": "Rotate the auth token for an auto-config endpoint.",
+                "operationId": "v1.endpoint.auto-config.rotate",
+                "parameters": [
+                    {
+                        "description": "The Application's ID or UID.",
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The Application's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The Endpoint's ID or UID.",
+                        "in": "path",
+                        "name": "endpoint_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The Endpoint's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AutoConfigOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Rotate Subscription",
+                "tags": [
+                    "Webhooks AutoConfig"
+                ],
+                "x-internal": true
             }
         },
         "/api/v1/app/{app_id}/endpoint/{endpoint_id}/bulk-replay": {
@@ -15401,7 +15955,7 @@
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "response, err := svix.Endpoint.BulkReplay(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tBulkReplayIn{\n\t\tSince:           time.Date(2025, 10, 2, 20, 28, 42, 0, time.UTC),\n\t\tUntil:           ptr(time.Date(2025, 10, 2, 20, 28, 42, 0, time.UTC)),\n\t\tEventTypes:      []string{},\n\t\tChannel:         ptr(\"project_1337\"),\n\t\tTag:             ptr(\"project_1337\"),\n\t\tStatus:          ptr(MESSAGESTATUS_SUCCESS),\n\t\tStatusCodeClass: ptr(STATUSCODECLASS_CODE_NONE),\n\t},\n\tnil,\n)"
+                        "source": "response, err := svix.Endpoint.BulkReplay(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tBulkReplayIn{\n\t\tSince:           time.Date(2025, 10, 2, 20, 28, 42, 0, time.UTC),\n\t\tUntil:           new(time.Date(2025, 10, 2, 20, 28, 42, 0, time.UTC)),\n\t\tEventTypes:      []string{},\n\t\tChannel:         new(\"project_1337\"),\n\t\tTag:             new(\"project_1337\"),\n\t\tStatus:          new(MESSAGESTATUS_SUCCESS),\n\t\tStatusCodeClass: new(STATUSCODECLASS_CODE_NONE),\n\t},\n\tnil,\n)"
                     },
                     {
                         "label": "Kotlin",
@@ -18354,7 +18908,7 @@
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "response, err := svix.Endpoint.Recover(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tRecoverIn{\n\t\tSince: time.Date(2025, 10, 2, 20, 28, 42, 0, time.UTC),\n\t\tUntil: ptr(time.Date(2025, 10, 2, 20, 28, 42, 0, time.UTC)),\n\t},\n\tnil,\n)"
+                        "source": "response, err := svix.Endpoint.Recover(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tRecoverIn{\n\t\tSince: time.Date(2025, 10, 2, 20, 28, 42, 0, time.UTC),\n\t\tUntil: new(time.Date(2025, 10, 2, 20, 28, 42, 0, time.UTC)),\n\t},\n\tnil,\n)"
                     },
                     {
                         "label": "Kotlin",
@@ -18569,7 +19123,7 @@
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "response, err := svix.Endpoint.ReplayMissing(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tReplayIn{\n\t\tSince: time.Date(2025, 10, 2, 20, 28, 42, 0, time.UTC),\n\t\tUntil: ptr(time.Date(2025, 10, 2, 20, 28, 42, 0, time.UTC)),\n\t},\n\tnil,\n)"
+                        "source": "response, err := svix.Endpoint.ReplayMissing(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tReplayIn{\n\t\tSince: time.Date(2025, 10, 2, 20, 28, 42, 0, time.UTC),\n\t\tUntil: new(time.Date(2025, 10, 2, 20, 28, 42, 0, time.UTC)),\n\t},\n\tnil,\n)"
                     },
                     {
                         "label": "Kotlin",
@@ -18973,7 +19527,7 @@
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "err := svix.Endpoint.RotateSecret(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tEndpointSecretRotateIn{Key: ptr(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")},\n\tnil,\n)"
+                        "source": "err := svix.Endpoint.RotateSecret(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tEndpointSecretRotateIn{Key: new(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")},\n\tnil,\n)"
                     },
                     {
                         "label": "Kotlin",
@@ -19188,7 +19742,7 @@
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "response, err := svix.Endpoint.SendExample(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tEventExampleIn{EventType: \"user.signup\", ExampleIndex: ptr(uint64(1))},\n\tnil,\n)"
+                        "source": "response, err := svix.Endpoint.SendExample(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tEventExampleIn{EventType: \"user.signup\", ExampleIndex: new(uint64(1))},\n\tnil,\n)"
                     },
                     {
                         "label": "Kotlin",
@@ -19801,7 +20355,7 @@
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "err := svix.Endpoint.PatchTransformation(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tEndpointTransformationPatch{\n\t\tCode:    NewNullable(\"function handler(webhook) { /* ... */ }\"),\n\t\tEnabled: ptr(true),\n\t},\n)"
+                        "source": "err := svix.Endpoint.PatchTransformation(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tEndpointTransformationPatch{\n\t\tCode:    NewNullable(\"function handler(webhook) { /* ... */ }\"),\n\t\tEnabled: new(true),\n\t},\n)"
                     },
                     {
                         "label": "Kotlin",
@@ -22177,7 +22731,7 @@
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "response, err := svix.Message.Create(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\tMessageIn{\n\t\tEventId:   ptr(\"unique-identifier\"),\n\t\tEventType: \"user.signup\",\n\t\tPayload: map[string]any{\n\t\t\t\"email\":    \"test@example.com\",\n\t\t\t\"type\":     \"user.created\",\n\t\t\t\"username\": \"test_user\",\n\t\t},\n\t\tChannels: []string{\"project_123\", \"group_2\"},\n\t\tApplication: ptr(\n\t\t\tApplicationIn{\n\t\t\t\tName:         \"My first application\",\n\t\t\t\tRateLimit:    ptr(uint16(1)),\n\t\t\t\tThrottleRate: ptr(uint16(1)),\n\t\t\t\tUid:          ptr(\"unique-identifier\"),\n\t\t\t\tMetadata:     nil,\n\t\t\t},\n\t\t),\n\t\tTags:                   []string{\"my_tag\", \"other\"},\n\t\tTransformationsParams:  nil,\n\t\tDeliverAt:              ptr(time.Date(2025, 10, 2, 20, 28, 42, 0, time.UTC)),\n\t\tPayloadRetentionPeriod: ptr(int64(90)),\n\t\tPayloadRetentionHours:  ptr(int64(1)),\n\t},\n\tnil,\n)\n\n// Alternatively, with a raw string payload.\nresponse, err := svix.Message.Create(ctx, \"app_id\", &NewMessageInRaw(\n\t\"user.signup\",\n\t\"This is a raw body.\",\n\t&\"text/plain\",\n))"
+                        "source": "response, err := svix.Message.Create(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\tMessageIn{\n\t\tEventId:   new(\"unique-identifier\"),\n\t\tEventType: \"user.signup\",\n\t\tPayload: map[string]any{\n\t\t\t\"email\":    \"test@example.com\",\n\t\t\t\"type\":     \"user.created\",\n\t\t\t\"username\": \"test_user\",\n\t\t},\n\t\tChannels: []string{\"project_123\", \"group_2\"},\n\t\tApplication: new(\n\t\t\tApplicationIn{\n\t\t\t\tName:         \"My first application\",\n\t\t\t\tRateLimit:    new(uint16(1)),\n\t\t\t\tThrottleRate: new(uint16(1)),\n\t\t\t\tUid:          new(\"unique-identifier\"),\n\t\t\t\tMetadata:     nil,\n\t\t\t},\n\t\t),\n\t\tTags:                   []string{\"my_tag\", \"other\"},\n\t\tTransformationsParams:  nil,\n\t\tDeliverAt:              new(time.Date(2025, 10, 2, 20, 28, 42, 0, time.UTC)),\n\t\tPayloadRetentionPeriod: new(int64(90)),\n\t\tPayloadRetentionHours:  new(int64(1)),\n\t},\n\tnil,\n)\n\n// Alternatively, with a raw string payload.\nresponse, err := svix.Message.Create(ctx, \"app_id\", &NewMessageInRaw(\n\t\"user.signup\",\n\t\"This is a raw body.\",\n\t&\"text/plain\",\n))"
                     },
                     {
                         "label": "Kotlin",
@@ -25430,9 +25984,9 @@
                             "description": "The iterator returned from a prior invocation",
                             "example": "sink_2yZwUhtgs5Ai8T9yRQJXA",
                             "maxLength": 27,
-                            "minLength": 27,
+                            "minLength": 26,
                             "nullable": true,
-                            "pattern": "^sink_[A-Za-z0-9]{22}$",
+                            "pattern": "^sink_[A-Za-z0-9]{21,22}$",
                             "type": "string"
                         },
                         "style": "form"
@@ -27711,7 +28265,7 @@
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "response, err := svix.Authentication.AppPortalAccess(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\tAppPortalAccessIn{\n\t\tApplication: ptr(\n\t\t\tApplicationIn{\n\t\t\t\tName:         \"My first application\",\n\t\t\t\tRateLimit:    ptr(uint16(1)),\n\t\t\t\tThrottleRate: ptr(uint16(1)),\n\t\t\t\tUid:          ptr(\"unique-identifier\"),\n\t\t\t\tMetadata:     nil,\n\t\t\t},\n\t\t),\n\t\tReadOnly:     ptr(true),\n\t\tCapabilities: []AppPortalCapability{\"ViewBase\", \"ViewEndpointSecret\"},\n\t\tFeatureFlags: []string{},\n\t\tExpiry:       ptr(uint64(1)),\n\t\tSessionId:    ptr(\"user_1FB8\"),\n\t},\n\tnil,\n)"
+                        "source": "response, err := svix.Authentication.AppPortalAccess(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\tAppPortalAccessIn{\n\t\tApplication: new(\n\t\t\tApplicationIn{\n\t\t\t\tName:         \"My first application\",\n\t\t\t\tRateLimit:    new(uint16(1)),\n\t\t\t\tThrottleRate: new(uint16(1)),\n\t\t\t\tUid:          new(\"unique-identifier\"),\n\t\t\t\tMetadata:     nil,\n\t\t\t},\n\t\t),\n\t\tReadOnly:     new(true),\n\t\tCapabilities: []AppPortalCapability{\"ViewBase\", \"ViewEndpointSecret\"},\n\t\tFeatureFlags: []string{},\n\t\tExpiry:       new(uint64(1)),\n\t\tSessionId:    new(\"user_1FB8\"),\n\t},\n\tnil,\n)"
                     },
                     {
                         "label": "Kotlin",
@@ -28038,7 +28592,7 @@
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "err := svix.Authentication.ExpireAll(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\tApplicationTokenExpireIn{Expiry: ptr(int64(60)), SessionIds: []string{}},\n\tnil,\n)"
+                        "source": "err := svix.Authentication.ExpireAll(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\tApplicationTokenExpireIn{Expiry: new(int64(60)), SessionIds: []string{}},\n\tnil,\n)"
                     },
                     {
                         "label": "Kotlin",
@@ -29479,7 +30033,7 @@
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "response, err := svix.Authentication.StreamPortalAccess(\n\tctx,\n\t\"strm_31Dc0DD72P5AddYUguyBd\",\n\tStreamPortalAccessIn{\n\t\tFeatureFlags: []string{},\n\t\tExpiry:       ptr(uint64(1)),\n\t\tSessionId:    ptr(\"user_1FB8\"),\n\t},\n\tnil,\n)"
+                        "source": "response, err := svix.Authentication.StreamPortalAccess(\n\tctx,\n\t\"strm_31Dc0DD72P5AddYUguyBd\",\n\tStreamPortalAccessIn{\n\t\tFeatureFlags: []string{},\n\t\tExpiry:       new(uint64(1)),\n\t\tSessionId:    new(\"user_1FB8\"),\n\t},\n\tnil,\n)"
                     },
                     {
                         "label": "Kotlin",
@@ -29671,7 +30225,7 @@
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "err := svix.Authentication.StreamExpireAll(\n\tctx,\n\t\"strm_31Dc0DD72P5AddYUguyBd\",\n\tStreamTokenExpireIn{Expiry: ptr(int64(60)), SessionIds: []string{}},\n\tnil,\n)"
+                        "source": "err := svix.Authentication.StreamExpireAll(\n\tctx,\n\t\"strm_31Dc0DD72P5AddYUguyBd\",\n\tStreamTokenExpireIn{Expiry: new(int64(60)), SessionIds: []string{}},\n\tnil,\n)"
                     },
                     {
                         "label": "Kotlin",
@@ -30078,7 +30632,7 @@
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "response, err := svix.Authentication.RotateStreamPollerToken(\n\tctx,\n\t\"strm_31Dc0DD72P5AddYUguyBd\",\n\t\"sink_31Dc11sPYY9aLDkwPuGMa\",\n\tRotatePollerTokenIn{Expiry: ptr(int64(1)), OldTokenExpiry: ptr(int64(1))},\n\tnil,\n)"
+                        "source": "response, err := svix.Authentication.RotateStreamPollerToken(\n\tctx,\n\t\"strm_31Dc0DD72P5AddYUguyBd\",\n\t\"sink_31Dc11sPYY9aLDkwPuGMa\",\n\tRotatePollerTokenIn{Expiry: new(int64(1)), OldTokenExpiry: new(int64(1))},\n\tnil,\n)"
                     },
                     {
                         "label": "Kotlin",
@@ -30883,7 +31437,7 @@
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "response, err := svix.Connector.Create(\n\tctx,\n\tConnectorIn{\n\t\tName:              \"My first connector\",\n\t\tUid:               ptr(\"unique-identifier\"),\n\t\tLogo:              ptr(\"https://example.com/logo.png\"),\n\t\tDescription:       ptr(\"Example connector description\"),\n\t\tKind:              ptr(CONNECTORKIND_CUSTOM),\n\t\tInstructions:      ptr(\"Markdown-formatted instructions\"),\n\t\tAllowedEventTypes: []string{\"user.signup\", \"user.deleted\"},\n\t\tTransformation:    \"function handler(webhook) { /* ... */ }\",\n\t\tFeatureFlags:      []string{},\n\t\tProductType:       ptr(CONNECTORPRODUCT_DISPATCH),\n\t},\n\tnil,\n)"
+                        "source": "response, err := svix.Connector.Create(\n\tctx,\n\tConnectorIn{\n\t\tName:              \"My first connector\",\n\t\tUid:               new(\"unique-identifier\"),\n\t\tLogo:              new(\"https://example.com/logo.png\"),\n\t\tDescription:       new(\"Example connector description\"),\n\t\tKind:              new(CONNECTORKIND_CUSTOM),\n\t\tInstructions:      new(\"Markdown-formatted instructions\"),\n\t\tAllowedEventTypes: []string{\"user.signup\", \"user.deleted\"},\n\t\tTransformation:    \"function handler(webhook) { /* ... */ }\",\n\t\tFeatureFlags:      []string{},\n\t\tProductType:       new(CONNECTORPRODUCT_DISPATCH),\n\t},\n\tnil,\n)"
                     },
                     {
                         "label": "Kotlin",
@@ -32020,7 +32574,7 @@
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "response, err := svix.Connector.Patch(\n\tctx,\n\t\"connector_id\",\n\tConnectorPatch{\n\t\tName:              ptr(\"sample string\"),\n\t\tLogo:              NewNullable(\"sample string\"),\n\t\tDescription:       ptr(\"sample string\"),\n\t\tKind:              ptr(CONNECTORKIND_CUSTOM),\n\t\tInstructions:      ptr(\"sample string\"),\n\t\tAllowedEventTypes: NewNullable([]string{\"user.signup\", \"user.deleted\"}),\n\t\tTransformation:    ptr(\"sample string\"),\n\t\tFeatureFlags:      NewNullable([]string{\"cool-new-feature\"}),\n\t},\n)"
+                        "source": "response, err := svix.Connector.Patch(\n\tctx,\n\t\"connector_id\",\n\tConnectorPatch{\n\t\tName:              new(\"sample string\"),\n\t\tLogo:              NewNullable(\"sample string\"),\n\t\tDescription:       new(\"sample string\"),\n\t\tKind:              new(CONNECTORKIND_CUSTOM),\n\t\tInstructions:      new(\"sample string\"),\n\t\tAllowedEventTypes: NewNullable([]string{\"user.signup\", \"user.deleted\"}),\n\t\tTransformation:    new(\"sample string\"),\n\t\tFeatureFlags:      NewNullable([]string{\"cool-new-feature\"}),\n\t},\n)"
                     },
                     {
                         "label": "Kotlin",
@@ -32219,7 +32773,7 @@
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "response, err := svix.Connector.Update(\n\tctx,\n\t\"connector_id\",\n\tConnectorUpdate{\n\t\tName:              ptr(\"My first connector\"),\n\t\tLogo:              ptr(\"https://example.com/logo.png\"),\n\t\tDescription:       ptr(\"Example connector description\"),\n\t\tKind:              ptr(CONNECTORKIND_CUSTOM),\n\t\tInstructions:      ptr(\"Markdown-formatted instructions\"),\n\t\tAllowedEventTypes: []string{\"user.signup\", \"user.deleted\"},\n\t\tTransformation:    \"function handler(webhook) { /* ... */ }\",\n\t\tFeatureFlags:      []string{\"cool-new-feature\"},\n\t},\n)"
+                        "source": "response, err := svix.Connector.Update(\n\tctx,\n\t\"connector_id\",\n\tConnectorUpdate{\n\t\tName:              new(\"My first connector\"),\n\t\tLogo:              new(\"https://example.com/logo.png\"),\n\t\tDescription:       new(\"Example connector description\"),\n\t\tKind:              new(CONNECTORKIND_CUSTOM),\n\t\tInstructions:      new(\"Markdown-formatted instructions\"),\n\t\tAllowedEventTypes: []string{\"user.signup\", \"user.deleted\"},\n\t\tTransformation:    \"function handler(webhook) { /* ... */ }\",\n\t\tFeatureFlags:      []string{\"cool-new-feature\"},\n\t},\n)"
                     },
                     {
                         "label": "Kotlin",
@@ -32501,6 +33055,146 @@
                 "summary": "Update Connector Options",
                 "tags": [
                     "Connector"
+                ],
+                "x-internal": true
+            }
+        },
+        "/api/v1/endpoint/{endpoint_id}/auto-config": {
+            "put": {
+                "description": "Update an auto-config endpoint by providing endpoint details.",
+                "operationId": "v1.endpoint.auto-config.update",
+                "parameters": [
+                    {
+                        "description": "The Application's ID or UID.",
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The Application's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The Endpoint's ID or UID.",
+                        "in": "path",
+                        "name": "endpoint_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The Endpoint's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AutoConfigSubscribeIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EndpointOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Update Subscription",
+                "tags": [
+                    "Webhooks AutoConfig"
                 ],
                 "x-internal": true
             }
@@ -33320,7 +34014,7 @@
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "response, err := svix.EventType.Create(\n\tctx,\n\tEventTypeIn{\n\t\tName:         \"user.signup\",\n\t\tDescription:  \"A user has signed up\",\n\t\tArchived:     ptr(true),\n\t\tDeprecated:   ptr(true),\n\t\tSchemas:      nil,\n\t\tGroupName:    ptr(\"user\"),\n\t\tFeatureFlags: []string{\"cool-new-feature\"},\n\t\tFeatureFlag:  ptr(\"sample string\"),\n\t},\n\tnil,\n)"
+                        "source": "response, err := svix.EventType.Create(\n\tctx,\n\tEventTypeIn{\n\t\tName:         \"user.signup\",\n\t\tDescription:  \"A user has signed up\",\n\t\tArchived:     new(true),\n\t\tDeprecated:   new(true),\n\t\tSchemas:      nil,\n\t\tGroupName:    new(\"user\"),\n\t\tFeatureFlags: []string{\"cool-new-feature\"},\n\t\tFeatureFlag:  new(\"sample string\"),\n\t},\n\tnil,\n)"
                     },
                     {
                         "label": "Kotlin",
@@ -33615,7 +34309,7 @@
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "response, err := svix.EventType.ImportOpenapi(\n\tctx,\n\tEventTypeImportOpenApiIn{\n\t\tDryRun:     ptr(true),\n\t\tReplaceAll: ptr(true),\n\t\tSpec:       nil,\n\t\tSpecRaw:    ptr(\"sample string\"),\n\t},\n\tnil,\n)"
+                        "source": "response, err := svix.EventType.ImportOpenapi(\n\tctx,\n\tEventTypeImportOpenApiIn{\n\t\tDryRun:     new(true),\n\t\tReplaceAll: new(true),\n\t\tSpec:       nil,\n\t\tSpecRaw:    new(\"sample string\"),\n\t},\n\tnil,\n)"
                     },
                     {
                         "label": "Kotlin",
@@ -34165,7 +34859,7 @@
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "response, err := svix.EventType.Patch(\n\tctx,\n\t\"user.signup\",\n\tEventTypePatch{\n\t\tDescription:  ptr(\"sample string\"),\n\t\tArchived:     ptr(true),\n\t\tDeprecated:   ptr(true),\n\t\tSchemas:      NewUnsetNullable[map[string]any](),\n\t\tFeatureFlags: NewNullable([]string{\"cool-new-feature\"}),\n\t\tFeatureFlag:  NewNullable(\"sample string\"),\n\t\tGroupName:    NewNullable(\"user\"),\n\t},\n)"
+                        "source": "response, err := svix.EventType.Patch(\n\tctx,\n\t\"user.signup\",\n\tEventTypePatch{\n\t\tDescription:  new(\"sample string\"),\n\t\tArchived:     new(true),\n\t\tDeprecated:   new(true),\n\t\tSchemas:      NewUnsetNullable[map[string]any](),\n\t\tFeatureFlags: NewNullable([]string{\"cool-new-feature\"}),\n\t\tFeatureFlag:  NewNullable(\"sample string\"),\n\t\tGroupName:    NewNullable(\"user\"),\n\t},\n)"
                     },
                     {
                         "label": "Kotlin",
@@ -34363,7 +35057,7 @@
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "response, err := svix.EventType.Update(\n\tctx,\n\t\"user.signup\",\n\tEventTypeUpdate{\n\t\tDescription:  \"A user has signed up\",\n\t\tArchived:     ptr(true),\n\t\tDeprecated:   ptr(true),\n\t\tSchemas:      nil,\n\t\tFeatureFlags: []string{\"cool-new-feature\"},\n\t\tFeatureFlag:  ptr(\"sample string\"),\n\t\tGroupName:    ptr(\"user\"),\n\t},\n)"
+                        "source": "response, err := svix.EventType.Update(\n\tctx,\n\t\"user.signup\",\n\tEventTypeUpdate{\n\t\tDescription:  \"A user has signed up\",\n\t\tArchived:     new(true),\n\t\tDeprecated:   new(true),\n\t\tSchemas:      nil,\n\t\tFeatureFlags: []string{\"cool-new-feature\"},\n\t\tFeatureFlag:  new(\"sample string\"),\n\t\tGroupName:    new(\"user\"),\n\t},\n)"
                     },
                     {
                         "label": "Kotlin",
@@ -37372,67 +38066,67 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const response = await svix.operationalWebhook.endpoint.create({\n  description: \"An example endpoint name\",\n  rateLimit: 1,\n  uid: \"unique-identifier\",\n  url: \"https://example.com/webhook/\",\n  disabled: true,\n  filterTypes: [\"message.attempt.failing\"],\n  secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n  metadata: {},\n});"
+                        "source": "const response = await svix.operationalWebhook.endpoint.create({\n  description: \"An example endpoint name\",\n  rateLimit: 1,\n  throttleRate: 1,\n  uid: \"unique-identifier\",\n  url: \"https://example.com/webhook/\",\n  disabled: true,\n  filterTypes: [\"message.attempt.failing\"],\n  secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n  metadata: {},\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "TypeScript",
-                        "source": "const response = await svix.operationalWebhook.endpoint.create({\n  description: \"An example endpoint name\",\n  rateLimit: 1,\n  uid: \"unique-identifier\",\n  url: \"https://example.com/webhook/\",\n  disabled: true,\n  filterTypes: [\"message.attempt.failing\"],\n  secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n  metadata: {},\n});"
+                        "source": "const response = await svix.operationalWebhook.endpoint.create({\n  description: \"An example endpoint name\",\n  rateLimit: 1,\n  throttleRate: 1,\n  uid: \"unique-identifier\",\n  url: \"https://example.com/webhook/\",\n  disabled: true,\n  filterTypes: [\"message.attempt.failing\"],\n  secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n  metadata: {},\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "response = svix.operational_webhook.endpoint.create(\n    OperationalWebhookEndpointIn(\n        description=\"An example endpoint name\",\n        rate_limit=1,\n        uid=\"unique-identifier\",\n        url=\"https://example.com/webhook/\",\n        disabled=True,\n        filter_types=[\n            \"message.attempt.failing\",\n        ],\n        secret=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n        metadata={},\n    ),\n)"
+                        "source": "response = svix.operational_webhook.endpoint.create(\n    OperationalWebhookEndpointIn(\n        description=\"An example endpoint name\",\n        rate_limit=1,\n        throttle_rate=1,\n        uid=\"unique-identifier\",\n        url=\"https://example.com/webhook/\",\n        disabled=True,\n        filter_types=[\n            \"message.attempt.failing\",\n        ],\n        secret=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n        metadata={},\n    ),\n)"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python (Async)",
-                        "source": "response = await svix.operational_webhook.endpoint.create(\n    OperationalWebhookEndpointIn(\n        description=\"An example endpoint name\",\n        rate_limit=1,\n        uid=\"unique-identifier\",\n        url=\"https://example.com/webhook/\",\n        disabled=True,\n        filter_types=[\n            \"message.attempt.failing\",\n        ],\n        secret=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n        metadata={},\n    ),\n)"
+                        "source": "response = await svix.operational_webhook.endpoint.create(\n    OperationalWebhookEndpointIn(\n        description=\"An example endpoint name\",\n        rate_limit=1,\n        throttle_rate=1,\n        uid=\"unique-identifier\",\n        url=\"https://example.com/webhook/\",\n        disabled=True,\n        filter_types=[\n            \"message.attempt.failing\",\n        ],\n        secret=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n        metadata={},\n    ),\n)"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "response, err := svix.OperationalWebhook.Endpoint.Create(\n\tctx,\n\tOperationalWebhookEndpointIn{\n\t\tDescription: ptr(\"An example endpoint name\"),\n\t\tRateLimit:   ptr(uint16(1)),\n\t\tUid:         ptr(\"unique-identifier\"),\n\t\tUrl:         \"https://example.com/webhook/\",\n\t\tDisabled:    ptr(true),\n\t\tFilterTypes: []string{\"message.attempt.failing\"},\n\t\tSecret:      ptr(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"),\n\t\tMetadata:    nil,\n\t},\n\tnil,\n)"
+                        "source": "response, err := svix.OperationalWebhook.Endpoint.Create(\n\tctx,\n\tOperationalWebhookEndpointIn{\n\t\tDescription:  new(\"An example endpoint name\"),\n\t\tRateLimit:    new(uint16(1)),\n\t\tThrottleRate: new(uint16(1)),\n\t\tUid:          new(\"unique-identifier\"),\n\t\tUrl:          \"https://example.com/webhook/\",\n\t\tDisabled:     new(true),\n\t\tFilterTypes:  []string{\"message.attempt.failing\"},\n\t\tSecret:       new(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"),\n\t\tMetadata:     nil,\n\t},\n\tnil,\n)"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val response =\n    svix.operationalWebhook.endpoint.create(\n        OperationalWebhookEndpointIn(\n            description = \"An example endpoint name\",\n            rateLimit = 1u,\n            uid = \"unique-identifier\",\n            url = \"https://example.com/webhook/\",\n            disabled = true,\n            filterTypes = setOf(\"message.attempt.failing\"),\n            secret = \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n            metadata = mapOf(),\n        )\n    )"
+                        "source": "val response =\n    svix.operationalWebhook.endpoint.create(\n        OperationalWebhookEndpointIn(\n            description = \"An example endpoint name\",\n            rateLimit = 1u,\n            throttleRate = 1u,\n            uid = \"unique-identifier\",\n            url = \"https://example.com/webhook/\",\n            disabled = true,\n            filterTypes = setOf(\"message.attempt.failing\"),\n            secret = \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n            metadata = mapOf(),\n        )\n    )"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "var response = svix.getOperationalWebhook()\n        .getEndpoint()\n        .create(new OperationalWebhookEndpointIn()\n            .description(\"An example endpoint name\")\n            .rateLimit(1L)\n            .uid(\"unique-identifier\")\n            .url(URI.create(\"https://example.com/webhook/\"))\n            .disabled(true)\n            .filterTypes(Set.of(\"message.attempt.failing\"))\n            .secret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n            .metadata(Map.of()));"
+                        "source": "var response = svix.getOperationalWebhook()\n        .getEndpoint()\n        .create(new OperationalWebhookEndpointIn()\n            .description(\"An example endpoint name\")\n            .rateLimit(1L)\n            .throttleRate(1L)\n            .uid(\"unique-identifier\")\n            .url(URI.create(\"https://example.com/webhook/\"))\n            .disabled(true)\n            .filterTypes(Set.of(\"message.attempt.failing\"))\n            .secret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n            .metadata(Map.of()));"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "response = svix\n  .operational_webhook\n  .endpoint\n  .create(\n    {\n      description: \"An example endpoint name\",\n      rateLimit: 1,\n      uid: \"unique-identifier\",\n      url: \"https://example.com/webhook/\",\n      disabled: true,\n      filterTypes: [\"message.attempt.failing\"],\n      secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n      metadata: {}\n    }\n  )"
+                        "source": "response = svix\n  .operational_webhook\n  .endpoint\n  .create(\n    {\n      description: \"An example endpoint name\",\n      rateLimit: 1,\n      throttleRate: 1,\n      uid: \"unique-identifier\",\n      url: \"https://example.com/webhook/\",\n      disabled: true,\n      filterTypes: [\"message.attempt.failing\"],\n      secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n      metadata: {}\n    }\n  )"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let response = svix\n    .operational_webhook()\n    .endpoint()\n    .create(\n        OperationalWebhookEndpointIn {\n            description: Some(\"An example endpoint name\".to_string()),\n            rate_limit: Some(1),\n            uid: Some(\"unique-identifier\".to_string()),\n            url: \"https://example.com/webhook/\".to_string(),\n            disabled: Some(true),\n            filter_types: Some(vec![\"message.attempt.failing\".to_string()]),\n            secret: Some(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\".to_string()),\n            metadata: Some(HashMap::new()),\n        },\n        None,\n    )\n    .await?;"
+                        "source": "let response = svix\n    .operational_webhook()\n    .endpoint()\n    .create(\n        OperationalWebhookEndpointIn {\n            description: Some(\"An example endpoint name\".to_string()),\n            rate_limit: Some(1),\n            throttle_rate: Some(1),\n            uid: Some(\"unique-identifier\".to_string()),\n            url: \"https://example.com/webhook/\".to_string(),\n            disabled: Some(true),\n            filter_types: Some(vec![\"message.attempt.failing\".to_string()]),\n            secret: Some(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\".to_string()),\n            metadata: Some(HashMap::new()),\n        },\n        None,\n    )\n    .await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var response = svix.OperationalWebhook.Endpoint.Create(\n    new OperationalWebhookEndpointIn\n    {\n        Description = \"An example endpoint name\",\n        RateLimit = 1,\n        Uid = \"unique-identifier\",\n        Url = \"https://example.com/webhook/\",\n        Disabled = true,\n        FilterTypes = [\"message.attempt.failing\"],\n        Secret = \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n        Metadata = [],\n    }\n);"
+                        "source": "var response = svix.OperationalWebhook.Endpoint.Create(\n    new OperationalWebhookEndpointIn\n    {\n        Description = \"An example endpoint name\",\n        RateLimit = 1,\n        ThrottleRate = 1,\n        Uid = \"unique-identifier\",\n        Url = \"https://example.com/webhook/\",\n        Disabled = true,\n        FilterTypes = [\"message.attempt.failing\"],\n        Secret = \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n        Metadata = [],\n    }\n);"
                     },
                     {
                         "label": "PHP",
                         "lang": "PHP",
-                        "source": "$response = $svix->operationalWebhook->endpoint->create(\n    OperationalWebhookEndpointIn::create(\n        url: \"https://example.com/webhook/\"\n    )\n    ->withDescription(\"An example endpoint name\")\n    ->withRateLimit(1)\n    ->withUid(\"unique-identifier\")\n    ->withDisabled(true)\n    ->withFilterTypes([\"message.attempt.failing\"])\n    ->withSecret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n    ->withMetadata([])\n);"
+                        "source": "$response = $svix->operationalWebhook->endpoint->create(\n    OperationalWebhookEndpointIn::create(\n        url: \"https://example.com/webhook/\"\n    )\n    ->withDescription(\"An example endpoint name\")\n    ->withRateLimit(1)\n    ->withThrottleRate(1)\n    ->withUid(\"unique-identifier\")\n    ->withDisabled(true)\n    ->withFilterTypes([\"message.attempt.failing\"])\n    ->withSecret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n    ->withMetadata([])\n);"
                     },
                     {
                         "label": "CLI",
                         "lang": "CLI",
-                        "source": "svix operational-webhook endpoint create '{\n    \"description\": \"An example endpoint name\",\n    \"disabled\": true,\n    \"filterTypes\": [\n      \"message.attempt.failing\"\n    ],\n    \"metadata\": {},\n    \"rateLimit\": 1,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    \"uid\": \"unique-identifier\",\n    \"url\": \"https://example.com/webhook/\"\n  }'"
+                        "source": "svix operational-webhook endpoint create '{\n    \"description\": \"An example endpoint name\",\n    \"disabled\": true,\n    \"filterTypes\": [\n      \"message.attempt.failing\"\n    ],\n    \"metadata\": {},\n    \"rateLimit\": 1,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    \"throttleRate\": 1,\n    \"uid\": \"unique-identifier\",\n    \"url\": \"https://example.com/webhook/\"\n  }'"
                     },
                     {
                         "label": "cURL",
                         "lang": "cURL",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/operational-webhook/endpoint' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"description\": \"An example endpoint name\",\n    \"disabled\": true,\n    \"filterTypes\": [\n      \"message.attempt.failing\"\n    ],\n    \"metadata\": {},\n    \"rateLimit\": 1,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    \"uid\": \"unique-identifier\",\n    \"url\": \"https://example.com/webhook/\"\n  }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/operational-webhook/endpoint' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"description\": \"An example endpoint name\",\n    \"disabled\": true,\n    \"filterTypes\": [\n      \"message.attempt.failing\"\n    ],\n    \"metadata\": {},\n    \"rateLimit\": 1,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    \"throttleRate\": 1,\n    \"uid\": \"unique-identifier\",\n    \"url\": \"https://example.com/webhook/\"\n  }'"
                     }
                 ]
             }
@@ -37914,67 +38608,67 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const response = await svix.operationalWebhook.endpoint.update(\n  \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n  {\n    description: \"An example endpoint name\",\n    rateLimit: 1,\n    uid: \"unique-identifier\",\n    url: \"https://example.com/webhook/\",\n    disabled: true,\n    filterTypes: [\"message.attempt.failing\"],\n    metadata: {},\n  }\n);"
+                        "source": "const response = await svix.operationalWebhook.endpoint.update(\n  \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n  {\n    description: \"An example endpoint name\",\n    rateLimit: 1,\n    throttleRate: 1,\n    uid: \"unique-identifier\",\n    url: \"https://example.com/webhook/\",\n    disabled: true,\n    filterTypes: [\"message.attempt.failing\"],\n    metadata: {},\n  }\n);"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "TypeScript",
-                        "source": "const response = await svix.operationalWebhook.endpoint.update(\n  \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n  {\n    description: \"An example endpoint name\",\n    rateLimit: 1,\n    uid: \"unique-identifier\",\n    url: \"https://example.com/webhook/\",\n    disabled: true,\n    filterTypes: [\"message.attempt.failing\"],\n    metadata: {},\n  }\n);"
+                        "source": "const response = await svix.operationalWebhook.endpoint.update(\n  \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n  {\n    description: \"An example endpoint name\",\n    rateLimit: 1,\n    throttleRate: 1,\n    uid: \"unique-identifier\",\n    url: \"https://example.com/webhook/\",\n    disabled: true,\n    filterTypes: [\"message.attempt.failing\"],\n    metadata: {},\n  }\n);"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "response = svix.operational_webhook.endpoint.update(\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    OperationalWebhookEndpointUpdate(\n        description=\"An example endpoint name\",\n        rate_limit=1,\n        uid=\"unique-identifier\",\n        url=\"https://example.com/webhook/\",\n        disabled=True,\n        filter_types=[\n            \"message.attempt.failing\",\n        ],\n        metadata={},\n    ),\n)"
+                        "source": "response = svix.operational_webhook.endpoint.update(\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    OperationalWebhookEndpointUpdate(\n        description=\"An example endpoint name\",\n        rate_limit=1,\n        throttle_rate=1,\n        uid=\"unique-identifier\",\n        url=\"https://example.com/webhook/\",\n        disabled=True,\n        filter_types=[\n            \"message.attempt.failing\",\n        ],\n        metadata={},\n    ),\n)"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python (Async)",
-                        "source": "response = await svix.operational_webhook.endpoint.update(\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    OperationalWebhookEndpointUpdate(\n        description=\"An example endpoint name\",\n        rate_limit=1,\n        uid=\"unique-identifier\",\n        url=\"https://example.com/webhook/\",\n        disabled=True,\n        filter_types=[\n            \"message.attempt.failing\",\n        ],\n        metadata={},\n    ),\n)"
+                        "source": "response = await svix.operational_webhook.endpoint.update(\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    OperationalWebhookEndpointUpdate(\n        description=\"An example endpoint name\",\n        rate_limit=1,\n        throttle_rate=1,\n        uid=\"unique-identifier\",\n        url=\"https://example.com/webhook/\",\n        disabled=True,\n        filter_types=[\n            \"message.attempt.failing\",\n        ],\n        metadata={},\n    ),\n)"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "response, err := svix.OperationalWebhook.Endpoint.Update(\n\tctx,\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tOperationalWebhookEndpointUpdate{\n\t\tDescription: ptr(\"An example endpoint name\"),\n\t\tRateLimit:   ptr(uint16(1)),\n\t\tUid:         ptr(\"unique-identifier\"),\n\t\tUrl:         \"https://example.com/webhook/\",\n\t\tDisabled:    ptr(true),\n\t\tFilterTypes: []string{\"message.attempt.failing\"},\n\t\tMetadata:    nil,\n\t},\n)"
+                        "source": "response, err := svix.OperationalWebhook.Endpoint.Update(\n\tctx,\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tOperationalWebhookEndpointUpdate{\n\t\tDescription:  new(\"An example endpoint name\"),\n\t\tRateLimit:    new(uint16(1)),\n\t\tThrottleRate: new(uint16(1)),\n\t\tUid:          new(\"unique-identifier\"),\n\t\tUrl:          \"https://example.com/webhook/\",\n\t\tDisabled:     new(true),\n\t\tFilterTypes:  []string{\"message.attempt.failing\"},\n\t\tMetadata:     nil,\n\t},\n)"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val response =\n    svix.operationalWebhook.endpoint.update(\n        \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n        OperationalWebhookEndpointUpdate(\n            description = \"An example endpoint name\",\n            rateLimit = 1u,\n            uid = \"unique-identifier\",\n            url = \"https://example.com/webhook/\",\n            disabled = true,\n            filterTypes = setOf(\"message.attempt.failing\"),\n            metadata = mapOf(),\n        ),\n    )"
+                        "source": "val response =\n    svix.operationalWebhook.endpoint.update(\n        \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n        OperationalWebhookEndpointUpdate(\n            description = \"An example endpoint name\",\n            rateLimit = 1u,\n            throttleRate = 1u,\n            uid = \"unique-identifier\",\n            url = \"https://example.com/webhook/\",\n            disabled = true,\n            filterTypes = setOf(\"message.attempt.failing\"),\n            metadata = mapOf(),\n        ),\n    )"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "var response = svix.getOperationalWebhook()\n        .getEndpoint()\n        .update(\n            \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n            new OperationalWebhookEndpointUpdate()\n                .description(\"An example endpoint name\")\n                .rateLimit(1L)\n                .uid(\"unique-identifier\")\n                .url(URI.create(\"https://example.com/webhook/\"))\n                .disabled(true)\n                .filterTypes(Set.of(\"message.attempt.failing\"))\n                .metadata(Map.of()));"
+                        "source": "var response = svix.getOperationalWebhook()\n        .getEndpoint()\n        .update(\n            \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n            new OperationalWebhookEndpointUpdate()\n                .description(\"An example endpoint name\")\n                .rateLimit(1L)\n                .throttleRate(1L)\n                .uid(\"unique-identifier\")\n                .url(URI.create(\"https://example.com/webhook/\"))\n                .disabled(true)\n                .filterTypes(Set.of(\"message.attempt.failing\"))\n                .metadata(Map.of()));"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "response = svix\n  .operational_webhook\n  .endpoint\n  .update(\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    {\n      description: \"An example endpoint name\",\n      rateLimit: 1,\n      uid: \"unique-identifier\",\n      url: \"https://example.com/webhook/\",\n      disabled: true,\n      filterTypes: [\"message.attempt.failing\"],\n      metadata: {}\n    }\n  )"
+                        "source": "response = svix\n  .operational_webhook\n  .endpoint\n  .update(\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    {\n      description: \"An example endpoint name\",\n      rateLimit: 1,\n      throttleRate: 1,\n      uid: \"unique-identifier\",\n      url: \"https://example.com/webhook/\",\n      disabled: true,\n      filterTypes: [\"message.attempt.failing\"],\n      metadata: {}\n    }\n  )"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let response = svix\n    .operational_webhook()\n    .endpoint()\n    .update(\n        \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\".to_string(),\n        OperationalWebhookEndpointUpdate {\n            description: Some(\"An example endpoint name\".to_string()),\n            rate_limit: Some(1),\n            uid: Some(\"unique-identifier\".to_string()),\n            url: \"https://example.com/webhook/\".to_string(),\n            disabled: Some(true),\n            filter_types: Some(vec![\"message.attempt.failing\".to_string()]),\n            metadata: Some(HashMap::new()),\n        },\n    )\n    .await?;"
+                        "source": "let response = svix\n    .operational_webhook()\n    .endpoint()\n    .update(\n        \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\".to_string(),\n        OperationalWebhookEndpointUpdate {\n            description: Some(\"An example endpoint name\".to_string()),\n            rate_limit: Some(1),\n            throttle_rate: Some(1),\n            uid: Some(\"unique-identifier\".to_string()),\n            url: \"https://example.com/webhook/\".to_string(),\n            disabled: Some(true),\n            filter_types: Some(vec![\"message.attempt.failing\".to_string()]),\n            metadata: Some(HashMap::new()),\n        },\n    )\n    .await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var response = svix.OperationalWebhook.Endpoint.Update(\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    new OperationalWebhookEndpointUpdate\n    {\n        Description = \"An example endpoint name\",\n        RateLimit = 1,\n        Uid = \"unique-identifier\",\n        Url = \"https://example.com/webhook/\",\n        Disabled = true,\n        FilterTypes = [\"message.attempt.failing\"],\n        Metadata = [],\n    }\n);"
+                        "source": "var response = svix.OperationalWebhook.Endpoint.Update(\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    new OperationalWebhookEndpointUpdate\n    {\n        Description = \"An example endpoint name\",\n        RateLimit = 1,\n        ThrottleRate = 1,\n        Uid = \"unique-identifier\",\n        Url = \"https://example.com/webhook/\",\n        Disabled = true,\n        FilterTypes = [\"message.attempt.failing\"],\n        Metadata = [],\n    }\n);"
                     },
                     {
                         "label": "PHP",
                         "lang": "PHP",
-                        "source": "$response = $svix->operationalWebhook->endpoint->update(\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    OperationalWebhookEndpointUpdate::create(\n        url: \"https://example.com/webhook/\"\n    )\n    ->withDescription(\"An example endpoint name\")\n    ->withRateLimit(1)\n    ->withUid(\"unique-identifier\")\n    ->withDisabled(true)\n    ->withFilterTypes([\"message.attempt.failing\"])\n    ->withMetadata([])\n);"
+                        "source": "$response = $svix->operationalWebhook->endpoint->update(\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    OperationalWebhookEndpointUpdate::create(\n        url: \"https://example.com/webhook/\"\n    )\n    ->withDescription(\"An example endpoint name\")\n    ->withRateLimit(1)\n    ->withThrottleRate(1)\n    ->withUid(\"unique-identifier\")\n    ->withDisabled(true)\n    ->withFilterTypes([\"message.attempt.failing\"])\n    ->withMetadata([])\n);"
                     },
                     {
                         "label": "CLI",
                         "lang": "CLI",
-                        "source": "svix operational-webhook endpoint update \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\" '{\n    \"description\": \"An example endpoint name\",\n    \"disabled\": true,\n    \"filterTypes\": [\n      \"message.attempt.failing\"\n    ],\n    \"metadata\": {},\n    \"rateLimit\": 1,\n    \"uid\": \"unique-identifier\",\n    \"url\": \"https://example.com/webhook/\"\n  }'"
+                        "source": "svix operational-webhook endpoint update \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\" '{\n    \"description\": \"An example endpoint name\",\n    \"disabled\": true,\n    \"filterTypes\": [\n      \"message.attempt.failing\"\n    ],\n    \"metadata\": {},\n    \"rateLimit\": 1,\n    \"throttleRate\": 1,\n    \"uid\": \"unique-identifier\",\n    \"url\": \"https://example.com/webhook/\"\n  }'"
                     },
                     {
                         "label": "cURL",
                         "lang": "cURL",
-                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/operational-webhook/endpoint/ep_33ZIBDmz66FcPG35FnsbM6Ie4X1' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"description\": \"An example endpoint name\",\n    \"disabled\": true,\n    \"filterTypes\": [\n      \"message.attempt.failing\"\n    ],\n    \"metadata\": {},\n    \"rateLimit\": 1,\n    \"uid\": \"unique-identifier\",\n    \"url\": \"https://example.com/webhook/\"\n  }'"
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/operational-webhook/endpoint/ep_33ZIBDmz66FcPG35FnsbM6Ie4X1' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"description\": \"An example endpoint name\",\n    \"disabled\": true,\n    \"filterTypes\": [\n      \"message.attempt.failing\"\n    ],\n    \"metadata\": {},\n    \"rateLimit\": 1,\n    \"throttleRate\": 1,\n    \"uid\": \"unique-identifier\",\n    \"url\": \"https://example.com/webhook/\"\n  }'"
                     }
                 ]
             }
@@ -38671,7 +39365,7 @@
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "err := svix.OperationalWebhook.Endpoint.RotateSecret(\n\tctx,\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tOperationalWebhookEndpointSecretIn{Key: ptr(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")},\n\tnil,\n)"
+                        "source": "err := svix.OperationalWebhook.Endpoint.RotateSecret(\n\tctx,\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tOperationalWebhookEndpointSecretIn{Key: new(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")},\n\tnil,\n)"
                     },
                     {
                         "label": "Kotlin",
@@ -39241,9 +39935,9 @@
                             "description": "The iterator returned from a prior invocation",
                             "example": "strm_2yZwUhtgs5Ai8T9yRQJXA",
                             "maxLength": 27,
-                            "minLength": 27,
+                            "minLength": 26,
                             "nullable": true,
-                            "pattern": "^strm_[A-Za-z0-9]{22}$",
+                            "pattern": "^strm_[A-Za-z0-9]{21,22}$",
                             "type": "string"
                         },
                         "style": "form"
@@ -39558,7 +40252,7 @@
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "response, err := svix.Streaming.Stream.Create(\n\tctx,\n\tStreamIn{Name: \"sample string\", Uid: ptr(\"unique-identifier\"), Metadata: nil},\n\tnil,\n)"
+                        "source": "response, err := svix.Streaming.Stream.Create(\n\tctx,\n\tStreamIn{Name: \"sample string\", Uid: new(\"unique-identifier\"), Metadata: nil},\n\tnil,\n)"
                     },
                     {
                         "label": "Kotlin",
@@ -39956,7 +40650,7 @@
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "response, err := svix.Streaming.EventType.Create(\n\tctx,\n\tStreamEventTypeIn{\n\t\tName:         \"user.signup\",\n\t\tDescription:  ptr(\"sample string\"),\n\t\tFeatureFlags: []string{\"cool-new-feature\"},\n\t\tDeprecated:   ptr(true),\n\t\tArchived:     ptr(true),\n\t},\n\tnil,\n)"
+                        "source": "response, err := svix.Streaming.EventType.Create(\n\tctx,\n\tStreamEventTypeIn{\n\t\tName:         \"user.signup\",\n\t\tDescription:  new(\"sample string\"),\n\t\tFeatureFlags: []string{\"cool-new-feature\"},\n\t\tDeprecated:   new(true),\n\t\tArchived:     new(true),\n\t},\n\tnil,\n)"
                     },
                     {
                         "label": "Kotlin",
@@ -40506,7 +41200,7 @@
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "response, err := svix.Streaming.EventType.Patch(\n\tctx,\n\t\"name\",\n\tStreamEventTypePatch{\n\t\tName:         NewNullable(\"user.signup\"),\n\t\tDescription:  NewNullable(\"sample string\"),\n\t\tFeatureFlags: NewNullable([]string{\"cool-new-feature\"}),\n\t\tDeprecated:   ptr(true),\n\t\tArchived:     ptr(true),\n\t},\n)"
+                        "source": "response, err := svix.Streaming.EventType.Patch(\n\tctx,\n\t\"name\",\n\tStreamEventTypePatch{\n\t\tName:         NewNullable(\"user.signup\"),\n\t\tDescription:  NewNullable(\"sample string\"),\n\t\tFeatureFlags: NewNullable([]string{\"cool-new-feature\"}),\n\t\tDeprecated:   new(true),\n\t\tArchived:     new(true),\n\t},\n)"
                     },
                     {
                         "label": "Kotlin",
@@ -40704,7 +41398,7 @@
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "response, err := svix.Streaming.EventType.Update(\n\tctx,\n\t\"name\",\n\tStreamEventTypeIn{\n\t\tName:         \"user.signup\",\n\t\tDescription:  ptr(\"sample string\"),\n\t\tFeatureFlags: []string{\"cool-new-feature\"},\n\t\tDeprecated:   ptr(true),\n\t\tArchived:     ptr(true),\n\t},\n)"
+                        "source": "response, err := svix.Streaming.EventType.Update(\n\tctx,\n\t\"name\",\n\tStreamEventTypeIn{\n\t\tName:         \"user.signup\",\n\t\tDescription:  new(\"sample string\"),\n\t\tFeatureFlags: []string{\"cool-new-feature\"},\n\t\tDeprecated:   new(true),\n\t\tArchived:     new(true),\n\t},\n)"
                     },
                     {
                         "label": "Kotlin",
@@ -41362,7 +42056,7 @@
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "response, err := svix.Streaming.Stream.Patch(\n\tctx,\n\t\"strm_31Dc0DD72P5AddYUguyBd\",\n\tStreamPatch{\n\t\tDescription: ptr(\"sample string\"),\n\t\tUid:         NewNullable(\"unique-identifier\"),\n\t\tMetadata:    nil,\n\t},\n)"
+                        "source": "response, err := svix.Streaming.Stream.Patch(\n\tctx,\n\t\"strm_31Dc0DD72P5AddYUguyBd\",\n\tStreamPatch{\n\t\tDescription: new(\"sample string\"),\n\t\tUid:         NewNullable(\"unique-identifier\"),\n\t\tMetadata:    nil,\n\t},\n)"
                     },
                     {
                         "label": "Kotlin",
@@ -41560,7 +42254,7 @@
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "response, err := svix.Streaming.Stream.Update(\n\tctx,\n\t\"strm_31Dc0DD72P5AddYUguyBd\",\n\tStreamIn{Name: \"sample string\", Uid: ptr(\"unique-identifier\"), Metadata: nil},\n)"
+                        "source": "response, err := svix.Streaming.Stream.Update(\n\tctx,\n\t\"strm_31Dc0DD72P5AddYUguyBd\",\n\tStreamIn{Name: \"sample string\", Uid: new(\"unique-identifier\"), Metadata: nil},\n)"
                     },
                     {
                         "label": "Kotlin",
@@ -42087,9 +42781,9 @@
                             "description": "The iterator returned from a prior invocation",
                             "example": "sink_2yZwUhtgs5Ai8T9yRQJXA",
                             "maxLength": 27,
-                            "minLength": 27,
+                            "minLength": 26,
                             "nullable": true,
-                            "pattern": "^sink_[A-Za-z0-9]{22}$",
+                            "pattern": "^sink_[A-Za-z0-9]{21,22}$",
                             "type": "string"
                         },
                         "style": "form"
@@ -42418,7 +43112,7 @@
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "response, err := svix.Streaming.Sink.Create(\n\tctx,\n\t\"strm_31Dc0DD72P5AddYUguyBd\",\n\tStreamSinkIn{\n\t\tUid:         ptr(\"unique-identifier\"),\n\t\tStatus:      ptr(SINKSTATUSIN_ENABLED),\n\t\tBatchSize:   ptr(uint16(100)),\n\t\tMaxWaitSecs: ptr(uint16(1)),\n\t\tEventTypes:  []string{},\n\t\tMetadata:    nil,\n\t\tConfig:      (AzureBlobStorageConfig{Container: \"sample string\", Account: \"sample string\", AccessKey: \"sample string\"}),\n\t\tType:        \"azureBlobStorage\",\n\t},\n\tnil,\n)"
+                        "source": "response, err := svix.Streaming.Sink.Create(\n\tctx,\n\t\"strm_31Dc0DD72P5AddYUguyBd\",\n\tStreamSinkIn{\n\t\tUid:         new(\"unique-identifier\"),\n\t\tStatus:      new(SINKSTATUSIN_ENABLED),\n\t\tBatchSize:   new(uint16(100)),\n\t\tMaxWaitSecs: new(uint16(1)),\n\t\tEventTypes:  []string{},\n\t\tMetadata:    nil,\n\t\tConfig:      (AzureBlobStorageConfig{Container: \"sample string\", Account: \"sample string\", AccessKey: \"sample string\"}),\n\t\tType:        \"azureBlobStorage\",\n\t},\n\tnil,\n)"
                     },
                     {
                         "label": "Kotlin",
@@ -42999,7 +43693,7 @@
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "response, err := svix.Streaming.Sink.Patch(\n\tctx,\n\t\"strm_31Dc0DD72P5AddYUguyBd\",\n\t\"sink_31Dc11sPYY9aLDkwPuGMa\",\n\tStreamSinkPatch{\n\t\tUid:         NewNullable(\"unique-identifier\"),\n\t\tStatus:      NewNullable(SINKSTATUSIN_ENABLED),\n\t\tBatchSize:   NewNullable(uint16(100)),\n\t\tMaxWaitSecs: NewNullable(uint16(1)),\n\t\tEventTypes:  []string{},\n\t\tMetadata:    nil,\n\t\tConfig:      (AzureBlobStoragePatchConfig{Container: ptr(\"sample string\"), Account: ptr(\"sample string\"), AccessKey: ptr(\"sample string\")}),\n\t\tType:        \"azureBlobStorage\",\n\t},\n)"
+                        "source": "response, err := svix.Streaming.Sink.Patch(\n\tctx,\n\t\"strm_31Dc0DD72P5AddYUguyBd\",\n\t\"sink_31Dc11sPYY9aLDkwPuGMa\",\n\tStreamSinkPatch{\n\t\tUid:         NewNullable(\"unique-identifier\"),\n\t\tStatus:      NewNullable(SINKSTATUSIN_ENABLED),\n\t\tBatchSize:   NewNullable(uint16(100)),\n\t\tMaxWaitSecs: NewNullable(uint16(1)),\n\t\tEventTypes:  []string{},\n\t\tMetadata:    nil,\n\t\tConfig:      (AzureBlobStoragePatchConfig{Container: new(\"sample string\"), Account: new(\"sample string\"), AccessKey: new(\"sample string\")}),\n\t\tType:        \"azureBlobStorage\",\n\t},\n)"
                     },
                     {
                         "label": "Kotlin",
@@ -43211,7 +43905,7 @@
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "response, err := svix.Streaming.Sink.Update(\n\tctx,\n\t\"strm_31Dc0DD72P5AddYUguyBd\",\n\t\"sink_31Dc11sPYY9aLDkwPuGMa\",\n\tStreamSinkIn{\n\t\tUid:         ptr(\"unique-identifier\"),\n\t\tStatus:      ptr(SINKSTATUSIN_ENABLED),\n\t\tBatchSize:   ptr(uint16(100)),\n\t\tMaxWaitSecs: ptr(uint16(1)),\n\t\tEventTypes:  []string{},\n\t\tMetadata:    nil,\n\t\tConfig:      (AzureBlobStorageConfig{Container: \"sample string\", Account: \"sample string\", AccessKey: \"sample string\"}),\n\t\tType:        \"azureBlobStorage\",\n\t},\n)"
+                        "source": "response, err := svix.Streaming.Sink.Update(\n\tctx,\n\t\"strm_31Dc0DD72P5AddYUguyBd\",\n\t\"sink_31Dc11sPYY9aLDkwPuGMa\",\n\tStreamSinkIn{\n\t\tUid:         new(\"unique-identifier\"),\n\t\tStatus:      new(SINKSTATUSIN_ENABLED),\n\t\tBatchSize:   new(uint16(100)),\n\t\tMaxWaitSecs: new(uint16(1)),\n\t\tEventTypes:  []string{},\n\t\tMetadata:    nil,\n\t\tConfig:      (AzureBlobStorageConfig{Container: \"sample string\", Account: \"sample string\", AccessKey: \"sample string\"}),\n\t\tType:        \"azureBlobStorage\",\n\t},\n)"
                     },
                     {
                         "label": "Kotlin",
@@ -44628,7 +45322,7 @@
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "response, err := svix.Streaming.Sink.RotateSecret(\n\tctx,\n\t\"strm_31Dc0DD72P5AddYUguyBd\",\n\t\"sink_31Dc11sPYY9aLDkwPuGMa\",\n\tEndpointSecretRotateIn{Key: ptr(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")},\n\tnil,\n)"
+                        "source": "response, err := svix.Streaming.Sink.RotateSecret(\n\tctx,\n\t\"strm_31Dc0DD72P5AddYUguyBd\",\n\t\"sink_31Dc11sPYY9aLDkwPuGMa\",\n\tEndpointSecretRotateIn{Key: new(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")},\n\tnil,\n)"
                     },
                     {
                         "label": "Kotlin",
@@ -45173,7 +45867,7 @@
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "response, err := svix.Streaming.Sink.TransformationPartialUpdate(\n\tctx,\n\t\"strm_31Dc0DD72P5AddYUguyBd\",\n\t\"sink_31Dc11sPYY9aLDkwPuGMa\",\n\tSinkTransformIn{Code: ptr(\"sample string\")},\n)"
+                        "source": "response, err := svix.Streaming.Sink.TransformationPartialUpdate(\n\tctx,\n\t\"strm_31Dc0DD72P5AddYUguyBd\",\n\t\"sink_31Dc11sPYY9aLDkwPuGMa\",\n\tSinkTransformIn{Code: new(\"sample string\")},\n)"
                     },
                     {
                         "label": "Kotlin",
@@ -45244,9 +45938,9 @@
                             "description": "The iterator returned from a prior invocation",
                             "example": "src_2yZwUhtgs5Ai8T9yRQJXA",
                             "maxLength": 26,
-                            "minLength": 26,
+                            "minLength": 25,
                             "nullable": true,
-                            "pattern": "^src_[A-Za-z0-9]{22}$",
+                            "pattern": "^src_[A-Za-z0-9]{21,22}$",
                             "type": "string"
                         },
                         "style": "form"
@@ -45561,7 +46255,7 @@
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "response, err := svix.Ingest.Source.Create(\n\tctx,\n\tIngestSourceIn{\n\t\tName:     \"sample string\",\n\t\tUid:      ptr(\"unique-identifier\"),\n\t\tMetadata: nil,\n\t\tConfig:   (CronConfig{Schedule: \"sample string\", Payload: \"sample string\", ContentType: ptr(\"sample string\")}),\n\t\tType:     \"cron\",\n\t},\n\tnil,\n)"
+                        "source": "response, err := svix.Ingest.Source.Create(\n\tctx,\n\tIngestSourceIn{\n\t\tName:     \"sample string\",\n\t\tUid:      new(\"unique-identifier\"),\n\t\tMetadata: nil,\n\t\tConfig:   (CronConfig{Schedule: \"sample string\", Payload: \"sample string\", ContentType: new(\"sample string\")}),\n\t\tType:     \"cron\",\n\t},\n\tnil,\n)"
                     },
                     {
                         "label": "Kotlin",
@@ -46232,7 +46926,7 @@
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "response, err := svix.Ingest.Source.Update(\n\tctx,\n\t\"src_31Dc4Mx7vQVLfxFgArIhq\",\n\tIngestSourceIn{\n\t\tName:     \"sample string\",\n\t\tUid:      ptr(\"unique-identifier\"),\n\t\tMetadata: nil,\n\t\tConfig:   (CronConfig{Schedule: \"sample string\", Payload: \"sample string\", ContentType: ptr(\"sample string\")}),\n\t\tType:     \"cron\",\n\t},\n)"
+                        "source": "response, err := svix.Ingest.Source.Update(\n\tctx,\n\t\"src_31Dc4Mx7vQVLfxFgArIhq\",\n\tIngestSourceIn{\n\t\tName:     \"sample string\",\n\t\tUid:      new(\"unique-identifier\"),\n\t\tMetadata: nil,\n\t\tConfig:   (CronConfig{Schedule: \"sample string\", Payload: \"sample string\", ContentType: new(\"sample string\")}),\n\t\tType:     \"cron\",\n\t},\n)"
                     },
                     {
                         "label": "Kotlin",
@@ -46431,7 +47125,7 @@
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "response, err := svix.Ingest.Dashboard(\n\tctx,\n\t\"src_31Dc4Mx7vQVLfxFgArIhq\",\n\tIngestSourceConsumerPortalAccessIn{Expiry: ptr(uint64(1)), ReadOnly: ptr(true)},\n\tnil,\n)"
+                        "source": "response, err := svix.Ingest.Dashboard(\n\tctx,\n\t\"src_31Dc4Mx7vQVLfxFgArIhq\",\n\tIngestSourceConsumerPortalAccessIn{Expiry: new(uint64(1)), ReadOnly: new(true)},\n\tnil,\n)"
                     },
                     {
                         "label": "Kotlin",
@@ -46847,7 +47541,7 @@
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "response, err := svix.Ingest.Endpoint.Create(\n\tctx,\n\t\"src_31Dc4Mx7vQVLfxFgArIhq\",\n\tIngestEndpointIn{\n\t\tDescription: ptr(\"An example endpoint name\"),\n\t\tRateLimit:   ptr(uint16(1)),\n\t\tUid:         ptr(\"unique-identifier\"),\n\t\tUrl:         \"https://example.com/webhook/\",\n\t\tDisabled:    ptr(true),\n\t\tSecret:      ptr(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"),\n\t\tMetadata:    nil,\n\t},\n\tnil,\n)"
+                        "source": "response, err := svix.Ingest.Endpoint.Create(\n\tctx,\n\t\"src_31Dc4Mx7vQVLfxFgArIhq\",\n\tIngestEndpointIn{\n\t\tDescription: new(\"An example endpoint name\"),\n\t\tRateLimit:   new(uint16(1)),\n\t\tUid:         new(\"unique-identifier\"),\n\t\tUrl:         \"https://example.com/webhook/\",\n\t\tDisabled:    new(true),\n\t\tSecret:      new(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"),\n\t\tMetadata:    nil,\n\t},\n\tnil,\n)"
                     },
                     {
                         "label": "Kotlin",
@@ -47431,7 +48125,7 @@
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "response, err := svix.Ingest.Endpoint.Update(\n\tctx,\n\t\"src_31Dc4Mx7vQVLfxFgArIhq\",\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tIngestEndpointUpdate{\n\t\tDescription: ptr(\"An example endpoint name\"),\n\t\tRateLimit:   ptr(uint16(1)),\n\t\tUid:         ptr(\"unique-identifier\"),\n\t\tUrl:         \"https://example.com/webhook/\",\n\t\tDisabled:    ptr(true),\n\t\tMetadata:    nil,\n\t},\n)"
+                        "source": "response, err := svix.Ingest.Endpoint.Update(\n\tctx,\n\t\"src_31Dc4Mx7vQVLfxFgArIhq\",\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tIngestEndpointUpdate{\n\t\tDescription: new(\"An example endpoint name\"),\n\t\tRateLimit:   new(uint16(1)),\n\t\tUid:         new(\"unique-identifier\"),\n\t\tUrl:         \"https://example.com/webhook/\",\n\t\tDisabled:    new(true),\n\t\tMetadata:    nil,\n\t},\n)"
                     },
                     {
                         "label": "Kotlin",
@@ -48224,7 +48918,7 @@
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "err := svix.Ingest.Endpoint.RotateSecret(\n\tctx,\n\t\"src_31Dc4Mx7vQVLfxFgArIhq\",\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tIngestEndpointSecretIn{Key: ptr(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")},\n\tnil,\n)"
+                        "source": "err := svix.Ingest.Endpoint.RotateSecret(\n\tctx,\n\t\"src_31Dc4Mx7vQVLfxFgArIhq\",\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tIngestEndpointSecretIn{Key: new(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")},\n\tnil,\n)"
                     },
                     {
                         "label": "Kotlin",
@@ -48615,7 +49309,7 @@
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "err := svix.Ingest.Endpoint.SetTransformation(\n\tctx,\n\t\"src_31Dc4Mx7vQVLfxFgArIhq\",\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tIngestEndpointTransformationPatch{Code: NewNullable(\"sample string\"), Enabled: ptr(true)},\n)"
+                        "source": "err := svix.Ingest.Endpoint.SetTransformation(\n\tctx,\n\t\"src_31Dc4Mx7vQVLfxFgArIhq\",\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tIngestEndpointTransformationPatch{Code: NewNullable(\"sample string\"), Enabled: new(true)},\n)"
                     },
                     {
                         "label": "Kotlin",
@@ -48674,8 +49368,8 @@
                             "description": "The Source's ID.",
                             "example": "src_2yZwUhtgs5Ai8T9yRQJXA",
                             "maxLength": 26,
-                            "minLength": 26,
-                            "pattern": "^src_[A-Za-z0-9]{22}$",
+                            "minLength": 25,
+                            "pattern": "^src_[A-Za-z0-9]{21,22}$",
                             "type": "string"
                         },
                         "style": "simple"
@@ -48808,8 +49502,8 @@
                             "description": "The Source's ID.",
                             "example": "src_2yZwUhtgs5Ai8T9yRQJXA",
                             "maxLength": 26,
-                            "minLength": 26,
-                            "pattern": "^src_[A-Za-z0-9]{22}$",
+                            "minLength": 25,
+                            "pattern": "^src_[A-Za-z0-9]{21,22}$",
                             "type": "string"
                         },
                         "style": "simple"
