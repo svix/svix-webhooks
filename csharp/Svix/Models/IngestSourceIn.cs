@@ -193,6 +193,9 @@ namespace Svix.Models
         public static IngestSourceInConfig Airwallex(AirwallexConfig airwallexConfig) =>
             new(airwallexConfig, ConfigType.Airwallex);
 
+        public static IngestSourceInConfig Vgs(VgsConfig vgsConfig) =>
+            new(vgsConfig, ConfigType.Vgs);
+
         private enum ConfigType
         {
             [EnumMember(Value = "generic-webhook")]
@@ -311,6 +314,9 @@ namespace Svix.Models
 
             [EnumMember(Value = "airwallex")]
             Airwallex,
+
+            [EnumMember(Value = "vgs")]
+            Vgs,
         }
 
         public TResult Match<TResult>(
@@ -352,7 +358,8 @@ namespace Svix.Models
             Func<SvixConfig, TResult> onOpenAi,
             Func<SvixConfig, TResult> onRender,
             Func<VeriffConfig, TResult> onVeriff,
-            Func<AirwallexConfig, TResult> onAirwallex
+            Func<AirwallexConfig, TResult> onAirwallex,
+            Func<VgsConfig, TResult> onVgs
         )
         {
             return _type switch
@@ -396,6 +403,7 @@ namespace Svix.Models
                 ConfigType.Render => onRender((SvixConfig)_value),
                 ConfigType.Veriff => onVeriff((VeriffConfig)_value),
                 ConfigType.Airwallex => onAirwallex((AirwallexConfig)_value),
+                ConfigType.Vgs => onVgs((VgsConfig)_value),
                 // unreachable
                 _ => throw new InvalidOperationException("Unknown config type"),
             };
@@ -440,7 +448,8 @@ namespace Svix.Models
             Action<SvixConfig> onOpenAi,
             Action<SvixConfig> onRender,
             Action<VeriffConfig> onVeriff,
-            Action<AirwallexConfig> onAirwallex
+            Action<AirwallexConfig> onAirwallex,
+            Action<VgsConfig> onVgs
         )
         {
             switch (_type)
@@ -561,6 +570,9 @@ namespace Svix.Models
                     break;
                 case ConfigType.Airwallex:
                     onAirwallex((AirwallexConfig)_value);
+                    break;
+                case ConfigType.Vgs:
+                    onVgs((VgsConfig)_value);
                     break;
                 default:
                     // unreachable
@@ -692,6 +704,7 @@ namespace Svix.Models
                 ["render"] = c => IngestSourceInConfig.Render(ToObj<SvixConfig>(c)),
                 ["veriff"] = c => IngestSourceInConfig.Veriff(ToObj<VeriffConfig>(c)),
                 ["airwallex"] = c => IngestSourceInConfig.Airwallex(ToObj<AirwallexConfig>(c)),
+                ["vgs"] = c => IngestSourceInConfig.Vgs(ToObj<VgsConfig>(c)),
             };
     }
 }

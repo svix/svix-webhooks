@@ -19,6 +19,7 @@ class ApplicationListOptions(BaseOptions):
     exclude_apps_with_disabled_endpoints: t.Optional[bool] = None
     """Exclude applications that have only disabled endpoints. Default is false."""
     exclude_apps_with_svix_play_endpoints: t.Optional[bool] = None
+    """Exclude applications that only have Svix Play endpoints. Default is false."""
     limit: t.Optional[int] = None
     """Limit the number of returned items"""
     iterator: t.Optional[str] = None

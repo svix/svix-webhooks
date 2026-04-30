@@ -215,6 +215,8 @@ from ..models import (
     VapiConfigOut,
     VeriffConfig,
     VeriffConfigOut,
+    VgsConfig,
+    VgsConfigOut,
     ZoomConfig,
     ZoomConfigOut,
 )
@@ -644,6 +646,8 @@ __all__ = [
     "VapiConfigOut",
     "VeriffConfig",
     "VeriffConfigOut",
+    "VgsConfig",
+    "VgsConfigOut",
     "ZoomConfig",
     "ZoomConfigOut",
 ]

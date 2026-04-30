@@ -10,6 +10,7 @@ class EndpointStats implements \JsonSerializable
     private array $setFields = [];
 
     private function __construct(
+        public readonly int $canceled,
         public readonly int $fail,
         public readonly int $pending,
         public readonly int $sending,
@@ -23,23 +24,26 @@ class EndpointStats implements \JsonSerializable
      * Create an instance of EndpointStats with required fields.
      */
     public static function create(
+        int $canceled,
         int $fail,
         int $pending,
         int $sending,
         int $success,
     ): self {
         return new self(
+            canceled: $canceled,
             fail: $fail,
             pending: $pending,
             sending: $sending,
             success: $success,
-            setFields: ['fail' => true, 'pending' => true, 'sending' => true, 'success' => true]
+            setFields: ['canceled' => true, 'fail' => true, 'pending' => true, 'sending' => true, 'success' => true]
         );
     }
 
     public function jsonSerialize(): mixed
     {
         $data = [
+            'canceled' => $this->canceled,
             'fail' => $this->fail,
             'pending' => $this->pending,
             'sending' => $this->sending,
@@ -54,6 +58,7 @@ class EndpointStats implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
+            canceled: \Svix\Utils::deserializeInt($data, 'canceled', true, 'EndpointStats'),
             fail: \Svix\Utils::deserializeInt($data, 'fail', true, 'EndpointStats'),
             pending: \Svix\Utils::deserializeInt($data, 'pending', true, 'EndpointStats'),
             sending: \Svix\Utils::deserializeInt($data, 'sending', true, 'EndpointStats'),

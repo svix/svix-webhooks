@@ -33,7 +33,11 @@ data class MessageAttemptListByEndpointOptions(
     val after: Instant? = null,
     /** When `true` attempt content is included in the response */
     val withContent: Boolean? = null,
-    /** When `true`, the message information is included in the response */
+    /**
+     * When `true`, the message information is included in the response
+     *
+     * Note that message payloads are never included in the response, regardless of this flag.
+     */
     val withMsg: Boolean? = null,
     /** Filter response based on the event type */
     val eventTypes: Set<String>? = null,

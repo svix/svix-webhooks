@@ -246,6 +246,8 @@ require "svix/models/vapi_config"
 require "svix/models/vapi_config_out"
 require "svix/models/veriff_config"
 require "svix/models/veriff_config_out"
+require "svix/models/vgs_config"
+require "svix/models/vgs_config_out"
 require "svix/models/zoom_config"
 require "svix/models/zoom_config_out"
 

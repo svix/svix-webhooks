@@ -29,6 +29,7 @@ import (
 //   - "telnyx": Use TelnyxConfig
 //   - "vapi": Use VapiConfig
 //   - "veriff": Use VeriffConfig
+//   - "vgs": Use VgsConfig
 //   - "zoom": Use ZoomConfig
 type IngestSourceIn struct {
 	Metadata *map[string]string   `json:"metadata,omitempty"`
@@ -80,6 +81,7 @@ const (
 	IngestSourceInTypeRender         IngestSourceInType = "render"
 	IngestSourceInTypeVeriff         IngestSourceInType = "veriff"
 	IngestSourceInTypeAirwallex      IngestSourceInType = "airwallex"
+	IngestSourceInTypeVgs            IngestSourceInType = "vgs"
 )
 
 type IngestSourceInConfig interface {
@@ -109,6 +111,7 @@ func (TelnyxConfig) isIngestSourceInConfig()    {}
 func (VapiConfig) isIngestSourceInConfig()      {}
 func (VeriffConfig) isIngestSourceInConfig()    {}
 func (AirwallexConfig) isIngestSourceInConfig() {}
+func (VgsConfig) isIngestSourceInConfig()       {}
 
 func (i *IngestSourceIn) UnmarshalJSON(data []byte) error {
 	type Alias IngestSourceIn
@@ -208,6 +211,10 @@ func (i *IngestSourceIn) UnmarshalJSON(data []byte) error {
 		var c VeriffConfig
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
+	case "vgs":
+		var c VgsConfig
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
 	case "zoom":
 		var c ZoomConfig
 		err = json.Unmarshal(aux.Config, &c)
@@ -271,4 +278,5 @@ var IngestSourceInTypeFromString = map[string]IngestSourceInType{
 	"render":          IngestSourceInTypeRender,
 	"veriff":          IngestSourceInTypeVeriff,
 	"airwallex":       IngestSourceInTypeAirwallex,
+	"vgs":             IngestSourceInTypeVgs,
 }

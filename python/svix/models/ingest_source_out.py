@@ -27,6 +27,7 @@ from .svix_config_out import SvixConfigOut
 from .telnyx_config_out import TelnyxConfigOut
 from .vapi_config_out import VapiConfigOut
 from .veriff_config_out import VeriffConfigOut
+from .vgs_config_out import VgsConfigOut
 from .zoom_config_out import ZoomConfigOut
 
 
@@ -87,6 +88,7 @@ class IngestSourceOut(BaseModel):
         t.Literal["render"],
         t.Literal["veriff"],
         t.Literal["airwallex"],
+        t.Literal["vgs"],
     ]
     config: t.Union[
         t.Dict[str, t.Any],
@@ -112,6 +114,7 @@ class IngestSourceOut(BaseModel):
         VapiConfigOut,
         VeriffConfigOut,
         AirwallexConfigOut,
+        VgsConfigOut,
     ]
 
     @model_validator(mode="wrap")
@@ -200,6 +203,8 @@ class IngestSourceOut(BaseModel):
             output.config = VeriffConfigOut.model_validate(data.get("config", {}))
         elif output.type == "airwallex":
             output.config = AirwallexConfigOut.model_validate(data.get("config", {}))
+        elif output.type == "vgs":
+            output.config = VgsConfigOut.model_validate(data.get("config", {}))
         else:
             raise ValueError(f"Unexpected type `{output.type}`")
         return output

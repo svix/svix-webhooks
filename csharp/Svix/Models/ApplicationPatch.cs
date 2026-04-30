@@ -21,6 +21,11 @@ namespace Svix.Models
 
         public bool ShouldSerializeRateLimit() => !RateLimit.IsUnset;
 
+        [JsonProperty("throttleRate")]
+        public MaybeUnset<ushort?> ThrottleRate { get; set; } = MaybeUnset<ushort?>.Unset();
+
+        public bool ShouldSerializeThrottleRate() => !ThrottleRate.IsUnset;
+
         [JsonProperty("uid")]
         public MaybeUnset<string?> Uid { get; set; } = MaybeUnset<string?>.Unset();
 
@@ -34,6 +39,7 @@ namespace Svix.Models
             sb.Append("  Metadata: ").Append(Metadata).Append('\n');
             sb.Append("  Name: ").Append(Name).Append('\n');
             sb.Append("  RateLimit: ").Append(RateLimit).Append('\n');
+            sb.Append("  ThrottleRate: ").Append(ThrottleRate).Append('\n');
             sb.Append("  Uid: ").Append(Uid).Append('\n');
             sb.Append("}\n");
             return sb.ToString();

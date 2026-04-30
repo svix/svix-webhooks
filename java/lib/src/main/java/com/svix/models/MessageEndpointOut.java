@@ -256,8 +256,9 @@ public class MessageEndpointOut {
     }
 
     /**
-     * Maximum messages per second to send to this endpoint. Outgoing messages will be throttled to
-     * this rate.
+     * Maximum messages per second to send to this endpoint.
+     *
+     * <p>Outgoing messages will be throttled to this rate.
      *
      * @return throttleRate
      */

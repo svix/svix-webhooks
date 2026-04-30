@@ -27,6 +27,7 @@ public class OperationalWebhookEndpointUpdate {
     @JsonProperty private Set<String> filterTypes;
     @JsonProperty private Map<String, String> metadata;
     @JsonProperty private Long rateLimit;
+    @JsonProperty private Long throttleRate;
     @JsonProperty private String uid;
     @JsonProperty private URI url;
 
@@ -126,23 +127,47 @@ public class OperationalWebhookEndpointUpdate {
         this.metadata = metadata;
     }
 
+    @Deprecated
     public OperationalWebhookEndpointUpdate rateLimit(Long rateLimit) {
         this.rateLimit = rateLimit;
         return this;
     }
 
     /**
-     * Get rateLimit
+     * Deprecated, use `throttleRate` instead.
      *
      * @return rateLimit
      */
     @javax.annotation.Nullable
+    @Deprecated
     public Long getRateLimit() {
         return rateLimit;
     }
 
+    @Deprecated
     public void setRateLimit(Long rateLimit) {
         this.rateLimit = rateLimit;
+    }
+
+    public OperationalWebhookEndpointUpdate throttleRate(Long throttleRate) {
+        this.throttleRate = throttleRate;
+        return this;
+    }
+
+    /**
+     * Maximum messages per second to send to this endpoint.
+     *
+     * <p>Outgoing messages will be throttled to this rate.
+     *
+     * @return throttleRate
+     */
+    @javax.annotation.Nullable
+    public Long getThrottleRate() {
+        return throttleRate;
+    }
+
+    public void setThrottleRate(Long throttleRate) {
+        this.throttleRate = throttleRate;
     }
 
     public OperationalWebhookEndpointUpdate uid(String uid) {

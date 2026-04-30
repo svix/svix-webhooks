@@ -6,6 +6,9 @@ namespace Svix.Models
 {
     public class EndpointStats
     {
+        [JsonProperty("canceled", Required = Required.Always)]
+        public required long Canceled { get; set; }
+
         [JsonProperty("fail", Required = Required.Always)]
         public required long Fail { get; set; }
 
@@ -23,6 +26,7 @@ namespace Svix.Models
             StringBuilder sb = new StringBuilder();
 
             sb.Append("class EndpointStats {\n");
+            sb.Append("  Canceled: ").Append(Canceled).Append('\n');
             sb.Append("  Fail: ").Append(Fail).Append('\n');
             sb.Append("  Pending: ").Append(Pending).Append('\n');
             sb.Append("  Sending: ").Append(Sending).Append('\n');

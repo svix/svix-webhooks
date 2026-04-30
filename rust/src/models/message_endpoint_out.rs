@@ -40,8 +40,9 @@ pub struct MessageEndpointOut {
     #[serde(rename = "statusText")]
     pub status_text: MessageStatusText,
 
-    /// Maximum messages per second to send to this endpoint. Outgoing messages
-    /// will be throttled to this rate.
+    /// Maximum messages per second to send to this endpoint.
+    ///
+    /// Outgoing messages will be throttled to this rate.
     #[serde(rename = "throttleRate")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub throttle_rate: Option<u16>,

@@ -41,7 +41,11 @@ public class MessageAttemptListByEndpointOptions {
     /** When `true` attempt content is included in the response */
     Boolean withContent;
 
-    /** When `true`, the message information is included in the response */
+    /**
+     * When `true`, the message information is included in the response
+     *
+     * <p>Note that message payloads are never included in the response, regardless of this flag.
+     */
     Boolean withMsg;
 
     /** Filter response based on the event type */

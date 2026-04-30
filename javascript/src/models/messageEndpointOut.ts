@@ -21,7 +21,11 @@ export interface MessageEndpointOut {
   rateLimit?: number | null;
   status: MessageStatus;
   statusText: MessageStatusText;
-  /** Maximum messages per second to send to this endpoint. Outgoing messages will be throttled to this rate. */
+  /**
+   * Maximum messages per second to send to this endpoint.
+   *
+   * Outgoing messages will be throttled to this rate.
+   */
   throttleRate?: number | null;
   /** Optional unique identifier for the endpoint. */
   uid?: string | null;

@@ -212,5 +212,7 @@ export { type VapiConfig } from "./vapiConfig";
 export { type VapiConfigOut } from "./vapiConfigOut";
 export { type VeriffConfig } from "./veriffConfig";
 export { type VeriffConfigOut } from "./veriffConfigOut";
+export { type VgsConfig } from "./vgsConfig";
+export { type VgsConfigOut } from "./vgsConfigOut";
 export { type ZoomConfig } from "./zoomConfig";
 export { type ZoomConfigOut } from "./zoomConfigOut";

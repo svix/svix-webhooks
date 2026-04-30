@@ -602,6 +602,21 @@ public abstract class IngestSourceOutConfig {
         }
     }
 
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
+    @VariantName("vgs")
+    public static class Vgs extends IngestSourceOutConfig {
+        private final VgsConfigOut vgs;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(vgs);
+        }
+    }
+
     @FunctionalInterface
     private interface TypeFactory {
         IngestSourceOutConfig create(JsonNode config);
@@ -650,6 +665,7 @@ public abstract class IngestSourceOutConfig {
         TY_M.put("render", c -> new Render(m.convertValue(c, SvixConfigOut.class)));
         TY_M.put("veriff", c -> new Veriff(m.convertValue(c, VeriffConfigOut.class)));
         TY_M.put("airwallex", c -> new Airwallex(m.convertValue(c, AirwallexConfigOut.class)));
+        TY_M.put("vgs", c -> new Vgs(m.convertValue(c, VgsConfigOut.class)));
     }
 
     public static IngestSourceOutConfig fromTypeAndConfig(String type, JsonNode config) {

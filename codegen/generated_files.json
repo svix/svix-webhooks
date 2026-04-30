@@ -238,6 +238,8 @@
         "csharp/Svix/Models/VapiConfigOut.cs",
         "csharp/Svix/Models/VeriffConfig.cs",
         "csharp/Svix/Models/VeriffConfigOut.cs",
+        "csharp/Svix/Models/VgsConfig.cs",
+        "csharp/Svix/Models/VgsConfigOut.cs",
         "csharp/Svix/Models/ZoomConfig.cs",
         "csharp/Svix/Models/ZoomConfigOut.cs"
     ],
@@ -488,6 +490,8 @@
         "go/models/vapi_config_out.go",
         "go/models/veriff_config.go",
         "go/models/veriff_config_out.go",
+        "go/models/vgs_config.go",
+        "go/models/vgs_config_out.go",
         "go/models/zoom_config.go",
         "go/models/zoom_config_out.go"
     ],
@@ -829,6 +833,8 @@
         "java/lib/src/main/java/com/svix/models/VapiConfigOut.java",
         "java/lib/src/main/java/com/svix/models/VeriffConfig.java",
         "java/lib/src/main/java/com/svix/models/VeriffConfigOut.java",
+        "java/lib/src/main/java/com/svix/models/VgsConfig.java",
+        "java/lib/src/main/java/com/svix/models/VgsConfigOut.java",
         "java/lib/src/main/java/com/svix/models/ZoomConfig.java",
         "java/lib/src/main/java/com/svix/models/ZoomConfigOut.java"
     ],
@@ -1074,6 +1080,8 @@
         "javascript/src/models/vapiConfigOut.ts",
         "javascript/src/models/veriffConfig.ts",
         "javascript/src/models/veriffConfigOut.ts",
+        "javascript/src/models/vgsConfig.ts",
+        "javascript/src/models/vgsConfigOut.ts",
         "javascript/src/models/zoomConfig.ts",
         "javascript/src/models/zoomConfigOut.ts"
     ],
@@ -1319,6 +1327,8 @@
         "kotlin/lib/src/main/kotlin/models/VapiConfigOut.kt",
         "kotlin/lib/src/main/kotlin/models/VeriffConfig.kt",
         "kotlin/lib/src/main/kotlin/models/VeriffConfigOut.kt",
+        "kotlin/lib/src/main/kotlin/models/VgsConfig.kt",
+        "kotlin/lib/src/main/kotlin/models/VgsConfigOut.kt",
         "kotlin/lib/src/main/kotlin/models/ZoomConfig.kt",
         "kotlin/lib/src/main/kotlin/models/ZoomConfigOut.kt"
     ],
@@ -1831,6 +1841,8 @@
         "python/svix/models/vapi_config_out.py",
         "python/svix/models/veriff_config.py",
         "python/svix/models/veriff_config_out.py",
+        "python/svix/models/vgs_config.py",
+        "python/svix/models/vgs_config_out.py",
         "python/svix/models/zoom_config.py",
         "python/svix/models/zoom_config_out.py"
     ],
@@ -2076,6 +2088,8 @@
         "ruby/lib/svix/models/vapi_config_out.rb",
         "ruby/lib/svix/models/veriff_config.rb",
         "ruby/lib/svix/models/veriff_config_out.rb",
+        "ruby/lib/svix/models/vgs_config.rb",
+        "ruby/lib/svix/models/vgs_config_out.rb",
         "ruby/lib/svix/models/zoom_config.rb",
         "ruby/lib/svix/models/zoom_config_out.rb"
     ],
@@ -2320,6 +2334,8 @@
         "rust/src/models/vapi_config_out.rs",
         "rust/src/models/veriff_config.rs",
         "rust/src/models/veriff_config_out.rs",
+        "rust/src/models/vgs_config.rs",
+        "rust/src/models/vgs_config_out.rs",
         "rust/src/models/zoom_config.rs",
         "rust/src/models/zoom_config_out.rs"
     ],

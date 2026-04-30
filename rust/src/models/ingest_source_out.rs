@@ -12,7 +12,8 @@ use super::{
     shopify_config_out::ShopifyConfigOut, slack_config_out::SlackConfigOut,
     stripe_config_out::StripeConfigOut, svix_config_out::SvixConfigOut,
     telnyx_config_out::TelnyxConfigOut, vapi_config_out::VapiConfigOut,
-    veriff_config_out::VeriffConfigOut, zoom_config_out::ZoomConfigOut,
+    veriff_config_out::VeriffConfigOut, vgs_config_out::VgsConfigOut,
+    zoom_config_out::ZoomConfigOut,
 };
 
 #[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
@@ -123,6 +124,8 @@ pub enum IngestSourceOutConfig {
     Veriff(VeriffConfigOut),
     #[serde(rename = "airwallex")]
     Airwallex(AirwallexConfigOut),
+    #[serde(rename = "vgs")]
+    Vgs(VgsConfigOut),
 }
 
 #[allow(clippy::derivable_impls)]

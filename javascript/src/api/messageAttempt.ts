@@ -40,7 +40,11 @@ export interface MessageAttemptListByEndpointOptions {
   after?: Date | null;
   /** When `true` attempt content is included in the response */
   withContent?: boolean;
-  /** When `true`, the message information is included in the response */
+  /**
+   * When `true`, the message information is included in the response
+   *
+   * Note that message payloads are never included in the response, regardless of this flag.
+   */
   withMsg?: boolean;
   /** Filter response based on the event type */
   eventTypes?: string[];

@@ -223,6 +223,8 @@ from .vapi_config import VapiConfig
 from .vapi_config_out import VapiConfigOut
 from .veriff_config import VeriffConfig
 from .veriff_config_out import VeriffConfigOut
+from .vgs_config import VgsConfig
+from .vgs_config_out import VgsConfigOut
 from .zoom_config import ZoomConfig
 from .zoom_config_out import ZoomConfigOut
 
@@ -441,6 +443,8 @@ __all__ = [
     "VapiConfigOut",
     "VeriffConfig",
     "VeriffConfigOut",
+    "VgsConfig",
+    "VgsConfigOut",
     "ZoomConfig",
     "ZoomConfigOut",
 ]

@@ -35,7 +35,9 @@ class MessageAttemptListByEndpointOptions(BaseOptions):
     with_content: t.Optional[bool] = None
     """When `true` attempt content is included in the response"""
     with_msg: t.Optional[bool] = None
-    """When `true`, the message information is included in the response"""
+    """When `true`, the message information is included in the response
+
+Note that message payloads are never included in the response, regardless of this flag."""
     event_types: t.Optional[t.List[str]] = None
     """Filter response based on the event type"""
 

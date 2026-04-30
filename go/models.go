@@ -217,6 +217,8 @@ type (
 	VapiConfigOut                             = models.VapiConfigOut
 	VeriffConfig                              = models.VeriffConfig
 	VeriffConfigOut                           = models.VeriffConfigOut
+	VgsConfig                                 = models.VgsConfig
+	VgsConfigOut                              = models.VgsConfigOut
 	ZoomConfig                                = models.ZoomConfig
 	ZoomConfigOut                             = models.ZoomConfigOut
 )

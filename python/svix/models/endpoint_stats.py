@@ -4,6 +4,8 @@ from .common import BaseModel
 
 
 class EndpointStats(BaseModel):
+    canceled: int
+
     fail: int
 
     pending: int

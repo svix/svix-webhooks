@@ -23,6 +23,7 @@ public class ApplicationPatch {
     @JsonProperty private Map<String, String> metadata;
     @JsonProperty private String name;
     @JsonProperty private MaybeUnset<Long> rateLimit;
+    @JsonProperty private MaybeUnset<Long> throttleRate;
     @JsonProperty private MaybeUnset<String> uid;
 
     public ApplicationPatch() {}
@@ -74,17 +75,19 @@ public class ApplicationPatch {
         this.name = name;
     }
 
+    @Deprecated
     public ApplicationPatch rateLimit(Long rateLimit) {
         this.rateLimit = new MaybeUnset<>(rateLimit);
         return this;
     }
 
     /**
-     * Get rateLimit
+     * Deprecated, use `throttleRate` instead.
      *
      * @return rateLimit
      */
     @javax.annotation.Nullable
+    @Deprecated
     public Long getRateLimit() {
         if (rateLimit == null) {
             return null;
@@ -92,8 +95,33 @@ public class ApplicationPatch {
         return rateLimit.getValue();
     }
 
+    @Deprecated
     public void setRateLimit(Long rateLimit) {
         this.rateLimit = new MaybeUnset<>(rateLimit);
+    }
+
+    public ApplicationPatch throttleRate(Long throttleRate) {
+        this.throttleRate = new MaybeUnset<>(throttleRate);
+        return this;
+    }
+
+    /**
+     * Maximum messages per second to send to this application.
+     *
+     * <p>Outgoing messages will be throttled to this rate.
+     *
+     * @return throttleRate
+     */
+    @javax.annotation.Nullable
+    public Long getThrottleRate() {
+        if (throttleRate == null) {
+            return null;
+        }
+        return throttleRate.getValue();
+    }
+
+    public void setThrottleRate(Long throttleRate) {
+        this.throttleRate = new MaybeUnset<>(throttleRate);
     }
 
     public ApplicationPatch uid(String uid) {

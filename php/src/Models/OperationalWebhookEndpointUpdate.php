@@ -12,7 +12,11 @@ class OperationalWebhookEndpointUpdate implements \JsonSerializable
     /**
      * @param list<string>|null          $filterTypes
      * @param array<string, string>|null $metadata
-     * @param string|null                $uid         optional unique identifier for the endpoint
+     * @param int|null                   $rateLimit    deprecated, use `throttleRate` instead
+     * @param int|null                   $throttleRate Maximum messages per second to send to this endpoint.
+     *
+     * Outgoing messages will be throttled to this rate.
+     * @param string|null $uid optional unique identifier for the endpoint
      */
     private function __construct(
         public readonly string $url,
@@ -21,6 +25,7 @@ class OperationalWebhookEndpointUpdate implements \JsonSerializable
         public readonly ?array $filterTypes = null,
         public readonly ?array $metadata = null,
         public readonly ?int $rateLimit = null,
+        public readonly ?int $throttleRate = null,
         public readonly ?string $uid = null,
         array $setFields = [],
     ) {
@@ -39,6 +44,7 @@ class OperationalWebhookEndpointUpdate implements \JsonSerializable
             filterTypes: null,
             metadata: null,
             rateLimit: null,
+            throttleRate: null,
             uid: null,
             url: $url,
             setFields: ['url' => true]
@@ -56,6 +62,7 @@ class OperationalWebhookEndpointUpdate implements \JsonSerializable
             filterTypes: $this->filterTypes,
             metadata: $this->metadata,
             rateLimit: $this->rateLimit,
+            throttleRate: $this->throttleRate,
             uid: $this->uid,
             url: $this->url,
             setFields: $setFields
@@ -73,6 +80,7 @@ class OperationalWebhookEndpointUpdate implements \JsonSerializable
             filterTypes: $this->filterTypes,
             metadata: $this->metadata,
             rateLimit: $this->rateLimit,
+            throttleRate: $this->throttleRate,
             uid: $this->uid,
             url: $this->url,
             setFields: $setFields
@@ -90,6 +98,7 @@ class OperationalWebhookEndpointUpdate implements \JsonSerializable
             filterTypes: $filterTypes,
             metadata: $this->metadata,
             rateLimit: $this->rateLimit,
+            throttleRate: $this->throttleRate,
             uid: $this->uid,
             url: $this->url,
             setFields: $setFields
@@ -107,6 +116,7 @@ class OperationalWebhookEndpointUpdate implements \JsonSerializable
             filterTypes: $this->filterTypes,
             metadata: $metadata,
             rateLimit: $this->rateLimit,
+            throttleRate: $this->throttleRate,
             uid: $this->uid,
             url: $this->url,
             setFields: $setFields
@@ -124,6 +134,25 @@ class OperationalWebhookEndpointUpdate implements \JsonSerializable
             filterTypes: $this->filterTypes,
             metadata: $this->metadata,
             rateLimit: $rateLimit,
+            throttleRate: $this->throttleRate,
+            uid: $this->uid,
+            url: $this->url,
+            setFields: $setFields
+        );
+    }
+
+    public function withThrottleRate(?int $throttleRate): self
+    {
+        $setFields = $this->setFields;
+        $setFields['throttleRate'] = true;
+
+        return new self(
+            description: $this->description,
+            disabled: $this->disabled,
+            filterTypes: $this->filterTypes,
+            metadata: $this->metadata,
+            rateLimit: $this->rateLimit,
+            throttleRate: $throttleRate,
             uid: $this->uid,
             url: $this->url,
             setFields: $setFields
@@ -141,6 +170,7 @@ class OperationalWebhookEndpointUpdate implements \JsonSerializable
             filterTypes: $this->filterTypes,
             metadata: $this->metadata,
             rateLimit: $this->rateLimit,
+            throttleRate: $this->throttleRate,
             uid: $uid,
             url: $this->url,
             setFields: $setFields
@@ -167,6 +197,9 @@ class OperationalWebhookEndpointUpdate implements \JsonSerializable
         if (isset($this->setFields['rateLimit'])) {
             $data['rateLimit'] = $this->rateLimit;
         }
+        if (isset($this->setFields['throttleRate'])) {
+            $data['throttleRate'] = $this->throttleRate;
+        }
         if (isset($this->setFields['uid'])) {
             $data['uid'] = $this->uid;
         }
@@ -185,6 +218,7 @@ class OperationalWebhookEndpointUpdate implements \JsonSerializable
             filterTypes: \Svix\Utils::getValFromJson($data, 'filterTypes', false, 'OperationalWebhookEndpointUpdate'),
             metadata: \Svix\Utils::getValFromJson($data, 'metadata', false, 'OperationalWebhookEndpointUpdate'),
             rateLimit: \Svix\Utils::deserializeInt($data, 'rateLimit', false, 'OperationalWebhookEndpointUpdate'),
+            throttleRate: \Svix\Utils::deserializeInt($data, 'throttleRate', false, 'OperationalWebhookEndpointUpdate'),
             uid: \Svix\Utils::deserializeString($data, 'uid', false, 'OperationalWebhookEndpointUpdate'),
             url: \Svix\Utils::getValFromJson($data, 'url', true, 'OperationalWebhookEndpointUpdate')
         );

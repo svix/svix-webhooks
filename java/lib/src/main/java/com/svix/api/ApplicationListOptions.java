@@ -13,6 +13,7 @@ public class ApplicationListOptions {
     /** Exclude applications that have only disabled endpoints. Default is false. */
     Boolean excludeAppsWithDisabledEndpoints;
 
+    /** Exclude applications that only have Svix Play endpoints. Default is false. */
     Boolean excludeAppsWithSvixPlayEndpoints;
 
     /** Limit the number of returned items */

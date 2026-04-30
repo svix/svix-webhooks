@@ -18,7 +18,9 @@ module Svix
     attr_accessor :rate_limit
     attr_accessor :status
     attr_accessor :status_text
-    # Maximum messages per second to send to this endpoint. Outgoing messages will be throttled to this rate.
+    # Maximum messages per second to send to this endpoint.
+    #
+    # Outgoing messages will be throttled to this rate.
     attr_accessor :throttle_rate
     # Optional unique identifier for the endpoint.
     attr_accessor :uid

@@ -13,6 +13,7 @@ data class ApplicationListOptions(
     val excludeAppsWithNoEndpoints: Boolean? = null,
     /** Exclude applications that have only disabled endpoints. Default is false. */
     val excludeAppsWithDisabledEndpoints: Boolean? = null,
+    /** Exclude applications that only have Svix Play endpoints. Default is false. */
     val excludeAppsWithSvixPlayEndpoints: Boolean? = null,
     /** Limit the number of returned items */
     val limit: ULong? = null,

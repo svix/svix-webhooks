@@ -33,7 +33,9 @@ class MessageEndpointOut(BaseModel):
     status_text: MessageStatusText
 
     throttle_rate: t.Optional[int] = None
-    """Maximum messages per second to send to this endpoint. Outgoing messages will be throttled to this rate."""
+    """Maximum messages per second to send to this endpoint.
+
+    Outgoing messages will be throttled to this rate."""
 
     uid: t.Optional[str] = None
     """Optional unique identifier for the endpoint."""

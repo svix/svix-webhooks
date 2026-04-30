@@ -214,6 +214,8 @@ pub mod vapi_config;
 pub mod vapi_config_out;
 pub mod veriff_config;
 pub mod veriff_config_out;
+pub mod vgs_config;
+pub mod vgs_config_out;
 pub mod zoom_config;
 pub mod zoom_config_out;
 // not currently generated
@@ -438,6 +440,8 @@ pub use self::{
     vapi_config_out::VapiConfigOut,
     veriff_config::VeriffConfig,
     veriff_config_out::VeriffConfigOut,
+    vgs_config::VgsConfig,
+    vgs_config_out::VgsConfigOut,
     zoom_config::ZoomConfig,
     zoom_config_out::ZoomConfigOut,
 };

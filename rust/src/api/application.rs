@@ -10,6 +10,8 @@ pub struct ApplicationListOptions {
     /// false.
     pub exclude_apps_with_disabled_endpoints: Option<bool>,
 
+    /// Exclude applications that only have Svix Play endpoints. Default is
+    /// false.
     pub exclude_apps_with_svix_play_endpoints: Option<bool>,
 
     /// Limit the number of returned items

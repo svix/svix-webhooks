@@ -9,7 +9,7 @@ use super::{
     port_io_config::PortIoConfig, rutter_config::RutterConfig, segment_config::SegmentConfig,
     shopify_config::ShopifyConfig, slack_config::SlackConfig, stripe_config::StripeConfig,
     svix_config::SvixConfig, telnyx_config::TelnyxConfig, vapi_config::VapiConfig,
-    veriff_config::VeriffConfig, zoom_config::ZoomConfig,
+    veriff_config::VeriffConfig, vgs_config::VgsConfig, zoom_config::ZoomConfig,
 };
 
 #[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
@@ -108,6 +108,8 @@ pub enum IngestSourceInConfig {
     Veriff(VeriffConfig),
     #[serde(rename = "airwallex")]
     Airwallex(AirwallexConfig),
+    #[serde(rename = "vgs")]
+    Vgs(VgsConfig),
 }
 
 #[allow(clippy::derivable_impls)]

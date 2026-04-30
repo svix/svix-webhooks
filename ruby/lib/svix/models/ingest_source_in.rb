@@ -23,6 +23,7 @@ require_relative "./svix_config"
 require_relative "./telnyx_config"
 require_relative "./vapi_config"
 require_relative "./veriff_config"
+require_relative "./vgs_config"
 require_relative "./zoom_config"
 
 module Svix
@@ -156,6 +157,9 @@ module Svix
 
     class Airwallex < AirwallexConfig
     end
+
+    class Vgs < VgsConfig
+    end
   end
 
   class IngestSourceIn
@@ -206,7 +210,8 @@ module Svix
       IngestSourceInConfig::OpenAi => "open-ai",
       IngestSourceInConfig::Render => "render",
       IngestSourceInConfig::Veriff => "veriff",
-      IngestSourceInConfig::Airwallex => "airwallex"
+      IngestSourceInConfig::Airwallex => "airwallex",
+      IngestSourceInConfig::Vgs => "vgs"
     }
     private_constant :TYPE_TO_NAME
     NAME_TO_TYPE = TYPE_TO_NAME.invert

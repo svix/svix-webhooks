@@ -15,8 +15,10 @@ class MessageEndpointOut implements \JsonSerializable
      * @param list<string>|null $filterTypes
      * @param string            $id           the Endpoint's ID
      * @param int|null          $rateLimit    deprecated, use `throttleRate` instead
-     * @param int|null          $throttleRate Maximum messages per second to send to this endpoint. Outgoing messages will be throttled to this rate.
-     * @param string|null       $uid          optional unique identifier for the endpoint
+     * @param int|null          $throttleRate Maximum messages per second to send to this endpoint.
+     *
+     * Outgoing messages will be throttled to this rate.
+     * @param string|null $uid optional unique identifier for the endpoint
      */
     private function __construct(
         public readonly \DateTimeImmutable $createdAt,

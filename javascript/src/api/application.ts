@@ -18,6 +18,7 @@ export interface ApplicationListOptions {
   excludeAppsWithNoEndpoints?: boolean;
   /** Exclude applications that have only disabled endpoints. Default is false. */
   excludeAppsWithDisabledEndpoints?: boolean;
+  /** Exclude applications that only have Svix Play endpoints. Default is false. */
   excludeAppsWithSvixPlayEndpoints?: boolean;
   /** Limit the number of returned items */
   limit?: number;

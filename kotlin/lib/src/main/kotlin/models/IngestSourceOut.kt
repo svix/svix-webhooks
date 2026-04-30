@@ -247,6 +247,11 @@ sealed class IngestSourceOutConfig {
             Json.encodeToJsonElement(AirwallexConfigOut.serializer(), airwallex)
     }
 
+    @VariantName("vgs")
+    data class Vgs(val vgs: VgsConfigOut) : IngestSourceOutConfig() {
+        override fun toJsonElement() = Json.encodeToJsonElement(VgsConfigOut.serializer(), vgs)
+    }
+
     companion object {
         private val typeMap =
             mapOf<String, (JsonElement) -> IngestSourceOutConfig>(
@@ -408,6 +413,10 @@ sealed class IngestSourceOutConfig {
                         Airwallex(
                             Json.decodeFromJsonElement(AirwallexConfigOut.serializer(), config)
                         )
+                    },
+                "vgs" to
+                    { config ->
+                        Vgs(Json.decodeFromJsonElement(VgsConfigOut.serializer(), config))
                     },
             )
 

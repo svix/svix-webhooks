@@ -30,6 +30,7 @@ import (
 //   - "telnyx": Use TelnyxConfigOut
 //   - "vapi": Use VapiConfigOut
 //   - "veriff": Use VeriffConfigOut
+//   - "vgs": Use VgsConfigOut
 //   - "zoom": Use ZoomConfigOut
 type IngestSourceOut struct {
 	CreatedAt time.Time             `json:"createdAt"`
@@ -85,6 +86,7 @@ const (
 	IngestSourceOutTypeRender         IngestSourceOutType = "render"
 	IngestSourceOutTypeVeriff         IngestSourceOutType = "veriff"
 	IngestSourceOutTypeAirwallex      IngestSourceOutType = "airwallex"
+	IngestSourceOutTypeVgs            IngestSourceOutType = "vgs"
 )
 
 type IngestSourceOutConfig interface {
@@ -114,6 +116,7 @@ func (TelnyxConfigOut) isIngestSourceOutConfig()    {}
 func (VapiConfigOut) isIngestSourceOutConfig()      {}
 func (VeriffConfigOut) isIngestSourceOutConfig()    {}
 func (AirwallexConfigOut) isIngestSourceOutConfig() {}
+func (VgsConfigOut) isIngestSourceOutConfig()       {}
 
 func (i *IngestSourceOut) UnmarshalJSON(data []byte) error {
 	type Alias IngestSourceOut
@@ -213,6 +216,10 @@ func (i *IngestSourceOut) UnmarshalJSON(data []byte) error {
 		var c VeriffConfigOut
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
+	case "vgs":
+		var c VgsConfigOut
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
 	case "zoom":
 		var c ZoomConfigOut
 		err = json.Unmarshal(aux.Config, &c)
@@ -276,4 +283,5 @@ var IngestSourceOutTypeFromString = map[string]IngestSourceOutType{
 	"render":          IngestSourceOutTypeRender,
 	"veriff":          IngestSourceOutTypeVeriff,
 	"airwallex":       IngestSourceOutTypeAirwallex,
+	"vgs":             IngestSourceOutTypeVgs,
 }

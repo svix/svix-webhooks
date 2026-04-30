@@ -29,6 +29,7 @@ import { type SvixConfigOut, SvixConfigOutSerializer } from "./svixConfigOut";
 import { type TelnyxConfigOut, TelnyxConfigOutSerializer } from "./telnyxConfigOut";
 import { type VapiConfigOut, VapiConfigOutSerializer } from "./vapiConfigOut";
 import { type VeriffConfigOut, VeriffConfigOutSerializer } from "./veriffConfigOut";
+import { type VgsConfigOut, VgsConfigOutSerializer } from "./vgsConfigOut";
 import { type ZoomConfigOut, ZoomConfigOutSerializer } from "./zoomConfigOut";
 interface _IngestSourceOutFields {
   createdAt: Date;
@@ -240,6 +241,11 @@ interface IngestSourceOutAirwallex {
   config: AirwallexConfigOut;
 }
 
+interface IngestSourceOutVgs {
+  type: "vgs";
+  config: VgsConfigOut;
+}
+
 export type IngestSourceOut = _IngestSourceOutFields &
   (
     | IngestSourceOutGenericWebhook
@@ -281,6 +287,7 @@ export type IngestSourceOut = _IngestSourceOutFields &
     | IngestSourceOutRender
     | IngestSourceOutVeriff
     | IngestSourceOutAirwallex
+    | IngestSourceOutVgs
   );
 
 export const IngestSourceOutSerializer = {
@@ -367,6 +374,8 @@ export const IngestSourceOutSerializer = {
           return VeriffConfigOutSerializer._fromJsonObject(object["config"]);
         case "airwallex":
           return AirwallexConfigOutSerializer._fromJsonObject(object["config"]);
+        case "vgs":
+          return VgsConfigOutSerializer._fromJsonObject(object["config"]);
         default:
           throw new Error(`Unexpected type: ${type}`);
       }
@@ -505,6 +514,9 @@ export const IngestSourceOutSerializer = {
         break;
       case "airwallex":
         config = AirwallexConfigOutSerializer._toJsonObject(self.config);
+        break;
+      case "vgs":
+        config = VgsConfigOutSerializer._toJsonObject(self.config);
         break;
     }
 

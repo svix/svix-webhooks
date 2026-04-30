@@ -973,17 +973,6 @@
                 ],
                 "type": "object"
             },
-            "AutoConfigSubscribeIn": {
-                "properties": {
-                    "endpoint": {
-                        "$ref": "#/components/schemas/EndpointIn"
-                    }
-                },
-                "required": [
-                    "endpoint"
-                ],
-                "type": "object"
-            },
             "AzureBlobStorageConfig": {
                 "properties": {
                     "accessKey": {
@@ -6141,6 +6130,24 @@
                             "type"
                         ],
                         "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/VgsConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "vgs"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
                     }
                 ],
                 "properties": {
@@ -6861,6 +6868,24 @@
                             "type": {
                                 "enum": [
                                     "airwallex"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/VgsConfigOut"
+                            },
+                            "type": {
+                                "enum": [
+                                    "vgs"
                                 ],
                                 "type": "string"
                             }
@@ -11751,6 +11776,17 @@
             "StripeConfigOut": {
                 "type": "object"
             },
+            "SubscribeIn": {
+                "properties": {
+                    "endpoint": {
+                        "$ref": "#/components/schemas/EndpointIn"
+                    }
+                },
+                "required": [
+                    "endpoint"
+                ],
+                "type": "object"
+            },
             "SvixConfig": {
                 "properties": {
                     "secret": {
@@ -11910,6 +11946,20 @@
                 "type": "object"
             },
             "VeriffConfigOut": {
+                "type": "object"
+            },
+            "VgsConfig": {
+                "properties": {
+                    "secret": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "secret"
+                ],
+                "type": "object"
+            },
+            "VgsConfigOut": {
                 "type": "object"
             },
             "ZoomConfig": {
@@ -15640,6 +15690,144 @@
                     }
                 ],
                 "summary": "Get Subscription",
+                "tags": [
+                    "Webhooks AutoConfig"
+                ],
+                "x-internal": true
+            },
+            "put": {
+                "description": "Update an auto-config endpoint by providing endpoint details.",
+                "operationId": "v1.endpoint.auto-config.update",
+                "parameters": [
+                    {
+                        "description": "The Application's ID or UID.",
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The Application's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The Endpoint's ID or UID.",
+                        "in": "path",
+                        "name": "endpoint_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The Endpoint's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SubscribeIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EndpointOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Update Subscription",
                 "tags": [
                     "Webhooks AutoConfig"
                 ],
@@ -33055,146 +33243,6 @@
                 "summary": "Update Connector Options",
                 "tags": [
                     "Connector"
-                ],
-                "x-internal": true
-            }
-        },
-        "/api/v1/endpoint/{endpoint_id}/auto-config": {
-            "put": {
-                "description": "Update an auto-config endpoint by providing endpoint details.",
-                "operationId": "v1.endpoint.auto-config.update",
-                "parameters": [
-                    {
-                        "description": "The Application's ID or UID.",
-                        "in": "path",
-                        "name": "app_id",
-                        "required": true,
-                        "schema": {
-                            "description": "The Application's ID or UID.",
-                            "example": "unique-identifier",
-                            "maxLength": 256,
-                            "minLength": 1,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                            "type": "string"
-                        },
-                        "style": "simple"
-                    },
-                    {
-                        "description": "The Endpoint's ID or UID.",
-                        "in": "path",
-                        "name": "endpoint_id",
-                        "required": true,
-                        "schema": {
-                            "description": "The Endpoint's ID or UID.",
-                            "example": "unique-identifier",
-                            "maxLength": 256,
-                            "minLength": 1,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                            "type": "string"
-                        },
-                        "style": "simple"
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/AutoConfigSubscribeIn"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/EndpointOut"
-                                }
-                            }
-                        },
-                        "description": ""
-                    },
-                    "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Bad request"
-                    },
-                    "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Forbidden"
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Not Found"
-                    },
-                    "409": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Conflict"
-                    },
-                    "422": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        },
-                        "description": "Validation Error"
-                    },
-                    "429": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Too Many Requests"
-                    }
-                },
-                "security": [
-                    {
-                        "HTTPBearer": []
-                    }
-                ],
-                "summary": "Update Subscription",
-                "tags": [
-                    "Webhooks AutoConfig"
                 ],
                 "x-internal": true
             }

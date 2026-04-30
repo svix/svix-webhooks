@@ -32,6 +32,8 @@ pub struct MessageAttemptListByEndpointOptions {
     #[arg(long)]
     pub with_content: Option<bool>,
     /// When `true`, the message information is included in the response
+    ///
+    /// Note that message payloads are never included in the response, regardless of this flag.
     #[arg(long)]
     pub with_msg: Option<bool>,
     /// Filter response based on the event type

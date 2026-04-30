@@ -17,7 +17,11 @@ export interface EndpointOut {
    * @deprecated
    */
   rateLimit?: number | null;
-  /** Maximum messages per second to send to this endpoint. Outgoing messages will be throttled to this rate. */
+  /**
+   * Maximum messages per second to send to this endpoint.
+   *
+   * Outgoing messages will be throttled to this rate.
+   */
   throttleRate?: number | null;
   /** Optional unique identifier for the endpoint. */
   uid?: string | null;

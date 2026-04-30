@@ -4,4 +4,10 @@ package com.svix.kotlin.models
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class EndpointStats(val fail: Long, val pending: Long, val sending: Long, val success: Long)
+data class EndpointStats(
+    val canceled: Long,
+    val fail: Long,
+    val pending: Long,
+    val sending: Long,
+    val success: Long,
+)

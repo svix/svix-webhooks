@@ -23,6 +23,7 @@ type ApplicationListOptions struct {
 	ExcludeAppsWithNoEndpoints *bool
 	// Exclude applications that have only disabled endpoints. Default is false.
 	ExcludeAppsWithDisabledEndpoints *bool
+	// Exclude applications that only have Svix Play endpoints. Default is false.
 	ExcludeAppsWithSvixPlayEndpoints *bool
 	// Limit the number of returned items
 	Limit *uint64
