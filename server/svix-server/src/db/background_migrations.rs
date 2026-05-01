@@ -105,7 +105,7 @@ pub async fn run_migrations(
     Ok(true)
 }
 
-async fn apply(pool: &PgPool, migration: &BackgroundMigration) -> Result<bool, sqlx::Error> {
+async fn apply(pool: &PgPool, migration: &BackgroundMigration) -> Result<(), sqlx::Error> {
     let existing =
         sqlx::query("SELECT success, attempts FROM _svix_background_migrations WHERE id = $1")
             .bind(migration.id)
@@ -113,7 +113,8 @@ async fn apply(pool: &PgPool, migration: &BackgroundMigration) -> Result<bool, s
             .await?;
 
     match existing {
-        Some(row) if row.get::<bool, _>("success") => return Ok(true),
+        Some(row) if row.get::<bool, _>("success") => return Ok(()),
+        // Attempt to clean up previously failed migration
         Some(row) => {
             let attempts: i32 = row.get("attempts");
             tracing::warn!(
@@ -165,13 +166,13 @@ async fn apply(pool: &PgPool, migration: &BackgroundMigration) -> Result<bool, s
     }
     .await;
 
-    if let Err(ref e) = apply_result {
+    if let Err(e) = apply_result {
         let _ = sqlx::query("UPDATE _svix_background_migrations SET last_error = $1 WHERE id = $2")
             .bind(e.to_string())
             .bind(migration.id)
             .execute(pool)
             .await;
-        return apply_result.map(|_| false);
+        return Err(e);
     }
 
     sqlx::query(
@@ -188,7 +189,8 @@ async fn apply(pool: &PgPool, migration: &BackgroundMigration) -> Result<bool, s
         elapsed_secs = started.elapsed().as_secs_f64(),
         "Background migration completed"
     );
-    Ok(true)
+
+    Ok(())
 }
 
 pub async fn run(cfg: &Configuration) {

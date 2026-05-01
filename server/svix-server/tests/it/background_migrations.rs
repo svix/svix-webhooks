@@ -369,6 +369,63 @@ async fn test_revert_failed_migration_errors() {
 }
 
 #[tokio::test]
+async fn test_failure_stops_subsequent_migrations() {
+    let pool = test_pool().await;
+    ensure_table(&pool).await.unwrap();
+
+    let migrations = [
+        BackgroundMigration {
+            id: "test_stop_on_fail_1",
+            apply_sql: &["SELECT 1"],
+            cleanup_sql: None,
+            revert_sql: None,
+        },
+        BackgroundMigration {
+            id: "test_stop_on_fail_2",
+            apply_sql: &["this is not valid sql"],
+            cleanup_sql: None,
+            revert_sql: None,
+        },
+        BackgroundMigration {
+            id: "test_stop_on_fail_3",
+            apply_sql: &["SELECT 1"],
+            cleanup_sql: None,
+            revert_sql: None,
+        },
+        BackgroundMigration {
+            id: "test_stop_on_fail_4",
+            apply_sql: &["SELECT 1"],
+            cleanup_sql: None,
+            revert_sql: None,
+        },
+        BackgroundMigration {
+            id: "test_stop_on_fail_5",
+            apply_sql: &["SELECT 1"],
+            cleanup_sql: None,
+            revert_sql: None,
+        },
+    ];
+
+    run_migrations(&pool, &migrations).await.unwrap_err();
+
+    let ran: Vec<String> = sqlx::query_scalar(
+        "SELECT id FROM _svix_background_migrations WHERE id LIKE 'test_stop_on_fail_%'",
+    )
+    .fetch_all(&pool)
+    .await
+    .unwrap();
+    assert!(ran.contains(&"test_stop_on_fail_1".to_string()));
+    assert!(ran.contains(&"test_stop_on_fail_2".to_string()));
+    assert!(!ran.contains(&"test_stop_on_fail_3".to_string()));
+    assert!(!ran.contains(&"test_stop_on_fail_4".to_string()));
+    assert!(!ran.contains(&"test_stop_on_fail_5".to_string()));
+
+    for m in &migrations {
+        cleanup(&pool, m.id).await;
+    }
+}
+
+#[tokio::test]
 async fn test_revert_non_latest_errors() {
     let pool = test_pool().await;
     ensure_table(&pool).await.unwrap();
