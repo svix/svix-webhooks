@@ -25,6 +25,10 @@ ignore = [
     "RUSTSEC-2025-0134",
     # bincode (depended on by deno) is unmaintained
     "RUSTSEC-2025-0141",
+    # can't upgrade to hickory 0.26 until https://github.com/seanmonstar/reqwest/pull/3014 is landed
+    # on reqwest and all of our deps are updated to the new reqwest version
+    "RUSTSEC-2026-0118",
+    "RUSTSEC-2026-0119",
 ]
 
 [licenses]
