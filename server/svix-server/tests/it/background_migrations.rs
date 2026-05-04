@@ -210,6 +210,7 @@ async fn test_revert_succeeds() {
         revert_sql: Some(&["DELETE FROM _test_bgmig_revert WHERE id = 'applied'"]),
     };
 
+    cleanup(&pool, migration.id).await;
     run_with_pool(&pool, &[migration]).await;
 
     let row: Option<String> =
@@ -254,6 +255,7 @@ async fn test_empty_revert_sql_deletes_row() {
         revert_sql: None,
     };
 
+    cleanup(&pool, migration.id).await;
     run_with_pool(&pool, &[migration]).await;
 
     let tracking_before: Option<bool> =
