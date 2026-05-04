@@ -119,7 +119,6 @@ impl Svix {
         }
     }
 
-    #[cfg(feature = "svix_beta")]
     pub fn cfg(&self) -> &Configuration {
         &self.cfg
     }

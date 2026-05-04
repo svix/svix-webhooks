@@ -1,21 +1,19 @@
 pub(crate) mod endpoint_auto_config;
 
-use std::sync::Arc;
-
 pub(crate) use endpoint_auto_config::EndpointAutoConfig;
 
 use crate::Configuration;
 
-pub(crate) struct InternalApi {
-    pub(super) cfg: Arc<Configuration>,
+pub(crate) struct InternalApi<'a> {
+    pub(super) cfg: &'a Configuration,
 }
 
-impl InternalApi {
-    pub fn new(cfg: Arc<Configuration>) -> Self {
+impl<'a> InternalApi<'a> {
+    pub fn new(cfg: &'a Configuration) -> Self {
         Self { cfg }
     }
 
     pub fn auto_config(&self) -> EndpointAutoConfig<'_> {
-        EndpointAutoConfig::new(&self.cfg)
+        EndpointAutoConfig::new(self.cfg)
     }
 }

@@ -70,7 +70,7 @@ impl AutoConfig {
     }
 
     pub async fn subscribe(&self) -> Result<EndpointOut> {
-        InternalApi::new(self.svix.configuration_arc())
+        InternalApi::new(self.svix.cfg())
             .auto_config()
             .update(
                 self.app_id.clone(),
