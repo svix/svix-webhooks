@@ -1,5 +1,6 @@
 // this file is @generated
-use crate::{error::Result, internal::models::*, models::*, Configuration};
+use super::models::*;
+use crate::{error::Result, Configuration};
 
 #[derive(Default)]
 pub struct ApplicationListOptions {

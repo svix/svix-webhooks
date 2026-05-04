@@ -1,6 +1,6 @@
 // this file is @generated
-use super::{IngestEndpoint, IngestSource};
-use crate::{error::Result, internal::models::*, models::*, Configuration};
+use super::{models::*, IngestEndpoint, IngestSource};
+use crate::{error::Result, Configuration};
 
 #[derive(Default)]
 pub struct IngestDashboardOptions {
