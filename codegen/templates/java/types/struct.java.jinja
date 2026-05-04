@@ -52,7 +52,7 @@ public class {{ type.name | to_upper_camel_case }} {
     {% if type.name == "MessageIn" and field.name == "payload" -%}
         {% set field_ty = "String" -%}
     {% elif type.name == "MessageIn" and field.name == "transformationsParams" -%}
-        {% set field_ty = "Map<String,Object>" -%}
+        {% set field_ty = "Map<String, Object>" -%}
     {% endif -%}
     {{ field_annotation}} private {{ field_ty }} {{ field.name | to_lower_camel_case }};
 {% endfor -%}
@@ -65,7 +65,7 @@ public class {{ type.name | to_upper_camel_case }} {
     {% if type.name == "MessageIn" and field.name == "payload" -%}
         {% set f_ty = "String" -%}
     {% elif type.name == "MessageIn" and field.name == "transformationsParams" -%}
-        {% set f_ty = "Map<String,Object>" -%}
+        {% set f_ty = "Map<String, Object>" -%}
     {% endif -%}
     {% set f_varname = field.name | to_lower_camel_case -%}
     {% set f_deprecated = "" -%}
@@ -84,21 +84,20 @@ public class {{ type.name | to_upper_camel_case }} {
     }
 
     {% if field.type.is_set() or field.type.is_list() -%}
-    {{ f_deprecated }} public {{ class_ty }} add{{ f_varname | to_upper_camel_case }}Item ({{ field.type.inner_type().to_java() }} {{ f_varname }}Item) {
+    {{ f_deprecated }} public {{ class_ty }} add{{ f_varname | to_upper_camel_case }}Item(
+        {{ field.type.inner_type().to_java() }} {{ f_varname }}Item
+    ) {
         if (this.{{ f_varname }} == null) {
             {% if field.type.is_set() -%}
-                {% if type.name is endingwith "Patch" and field.nullable -%}
-            this.{{ f_varname }} = new MaybeUnset<>(new LinkedHashSet<>());
-                {% else -%}
-            this.{{ f_varname }} = new LinkedHashSet<>();
-                {% endif -%}
+                {% set init_expr = "new LinkedHashSet<>()" -%}
             {% else -%}
-                {% if type.name is endingwith "Patch" and field.nullable -%}
-            this.{{ f_varname }} = new MaybeUnset<>(new ArrayList<>());
-                {% else -%}
-            this.{{ f_varname }} = new ArrayList<>();
-                {% endif -%}
+                {% set init_expr = "new ArrayList<>()" -%}
             {% endif -%}
+            {% if type.name is endingwith "Patch" and field.nullable -%}
+                {% set init_expr %}new MaybeUnset<>({{ init_expr }}){% endset -%}
+            {% endif -%}
+
+            this.{{ f_varname }} = {{ init_expr }};
         }
         {% if type.name is endingwith "Patch" and field.nullable -%}
         this.{{ f_varname }}.getValue().add({{ f_varname }}Item);

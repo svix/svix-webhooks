@@ -5,6 +5,6 @@
     {% set field_lhs = field.name | to_lower_camel_case -%}
     {% if not field.required %}{% set field_lhs %}{{ field_lhs }}?{% endset %}{% endif -%}
     {% set ty = field.type.to_js() -%}
-    {% if field.nullable %}{% set ty %}{{ ty }} | null{% endset %}{% endif -%}
+    {% if field.nullable %}{% set ty = ty ~ " | null" %}{% endif -%}
     {{ field_lhs }}: {{ ty }};
 {% endfor -%}

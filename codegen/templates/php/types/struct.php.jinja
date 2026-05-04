@@ -50,19 +50,19 @@ class {{ type.name | to_upper_camel_case }} implements \JsonSerializable
         return new self(
             {% for field in type.fields -%}
                 {% if field.required -%}
-            {{ field.name | to_lower_camel_case }}: ${{ field.name | to_lower_camel_case }},
+                    {% set init_expr = "$" ~ field.name | to_lower_camel_case -%}
                 {% else -%}
-            {{ field.name | to_lower_camel_case }}: null,
+                    {% set init_expr = "null" -%}
                 {% endif -%}
 
+            {{ field.name | to_lower_camel_case }}: {{ init_expr }},
             {% endfor -%}
 
             setFields: [
-            {%- for field in type.fields -%}
-                {%- if field.required -%}
-            '{{ field.name | to_lower_camel_case }}' => true,
-                {%- endif -%}
-            {%- endfor -%} ]
+                {%- for field in type.fields | selectattr("required") -%}
+                '{{ field.name | to_lower_camel_case }}' => true,
+                {%- endfor -%}
+            ]
         );
     }
 
@@ -102,14 +102,12 @@ class {{ type.name | to_upper_camel_case }} implements \JsonSerializable
     {
         $data = [
         {% set serialized_data -%}
-            {%- for field in type.fields -%}
-                {%- if field.required and not field.nullable -%}
-                    {% set field_expr %}$this->{{ field.name | to_lower_camel_case }}{% endset -%}
-                    {% if field.name == "payload" and type_name == "MessageIn" %}
-                    'payload' => \Svix\Utils::newStdClassIfArrayIsEmpty($this->payload),
-                    {% else -%}
-                    '{{ field.name }}' => {{ field_to_json(field_expr, field.type, field.required, type_name) }},
-                    {% endif -%}
+            {%- for field in type.fields | selectattr("required") | selectattr("nullable", "false") -%}
+                {% set field_expr %}$this->{{ field.name | to_lower_camel_case }}{% endset -%}
+                {% if field.name == "payload" and type_name == "MessageIn" %}
+                'payload' => \Svix\Utils::newStdClassIfArrayIsEmpty($this->payload),
+                {% else -%}
+                '{{ field.name }}' => {{ field_to_json(field_expr, field.type, field.required, type_name) }},
                 {% endif -%}
             {%- endfor -%}
         {%- endset -%}
@@ -140,9 +138,8 @@ class {{ type.name | to_upper_camel_case }} implements \JsonSerializable
     {
         return new self(
             {% for field in type.fields -%}
-                {% set trailing_comma %}{% if not loop.last %},{% endif %}{% endset -%}
-                {% set field_expr %}$data['{{ field.name }}']{% endset -%}
-                {{ field.name | to_lower_camel_case }}: {{ field_from_json(field.name, field.type, field.required, type_name) }} {{ trailing_comma }}
+                {{ field.name | to_lower_camel_case }}: {{ field_from_json(field.name, field.type, field.required, type_name) }}
+                {%- if not loop.last %},{% endif %}
             {% endfor -%}
         );
     }
