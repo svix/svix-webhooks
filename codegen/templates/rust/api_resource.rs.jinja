@@ -7,8 +7,8 @@ use crate::{
     {%- endif %}
     Configuration,
 };
-use super::models::*;
 use super::{
+    super::models::*,
     {% for _, sub in resource.subresources | items -%}
         {{ sub.name | to_upper_camel_case }} ,
     {%- endfor %}

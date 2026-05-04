@@ -1,5 +1,5 @@
 // this file is @generated
-use super::{models::*, OperationalWebhookEndpoint};
+use super::{super::models::*, OperationalWebhookEndpoint};
 use crate::Configuration;
 
 pub struct OperationalWebhook<'a> {

@@ -1,5 +1,5 @@
 // this file is @generated
-use super::models::*;
+use super::super::models::*;
 use crate::{error::Result, Configuration};
 
 #[derive(Default)]

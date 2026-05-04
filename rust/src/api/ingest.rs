@@ -1,5 +1,5 @@
 // this file is @generated
-use super::{models::*, IngestEndpoint, IngestSource};
+use super::{super::models::*, IngestEndpoint, IngestSource};
 use crate::{error::Result, Configuration};
 
 #[derive(Default)]

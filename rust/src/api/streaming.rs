@@ -1,5 +1,7 @@
 // this file is @generated
-use super::{models::*, StreamingEventType, StreamingEvents, StreamingSink, StreamingStream};
+use super::{
+    super::models::*, StreamingEventType, StreamingEvents, StreamingSink, StreamingStream,
+};
 use crate::{error::Result, Configuration};
 
 pub struct Streaming<'a> {

@@ -1,5 +1,5 @@
 // this file is @generated
-use super::{models::*, MessagePoller};
+use super::{super::models::*, MessagePoller};
 use crate::{error::Result, Configuration};
 
 #[derive(Default)]
