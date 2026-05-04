@@ -1,4 +1,5 @@
 use std::{
+    collections::VecDeque,
     future::Future,
     net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr},
     pin::Pin,
@@ -12,7 +13,7 @@ use axum::{body::Body, response::Response};
 use axum_extra::headers::{Authorization, authorization::Credentials};
 use bytes::Bytes;
 use futures::{FutureExt, future::BoxFuture};
-use hickory_resolver::{ResolveError, Resolver, TokioResolver, lookup_ip::LookupIpIntoIter};
+use hickory_resolver::{Resolver, TokioResolver, net::NetError};
 use http::{HeaderMap, HeaderValue, Method, StatusCode, Version};
 use http_body_util::Full;
 use hyper::{Uri, body::Incoming, ext::HeaderCaseMap};
@@ -54,7 +55,7 @@ pub enum Error {
     #[error("requests to this IP range are blocked (see the server configuration)")]
     BlockedIp,
     #[error("error resolving name: {0}")]
-    Resolve(#[from] ResolveError),
+    Resolve(#[from] NetError),
 
     #[error("request timed out")]
     TimedOut,
@@ -614,57 +615,46 @@ impl Service<Name> for NonLocalDnsResolver {
                 .iter()
                 .any(|whitelisted| whitelisted == name.as_str());
 
-            let lookup = resolver.lookup_ip(name.as_str()).await?;
+            let mut addresses = resolver
+                .lookup_ip(name.as_str())
+                .await?
+                .iter()
+                .collect::<VecDeque<_>>();
 
-            if lookup.iter().all(|ip| {
-                !is_allowed(ip)
-                    && !whitelist_nets.iter().any(|subnet| subnet.contains(&ip))
-                    && !whitelisted_name
-            }) {
-                Err(Error::BlockedIp)
-            } else {
-                Ok(SocketAddrs {
-                    iter: lookup.into_iter(),
-                    whitelist_nets,
-                    whitelisted_name,
-                })
+            if !addresses.is_empty() {
+                addresses.retain(move |ip| {
+                    is_allowed(*ip)
+                        || whitelist_nets.iter().any(|subnet| subnet.contains(ip))
+                        || whitelisted_name
+                });
+                if addresses.is_empty() {
+                    return Err(Error::BlockedIp);
+                }
             }
+
+            Ok(SocketAddrs {
+                filtered_addresses: addresses,
+            })
         })
     }
 }
 
 pub struct SocketAddrs {
-    iter: LookupIpIntoIter,
-    whitelist_nets: Arc<Vec<IpNet>>,
-    whitelisted_name: bool,
+    filtered_addresses: VecDeque<IpAddr>,
 }
 
 impl Iterator for SocketAddrs {
     type Item = SocketAddr;
 
     fn next(&mut self) -> Option<Self::Item> {
-        loop {
-            match self.iter.next() {
-                Some(ip_addr) => {
-                    if is_allowed(ip_addr)
-                        || self
-                            .whitelist_nets
-                            .iter()
-                            .any(|subnet| subnet.contains(&ip_addr))
-                        || self.whitelisted_name
-                    {
-                        return Some(SocketAddr::from((ip_addr, 0)));
-                    }
-                }
-
-                None => return None,
-            }
-        }
+        self.filtered_addresses
+            .pop_front()
+            .map(|item| SocketAddr::from((item, 0)))
     }
 }
 
-async fn new_resolver() -> Result<Arc<TokioResolver>, ResolveError> {
-    Ok(Arc::new(Resolver::builder_tokio()?.build()))
+async fn new_resolver() -> Result<Arc<TokioResolver>, NetError> {
+    Ok(Arc::new(Resolver::builder_tokio()?.build()?))
 }
 
 fn is_allowed(addr: IpAddr) -> bool {
