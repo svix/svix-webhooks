@@ -9,7 +9,6 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-/// Content of the auto-config token. Fields are renamed to shorten the length of final base64 encoded token.
 struct AutoConfigTokenContentV1 {
     #[serde(rename = "aid")]
     pub app_id: String,
@@ -39,16 +38,22 @@ pub enum AutoConfigError {
     InvalidToken,
 }
 
+fn decode_autoconfig_token_v1(
+    token: &str,
+) -> std::result::Result<AutoConfigTokenContentV1, AutoConfigError> {
+    let token = token
+        .strip_prefix(AUTOCONFIG_TOKEN_PREFIX_V1)
+        .ok_or(AutoConfigError::InvalidToken)?;
+
+    let decoded = base64::decode(token).map_err(|_| AutoConfigError::InvalidToken)?;
+
+    serde_json::from_slice::<AutoConfigTokenContentV1>(&decoded)
+        .map_err(|_| AutoConfigError::InvalidToken)
+}
+
 impl AutoConfig {
     pub fn new(token: String, endpoint: EndpointIn) -> std::result::Result<Self, AutoConfigError> {
-        let token = token
-            .strip_prefix(AUTOCONFIG_TOKEN_PREFIX_V1)
-            .ok_or(AutoConfigError::InvalidToken)?;
-
-        // FIXME: ugly map_errs
-        let content = base64::decode(token).map_err(|_| AutoConfigError::InvalidToken)?;
-        let content = serde_json::from_slice::<AutoConfigTokenContentV1>(&content)
-            .map_err(|_| AutoConfigError::InvalidToken)?;
+        let content = decode_autoconfig_token_v1(&token)?;
         let webhook =
             Webhook::new(&content.endpoint_secret).map_err(|_| AutoConfigError::InvalidToken)?;
 
@@ -86,5 +91,46 @@ impl AutoConfig {
         headers: &HM,
     ) -> std::result::Result<(), WebhookError> {
         self.webhook.verify(payload, headers)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn decode_autoconfig_token_v1_parses_payload() {
+        let json = r#"{"aid":"app_1","eid":"ep_2","surl":"https://api.example.test","esec":"whsec_Zm9v","tok":"sk_test_xyz"}"#;
+        let token = format!("{}{}", AUTOCONFIG_TOKEN_PREFIX_V1, base64::encode(json));
+        let content = decode_autoconfig_token_v1(&token).expect("valid token");
+
+        assert_eq!(content.app_id, "app_1");
+        assert_eq!(content.endpoint_id, "ep_2");
+        assert_eq!(content.server_url, "https://api.example.test");
+        assert_eq!(content.endpoint_secret, "whsec_Zm9v");
+        assert_eq!(content.token_plaintext, "sk_test_xyz");
+    }
+
+    #[test]
+    fn decode_autoconfig_token_v1_rejects_bad_prefix() {
+        let json = r#"{"aid":"a","eid":"e","surl":"https://x","esec":"whsec_Zm9v","tok":"t"}"#;
+        let token = format!("wrong_{}", base64::encode(json));
+        assert!(matches!(
+            decode_autoconfig_token_v1(&token),
+            Err(AutoConfigError::InvalidToken)
+        ));
+    }
+
+    #[test]
+    fn decode_autoconfig_token_v1_rejects_invalid_json() {
+        let token = format!(
+            "{}{}",
+            AUTOCONFIG_TOKEN_PREFIX_V1,
+            base64::encode("not json")
+        );
+        assert!(matches!(
+            decode_autoconfig_token_v1(&token),
+            Err(AutoConfigError::InvalidToken)
+        ));
     }
 }
