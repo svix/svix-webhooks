@@ -11,26 +11,23 @@ use serde::{Deserialize, Serialize};
 #[serde(rename_all = "camelCase")]
 /// Content of the auto-config token. Fields are renamed to shorten the length of final base64 encoded token.
 struct AutoConfigTokenContentV1 {
-    /// The endpoint ID.
+    #[serde(rename = "aid")]
+    pub app_id: String,
     #[serde(rename = "eid")]
     pub endpoint_id: String,
-    /// Server URL.
     #[serde(rename = "surl")]
     pub server_url: String,
-    /// The endpoint secret. To verify incoming webhooks from an endpoint created with this subscription.
     #[serde(rename = "esec")]
     pub endpoint_secret: String,
-    /// The token plaintext. To be used to call complete_subscription.
     #[serde(rename = "tok")]
-    // Note: It's important that this field is last in this struct, so the censored token always contains part of the revealed token,
-    // since that's the only way to differentiate between different magic tokens for the same endpoint.
     pub token_plaintext: String,
 }
 
 pub struct AutoConfig {
+    app_id: String,
+    endpoint_id: String,
     endpoint: EndpointIn,
     webhook: Webhook,
-    endpoint_id: String,
     svix: Svix,
 }
 
@@ -48,10 +45,10 @@ impl AutoConfig {
             .strip_prefix(AUTOCONFIG_TOKEN_PREFIX_V1)
             .ok_or(AutoConfigError::InvalidToken)?;
 
+        // FIXME: ugly map_errs
         let content = base64::decode(token).map_err(|_| AutoConfigError::InvalidToken)?;
         let content = serde_json::from_slice::<AutoConfigTokenContentV1>(&content)
             .map_err(|_| AutoConfigError::InvalidToken)?;
-
         let webhook =
             Webhook::new(&content.endpoint_secret).map_err(|_| AutoConfigError::InvalidToken)?;
 
@@ -64,8 +61,9 @@ impl AutoConfig {
         );
 
         Ok(Self {
-            endpoint,
+            app_id: content.app_id,
             endpoint_id: content.endpoint_id,
+            endpoint,
             webhook,
             svix,
         })
@@ -75,7 +73,7 @@ impl AutoConfig {
         InternalApi::new(self.svix.configuration_arc())
             .auto_config()
             .update(
-                "-".to_string(),
+                self.app_id.clone(),
                 self.endpoint_id.clone(),
                 SubscribeIn::new(self.endpoint.clone()),
             )

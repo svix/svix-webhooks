@@ -1,10 +1,5 @@
 // this file is @generated
-use crate::{
-    error::Result,
-    internal::models::subscribe_in::SubscribeIn,
-    models::*,
-    Configuration,
-};
+use crate::{error::Result, models::*, Configuration};
 
 pub struct EndpointAutoConfig<'a> {
     cfg: &'a Configuration,

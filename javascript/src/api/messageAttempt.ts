@@ -46,8 +46,6 @@ export interface MessageAttemptListByEndpointOptions {
    * Note that message payloads are never included in the response, regardless of this flag.
    */
   withMsg?: boolean;
-  /** When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are returned as Success (0) */
-  expandedStatuses?: boolean;
   /** Filter response based on the event type */
   eventTypes?: string[];
 }
@@ -152,7 +150,6 @@ export class MessageAttempt {
       after: options?.after,
       with_content: options?.withContent,
       with_msg: options?.withMsg,
-      expanded_statuses: options?.expandedStatuses,
       event_types: options?.eventTypes,
     });
 

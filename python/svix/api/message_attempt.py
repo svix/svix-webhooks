@@ -54,7 +54,6 @@ Note that message payloads are never included in the response, regardless of thi
                 "after": self.after,
                 "with_content": self.with_content,
                 "with_msg": self.with_msg,
-                "expanded_statuses": self.expanded_statuses,
                 "event_types": self.event_types,
             }
         )

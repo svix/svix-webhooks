@@ -48,12 +48,6 @@ public class MessageAttemptListByEndpointOptions {
      */
     Boolean withMsg;
 
-    /**
-     * When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are
-     * returned as Success (0)
-     */
-    Boolean expandedStatuses;
-
     /** Filter response based on the event type */
     Set<String> eventTypes;
 }

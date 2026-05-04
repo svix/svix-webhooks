@@ -87,10 +87,6 @@ public class MessageAttempt {
         if (options.withMsg != null) {
             url.addQueryParameter("with_msg", Utils.serializeQueryParam(options.withMsg));
         }
-        if (options.expandedStatuses != null) {
-            url.addQueryParameter(
-                    "expanded_statuses", Utils.serializeQueryParam(options.expandedStatuses));
-        }
         if (options.eventTypes != null) {
             url.addQueryParameter("event_types", Utils.serializeQueryParam(options.eventTypes));
         }

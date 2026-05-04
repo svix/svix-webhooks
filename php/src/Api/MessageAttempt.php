@@ -44,7 +44,6 @@ class MessageAttempt
             $request->setQueryParam('after', $options->after);
             $request->setQueryParam('with_content', $options->withContent);
             $request->setQueryParam('with_msg', $options->withMsg);
-            $request->setQueryParam('expanded_statuses', $options->expandedStatuses);
             $request->setQueryParam('event_types', $options->eventTypes);
         }
         $res = $this->client->send($request);
