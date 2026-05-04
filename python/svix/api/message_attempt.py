@@ -21,7 +21,7 @@ class MessageAttemptListByEndpointOptions(BaseOptions):
     iterator: t.Optional[str] = None
     """The iterator returned from a prior invocation"""
     status: t.Optional[models.MessageStatus] = None
-    """Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)"""
+    """Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), Sending (3), or Canceled (4)"""
     status_code_class: t.Optional[models.StatusCodeClass] = None
     """Filter response based on the HTTP status code"""
     channel: t.Optional[str] = None
@@ -38,6 +38,8 @@ class MessageAttemptListByEndpointOptions(BaseOptions):
     """When `true`, the message information is included in the response
 
 Note that message payloads are never included in the response, regardless of this flag."""
+    expanded_statuses: t.Optional[bool] = None
+    """When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are returned as Success (0)"""
     event_types: t.Optional[t.List[str]] = None
     """Filter response based on the event type"""
 
@@ -54,6 +56,7 @@ Note that message payloads are never included in the response, regardless of thi
                 "after": self.after,
                 "with_content": self.with_content,
                 "with_msg": self.with_msg,
+                "expanded_statuses": self.expanded_statuses,
                 "event_types": self.event_types,
             }
         )
@@ -66,7 +69,7 @@ class MessageAttemptListByMsgOptions(BaseOptions):
     iterator: t.Optional[str] = None
     """The iterator returned from a prior invocation"""
     status: t.Optional[models.MessageStatus] = None
-    """Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)"""
+    """Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), Sending (3), or Canceled (4)"""
     status_code_class: t.Optional[models.StatusCodeClass] = None
     """Filter response based on the HTTP status code"""
     channel: t.Optional[str] = None
@@ -81,6 +84,8 @@ class MessageAttemptListByMsgOptions(BaseOptions):
     """Only include items created after a certain date"""
     with_content: t.Optional[bool] = None
     """When `true` attempt content is included in the response"""
+    expanded_statuses: t.Optional[bool] = None
+    """When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are returned as Success (0)"""
     event_types: t.Optional[t.List[str]] = None
     """Filter response based on the event type"""
 
@@ -97,6 +102,7 @@ class MessageAttemptListByMsgOptions(BaseOptions):
                 "before": self.before,
                 "after": self.after,
                 "with_content": self.with_content,
+                "expanded_statuses": self.expanded_statuses,
                 "event_types": self.event_types,
             }
         )
@@ -113,13 +119,15 @@ class MessageAttemptListAttemptedMessagesOptions(BaseOptions):
     tag: t.Optional[str] = None
     """Filter response based on the message tags"""
     status: t.Optional[models.MessageStatus] = None
-    """Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)"""
+    """Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), Sending (3), or Canceled (4)"""
     before: t.Optional[datetime] = None
     """Only include items created before a certain date"""
     after: t.Optional[datetime] = None
     """Only include items created after a certain date"""
     with_content: t.Optional[bool] = None
     """When `true` message payloads are included in the response"""
+    expanded_statuses: t.Optional[bool] = None
+    """When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are returned as Success (0)"""
     event_types: t.Optional[t.List[str]] = None
     """Filter response based on the event type"""
 
@@ -134,7 +142,21 @@ class MessageAttemptListAttemptedMessagesOptions(BaseOptions):
                 "before": self.before,
                 "after": self.after,
                 "with_content": self.with_content,
+                "expanded_statuses": self.expanded_statuses,
                 "event_types": self.event_types,
+            }
+        )
+
+
+@dataclass
+class MessageAttemptGetOptions(BaseOptions):
+    expanded_statuses: t.Optional[bool] = None
+    """When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are returned as Success (0)"""
+
+    def _query_params(self) -> t.Dict[str, str]:
+        return serialize_params(
+            {
+                "expanded_statuses": self.expanded_statuses,
             }
         )
 
@@ -244,7 +266,13 @@ class MessageAttemptAsync(ApiBase):
         )
         return ListResponseEndpointMessageOut.model_validate(response.json())
 
-    async def get(self, app_id: str, msg_id: str, attempt_id: str) -> MessageAttemptOut:
+    async def get(
+        self,
+        app_id: str,
+        msg_id: str,
+        attempt_id: str,
+        options: MessageAttemptGetOptions = MessageAttemptGetOptions(),
+    ) -> MessageAttemptOut:
         """`msg_id`: Use a message id or a message `eventId`"""
         response = await self._request_asyncio(
             method="get",
@@ -254,6 +282,8 @@ class MessageAttemptAsync(ApiBase):
                 "msg_id": msg_id,
                 "attempt_id": attempt_id,
             },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
         )
         return MessageAttemptOut.model_validate(response.json())
 
@@ -393,7 +423,13 @@ class MessageAttempt(ApiBase):
         )
         return ListResponseEndpointMessageOut.model_validate(response.json())
 
-    def get(self, app_id: str, msg_id: str, attempt_id: str) -> MessageAttemptOut:
+    def get(
+        self,
+        app_id: str,
+        msg_id: str,
+        attempt_id: str,
+        options: MessageAttemptGetOptions = MessageAttemptGetOptions(),
+    ) -> MessageAttemptOut:
         """`msg_id`: Use a message id or a message `eventId`"""
         response = self._request_sync(
             method="get",
@@ -403,6 +439,8 @@ class MessageAttempt(ApiBase):
                 "msg_id": msg_id,
                 "attempt_id": attempt_id,
             },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
         )
         return MessageAttemptOut.model_validate(response.json())
 

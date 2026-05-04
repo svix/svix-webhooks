@@ -6,9 +6,10 @@ module Svix
     PENDING = "pending".freeze
     FAIL = "fail".freeze
     SENDING = "sending".freeze
+    CANCELED = "canceled".freeze
 
     def self.all_vars
-      @all_vars ||= [SUCCESS, PENDING, FAIL, SENDING].freeze
+      @all_vars ||= [SUCCESS, PENDING, FAIL, SENDING, CANCELED].freeze
     end
 
     def initialize(value)

@@ -9,6 +9,7 @@ use serde_repr::{Deserialize_repr, Serialize_repr};
 /// - Pending = 1
 /// - Fail = 2
 /// - Sending = 3
+/// - Canceled = 4
 #[repr(i64)]
 #[derive(
     Clone,
@@ -29,6 +30,7 @@ pub enum MessageStatus {
     Pending = 1,
     Fail = 2,
     Sending = 3,
+    Canceled = 4,
 }
 
 impl fmt::Display for MessageStatus {

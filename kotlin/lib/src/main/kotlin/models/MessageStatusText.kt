@@ -13,7 +13,8 @@ enum class MessageStatusText : ToQueryParam {
     @SerialName("success") SUCCESS,
     @SerialName("pending") PENDING,
     @SerialName("fail") FAIL,
-    @SerialName("sending") SENDING;
+    @SerialName("sending") SENDING,
+    @SerialName("canceled") CANCELED;
 
     override fun toQueryParam() = Json.encodeToJsonElement(this).jsonPrimitive.content
 }

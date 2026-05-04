@@ -5,6 +5,7 @@ export enum MessageStatusText {
   Pending = "pending",
   Fail = "fail",
   Sending = "sending",
+  Canceled = "canceled",
 }
 
 export const MessageStatusTextSerializer = {

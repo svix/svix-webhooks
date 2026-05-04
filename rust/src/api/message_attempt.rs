@@ -10,7 +10,7 @@ pub struct MessageAttemptListByEndpointOptions {
     pub iterator: Option<String>,
 
     /// Filter response based on the status of the attempt: Success (0), Pending
-    /// (1), Failed (2), or Sending (3)
+    /// (1), Failed (2), Sending (3), or Canceled (4)
     pub status: Option<MessageStatus>,
 
     /// Filter response based on the HTTP status code
@@ -41,6 +41,10 @@ pub struct MessageAttemptListByEndpointOptions {
     /// regardless of this flag.
     pub with_msg: Option<bool>,
 
+    /// When `true`, return the Canceled (4) status in attempts. If `false`,
+    /// canceled attempts are returned as Success (0)
+    pub expanded_statuses: Option<bool>,
+
     /// Filter response based on the event type
     pub event_types: Option<Vec<String>>,
 }
@@ -54,7 +58,7 @@ pub struct MessageAttemptListByMsgOptions {
     pub iterator: Option<String>,
 
     /// Filter response based on the status of the attempt: Success (0), Pending
-    /// (1), Failed (2), or Sending (3)
+    /// (1), Failed (2), Sending (3), or Canceled (4)
     pub status: Option<MessageStatus>,
 
     /// Filter response based on the HTTP status code
@@ -82,6 +86,10 @@ pub struct MessageAttemptListByMsgOptions {
     /// When `true` attempt content is included in the response
     pub with_content: Option<bool>,
 
+    /// When `true`, return the Canceled (4) status in attempts. If `false`,
+    /// canceled attempts are returned as Success (0)
+    pub expanded_statuses: Option<bool>,
+
     /// Filter response based on the event type
     pub event_types: Option<Vec<String>>,
 }
@@ -101,7 +109,7 @@ pub struct MessageAttemptListAttemptedMessagesOptions {
     pub tag: Option<String>,
 
     /// Filter response based on the status of the attempt: Success (0), Pending
-    /// (1), Failed (2), or Sending (3)
+    /// (1), Failed (2), Sending (3), or Canceled (4)
     pub status: Option<MessageStatus>,
 
     /// Only include items created before a certain date
@@ -117,8 +125,19 @@ pub struct MessageAttemptListAttemptedMessagesOptions {
     /// When `true` message payloads are included in the response
     pub with_content: Option<bool>,
 
+    /// When `true`, return the Canceled (4) status in attempts. If `false`,
+    /// canceled attempts are returned as Success (0)
+    pub expanded_statuses: Option<bool>,
+
     /// Filter response based on the event type
     pub event_types: Option<Vec<String>>,
+}
+
+#[derive(Default)]
+pub struct MessageAttemptGetOptions {
+    /// When `true`, return the Canceled (4) status in attempts. If `false`,
+    /// canceled attempts are returned as Success (0)
+    pub expanded_statuses: Option<bool>,
 }
 
 #[derive(Default)]
@@ -168,6 +187,7 @@ impl<'a> MessageAttempt<'a> {
             after,
             with_content,
             with_msg,
+            expanded_statuses,
             event_types,
         } = options.unwrap_or_default();
 
@@ -187,6 +207,7 @@ impl<'a> MessageAttempt<'a> {
         .with_optional_query_param("after", after)
         .with_optional_query_param("with_content", with_content)
         .with_optional_query_param("with_msg", with_msg)
+        .with_optional_query_param("expanded_statuses", expanded_statuses)
         .with_optional_query_param("event_types", event_types)
         .execute(self.cfg)
         .await
@@ -216,6 +237,7 @@ impl<'a> MessageAttempt<'a> {
             before,
             after,
             with_content,
+            expanded_statuses,
             event_types,
         } = options.unwrap_or_default();
 
@@ -235,6 +257,7 @@ impl<'a> MessageAttempt<'a> {
         .with_optional_query_param("before", before)
         .with_optional_query_param("after", after)
         .with_optional_query_param("with_content", with_content)
+        .with_optional_query_param("expanded_statuses", expanded_statuses)
         .with_optional_query_param("event_types", event_types)
         .execute(self.cfg)
         .await
@@ -266,6 +289,7 @@ impl<'a> MessageAttempt<'a> {
             before,
             after,
             with_content,
+            expanded_statuses,
             event_types,
         } = options.unwrap_or_default();
 
@@ -283,6 +307,7 @@ impl<'a> MessageAttempt<'a> {
         .with_optional_query_param("before", before)
         .with_optional_query_param("after", after)
         .with_optional_query_param("with_content", with_content)
+        .with_optional_query_param("expanded_statuses", expanded_statuses)
         .with_optional_query_param("event_types", event_types)
         .execute(self.cfg)
         .await
@@ -335,7 +360,10 @@ impl<'a> MessageAttempt<'a> {
         app_id: String,
         msg_id: String,
         attempt_id: String,
+        options: Option<MessageAttemptGetOptions>,
     ) -> Result<MessageAttemptOut> {
+        let MessageAttemptGetOptions { expanded_statuses } = options.unwrap_or_default();
+
         crate::request::Request::new(
             http1::Method::GET,
             "/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}",
@@ -343,6 +371,7 @@ impl<'a> MessageAttempt<'a> {
         .with_path_param("app_id", app_id)
         .with_path_param("msg_id", msg_id)
         .with_path_param("attempt_id", attempt_id)
+        .with_optional_query_param("expanded_statuses", expanded_statuses)
         .execute(self.cfg)
         .await
     }

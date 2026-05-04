@@ -10,7 +10,7 @@ pub struct MessageAttemptListByEndpointOptions {
     /// The iterator returned from a prior invocation
     #[arg(long)]
     pub iterator: Option<String>,
-    /// Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)
+    /// Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), Sending (3), or Canceled (4)
     #[arg(long)]
     pub status: Option<MessageStatus>,
     /// Filter response based on the HTTP status code
@@ -36,6 +36,9 @@ pub struct MessageAttemptListByEndpointOptions {
     /// Note that message payloads are never included in the response, regardless of this flag.
     #[arg(long)]
     pub with_msg: Option<bool>,
+    /// When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are returned as Success (0)
+    #[arg(long)]
+    pub expanded_statuses: Option<bool>,
     /// Filter response based on the event type
     #[arg(long)]
     pub event_types: Option<Vec<String>>,
@@ -54,6 +57,7 @@ impl From<MessageAttemptListByEndpointOptions> for svix::api::MessageAttemptList
             after,
             with_content,
             with_msg,
+            expanded_statuses,
             event_types,
         } = value;
         Self {
@@ -67,6 +71,7 @@ impl From<MessageAttemptListByEndpointOptions> for svix::api::MessageAttemptList
             after: after.map(|dt| dt.to_rfc3339()),
             with_content,
             with_msg,
+            expanded_statuses,
             event_types,
         }
     }
@@ -80,7 +85,7 @@ pub struct MessageAttemptListByMsgOptions {
     /// The iterator returned from a prior invocation
     #[arg(long)]
     pub iterator: Option<String>,
-    /// Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)
+    /// Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), Sending (3), or Canceled (4)
     #[arg(long)]
     pub status: Option<MessageStatus>,
     /// Filter response based on the HTTP status code
@@ -104,6 +109,9 @@ pub struct MessageAttemptListByMsgOptions {
     /// When `true` attempt content is included in the response
     #[arg(long)]
     pub with_content: Option<bool>,
+    /// When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are returned as Success (0)
+    #[arg(long)]
+    pub expanded_statuses: Option<bool>,
     /// Filter response based on the event type
     #[arg(long)]
     pub event_types: Option<Vec<String>>,
@@ -122,6 +130,7 @@ impl From<MessageAttemptListByMsgOptions> for svix::api::MessageAttemptListByMsg
             before,
             after,
             with_content,
+            expanded_statuses,
             event_types,
         } = value;
         Self {
@@ -135,6 +144,7 @@ impl From<MessageAttemptListByMsgOptions> for svix::api::MessageAttemptListByMsg
             before: before.map(|dt| dt.to_rfc3339()),
             after: after.map(|dt| dt.to_rfc3339()),
             with_content,
+            expanded_statuses,
             event_types,
         }
     }
@@ -154,7 +164,7 @@ pub struct MessageAttemptListAttemptedMessagesOptions {
     /// Filter response based on the message tags
     #[arg(long)]
     pub tag: Option<String>,
-    /// Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)
+    /// Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), Sending (3), or Canceled (4)
     #[arg(long)]
     pub status: Option<MessageStatus>,
     /// Only include items created before a certain date
@@ -166,6 +176,9 @@ pub struct MessageAttemptListAttemptedMessagesOptions {
     /// When `true` message payloads are included in the response
     #[arg(long)]
     pub with_content: Option<bool>,
+    /// When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are returned as Success (0)
+    #[arg(long)]
+    pub expanded_statuses: Option<bool>,
     /// Filter response based on the event type
     #[arg(long)]
     pub event_types: Option<Vec<String>>,
@@ -184,6 +197,7 @@ impl From<MessageAttemptListAttemptedMessagesOptions>
             before,
             after,
             with_content,
+            expanded_statuses,
             event_types,
         } = value;
         Self {
@@ -195,8 +209,23 @@ impl From<MessageAttemptListAttemptedMessagesOptions>
             before: before.map(|dt| dt.to_rfc3339()),
             after: after.map(|dt| dt.to_rfc3339()),
             with_content,
+            expanded_statuses,
             event_types,
         }
+    }
+}
+
+#[derive(Args, Clone)]
+pub struct MessageAttemptGetOptions {
+    /// When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are returned as Success (0)
+    #[arg(long)]
+    pub expanded_statuses: Option<bool>,
+}
+
+impl From<MessageAttemptGetOptions> for svix::api::MessageAttemptGetOptions {
+    fn from(value: MessageAttemptGetOptions) -> Self {
+        let MessageAttemptGetOptions { expanded_statuses } = value;
+        Self { expanded_statuses }
     }
 }
 
@@ -433,6 +462,8 @@ pub enum MessageAttemptCommands {
         app_id: String,
         msg_id: String,
         attempt_id: String,
+        #[clap(flatten)]
+        options: MessageAttemptGetOptions,
     },
     /// Deletes the given attempt's response body.
     ///
@@ -557,10 +588,11 @@ impl MessageAttemptCommands {
                 app_id,
                 msg_id,
                 attempt_id,
+                options,
             } => {
                 let resp = client
                     .message_attempt()
-                    .get(app_id, msg_id, attempt_id)
+                    .get(app_id, msg_id, attempt_id, Some(options.into()))
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }

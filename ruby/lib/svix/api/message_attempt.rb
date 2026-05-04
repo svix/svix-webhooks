@@ -25,6 +25,7 @@ module Svix
           "after" => options["after"],
           "with_content" => options["with_content"],
           "with_msg" => options["with_msg"],
+          "expanded_statuses" => options["expanded_statuses"],
           "event_types" => options["event_types"]
         }
       )
@@ -47,6 +48,7 @@ module Svix
           "before" => options["before"],
           "after" => options["after"],
           "with_content" => options["with_content"],
+          "expanded_statuses" => options["expanded_statuses"],
           "event_types" => options["event_types"]
         }
       )
@@ -67,16 +69,21 @@ module Svix
           "before" => options["before"],
           "after" => options["after"],
           "with_content" => options["with_content"],
+          "expanded_statuses" => options["expanded_statuses"],
           "event_types" => options["event_types"]
         }
       )
       ListResponseEndpointMessageOut.deserialize(res)
     end
 
-    def get(app_id, msg_id, attempt_id)
+    def get(app_id, msg_id, attempt_id, options = {})
+      options = options.transform_keys(&:to_s)
       res = @client.execute_request(
         "GET",
-        "/api/v1/app/#{app_id}/msg/#{msg_id}/attempt/#{attempt_id}"
+        "/api/v1/app/#{app_id}/msg/#{msg_id}/attempt/#{attempt_id}",
+        query_params: {
+          "expanded_statuses" => options["expanded_statuses"]
+        }
       )
       MessageAttemptOut.deserialize(res)
     end

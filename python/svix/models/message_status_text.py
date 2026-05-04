@@ -7,6 +7,7 @@ class MessageStatusText(str, Enum):
     PENDING = "pending"
     FAIL = "fail"
     SENDING = "sending"
+    CANCELED = "canceled"
 
     def __str__(self) -> str:
         return str(self.value)

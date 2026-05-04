@@ -8,7 +8,8 @@ public enum MessageStatus implements ToQueryParam {
     SUCCESS(0),
     PENDING(1),
     FAIL(2),
-    SENDING(3);
+    SENDING(3),
+    CANCELED(4);
     private final long value;
 
     MessageStatus(long value) {

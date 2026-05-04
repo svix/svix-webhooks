@@ -87,6 +87,10 @@ public class MessageAttempt {
         if (options.withMsg != null) {
             url.addQueryParameter("with_msg", Utils.serializeQueryParam(options.withMsg));
         }
+        if (options.expandedStatuses != null) {
+            url.addQueryParameter(
+                    "expanded_statuses", Utils.serializeQueryParam(options.expandedStatuses));
+        }
         if (options.eventTypes != null) {
             url.addQueryParameter("event_types", Utils.serializeQueryParam(options.eventTypes));
         }
@@ -152,6 +156,10 @@ public class MessageAttempt {
         }
         if (options.withContent != null) {
             url.addQueryParameter("with_content", Utils.serializeQueryParam(options.withContent));
+        }
+        if (options.expandedStatuses != null) {
+            url.addQueryParameter(
+                    "expanded_statuses", Utils.serializeQueryParam(options.expandedStatuses));
         }
         if (options.eventTypes != null) {
             url.addQueryParameter("event_types", Utils.serializeQueryParam(options.eventTypes));
@@ -224,6 +232,10 @@ public class MessageAttempt {
         if (options.withContent != null) {
             url.addQueryParameter("with_content", Utils.serializeQueryParam(options.withContent));
         }
+        if (options.expandedStatuses != null) {
+            url.addQueryParameter(
+                    "expanded_statuses", Utils.serializeQueryParam(options.expandedStatuses));
+        }
         if (options.eventTypes != null) {
             url.addQueryParameter("event_types", Utils.serializeQueryParam(options.eventTypes));
         }
@@ -234,6 +246,16 @@ public class MessageAttempt {
     /** `msg_id`: Use a message id or a message `eventId` */
     public MessageAttemptOut get(final String appId, final String msgId, final String attemptId)
             throws IOException, ApiException {
+        return this.get(appId, msgId, attemptId, new MessageAttemptGetOptions());
+    }
+
+    /** `msg_id`: Use a message id or a message `eventId` */
+    public MessageAttemptOut get(
+            final String appId,
+            final String msgId,
+            final String attemptId,
+            final MessageAttemptGetOptions options)
+            throws IOException, ApiException {
         HttpUrl.Builder url =
                 this.client
                         .newUrlBuilder()
@@ -241,6 +263,10 @@ public class MessageAttempt {
                                 String.format(
                                         "/api/v1/app/%s/msg/%s/attempt/%s",
                                         appId, msgId, attemptId));
+        if (options.expandedStatuses != null) {
+            url.addQueryParameter(
+                    "expanded_statuses", Utils.serializeQueryParam(options.expandedStatuses));
+        }
         return this.client.executeRequest("GET", url.build(), null, null, MessageAttemptOut.class);
     }
 

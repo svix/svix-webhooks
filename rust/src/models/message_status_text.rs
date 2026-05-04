@@ -16,6 +16,8 @@ pub enum MessageStatusText {
     Fail,
     #[serde(rename = "sending")]
     Sending,
+    #[serde(rename = "canceled")]
+    Canceled,
 }
 
 impl fmt::Display for MessageStatusText {
@@ -25,6 +27,7 @@ impl fmt::Display for MessageStatusText {
             Self::Pending => "pending",
             Self::Fail => "fail",
             Self::Sending => "sending",
+            Self::Canceled => "canceled",
         };
         f.write_str(value)
     }

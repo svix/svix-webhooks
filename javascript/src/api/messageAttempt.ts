@@ -26,7 +26,7 @@ export interface MessageAttemptListByEndpointOptions {
   limit?: number;
   /** The iterator returned from a prior invocation */
   iterator?: string | null;
-  /** Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3) */
+  /** Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), Sending (3), or Canceled (4) */
   status?: MessageStatus;
   /** Filter response based on the HTTP status code */
   statusCodeClass?: StatusCodeClass;
@@ -46,6 +46,8 @@ export interface MessageAttemptListByEndpointOptions {
    * Note that message payloads are never included in the response, regardless of this flag.
    */
   withMsg?: boolean;
+  /** When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are returned as Success (0) */
+  expandedStatuses?: boolean;
   /** Filter response based on the event type */
   eventTypes?: string[];
 }
@@ -55,7 +57,7 @@ export interface MessageAttemptListByMsgOptions {
   limit?: number;
   /** The iterator returned from a prior invocation */
   iterator?: string | null;
-  /** Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3) */
+  /** Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), Sending (3), or Canceled (4) */
   status?: MessageStatus;
   /** Filter response based on the HTTP status code */
   statusCodeClass?: StatusCodeClass;
@@ -71,6 +73,8 @@ export interface MessageAttemptListByMsgOptions {
   after?: Date | null;
   /** When `true` attempt content is included in the response */
   withContent?: boolean;
+  /** When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are returned as Success (0) */
+  expandedStatuses?: boolean;
   /** Filter response based on the event type */
   eventTypes?: string[];
 }
@@ -84,7 +88,7 @@ export interface MessageAttemptListAttemptedMessagesOptions {
   channel?: string;
   /** Filter response based on the message tags */
   tag?: string;
-  /** Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3) */
+  /** Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), Sending (3), or Canceled (4) */
   status?: MessageStatus;
   /** Only include items created before a certain date */
   before?: Date | null;
@@ -92,8 +96,15 @@ export interface MessageAttemptListAttemptedMessagesOptions {
   after?: Date | null;
   /** When `true` message payloads are included in the response */
   withContent?: boolean;
+  /** When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are returned as Success (0) */
+  expandedStatuses?: boolean;
   /** Filter response based on the event type */
   eventTypes?: string[];
+}
+
+export interface MessageAttemptGetOptions {
+  /** When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are returned as Success (0) */
+  expandedStatuses?: boolean;
 }
 
 export interface MessageAttemptListAttemptedDestinationsOptions {
@@ -141,6 +152,7 @@ export class MessageAttempt {
       after: options?.after,
       with_content: options?.withContent,
       with_msg: options?.withMsg,
+      expanded_statuses: options?.expandedStatuses,
       event_types: options?.eventTypes,
     });
 
@@ -181,6 +193,7 @@ export class MessageAttempt {
       before: options?.before,
       after: options?.after,
       with_content: options?.withContent,
+      expanded_statuses: options?.expandedStatuses,
       event_types: options?.eventTypes,
     });
 
@@ -221,6 +234,7 @@ export class MessageAttempt {
       before: options?.before,
       after: options?.after,
       with_content: options?.withContent,
+      expanded_statuses: options?.expandedStatuses,
       event_types: options?.eventTypes,
     });
 
@@ -234,7 +248,8 @@ export class MessageAttempt {
   public get(
     appId: string,
     msgId: string,
-    attemptId: string
+    attemptId: string,
+    options?: MessageAttemptGetOptions
   ): Promise<MessageAttemptOut> {
     const request = new SvixRequest(
       HttpMethod.GET,
@@ -244,6 +259,9 @@ export class MessageAttempt {
     request.setPathParam("app_id", appId);
     request.setPathParam("msg_id", msgId);
     request.setPathParam("attempt_id", attemptId);
+    request.setQueryParams({
+      expanded_statuses: options?.expandedStatuses,
+    });
 
     return request.send(this.requestCtx, MessageAttemptOutSerializer._fromJsonObject);
   }

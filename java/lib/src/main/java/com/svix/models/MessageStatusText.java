@@ -8,7 +8,8 @@ public enum MessageStatusText implements ToQueryParam {
     SUCCESS("success"),
     PENDING("pending"),
     FAIL("fail"),
-    SENDING("sending");
+    SENDING("sending"),
+    CANCELED("canceled");
     private final String value;
 
     MessageStatusText(String value) {

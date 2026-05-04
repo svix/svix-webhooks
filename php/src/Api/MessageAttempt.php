@@ -44,6 +44,7 @@ class MessageAttempt
             $request->setQueryParam('after', $options->after);
             $request->setQueryParam('with_content', $options->withContent);
             $request->setQueryParam('with_msg', $options->withMsg);
+            $request->setQueryParam('expanded_statuses', $options->expandedStatuses);
             $request->setQueryParam('event_types', $options->eventTypes);
         }
         $res = $this->client->send($request);
@@ -76,6 +77,7 @@ class MessageAttempt
             $request->setQueryParam('before', $options->before);
             $request->setQueryParam('after', $options->after);
             $request->setQueryParam('with_content', $options->withContent);
+            $request->setQueryParam('expanded_statuses', $options->expandedStatuses);
             $request->setQueryParam('event_types', $options->eventTypes);
         }
         $res = $this->client->send($request);
@@ -108,6 +110,7 @@ class MessageAttempt
             $request->setQueryParam('before', $options->before);
             $request->setQueryParam('after', $options->after);
             $request->setQueryParam('with_content', $options->withContent);
+            $request->setQueryParam('expanded_statuses', $options->expandedStatuses);
             $request->setQueryParam('event_types', $options->eventTypes);
         }
         $res = $this->client->send($request);
@@ -120,8 +123,12 @@ class MessageAttempt
         string $appId,
         string $msgId,
         string $attemptId,
+        ?MessageAttemptGetOptions $options = null,
     ): MessageAttemptOut {
         $request = $this->client->newReq('GET', "/api/v1/app/{$appId}/msg/{$msgId}/attempt/{$attemptId}");
+        if (null !== $options) {
+            $request->setQueryParam('expanded_statuses', $options->expandedStatuses);
+        }
         $res = $this->client->send($request);
 
         return MessageAttemptOut::fromJson($res);

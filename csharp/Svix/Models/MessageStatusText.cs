@@ -19,5 +19,8 @@ namespace Svix.Models
 
         [EnumMember(Value = "sending")]
         Sending = 4,
+
+        [EnumMember(Value = "canceled")]
+        Canceled = 5,
     }
 }

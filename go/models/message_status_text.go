@@ -10,10 +10,11 @@ import (
 type MessageStatusText string
 
 const (
-	MESSAGESTATUSTEXT_SUCCESS MessageStatusText = "success"
-	MESSAGESTATUSTEXT_PENDING MessageStatusText = "pending"
-	MESSAGESTATUSTEXT_FAIL    MessageStatusText = "fail"
-	MESSAGESTATUSTEXT_SENDING MessageStatusText = "sending"
+	MESSAGESTATUSTEXT_SUCCESS  MessageStatusText = "success"
+	MESSAGESTATUSTEXT_PENDING  MessageStatusText = "pending"
+	MESSAGESTATUSTEXT_FAIL     MessageStatusText = "fail"
+	MESSAGESTATUSTEXT_SENDING  MessageStatusText = "sending"
+	MESSAGESTATUSTEXT_CANCELED MessageStatusText = "canceled"
 )
 
 var allowedMessageStatusText = []MessageStatusText{
@@ -21,6 +22,7 @@ var allowedMessageStatusText = []MessageStatusText{
 	"pending",
 	"fail",
 	"sending",
+	"canceled",
 }
 
 func (v *MessageStatusText) UnmarshalJSON(src []byte) error {
@@ -39,8 +41,9 @@ func (v *MessageStatusText) UnmarshalJSON(src []byte) error {
 }
 
 var MessageStatusTextFromString = map[string]MessageStatusText{
-	"success": MESSAGESTATUSTEXT_SUCCESS,
-	"pending": MESSAGESTATUSTEXT_PENDING,
-	"fail":    MESSAGESTATUSTEXT_FAIL,
-	"sending": MESSAGESTATUSTEXT_SENDING,
+	"success":  MESSAGESTATUSTEXT_SUCCESS,
+	"pending":  MESSAGESTATUSTEXT_PENDING,
+	"fail":     MESSAGESTATUSTEXT_FAIL,
+	"sending":  MESSAGESTATUSTEXT_SENDING,
+	"canceled": MESSAGESTATUSTEXT_CANCELED,
 }

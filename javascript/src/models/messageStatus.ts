@@ -6,12 +6,14 @@
  * - Pending = 1
  * - Fail = 2
  * - Sending = 3
+ * - Canceled = 4
  */
 export enum MessageStatus {
   Success = 0,
   Pending = 1,
   Fail = 2,
   Sending = 3,
+  Canceled = 4,
 }
 
 export const MessageStatusSerializer = {

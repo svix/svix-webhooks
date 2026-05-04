@@ -17,6 +17,7 @@ namespace Svix
         public DateTime? After { get; set; }
         public bool? WithContent { get; set; }
         public bool? WithMsg { get; set; }
+        public bool? ExpandedStatuses { get; set; }
         public List<string>? EventTypes { get; set; }
 
         public new Dictionary<string, string> QueryParams()
@@ -34,6 +35,7 @@ namespace Svix
                     { "after", After },
                     { "with_content", WithContent },
                     { "with_msg", WithMsg },
+                    { "expanded_statuses", ExpandedStatuses },
                     { "event_types", EventTypes },
                 }
             );
@@ -52,6 +54,7 @@ namespace Svix
         public DateTime? Before { get; set; }
         public DateTime? After { get; set; }
         public bool? WithContent { get; set; }
+        public bool? ExpandedStatuses { get; set; }
         public List<string>? EventTypes { get; set; }
 
         public new Dictionary<string, string> QueryParams()
@@ -69,6 +72,7 @@ namespace Svix
                     { "before", Before },
                     { "after", After },
                     { "with_content", WithContent },
+                    { "expanded_statuses", ExpandedStatuses },
                     { "event_types", EventTypes },
                 }
             );
@@ -85,6 +89,7 @@ namespace Svix
         public DateTime? Before { get; set; }
         public DateTime? After { get; set; }
         public bool? WithContent { get; set; }
+        public bool? ExpandedStatuses { get; set; }
         public List<string>? EventTypes { get; set; }
 
         public new Dictionary<string, string> QueryParams()
@@ -100,8 +105,21 @@ namespace Svix
                     { "before", Before },
                     { "after", After },
                     { "with_content", WithContent },
+                    { "expanded_statuses", ExpandedStatuses },
                     { "event_types", EventTypes },
                 }
+            );
+        }
+    }
+
+    public class MessageAttemptGetOptions : SvixOptionsBase
+    {
+        public bool? ExpandedStatuses { get; set; }
+
+        public new Dictionary<string, string> QueryParams()
+        {
+            return SerializeParams(
+                new Dictionary<string, object?> { { "expanded_statuses", ExpandedStatuses } }
             );
         }
     }
@@ -377,6 +395,7 @@ namespace Svix
             string appId,
             string msgId,
             string attemptId,
+            MessageAttemptGetOptions? options = null,
             CancellationToken cancellationToken = default
         )
         {
@@ -391,6 +410,8 @@ namespace Svix
                         { "msg_id", msgId },
                         { "attempt_id", attemptId },
                     },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
@@ -406,7 +427,12 @@ namespace Svix
         /// <summary>
         /// `msg_id`: Use a message id or a message `eventId`
         /// </summary>
-        public MessageAttemptOut Get(string appId, string msgId, string attemptId)
+        public MessageAttemptOut Get(
+            string appId,
+            string msgId,
+            string attemptId,
+            MessageAttemptGetOptions? options = null
+        )
         {
             try
             {
@@ -418,7 +444,9 @@ namespace Svix
                         { "app_id", appId },
                         { "msg_id", msgId },
                         { "attempt_id", attemptId },
-                    }
+                    },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams()
                 );
                 return response.Data;
             }

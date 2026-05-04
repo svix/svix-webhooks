@@ -23,8 +23,8 @@ public class MessageAttemptListAttemptedMessagesOptions {
     String tag;
 
     /**
-     * Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or
-     * Sending (3)
+     * Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2),
+     * Sending (3), or Canceled (4)
      */
     MessageStatus status;
 
@@ -36,6 +36,12 @@ public class MessageAttemptListAttemptedMessagesOptions {
 
     /** When `true` message payloads are included in the response */
     Boolean withContent;
+
+    /**
+     * When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are
+     * returned as Success (0)
+     */
+    Boolean expandedStatuses;
 
     /** Filter response based on the event type */
     Set<String> eventTypes;

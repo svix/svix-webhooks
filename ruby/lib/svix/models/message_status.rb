@@ -7,14 +7,16 @@ module Svix
   # - Pending = 1
   # - Fail = 2
   # - Sending = 3
+  # - Canceled = 4
   class MessageStatus
     SUCCESS = 0.freeze
     PENDING = 1.freeze
     FAIL = 2.freeze
     SENDING = 3.freeze
+    CANCELED = 4.freeze
 
     def self.all_vars
-      @all_vars ||= [SUCCESS, PENDING, FAIL, SENDING].freeze
+      @all_vars ||= [SUCCESS, PENDING, FAIL, SENDING, CANCELED].freeze
     end
 
     def initialize(value)

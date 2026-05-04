@@ -17,8 +17,8 @@ data class MessageAttemptListByEndpointOptions(
     /** The iterator returned from a prior invocation */
     val iterator: String? = null,
     /**
-     * Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or
-     * Sending (3)
+     * Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2),
+     * Sending (3), or Canceled (4)
      */
     val status: MessageStatus? = null,
     /** Filter response based on the HTTP status code */
@@ -39,6 +39,11 @@ data class MessageAttemptListByEndpointOptions(
      * Note that message payloads are never included in the response, regardless of this flag.
      */
     val withMsg: Boolean? = null,
+    /**
+     * When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are
+     * returned as Success (0)
+     */
+    val expandedStatuses: Boolean? = null,
     /** Filter response based on the event type */
     val eventTypes: Set<String>? = null,
 )
@@ -49,8 +54,8 @@ data class MessageAttemptListByMsgOptions(
     /** The iterator returned from a prior invocation */
     val iterator: String? = null,
     /**
-     * Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or
-     * Sending (3)
+     * Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2),
+     * Sending (3), or Canceled (4)
      */
     val status: MessageStatus? = null,
     /** Filter response based on the HTTP status code */
@@ -67,6 +72,11 @@ data class MessageAttemptListByMsgOptions(
     val after: Instant? = null,
     /** When `true` attempt content is included in the response */
     val withContent: Boolean? = null,
+    /**
+     * When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are
+     * returned as Success (0)
+     */
+    val expandedStatuses: Boolean? = null,
     /** Filter response based on the event type */
     val eventTypes: Set<String>? = null,
 )
@@ -81,8 +91,8 @@ data class MessageAttemptListAttemptedMessagesOptions(
     /** Filter response based on the message tags */
     val tag: String? = null,
     /**
-     * Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or
-     * Sending (3)
+     * Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2),
+     * Sending (3), or Canceled (4)
      */
     val status: MessageStatus? = null,
     /** Only include items created before a certain date */
@@ -91,8 +101,21 @@ data class MessageAttemptListAttemptedMessagesOptions(
     val after: Instant? = null,
     /** When `true` message payloads are included in the response */
     val withContent: Boolean? = null,
+    /**
+     * When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are
+     * returned as Success (0)
+     */
+    val expandedStatuses: Boolean? = null,
     /** Filter response based on the event type */
     val eventTypes: Set<String>? = null,
+)
+
+data class MessageAttemptGetOptions(
+    /**
+     * When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are
+     * returned as Success (0)
+     */
+    val expandedStatuses: Boolean? = null
 )
 
 data class MessageAttemptListAttemptedDestinationsOptions(
@@ -132,6 +155,9 @@ class MessageAttempt(private val client: SvixHttpClient) {
         options.after?.let { url.addQueryParameter("after", serializeQueryParam(it)) }
         options.withContent?.let { url.addQueryParameter("with_content", serializeQueryParam(it)) }
         options.withMsg?.let { url.addQueryParameter("with_msg", serializeQueryParam(it)) }
+        options.expandedStatuses?.let {
+            url.addQueryParameter("expanded_statuses", serializeQueryParam(it))
+        }
         options.eventTypes?.let { url.addQueryParameter("event_types", serializeQueryParam(it)) }
         return client.executeRequest<Any, ListResponseMessageAttemptOut>("GET", url.build())
     }
@@ -162,6 +188,9 @@ class MessageAttempt(private val client: SvixHttpClient) {
         options.before?.let { url.addQueryParameter("before", serializeQueryParam(it)) }
         options.after?.let { url.addQueryParameter("after", serializeQueryParam(it)) }
         options.withContent?.let { url.addQueryParameter("with_content", serializeQueryParam(it)) }
+        options.expandedStatuses?.let {
+            url.addQueryParameter("expanded_statuses", serializeQueryParam(it))
+        }
         options.eventTypes?.let { url.addQueryParameter("event_types", serializeQueryParam(it)) }
         return client.executeRequest<Any, ListResponseMessageAttemptOut>("GET", url.build())
     }
@@ -193,14 +222,25 @@ class MessageAttempt(private val client: SvixHttpClient) {
         options.before?.let { url.addQueryParameter("before", serializeQueryParam(it)) }
         options.after?.let { url.addQueryParameter("after", serializeQueryParam(it)) }
         options.withContent?.let { url.addQueryParameter("with_content", serializeQueryParam(it)) }
+        options.expandedStatuses?.let {
+            url.addQueryParameter("expanded_statuses", serializeQueryParam(it))
+        }
         options.eventTypes?.let { url.addQueryParameter("event_types", serializeQueryParam(it)) }
         return client.executeRequest<Any, ListResponseEndpointMessageOut>("GET", url.build())
     }
 
     /** `msg_id`: Use a message id or a message `eventId` */
-    suspend fun get(appId: String, msgId: String, attemptId: String): MessageAttemptOut {
+    suspend fun get(
+        appId: String,
+        msgId: String,
+        attemptId: String,
+        options: MessageAttemptGetOptions = MessageAttemptGetOptions(),
+    ): MessageAttemptOut {
         val url =
             client.newUrlBuilder().encodedPath("/api/v1/app/$appId/msg/$msgId/attempt/$attemptId")
+        options.expandedStatuses?.let {
+            url.addQueryParameter("expanded_statuses", serializeQueryParam(it))
+        }
         return client.executeRequest<Any, MessageAttemptOut>("GET", url.build())
     }
 

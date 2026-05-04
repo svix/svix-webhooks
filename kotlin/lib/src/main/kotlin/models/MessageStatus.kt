@@ -16,7 +16,8 @@ enum class MessageStatus : ToQueryParam {
     SUCCESS,
     PENDING,
     FAIL,
-    SENDING;
+    SENDING,
+    CANCELED;
 
     override fun toQueryParam() = Json.encodeToJsonElement(this).jsonPrimitive.content
 }
@@ -35,6 +36,7 @@ object MessageStatusSerializer : KSerializer<MessageStatus> {
                 MessageStatus.PENDING -> 1L
                 MessageStatus.FAIL -> 2L
                 MessageStatus.SENDING -> 3L
+                MessageStatus.CANCELED -> 4L
             }
         encoder.encodeLong(vAsLong)
     }
@@ -45,6 +47,7 @@ object MessageStatusSerializer : KSerializer<MessageStatus> {
             1L -> MessageStatus.PENDING
             2L -> MessageStatus.FAIL
             3L -> MessageStatus.SENDING
+            4L -> MessageStatus.CANCELED
             else -> {
                 throw SerializationException("$vAsLong is not a valid value for MessageStatus")
             }

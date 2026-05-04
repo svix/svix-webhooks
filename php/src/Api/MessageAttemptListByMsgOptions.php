@@ -21,6 +21,7 @@ class MessageAttemptListByMsgOptions
         public readonly ?\DateTimeImmutable $before = null,
         public readonly ?\DateTimeImmutable $after = null,
         public readonly ?bool $withContent = null,
+        public readonly ?bool $expandedStatuses = null,
         public readonly ?array $eventTypes = null,
     ) {
     }

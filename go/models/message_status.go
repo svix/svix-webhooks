@@ -13,13 +13,15 @@ import (
 // - Pending = 1
 // - Fail = 2
 // - Sending = 3
+// - Canceled = 4
 type MessageStatus int64
 
 const (
-	MESSAGESTATUS_SUCCESS MessageStatus = 0
-	MESSAGESTATUS_PENDING MessageStatus = 1
-	MESSAGESTATUS_FAIL    MessageStatus = 2
-	MESSAGESTATUS_SENDING MessageStatus = 3
+	MESSAGESTATUS_SUCCESS  MessageStatus = 0
+	MESSAGESTATUS_PENDING  MessageStatus = 1
+	MESSAGESTATUS_FAIL     MessageStatus = 2
+	MESSAGESTATUS_SENDING  MessageStatus = 3
+	MESSAGESTATUS_CANCELED MessageStatus = 4
 )
 
 var allowedMessageStatus = []MessageStatus{
@@ -27,6 +29,7 @@ var allowedMessageStatus = []MessageStatus{
 	1,
 	2,
 	3,
+	4,
 }
 
 func (v *MessageStatus) UnmarshalJSON(src []byte) error {
@@ -49,4 +52,5 @@ var MessageStatusFromInt64 = map[int64]MessageStatus{
 	1: MESSAGESTATUS_PENDING,
 	2: MESSAGESTATUS_FAIL,
 	3: MESSAGESTATUS_SENDING,
+	4: MESSAGESTATUS_CANCELED,
 }

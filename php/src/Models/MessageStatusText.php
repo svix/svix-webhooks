@@ -11,6 +11,7 @@ enum MessageStatusText: string implements \JsonSerializable
     case PENDING = 'pending';
     case FAIL = 'fail';
     case SENDING = 'sending';
+    case CANCELED = 'canceled';
 
     /**
      * Create an instance from a mixed obj.

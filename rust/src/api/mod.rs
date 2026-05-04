@@ -70,7 +70,7 @@ pub use self::{
         MessageListOptions, MessagePrecheckOptions,
     },
     message_attempt::{
-        MessageAttempt, MessageAttemptListAttemptedDestinationsOptions,
+        MessageAttempt, MessageAttemptGetOptions, MessageAttemptListAttemptedDestinationsOptions,
         MessageAttemptListAttemptedMessagesOptions, MessageAttemptListByEndpointOptions,
         MessageAttemptListByMsgOptions, MessageAttemptResendOptions,
     },

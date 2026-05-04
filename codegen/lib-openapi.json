@@ -8850,12 +8850,13 @@
                 "type": "object"
             },
             "MessageStatus": {
-                "description": "The sending status of the message:\n\n- Success = 0\n- Pending = 1\n- Fail = 2\n- Sending = 3",
+                "description": "The sending status of the message:\n\n- Success = 0\n- Pending = 1\n- Fail = 2\n- Sending = 3\n- Canceled = 4",
                 "enum": [
                     0,
                     1,
                     2,
-                    3
+                    3,
+                    4
                 ],
                 "title": "MessageStatus",
                 "type": "integer",
@@ -8863,7 +8864,8 @@
                     "Success",
                     "Pending",
                     "Fail",
-                    "Sending"
+                    "Sending",
+                    "Canceled"
                 ]
             },
             "MessageStatusText": {
@@ -8871,7 +8873,8 @@
                     "success",
                     "pending",
                     "fail",
-                    "sending"
+                    "sending",
+                    "canceled"
                 ],
                 "type": "string"
             },
@@ -13346,13 +13349,13 @@
                         "style": "form"
                     },
                     {
-                        "description": "Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)",
+                        "description": "Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), Sending (3), or Canceled (4)",
                         "explode": false,
                         "in": "query",
                         "name": "status",
                         "schema": {
                             "$ref": "#/components/schemas/MessageStatus",
-                            "description": "Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)",
+                            "description": "Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), Sending (3), or Canceled (4)",
                             "nullable": true
                         },
                         "style": "form"
@@ -13439,6 +13442,17 @@
                         "schema": {
                             "default": false,
                             "description": "When `true`, the message information is included in the response\n\nNote that message payloads are never included in the response, regardless of this flag.",
+                            "type": "boolean"
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "description": "When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are returned as Success (0)",
+                        "in": "query",
+                        "name": "expanded_statuses",
+                        "schema": {
+                            "default": false,
+                            "description": "When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are returned as Success (0)",
                             "type": "boolean"
                         },
                         "style": "form"
@@ -13659,13 +13673,13 @@
                 "operationId": "v1.message-attempt.count-by-endpoint",
                 "parameters": [
                     {
-                        "description": "Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)",
+                        "description": "Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), Sending (3), or Canceled (4)",
                         "explode": false,
                         "in": "query",
                         "name": "status",
                         "schema": {
                             "$ref": "#/components/schemas/MessageStatus",
-                            "description": "Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)",
+                            "description": "Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), Sending (3), or Canceled (4)",
                             "nullable": true
                         },
                         "style": "form"
@@ -13912,13 +13926,13 @@
                         "style": "form"
                     },
                     {
-                        "description": "Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)",
+                        "description": "Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), Sending (3), or Canceled (4)",
                         "explode": false,
                         "in": "query",
                         "name": "status",
                         "schema": {
                             "$ref": "#/components/schemas/MessageStatus",
-                            "description": "Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)",
+                            "description": "Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), Sending (3), or Canceled (4)",
                             "nullable": true
                         },
                         "style": "form"
@@ -14009,6 +14023,17 @@
                         "schema": {
                             "default": true,
                             "description": "When `true` attempt content is included in the response",
+                            "type": "boolean"
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "description": "When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are returned as Success (0)",
+                        "in": "query",
+                        "name": "expanded_statuses",
+                        "schema": {
+                            "default": false,
+                            "description": "When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are returned as Success (0)",
                             "type": "boolean"
                         },
                         "style": "form"
@@ -17367,13 +17392,13 @@
                         "style": "form"
                     },
                     {
-                        "description": "Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)",
+                        "description": "Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), Sending (3), or Canceled (4)",
                         "explode": false,
                         "in": "query",
                         "name": "status",
                         "schema": {
                             "$ref": "#/components/schemas/MessageStatus",
-                            "description": "Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)",
+                            "description": "Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), Sending (3), or Canceled (4)",
                             "nullable": true
                         },
                         "style": "form"
@@ -17409,6 +17434,17 @@
                         "schema": {
                             "default": true,
                             "description": "When `true` message payloads are included in the response",
+                            "type": "boolean"
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "description": "When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are returned as Success (0)",
+                        "in": "query",
+                        "name": "expanded_statuses",
+                        "schema": {
+                            "default": false,
+                            "description": "When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are returned as Success (0)",
                             "type": "boolean"
                         },
                         "style": "form"
@@ -23610,6 +23646,17 @@
                             "type": "string"
                         },
                         "style": "simple"
+                    },
+                    {
+                        "description": "When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are returned as Success (0)",
+                        "in": "query",
+                        "name": "expanded_statuses",
+                        "schema": {
+                            "default": false,
+                            "description": "When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are returned as Success (0)",
+                            "type": "boolean"
+                        },
+                        "style": "form"
                     }
                 ],
                 "responses": {
@@ -23727,7 +23774,7 @@
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "response, err := svix.MessageAttempt.Get(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"msg_33ZHzkmDazsPr4mDUsdzXJrGQ1f\",\n\t\"atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n)"
+                        "source": "response, err := svix.MessageAttempt.Get(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"msg_33ZHzkmDazsPr4mDUsdzXJrGQ1f\",\n\t\"atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\tnil,\n)"
                     },
                     {
                         "label": "Kotlin",
@@ -23747,7 +23794,7 @@
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let response = svix\n    .message_attempt()\n    .get(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n        \"msg_33ZHzkmDazsPr4mDUsdzXJrGQ1f\".to_string(),\n        \"atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n    )\n    .await?;"
+                        "source": "let response = svix\n    .message_attempt()\n    .get(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n        \"msg_33ZHzkmDazsPr4mDUsdzXJrGQ1f\".to_string(),\n        \"atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n        None,\n    )\n    .await?;"
                     },
                     {
                         "label": "C#",

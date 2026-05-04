@@ -9,6 +9,7 @@ namespace Svix.Models
     /// - Pending = 1
     /// - Fail = 2
     /// - Sending = 3
+    /// - Canceled = 4
     /// </summary>
     public enum MessageStatus
     {
@@ -16,5 +17,6 @@ namespace Svix.Models
         Pending = 1,
         Fail = 2,
         Sending = 3,
+        Canceled = 4,
     }
 }

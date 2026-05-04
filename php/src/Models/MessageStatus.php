@@ -11,6 +11,7 @@ enum MessageStatus: int implements \JsonSerializable
     case PENDING = 1;
     case FAIL = 2;
     case SENDING = 3;
+    case CANCELED = 4;
 
     /**
      * Create an instance from a mixed obj.

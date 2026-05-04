@@ -25,7 +25,7 @@ type MessageAttemptListByEndpointOptions struct {
 	// The iterator returned from a prior invocation
 	Iterator *string
 
-	// Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)
+	// Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), Sending (3), or Canceled (4)
 	Status *models.MessageStatus
 
 	// Filter response based on the HTTP status code
@@ -44,6 +44,8 @@ type MessageAttemptListByEndpointOptions struct {
 	//
 	// Note that message payloads are never included in the response, regardless of this flag.
 	WithMsg *bool
+	// When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are returned as Success (0)
+	ExpandedStatuses *bool
 	// Filter response based on the event type
 	EventTypes *[]string
 }
@@ -54,7 +56,7 @@ type MessageAttemptListByMsgOptions struct {
 	// The iterator returned from a prior invocation
 	Iterator *string
 
-	// Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)
+	// Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), Sending (3), or Canceled (4)
 	Status *models.MessageStatus
 
 	// Filter response based on the HTTP status code
@@ -71,6 +73,8 @@ type MessageAttemptListByMsgOptions struct {
 	After *time.Time
 	// When `true` attempt content is included in the response
 	WithContent *bool
+	// When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are returned as Success (0)
+	ExpandedStatuses *bool
 	// Filter response based on the event type
 	EventTypes *[]string
 }
@@ -85,7 +89,7 @@ type MessageAttemptListAttemptedMessagesOptions struct {
 	// Filter response based on the message tags
 	Tag *string
 
-	// Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), or Sending (3)
+	// Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), Sending (3), or Canceled (4)
 	Status *models.MessageStatus
 	// Only include items created before a certain date
 	Before *time.Time
@@ -93,8 +97,15 @@ type MessageAttemptListAttemptedMessagesOptions struct {
 	After *time.Time
 	// When `true` message payloads are included in the response
 	WithContent *bool
+	// When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are returned as Success (0)
+	ExpandedStatuses *bool
 	// Filter response based on the event type
 	EventTypes *[]string
+}
+
+type MessageAttemptGetOptions struct {
+	// When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are returned as Success (0)
+	ExpandedStatuses *bool
 }
 
 type MessageAttemptListAttemptedDestinationsOptions struct {
@@ -137,6 +148,7 @@ func (messageAttempt *MessageAttempt) ListByEndpoint(
 		internal.SerializeParamToMap("after", o.After, queryMap, &err)
 		internal.SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
 		internal.SerializeParamToMap("with_msg", o.WithMsg, queryMap, &err)
+		internal.SerializeParamToMap("expanded_statuses", o.ExpandedStatuses, queryMap, &err)
 		internal.SerializeParamToMap("event_types", o.EventTypes, queryMap, &err)
 		if err != nil {
 			return nil, err
@@ -183,6 +195,7 @@ func (messageAttempt *MessageAttempt) ListByMsg(
 		internal.SerializeParamToMap("before", o.Before, queryMap, &err)
 		internal.SerializeParamToMap("after", o.After, queryMap, &err)
 		internal.SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
+		internal.SerializeParamToMap("expanded_statuses", o.ExpandedStatuses, queryMap, &err)
 		internal.SerializeParamToMap("event_types", o.EventTypes, queryMap, &err)
 		if err != nil {
 			return nil, err
@@ -229,6 +242,7 @@ func (messageAttempt *MessageAttempt) ListAttemptedMessages(
 		internal.SerializeParamToMap("before", o.Before, queryMap, &err)
 		internal.SerializeParamToMap("after", o.After, queryMap, &err)
 		internal.SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
+		internal.SerializeParamToMap("expanded_statuses", o.ExpandedStatuses, queryMap, &err)
 		internal.SerializeParamToMap("event_types", o.EventTypes, queryMap, &err)
 		if err != nil {
 			return nil, err
@@ -252,11 +266,20 @@ func (messageAttempt *MessageAttempt) Get(
 	appId string,
 	msgId string,
 	attemptId string,
+	o *MessageAttemptGetOptions,
 ) (*models.MessageAttemptOut, error) {
 	pathMap := map[string]string{
 		"app_id":     appId,
 		"msg_id":     msgId,
 		"attempt_id": attemptId,
+	}
+	queryMap := map[string]string{}
+	var err error
+	if o != nil {
+		internal.SerializeParamToMap("expanded_statuses", o.ExpandedStatuses, queryMap, &err)
+		if err != nil {
+			return nil, err
+		}
 	}
 	return internal.ExecuteRequest[any, models.MessageAttemptOut](
 		ctx,
@@ -264,7 +287,7 @@ func (messageAttempt *MessageAttempt) Get(
 		"GET",
 		"/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}",
 		pathMap,
-		nil,
+		queryMap,
 		nil,
 		nil,
 	)

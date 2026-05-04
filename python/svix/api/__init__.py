@@ -288,6 +288,7 @@ from .message import (
 from .message_attempt import (
     MessageAttempt,
     MessageAttemptAsync,
+    MessageAttemptGetOptions,
     MessageAttemptListAttemptedDestinationsOptions,
     MessageAttemptListAttemptedMessagesOptions,
     MessageAttemptListByEndpointOptions,
@@ -402,6 +403,7 @@ __all__ = [
     "MessageAttemptListByEndpointOptions",
     "MessageAttemptListByMsgOptions",
     "MessageAttemptListAttemptedMessagesOptions",
+    "MessageAttemptGetOptions",
     "MessageAttemptListAttemptedDestinationsOptions",
     "MessageAttemptResendOptions",
     "OperationalWebhookEndpoint",
