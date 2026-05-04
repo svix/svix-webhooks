@@ -246,9 +246,7 @@ def run_codegen_for_language(language, language_config) -> list[str]:
 def parse_config():
     with open(Path("codegen").joinpath("codegen.toml"), "rb") as f:
         data = tomllib.load(f)
-    global_section = data.pop("global")
-    input_files = global_section["input_files"]
-    global_extra_codegen_args = global_section.get("extra_codegen_args", [])
+    input_files = data.pop("global")["input_files"]
     config = {}
     for language, language_config in data.items():
         config[language] = {"tasks": [], "tasks_count": len(language_config["task"])}
@@ -267,8 +265,7 @@ def parse_config():
                     "template": task["template"],
                     "output_dir": task["output_dir"],
                     "extra_mounts": language_config.get("extra_mounts", {}),
-                    "extra_codegen_args": global_extra_codegen_args
-                    + task.get(
+                    "extra_codegen_args": task.get(
                         "extra_codegen_args",
                         language_config.get("extra_codegen_args", []),
                     ),

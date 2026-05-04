@@ -123,10 +123,6 @@ impl Svix {
     pub fn cfg(&self) -> &Configuration {
         &self.cfg
     }
-
-    pub(crate) fn configuration_arc(&self) -> Arc<Configuration> {
-        Arc::clone(&self.cfg)
-    }
 }
 
 #[cfg(test)]
