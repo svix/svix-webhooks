@@ -1,6 +1,6 @@
 // this file is @generated
 use super::{StreamingEventType, StreamingEvents, StreamingSink, StreamingStream};
-use crate::{error::Result, models::*, Configuration};
+use crate::{error::Result, internal::models::*, models::*, Configuration};
 
 pub struct Streaming<'a> {
     cfg: &'a Configuration,

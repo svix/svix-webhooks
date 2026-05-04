@@ -1,5 +1,5 @@
 // this file is @generated
-use crate::{error::Result, models::*, Configuration};
+use crate::{error::Result, internal::models::*, models::*, Configuration};
 
 #[derive(Default)]
 pub struct IngestEndpointListOptions {

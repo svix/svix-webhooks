@@ -5,6 +5,7 @@ use crate::{
 {%- if resource.operations | length > 0 %}
     error::Result,
     models::*,
+    internal::models::*,
 {%- endif %}
     Configuration,
 };
