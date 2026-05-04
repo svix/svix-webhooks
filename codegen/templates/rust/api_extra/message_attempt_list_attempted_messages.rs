@@ -15,6 +15,7 @@ pub async fn list_attempts_for_endpoint(
         channel,
         tag,
         status,
+        expanded_statuses,
         status_code_class: _,
         endpoint_id: _,
         with_content: _,
@@ -29,6 +30,7 @@ pub async fn list_attempts_for_endpoint(
     .with_optional_query_param("channel", channel)
     .with_optional_query_param("tag", tag)
     .with_optional_query_param("status", status)
+    .with_optional_query_param("expanded_statuses", expanded_statuses)
     .with_optional_query_param("before", before)
     .with_optional_query_param("after", after)
     .with_optional_query_param("event_types", event_types)
