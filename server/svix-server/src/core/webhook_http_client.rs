@@ -654,7 +654,9 @@ impl Iterator for SocketAddrs {
 }
 
 async fn new_resolver() -> Result<Arc<TokioResolver>, NetError> {
-    Ok(Arc::new(Resolver::builder_tokio()?.build()?))
+    let mut builder = Resolver::builder_tokio()?;
+    builder.options_mut().ip_strategy = hickory_resolver::config::LookupIpStrategy::Ipv4thenIpv6;
+    Ok(Arc::new(builder.build()?))
 }
 
 fn is_allowed(addr: IpAddr) -> bool {
