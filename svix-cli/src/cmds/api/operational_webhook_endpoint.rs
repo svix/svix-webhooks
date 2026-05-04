@@ -90,6 +90,7 @@ pub enum OperationalWebhookEndpointCommands {
     \"id\": \"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
     \"metadata\": {\"key\": \"...\"},
     \"rateLimit\": 123,
+    \"throttleRate\": 123,
     \"uid\": \"unique-identifier\",
     \"updatedAt\": \"2030-01-01T00:00:00Z\",
     \"url\": \"https://example.com/webhook/\"
@@ -119,6 +120,7 @@ pub enum OperationalWebhookEndpointCommands {
   \"metadata\": {\"key\": \"...\"},
   \"rateLimit\": 123,
   \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",
+  \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
   \"url\": \"https://example.com/webhook/\"
 }\n\nExample response:
@@ -130,6 +132,7 @@ pub enum OperationalWebhookEndpointCommands {
   \"id\": \"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
   \"metadata\": {\"key\": \"...\"},
   \"rateLimit\": 123,
+  \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
   \"updatedAt\": \"2030-01-01T00:00:00Z\",
   \"url\": \"https://example.com/webhook/\"
@@ -157,6 +160,7 @@ pub enum OperationalWebhookEndpointCommands {
   \"id\": \"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
   \"metadata\": {\"key\": \"...\"},
   \"rateLimit\": 123,
+  \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
   \"updatedAt\": \"2030-01-01T00:00:00Z\",
   \"url\": \"https://example.com/webhook/\"
@@ -178,6 +182,7 @@ pub enum OperationalWebhookEndpointCommands {
   \"filterTypes\": [\"message.attempt.failing\"],
   \"metadata\": {\"key\": \"...\"},
   \"rateLimit\": 123,
+  \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
   \"url\": \"https://example.com/webhook/\"
 }\n\nExample response:
@@ -189,6 +194,7 @@ pub enum OperationalWebhookEndpointCommands {
   \"id\": \"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
   \"metadata\": {\"key\": \"...\"},
   \"rateLimit\": 123,
+  \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
   \"updatedAt\": \"2030-01-01T00:00:00Z\",
   \"url\": \"https://example.com/webhook/\"

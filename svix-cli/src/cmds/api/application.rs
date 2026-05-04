@@ -204,6 +204,7 @@ pub enum ApplicationCommands {
   \"metadata\": {\"key\": \"...\"},
   \"name\": \"...\",
   \"rateLimit\": 123,
+  \"throttleRate\": 123,
   \"uid\": \"unique-identifier\"
 }\n\nExample response:
 {

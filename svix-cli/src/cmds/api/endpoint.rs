@@ -619,6 +619,7 @@ pub enum EndpointCommands {
         ))]
     #[command(after_help = "Example response:
 {
+  \"canceled\": 123,
   \"fail\": 123,
   \"pending\": 123,
   \"sending\": 123,
