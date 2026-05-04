@@ -17,6 +17,7 @@ namespace Svix
         public DateTime? After { get; set; }
         public bool? WithContent { get; set; }
         public bool? WithMsg { get; set; }
+        public bool? ExpandedStatuses { get; set; }
         public List<string>? EventTypes { get; set; }
 
         public new Dictionary<string, string> QueryParams()
@@ -34,6 +35,7 @@ namespace Svix
                     { "after", After },
                     { "with_content", WithContent },
                     { "with_msg", WithMsg },
+                    { "expanded_statuses", ExpandedStatuses },
                     { "event_types", EventTypes },
                 }
             );

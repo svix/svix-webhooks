@@ -38,6 +38,8 @@ class MessageAttemptListByEndpointOptions(BaseOptions):
     """When `true`, the message information is included in the response
 
 Note that message payloads are never included in the response, regardless of this flag."""
+    expanded_statuses: t.Optional[bool] = None
+    """When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are returned as Success (0)"""
     event_types: t.Optional[t.List[str]] = None
     """Filter response based on the event type"""
 
@@ -54,6 +56,7 @@ Note that message payloads are never included in the response, regardless of thi
                 "after": self.after,
                 "with_content": self.with_content,
                 "with_msg": self.with_msg,
+                "expanded_statuses": self.expanded_statuses,
                 "event_types": self.event_types,
             }
         )

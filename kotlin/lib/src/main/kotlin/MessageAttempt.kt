@@ -39,6 +39,11 @@ data class MessageAttemptListByEndpointOptions(
      * Note that message payloads are never included in the response, regardless of this flag.
      */
     val withMsg: Boolean? = null,
+    /**
+     * When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are
+     * returned as Success (0)
+     */
+    val expandedStatuses: Boolean? = null,
     /** Filter response based on the event type */
     val eventTypes: Set<String>? = null,
 )
@@ -150,6 +155,9 @@ class MessageAttempt(private val client: SvixHttpClient) {
         options.after?.let { url.addQueryParameter("after", serializeQueryParam(it)) }
         options.withContent?.let { url.addQueryParameter("with_content", serializeQueryParam(it)) }
         options.withMsg?.let { url.addQueryParameter("with_msg", serializeQueryParam(it)) }
+        options.expandedStatuses?.let {
+            url.addQueryParameter("expanded_statuses", serializeQueryParam(it))
+        }
         options.eventTypes?.let { url.addQueryParameter("event_types", serializeQueryParam(it)) }
         return client.executeRequest<Any, ListResponseMessageAttemptOut>("GET", url.build())
     }

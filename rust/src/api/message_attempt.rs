@@ -41,6 +41,10 @@ pub struct MessageAttemptListByEndpointOptions {
     /// regardless of this flag.
     pub with_msg: Option<bool>,
 
+    /// When `true`, return the Canceled (4) status in attempts. If `false`,
+    /// canceled attempts are returned as Success (0)
+    pub expanded_statuses: Option<bool>,
+
     /// Filter response based on the event type
     pub event_types: Option<Vec<String>>,
 }
@@ -183,6 +187,7 @@ impl<'a> MessageAttempt<'a> {
             after,
             with_content,
             with_msg,
+            expanded_statuses,
             event_types,
         } = options.unwrap_or_default();
 
@@ -202,6 +207,7 @@ impl<'a> MessageAttempt<'a> {
         .with_optional_query_param("after", after)
         .with_optional_query_param("with_content", with_content)
         .with_optional_query_param("with_msg", with_msg)
+        .with_optional_query_param("expanded_statuses", expanded_statuses)
         .with_optional_query_param("event_types", event_types)
         .execute(self.cfg)
         .await

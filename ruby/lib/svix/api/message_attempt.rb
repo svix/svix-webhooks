@@ -25,6 +25,7 @@ module Svix
           "after" => options["after"],
           "with_content" => options["with_content"],
           "with_msg" => options["with_msg"],
+          "expanded_statuses" => options["expanded_statuses"],
           "event_types" => options["event_types"]
         }
       )

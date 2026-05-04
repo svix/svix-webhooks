@@ -44,6 +44,8 @@ type MessageAttemptListByEndpointOptions struct {
 	//
 	// Note that message payloads are never included in the response, regardless of this flag.
 	WithMsg *bool
+	// When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are returned as Success (0)
+	ExpandedStatuses *bool
 	// Filter response based on the event type
 	EventTypes *[]string
 }
@@ -146,6 +148,7 @@ func (messageAttempt *MessageAttempt) ListByEndpoint(
 		internal.SerializeParamToMap("after", o.After, queryMap, &err)
 		internal.SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
 		internal.SerializeParamToMap("with_msg", o.WithMsg, queryMap, &err)
+		internal.SerializeParamToMap("expanded_statuses", o.ExpandedStatuses, queryMap, &err)
 		internal.SerializeParamToMap("event_types", o.EventTypes, queryMap, &err)
 		if err != nil {
 			return nil, err

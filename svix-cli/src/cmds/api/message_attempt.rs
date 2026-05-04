@@ -36,6 +36,9 @@ pub struct MessageAttemptListByEndpointOptions {
     /// Note that message payloads are never included in the response, regardless of this flag.
     #[arg(long)]
     pub with_msg: Option<bool>,
+    /// When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are returned as Success (0)
+    #[arg(long)]
+    pub expanded_statuses: Option<bool>,
     /// Filter response based on the event type
     #[arg(long)]
     pub event_types: Option<Vec<String>>,
@@ -54,6 +57,7 @@ impl From<MessageAttemptListByEndpointOptions> for svix::api::MessageAttemptList
             after,
             with_content,
             with_msg,
+            expanded_statuses,
             event_types,
         } = value;
         Self {
@@ -67,6 +71,7 @@ impl From<MessageAttemptListByEndpointOptions> for svix::api::MessageAttemptList
             after: after.map(|dt| dt.to_rfc3339()),
             with_content,
             with_msg,
+            expanded_statuses,
             event_types,
         }
     }

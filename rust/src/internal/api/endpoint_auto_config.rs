@@ -19,7 +19,7 @@ impl<'a> EndpointAutoConfig<'a> {
     ) -> Result<EndpointOut> {
         crate::request::Request::new(
             http1::Method::PUT,
-            "/api/v1/endpoint/{endpoint_id}/auto-config",
+            "/api/v1/app/{app_id}/endpoint/{endpoint_id}/auto-config",
         )
         .with_path_param("app_id", app_id)
         .with_path_param("endpoint_id", endpoint_id)
