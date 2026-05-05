@@ -215,6 +215,7 @@ from .stream_sink_patch import StreamSinkPatch
 from .stream_token_expire_in import StreamTokenExpireIn
 from .stripe_config import StripeConfig
 from .stripe_config_out import StripeConfigOut
+from .subscribe_in import SubscribeIn
 from .svix_config import SvixConfig
 from .svix_config_out import SvixConfigOut
 from .telnyx_config import TelnyxConfig
@@ -435,6 +436,7 @@ __all__ = [
     "StreamTokenExpireIn",
     "StripeConfig",
     "StripeConfigOut",
+    "SubscribeIn",
     "SvixConfig",
     "SvixConfigOut",
     "TelnyxConfig",

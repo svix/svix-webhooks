@@ -1627,6 +1627,10 @@
         "python/svix/api/svix.py"
     ],
     [
+        "python/svix/api_internal/endpoint.py",
+        "python/svix/api_internal/endpoint_auto_config.py"
+    ],
+    [
         "python/svix/models/__init__.py"
     ],
     [
@@ -1835,6 +1839,7 @@
         "python/svix/models/stream_token_expire_in.py",
         "python/svix/models/stripe_config.py",
         "python/svix/models/stripe_config_out.py",
+        "python/svix/models/subscribe_in.py",
         "python/svix/models/svix_config.py",
         "python/svix/models/svix_config_out.py",
         "python/svix/models/telnyx_config.py",

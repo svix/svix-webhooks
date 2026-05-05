@@ -67,16 +67,28 @@ output_dir = "python/svix/api"
 [[python.task]]
 template = "templates/python/component_type_summary.py.jinja"
 output_dir = "python/svix/models"
+extra_codegen_args = [
+   "--include-op-id=v1.endpoint.auto-config.update"
+]
 [[python.task]]
 template = "templates/python/component_type.py.jinja"
 output_dir = "python/svix/models"
+extra_codegen_args = [
+   "--include-op-id=v1.endpoint.auto-config.update"
+]
 [[python.task]]
 template = "templates/python/api_summary.py.jinja"
 output_dir = "python/svix/api"
 [[python.task]]
 template = "templates/python/summary.py.jinja"
 output_dir = "python/svix/api"
-
+[[python.task]]
+template = "templates/python/api_resource.py.jinja"
+output_dir = "python/svix/api_internal"
+extra_codegen_args = [
+   "--include-mode=only-specified",
+   "--include-op-id=v1.endpoint.auto-config.update"
+]
 
 [ruby]
 [[ruby.task]]
