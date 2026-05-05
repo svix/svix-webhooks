@@ -1877,6 +1877,10 @@
         "ruby/lib/svix/api/streaming_stream.rb"
     ],
     [
+        "ruby/lib/svix/api_internal/endpoint.rb",
+        "ruby/lib/svix/api_internal/endpoint_auto_config.rb"
+    ],
+    [
         "ruby/lib/svix/models/adobe_sign_config.rb",
         "ruby/lib/svix/models/adobe_sign_config_out.rb",
         "ruby/lib/svix/models/aggregate_event_types_out.rb",
@@ -2082,6 +2086,7 @@
         "ruby/lib/svix/models/stream_token_expire_in.rb",
         "ruby/lib/svix/models/stripe_config.rb",
         "ruby/lib/svix/models/stripe_config_out.rb",
+        "ruby/lib/svix/models/subscribe_in.rb",
         "ruby/lib/svix/models/svix_config.rb",
         "ruby/lib/svix/models/svix_config_out.rb",
         "ruby/lib/svix/models/telnyx_config.rb",

@@ -88,6 +88,16 @@ output_dir = "ruby/lib"
 [[ruby.task]]
 template = "templates/ruby/component_type.rb.jinja"
 output_dir = "ruby/lib/svix/models"
+extra_codegen_args = [
+   "--include-op-id=v1.endpoint.auto-config.update",
+]
+[[ruby.task]]
+template = "templates/ruby/api_resource.rb.jinja"
+output_dir = "ruby/lib/svix/api_internal"
+extra_codegen_args = [
+   "--include-mode=only-specified",
+   "--include-op-id=v1.endpoint.auto-config.update"
+]
 
 
 [csharp]
