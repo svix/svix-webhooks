@@ -2,14 +2,12 @@
 {% set resource_type_name = resource.name | to_upper_camel_case -%}
 
 use crate::{
-    {%- if resource.operations | length > 0 %}
+{%- if resource.operations | length > 0 %}
     error::Result,
-    {%- endif %}
+    models::*,
+{%- endif %}
     Configuration,
 };
-{%- if resource.operations | length > 0 %}
-use super::super::models::*;
-{%- endif %}
 use super::{
     {% for _, sub in resource.subresources | items -%}
         {{ sub.name | to_upper_camel_case }} ,

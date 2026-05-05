@@ -9,6 +9,7 @@ import string
 import subprocess
 import time
 import multiprocessing
+import argparse
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
@@ -18,7 +19,7 @@ except ImportError:
     print("Python 3.11 or greater is required to run the codegen")
     exit(1)
 
-OPENAPI_CODEGEN_IMAGE = "ghcr.io/svix/openapi-codegen:20260423-356"
+OPENAPI_CODEGEN_IMAGE = "ghcr.io/svix/openapi-codegen:20260505-364"
 DEBUG = os.getenv("DEBUG") is not None
 GREEN = "\033[92m"
 BLUE = "\033[94m"

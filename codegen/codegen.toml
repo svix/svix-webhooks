@@ -13,24 +13,22 @@ output_dir = "rust/src/api"
 [[rust.task]]
 template = "templates/rust/component_type_summary.rs.jinja"
 output_dir = "rust/src/models"
+extra_codegen_args = [
+   "--include-op-id=v1.endpoint.auto-config.update",
+]
 [[rust.task]]
 template = "templates/rust/component_type.rs.jinja"
 output_dir = "rust/src/models"
+extra_codegen_args = [
+   "--include-op-id=v1.endpoint.auto-config.update",
+]
 [[rust.task]]
 template = "templates/rust/api_resource.rs.jinja"
-output_dir = "rust/src/internal/api"
+output_dir = "rust/src/api_internal"
 extra_codegen_args = [
    "--include-mode=only-specified",
    "--include-op-id=v1.endpoint.auto-config.update"
 ]
-[[rust.task]]
-template = "templates/rust/component_type.rs.jinja"
-output_dir = "rust/src/internal/models"
-extra_codegen_args = [
-   "--include-mode=only-specified",
-   "--include-op-id=v1.endpoint.auto-config.update",
-]
-
 
 [javascript]
 [[javascript.task]]

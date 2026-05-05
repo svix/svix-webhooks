@@ -1,6 +1,5 @@
 // this file is @generated
-use super::super::models::*;
-use crate::{error::Result, Configuration};
+use crate::{error::Result, models::*, Configuration};
 
 pub struct EndpointAutoConfig<'a> {
     cfg: &'a Configuration,

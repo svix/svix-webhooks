@@ -206,6 +206,7 @@ pub mod stream_sink_patch;
 pub mod stream_token_expire_in;
 pub mod stripe_config;
 pub mod stripe_config_out;
+pub mod subscribe_in;
 pub mod svix_config;
 pub mod svix_config_out;
 pub mod telnyx_config;
@@ -432,6 +433,7 @@ pub use self::{
     stream_token_expire_in::StreamTokenExpireIn,
     stripe_config::StripeConfig,
     stripe_config_out::StripeConfigOut,
+    subscribe_in::SubscribeIn,
     svix_config::SvixConfig,
     svix_config_out::SvixConfigOut,
     telnyx_config::TelnyxConfig,

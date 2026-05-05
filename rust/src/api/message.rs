@@ -1,6 +1,6 @@
 // this file is @generated
-use super::{super::models::*, MessagePoller};
-use crate::{error::Result, Configuration};
+use super::MessagePoller;
+use crate::{error::Result, models::*, Configuration};
 
 #[derive(Default)]
 pub struct MessageListOptions {
