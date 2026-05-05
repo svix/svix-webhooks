@@ -34,6 +34,7 @@ pub struct AutoConfig {
 const AUTOCONFIG_TOKEN_PREFIX_V1: &str = "auto_v1_";
 
 #[derive(thiserror::Error, Debug)]
+#[non_exhaustive]
 pub enum AutoConfigError {
     #[error("invalid token")]
     InvalidToken,
