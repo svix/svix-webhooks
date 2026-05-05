@@ -865,6 +865,10 @@
         "javascript/src/api/streamingStream.ts"
     ],
     [
+        "javascript/src/api_internal/endpoint.ts",
+        "javascript/src/api_internal/endpointAutoConfig.ts"
+    ],
+    [
         "javascript/src/index.ts"
     ],
     [
@@ -1073,6 +1077,7 @@
         "javascript/src/models/streamTokenExpireIn.ts",
         "javascript/src/models/stripeConfig.ts",
         "javascript/src/models/stripeConfigOut.ts",
+        "javascript/src/models/subscribeIn.ts",
         "javascript/src/models/svixConfig.ts",
         "javascript/src/models/svixConfigOut.ts",
         "javascript/src/models/telnyxConfig.ts",

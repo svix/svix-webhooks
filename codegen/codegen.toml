@@ -40,9 +40,19 @@ output_dir = "javascript/src/models"
 [[javascript.task]]
 template = "templates/javascript/component_type.ts.jinja"
 output_dir = "javascript/src/models"
+extra_codegen_args = [
+   "--include-op-id=v1.endpoint.auto-config.update"
+]
 [[javascript.task]]
 template = "templates/javascript/summary.ts.jinja"
 output_dir = "javascript/src"
+[[javascript.task]]
+template = "templates/javascript/api_resource.ts.jinja"
+output_dir = "javascript/src/api_internal"
+extra_codegen_args = [
+   "--include-mode=only-specified",
+   "--include-op-id=v1.endpoint.auto-config.update"
+]
 
 
 [cli]

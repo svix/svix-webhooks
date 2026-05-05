@@ -65,7 +65,7 @@ const REGIONS = [
 ];
 
 export class Svix {
-  private readonly requestCtx: SvixRequestContext;
+  protected readonly requestCtx: SvixRequestContext;
 
   public constructor(token: string, options: SvixOptions = {}) {
     const regionalUrl = REGIONS.find((x) => x.region === token.split(".")[1])?.url;
@@ -163,3 +163,5 @@ export class Svix {
     return new OperationalWebhookEndpoint(this.requestCtx);
   }
 }
+
+export * from "./autoconfig";

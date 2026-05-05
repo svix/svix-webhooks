@@ -54,7 +54,6 @@ const REGIONS = [
   { region: "au", url: "https://api.au.svix.com" },
 ];
 
-
 export class Svix {
   private readonly requestCtx: SvixRequestContext;
 
@@ -102,3 +101,5 @@ export class Svix {
     return new OperationalWebhookEndpoint(this.requestCtx);
   }
 }
+
+export * from "./autoconfig";
