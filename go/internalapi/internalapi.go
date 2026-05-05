@@ -12,7 +12,8 @@ import (
 type (
 	// THIS TYPE CAN AND WILL CHANGE WITHOUT WARNING
 	InternalSvix struct {
-		Management *Management
+		Management         *Management
+		EndpointAutoConfig *EndpointAutoConfig
 	}
 )
 
@@ -24,7 +25,8 @@ func New(token string, serverUrl *url.URL, debug bool, userAgentSuffix string) (
 	svixHttpClient.DefaultHeaders["User-Agent"] = fmt.Sprintf("svix-libs/%s/go/%s", svix.Version, userAgentSuffix)
 
 	svx := InternalSvix{
-		Management: newManagement(&svixHttpClient),
+		Management:         newManagement(&svixHttpClient),
+		EndpointAutoConfig: NewEndpointAutoConfig(&svixHttpClient),
 	}
 	return &svx, nil
 }
