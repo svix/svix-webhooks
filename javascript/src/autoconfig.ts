@@ -1,6 +1,5 @@
 import { SvixInternal } from "./api_internal";
 import { Endpoint as InternalEndpoint } from "./api_internal/endpoint";
-import { Svix } from "./index";
 import type { EndpointIn } from "./models/endpointIn";
 import type { EndpointOut } from "./models/endpointOut";
 import type { SvixRequestContext } from "./request";
@@ -12,7 +11,6 @@ import {
 
 const AUTOCONFIG_TOKEN_PREFIX_V1 = "auto_v1_";
 
-/** Payload embedded in an {@link AutoConfig} token (`auto_v1_…`), JSON keys match the wire format. */
 interface AutoConfigTokenContentV1 {
   aid: string;
   eid: string;
@@ -28,8 +26,19 @@ export class AutoConfigError extends Error {
   }
 }
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null;
+function isAutoConfigTokenContentV1(value: unknown): value is AutoConfigTokenContentV1 {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+
+  const { aid, eid, surl, esec, tok } = value as AutoConfigTokenContentV1;
+  return (
+    typeof aid === "string" &&
+    typeof eid === "string" &&
+    typeof surl === "string" &&
+    typeof esec === "string" &&
+    typeof tok === "string"
+  );
 }
 
 function decodeAutoconfigTokenV1(token: string): AutoConfigTokenContentV1 {
@@ -38,31 +47,25 @@ function decodeAutoconfigTokenV1(token: string): AutoConfigTokenContentV1 {
   }
   const b64 = token.slice(AUTOCONFIG_TOKEN_PREFIX_V1.length);
   let json: string;
+
   try {
     json = Buffer.from(b64, "base64").toString("utf8");
   } catch {
     throw new AutoConfigError();
   }
+
   let parsed: unknown;
   try {
     parsed = JSON.parse(json);
   } catch {
     throw new AutoConfigError();
   }
-  if (!isRecord(parsed)) {
+
+  if (!isAutoConfigTokenContentV1(parsed)) {
     throw new AutoConfigError();
   }
-  const { aid, eid, surl, esec, tok } = parsed;
-  if (
-    typeof aid !== "string" ||
-    typeof eid !== "string" ||
-    typeof surl !== "string" ||
-    typeof esec !== "string" ||
-    typeof tok !== "string"
-  ) {
-    throw new AutoConfigError();
-  }
-  return { aid, eid, surl, esec, tok };
+
+  return parsed;
 }
 
 export class AutoConfig {
@@ -90,7 +93,6 @@ export class AutoConfig {
     this.requestCtx = svix.getRequestCtx();
   }
 
-  /** Register this endpoint with Svix using the internal auto-config API. */
   public subscribe(): Promise<EndpointOut> {
     return new InternalEndpoint(this.requestCtx).auto_config.update(
       this.appId,
