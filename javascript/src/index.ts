@@ -20,7 +20,6 @@ import type { SvixRequestContext } from "./request";
 export { type PostOptions, ApiException } from "./util";
 export { HTTPValidationError, HttpErrorOut, ValidationError } from "./HttpErrors";
 export * from "./webhook";
-export * from "./autoconfig";
 export * from "./models/index";
 import type { XOR } from "./util";
 
@@ -164,3 +163,6 @@ export class Svix {
     return new OperationalWebhookEndpoint(this.requestCtx);
   }
 }
+
+// Last to avoid circular dependency
+export * from "./autoconfig";
