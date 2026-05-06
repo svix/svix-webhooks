@@ -18,7 +18,16 @@ repositories {
 
 sourceSets {
     main.java.srcDirs = ['lib/src/main/java']
+    java11 {
+        java.srcDirs = ['lib/src/main/java11']
+        compileClasspath += sourceSets.main.output
+    }
     test.java.srcDirs = ['lib/src/test']
+}
+
+tasks.named('compileJava11Java') {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }
 
 dependencies {
@@ -44,8 +53,12 @@ dependencies {
 
 jar {
     archiveBaseName = POM_ARTIFACT_ID
+    into('META-INF/versions/11') {
+        from sourceSets.java11.output
+    }
     manifest {
-        attributes('Implementation-Title': POM_NAME,
+        attributes('Multi-Release': 'true',
+                   'Implementation-Title': POM_NAME,
                    'Implementation-Version': VERSION_NAME,
                    'Implementation-Vendor': VENDOR_NAME,
                    'Bundle-SymbolicName': POM_ARTIFACT_ID,

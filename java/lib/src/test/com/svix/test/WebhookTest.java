@@ -10,7 +10,6 @@ import com.svix.exceptions.WebhookVerificationException;
 import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
 
-import java.net.http.HttpHeaders;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,7 +17,6 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiPredicate;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -213,20 +211,12 @@ public class WebhookTest {
                     new ArrayList<String>(Arrays.asList(String.format("v1,%s", this.signature))));
         }
 
-        public HttpHeaders headers() {
+        public Map<String, List<String>> headers() {
             HashMap<String, List<String>> map = new HashMap<String, List<String>>();
             for (Map.Entry<String, ArrayList<String>> entry : this.headerMap.entrySet()) {
                 map.put(entry.getKey(), entry.getValue());
             }
-
-            return HttpHeaders.of(map, new DefaultBiPredicate());
-        }
-    }
-
-    private class DefaultBiPredicate implements BiPredicate<String, String> {
-        @Override
-        public boolean test(final String arg0, final String arg1) {
-            return true;
+            return map;
         }
     }
 }
