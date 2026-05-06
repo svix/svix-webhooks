@@ -6,6 +6,7 @@ import lombok.Getter;
 
 import okhttp3.HttpUrl;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Getter
@@ -60,10 +61,9 @@ public class Svix {
             throw new IllegalArgumentException("Invalid base url");
         }
 
-        Map<String, String> defaultHeaders =
-                Map.of(
-                        "User-Agent", "svix-libs/" + Version.VERSION + "/java",
-                        "Authorization", "Bearer " + token);
+        Map<String, String> defaultHeaders = new HashMap<>();
+        defaultHeaders.put("User-Agent", "svix-libs/" + Version.VERSION + "/java");
+        defaultHeaders.put("Authorization", "Bearer " + token);
 
         SvixHttpClient httpClient =
                 new SvixHttpClient(parsedUrl, defaultHeaders, options.getRetrySchedule());
