@@ -1,6 +1,6 @@
 module github.com/svix/svix-webhooks
 
-go 1.20
+go 1.21
 
 retract (
 	// versions with a bug that silently broke downstream error handling code

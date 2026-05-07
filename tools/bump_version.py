@@ -81,7 +81,7 @@ VERSION_FILES = [
     ),
     # Go
     VersionFile(
-        "go/version.go",
+        "go/internal/version.go",
         [r'(const Version\s*=\s*")([^"]*)(")', ],
     ),
     # Java

@@ -145,7 +145,8 @@ output_dir = "java/lib/src/main/java/com/svix/models"
 
 [go]
 extra_shell_commands = [
-   "sed -i.bak 's/package svix/package internalapi/g' go/internalapi/management* && rm go/internalapi/management*.bak",
+   "perl -pi -e 's/package svix/package internalapi/g' go/internalapi/management*",
+   "perl -pi -e 's/package svix/package internalapi/g' go/internalapi/endpoint*",
 ]
 extra_codegen_args = ["-e=v1.health.get"]
 
@@ -161,6 +162,21 @@ output_dir = "go"
 [[go.task]]
 template = "templates/go/component_type.go.jinja"
 output_dir = "go/models"
+extra_codegen_args = [
+   # This is a limited list of operations required by terraform
+   "--include-op-id=v1.management.environment.list",
+   "--include-op-id=v1.management.environment.create",
+   "--include-op-id=v1.management.environment.get",
+   "--include-op-id=v1.management.environment.update",
+   "--include-op-id=v1.management.environment.delete",
+   "--include-op-id=v1.management.environment-settings.get",
+   "--include-op-id=v1.management.environment-settings.update",
+   "--include-op-id=v1.management.environment-settings.patch",
+   "--include-op-id=v1.management.authentication.create-api-token",
+   "--include-op-id=v1.management.authentication.expire-api-token",
+   "--include-op-id=v1.management.authentication.patch-api-token",
+   "--include-op-id=v1.endpoint.auto-config.update"
+]
 [[go.task]]
 template = "templates/go/api_resource.go.jinja"
 output_dir = "go/internalapi"
@@ -179,24 +195,7 @@ extra_codegen_args = [
    "--include-op-id=v1.management.authentication.create-api-token",
    "--include-op-id=v1.management.authentication.expire-api-token",
    "--include-op-id=v1.management.authentication.patch-api-token",
-]
-[[go.task]]
-template = "templates/go/component_type.go.jinja"
-output_dir = "go/models"
-extra_codegen_args = [
-   # This is a limited list of operations required by terraform
-   "--include-mode=only-specified",
-   "--include-op-id=v1.management.environment.list",
-   "--include-op-id=v1.management.environment.create",
-   "--include-op-id=v1.management.environment.get",
-   "--include-op-id=v1.management.environment.update",
-   "--include-op-id=v1.management.environment.delete",
-   "--include-op-id=v1.management.environment-settings.get",
-   "--include-op-id=v1.management.environment-settings.update",
-   "--include-op-id=v1.management.environment-settings.patch",
-   "--include-op-id=v1.management.authentication.create-api-token",
-   "--include-op-id=v1.management.authentication.expire-api-token",
-   "--include-op-id=v1.management.authentication.patch-api-token",
+   "--include-op-id=v1.endpoint.auto-config.update"
 ]
 
 
