@@ -1,2 +1,22 @@
 # Ignore mustache files for the purposes of language statistics
 *.mustache linguist-vendored
+
+# Generated API clients
+/svix-cli/src/cmds/api/** linguist-generated
+/csharp/Svix/Models/** linguist-generated
+/go/models/** linguist-generated
+/java/lib/src/main/java/com/svix/api/** linguist-generated
+/java/lib/src/main/java/com/svix/models/** linguist-generated
+/javascript/src/apis/** linguist-generated
+/javascript/src/models/** linguist-generated
+/kotlin/lib/src/main/kotlin/models/** linguist-generated
+/php/src/Api/** linguist-generated
+/php/src/Models/** linguist-generated
+/php/src/Svix.php linguist-generated
+/python/svix/__init__.py linguist-generated
+/python/svix/apis/** linguist-generated
+/python/svix/models/** linguist-generated
+/ruby/lib/svix/api/** linguist-generated
+/ruby/lib/svix/models/** linguist-generated
+/rust/src/api/** linguist-generated
+/rust/src/models/** linguist-generated
