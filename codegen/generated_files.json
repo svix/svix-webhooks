@@ -1423,6 +1423,10 @@
         "php/src/Api/StreamingStreamListOptions.php"
     ],
     [
+        "php/src/ApiInternal/Endpoint.php",
+        "php/src/ApiInternal/EndpointAutoConfig.php"
+    ],
+    [
         "php/src/Models/AggregateEventTypesOut.php",
         "php/src/Models/AmazonS3PatchConfig.php",
         "php/src/Models/ApiTokenOut.php",
@@ -1591,7 +1595,8 @@
         "php/src/Models/StreamSinkIn.php",
         "php/src/Models/StreamSinkOut.php",
         "php/src/Models/StreamSinkPatch.php",
-        "php/src/Models/StreamTokenExpireIn.php"
+        "php/src/Models/StreamTokenExpireIn.php",
+        "php/src/Models/SubscribeIn.php"
     ],
     [
         "php/src/Svix.php"
