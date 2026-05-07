@@ -21,9 +21,6 @@ class AutoConfigError(Exception):
 
 class _AutoConfigTokenContentV1(pydantic.BaseModel):
     """Payload embedded in a v1 autoconfig token (short JSON keys)."""
-
-    model_config = pydantic.ConfigDict(populate_by_name=True)
-
     app_id: str = pydantic.Field(alias="aid")
     endpoint_id: str = pydantic.Field(alias="eid")
     server_url: str = pydantic.Field(alias="surl")
