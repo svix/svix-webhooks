@@ -123,12 +123,25 @@ extra_codegen_args = [
 
 
 [csharp]
+extra_shell_commands = [
+   "perl -pi -e 's/namespace Svix/namespace Svix.ApiInternal/g' csharp/Svix/ApiInternal/*.cs",
+]
 [[csharp.task]]
 template = "templates/csharp/api_resource.cs.jinja"
 output_dir = "csharp/Svix"
 [[csharp.task]]
 template = "templates/csharp/component_type.cs.jinja"
 output_dir = "csharp/Svix/Models"
+extra_codegen_args = [
+   "--include-op-id=v1.endpoint.auto-config.update"
+]
+[[csharp.task]]
+template = "templates/csharp/api_resource.cs.jinja"
+output_dir = "csharp/Svix/ApiInternal"
+extra_codegen_args = [
+   "--include-mode=only-specified",
+   "--include-op-id=v1.endpoint.auto-config.update"
+]
 
 
 [java]

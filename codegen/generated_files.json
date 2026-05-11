@@ -1,5 +1,9 @@
 [
     [
+        "csharp/Svix/ApiInternal/Endpoint.cs",
+        "csharp/Svix/ApiInternal/EndpointAutoConfig.cs"
+    ],
+    [
         "csharp/Svix/Application.cs",
         "csharp/Svix/Authentication.cs",
         "csharp/Svix/BackgroundTask.cs",
@@ -230,6 +234,7 @@
         "csharp/Svix/Models/StreamTokenExpireIn.cs",
         "csharp/Svix/Models/StripeConfig.cs",
         "csharp/Svix/Models/StripeConfigOut.cs",
+        "csharp/Svix/Models/SubscribeIn.cs",
         "csharp/Svix/Models/SvixConfig.cs",
         "csharp/Svix/Models/SvixConfigOut.cs",
         "csharp/Svix/Models/TelnyxConfig.cs",
