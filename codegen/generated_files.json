@@ -614,6 +614,10 @@
         "java/lib/src/main/java/com/svix/api/StreamingStreamListOptions.java"
     ],
     [
+        "java/lib/src/main/java/com/svix/internalapi/Endpoint.java",
+        "java/lib/src/main/java/com/svix/internalapi/EndpointAutoConfig.java"
+    ],
+    [
         "java/lib/src/main/java/com/svix/models/AdobeSignConfig.java",
         "java/lib/src/main/java/com/svix/models/AdobeSignConfigOut.java",
         "java/lib/src/main/java/com/svix/models/AggregateEventTypesOut.java",
@@ -824,6 +828,7 @@
         "java/lib/src/main/java/com/svix/models/StreamTokenExpireIn.java",
         "java/lib/src/main/java/com/svix/models/StripeConfig.java",
         "java/lib/src/main/java/com/svix/models/StripeConfigOut.java",
+        "java/lib/src/main/java/com/svix/models/SubscribeIn.java",
         "java/lib/src/main/java/com/svix/models/SvixConfig.java",
         "java/lib/src/main/java/com/svix/models/SvixConfigOut.java",
         "java/lib/src/main/java/com/svix/models/TelnyxConfig.java",

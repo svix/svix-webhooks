@@ -132,6 +132,9 @@ output_dir = "csharp/Svix/Models"
 
 
 [java]
+extra_shell_commands = [
+   "perl -pi -e 's/package com\\.svix\\.api/package com.svix.internalapi/g' java/lib/src/main/java/com/svix/internalapi/*.java",
+]
 [[java.task]]
 template = "templates/java/api_resource.java.jinja"
 output_dir = "java/lib/src/main/java/com/svix/api"
@@ -141,7 +144,16 @@ output_dir = "java/lib/src/main/java/com/svix/api"
 [[java.task]]
 template = "templates/java/component_type.java.jinja"
 output_dir = "java/lib/src/main/java/com/svix/models"
-
+extra_codegen_args = [
+   "--include-op-id=v1.endpoint.auto-config.update"
+]
+[[java.task]]
+template = "templates/java/api_resource.java.jinja"
+output_dir = "java/lib/src/main/java/com/svix/internalapi"
+extra_codegen_args = [
+   "--include-mode=only-specified",
+   "--include-op-id=v1.endpoint.auto-config.update"
+]
 
 [go]
 extra_shell_commands = [
