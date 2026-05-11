@@ -17,7 +17,9 @@ namespace Svix.Tests
             var token =
                 AUTOCONFIG_TOKEN_PREFIX_V1 + Convert.ToBase64String(Encoding.UTF8.GetBytes(json));
 
-            var ex = Record.Exception(() => new AutoConfig(token, new EndpointIn { Url = "https://hook.example.test" }));
+            var ex = Record.Exception(() =>
+                new AutoConfig(token, new EndpointIn { Url = "https://hook.example.test" })
+            );
 
             Assert.Null(ex);
         }
@@ -25,20 +27,24 @@ namespace Svix.Tests
         [Fact]
         public void BadPrefix_ThrowsAutoConfigException()
         {
-            var json =
-                """{"aid":"a","eid":"e","surl":"https://x","esec":"whsec_Zm9v","tok":"t"}""";
+            var json = """{"aid":"a","eid":"e","surl":"https://x","esec":"whsec_Zm9v","tok":"t"}""";
             var token = "wrong_" + Convert.ToBase64String(Encoding.UTF8.GetBytes(json));
 
-            Assert.Throws<AutoConfigException>(() => new AutoConfig(token, new EndpointIn { Url = "https://hook.example.test" }));
+            Assert.Throws<AutoConfigException>(() =>
+                new AutoConfig(token, new EndpointIn { Url = "https://hook.example.test" })
+            );
         }
 
         [Fact]
         public void InvalidJson_ThrowsAutoConfigException()
         {
             var token =
-                AUTOCONFIG_TOKEN_PREFIX_V1 + Convert.ToBase64String(Encoding.UTF8.GetBytes("not json"));
+                AUTOCONFIG_TOKEN_PREFIX_V1
+                + Convert.ToBase64String(Encoding.UTF8.GetBytes("not json"));
 
-            Assert.Throws<AutoConfigException>(() => new AutoConfig(token, new EndpointIn { Url = "https://hook.example.test" }));
+            Assert.Throws<AutoConfigException>(() =>
+                new AutoConfig(token, new EndpointIn { Url = "https://hook.example.test" })
+            );
         }
     }
 }

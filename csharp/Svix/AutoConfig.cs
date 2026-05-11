@@ -53,9 +53,7 @@ namespace Svix
             );
         }
 
-        public async Task<EndpointOut> SubscribeAsync(
-            CancellationToken cancellationToken = default
-        )
+        public async Task<EndpointOut> SubscribeAsync(CancellationToken cancellationToken = default)
         {
             return await new EndpointAutoConfig(_client).UpdateAsync(
                 _appId,
