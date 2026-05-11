@@ -9,8 +9,9 @@ import com.svix.models.EndpointOut;
 import com.svix.models.SubscribeIn;
 
 import java.io.IOException;
-import java.net.http.HttpHeaders;
 import java.util.Base64;
+import java.util.List;
+import java.util.Map;
 
 public final class AutoConfig {
     public static final String AUTOCONFIG_TOKEN_PREFIX_V1 = "auto_v1_";
@@ -59,7 +60,7 @@ public final class AutoConfig {
                 .update(appId, endpointId, new SubscribeIn().endpoint(endpoint));
     }
 
-    public void verify(final String payload, final HttpHeaders headers)
+    public void verify(final String payload, final Map<String, List<String>> headers)
             throws WebhookVerificationException {
         webhook.verify(payload, headers);
     }
