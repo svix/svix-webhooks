@@ -15,8 +15,7 @@ namespace Svix.Tests
             var json =
                 """{"aid":"app_1","eid":"ep_2","surl":"https://api.example.test","esec":"whsec_Zm9v","tok":"sk_test_xyz"}""";
             var token =
-                AUTOCONFIG_TOKEN_PREFIX_V1
-                + Convert.ToBase64String(Encoding.UTF8.GetBytes(json));
+                AUTOCONFIG_TOKEN_PREFIX_V1 + Convert.ToBase64String(Encoding.UTF8.GetBytes(json));
 
             var ex = Record.Exception(() => new AutoConfig(token, new EndpointIn { Url = "https://hook.example.test" }));
 
@@ -37,8 +36,7 @@ namespace Svix.Tests
         public void InvalidJson_ThrowsAutoConfigException()
         {
             var token =
-                AUTOCONFIG_TOKEN_PREFIX_V1
-                + Convert.ToBase64String(Encoding.UTF8.GetBytes("not json"));
+                AUTOCONFIG_TOKEN_PREFIX_V1 + Convert.ToBase64String(Encoding.UTF8.GetBytes("not json"));
 
             Assert.Throws<AutoConfigException>(() => new AutoConfig(token, new EndpointIn { Url = "https://hook.example.test" }));
         }
