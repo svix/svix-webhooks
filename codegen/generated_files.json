@@ -1128,6 +1128,10 @@
         "kotlin/lib/src/main/kotlin/StreamingStream.kt"
     ],
     [
+        "kotlin/lib/src/main/kotlin/internalapi/Endpoint.kt",
+        "kotlin/lib/src/main/kotlin/internalapi/EndpointAutoConfig.kt"
+    ],
+    [
         "kotlin/lib/src/main/kotlin/models/AdobeSignConfig.kt",
         "kotlin/lib/src/main/kotlin/models/AdobeSignConfigOut.kt",
         "kotlin/lib/src/main/kotlin/models/AggregateEventTypesOut.kt",
@@ -1333,6 +1337,7 @@
         "kotlin/lib/src/main/kotlin/models/StreamTokenExpireIn.kt",
         "kotlin/lib/src/main/kotlin/models/StripeConfig.kt",
         "kotlin/lib/src/main/kotlin/models/StripeConfigOut.kt",
+        "kotlin/lib/src/main/kotlin/models/SubscribeIn.kt",
         "kotlin/lib/src/main/kotlin/models/SvixConfig.kt",
         "kotlin/lib/src/main/kotlin/models/SvixConfigOut.kt",
         "kotlin/lib/src/main/kotlin/models/TelnyxConfig.kt",

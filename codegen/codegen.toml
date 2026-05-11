@@ -226,14 +226,25 @@ extra_codegen_args = [
 
 
 [kotlin]
+extra_shell_commands = [
+   "perl -pi -e 's/package com\\.svix\\.kotlin/package com\\.svix\\.kotlin\\.internal/g' kotlin/lib/src/main/kotlin/internalapi/*.kt",
+]
 [[kotlin.task]]
 template = "templates/kotlin/component_type.kt.jinja"
 output_dir = "kotlin/lib/src/main/kotlin/models"
-
+extra_codegen_args = [
+   "--include-op-id=v1.endpoint.auto-config.update"
+]
 [[kotlin.task]]
 template = "templates/kotlin/api_resource.kt.jinja"
 output_dir = "kotlin/lib/src/main/kotlin"
-
+[[kotlin.task]]
+template = "templates/kotlin/api_resource.kt.jinja"
+output_dir = "kotlin/lib/src/main/kotlin/internalapi"
+extra_codegen_args = [
+   "--include-mode=only-specified",
+   "--include-op-id=v1.endpoint.auto-config.update"
+]
 
 [php]
 extra_codegen_args = [
