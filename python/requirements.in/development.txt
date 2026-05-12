@@ -1,6 +1,5 @@
 ruff
 mypy>=1.4.0
-pip-tools>=6.13.0
 pytest
 httpx>=0.28.0
 pytest-docker

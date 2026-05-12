@@ -4,8 +4,6 @@ anyio==4.6.0
     # via httpx
 attrs==24.2.0
     # via pytest-docker
-build==1.2.2
-    # via pip-tools
 certifi==2024.8.30
     # via
     #   httpcore
@@ -13,8 +11,6 @@ certifi==2024.8.30
     #   requests
 charset-normalizer==3.3.2
     # via requests
-click==8.1.7
-    # via pip-tools
 h11==0.16.0
     # via httpcore
 httpcore==1.0.9
@@ -37,22 +33,11 @@ mypy==1.11.2
 mypy-extensions==1.0.0
     # via mypy
 packaging==24.1
-    # via
-    #   build
-    #   pytest
-    #   wheel
-pip==26.0.1
-    # via pip-tools
-pip-tools==7.5.3
-    # via -r requirements.in/development.txt
+    # via pytest
 pluggy==1.5.0
     # via pytest
 pygments==2.20.0
     # via pytest
-pyproject-hooks==1.1.0
-    # via
-    #   build
-    #   pip-tools
 pytest==9.0.3
     # via
     #   -r requirements.in/development.txt
@@ -65,8 +50,6 @@ requests==2.33.1
     # via -r requirements.in/development.txt
 ruff==0.6.8
     # via -r requirements.in/development.txt
-setuptools==80.9.0
-    # via pip-tools
 sniffio==1.3.1
     # via anyio
 types-requests==2.32.4.20250809
@@ -81,5 +64,3 @@ werkzeug==3.1.5
     # via
     #   -r requirements.in/development.txt
     #   pytest-httpserver
-wheel==0.46.3
-    # via pip-tools
