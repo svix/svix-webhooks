@@ -41,6 +41,7 @@ async fn test_fresh_apply_succeeds() {
         revert_sql: None,
     };
 
+    cleanup(&pool, migration.id).await;
     run_with_pool(&pool, &[migration]).await;
 
     let success: bool =
@@ -66,6 +67,7 @@ async fn test_apply_is_idempotent() {
         revert_sql: None,
     };
 
+    cleanup(&pool, migration.id).await;
     run_with_pool(&pool, &[migration]).await;
     run_with_pool(&pool, &[migration]).await;
 
@@ -141,6 +143,7 @@ async fn test_failed_sql_records_error() {
         revert_sql: None,
     };
 
+    cleanup(&pool, migration.id).await;
     run_migrations(&pool, &[migration]).await.unwrap_err();
 
     let last_error: Option<String> =
@@ -408,6 +411,9 @@ async fn test_failure_stops_subsequent_migrations() {
         },
     ];
 
+    for m in &migrations {
+        cleanup(&pool, m.id).await;
+    }
     run_migrations(&pool, &migrations).await.unwrap_err();
 
     let ran: Vec<String> = sqlx::query_scalar(
@@ -446,6 +452,8 @@ async fn test_revert_non_latest_errors() {
     };
     let migrations = [m1, m2];
 
+    cleanup(&pool, m1.id).await;
+    cleanup(&pool, m2.id).await;
     run_with_pool(&pool, &migrations).await;
 
     let result = try_revert(&pool, &migrations, migrations[0].id).await;
