@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 1.94.0
+* Libs **(New)**: Webhooks AutoConfig SDK
+
 ## Version 1.93.0
 * Server: Warn when Redis pending timeout is shorter than worker request timeout + buffer (thanks [@vinay0826])
 * Server: Add missing messageattempt index (as a new kind of background migration)
