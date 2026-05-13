@@ -23,6 +23,7 @@ jobs:
             echo 'there are uncommitted changes!'
             echo 'please rerun `regen_openapi.py` and commit the result'
             git status
+            git diff | head -100
             exit 1
           else
             echo 'all good.'
