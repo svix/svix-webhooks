@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace Svix\Api;
 
+use Svix\Exception\ApiException;
 use Svix\Models\EmptyResponse;
 use Svix\Models\EndpointSecretRotateIn;
 use Svix\Models\ListResponseStreamSinkOut;
@@ -22,7 +23,11 @@ class StreamingSink
     ) {
     }
 
-    /** List of all the stream's sinks. */
+    /**
+     * List of all the stream's sinks.
+     *
+     * @throws ApiException
+     */
     public function list(
         string $streamId,
         ?StreamingSinkListOptions $options = null,
@@ -38,7 +43,11 @@ class StreamingSink
         return ListResponseStreamSinkOut::fromJson($res);
     }
 
-    /** Creates a new sink. */
+    /**
+     * Creates a new sink.
+     *
+     * @throws ApiException
+     */
     public function create(
         string $streamId,
         StreamSinkIn $streamSinkIn,
@@ -54,7 +63,11 @@ class StreamingSink
         return StreamSinkOut::fromJson($res);
     }
 
-    /** Get a sink by id or uid. */
+    /**
+     * Get a sink by id or uid.
+     *
+     * @throws ApiException
+     */
     public function get(
         string $streamId,
         string $sinkId,
@@ -65,7 +78,11 @@ class StreamingSink
         return StreamSinkOut::fromJson($res);
     }
 
-    /** Update a sink. */
+    /**
+     * Update a sink.
+     *
+     * @throws ApiException
+     */
     public function update(
         string $streamId,
         string $sinkId,
@@ -78,7 +95,11 @@ class StreamingSink
         return StreamSinkOut::fromJson($res);
     }
 
-    /** Delete a sink. */
+    /**
+     * Delete a sink.
+     *
+     * @throws ApiException
+     */
     public function delete(
         string $streamId,
         string $sinkId,
@@ -87,7 +108,11 @@ class StreamingSink
         $res = $this->client->sendNoResponseBody($request);
     }
 
-    /** Partially update a sink. */
+    /**
+     * Partially update a sink.
+     *
+     * @throws ApiException
+     */
     public function patch(
         string $streamId,
         string $sinkId,
@@ -106,6 +131,8 @@ class StreamingSink
      * This is used to verify the authenticity of the delivery.
      *
      * For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
+     *
+     * @throws ApiException
      */
     public function getSecret(
         string $streamId,
@@ -117,7 +144,11 @@ class StreamingSink
         return SinkSecretOut::fromJson($res);
     }
 
-    /** Rotates the signing secret (only supported for http sinks). */
+    /**
+     * Rotates the signing secret (only supported for http sinks).
+     *
+     * @throws ApiException
+     */
     public function rotateSecret(
         string $streamId,
         string $sinkId,
@@ -134,7 +165,11 @@ class StreamingSink
         return EmptyResponse::fromJson($res);
     }
 
-    /** Set or unset the transformation code associated with this sink. */
+    /**
+     * Set or unset the transformation code associated with this sink.
+     *
+     * @throws ApiException
+     */
     public function transformationPartialUpdate(
         string $streamId,
         string $sinkId,

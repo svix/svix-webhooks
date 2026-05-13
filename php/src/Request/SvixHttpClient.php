@@ -32,18 +32,26 @@ class SvixHttpClient
         return new SvixRequest($method, $url);
     }
 
+    /**
+     * @throws ApiException
+     */
     public function send(SvixRequest $req): ?string
     {
         $response = $this->sendInner($req);
         return $response['body'];
     }
 
+    /**
+     * @throws ApiException
+     */
     public function sendNoResponseBody(SvixRequest $req): void
     {
         $this->sendInner($req);
     }
 
-
+    /**
+     * @throws ApiException
+     */
     private function sendInner(SvixRequest $req): array
     {
         // Set idempotency key for POST requests

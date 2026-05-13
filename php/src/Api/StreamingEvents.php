@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace Svix\Api;
 
+use Svix\Exception\ApiException;
 use Svix\Models\CreateStreamEventsIn;
 use Svix\Models\CreateStreamEventsOut;
 use Svix\Models\EventStreamOut;
@@ -17,7 +18,11 @@ class StreamingEvents
     ) {
     }
 
-    /** Creates events on the Stream. */
+    /**
+     * Creates events on the Stream.
+     *
+     * @throws ApiException
+     */
     public function create(
         string $streamId,
         CreateStreamEventsIn $createStreamEventsIn,
@@ -37,6 +42,8 @@ class StreamingEvents
      * Iterate over a stream of events.
      *
      * The sink must be of type `poller` to use the poller endpoint.
+     *
+     * @throws ApiException
      */
     public function get(
         string $streamId,

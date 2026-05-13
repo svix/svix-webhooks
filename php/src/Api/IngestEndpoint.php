@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace Svix\Api;
 
+use Svix\Exception\ApiException;
 use Svix\Models\IngestEndpointHeadersIn;
 use Svix\Models\IngestEndpointHeadersOut;
 use Svix\Models\IngestEndpointIn;
@@ -24,7 +25,11 @@ class IngestEndpoint
     ) {
     }
 
-    /** List ingest endpoints. */
+    /**
+     * List ingest endpoints.
+     *
+     * @throws ApiException
+     */
     public function list(
         string $sourceId,
         ?IngestEndpointListOptions $options = null,
@@ -40,7 +45,11 @@ class IngestEndpoint
         return ListResponseIngestEndpointOut::fromJson($res);
     }
 
-    /** Create an ingest endpoint. */
+    /**
+     * Create an ingest endpoint.
+     *
+     * @throws ApiException
+     */
     public function create(
         string $sourceId,
         IngestEndpointIn $ingestEndpointIn,
@@ -56,7 +65,11 @@ class IngestEndpoint
         return IngestEndpointOut::fromJson($res);
     }
 
-    /** Get an ingest endpoint. */
+    /**
+     * Get an ingest endpoint.
+     *
+     * @throws ApiException
+     */
     public function get(
         string $sourceId,
         string $endpointId,
@@ -67,7 +80,11 @@ class IngestEndpoint
         return IngestEndpointOut::fromJson($res);
     }
 
-    /** Update an ingest endpoint. */
+    /**
+     * Update an ingest endpoint.
+     *
+     * @throws ApiException
+     */
     public function update(
         string $sourceId,
         string $endpointId,
@@ -80,7 +97,11 @@ class IngestEndpoint
         return IngestEndpointOut::fromJson($res);
     }
 
-    /** Delete an ingest endpoint. */
+    /**
+     * Delete an ingest endpoint.
+     *
+     * @throws ApiException
+     */
     public function delete(
         string $sourceId,
         string $endpointId,
@@ -89,7 +110,11 @@ class IngestEndpoint
         $res = $this->client->sendNoResponseBody($request);
     }
 
-    /** Get the additional headers to be sent with the ingest. */
+    /**
+     * Get the additional headers to be sent with the ingest.
+     *
+     * @throws ApiException
+     */
     public function getHeaders(
         string $sourceId,
         string $endpointId,
@@ -100,7 +125,11 @@ class IngestEndpoint
         return IngestEndpointHeadersOut::fromJson($res);
     }
 
-    /** Set the additional headers to be sent to the endpoint. */
+    /**
+     * Set the additional headers to be sent to the endpoint.
+     *
+     * @throws ApiException
+     */
     public function updateHeaders(
         string $sourceId,
         string $endpointId,
@@ -116,6 +145,8 @@ class IngestEndpoint
      *
      * This is used to verify the authenticity of the webhook.
      * For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
+     *
+     * @throws ApiException
      */
     public function getSecret(
         string $sourceId,
@@ -131,6 +162,8 @@ class IngestEndpoint
      * Rotates an ingest endpoint's signing secret.
      *
      * The previous secret will remain valid for the next 24 hours.
+     *
+     * @throws ApiException
      */
     public function rotateSecret(
         string $sourceId,
@@ -146,7 +179,11 @@ class IngestEndpoint
         $res = $this->client->sendNoResponseBody($request);
     }
 
-    /** Get the transformation code associated with this ingest endpoint. */
+    /**
+     * Get the transformation code associated with this ingest endpoint.
+     *
+     * @throws ApiException
+     */
     public function getTransformation(
         string $sourceId,
         string $endpointId,
@@ -157,7 +194,11 @@ class IngestEndpoint
         return IngestEndpointTransformationOut::fromJson($res);
     }
 
-    /** Set or unset the transformation code associated with this ingest endpoint. */
+    /**
+     * Set or unset the transformation code associated with this ingest endpoint.
+     *
+     * @throws ApiException
+     */
     public function setTransformation(
         string $sourceId,
         string $endpointId,

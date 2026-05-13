@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace Svix\Api;
 
+use Svix\Exception\ApiException;
 use Svix\Models\ApiTokenOut;
 use Svix\Models\ApplicationTokenExpireIn;
 use Svix\Models\AppPortalAccessIn;
@@ -21,7 +22,12 @@ class Authentication
     ) {
     }
 
-    /** Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal. */
+    /**
+     * Use this function to get magic links (and authentication codes) for connecting your users to the Consumer
+     * Application Portal.
+     *
+     * @throws ApiException
+     */
     public function appPortalAccess(
         string $appId,
         AppPortalAccessIn $appPortalAccessIn,
@@ -37,7 +43,11 @@ class Authentication
         return AppPortalAccessOut::fromJson($res);
     }
 
-    /** Expire all of the tokens associated with a specific application. */
+    /**
+     * Expire all of the tokens associated with a specific application.
+     *
+     * @throws ApiException
+     */
     public function expireAll(
         string $appId,
         ApplicationTokenExpireIn $applicationTokenExpireIn,
@@ -55,6 +65,8 @@ class Authentication
      * Logout an app token.
      *
      * Trying to log out other tokens will fail.
+     *
+     * @throws ApiException
      */
     public function logout(
         ?AuthenticationLogoutOptions $options = null,
@@ -70,6 +82,8 @@ class Authentication
      * Logout a stream token.
      *
      * Trying to log out other tokens will fail.
+     *
+     * @throws ApiException
      */
     public function streamLogout(
         ?AuthenticationStreamLogoutOptions $options = null,
@@ -81,7 +95,12 @@ class Authentication
         $res = $this->client->sendNoResponseBody($request);
     }
 
-    /** Use this function to get magic links (and authentication codes) for connecting your users to the Stream Consumer Portal. */
+    /**
+     * Use this function to get magic links (and authentication codes) for connecting your users to the Stream Consumer
+     * Portal.
+     *
+     * @throws ApiException
+     */
     public function streamPortalAccess(
         string $streamId,
         StreamPortalAccessIn $streamPortalAccessIn,
@@ -111,7 +130,11 @@ class Authentication
         $res = $this->client->sendNoResponseBody($request);
     }
 
-    /** Get the current auth token for the stream poller. */
+    /**
+     * Get the current auth token for the stream poller.
+     *
+     * @throws ApiException
+     */
     public function getStreamPollerToken(
         string $streamId,
         string $sinkId,
@@ -122,7 +145,11 @@ class Authentication
         return ApiTokenOut::fromJson($res);
     }
 
-    /** Create a new auth token for the stream poller API. */
+    /**
+     * Create a new auth token for the stream poller API.
+     *
+     * @throws ApiException
+     */
     public function rotateStreamPollerToken(
         string $streamId,
         string $sinkId,

@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace Svix\Api;
 
+use Svix\Exception\ApiException;
 use Svix\Models\AggregateEventTypesOut;
 use Svix\Models\AppUsageStatsIn;
 use Svix\Models\AppUsageStatsOut;
@@ -40,6 +41,8 @@ class Statistics
      *   }
      * }
      * ```
+     *
+     * @throws ApiException
      */
     public function aggregateAppStats(
         AppUsageStatsIn $appUsageStatsIn,
@@ -78,6 +81,8 @@ class Statistics
      *   }
      * }
      * ```
+     *
+     * @throws ApiException
      */
     public function aggregateEventTypes(
     ): AggregateEventTypesOut {

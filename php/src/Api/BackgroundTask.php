@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace Svix\Api;
 
+use Svix\Exception\ApiException;
 use Svix\Models\BackgroundTaskOut;
 use Svix\Models\ListResponseBackgroundTaskOut;
 use Svix\Request\SvixHttpClient;
@@ -16,7 +17,11 @@ class BackgroundTask
     ) {
     }
 
-    /** List background tasks executed in the past 90 days. */
+    /**
+     * List background tasks executed in the past 90 days.
+     *
+     * @throws ApiException
+     */
     public function list(
         ?BackgroundTaskListOptions $options = null,
     ): ListResponseBackgroundTaskOut {
@@ -33,7 +38,11 @@ class BackgroundTask
         return ListResponseBackgroundTaskOut::fromJson($res);
     }
 
-    /** Get a background task by ID. */
+    /**
+     * Get a background task by ID.
+     *
+     * @throws ApiException
+     */
     public function get(
         string $taskId,
     ): BackgroundTaskOut {

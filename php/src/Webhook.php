@@ -23,6 +23,10 @@ class Webhook
         return $obj;
     }
 
+    /**
+     * @throws Exception\WebhookVerificationException
+     * @throws Exception\WebhookSigningException
+     */
     public function verify($payload, $headers)
     {
         if (
@@ -73,6 +77,9 @@ class Webhook
         throw new Exception\WebhookVerificationException("No matching signature found");
     }
 
+    /**
+     * @throws Exception\WebhookSigningException
+     */
     public function sign($msgId, $timestamp, $payload)
     {
         if (!$this->isPositiveInteger($timestamp)) {
@@ -84,6 +91,9 @@ class Webhook
         return "v1,{$signature}";
     }
 
+    /**
+     * @throws Exception\WebhookVerificationException
+     */
     private function verifyTimestamp($timestampHeader)
     {
         $now = time();

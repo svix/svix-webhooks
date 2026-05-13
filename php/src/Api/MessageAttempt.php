@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace Svix\Api;
 
+use Svix\Exception\ApiException;
 use Svix\Models\EmptyResponse;
 use Svix\Models\ListResponseEndpointMessageOut;
 use Svix\Models\ListResponseMessageAttemptOut;
@@ -26,6 +27,8 @@ class MessageAttempt
      * relative to now or, if an iterator is provided, 90 days before/after the time indicated
      * by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
      * set the `before` or `after` parameter as appropriate.
+     *
+     * @throws ApiException
      */
     public function listByEndpoint(
         string $appId,
@@ -59,6 +62,8 @@ class MessageAttempt
      * relative to now or, if an iterator is provided, 90 days before/after the time indicated
      * by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
      * set the `before` or `after` parameter as appropriate.
+     *
+     * @throws ApiException
      */
     public function listByMsg(
         string $appId,
@@ -94,6 +99,8 @@ class MessageAttempt
      * relative to now or, if an iterator is provided, 90 days before/after the time indicated
      * by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
      * set the `before` or `after` parameter as appropriate.
+     *
+     * @throws ApiException
      */
     public function listAttemptedMessages(
         string $appId,
@@ -118,7 +125,11 @@ class MessageAttempt
         return ListResponseEndpointMessageOut::fromJson($res);
     }
 
-    /** `msg_id`: Use a message id or a message `eventId` */
+    /**
+     * `msg_id`: Use a message id or a message `eventId`
+     *
+     * @throws ApiException
+     */
     public function get(
         string $appId,
         string $msgId,
@@ -139,6 +150,8 @@ class MessageAttempt
      *
      * Useful when an endpoint accidentally returned sensitive content.
      * The message can't be replayed or resent once its payload has been deleted or expired.
+     *
+     * @throws ApiException
      */
     public function expungeContent(
         string $appId,
@@ -154,6 +167,8 @@ class MessageAttempt
      *
      * Additionally includes metadata about the latest message attempt.
      * By default, endpoints are listed in ascending order by ID.
+     *
+     * @throws ApiException
      */
     public function listAttemptedDestinations(
         string $appId,
@@ -170,7 +185,11 @@ class MessageAttempt
         return ListResponseMessageEndpointOut::fromJson($res);
     }
 
-    /** Resend a message to the specified endpoint. */
+    /**
+     * Resend a message to the specified endpoint.
+     *
+     * @throws ApiException
+     */
     public function resend(
         string $appId,
         string $msgId,

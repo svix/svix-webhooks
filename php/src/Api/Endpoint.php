@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace Svix\Api;
 
+use Svix\Exception\ApiException;
 use Svix\Models\BulkReplayIn;
 use Svix\Models\EndpointHeadersIn;
 use Svix\Models\EndpointHeadersOut;
@@ -35,7 +36,11 @@ class Endpoint
     ) {
     }
 
-    /** List the application's endpoints. */
+    /**
+     * List the application's endpoints.
+     *
+     * @throws ApiException
+     */
     public function list(
         string $appId,
         ?EndpointListOptions $options = null,
@@ -55,6 +60,8 @@ class Endpoint
      * Create a new endpoint for the application.
      *
      * When `secret` is `null` the secret is automatically generated (recommended).
+     *
+     * @throws ApiException
      */
     public function create(
         string $appId,
@@ -71,7 +78,11 @@ class Endpoint
         return EndpointOut::fromJson($res);
     }
 
-    /** Get an endpoint. */
+    /**
+     * Get an endpoint.
+     *
+     * @throws ApiException
+     */
     public function get(
         string $appId,
         string $endpointId,
@@ -82,7 +93,11 @@ class Endpoint
         return EndpointOut::fromJson($res);
     }
 
-    /** Update an endpoint. */
+    /**
+     * Update an endpoint.
+     *
+     * @throws ApiException
+     */
     public function update(
         string $appId,
         string $endpointId,
@@ -95,7 +110,11 @@ class Endpoint
         return EndpointOut::fromJson($res);
     }
 
-    /** Delete an endpoint. */
+    /**
+     * Delete an endpoint.
+     *
+     * @throws ApiException
+     */
     public function delete(
         string $appId,
         string $endpointId,
@@ -104,7 +123,11 @@ class Endpoint
         $res = $this->client->sendNoResponseBody($request);
     }
 
-    /** Partially update an endpoint. */
+    /**
+     * Partially update an endpoint.
+     *
+     * @throws ApiException
+     */
     public function patch(
         string $appId,
         string $endpointId,
@@ -119,10 +142,8 @@ class Endpoint
 
     /**
      * Bulk replay messages sent to the endpoint.
-     *
      * Only messages that were created after `since` will be sent.
      * This will replay both successful, and failed messages
-     *
      * A completed task will return a payload like the following:
      * ```json
      * {
@@ -134,6 +155,8 @@ class Endpoint
      *   }
      * }
      * ```
+     *
+     * @throws ApiException
      */
     public function bulkReplay(
         string $appId,
@@ -151,7 +174,11 @@ class Endpoint
         return ReplayOut::fromJson($res);
     }
 
-    /** Get the additional headers to be sent with the webhook. */
+    /**
+     * Get the additional headers to be sent with the webhook.
+     *
+     * @throws ApiException
+     */
     public function getHeaders(
         string $appId,
         string $endpointId,
@@ -162,7 +189,11 @@ class Endpoint
         return EndpointHeadersOut::fromJson($res);
     }
 
-    /** Set the additional headers to be sent with the webhook. */
+    /**
+     * Set the additional headers to be sent with the webhook.
+     *
+     * @throws ApiException
+     */
     public function updateHeaders(
         string $appId,
         string $endpointId,
@@ -173,7 +204,11 @@ class Endpoint
         $res = $this->client->sendNoResponseBody($request);
     }
 
-    /** Partially set the additional headers to be sent with the webhook. */
+    /**
+     * Partially set the additional headers to be sent with the webhook.
+     *
+     * @throws ApiException
+     */
     public function patchHeaders(
         string $appId,
         string $endpointId,
@@ -186,9 +221,7 @@ class Endpoint
 
     /**
      * Resend all failed messages since a given time.
-     *
      * Messages that were sent successfully, even if failed initially, are not resent.
-     *
      * A completed task will return a payload like the following:
      * ```json
      * {
@@ -200,6 +233,8 @@ class Endpoint
      *   }
      * }
      * ```
+     *
+     * @throws ApiException
      */
     public function recover(
         string $appId,
@@ -219,10 +254,8 @@ class Endpoint
 
     /**
      * Replays messages to the endpoint.
-     *
      * Only messages that were created after `since` will be sent.
      * Messages that were previously sent to the endpoint are not resent.
-     *
      * A completed task will return a payload like the following:
      * ```json
      * {
@@ -234,6 +267,8 @@ class Endpoint
      *   }
      * }
      * ```
+     *
+     * @throws ApiException
      */
     public function replayMissing(
         string $appId,
@@ -256,6 +291,8 @@ class Endpoint
      *
      * This is used to verify the authenticity of the webhook.
      * For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
+     *
+     * @throws ApiException
      */
     public function getSecret(
         string $appId,
@@ -271,6 +308,8 @@ class Endpoint
      * Rotates the endpoint's signing secret.
      *
      * The previous secret will remain valid for the next 24 hours.
+     *
+     * @throws ApiException
      */
     public function rotateSecret(
         string $appId,
@@ -286,7 +325,11 @@ class Endpoint
         $res = $this->client->sendNoResponseBody($request);
     }
 
-    /** Send an example message for an event. */
+    /**
+     * Send an example message for an event.
+     *
+     * @throws ApiException
+     */
     public function sendExample(
         string $appId,
         string $endpointId,
@@ -303,7 +346,11 @@ class Endpoint
         return MessageOut::fromJson($res);
     }
 
-    /** Get basic statistics for the endpoint. */
+    /**
+     * Get basic statistics for the endpoint.
+     *
+     * @throws ApiException
+     */
     public function getStats(
         string $appId,
         string $endpointId,
@@ -319,7 +366,11 @@ class Endpoint
         return EndpointStats::fromJson($res);
     }
 
-    /** Get the transformation code associated with this endpoint. */
+    /**
+     * Get the transformation code associated with this endpoint.
+     *
+     * @throws ApiException
+     */
     public function transformationGet(
         string $appId,
         string $endpointId,
@@ -330,7 +381,11 @@ class Endpoint
         return EndpointTransformationOut::fromJson($res);
     }
 
-    /** Set or unset the transformation code associated with this endpoint. */
+    /**
+     * Set or unset the transformation code associated with this endpoint.
+     *
+     * @throws ApiException
+     */
     public function patchTransformation(
         string $appId,
         string $endpointId,
@@ -341,7 +396,11 @@ class Endpoint
         $res = $this->client->sendNoResponseBody($request);
     }
 
-    /** This operation was renamed to `set-transformation`. */
+    /**
+     * This operation was renamed to `set-transformation`.
+     *
+     * @throws ApiException
+     */
     public function transformationPartialUpdate(
         string $appId,
         string $endpointId,

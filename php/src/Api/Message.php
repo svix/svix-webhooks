@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace Svix\Api;
 
+use Svix\Exception\ApiException;
 use Svix\Models\ExpungeAllContentsOut;
 use Svix\Models\ListResponseMessageOut;
 use Svix\Models\MessageIn;
@@ -33,6 +34,8 @@ class Message
      * relative to now or, if an iterator is provided, 90 days before/after the time indicated
      * by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
      * set the `before` or `after` parameter as appropriate.
+     *
+     * @throws ApiException
      */
     public function list(
         string $appId,
@@ -64,6 +67,8 @@ class Message
      * Messages can also have `channels`, which similar to event types let endpoints filter by them. Unlike event types, messages can have multiple channels, and channels don't imply a specific message content or schema.
      *
      * The `payload` property is the webhook's body (the actual webhook message). Svix supports payload sizes of up to 1MiB, though it's generally a good idea to keep webhook payloads small, probably no larger than 40kb.
+     *
+     *  @throws ApiException
      */
     public function create(
         string $appId,
@@ -97,6 +102,8 @@ class Message
      *   }
      * }
      * ```
+     *
+     * @throws ApiException
      */
     public function expungeAllContents(
         string $appId,
@@ -118,6 +125,8 @@ class Message
      * Note: most people shouldn't be using this API. Svix doesn't bill you for
      * messages not actually sent, so using this API doesn't save money.
      * If unsure, please ask Svix support before using this API.
+     *
+     * @throws ApiException
      */
     public function precheck(
         string $appId,
@@ -134,7 +143,11 @@ class Message
         return MessagePrecheckOut::fromJson($res);
     }
 
-    /** Get a message by its ID or eventID. */
+    /**
+     * Get a message by its ID or eventID.
+     *
+     * @throws ApiException
+     */
     public function get(
         string $appId,
         string $msgId,
@@ -154,6 +167,8 @@ class Message
      *
      * Useful in cases when a message was accidentally sent with sensitive content.
      * The message can't be replayed or resent once its payload has been deleted or expired.
+     *
+     * @throws ApiException
      */
     public function expungeContent(
         string $appId,

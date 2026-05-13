@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace Svix\Api;
 
+use Svix\Exception\ApiException;
 use Svix\Models\ListResponseStreamEventTypeOut;
 use Svix\Models\StreamEventTypeIn;
 use Svix\Models\StreamEventTypeOut;
@@ -18,7 +19,11 @@ class StreamingEventType
     ) {
     }
 
-    /** List of all the organization's event types for streaming. */
+    /**
+     * List of all the organization's event types for streaming.
+     *
+     * @throws ApiException
+     */
     public function list(
         ?StreamingEventTypeListOptions $options = null,
     ): ListResponseStreamEventTypeOut {
@@ -34,7 +39,11 @@ class StreamingEventType
         return ListResponseStreamEventTypeOut::fromJson($res);
     }
 
-    /** Create an event type for Streams. */
+    /**
+     * Create an event type for Streams.
+     *
+     * @throws ApiException
+     */
     public function create(
         StreamEventTypeIn $streamEventTypeIn,
         ?StreamingEventTypeCreateOptions $options = null,
@@ -49,7 +58,11 @@ class StreamingEventType
         return StreamEventTypeOut::fromJson($res);
     }
 
-    /** Get an event type. */
+    /**
+     * Get an event type.
+     *
+     * @throws ApiException
+     */
     public function get(
         string $name,
     ): StreamEventTypeOut {
@@ -59,7 +72,11 @@ class StreamingEventType
         return StreamEventTypeOut::fromJson($res);
     }
 
-    /** Update or create a event type for Streams. */
+    /**
+     * Update or create a event type for Streams.
+     *
+     * @throws ApiException
+     */
     public function update(
         string $name,
         StreamEventTypeIn $streamEventTypeIn,
@@ -71,7 +88,11 @@ class StreamingEventType
         return StreamEventTypeOut::fromJson($res);
     }
 
-    /** Delete an event type. */
+    /**
+     * Delete an event type.
+     *
+     * @throws ApiException
+     */
     public function delete(
         string $name,
         ?StreamingEventTypeDeleteOptions $options = null,
@@ -83,7 +104,11 @@ class StreamingEventType
         $res = $this->client->sendNoResponseBody($request);
     }
 
-    /** Patch an event type for Streams. */
+    /**
+     * Patch an event type for Streams.
+     *
+     * @throws ApiException
+     */
     public function patch(
         string $name,
         StreamEventTypePatch $streamEventTypePatch,

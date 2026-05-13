@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace Svix\Api;
 
+use Svix\Exception\ApiException;
 use Svix\Request\SvixHttpClient;
 
 class Health
@@ -14,7 +15,11 @@ class Health
     ) {
     }
 
-    /** Verify the API server is up and running. */
+    /**
+     * Verify the API server is up and running.
+     *
+     * @throws ApiException
+     */
     public function get(
     ): void {
         $request = $this->client->newReq('GET', '/api/v1/health');

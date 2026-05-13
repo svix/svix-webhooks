@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace Svix\Api;
 
+use Svix\Exception\ApiException;
 use Svix\Models\EndpointHeadersOut;
 use Svix\Models\HttpSinkHeadersPatchIn;
 use Svix\Models\SinkTransformationOut;
@@ -26,7 +27,11 @@ class Streaming
         $this->stream = new StreamingStream($client);
     }
 
-    /** Get the HTTP sink headers. Only valid for `http` or `otelTracing` sinks. */
+    /**
+     * Get the HTTP sink headers. Only valid for `http` or `otelTracing` sinks.
+     *
+     * @throws ApiException
+     */
     public function sinkHeadersGet(
         string $streamId,
         string $sinkId,
@@ -37,7 +42,11 @@ class Streaming
         return EndpointHeadersOut::fromJson($res);
     }
 
-    /** Updates the Sink's headers. Only valid for `http` or `otelTracing` sinks. */
+    /**
+     * Updates the Sink's headers. Only valid for `http` or `otelTracing` sinks.
+     *
+     * @throws ApiException
+     */
     public function sinkHeadersPatch(
         string $streamId,
         string $sinkId,
@@ -50,7 +59,11 @@ class Streaming
         return EndpointHeadersOut::fromJson($res);
     }
 
-    /** Get the transformation code associated with this sink. */
+    /**
+     * Get the transformation code associated with this sink.
+     *
+     * @throws ApiException
+     */
     public function sinkTransformationGet(
         string $streamId,
         string $sinkId,

@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace Svix\Api;
 
+use Svix\Exception\ApiException;
 use Svix\Models\EventTypeImportOpenApiIn;
 use Svix\Models\EventTypeImportOpenApiOut;
 use Svix\Models\EventTypeIn;
@@ -21,7 +22,11 @@ class EventType
     ) {
     }
 
-    /** Return the list of event types. */
+    /**
+     * Return the list of event types.
+     *
+     * @throws ApiException
+     */
     public function list(
         ?EventTypeListOptions $options = null,
     ): ListResponseEventTypeOut {
@@ -44,6 +49,8 @@ class EventType
      * Unarchiving an event type will allow endpoints to filter on it and messages to be sent with it.
      * Endpoints filtering on the event type before archival will continue to filter on it.
      * This operation does not preserve the description and schemas.
+     *
+     * @throws ApiException
      */
     public function create(
         EventTypeIn $eventTypeIn,
@@ -65,6 +72,8 @@ class EventType
      * If an existing `archived` event type is updated, it will be unarchived.
      * The importer will convert all webhooks found in the either the `webhooks` or `x-webhooks`
      * top-level.
+     *
+     * @throws ApiException
      */
     public function importOpenapi(
         EventTypeImportOpenApiIn $eventTypeImportOpenApiIn,
@@ -80,7 +89,11 @@ class EventType
         return EventTypeImportOpenApiOut::fromJson($res);
     }
 
-    /** Get an event type. */
+    /**
+     * Get an event type.
+     *
+     * @throws ApiException
+     */
     public function get(
         string $eventTypeName,
     ): EventTypeOut {
@@ -90,7 +103,11 @@ class EventType
         return EventTypeOut::fromJson($res);
     }
 
-    /** Update an event type. */
+    /**
+     * Update an event type.
+     *
+     * @throws ApiException
+     */
     public function update(
         string $eventTypeName,
         EventTypeUpdate $eventTypeUpdate,
@@ -109,6 +126,8 @@ class EventType
      * However, new messages can not be sent with it and endpoints can not filter on it.
      * An event type can be unarchived with the
      * [create operation](#operation/create_event_type_api_v1_event_type__post).
+     *
+     * @throws ApiException
      */
     public function delete(
         string $eventTypeName,
@@ -121,7 +140,11 @@ class EventType
         $res = $this->client->sendNoResponseBody($request);
     }
 
-    /** Partially update an event type. */
+    /**
+     * Partially update an event type.
+     *
+     * @throws ApiException
+     */
     public function patch(
         string $eventTypeName,
         EventTypePatch $eventTypePatch,

@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace Svix\Api;
 
+use Svix\Exception\ApiException;
 use Svix\Models\RotateTokenOut;
 use Svix\Request\SvixHttpClient;
 
@@ -22,6 +23,8 @@ class IngestSource
      * construct the unique `ingestUrl` for the source. Previous tokens
      * will remain valid for 48 hours after rotation. The token can be
      * rotated a maximum of three times within the 48-hour period.
+     *
+     * @throws ApiException
      */
     public function rotateToken(
         string $sourceId,

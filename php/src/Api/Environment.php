@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace Svix\Api;
 
+use Svix\Exception\ApiException;
 use Svix\Models\EnvironmentIn;
 use Svix\Models\EnvironmentOut;
 use Svix\Request\SvixHttpClient;
@@ -21,6 +22,8 @@ class Environment
      *
      * Note that the schema for [`EnvironmentOut`] is subject to change. The fields
      * herein are provided for convenience but should be treated as JSON blobs.
+     *
+     * @throws ApiException
      */
     public function export(
         ?EnvironmentExportOptions $options = null,
@@ -41,6 +44,8 @@ class Environment
      *
      * Note that the schema for [`EnvironmentIn`] is subject to change. The fields
      * herein are provided for convenience but should be treated as JSON blobs.
+     *
+     * @throws ApiException
      */
     public function import(
         EnvironmentIn $environmentIn,

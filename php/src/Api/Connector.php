@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace Svix\Api;
 
+use Svix\Exception\ApiException;
 use Svix\Models\ConnectorIn;
 use Svix\Models\ConnectorOut;
 use Svix\Models\ConnectorPatch;
@@ -19,7 +20,11 @@ class Connector
     ) {
     }
 
-    /** List all connectors for an application. */
+    /**
+     * List all connectors for an application.
+     *
+     * @throws ApiException
+     */
     public function list(
         ?ConnectorListOptions $options = null,
     ): ListResponseConnectorOut {
@@ -35,7 +40,11 @@ class Connector
         return ListResponseConnectorOut::fromJson($res);
     }
 
-    /** Create a new connector. */
+    /**
+     * Create a new connector.
+     *
+     * @throws ApiException
+     */
     public function create(
         ConnectorIn $connectorIn,
         ?ConnectorCreateOptions $options = null,
@@ -50,7 +59,11 @@ class Connector
         return ConnectorOut::fromJson($res);
     }
 
-    /** Get a connector. */
+    /**
+     * Get a connector.
+     *
+     * @throws ApiException
+     */
     public function get(
         string $connectorId,
     ): ConnectorOut {
@@ -60,7 +73,11 @@ class Connector
         return ConnectorOut::fromJson($res);
     }
 
-    /** Update a connector. */
+    /**
+     * Update a connector.
+     *
+     * @throws ApiException
+     */
     public function update(
         string $connectorId,
         ConnectorUpdate $connectorUpdate,
@@ -72,7 +89,11 @@ class Connector
         return ConnectorOut::fromJson($res);
     }
 
-    /** Delete a connector. */
+    /**
+     * Delete a connector.
+     *
+     * @throws ApiException
+     */
     public function delete(
         string $connectorId,
     ): void {
@@ -80,7 +101,11 @@ class Connector
         $res = $this->client->sendNoResponseBody($request);
     }
 
-    /** Partially update a connector. */
+    /**
+     * Partially update a connector.
+     *
+     * @throws ApiException
+     */
     public function patch(
         string $connectorId,
         ConnectorPatch $connectorPatch,

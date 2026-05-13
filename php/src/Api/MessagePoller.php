@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace Svix\Api;
 
+use Svix\Exception\ApiException;
 use Svix\Models\PollingEndpointConsumerSeekIn;
 use Svix\Models\PollingEndpointConsumerSeekOut;
 use Svix\Models\PollingEndpointOut;
@@ -17,7 +18,11 @@ class MessagePoller
     ) {
     }
 
-    /** Reads the stream of created messages for an application, filtered on the Sink's event types and Channels. */
+    /**
+     * Reads the stream of created messages for an application, filtered on the Sink's event types and Channels.
+     *
+     * @throws ApiException
+     */
     public function poll(
         string $appId,
         string $sinkId,
@@ -39,6 +44,8 @@ class MessagePoller
     /**
      * Reads the stream of created messages for an application, filtered on the Sink's event types and
      * Channels, using server-managed iterator tracking.
+     *
+     * @throws ApiException
      */
     public function consumerPoll(
         string $appId,
@@ -56,7 +63,11 @@ class MessagePoller
         return PollingEndpointOut::fromJson($res);
     }
 
-    /** Sets the starting offset for the consumer of a polling endpoint. */
+    /**
+     * Sets the starting offset for the consumer of a polling endpoint.
+     *
+     * @throws ApiException
+     */
     public function consumerSeek(
         string $appId,
         string $sinkId,
