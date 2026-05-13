@@ -68,7 +68,7 @@ class Message
      *
      * The `payload` property is the webhook's body (the actual webhook message). Svix supports payload sizes of up to 1MiB, though it's generally a good idea to keep webhook payloads small, probably no larger than 40kb.
      *
-     *  @throws ApiException
+     * @throws ApiException
      */
     public function create(
         string $appId,

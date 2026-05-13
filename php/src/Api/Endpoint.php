@@ -142,8 +142,10 @@ class Endpoint
 
     /**
      * Bulk replay messages sent to the endpoint.
+     *
      * Only messages that were created after `since` will be sent.
      * This will replay both successful, and failed messages
+     *
      * A completed task will return a payload like the following:
      * ```json
      * {
@@ -221,7 +223,9 @@ class Endpoint
 
     /**
      * Resend all failed messages since a given time.
+     *
      * Messages that were sent successfully, even if failed initially, are not resent.
+     *
      * A completed task will return a payload like the following:
      * ```json
      * {
@@ -254,8 +258,10 @@ class Endpoint
 
     /**
      * Replays messages to the endpoint.
+     *
      * Only messages that were created after `since` will be sent.
      * Messages that were previously sent to the endpoint are not resent.
+     *
      * A completed task will return a payload like the following:
      * ```json
      * {

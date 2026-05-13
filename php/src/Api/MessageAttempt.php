@@ -126,7 +126,7 @@ class MessageAttempt
     }
 
     /**
-     * `msg_id`: Use a message id or a message `eventId`
+     * `msg_id`: Use a message id or a message `eventId`.
      *
      * @throws ApiException
      */

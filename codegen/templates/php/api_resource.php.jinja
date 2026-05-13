@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace Svix\Api;
 
+use Svix\Exception\ApiException;
 use Svix\Request\SvixHttpClient;
 {% for c in referenced_components -%}
 use Svix\Models\{{ c | to_upper_camel_case }};
@@ -26,11 +27,14 @@ class {{ resource_type_name }}
         {% endfor -%}
     }
 
-
     {% for op in resource.operations -%}
+    /**
     {% if op.description is defined %}
-    {{ op.description | to_doc_comment(style="php_class") }}
+    * {{ op.description | to_doc_comment(style="php_field") }}
+    *
     {% endif -%}
+    * @throws ApiException
+    */
     public function {{ op.name | to_lower_camel_case }}(
         {% for p in op.path_params -%}
         string ${{ p | to_lower_camel_case }},

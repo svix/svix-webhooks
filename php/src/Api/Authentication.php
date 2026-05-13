@@ -23,8 +23,7 @@ class Authentication
     }
 
     /**
-     * Use this function to get magic links (and authentication codes) for connecting your users to the Consumer
-     * Application Portal.
+     * Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal.
      *
      * @throws ApiException
      */
@@ -96,8 +95,7 @@ class Authentication
     }
 
     /**
-     * Use this function to get magic links (and authentication codes) for connecting your users to the Stream Consumer
-     * Portal.
+     * Use this function to get magic links (and authentication codes) for connecting your users to the Stream Consumer Portal.
      *
      * @throws ApiException
      */
@@ -116,7 +114,11 @@ class Authentication
         return AppPortalAccessOut::fromJson($res);
     }
 
-    /** Expire all of the tokens associated with a specific stream. */
+    /**
+     * Expire all of the tokens associated with a specific stream.
+     *
+     * @throws ApiException
+     */
     public function streamExpireAll(
         string $streamId,
         StreamTokenExpireIn $streamTokenExpireIn,

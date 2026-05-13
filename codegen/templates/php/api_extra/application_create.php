@@ -1,4 +1,8 @@
-/** Get or create a new application */
+/**
+ * Get or create a new application
+ *
+ * @throws ApiException
+ */
 public function getOrCreate(
     ApplicationIn $applicationIn,
     ?ApplicationCreateOptions $options = null,

@@ -61,7 +61,7 @@ class Application
     }
 
     /**
-     * Get or create a new application
+     * Get or create a new application.
      *
      * @throws ApiException
      */
