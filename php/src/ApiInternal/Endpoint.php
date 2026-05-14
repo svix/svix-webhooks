@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace Svix\ApiInternal;
 
+use Svix\Exception\ApiException;
 use Svix\Models\EndpointTransformationIn;
 use Svix\Request\SvixHttpClient;
 
@@ -18,7 +19,11 @@ class Endpoint
         $this->autoConfig = new EndpointAutoConfig($client);
     }
 
-    /** This operation was renamed to `set-transformation`. */
+    /**
+     * This operation was renamed to `set-transformation`.
+     *
+     * @throws ApiException
+     */
     public function transformationPartialUpdate(
         string $appId,
         string $endpointId,

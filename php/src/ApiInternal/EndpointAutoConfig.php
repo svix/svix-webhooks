@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace Svix\ApiInternal;
 
+use Svix\Exception\ApiException;
 use Svix\Models\EndpointOut;
 use Svix\Models\SubscribeIn;
 use Svix\Request\SvixHttpClient;
@@ -16,7 +17,11 @@ class EndpointAutoConfig
     ) {
     }
 
-    /** Update an auto-config endpoint by providing endpoint details. */
+    /**
+     * Update an auto-config endpoint by providing endpoint details.
+     *
+     * @throws ApiException
+     */
     public function update(
         string $appId,
         string $endpointId,
