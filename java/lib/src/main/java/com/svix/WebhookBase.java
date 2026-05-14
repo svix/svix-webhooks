@@ -45,7 +45,7 @@ abstract class WebhookBase {
         this.key = secret;
     }
 
-    public final void verify(final String payload, final Map<String, List<String>> headers)
+    public void verify(final String payload, final Map<String, List<String>> headers)
             throws WebhookVerificationException {
         String msgId = firstHeader(headers, SVIX_MSG_ID_KEY);
         String msgSignature = firstHeader(headers, SVIX_MSG_SIGNATURE_KEY);
@@ -101,7 +101,7 @@ abstract class WebhookBase {
         return null;
     }
 
-    public final String sign(final String msgId, final long timestamp, final String payload)
+    public String sign(final String msgId, final long timestamp, final String payload)
             throws WebhookSigningException {
         try {
             String toSign = String.format("%s.%s.%s", msgId, timestamp, payload);
