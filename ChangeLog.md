@@ -2,6 +2,7 @@
 
 ## Version 1.94.0
 * Libs **(New)**: Webhooks AutoConfig SDK
+* Libs/Java: Restore compatibility with Java 1.8 in Webhooks verification
 
 ## Version 1.93.0
 * Server: Warn when Redis pending timeout is shorter than worker request timeout + buffer (thanks [@vinay0826])
