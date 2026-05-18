@@ -65,7 +65,7 @@ namespace Svix
             }
 
             byte[] randomBytes = new byte[8];
-            new Random().NextBytes(randomBytes);
+            Random.Shared.NextBytes(randomBytes);
             ulong req_id = BitConverter.ToUInt64(randomBytes, 0);
 
             // In C# they don't let you send the same request twice :(
