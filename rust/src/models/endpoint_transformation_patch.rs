@@ -9,6 +9,9 @@ pub struct EndpointTransformationPatch {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub enabled: Option<bool>,
+
+    #[serde(default, skip_serializing_if = "JsOption::is_undefined")]
+    pub variables: JsOption<std::collections::HashMap<String, String>>,
 }
 
 impl EndpointTransformationPatch {
@@ -16,6 +19,7 @@ impl EndpointTransformationPatch {
         Self {
             code: JsOption::Undefined,
             enabled: None,
+            variables: JsOption::Undefined,
         }
     }
 }

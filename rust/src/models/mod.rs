@@ -17,6 +17,7 @@ pub mod application_in;
 pub mod application_out;
 pub mod application_patch;
 pub mod application_token_expire_in;
+pub mod authentication_source;
 pub mod azure_blob_storage_config;
 pub mod azure_blob_storage_patch_config;
 pub mod background_task_finished_event;
@@ -217,6 +218,7 @@ pub mod veriff_config;
 pub mod veriff_config_out;
 pub mod vgs_config;
 pub mod vgs_config_out;
+pub mod whoami_out;
 pub mod zoom_config;
 pub mod zoom_config_out;
 // not currently generated
@@ -244,6 +246,7 @@ pub use self::{
     application_out::ApplicationOut,
     application_patch::ApplicationPatch,
     application_token_expire_in::ApplicationTokenExpireIn,
+    authentication_source::AuthenticationSource,
     azure_blob_storage_config::AzureBlobStorageConfig,
     azure_blob_storage_patch_config::AzureBlobStoragePatchConfig,
     background_task_finished_event::BackgroundTaskFinishedEvent,
@@ -444,6 +447,7 @@ pub use self::{
     veriff_config_out::VeriffConfigOut,
     vgs_config::VgsConfig,
     vgs_config_out::VgsConfigOut,
+    whoami_out::WhoamiOut,
     zoom_config::ZoomConfig,
     zoom_config_out::ZoomConfigOut,
 };

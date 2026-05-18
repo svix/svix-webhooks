@@ -7,8 +7,9 @@ module Svix
     attr_accessor :code
     attr_accessor :enabled
     attr_accessor :updated_at
+    attr_accessor :variables
 
-    ALL_FIELD ||= ["code", "enabled", "updated_at"].freeze
+    ALL_FIELD ||= ["code", "enabled", "updated_at", "variables"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -35,6 +36,7 @@ module Svix
       attrs["code"] = attributes["code"]
       attrs["enabled"] = attributes["enabled"]
       attrs["updated_at"] = DateTime.rfc3339(attributes["updatedAt"]).to_time if attributes["updatedAt"]
+      attrs["variables"] = attributes["variables"]
       new(attrs)
     end
 
@@ -43,6 +45,7 @@ module Svix
       out["code"] = Svix::serialize_primitive(@code) if @code
       out["enabled"] = Svix::serialize_primitive(@enabled) if @enabled
       out["updatedAt"] = Svix::serialize_primitive(@updated_at) if @updated_at
+      out["variables"] = Svix::serialize_primitive(@variables) if @variables
       out
     end
 

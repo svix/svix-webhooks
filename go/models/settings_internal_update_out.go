@@ -34,6 +34,7 @@ type SettingsInternalUpdateOut struct {
 	SendSvixWebhookHeaders        *bool                   `json:"sendSvixWebhookHeaders,omitempty"`
 	ShowFeatureTooltips           *bool                   `json:"showFeatureTooltips,omitempty"`
 	ShowUseSvixPlay               *bool                   `json:"showUseSvixPlay,omitempty"`
+	WebhooksAutoConfig            *bool                   `json:"webhooksAutoConfig,omitempty"`
 	WhitelabelHeaders             *bool                   `json:"whitelabelHeaders,omitempty"`
 	WipeSuccessfulPayload         *bool                   `json:"wipeSuccessfulPayload,omitempty"`
 }

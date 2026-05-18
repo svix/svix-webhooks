@@ -40,6 +40,7 @@ type SettingsInternalPatch struct {
 	SendSvixWebhookHeaders        *bool                                 `json:"sendSvixWebhookHeaders,omitempty"`
 	ShowFeatureTooltips           *bool                                 `json:"showFeatureTooltips,omitempty"`
 	ShowUseSvixPlay               *bool                                 `json:"showUseSvixPlay,omitempty"`
+	WebhooksAutoConfig            *bool                                 `json:"webhooksAutoConfig,omitempty"`
 	WhitelabelHeaders             *bool                                 `json:"whitelabelHeaders,omitempty"`
 	WipeSuccessfulPayload         *bool                                 `json:"wipeSuccessfulPayload,omitempty"`
 }
@@ -141,6 +142,9 @@ func (o SettingsInternalPatch) MarshalJSON() ([]byte, error) {
 	}
 	if o.ShowUseSvixPlay != nil {
 		toSerialize["showUseSvixPlay"] = o.ShowUseSvixPlay
+	}
+	if o.WebhooksAutoConfig != nil {
+		toSerialize["webhooksAutoConfig"] = o.WebhooksAutoConfig
 	}
 	if o.WhitelabelHeaders != nil {
 		toSerialize["whitelabelHeaders"] = o.WhitelabelHeaders

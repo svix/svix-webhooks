@@ -15,6 +15,9 @@ namespace Svix.Models
         [JsonProperty("updatedAt")]
         public DateTime? UpdatedAt { get; set; } = null;
 
+        [JsonProperty("variables")]
+        public Dictionary<string, string>? Variables { get; set; } = null;
+
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
@@ -23,6 +26,7 @@ namespace Svix.Models
             sb.Append("  Code: ").Append(Code).Append('\n');
             sb.Append("  Enabled: ").Append(Enabled).Append('\n');
             sb.Append("  UpdatedAt: ").Append(UpdatedAt).Append('\n');
+            sb.Append("  Variables: ").Append(Variables).Append('\n');
             sb.Append("}\n");
             return sb.ToString();
         }

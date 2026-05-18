@@ -16,6 +16,12 @@ namespace Svix.Models
 
         public bool ShouldSerializeEnabled() => Enabled != null;
 
+        [JsonProperty("variables")]
+        public MaybeUnset<Dictionary<string, string>?> Variables { get; set; } =
+            MaybeUnset<Dictionary<string, string>?>.Unset();
+
+        public bool ShouldSerializeVariables() => !Variables.IsUnset;
+
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
@@ -23,6 +29,7 @@ namespace Svix.Models
             sb.Append("class EndpointTransformationPatch {\n");
             sb.Append("  Code: ").Append(Code).Append('\n');
             sb.Append("  Enabled: ").Append(Enabled).Append('\n');
+            sb.Append("  Variables: ").Append(Variables).Append('\n');
             sb.Append("}\n");
             return sb.ToString();
         }
