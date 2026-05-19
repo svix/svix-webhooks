@@ -35,6 +35,7 @@ type SettingsInternalOut struct {
 	ShowFeatureTooltips           *bool                   `json:"showFeatureTooltips,omitempty"`
 	ShowSvixBrandFooter           *bool                   `json:"showSvixBrandFooter,omitempty"`
 	ShowUseSvixPlay               *bool                   `json:"showUseSvixPlay,omitempty"`
+	WebhooksAutoConfig            *bool                   `json:"webhooksAutoConfig,omitempty"`
 	WhitelabelHeaders             *bool                   `json:"whitelabelHeaders,omitempty"`
 	WhitelabelLogo                *string                 `json:"whitelabelLogo,omitempty"`
 	WipeSuccessfulPayload         *bool                   `json:"wipeSuccessfulPayload,omitempty"`

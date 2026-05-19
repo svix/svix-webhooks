@@ -287,6 +287,24 @@ pub enum AuthenticationCommands {
         #[clap(flatten)]
         options: AuthenticationRotateStreamPollerTokenOptions,
     },
+    /// Return information about the account associated with the current token
+    #[command(help_template = concat!(
+            "{about-with-newline}\n",
+            "{usage-heading} {usage}\n\n",
+            "Example: svix authentication whoami\n",
+            "{after-help}",
+            "\n",
+            "{all-args}",
+        ))]
+    #[command(after_help = "Example response:
+{
+  \"appId\": \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+  \"envId\": \"org_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+  \"permissionSource\": \"OidcJwt\",
+  \"sessionId\": \"user_1FB8\",
+  \"streamAppId\": \"strm_2yZwUhtgs5Ai8T9yRQJXA\"
+}\n")]
+    Whoami {},
 }
 
 impl AuthenticationCommands {
@@ -385,6 +403,10 @@ impl AuthenticationCommands {
                         Some(options.into()),
                     )
                     .await?;
+                crate::json::print_json_output(&resp, color_mode)?;
+            }
+            Self::Whoami {} => {
+                let resp = client.authentication().whoami().await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
         }

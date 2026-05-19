@@ -12,6 +12,8 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.time.OffsetDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 @ToString
 @EqualsAndHashCode
@@ -21,6 +23,7 @@ public class EndpointTransformationOut {
     @JsonProperty private String code;
     @JsonProperty private Boolean enabled;
     @JsonProperty private OffsetDateTime updatedAt;
+    @JsonProperty private Map<String, String> variables;
 
     public EndpointTransformationOut() {}
 
@@ -79,6 +82,34 @@ public class EndpointTransformationOut {
 
     public void setUpdatedAt(OffsetDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public EndpointTransformationOut variables(Map<String, String> variables) {
+        this.variables = variables;
+        return this;
+    }
+
+    public EndpointTransformationOut putVariablesItem(String key, String variablesItem) {
+        if (this.variables == null) {
+            this.variables = new HashMap<>();
+        }
+        this.variables.put(key, variablesItem);
+
+        return this;
+    }
+
+    /**
+     * Get variables
+     *
+     * @return variables
+     */
+    @javax.annotation.Nullable
+    public Map<String, String> getVariables() {
+        return variables;
+    }
+
+    public void setVariables(Map<String, String> variables) {
+        this.variables = variables;
     }
 
     /**

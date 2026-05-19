@@ -214,4 +214,11 @@ impl<'a> Authentication<'a> {
         .execute(self.cfg)
         .await
     }
+
+    /// Return information about the account associated with the current token
+    pub async fn whoami(&self) -> Result<WhoamiOut> {
+        crate::request::Request::new(http1::Method::GET, "/api/v1/auth/whoami")
+            .execute(self.cfg)
+            .await
+    }
 }

@@ -9,10 +9,14 @@ class EndpointTransformationOut implements \JsonSerializable
 {
     private array $setFields = [];
 
+    /**
+     * @param array<string, string>|null $variables
+     */
     private function __construct(
         public readonly ?string $code = null,
         public readonly ?bool $enabled = null,
         public readonly ?\DateTimeImmutable $updatedAt = null,
+        public readonly ?array $variables = null,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -27,6 +31,7 @@ class EndpointTransformationOut implements \JsonSerializable
             code: null,
             enabled: null,
             updatedAt: null,
+            variables: null,
             setFields: []
         );
     }
@@ -40,6 +45,7 @@ class EndpointTransformationOut implements \JsonSerializable
             code: $code,
             enabled: $this->enabled,
             updatedAt: $this->updatedAt,
+            variables: $this->variables,
             setFields: $setFields
         );
     }
@@ -53,6 +59,7 @@ class EndpointTransformationOut implements \JsonSerializable
             code: $this->code,
             enabled: $enabled,
             updatedAt: $this->updatedAt,
+            variables: $this->variables,
             setFields: $setFields
         );
     }
@@ -66,6 +73,21 @@ class EndpointTransformationOut implements \JsonSerializable
             code: $this->code,
             enabled: $this->enabled,
             updatedAt: $updatedAt,
+            variables: $this->variables,
+            setFields: $setFields
+        );
+    }
+
+    public function withVariables(?array $variables): self
+    {
+        $setFields = $this->setFields;
+        $setFields['variables'] = true;
+
+        return new self(
+            code: $this->code,
+            enabled: $this->enabled,
+            updatedAt: $this->updatedAt,
+            variables: $variables,
             setFields: $setFields
         );
     }
@@ -84,6 +106,9 @@ class EndpointTransformationOut implements \JsonSerializable
         if (isset($this->setFields['updatedAt'])) {
             $data['updatedAt'] = $this->updatedAt->format('c');
         }
+        if (isset($this->setFields['variables'])) {
+            $data['variables'] = $this->variables;
+        }
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
@@ -96,7 +121,8 @@ class EndpointTransformationOut implements \JsonSerializable
         return new self(
             code: \Svix\Utils::deserializeString($data, 'code', false, 'EndpointTransformationOut'),
             enabled: \Svix\Utils::deserializeBool($data, 'enabled', false, 'EndpointTransformationOut'),
-            updatedAt: \Svix\Utils::deserializeDt($data, 'updatedAt', false, 'EndpointTransformationOut')
+            updatedAt: \Svix\Utils::deserializeDt($data, 'updatedAt', false, 'EndpointTransformationOut'),
+            variables: \Svix\Utils::getValFromJson($data, 'variables', false, 'EndpointTransformationOut')
         );
     }
 

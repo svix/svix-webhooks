@@ -2171,6 +2171,7 @@
         "rust/src/models/application_out.rs",
         "rust/src/models/application_patch.rs",
         "rust/src/models/application_token_expire_in.rs",
+        "rust/src/models/authentication_source.rs",
         "rust/src/models/azure_blob_storage_config.rs",
         "rust/src/models/azure_blob_storage_patch_config.rs",
         "rust/src/models/background_task_finished_event.rs",
@@ -2371,6 +2372,7 @@
         "rust/src/models/veriff_config_out.rs",
         "rust/src/models/vgs_config.rs",
         "rust/src/models/vgs_config_out.rs",
+        "rust/src/models/whoami_out.rs",
         "rust/src/models/zoom_config.rs",
         "rust/src/models/zoom_config_out.rs"
     ],

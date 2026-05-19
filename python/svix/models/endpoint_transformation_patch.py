@@ -8,3 +8,5 @@ class EndpointTransformationPatch(BaseModel):
     code: t.Optional[str] = None
 
     enabled: t.Optional[bool] = None
+
+    variables: t.Optional[t.Dict[str, str]] = None

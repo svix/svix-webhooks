@@ -644,7 +644,8 @@ pub enum EndpointCommands {
 {
   \"code\": \"...\",
   \"enabled\": true,
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"variables\": {\"key\": \"...\"}
 }\n")]
     TransformationGet { app_id: String, id: String },
     /// Set or unset the transformation code associated with this endpoint.
@@ -659,7 +660,8 @@ pub enum EndpointCommands {
     #[command(after_help = "Example body:
 {
   \"code\": \"function handler(webhook) { /* ... */ }\",
-  \"enabled\": true
+  \"enabled\": true,
+  \"variables\": {\"key\": \"...\"}
 }\n")]
     PatchTransformation {
         app_id: String,

@@ -12,6 +12,9 @@ pub struct EndpointTransformationOut {
     #[serde(rename = "updatedAt")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub updated_at: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub variables: Option<std::collections::HashMap<String, String>>,
 }
 
 impl EndpointTransformationOut {
@@ -20,6 +23,7 @@ impl EndpointTransformationOut {
             code: None,
             enabled: None,
             updated_at: None,
+            variables: None,
         }
     }
 }

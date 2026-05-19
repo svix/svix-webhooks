@@ -6,8 +6,9 @@ module Svix
   class EndpointTransformationPatch
     attr_accessor :code
     attr_accessor :enabled
+    attr_accessor :variables
 
-    ALL_FIELD ||= ["code", "enabled"].freeze
+    ALL_FIELD ||= ["code", "enabled", "variables"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -33,6 +34,7 @@ module Svix
       attrs = Hash.new
       attrs["code"] = attributes["code"]
       attrs["enabled"] = attributes["enabled"]
+      attrs["variables"] = attributes["variables"]
       new(attrs)
     end
 
@@ -40,6 +42,7 @@ module Svix
       out = Hash.new
       out["code"] = Svix::serialize_primitive(@code) if @__code_is_defined
       out["enabled"] = Svix::serialize_primitive(@enabled) if @enabled
+      out["variables"] = Svix::serialize_primitive(@variables) if @__variables_is_defined
       out
     end
 

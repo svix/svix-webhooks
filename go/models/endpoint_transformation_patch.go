@@ -8,8 +8,9 @@ import (
 )
 
 type EndpointTransformationPatch struct {
-	Code    utils.Nullable[string] `json:"code"`
-	Enabled *bool                  `json:"enabled,omitempty"`
+	Code      utils.Nullable[string]            `json:"code"`
+	Enabled   *bool                             `json:"enabled,omitempty"`
+	Variables utils.Nullable[map[string]string] `json:"variables"`
 }
 
 func (o EndpointTransformationPatch) MarshalJSON() ([]byte, error) {
@@ -19,6 +20,9 @@ func (o EndpointTransformationPatch) MarshalJSON() ([]byte, error) {
 	}
 	if o.Enabled != nil {
 		toSerialize["enabled"] = o.Enabled
+	}
+	if o.Variables.IsSet() {
+		toSerialize["variables"] = o.Variables
 	}
 	return json.Marshal(toSerialize)
 }
