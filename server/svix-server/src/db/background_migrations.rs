@@ -241,29 +241,32 @@ pub async fn try_revert(
         return Ok(false);
     }
 
-    let applied: std::collections::HashSet<String> =
-        sqlx::query_scalar("SELECT id FROM _svix_background_migrations WHERE success = TRUE")
-            .fetch_all(pool)
-            .await?
-            .into_iter()
-            .collect();
+    let result: Result<bool, Error> = async {
+        let applied: std::collections::HashSet<String> =
+            sqlx::query_scalar("SELECT id FROM _svix_background_migrations WHERE success = TRUE")
+                .fetch_all(pool)
+                .await?
+                .into_iter()
+                .collect();
 
-    let Some(last_applied) = migrations.iter().rev().find(|m| applied.contains(m.id)) else {
-        return Err(Error::Migration(format!(
-            "migration '{id}' has not been applied"
-        )));
-    };
-    if last_applied.id != id {
-        return Err(Error::Migration(format!(
-            "migration '{id}' is not the last applied migration and cannot be reverted out of order"
-        )));
+        let Some(last_applied) = migrations.iter().rev().find(|m| applied.contains(m.id)) else {
+            return Err(Error::Migration(format!(
+                "migration '{id}' has not been applied"
+            )));
+        };
+        if last_applied.id != id {
+            return Err(Error::Migration(format!(
+                "migration '{id}' is not the last applied migration and cannot be reverted out of order"
+            )));
+        }
+
+        if last_applied.revert_sql.is_none() {
+            tracing::warn!(id, "No revert SQL for migration");
+        }
+
+        revert_inner(pool, last_applied, last_applied.revert_sql).await
     }
-
-    if last_applied.revert_sql.is_none() {
-        tracing::warn!(id, "No revert SQL for migration");
-    }
-
-    let result = revert_inner(pool, last_applied, last_applied.revert_sql).await;
+    .await;
     advisory_lock_release(&mut conn).await;
     result
 }
