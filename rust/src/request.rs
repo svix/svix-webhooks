@@ -52,29 +52,25 @@ impl Request {
         self
     }
 
-    pub fn with_optional_header_param(
-        mut self,
-        basename: &'static str,
-        param: Option<String>,
-    ) -> Self {
+    pub fn with_optional_header_param(mut self, name: &'static str, param: Option<String>) -> Self {
         if let Some(value) = param {
-            self.header_params.insert(basename, value);
+            self.header_params.insert(name, value);
         }
         self
     }
 
-    pub fn with_query_param(mut self, basename: &'static str, param: impl QueryParamValue) -> Self {
-        self.query_params.insert(basename, param.encode());
+    pub fn with_query_param(mut self, name: &'static str, param: impl QueryParamValue) -> Self {
+        self.query_params.insert(name, param.encode());
         self
     }
 
     pub fn with_optional_query_param<T: QueryParamValue>(
         mut self,
-        basename: &'static str,
+        name: &'static str,
         param: Option<T>,
     ) -> Self {
         if let Some(value) = param {
-            self.query_params.insert(basename, value.encode());
+            self.query_params.insert(name, value.encode());
         }
         self
     }
