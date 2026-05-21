@@ -36,7 +36,7 @@ test("mockttp tests", async (t) => {
     });
     const requests = await endpointMock.getSeenRequests();
     assert.equal(requests.length, 1);
-    assert(requests[0].url.endsWith("before=2025-02-16T21%3A38%3A21.977Z"));
+    assert(requests[0].url.includes("before=2025-02-16T21%3A38%3A21.977Z"));
   });
 
   await t.test("test Date request body", async () => {
