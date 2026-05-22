@@ -557,7 +557,7 @@ async fn test_crud() {
     assert!(list_app_1.data.contains(&app_1_ep_3));
 
     let list_app_2: ListResponse<EndpointOut> = client
-        .get(&format!("api/v1/app/{}/endpoint/", &app_2), StatusCode::OK)
+        .get(&format!("api/v1/app/{app_2}/endpoint/"), StatusCode::OK)
         .await
         .unwrap();
     assert_eq!(list_app_2.data.len(), 2);
@@ -699,7 +699,7 @@ async fn test_endpoint_list_ordering() {
     // Iterate in ascending order
     let list: ListResponse<EndpointOut> = client
         .get(
-            &format!("api/v1/app/{}/endpoint/?limit=3&order=ascending", &app_id),
+            &format!("api/v1/app/{app_id}/endpoint/?limit=3&order=ascending"),
             StatusCode::OK,
         )
         .await
@@ -820,7 +820,7 @@ async fn test_uid() {
     ep_1.uid = Some(uid.clone());
     client
         .post::<_, IgnoredAny>(
-            &format!("api/v1/app/{}/endpoint/", &app_id),
+            &format!("api/v1/app/{app_id}/endpoint/"),
             ep_1,
             StatusCode::CREATED,
         )
@@ -1229,7 +1229,7 @@ async fn test_endpoint_rotate_signing_symmetric_and_asymmetric() {
                     .unwrap()
                     .to_str()
                     .unwrap();
-                let to_sign = format!("{msg_id}.{timestamp}.{}", &last_body);
+                let to_sign = format!("{msg_id}.{timestamp}.{last_body}");
                 let found =
                     signatures
                         .split(' ')
@@ -2062,7 +2062,7 @@ async fn test_msg_channels_filter() {
 
         let msg: MessageOut = client
             .post(
-                &format!("api/v1/app/{}/msg/", &app_id),
+                &format!("api/v1/app/{app_id}/msg/"),
                 message_in,
                 StatusCode::ACCEPTED,
             )

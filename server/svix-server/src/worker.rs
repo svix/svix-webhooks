@@ -678,7 +678,7 @@ async fn handle_failed_dispatch(
                 .ok_or_else(|| {
                     Error::generic(format_args!(
                         "Endpoint not found {app_id} {}",
-                        &msg_task.endpoint_id
+                        msg_task.endpoint_id
                     ))
                 })?;
 
@@ -859,7 +859,7 @@ async fn process_queue_task_inner(
                                     .ok_or_else(|| {
                                         Error::generic(format!(
                                             "MessageDestination not found for message {}",
-                                            &task.msg_id
+                                            task.msg_id
                                         ))
                                     })?
                                     .status

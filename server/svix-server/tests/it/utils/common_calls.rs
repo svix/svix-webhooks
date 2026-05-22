@@ -136,7 +136,7 @@ pub async fn create_test_message(
 ) -> Result<MessageOut> {
     client
         .post(
-            &format!("api/v1/app/{}/msg/", &app_id),
+            &format!("api/v1/app/{app_id}/msg/"),
             message_in("event.type", payload)?,
             StatusCode::ACCEPTED,
         )

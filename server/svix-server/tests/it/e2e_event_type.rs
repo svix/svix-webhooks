@@ -74,7 +74,7 @@ async fn test_patch() {
 
     // Assert that the change was made
     let out = client
-        .get::<EventTypeOut>(&format!("api/v1/event-type/{}/", &et.name), StatusCode::OK)
+        .get::<EventTypeOut>(&format!("api/v1/event-type/{}/", et.name), StatusCode::OK)
         .await
         .unwrap();
     assert_eq!(out.description, "updated_description".to_owned());
@@ -97,7 +97,7 @@ async fn test_patch() {
 
     // Assert that the change was made
     let out = client
-        .get::<EventTypeOut>(&format!("api/v1/event-type/{}/", &et.name), StatusCode::OK)
+        .get::<EventTypeOut>(&format!("api/v1/event-type/{}/", et.name), StatusCode::OK)
         .await
         .unwrap();
 
@@ -121,7 +121,7 @@ async fn test_patch() {
 
     // Assert that the change was made
     let out = client
-        .get::<EventTypeOut>(&format!("api/v1/event-type/{}/", &et.name), StatusCode::OK)
+        .get::<EventTypeOut>(&format!("api/v1/event-type/{}/", et.name), StatusCode::OK)
         .await
         .unwrap();
 
@@ -145,7 +145,7 @@ async fn test_patch() {
 
     // Assert that the change was made
     let out = client
-        .get::<EventTypeOut>(&format!("api/v1/event-type/{}/", &et.name), StatusCode::OK)
+        .get::<EventTypeOut>(&format!("api/v1/event-type/{}/", et.name), StatusCode::OK)
         .await
         .unwrap();
 
@@ -171,7 +171,7 @@ async fn test_event_type_create_read_list() {
 
     assert_eq!(
         client
-            .get::<EventTypeOut>(&format!("api/v1/event-type/{}/", &et.name), StatusCode::OK)
+            .get::<EventTypeOut>(&format!("api/v1/event-type/{}/", et.name), StatusCode::OK)
             .await
             .unwrap(),
         et
