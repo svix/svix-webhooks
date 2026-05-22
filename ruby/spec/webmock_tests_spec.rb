@@ -36,7 +36,7 @@ describe "API Client" do
 
     svx.message_attempt.list_by_endpoint("app_id", "endpoint_id", {tag: "#"})
 
-    expect(WebMock).to(have_requested(:get, "#{host}/api/v1/app/app_id/attempt/endpoint/endpoint_id?tag=%23"))
+    expect(WebMock).to(have_requested(:get, "#{host}/api/v1/app/app_id/attempt/endpoint/endpoint_id?expanded_statuses=true&tag=%23"))
   end
 
   it "test Date in query param" do
@@ -52,7 +52,7 @@ describe "API Client" do
     expect(WebMock).to(
       have_requested(
         :get,
-        "#{host}/api/v1/app/app_id/attempt/endpoint/endpoint_id?tag=%23&before=2025-02-26T20%3A35%3A43%2B00%3A00"
+        "#{host}/api/v1/app/app_id/attempt/endpoint/endpoint_id?expanded_statuses=true&tag=%23&before=2025-02-26T20%3A35%3A43%2B00%3A00"
       )
     )
   end
@@ -77,6 +77,7 @@ describe "API Client" do
 
   it "test Date response body" do
     stub_request(:get, "#{host}/api/v1/app/app_id/attempt/endpoint/endpoint_id")
+      .with(query: hash_including({}))
       .to_return(
         status: 200,
         body: ListResponseMessageAttemptOut_JSON
@@ -88,13 +89,14 @@ describe "API Client" do
     expect(WebMock).to(
       have_requested(
         :get,
-        "#{host}/api/v1/app/app_id/attempt/endpoint/endpoint_id"
+        "#{host}/api/v1/app/app_id/attempt/endpoint/endpoint_id?expanded_statuses=true"
       )
     )
   end
 
   it "test listResponseOut deserializes correctly" do
     stub_request(:get, "#{host}/api/v1/app/app_id/attempt/endpoint/endpoint_id")
+      .with(query: hash_including({}))
       .to_return(
         status: 200,
         body: "{\"data\":[],\"iterator\":null,\"prevIterator\":null,\"done\":true}"
@@ -104,7 +106,7 @@ describe "API Client" do
     expect(WebMock).to(
       have_requested(
         :get,
-        "#{host}/api/v1/app/app_id/attempt/endpoint/endpoint_id"
+        "#{host}/api/v1/app/app_id/attempt/endpoint/endpoint_id?expanded_statuses=true"
       )
     )
   end
@@ -202,6 +204,7 @@ describe "API Client" do
 
   it "integer enum deserialization" do
     stub_request(:get, "#{host}/api/v1/app/app_id/attempt/endpoint/endpoint_id")
+      .with(query: hash_including({}))
       .to_return(
         status: 200,
         body: ListResponseMessageAttemptOut_JSON
@@ -304,6 +307,7 @@ describe "API Client" do
 
   it "MessageAttemptOut without msg" do
     stub_request(:get, "#{host}/api/v1/app/app/attempt/endpoint/edp")
+      .with(query: hash_including({}))
       .to_return(
         status: 200,
         body: ListResponseMessageAttemptOut_without_msg_JSON
