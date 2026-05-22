@@ -56,7 +56,9 @@ Note that message payloads are never included in the response, regardless of thi
                 "after": self.after,
                 "with_content": self.with_content,
                 "with_msg": self.with_msg,
-                "expanded_statuses": self.expanded_statuses,
+                "expanded_statuses": self.expanded_statuses
+                if self.expanded_statuses is not None
+                else True,
                 "event_types": self.event_types,
             }
         )
@@ -102,7 +104,9 @@ class MessageAttemptListByMsgOptions(BaseOptions):
                 "before": self.before,
                 "after": self.after,
                 "with_content": self.with_content,
-                "expanded_statuses": self.expanded_statuses,
+                "expanded_statuses": self.expanded_statuses
+                if self.expanded_statuses is not None
+                else True,
                 "event_types": self.event_types,
             }
         )
@@ -142,7 +146,9 @@ class MessageAttemptListAttemptedMessagesOptions(BaseOptions):
                 "before": self.before,
                 "after": self.after,
                 "with_content": self.with_content,
-                "expanded_statuses": self.expanded_statuses,
+                "expanded_statuses": self.expanded_statuses
+                if self.expanded_statuses is not None
+                else True,
                 "event_types": self.event_types,
             }
         )
@@ -156,7 +162,9 @@ class MessageAttemptGetOptions(BaseOptions):
     def _query_params(self) -> t.Dict[str, str]:
         return serialize_params(
             {
-                "expanded_statuses": self.expanded_statuses,
+                "expanded_statuses": self.expanded_statuses
+                if self.expanded_statuses is not None
+                else True,
             }
         )
 

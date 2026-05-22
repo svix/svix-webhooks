@@ -50,7 +50,10 @@ class {{ resource_type_name }}{{ op.name | to_upper_camel_case }}Options(BaseOpt
     def _query_params(self) -> t.Dict[str, str]:
         return serialize_params({
         {%- for p in op.query_params %}
-            "{{ p.name }}": self.{{ p.name | to_snake_case}},
+            "{{ p.name }}": self.{{ p.name | to_snake_case }}
+            {%- if p.name == "expanded_statuses"
+                %} if self.{{ p.name | to_snake_case }} is not None else True
+            {%- endif %},
         {%- endfor %}
         })
         {%- endif %}
@@ -59,7 +62,7 @@ class {{ resource_type_name }}{{ op.name | to_upper_camel_case }}Options(BaseOpt
     def _header_params(self) -> t.Dict[str, str]:
         return serialize_params({
         {%- for p in op.header_params %}
-            "{{ p.name }}": self.{{ p.name | to_snake_case}},
+            "{{ p.name }}": self.{{ p.name | to_snake_case }},
         {%- endfor %}
         })
         {%- endif %}

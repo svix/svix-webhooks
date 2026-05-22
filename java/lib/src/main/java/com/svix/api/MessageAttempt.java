@@ -90,6 +90,8 @@ public class MessageAttempt {
         if (options.expandedStatuses != null) {
             url.addQueryParameter(
                     "expanded_statuses", Utils.serializeQueryParam(options.expandedStatuses));
+        } else {
+            url.addQueryParameter("expanded_statuses", "true");
         }
         if (options.eventTypes != null) {
             url.addQueryParameter("event_types", Utils.serializeQueryParam(options.eventTypes));
@@ -160,6 +162,8 @@ public class MessageAttempt {
         if (options.expandedStatuses != null) {
             url.addQueryParameter(
                     "expanded_statuses", Utils.serializeQueryParam(options.expandedStatuses));
+        } else {
+            url.addQueryParameter("expanded_statuses", "true");
         }
         if (options.eventTypes != null) {
             url.addQueryParameter("event_types", Utils.serializeQueryParam(options.eventTypes));
@@ -235,6 +239,8 @@ public class MessageAttempt {
         if (options.expandedStatuses != null) {
             url.addQueryParameter(
                     "expanded_statuses", Utils.serializeQueryParam(options.expandedStatuses));
+        } else {
+            url.addQueryParameter("expanded_statuses", "true");
         }
         if (options.eventTypes != null) {
             url.addQueryParameter("event_types", Utils.serializeQueryParam(options.eventTypes));
@@ -266,6 +272,8 @@ public class MessageAttempt {
         if (options.expandedStatuses != null) {
             url.addQueryParameter(
                     "expanded_statuses", Utils.serializeQueryParam(options.expandedStatuses));
+        } else {
+            url.addQueryParameter("expanded_statuses", "true");
         }
         return this.client.executeRequest("GET", url.build(), null, null, MessageAttemptOut.class);
     }

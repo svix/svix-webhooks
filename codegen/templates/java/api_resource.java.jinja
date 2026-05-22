@@ -132,6 +132,12 @@ public class {{ resource_type_name }} {
             {% endif -%}
             );
         }
+        {#- HACK: default expanded_statuses to true, it only defaults to false
+            server-side because of backwards-compatibility for old SDKs #}
+        {%- if p.name == "expanded_statuses" %} else {
+            url.addQueryParameter("{{ p.name }}", "true");
+        }
+        {%- endif %}
         {% endfor -%}
         {# header params -#}
         {% if op.header_params | length > 0 -%}
