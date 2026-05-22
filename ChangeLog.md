@@ -1,5 +1,10 @@
 # Changelog
 
+## Unrelease
+* Libs/All: Enable server-side support of 'canceled' message-attempt status by default
+  * If you were previously comparing attempt statuses against 'success', note that the
+    result of the comparison will now change for messages canceled by a transformation script
+
 ## Version 1.94.0
 * Libs **(New)**: Webhooks AutoConfig SDK
 * Libs/Java: Restore compatibility with Java 1.8 in Webhooks verification
