@@ -78,7 +78,7 @@ First checkout the [core README](../README.md#development) for details on how to
 
 ## Requirements
 
- - PHP >= 5.6.0
+- PHP >= 8.3
 
 ## Building the library
 ```sh
