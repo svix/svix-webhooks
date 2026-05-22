@@ -155,9 +155,11 @@ class MessageAttempt(private val client: SvixHttpClient) {
         options.after?.let { url.addQueryParameter("after", serializeQueryParam(it)) }
         options.withContent?.let { url.addQueryParameter("with_content", serializeQueryParam(it)) }
         options.withMsg?.let { url.addQueryParameter("with_msg", serializeQueryParam(it)) }
-        options.expandedStatuses?.let {
-            url.addQueryParameter("expanded_statuses", serializeQueryParam(it))
-        }
+
+        url.addQueryParameter(
+            "expanded_statuses",
+            options.expandedStatuses?.let { serializeQueryParam(it) } ?: "true",
+        )
         options.eventTypes?.let { url.addQueryParameter("event_types", serializeQueryParam(it)) }
         return client.executeRequest<Any, ListResponseMessageAttemptOut>("GET", url.build())
     }
@@ -188,9 +190,11 @@ class MessageAttempt(private val client: SvixHttpClient) {
         options.before?.let { url.addQueryParameter("before", serializeQueryParam(it)) }
         options.after?.let { url.addQueryParameter("after", serializeQueryParam(it)) }
         options.withContent?.let { url.addQueryParameter("with_content", serializeQueryParam(it)) }
-        options.expandedStatuses?.let {
-            url.addQueryParameter("expanded_statuses", serializeQueryParam(it))
-        }
+
+        url.addQueryParameter(
+            "expanded_statuses",
+            options.expandedStatuses?.let { serializeQueryParam(it) } ?: "true",
+        )
         options.eventTypes?.let { url.addQueryParameter("event_types", serializeQueryParam(it)) }
         return client.executeRequest<Any, ListResponseMessageAttemptOut>("GET", url.build())
     }
@@ -222,9 +226,11 @@ class MessageAttempt(private val client: SvixHttpClient) {
         options.before?.let { url.addQueryParameter("before", serializeQueryParam(it)) }
         options.after?.let { url.addQueryParameter("after", serializeQueryParam(it)) }
         options.withContent?.let { url.addQueryParameter("with_content", serializeQueryParam(it)) }
-        options.expandedStatuses?.let {
-            url.addQueryParameter("expanded_statuses", serializeQueryParam(it))
-        }
+
+        url.addQueryParameter(
+            "expanded_statuses",
+            options.expandedStatuses?.let { serializeQueryParam(it) } ?: "true",
+        )
         options.eventTypes?.let { url.addQueryParameter("event_types", serializeQueryParam(it)) }
         return client.executeRequest<Any, ListResponseEndpointMessageOut>("GET", url.build())
     }
@@ -238,9 +244,11 @@ class MessageAttempt(private val client: SvixHttpClient) {
     ): MessageAttemptOut {
         val url =
             client.newUrlBuilder().encodedPath("/api/v1/app/$appId/msg/$msgId/attempt/$attemptId")
-        options.expandedStatuses?.let {
-            url.addQueryParameter("expanded_statuses", serializeQueryParam(it))
-        }
+
+        url.addQueryParameter(
+            "expanded_statuses",
+            options.expandedStatuses?.let { serializeQueryParam(it) } ?: "true",
+        )
         return client.executeRequest<Any, MessageAttemptOut>("GET", url.build())
     }
 

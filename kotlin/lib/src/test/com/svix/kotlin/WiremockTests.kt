@@ -496,4 +496,21 @@ class WiremockTests {
         getRequestedFor(urlEqualTo("/api/v1/app")),
     )
   }
+
+  @Test
+  fun testExpandedStatusesDefaultTrue() {
+    val svx = testClient()
+    wireMockServer.stubFor(
+      WireMock.get(urlPathEqualTo("/api/v1/app/ap/attempt/endpoint/endp"))
+        .willReturn(ok().withBodyFile("ListResponseMessageAttemptOut.json"))
+    )
+    runBlocking {
+      svx.messageAttempt.listByEndpoint("ap", "endp")
+    }
+
+    wireMockServer.verify(
+      1,
+      getRequestedFor(urlEqualTo("/api/v1/app/ap/attempt/endpoint/endp?expanded_statuses=true"))
+    )
+  }
 }
