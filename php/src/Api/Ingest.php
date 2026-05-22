@@ -33,9 +33,7 @@ class Ingest
         ?IngestDashboardOptions $options = null,
     ): DashboardAccessOut {
         $request = $this->client->newReq('POST', "/ingest/api/v1/source/{$sourceId}/dashboard");
-        if (null !== $options) {
-            $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
-        }
+        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
         $request->setBody(json_encode($ingestSourceConsumerPortalAccessIn));
         $res = $this->client->send($request);
 

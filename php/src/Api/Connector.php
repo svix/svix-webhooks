@@ -29,12 +29,10 @@ class Connector
         ?ConnectorListOptions $options = null,
     ): ListResponseConnectorOut {
         $request = $this->client->newReq('GET', '/api/v1/connector');
-        if (null !== $options) {
-            $request->setQueryParam('limit', $options->limit);
-            $request->setQueryParam('iterator', $options->iterator);
-            $request->setQueryParam('order', $options->order);
-            $request->setQueryParam('product_type', $options->productType);
-        }
+        $request->setQueryParam('limit', $options?->limit);
+        $request->setQueryParam('iterator', $options?->iterator);
+        $request->setQueryParam('order', $options?->order);
+        $request->setQueryParam('product_type', $options?->productType);
         $res = $this->client->send($request);
 
         return ListResponseConnectorOut::fromJson($res);
@@ -50,9 +48,7 @@ class Connector
         ?ConnectorCreateOptions $options = null,
     ): ConnectorOut {
         $request = $this->client->newReq('POST', '/api/v1/connector');
-        if (null !== $options) {
-            $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
-        }
+        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
         $request->setBody(json_encode($connectorIn));
         $res = $this->client->send($request);
 

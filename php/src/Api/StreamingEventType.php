@@ -28,12 +28,10 @@ class StreamingEventType
         ?StreamingEventTypeListOptions $options = null,
     ): ListResponseStreamEventTypeOut {
         $request = $this->client->newReq('GET', '/api/v1/stream/event-type');
-        if (null !== $options) {
-            $request->setQueryParam('limit', $options->limit);
-            $request->setQueryParam('iterator', $options->iterator);
-            $request->setQueryParam('order', $options->order);
-            $request->setQueryParam('include_archived', $options->includeArchived);
-        }
+        $request->setQueryParam('limit', $options?->limit);
+        $request->setQueryParam('iterator', $options?->iterator);
+        $request->setQueryParam('order', $options?->order);
+        $request->setQueryParam('include_archived', $options?->includeArchived);
         $res = $this->client->send($request);
 
         return ListResponseStreamEventTypeOut::fromJson($res);
@@ -49,9 +47,7 @@ class StreamingEventType
         ?StreamingEventTypeCreateOptions $options = null,
     ): StreamEventTypeOut {
         $request = $this->client->newReq('POST', '/api/v1/stream/event-type');
-        if (null !== $options) {
-            $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
-        }
+        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
         $request->setBody(json_encode($streamEventTypeIn));
         $res = $this->client->send($request);
 
@@ -98,9 +94,7 @@ class StreamingEventType
         ?StreamingEventTypeDeleteOptions $options = null,
     ): void {
         $request = $this->client->newReq('DELETE', "/api/v1/stream/event-type/{$name}");
-        if (null !== $options) {
-            $request->setQueryParam('expunge', $options->expunge);
-        }
+        $request->setQueryParam('expunge', $options?->expunge);
         $res = $this->client->sendNoResponseBody($request);
     }
 

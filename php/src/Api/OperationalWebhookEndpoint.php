@@ -32,11 +32,9 @@ class OperationalWebhookEndpoint
         ?OperationalWebhookEndpointListOptions $options = null,
     ): ListResponseOperationalWebhookEndpointOut {
         $request = $this->client->newReq('GET', '/api/v1/operational-webhook/endpoint');
-        if (null !== $options) {
-            $request->setQueryParam('limit', $options->limit);
-            $request->setQueryParam('iterator', $options->iterator);
-            $request->setQueryParam('order', $options->order);
-        }
+        $request->setQueryParam('limit', $options?->limit);
+        $request->setQueryParam('iterator', $options?->iterator);
+        $request->setQueryParam('order', $options?->order);
         $res = $this->client->send($request);
 
         return ListResponseOperationalWebhookEndpointOut::fromJson($res);
@@ -52,9 +50,7 @@ class OperationalWebhookEndpoint
         ?OperationalWebhookEndpointCreateOptions $options = null,
     ): OperationalWebhookEndpointOut {
         $request = $this->client->newReq('POST', '/api/v1/operational-webhook/endpoint');
-        if (null !== $options) {
-            $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
-        }
+        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
         $request->setBody(json_encode($operationalWebhookEndpointIn));
         $res = $this->client->send($request);
 
@@ -161,9 +157,7 @@ class OperationalWebhookEndpoint
         ?OperationalWebhookEndpointRotateSecretOptions $options = null,
     ): void {
         $request = $this->client->newReq('POST', "/api/v1/operational-webhook/endpoint/{$endpointId}/secret/rotate");
-        if (null !== $options) {
-            $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
-        }
+        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
         $request->setBody(json_encode($operationalWebhookEndpointSecretIn));
         $res = $this->client->sendNoResponseBody($request);
     }

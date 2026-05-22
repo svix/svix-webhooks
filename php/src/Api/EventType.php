@@ -31,13 +31,11 @@ class EventType
         ?EventTypeListOptions $options = null,
     ): ListResponseEventTypeOut {
         $request = $this->client->newReq('GET', '/api/v1/event-type');
-        if (null !== $options) {
-            $request->setQueryParam('limit', $options->limit);
-            $request->setQueryParam('iterator', $options->iterator);
-            $request->setQueryParam('order', $options->order);
-            $request->setQueryParam('include_archived', $options->includeArchived);
-            $request->setQueryParam('with_content', $options->withContent);
-        }
+        $request->setQueryParam('limit', $options?->limit);
+        $request->setQueryParam('iterator', $options?->iterator);
+        $request->setQueryParam('order', $options?->order);
+        $request->setQueryParam('include_archived', $options?->includeArchived);
+        $request->setQueryParam('with_content', $options?->withContent);
         $res = $this->client->send($request);
 
         return ListResponseEventTypeOut::fromJson($res);
@@ -57,9 +55,7 @@ class EventType
         ?EventTypeCreateOptions $options = null,
     ): EventTypeOut {
         $request = $this->client->newReq('POST', '/api/v1/event-type');
-        if (null !== $options) {
-            $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
-        }
+        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
         $request->setBody(json_encode($eventTypeIn));
         $res = $this->client->send($request);
 
@@ -80,9 +76,7 @@ class EventType
         ?EventTypeImportOpenapiOptions $options = null,
     ): EventTypeImportOpenApiOut {
         $request = $this->client->newReq('POST', '/api/v1/event-type/import/openapi');
-        if (null !== $options) {
-            $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
-        }
+        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
         $request->setBody(json_encode($eventTypeImportOpenApiIn));
         $res = $this->client->send($request);
 
@@ -134,9 +128,7 @@ class EventType
         ?EventTypeDeleteOptions $options = null,
     ): void {
         $request = $this->client->newReq('DELETE', "/api/v1/event-type/{$eventTypeName}");
-        if (null !== $options) {
-            $request->setQueryParam('expunge', $options->expunge);
-        }
+        $request->setQueryParam('expunge', $options?->expunge);
         $res = $this->client->sendNoResponseBody($request);
     }
 

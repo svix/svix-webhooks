@@ -31,9 +31,7 @@ class IngestSource
         ?IngestSourceRotateTokenOptions $options = null,
     ): RotateTokenOut {
         $request = $this->client->newReq('POST', "/ingest/api/v1/source/{$sourceId}/token/rotate");
-        if (null !== $options) {
-            $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
-        }
+        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
         $res = $this->client->send($request);
 
         return RotateTokenOut::fromJson($res);

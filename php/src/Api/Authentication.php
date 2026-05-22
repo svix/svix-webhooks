@@ -33,9 +33,7 @@ class Authentication
         ?AuthenticationAppPortalAccessOptions $options = null,
     ): AppPortalAccessOut {
         $request = $this->client->newReq('POST', "/api/v1/auth/app-portal-access/{$appId}");
-        if (null !== $options) {
-            $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
-        }
+        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
         $request->setBody(json_encode($appPortalAccessIn));
         $res = $this->client->send($request);
 
@@ -53,9 +51,7 @@ class Authentication
         ?AuthenticationExpireAllOptions $options = null,
     ): void {
         $request = $this->client->newReq('POST', "/api/v1/auth/app/{$appId}/expire-all");
-        if (null !== $options) {
-            $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
-        }
+        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
         $request->setBody(json_encode($applicationTokenExpireIn));
         $res = $this->client->sendNoResponseBody($request);
     }
@@ -71,9 +67,7 @@ class Authentication
         ?AuthenticationLogoutOptions $options = null,
     ): void {
         $request = $this->client->newReq('POST', '/api/v1/auth/logout');
-        if (null !== $options) {
-            $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
-        }
+        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
         $res = $this->client->sendNoResponseBody($request);
     }
 
@@ -88,9 +82,7 @@ class Authentication
         ?AuthenticationStreamLogoutOptions $options = null,
     ): void {
         $request = $this->client->newReq('POST', '/api/v1/auth/stream-logout');
-        if (null !== $options) {
-            $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
-        }
+        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
         $res = $this->client->sendNoResponseBody($request);
     }
 
@@ -105,9 +97,7 @@ class Authentication
         ?AuthenticationStreamPortalAccessOptions $options = null,
     ): AppPortalAccessOut {
         $request = $this->client->newReq('POST', "/api/v1/auth/stream-portal-access/{$streamId}");
-        if (null !== $options) {
-            $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
-        }
+        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
         $request->setBody(json_encode($streamPortalAccessIn));
         $res = $this->client->send($request);
 
@@ -125,9 +115,7 @@ class Authentication
         ?AuthenticationStreamExpireAllOptions $options = null,
     ): void {
         $request = $this->client->newReq('POST', "/api/v1/auth/stream/{$streamId}/expire-all");
-        if (null !== $options) {
-            $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
-        }
+        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
         $request->setBody(json_encode($streamTokenExpireIn));
         $res = $this->client->sendNoResponseBody($request);
     }
@@ -159,9 +147,7 @@ class Authentication
         ?AuthenticationRotateStreamPollerTokenOptions $options = null,
     ): ApiTokenOut {
         $request = $this->client->newReq('POST', "/api/v1/auth/stream/{$streamId}/sink/{$sinkId}/poller/token/rotate");
-        if (null !== $options) {
-            $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
-        }
+        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
         $request->setBody(json_encode($rotatePollerTokenIn));
         $res = $this->client->send($request);
 

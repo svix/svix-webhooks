@@ -49,9 +49,7 @@ class Statistics
         ?StatisticsAggregateAppStatsOptions $options = null,
     ): AppUsageStatsOut {
         $request = $this->client->newReq('POST', '/api/v1/stats/usage/app');
-        if (null !== $options) {
-            $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
-        }
+        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
         $request->setBody(json_encode($appUsageStatsIn));
         $res = $this->client->send($request);
 

@@ -28,11 +28,9 @@ class StreamingStream
         ?StreamingStreamListOptions $options = null,
     ): ListResponseStreamOut {
         $request = $this->client->newReq('GET', '/api/v1/stream');
-        if (null !== $options) {
-            $request->setQueryParam('limit', $options->limit);
-            $request->setQueryParam('iterator', $options->iterator);
-            $request->setQueryParam('order', $options->order);
-        }
+        $request->setQueryParam('limit', $options?->limit);
+        $request->setQueryParam('iterator', $options?->iterator);
+        $request->setQueryParam('order', $options?->order);
         $res = $this->client->send($request);
 
         return ListResponseStreamOut::fromJson($res);
@@ -48,9 +46,7 @@ class StreamingStream
         ?StreamingStreamCreateOptions $options = null,
     ): StreamOut {
         $request = $this->client->newReq('POST', '/api/v1/stream');
-        if (null !== $options) {
-            $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
-        }
+        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
         $request->setBody(json_encode($streamIn));
         $res = $this->client->send($request);
 

@@ -30,11 +30,9 @@ class Integration
         ?IntegrationListOptions $options = null,
     ): ListResponseIntegrationOut {
         $request = $this->client->newReq('GET', "/api/v1/app/{$appId}/integration");
-        if (null !== $options) {
-            $request->setQueryParam('limit', $options->limit);
-            $request->setQueryParam('iterator', $options->iterator);
-            $request->setQueryParam('order', $options->order);
-        }
+        $request->setQueryParam('limit', $options?->limit);
+        $request->setQueryParam('iterator', $options?->iterator);
+        $request->setQueryParam('order', $options?->order);
         $res = $this->client->send($request);
 
         return ListResponseIntegrationOut::fromJson($res);
@@ -51,9 +49,7 @@ class Integration
         ?IntegrationCreateOptions $options = null,
     ): IntegrationOut {
         $request = $this->client->newReq('POST', "/api/v1/app/{$appId}/integration");
-        if (null !== $options) {
-            $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
-        }
+        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
         $request->setBody(json_encode($integrationIn));
         $res = $this->client->send($request);
 
@@ -131,9 +127,7 @@ class Integration
         ?IntegrationRotateKeyOptions $options = null,
     ): IntegrationKeyOut {
         $request = $this->client->newReq('POST', "/api/v1/app/{$appId}/integration/{$integId}/key/rotate");
-        if (null !== $options) {
-            $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
-        }
+        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
         $res = $this->client->send($request);
 
         return IntegrationKeyOut::fromJson($res);

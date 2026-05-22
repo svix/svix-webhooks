@@ -26,13 +26,11 @@ class BackgroundTask
         ?BackgroundTaskListOptions $options = null,
     ): ListResponseBackgroundTaskOut {
         $request = $this->client->newReq('GET', '/api/v1/background-task');
-        if (null !== $options) {
-            $request->setQueryParam('status', $options->status);
-            $request->setQueryParam('task', $options->task);
-            $request->setQueryParam('limit', $options->limit);
-            $request->setQueryParam('iterator', $options->iterator);
-            $request->setQueryParam('order', $options->order);
-        }
+        $request->setQueryParam('status', $options?->status);
+        $request->setQueryParam('task', $options?->task);
+        $request->setQueryParam('limit', $options?->limit);
+        $request->setQueryParam('iterator', $options?->iterator);
+        $request->setQueryParam('order', $options?->order);
         $res = $this->client->send($request);
 
         return ListResponseBackgroundTaskOut::fromJson($res);
