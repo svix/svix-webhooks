@@ -142,7 +142,7 @@ class MockTest extends TestCase
         $req1 = $this->requestHistory[0]['request'];
         $query = $req1->getUri()->getQuery();
         // channel=asd&after=2025-08-27T17:43:50+00:00&event_types=ev1,eventtype-2
-        $this->assertEquals('channel=asd&after=2025-08-27T17%3A43%3A50%2B00%3A00&event_types=ev1%2Ceventtype-2', $query);
+        $this->assertEquals('channel=asd&after=2025-08-27T17%3A43%3A50%2B00%3A00&expanded_statuses=true&event_types=ev1%2Ceventtype-2', $query);
     }
 
     public function testDateSerialization(): void
@@ -290,7 +290,7 @@ class MockTest extends TestCase
 
         $req = $this->requestHistory[0]['request'];
         $query = $req->getUri()->getQuery();
-        $this->assertEquals('status=0&status_code_class=200', $query);
+        $this->assertEquals('status=0&status_code_class=200&expanded_statuses=true', $query);
     }
 
     public function testStringEnumBodySerialization(): void
