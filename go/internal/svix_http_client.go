@@ -210,6 +210,12 @@ func SerializeParamToMap(key string, val interface{}, d map[string]string, err *
 	}
 	// If val is null don't add it to the query params map
 	if val == nil || (reflect.ValueOf(val).Kind() == reflect.Ptr && reflect.ValueOf(val).IsNil()) {
+		// HACK: default expanded_statuses to true, it only defaults to false
+		//       server-side because of backwards-compatibility for old SDKs
+		if key == "expanded_statuses" {
+			d[key] = "true"
+		}
+
 		return
 	}
 
@@ -271,7 +277,7 @@ func serializeQueryOrHeaderParam(val interface{}, key string) (string, error) {
 		fallthrough
 	default:
 		return "", fmt.Errorf("can't serialize %s as a query param, key: %s", v.Kind().String(), key)
-
 	}
+
 	return value, nil
 }

@@ -152,7 +152,7 @@ export class MessageAttempt {
       after: options?.after,
       with_content: options?.withContent,
       with_msg: options?.withMsg,
-      expanded_statuses: options?.expandedStatuses,
+      expanded_statuses: options?.expandedStatuses ?? true,
       event_types: options?.eventTypes,
     });
 
@@ -193,7 +193,7 @@ export class MessageAttempt {
       before: options?.before,
       after: options?.after,
       with_content: options?.withContent,
-      expanded_statuses: options?.expandedStatuses,
+      expanded_statuses: options?.expandedStatuses ?? true,
       event_types: options?.eventTypes,
     });
 
@@ -234,7 +234,7 @@ export class MessageAttempt {
       before: options?.before,
       after: options?.after,
       with_content: options?.withContent,
-      expanded_statuses: options?.expandedStatuses,
+      expanded_statuses: options?.expandedStatuses ?? true,
       event_types: options?.eventTypes,
     });
 
@@ -260,7 +260,7 @@ export class MessageAttempt {
     request.setPathParam("msg_id", msgId);
     request.setPathParam("attempt_id", attemptId);
     request.setQueryParams({
-      expanded_statuses: options?.expandedStatuses,
+      expanded_statuses: options?.expandedStatuses ?? true,
     });
 
     return request.send(this.requestCtx, MessageAttemptOutSerializer._fromJsonObject);

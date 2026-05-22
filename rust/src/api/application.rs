@@ -97,7 +97,7 @@ impl<'a> Application<'a> {
         let ApplicationCreateOptions { idempotency_key } = options.unwrap_or_default();
 
         crate::request::Request::new(http1::Method::POST, "/api/v1/app")
-            .with_query_param("get_if_exists", "true".to_owned())
+            .with_query_param("get_if_exists", true)
             .with_optional_header_param("idempotency-key", idempotency_key)
             .with_body_param(application_in)
             .execute(self.cfg)

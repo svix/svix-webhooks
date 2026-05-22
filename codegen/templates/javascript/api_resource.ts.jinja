@@ -99,7 +99,10 @@ export class {{ resource_type_name }} {
             {% if op.query_params | length > 0 -%}
             request.setQueryParams({
                 {% for p in op.query_params -%}
-                "{{ p.name }}": options{% if not p.required %}?{% endif %}.{{ p.name | to_lower_camel_case }},
+                "{{ p.name }}": options{% if not p.required %}?{% endif %}.{{ p.name | to_lower_camel_case }}
+                    {#- HACK: default expanded_statuses to true, it only defaults to false
+                        server-side because of backwards-compatibility for old SDKs #}
+                    {%- if p.name == "expanded_statuses" %} ?? true{% endif %},
                 {% endfor -%}
             });
             {% endif -%}
