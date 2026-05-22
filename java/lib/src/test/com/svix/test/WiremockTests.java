@@ -61,7 +61,7 @@ public class WiremockTests {
     public void testDateUTCInQueryParam() throws Exception {
         Svix svx = testClient();
         wireMockRule.stubFor(
-                WireMock.get(urlMatching("/api/v1/app/ap/attempt/endpoint/endp?.*"))
+                WireMock.get(urlPathEqualTo("/api/v1/app/ap/attempt/endpoint/endp"))
                         .willReturn(
                                 WireMock.ok().withBodyFile("ListResponseMessageAttemptOut.json")));
 
@@ -76,14 +76,14 @@ public class WiremockTests {
                 1,
                 getRequestedFor(
                         urlEqualTo(
-                                "/api/v1/app/ap/attempt/endpoint/endp?before=2025-02-22T16%3A07%3A35.514412223Z")));
+                                "/api/v1/app/ap/attempt/endpoint/endp?before=2025-02-22T16%3A07%3A35.514412223Z&expanded_statuses=true")));
     }
 
     @Test
     public void testDateESTInQueryParam() throws Exception {
         Svix svx = testClient();
         wireMockRule.stubFor(
-                WireMock.get(urlMatching("/api/v1/app/ap/attempt/endpoint/endp?.*"))
+                WireMock.get(urlPathEqualTo("/api/v1/app/ap/attempt/endpoint/endp"))
                         .willReturn(
                                 WireMock.ok().withBodyFile("ListResponseMessageAttemptOut.json")));
 
@@ -98,7 +98,7 @@ public class WiremockTests {
                 1,
                 getRequestedFor(
                         urlEqualTo(
-                                "/api/v1/app/ap/attempt/endpoint/endp?before=2025-02-22T11%3A07%3A35.514412223-05%3A00")));
+                                "/api/v1/app/ap/attempt/endpoint/endp?before=2025-02-22T11%3A07%3A35.514412223-05%3A00&expanded_statuses=true")));
     }
 
     @Test
@@ -145,7 +145,7 @@ public class WiremockTests {
     public void testDateResponseBody() throws Exception {
         Svix svx = testClient();
         wireMockRule.stubFor(
-                WireMock.get(urlMatching("/api/v1/app/ap/attempt/endpoint/endp?.*"))
+                WireMock.get(urlPathEqualTo("/api/v1/app/ap/attempt/endpoint/endp"))
                         .willReturn(
                                 WireMock.ok().withBodyFile("ListResponseMessageAttemptOut.json")));
 
@@ -160,7 +160,7 @@ public class WiremockTests {
     public void testListResponseOutDeserializesCorrectly() throws Exception {
         Svix svx = testClient();
         wireMockRule.stubFor(
-                WireMock.get(urlEqualTo("/api/v1/app/ap/attempt/endpoint/endp"))
+                WireMock.get(urlPathEqualTo("/api/v1/app/ap/attempt/endpoint/endp"))
                         .willReturn(
                                 WireMock.ok()
                                         .withBody(
@@ -169,7 +169,7 @@ public class WiremockTests {
         ListResponseMessageAttemptOut res = svx.getMessageAttempt().listByEndpoint("ap", "endp");
         assertNull(res.getIterator());
 
-        wireMockRule.verify(1, getRequestedFor(urlEqualTo("/api/v1/app/ap/attempt/endpoint/endp")));
+        wireMockRule.verify(1, getRequestedFor(urlEqualTo("/api/v1/app/ap/attempt/endpoint/endp?expanded_statuses=true")));
     }
 
     @Test
@@ -292,14 +292,14 @@ public class WiremockTests {
     public void integerEnumDeserialization() throws Exception {
         Svix svx = testClient();
         wireMockRule.stubFor(
-                WireMock.get(urlMatching("/api/v1/app/ap/attempt/endpoint/endp"))
+                WireMock.get(urlPathEqualTo("/api/v1/app/ap/attempt/endpoint/endp"))
                         .willReturn(
                                 WireMock.ok().withBodyFile("ListResponseMessageAttemptOut.json")));
 
         ListResponseMessageAttemptOut res = svx.getMessageAttempt().listByEndpoint("ap", "endp");
 
         assertEquals(MessageAttemptTriggerType.SCHEDULED, res.getData().get(0).getTriggerType());
-        wireMockRule.verify(1, getRequestedFor(urlEqualTo("/api/v1/app/ap/attempt/endpoint/endp")));
+        wireMockRule.verify(1, getRequestedFor(urlEqualTo("/api/v1/app/ap/attempt/endpoint/endp?expanded_statuses=true")));
     }
 
     @Test
