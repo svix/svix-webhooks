@@ -35,11 +35,9 @@ class IngestEndpoint
         ?IngestEndpointListOptions $options = null,
     ): ListResponseIngestEndpointOut {
         $request = $this->client->newReq('GET', "/ingest/api/v1/source/{$sourceId}/endpoint");
-        if (null !== $options) {
-            $request->setQueryParam('limit', $options->limit);
-            $request->setQueryParam('iterator', $options->iterator);
-            $request->setQueryParam('order', $options->order);
-        }
+        $request->setQueryParam('limit', $options?->limit);
+        $request->setQueryParam('iterator', $options?->iterator);
+        $request->setQueryParam('order', $options?->order);
         $res = $this->client->send($request);
 
         return ListResponseIngestEndpointOut::fromJson($res);
@@ -56,9 +54,7 @@ class IngestEndpoint
         ?IngestEndpointCreateOptions $options = null,
     ): IngestEndpointOut {
         $request = $this->client->newReq('POST', "/ingest/api/v1/source/{$sourceId}/endpoint");
-        if (null !== $options) {
-            $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
-        }
+        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
         $request->setBody(json_encode($ingestEndpointIn));
         $res = $this->client->send($request);
 
@@ -172,9 +168,7 @@ class IngestEndpoint
         ?IngestEndpointRotateSecretOptions $options = null,
     ): void {
         $request = $this->client->newReq('POST', "/ingest/api/v1/source/{$sourceId}/endpoint/{$endpointId}/secret/rotate");
-        if (null !== $options) {
-            $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
-        }
+        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
         $request->setBody(json_encode($ingestEndpointSecretIn));
         $res = $this->client->sendNoResponseBody($request);
     }

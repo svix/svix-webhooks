@@ -42,16 +42,14 @@ class Message
         ?MessageListOptions $options = null,
     ): ListResponseMessageOut {
         $request = $this->client->newReq('GET', "/api/v1/app/{$appId}/msg");
-        if (null !== $options) {
-            $request->setQueryParam('limit', $options->limit);
-            $request->setQueryParam('iterator', $options->iterator);
-            $request->setQueryParam('channel', $options->channel);
-            $request->setQueryParam('before', $options->before);
-            $request->setQueryParam('after', $options->after);
-            $request->setQueryParam('with_content', $options->withContent);
-            $request->setQueryParam('tag', $options->tag);
-            $request->setQueryParam('event_types', $options->eventTypes);
-        }
+        $request->setQueryParam('limit', $options?->limit);
+        $request->setQueryParam('iterator', $options?->iterator);
+        $request->setQueryParam('channel', $options?->channel);
+        $request->setQueryParam('before', $options?->before);
+        $request->setQueryParam('after', $options?->after);
+        $request->setQueryParam('with_content', $options?->withContent);
+        $request->setQueryParam('tag', $options?->tag);
+        $request->setQueryParam('event_types', $options?->eventTypes);
         $res = $this->client->send($request);
 
         return ListResponseMessageOut::fromJson($res);
@@ -76,10 +74,8 @@ class Message
         ?MessageCreateOptions $options = null,
     ): MessageOut {
         $request = $this->client->newReq('POST', "/api/v1/app/{$appId}/msg");
-        if (null !== $options) {
-            $request->setQueryParam('with_content', $options->withContent);
-            $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
-        }
+        $request->setQueryParam('with_content', $options?->withContent);
+        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
         $request->setBody(json_encode($messageIn));
         $res = $this->client->send($request);
 
@@ -110,9 +106,7 @@ class Message
         ?MessageExpungeAllContentsOptions $options = null,
     ): ExpungeAllContentsOut {
         $request = $this->client->newReq('POST', "/api/v1/app/{$appId}/msg/expunge-all-contents");
-        if (null !== $options) {
-            $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
-        }
+        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
         $res = $this->client->send($request);
 
         return ExpungeAllContentsOut::fromJson($res);
@@ -134,9 +128,7 @@ class Message
         ?MessagePrecheckOptions $options = null,
     ): MessagePrecheckOut {
         $request = $this->client->newReq('POST', "/api/v1/app/{$appId}/msg/precheck/active");
-        if (null !== $options) {
-            $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
-        }
+        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
         $request->setBody(json_encode($messagePrecheckIn));
         $res = $this->client->send($request);
 
@@ -154,9 +146,7 @@ class Message
         ?MessageGetOptions $options = null,
     ): MessageOut {
         $request = $this->client->newReq('GET', "/api/v1/app/{$appId}/msg/{$msgId}");
-        if (null !== $options) {
-            $request->setQueryParam('with_content', $options->withContent);
-        }
+        $request->setQueryParam('with_content', $options?->withContent);
         $res = $this->client->send($request);
 
         return MessageOut::fromJson($res);

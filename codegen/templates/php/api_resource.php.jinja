@@ -55,19 +55,17 @@ class {{ resource_type_name }}
     {%- endif -%}
     {
         $request = $this->client->newReq('{{ op.method | upper }}', "{{ op.path | generate_php_path_str(op.path_params) }}");
-        {# query/header params -#}
-        {% if op | has_query_or_header_params -%}
-        if (null !== $options) {
-            {% for p in op.query_params -%}
-            $request->setQueryParam('{{ p.name }}', $options->{{ p.name | to_lower_camel_case }});
-            {% endfor -%}
 
-            {% for p in op.header_params -%}
-            $request->setHeaderParam('{{ p.name }}', $options->{{ p.name | to_lower_camel_case }});
-            {% endfor -%}
+        {#- query/header params #}
+        {%- for p in op.query_params %}
+        $request->setQueryParam('{{ p.name }}', $options?->{{ p.name | to_lower_camel_case }});
+        {%- endfor %}
 
-        }
-        {% endif -%}
+        {%- for p in op.header_params %}
+        $request->setHeaderParam('{{ p.name }}', $options?->{{ p.name | to_lower_camel_case }});
+        {%- endfor %}
+
+        {#- body params #}
         {% if op.request_body_schema_name is defined -%}
         $request->setBody(json_encode(${{ op.request_body_schema_name | to_lower_camel_case }}));
         {% endif -%}

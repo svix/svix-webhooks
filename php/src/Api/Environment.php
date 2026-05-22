@@ -29,9 +29,7 @@ class Environment
         ?EnvironmentExportOptions $options = null,
     ): EnvironmentOut {
         $request = $this->client->newReq('POST', '/api/v1/environment/export');
-        if (null !== $options) {
-            $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
-        }
+        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
         $res = $this->client->send($request);
 
         return EnvironmentOut::fromJson($res);
@@ -52,9 +50,7 @@ class Environment
         ?EnvironmentImportOptions $options = null,
     ): void {
         $request = $this->client->newReq('POST', '/api/v1/environment/import');
-        if (null !== $options) {
-            $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
-        }
+        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
         $request->setBody(json_encode($environmentIn));
         $res = $this->client->sendNoResponseBody($request);
     }

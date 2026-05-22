@@ -28,14 +28,12 @@ class Application
         ?ApplicationListOptions $options = null,
     ): ListResponseApplicationOut {
         $request = $this->client->newReq('GET', '/api/v1/app');
-        if (null !== $options) {
-            $request->setQueryParam('exclude_apps_with_no_endpoints', $options->excludeAppsWithNoEndpoints);
-            $request->setQueryParam('exclude_apps_with_disabled_endpoints', $options->excludeAppsWithDisabledEndpoints);
-            $request->setQueryParam('exclude_apps_with_svix_play_endpoints', $options->excludeAppsWithSvixPlayEndpoints);
-            $request->setQueryParam('limit', $options->limit);
-            $request->setQueryParam('iterator', $options->iterator);
-            $request->setQueryParam('order', $options->order);
-        }
+        $request->setQueryParam('exclude_apps_with_no_endpoints', $options?->excludeAppsWithNoEndpoints);
+        $request->setQueryParam('exclude_apps_with_disabled_endpoints', $options?->excludeAppsWithDisabledEndpoints);
+        $request->setQueryParam('exclude_apps_with_svix_play_endpoints', $options?->excludeAppsWithSvixPlayEndpoints);
+        $request->setQueryParam('limit', $options?->limit);
+        $request->setQueryParam('iterator', $options?->iterator);
+        $request->setQueryParam('order', $options?->order);
         $res = $this->client->send($request);
 
         return ListResponseApplicationOut::fromJson($res);
@@ -51,9 +49,7 @@ class Application
         ?ApplicationCreateOptions $options = null,
     ): ApplicationOut {
         $request = $this->client->newReq('POST', '/api/v1/app');
-        if (null !== $options) {
-            $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
-        }
+        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
         $request->setBody(json_encode($applicationIn));
         $res = $this->client->send($request);
 

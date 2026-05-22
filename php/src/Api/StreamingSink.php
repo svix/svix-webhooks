@@ -33,11 +33,9 @@ class StreamingSink
         ?StreamingSinkListOptions $options = null,
     ): ListResponseStreamSinkOut {
         $request = $this->client->newReq('GET', "/api/v1/stream/{$streamId}/sink");
-        if (null !== $options) {
-            $request->setQueryParam('limit', $options->limit);
-            $request->setQueryParam('iterator', $options->iterator);
-            $request->setQueryParam('order', $options->order);
-        }
+        $request->setQueryParam('limit', $options?->limit);
+        $request->setQueryParam('iterator', $options?->iterator);
+        $request->setQueryParam('order', $options?->order);
         $res = $this->client->send($request);
 
         return ListResponseStreamSinkOut::fromJson($res);
@@ -54,9 +52,7 @@ class StreamingSink
         ?StreamingSinkCreateOptions $options = null,
     ): StreamSinkOut {
         $request = $this->client->newReq('POST', "/api/v1/stream/{$streamId}/sink");
-        if (null !== $options) {
-            $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
-        }
+        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
         $request->setBody(json_encode($streamSinkIn));
         $res = $this->client->send($request);
 
@@ -156,9 +152,7 @@ class StreamingSink
         ?StreamingSinkRotateSecretOptions $options = null,
     ): EmptyResponse {
         $request = $this->client->newReq('POST', "/api/v1/stream/{$streamId}/sink/{$sinkId}/secret/rotate");
-        if (null !== $options) {
-            $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
-        }
+        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
         $request->setBody(json_encode($endpointSecretRotateIn));
         $res = $this->client->send($request);
 
