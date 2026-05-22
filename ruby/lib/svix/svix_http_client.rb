@@ -101,7 +101,7 @@ module Svix
     private def encode_query_params(query_params = {})
       encoded_query_pairs = []
       query_params.each do |k, v|
-        unless v.nil?
+        if !v.nil?
           if v.kind_of?(Array)
             encoded_query_pairs.append("#{k}=" + CGI::escape(v.sort.join(",")))
           elsif v.kind_of?(Time)
@@ -109,6 +109,10 @@ module Svix
           else
             encoded_query_pairs.append("#{k}=#{CGI::escape(v)}")
           end
+        elsif k == "expanded_statuses"
+          # HACK: default expanded_statuses to true, it only defaults to false
+          #       server-side because of backwards-compatibility for old SDKs
+          encoded_query_pairs.append("#{k}=true")
         end
       end
 
