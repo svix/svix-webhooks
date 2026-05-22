@@ -73,7 +73,7 @@ impl Config {
                 crate::runtime::validate_script(tc.source().as_str()).map_err(|e| {
                     Error::other(format!(
                         "failed to parse transformation for sender `{}`: {e:?}",
-                        &sc.name(),
+                        sc.name(),
                     ))
                 })?;
             }

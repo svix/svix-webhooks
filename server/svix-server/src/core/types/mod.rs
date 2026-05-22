@@ -973,7 +973,7 @@ impl EndpointSecret {
                 format!(
                     "{}{}",
                     EndpointSecretType::Ed25519.secret_prefix(),
-                    &STANDARD.encode(key.0.sk.as_slice())
+                    STANDARD.encode(key.0.sk.as_slice())
                 )
             }
         }
@@ -992,7 +992,7 @@ impl EndpointSecret {
                 format!(
                     "{}{}",
                     EndpointSecretType::Ed25519.public_prefix(),
-                    &STANDARD.encode(key.pubkey())
+                    STANDARD.encode(key.pubkey())
                 )
             }
         }
