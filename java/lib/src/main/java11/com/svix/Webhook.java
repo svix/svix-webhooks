@@ -1,5 +1,6 @@
 package com.svix;
 
+import com.svix.exceptions.EmptyWebhookSecretException;
 import com.svix.exceptions.WebhookVerificationException;
 
 import java.net.http.HttpHeaders;

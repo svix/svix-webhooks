@@ -1,6 +1,6 @@
 namespace Svix.Exceptions
 {
-    public class EmptyWebhookSecretException : Exception
+    public class EmptyWebhookSecretException : WebhookVerificationException
     {
         public EmptyWebhookSecretException()
             : base() { }

@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 
 import com.svix.Webhook;
+import com.svix.exceptions.EmptyWebhookSecretException;
 import com.svix.exceptions.WebhookSigningException;
 import com.svix.exceptions.WebhookVerificationException;
 
@@ -26,7 +27,7 @@ public class WebhookTest {
     private static final int SECOND_IN_MS = 1000;
 
     @Test
-    public void verifyValidPayloadAndheader() throws WebhookVerificationException {
+    public void verifyValidPayloadAndheader() throws WebhookVerificationException, EmptyWebhookSecretException {
         TestPayload testPayload = new TestPayload(System.currentTimeMillis());
 
         Webhook webhook = new Webhook(testPayload.secret);
@@ -35,7 +36,7 @@ public class WebhookTest {
     }
 
     @Test
-    public void verifyValidBrandlessPayloadAndheader() throws WebhookVerificationException {
+    public void verifyValidBrandlessPayloadAndheader() throws WebhookVerificationException, EmptyWebhookSecretException {
         TestPayload testPayload = new TestPayload(System.currentTimeMillis());
         HashMap<String, ArrayList<String>> unbrandedHeaders =
                 new HashMap<String, ArrayList<String>>();
@@ -51,7 +52,7 @@ public class WebhookTest {
 
     @Test
     public void verifyValidPayloadWithMultipleSignaturesIsValid()
-            throws WebhookVerificationException {
+            throws WebhookVerificationException, EmptyWebhookSecretException {
         TestPayload testPayload = new TestPayload(System.currentTimeMillis());
         String[] sigs =
                 new String[] {
@@ -139,7 +140,7 @@ public class WebhookTest {
     }
 
     @Test
-    public void verifySecretWorksWithOrWithoutPrefix() throws WebhookVerificationException {
+    public void verifySecretWorksWithOrWithoutPrefix() throws WebhookVerificationException, EmptyWebhookSecretException  {
         TestPayload testPayload = new TestPayload(System.currentTimeMillis());
 
         Webhook webhook = new Webhook(testPayload.secret);
@@ -150,7 +151,7 @@ public class WebhookTest {
     }
 
     @Test
-    public void verifyWebhookSignWorks() throws WebhookSigningException {
+    public void verifyWebhookSignWorks() throws WebhookSigningException, EmptyWebhookSecretException  {
         String key = "whsec_MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw";
         String msgId = "msg_p5jXN8AQM9LWM0D4loKWxJek";
         final long timestamp = 1614265330;
@@ -165,7 +166,7 @@ public class WebhookTest {
     private ThrowingRunnable verify(final TestPayload testPayload) {
         return new ThrowingRunnable() {
             @Override
-            public void run() throws WebhookVerificationException {
+            public void run() throws WebhookVerificationException, EmptyWebhookSecretException {
                 Webhook webhook = new Webhook(testPayload.secret);
                 webhook.verify(testPayload.payload, testPayload.headers());
             }

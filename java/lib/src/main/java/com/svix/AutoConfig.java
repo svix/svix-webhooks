@@ -2,6 +2,7 @@ package com.svix;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.svix.exceptions.ApiException;
+import com.svix.exceptions.EmptyWebhookSecretException;
 import com.svix.exceptions.WebhookVerificationException;
 import com.svix.internalapi.EndpointAutoConfig;
 import com.svix.models.EndpointIn;
@@ -30,6 +31,8 @@ public final class AutoConfig {
         try {
             this.webhook = new Webhook(content.getEndpointSecret());
         } catch (IllegalArgumentException e) {
+            throw new InvalidTokenException(e);
+        } catch (EmptyWebhookSecretException e) {
             throw new InvalidTokenException(e);
         }
 
