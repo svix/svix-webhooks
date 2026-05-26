@@ -53,10 +53,14 @@ class Utils
         return $val;
     }
 
-    static function deserializeDt(mixed $data, string $key, bool $required, string $structName): \DateTimeImmutable
+    static function deserializeDt(mixed $data, string $key, bool $required, string $structName): ?\DateTimeImmutable
     {
 
         $val = Utils::getValFromJson($data, $key, $required, $structName);
+        if ($val === null) {
+            return null;
+        }
+
         return new \DateTimeImmutable($val);
     }
 
