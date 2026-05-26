@@ -1,7 +1,8 @@
 import typing as t
 from datetime import datetime
-from standardwebhooks.webhooks import Webhook as StdWh
+
 from standardwebhooks.exceptions import WebhookVerificationError
+from standardwebhooks.webhooks import Webhook as StdWh
 
 
 class Webhook:

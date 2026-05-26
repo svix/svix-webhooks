@@ -2,24 +2,43 @@ name: Python Lint
 on:
   workflow_call:
 jobs:
-  build:
+  python-lint:
     runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
     steps:
       - uses: actions/checkout@v6
 
-      - uses: actions/setup-python@v5
-        name: Install Python
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
         with:
-          python-version: '3.11'
+          python-version: ${{ matrix.python_version }}
 
       - name: Install deps
-        run: |
-          cd python
-          python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt .
-          python -m pip install -r requirements-dev.txt .
+        working-directory: python/
+        run: uv sync
 
       - name: Run linting
+        working-directory: python/
+        run: uv run ./scripts/lint.sh
+
+  python-test-release:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          python-version: 3.14
+      - name: Install deps
+        working-directory: ./python
+        run: uv sync
+      - name: Build wheels
+        run: uv build
+        working-directory: ./python
+      - name: Test install wheels
         run: |
-          cd python
-          sh ./scripts/lint.sh
+          mkdir /tmp/test-install
+          cd /tmp/test-install
+          uv run --python '3.14' python3 -m venv venv
+          venv/bin/pip install "${{ github.workspace }}"/python/dist/svix*.whl
+          venv/bin/python -c 'import svix ; print(svix.__version__)'

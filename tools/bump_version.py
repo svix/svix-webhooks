@@ -130,6 +130,10 @@ VERSION_FILES = [
         "python/svix/__init__.py",
         [r'(__version__\s*=\s*")([^"]*)(")', ],
     ),
+    VersionFile(
+        "python/pyproject.toml",
+        [r'^(version\s*=\s*")([^"]*)(")', ],
+    ),
     # Ruby
     VersionFile(
         "ruby/Gemfile.lock",
