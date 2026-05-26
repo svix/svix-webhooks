@@ -2142,8 +2142,8 @@ checksum = "df3b46402a9d5adb4c86a0cf463f42e19994e3ee891101b1841f30a545cb49a9"
 
 [[package]]
 name = "hyper"
-version = "1.8.1"
-source = "git+https://github.com/svix/hyper.git?rev=30ae7e19512c346303196087c4a68b73945dc472#30ae7e19512c346303196087c4a68b73945dc472"
+version = "1.9.0"
+source = "git+https://github.com/svix/hyper.git?rev=27c1c555cb547bb3ed2df15758d9cdd7cd726590#27c1c555cb547bb3ed2df15758d9cdd7cd726590"
 dependencies = [
  "atomic-waker",
  "bytes",
@@ -2156,7 +2156,6 @@ dependencies = [
  "httpdate",
  "itoa",
  "pin-project-lite",
- "pin-utils",
  "smallvec",
  "tokio",
  "want",
@@ -3589,12 +3588,6 @@ name = "pin-project-lite"
 version = "0.2.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a89322df9ebe1c1578d689c92318e070967d1042b512afbe49518723f4e6d5cd"
-
-[[package]]
-name = "pin-utils"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8b870d8c151b6f2fb93e84a13146138f05d02ed11c7e7c54f8826aaaf7c9f184"
 
 [[package]]
 name = "piper"

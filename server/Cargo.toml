@@ -33,4 +33,4 @@ build-override.opt-level = 2
 svix-server-derive = { opt-level = 0 }
 
 [patch.crates-io]
-hyper = { git = "https://github.com/svix/hyper.git", rev = "30ae7e19512c346303196087c4a68b73945dc472" }
+hyper = { git = "https://github.com/svix/hyper.git", rev = "27c1c555cb547bb3ed2df15758d9cdd7cd726590" }
