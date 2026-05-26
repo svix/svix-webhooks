@@ -19,7 +19,7 @@ httpretty==1.1.4
     # via -r requirements.in/development.txt
 httpx==0.28.1
     # via -r requirements.in/development.txt
-idna==3.10
+idna==3.16
     # via
     #   anyio
     #   httpx

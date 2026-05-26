@@ -24,7 +24,7 @@ httpx==0.28.1
     # via
     #   svix (setup.py)
     #   standardwebhooks
-idna==3.10
+idna==3.16
     # via
     #   anyio
     #   httpx
