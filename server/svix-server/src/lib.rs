@@ -74,7 +74,7 @@ pub fn start_shut_down() {
 }
 
 pub static INSTANCE_ID: LazyLock<String> =
-    LazyLock::new(|| hex::encode(KsuidMs::new(None, None).to_string()));
+    LazyLock::new(|| hex::encode(KsuidMs::now(None).to_string()));
 
 async fn graceful_shutdown_handler() {
     let ctrl_c = async {

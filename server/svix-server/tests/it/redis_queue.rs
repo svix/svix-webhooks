@@ -167,7 +167,7 @@ async fn test_redis_streams_dlq() {
     cfg.redis_pending_duration_secs = 1;
 
     let cfg = std::sync::Arc::new(cfg);
-    let prefix = svix_ksuid::Ksuid::new(None, None).to_string();
+    let prefix = svix_ksuid::Ksuid::now(None).to_string();
 
     let pool = get_pool(&cfg).await;
     let mut conn = pool.get().await.unwrap();

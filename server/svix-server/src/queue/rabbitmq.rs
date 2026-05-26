@@ -29,11 +29,9 @@ pub async fn new_pair(
     drop(channel);
 
     // Ref https://www.rabbitmq.com/amqp-0-9-1-reference.html#basic.consume.consumer-tag
-    let consumer_tag = format!(
-        "{queue_name}-consumer-{}",
-        // prevent possible errors around duplicate consumer tags
-        KsuidMs::new(None, None).to_string()
-    );
+    //
+    // Include a random KSUID to prevent possible errors around duplicate consumer tags.
+    let consumer_tag = format!("{queue_name}-consumer-{}", KsuidMs::now(None));
 
     let (producer, consumer) = RabbitMqBackend::builder(RabbitMqConfig {
         uri: dsn.to_owned(),
@@ -110,7 +108,7 @@ async fn declare_delayed_message_exchange(channel: &lapin::Channel) -> Result<St
 
     channel
         .exchange_declare(
-            exchange_name,
+            exchange_name.into(),
             lapin::ExchangeKind::Custom("x-delayed-message".into()),
             opts,
             args,
@@ -143,15 +141,15 @@ async fn declare_bound_queue(
     // Refs https://www.rabbitmq.com/maxlength.html#definition-using-x-args and https://www.rabbitmq.com/dlx.html#using-optional-queue-arguments
     // We may want to figure out what the queue length enforcement looks like and dead letter queueing at a later point in time
     let args = FieldTable::default();
-    channel.queue_declare(queue_name, opts, args).await?;
+    channel.queue_declare(queue_name.into(), opts, args).await?;
 
     let routing_key = queue_name;
 
     channel
         .queue_bind(
-            queue_name,
-            exchange_name,
-            routing_key,
+            queue_name.into(),
+            exchange_name.into(),
+            routing_key.into(),
             QueueBindOptions { nowait: false },
             FieldTable::default(),
         )
@@ -196,10 +194,7 @@ mod tests {
                 .unwrap();
             let channel = conn.create_channel().await.unwrap();
 
-            let consumer_tag = format!(
-                "{QUEUE_NAME}-consumer-{}",
-                KsuidMs::new(None, None).to_string()
-            );
+            let consumer_tag = format!("{QUEUE_NAME}-consumer-{}", KsuidMs::now(None));
 
             let opts = BasicConsumeOptions {
                 no_local: false,
@@ -214,7 +209,12 @@ mod tests {
                 .unwrap();
 
             let mut consumer = channel
-                .basic_consume(QUEUE_NAME, &consumer_tag, opts, Default::default())
+                .basic_consume(
+                    QUEUE_NAME.into(),
+                    consumer_tag.into(),
+                    opts,
+                    Default::default(),
+                )
                 .await
                 .unwrap();
 
