@@ -1,5 +1,6 @@
 package com.svix;
 
+import com.svix.exceptions.EmptyWebhookSecretException;
 import com.svix.exceptions.WebhookSigningException;
 import com.svix.exceptions.WebhookVerificationException;
 
@@ -39,10 +40,16 @@ abstract class WebhookBase {
             sec = sec.substring(WebhookBase.SECRET_PREFIX.length());
         }
         this.key = Base64.getDecoder().decode(sec);
+        if (this.key.length == 0) {
+            throw new EmptyWebhookSecretException("Webhook secret should not be empty");
+        }
     }
 
     protected WebhookBase(final byte[] secret) {
         this.key = secret;
+        if (this.key.length == 0) {
+            throw new EmptyWebhookSecretException("Webhook secret should not be empty");
+        }
     }
 
     public void verify(final String payload, final Map<String, List<String>> headers)

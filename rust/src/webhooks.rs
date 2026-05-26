@@ -9,6 +9,9 @@ pub enum WebhookError {
     #[error("invalid secret")]
     InvalidSecret(#[from] base64::DecodeError),
 
+    #[error("secret may not be blank")]
+    EmptySecret,
+
     #[error("invalid header {0}")]
     InvalidHeader(&'static str),
 
@@ -29,7 +32,13 @@ pub enum WebhookError {
 }
 
 pub struct Webhook {
-    key: Vec<u8>,
+    key: Box<[u8]>,
+}
+
+impl std::fmt::Debug for Webhook {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Webhook {{ key: [redacted] }}")
+    }
 }
 
 const PREFIX: &str = "whsec_";
@@ -47,11 +56,22 @@ impl Webhook {
         let secret = secret.strip_prefix(PREFIX).unwrap_or(secret);
         let key = base64::decode(secret)?;
 
-        Ok(Webhook { key })
+        if key.is_empty() {
+            return Err(WebhookError::EmptySecret);
+        }
+
+        Ok(Webhook {
+            key: key.into_boxed_slice(),
+        })
     }
 
     pub fn from_bytes(secret: Vec<u8>) -> Result<Self, WebhookError> {
-        Ok(Webhook { key: secret })
+        if secret.is_empty() {
+            return Err(WebhookError::EmptySecret);
+        }
+        Ok(Webhook {
+            key: secret.into_boxed_slice(),
+        })
     }
 
     pub fn verify<HM: HeaderMap>(&self, payload: &[u8], headers: &HM) -> Result<(), WebhookError> {
@@ -455,5 +475,18 @@ mod tests {
                 assert!(wh.verify(payload, &hdr_map).is_err());
             }
         }
+    }
+
+    #[test]
+    fn test_new_rejects_empty_secret() {
+        let secret = "".to_owned();
+        Webhook::new(&secret).expect_err("should fail for empty secret");
+        let secret = "whsec_".to_owned();
+        Webhook::new(&secret).expect_err("should fail for whsec_-prefixed empty secret");
+    }
+
+    #[test]
+    fn test_from_bytes_rejects_empty_secret() {
+        Webhook::from_bytes(vec![]).expect_err("should fail for empty secret");
     }
 }

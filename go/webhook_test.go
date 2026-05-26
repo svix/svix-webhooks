@@ -231,3 +231,24 @@ func TestWebhookSign(t *testing.T) {
 	}
 
 }
+
+func TestWebhookNoEmptySecrets(t *testing.T) {
+	_, err := svix.NewWebhook("")
+	if err == nil {
+		t.Fatal("Expected error")
+	}
+}
+
+func TestWebhookNoEmptyPrefixedSecrets(t *testing.T) {
+	_, err := svix.NewWebhook("whsec_")
+	if err == nil {
+		t.Fatal("Expected error")
+	}
+}
+
+func TestWebhookNewRawNoEmptyPrefixedSecrets(t *testing.T) {
+	_, err := svix.NewWebhookRaw([]byte(""))
+	if err == nil {
+		t.Fatal("Expected error")
+	}
+}

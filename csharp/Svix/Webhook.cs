@@ -35,11 +35,21 @@ namespace Svix
             }
 
             this.key = Convert.FromBase64String(key);
+
+            if (this.key == null || this.key.Length == 0)
+            {
+                throw new EmptyWebhookSecretException("Missing webhook secret");
+            }
         }
 
         public Webhook(byte[] key)
         {
             this.key = key;
+
+            if (this.key == null || this.key.Length == 0)
+            {
+                throw new EmptyWebhookSecretException("Missing webhook secret");
+            }
         }
 
         public void Verify(ReadOnlySpan<char> payload, WebHeaderCollection headers)
