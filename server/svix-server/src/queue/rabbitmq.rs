@@ -29,11 +29,9 @@ pub async fn new_pair(
     drop(channel);
 
     // Ref https://www.rabbitmq.com/amqp-0-9-1-reference.html#basic.consume.consumer-tag
-    let consumer_tag = format!(
-        "{queue_name}-consumer-{}",
-        // prevent possible errors around duplicate consumer tags
-        KsuidMs::new(None, None).to_string()
-    );
+    //
+    // Include a random KSUID to prevent possible errors around duplicate consumer tags.
+    let consumer_tag = format!("{queue_name}-consumer-{}", KsuidMs::now(None));
 
     let (producer, consumer) = RabbitMqBackend::builder(RabbitMqConfig {
         uri: dsn.to_owned(),
@@ -196,10 +194,7 @@ mod tests {
                 .unwrap();
             let channel = conn.create_channel().await.unwrap();
 
-            let consumer_tag = format!(
-                "{QUEUE_NAME}-consumer-{}",
-                KsuidMs::new(None, None).to_string()
-            );
+            let consumer_tag = format!("{QUEUE_NAME}-consumer-{}", KsuidMs::now(None));
 
             let opts = BasicConsumeOptions {
                 no_local: false,

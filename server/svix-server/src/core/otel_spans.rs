@@ -55,7 +55,7 @@ impl<B> MakeSpan<B> for AxumOtelSpanCreator {
                     .get("svix-req-id")
                     .and_then(|v| v.to_str().map(ToOwned::to_owned).ok())
             })
-            .unwrap_or_else(|| KsuidMs::new(None, None).to_string());
+            .unwrap_or_else(|| KsuidMs::now(None).to_string());
 
         let remote_context = opentelemetry::global::get_text_map_propagator(|p| {
             p.extract(&opentelemetry_http::HeaderExtractor(request.headers()))

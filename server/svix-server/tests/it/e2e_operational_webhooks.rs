@@ -126,7 +126,7 @@ fn start_svix_server_with_operational_webhooks(
     let cfg = Arc::new(cfg);
 
     let jh = tokio::spawn(svix_server::run_with_prefix(
-        Some(svix_ksuid::Ksuid::new(None, None).to_string()),
+        Some(svix_ksuid::Ksuid::now(None).to_string()),
         cfg,
         Some(listener),
     ));

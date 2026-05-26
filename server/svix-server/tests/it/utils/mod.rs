@@ -322,7 +322,7 @@ pub async fn start_svix_server_with_cfg_and_org_id(
     cfg: &ConfigurationInner,
     org_id: OrganizationId,
 ) -> (TestClient, tokio::task::JoinHandle<()>) {
-    let prefix = svix_ksuid::Ksuid::new(None, None).to_string();
+    let prefix = svix_ksuid::Ksuid::now(None).to_string();
     start_svix_server_with_cfg_and_org_id_and_prefix(cfg, org_id, prefix).await
 }
 

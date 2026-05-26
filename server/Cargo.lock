@@ -3203,7 +3203,7 @@ dependencies = [
  "redis",
  "serde",
  "serde_json",
- "svix-ksuid 0.10.0",
+ "svix-ksuid",
  "sync_wrapper",
  "thiserror 2.0.18",
  "tokio",
@@ -5237,24 +5237,13 @@ dependencies = [
 
 [[package]]
 name = "svix-ksuid"
-version = "0.5.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8c0c2b19ae442a1842ba35f7eeff46e684bb24cb4a9571f41b48e5181e5eadd5"
-dependencies = [
- "base-encode",
- "byteorder",
- "chrono",
- "getrandom 0.2.17",
-]
-
-[[package]]
-name = "svix-ksuid"
 version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ef7ea3e998e0dbce512b1a87edf421dcf3eedbf59ab9396608e9624935869a90"
 dependencies = [
  "base-encode",
  "byteorder",
+ "chrono",
  "getrandom 0.4.2",
 ]
 
@@ -5322,7 +5311,7 @@ dependencies = [
  "socks5-proto",
  "sqlx",
  "svix",
- "svix-ksuid 0.5.3",
+ "svix-ksuid",
  "svix-server-derive",
  "thiserror 2.0.18",
  "tikv-jemallocator",

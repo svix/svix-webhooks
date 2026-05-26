@@ -202,7 +202,7 @@ pub trait BaseId: Deref<Target = String> {
 
     fn generate_(dt: Option<DateTime<Utc>>, payload: Option<&[u8]>) -> String {
         let ksuid = KsuidMs::new(dt, payload);
-        format!("{}{}", Self::PREFIX, ksuid.to_string())
+        format!("{}{ksuid}", Self::PREFIX)
     }
 
     fn new(dt: Option<DateTime<Utc>>, payload: Option<&[u8]>) -> Self::Output;
