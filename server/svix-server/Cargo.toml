@@ -70,7 +70,7 @@ regex = "1.5.5"
 reqwest = { version = "0.12.23", default-features = false, features = ["json", "rustls-tls", "hickory-dns"] }
 schemars = { version = "0.8.11", features = ["chrono", "url", "preserve_order"] }
 sea-orm = { version = "1.1.1", features = [ "sqlx-postgres", "runtime-tokio-rustls", "macros", "with-chrono", "with-json" ], default-features = false }
-sentry = { version = "0.34.0", features = ["tracing"] }
+sentry = { version = "0.48.2", default-features = false, features = ["backtrace", "contexts", "debug-images", "panic", "tracing", "transport"] }
 serde = { version = "1.0.184", features = ["derive"] }
 serde_json = { version = "1.0.74", features = ["arbitrary_precision", "raw_value"] }
 serde_path_to_error = "0.1.7"
