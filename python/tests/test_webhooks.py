@@ -1,10 +1,11 @@
-import pytest
 import base64
-import typing as t
-import hmac
 import hashlib
-from math import floor
+import hmac
+import typing as t
 from datetime import datetime, timedelta, timezone
+from math import floor
+
+import pytest
 
 from svix.webhooks import Webhook, WebhookVerificationError
 
@@ -28,7 +29,7 @@ class PayloadForTesting:
     header: t.Dict[str, str]
 
     def __init__(self, timestamp: datetime = datetime.now(tz=timezone.utc)):
-        ts = str(floor(timestamp.timestamp()))
+        ts = floor(timestamp.timestamp())
         to_sign = f"{defaultMsgID}.{ts}.{defaultPayload}".encode()
         signature = base64.b64encode(
             hmac_data(base64.b64decode(defaultSecret), to_sign)
@@ -42,7 +43,7 @@ class PayloadForTesting:
         self.header = {
             "svix-id": defaultMsgID,
             "svix-signature": "v1," + signature,
-            "svix-timestamp": self.timestamp,
+            "svix-timestamp": str(self.timestamp),
         }
 
 
@@ -110,9 +111,9 @@ def test_valid_signature_is_valid_and_returns_json():
 def test_valid_unbranded_signature_is_valid_and_returns_json():
     testPayload = PayloadForTesting()
     unbrandedHeaders = {
-        "webhook-id": testPayload.header.get("svix-id"),
-        "webhook-signature": testPayload.header.get("svix-signature"),
-        "webhook-timestamp": testPayload.header.get("svix-timestamp"),
+        "webhook-id": testPayload.header["svix-id"],
+        "webhook-signature": testPayload.header["svix-signature"],
+        "webhook-timestamp": testPayload.header["svix-timestamp"],
     }
     testPayload.header = unbrandedHeaders
 
@@ -176,7 +177,7 @@ def test_signature_verification_with_and_without_prefix():
 def test_sign_function():
     key = "whsec_MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw"
     msg_id = "msg_p5jXN8AQM9LWM0D4loKWxJek"
-    timestamp = datetime.utcfromtimestamp(1614265330)
+    timestamp = datetime.fromtimestamp(1614265330, tz=timezone.utc)
     payload = '{"test": 2432232314}'
     expected = "v1,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLJ1OE="
 

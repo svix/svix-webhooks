@@ -22,12 +22,8 @@ jobs:
         working-directory: ./python
         run: uv sync
 
-      - name: Check typing on client tests
-        run: |
-          uv run mypy tests/test_client.py
-          uv run ty check tests/test_client.py
-        working-directory: ./python
-
       - name: Run Python tests
         run: uv run pytest -sv
+        env:
+          CI: '1'
         working-directory: ./python

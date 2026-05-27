@@ -27,7 +27,13 @@ def test_decode_autoconfig_token_v1_parses_payload():
 
 
 def test_decode_autoconfig_token_v1_rejects_bad_prefix():
-    payload = {"aid": "a", "eid": "e", "surl": "https://x", "esec": "whsec_Zm9v", "tok": "t"}
+    payload = {
+        "aid": "a",
+        "eid": "e",
+        "surl": "https://x",
+        "esec": "whsec_Zm9v",
+        "tok": "t",
+    }
     raw = json.dumps(payload).encode()
     token = f"wrong_{base64.b64encode(raw).decode('ascii')}"
 
@@ -36,7 +42,9 @@ def test_decode_autoconfig_token_v1_rejects_bad_prefix():
 
 
 def test_decode_autoconfig_token_v1_rejects_invalid_json():
-    token = f"{_AUTOCONFIG_TOKEN_PREFIX_V1}{base64.b64encode(b'not json').decode('ascii')}"
+    token = (
+        f"{_AUTOCONFIG_TOKEN_PREFIX_V1}{base64.b64encode(b'not json').decode('ascii')}"
+    )
 
     with pytest.raises(AutoConfigError):
         _decode_autoconfig_token_v1(token)

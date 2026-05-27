@@ -3,6 +3,9 @@
 set -ex
 
 mypy svix
-ty check svix
-ruff check svix
-ruff format --check svix
+ty check svix/
+ty check tests/
+ruff check svix/
+ruff check tests/
+ruff format --check svix/
+ruff format --check tests/
