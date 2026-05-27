@@ -1,5 +1,6 @@
 package com.svix;
 
+import com.svix.exceptions.EmptyWebhookSecretException;
 import com.svix.exceptions.WebhookVerificationException;
 
 import java.net.http.HttpHeaders;
@@ -9,11 +10,11 @@ import java.net.http.HttpHeaders;
  */
 public final class Webhook extends WebhookBase {
 
-    public Webhook(final String secret) {
+    public Webhook(final String secret) throws EmptyWebhookSecretException {
         super(secret);
     }
 
-    public Webhook(final byte[] secret) {
+    public Webhook(final byte[] secret) throws EmptyWebhookSecretException {
         super(secret);
     }
 
