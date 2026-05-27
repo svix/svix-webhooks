@@ -4,6 +4,9 @@
 * Libs/All: Enable server-side support of 'canceled' message-attempt status by default
   * If you were previously comparing attempt statuses against 'success', note that the
     result of the comparison will now change for messages canceled by a transformation script
+* Libs/Python: Move from `setup.py` to [PEP-518](https://peps.python.org/pep-0518/)-compliant `pyproject.toml` build system
+* Libs/Python: Clarify that the minimum-supported Python interpreter version is 3.8
+* Libs/Python: Actually run tests against all supported python versions
 
 ## Version 1.94.0
 * Libs **(New)**: Webhooks AutoConfig SDK
