@@ -33,7 +33,7 @@ deno_ast = "0.53.0"
 deadpool = { version = "0.12.1", features = ["unmanaged", "rt_tokio_1"] }
 shellexpand = { version = "3.1.0", default-features = false, features = ["base-0"] }
 url = "2.5.4"
-reqwest = "0.12.22"
+reqwest = { version = "0.13.4", features = ["json"] }
 
 [target.'cfg(not(target_env = "msvc"))'.dependencies]
 tikv-jemallocator = { version = "0.6.0", optional = true }
