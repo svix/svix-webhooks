@@ -39,6 +39,8 @@ POST_BUMP_COMMANDS = [
     "cargo update --workspace --manifest-path=svix-cli/Cargo.toml",
     # JavaScript
     "cd javascript && npm i --package-lock-only --ignore-scripts",
+    # python
+    "cd python && uv sync",
 ]
 
 VERSION_FILES = [
@@ -132,7 +134,7 @@ VERSION_FILES = [
     ),
     VersionFile(
         "python/pyproject.toml",
-        [r'^(version\s*=\s*")([^"]*)(")', ],
+        [r'(version\s*=\s*")([^"]*)(")', ],
     ),
     # Ruby
     VersionFile(
