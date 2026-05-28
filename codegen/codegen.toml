@@ -69,7 +69,7 @@ extra_codegen_args = [
     "--include-op-id=v1.authentication.whoami",
 ]
 [[cli.task]]
-template = "templates/svix-cli/api_resource.rs.jinja"
+template = "templates/cli/api_resource.rs.jinja"
 output_dir = "svix-cli/src/cmds/api"
 extra_codegen_args = [
     "-e=v1.background-task.list",
