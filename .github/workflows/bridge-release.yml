@@ -39,7 +39,7 @@ jobs:
         run: cargo build --release --manifest-path bridge/svix-bridge/Cargo.toml
 
       - name: Release
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: svix-bridge-${{ matrix.target }}
           path: bridge/target/release/svix-bridge
