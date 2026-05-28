@@ -1,3 +1,4 @@
+import hashlib
 import itertools
 import uuid
 from typing import Any, Dict, List, Optional
@@ -19,8 +20,11 @@ from svix.api import (
 from svix.webhooks import Webhook
 
 
-def _gen_uuid(name: str) -> str:
-    return str(uuid.uuid5(uuid.NAMESPACE_DNS, name))
+def _gen_uid(name: str) -> str:
+    hasher = hashlib.sha256()
+    hasher.update(name.encode("utf-8"))
+    hasher.update(str(uuid.uuid4()).encode("ascii"))
+    return hasher.hexdigest()
 
 
 @pytest.fixture
@@ -28,11 +32,14 @@ def svix_app_name() -> str:
     return "svix_python_tests"
 
 
-@pytest.fixture
-def event_type_schema() -> Dict[str, Any]:
+def event_type_name() -> str:
+    return f"event.{str(uuid.uuid4()).replace('-', '')}"
+
+
+def make_event_type_schema(event_type_name) -> Dict[str, Any]:
     return {
         "type": "object",
-        "title": "event.test",
+        "title": event_type_name,
         "description": "A dummy event type",
         "properties": {
             "value": {
@@ -94,15 +101,14 @@ def create_svix_endpoint(
 
 
 def test_svix_application_create(svix_api: Svix, svix_app_name: str) -> None:
-    svix_app_uid = _gen_uuid(svix_app_name)
+    svix_app_uid = _gen_uid(svix_app_name)
     app = create_svix_app(svix_api, svix_app_name, svix_app_uid)
     assert app.name == svix_app_name
     assert app.uid == svix_app_uid
 
 
-def test_svix_event_type_create(
-    svix_api: Svix, event_type_schema: Dict[str, Any]
-) -> None:
+def test_svix_event_type_create(svix_api: Svix) -> None:
+    event_type_schema = make_event_type_schema(event_type_name())
     event_type = create_svix_event_type(svix_api, event_type_schema)
     assert event_type.name == event_type_schema["title"]
     assert event_type.description == event_type_schema["description"]
@@ -133,16 +139,16 @@ def svix_endpoint_create_test_params_ids() -> List[str]:
 def test_svix_endpoint_create(
     svix_api: Svix,
     svix_app_name: str,
-    event_type_schema: Dict[str, Any],
     endpoint_url: str,
     with_channel: bool,
     with_metadata: bool,
     with_secret: bool,
 ) -> None:
-    svix_app_uid = _gen_uuid(svix_app_name)
+    svix_app_uid = _gen_uid(svix_app_name)
     app = create_svix_app(svix_api, svix_app_name, svix_app_uid)
+    event_type_schema = make_event_type_schema(event_type_name())
     event_type = create_svix_event_type(svix_api, event_type_schema)
-    endpoint_uid = _gen_uuid(endpoint_url)
+    endpoint_uid = _gen_uid(endpoint_url)
     channel = "test" if with_channel else None
     metadata = {"test": "test"} if with_metadata else None
     secret = "whsec_" + "e" * 32 if with_secret else None
@@ -174,18 +180,22 @@ def test_svix_endpoint_create(
 def test_svix_message_create(
     svix_api: Svix,
     svix_app_name: str,
-    event_type_schema: Dict[str, Any],
     httpserver: HTTPServer,
     with_channel: bool,
+    is_ci: bool,
 ) -> None:
-    svix_app_uid = _gen_uuid(svix_app_name)
+    svix_app_uid = _gen_uid(svix_app_name)
     create_svix_app(svix_api, svix_app_name, svix_app_uid)
+    event_type_schema = make_event_type_schema(event_type_name())
     event_type = create_svix_event_type(svix_api, event_type_schema)
 
     channel = "test" if with_channel else None
     endpoint_path = "/webhook/receiver/"
-    endpoint_url = httpserver.url_for(endpoint_path)
-    endpoint_uid = _gen_uuid(endpoint_url)
+    if is_ci:
+        endpoint_url = httpserver.url_for(endpoint_path)
+    else:
+        endpoint_url = f"http://host.docker.internal:{httpserver.port}{endpoint_path}"
+    endpoint_uid = _gen_uid(endpoint_url)
     create_svix_endpoint(
         svix_api,
         svix_app_uid,
@@ -217,7 +227,7 @@ def test_svix_message_create(
     ).respond_with_handler(webhook_handler)
 
     # send message and check it is received by local http server
-    with httpserver.wait() as waiting:
+    with httpserver.wait(stop_on_nohandler=True, timeout=10) as waiting:
         message_out = svix_api.message.create(
             svix_app_uid,
             MessageIn(

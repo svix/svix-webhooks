@@ -18,3 +18,9 @@ tmp/
 ## Docker-specific ignores
 Dockerfile
 .dockerignore
+docker-compose.yml
+docker-compose.override.yml
+
+# git stuff
+.git/
+.github/
