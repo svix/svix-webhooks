@@ -134,7 +134,7 @@ VERSION_FILES = [
     ),
     VersionFile(
         "python/pyproject.toml",
-        [r'(version\s*=\s*")([^"]*)(")', ],
+        [r'(\[project\][\s\S]*?\nversion\s*=\s*")([^"]*)(")', ],
     ),
     # Ruby
     VersionFile(
