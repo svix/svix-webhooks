@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 1.95.1
+* Libs/Python: Fix release workflow (1.95.0 of the Python SDK failed publishing)
+
 ## Version 1.95.0
 * Libs/All: Enable server-side support of 'canceled' message-attempt status by default
   * If you were previously comparing attempt statuses against 'success', note that the
