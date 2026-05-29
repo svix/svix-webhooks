@@ -269,6 +269,7 @@ from .event_type import (
     EventTypeImportOpenapiOptions,
     EventTypeListOptions,
 )
+from .health import Health, HealthAsync
 from .integration import (
     Integration,
     IntegrationAsync,
@@ -381,6 +382,8 @@ __all__ = [
     "EventTypeCreateOptions",
     "EventTypeImportOpenapiOptions",
     "EventTypeDeleteOptions",
+    "Health",
+    "HealthAsync",
     "Integration",
     "IntegrationAsync",
     "IntegrationListOptions",

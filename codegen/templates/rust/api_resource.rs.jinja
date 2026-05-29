@@ -4,7 +4,10 @@
 use crate::{
 {%- if resource.operations | length > 0 %}
     error::Result,
+    {%- if resource.name != "health" %}
+    {#- HACK: this import generates unused warnings in health #}
     models::*,
+    {%- endif %}
 {%- endif %}
     Configuration,
 };

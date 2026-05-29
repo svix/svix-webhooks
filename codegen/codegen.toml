@@ -4,7 +4,6 @@ input_files = ["lib-openapi.json", "api_extra.ron"]
 [rust]
 extra_mounts = { "rust/.rustfmt.toml" = "/app/.rustfmt.toml" }
 extra_codegen_args = [
-    "-e=v1.health.get",
     "--include-op-id=v1.authentication.whoami",
 ]
 [[rust.task]]
@@ -63,7 +62,6 @@ extra_mounts = { "svix-cli/.rustfmt.toml" = "/app/.rustfmt.toml" }
 extra_codegen_args = [
     "-e=v1.background-task.list",
     "-e=v1.background-task.get",
-    "-e=v1.health.get",
     "-e=v1.statistics.aggregate-event-types",
     "-e=v1.statistics.aggregate-app-stats",
     "--include-op-id=v1.authentication.whoami",
@@ -74,7 +72,6 @@ output_dir = "svix-cli/src/cmds/api"
 extra_codegen_args = [
     "-e=v1.background-task.list",
     "-e=v1.background-task.get",
-    "-e=v1.health.get",
     "-e=v1.statistics.aggregate-event-types",
     "-e=v1.statistics.aggregate-app-stats",
     "--include-op-id=v1.authentication.whoami",
@@ -82,7 +79,6 @@ extra_codegen_args = [
 
 
 [python]
-extra_codegen_args = ["-e=v1.health.get"]
 [[python.task]]
 template = "templates/python/api_resource.py.jinja"
 output_dir = "python/svix/api"
@@ -169,8 +165,6 @@ extra_codegen_args = [
 ]
 
 [go]
-extra_codegen_args = ["-e=v1.health.get"]
-
 [[go.task]]
 template = "templates/go/summary.go.jinja"
 output_dir = "go"
@@ -179,7 +173,6 @@ template = "templates/go/api_resource.go.jinja"
 output_dir = "go"
 extra_codegen_args = [
     "--context={\"package\":\"svix\"}",
-    "-e=v1.health.get",
 ]
 [[go.task]]
 template = "templates/go/component_type_summary.go.jinja"

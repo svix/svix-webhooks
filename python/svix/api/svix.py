@@ -11,6 +11,7 @@ from .connector import Connector, ConnectorAsync
 from .endpoint import Endpoint, EndpointAsync
 from .environment import Environment, EnvironmentAsync
 from .event_type import EventType, EventTypeAsync
+from .health import Health, HealthAsync
 from .ingest import Ingest, IngestAsync
 from .integration import Integration, IntegrationAsync
 from .message import Message, MessageAsync
@@ -119,6 +120,10 @@ class SvixAsync(ClientBase):
         return EventTypeAsync(self._client)
 
     @property
+    def health(self) -> HealthAsync:
+        return HealthAsync(self._client)
+
+    @property
     def ingest(self) -> IngestAsync:
         return IngestAsync(self._client)
 
@@ -179,6 +184,10 @@ class Svix(ClientBase):
     @property
     def event_type(self) -> EventType:
         return EventType(self._client)
+
+    @property
+    def health(self) -> Health:
+        return Health(self._client)
 
     @property
     def ingest(self) -> Ingest:

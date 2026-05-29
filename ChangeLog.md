@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+* Libs: Add `health.get` to Go, Python and Rust SDK
+  * It was previously missing from these SDKs for historical reasons
+
 ## Version 1.95.1
 * Libs/Python: Fix release workflow (1.95.0 of the Python SDK failed publishing)
 
