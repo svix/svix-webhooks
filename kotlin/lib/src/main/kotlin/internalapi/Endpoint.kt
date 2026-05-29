@@ -1,6 +1,7 @@
 // this file is @generated
 package com.svix.kotlin.internal
 
+import com.svix.kotlin.SvixHttpClient
 import com.svix.kotlin.models.EndpointTransformationIn
 
 class Endpoint(private val client: SvixHttpClient) {

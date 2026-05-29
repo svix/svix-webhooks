@@ -177,10 +177,7 @@ output_dir = "go"
 [[go.task]]
 template = "templates/go/api_resource.go.jinja"
 output_dir = "go"
-extra_codegen_args = [
-    "--context={\"package\":\"svix\"}",
-    "-e=v1.health.get",
-]
+extra_codegen_args = ["--context={\"package\":\"svix\"}", "-e=v1.health.get"]
 [[go.task]]
 template = "templates/go/component_type_summary.go.jinja"
 output_dir = "go"
@@ -226,24 +223,21 @@ extra_codegen_args = [
 
 
 [kotlin]
-extra_shell_commands = [
-   "perl -pi -e 's/package com\\.svix\\.kotlin/package com\\.svix\\.kotlin\\.internal/g' kotlin/lib/src/main/kotlin/internalapi/*.kt",
-]
 [[kotlin.task]]
 template = "templates/kotlin/component_type.kt.jinja"
 output_dir = "kotlin/lib/src/main/kotlin/models"
-extra_codegen_args = [
-   "--include-op-id=v1.endpoint.auto-config.update"
-]
+extra_codegen_args = ["--include-op-id=v1.endpoint.auto-config.update"]
 [[kotlin.task]]
 template = "templates/kotlin/api_resource.kt.jinja"
 output_dir = "kotlin/lib/src/main/kotlin"
+extra_codegen_args = ["--context={\"package\":\"com.svix.kotlin\"}"]
 [[kotlin.task]]
 template = "templates/kotlin/api_resource.kt.jinja"
 output_dir = "kotlin/lib/src/main/kotlin/internalapi"
 extra_codegen_args = [
-   "--include-mode=only-specified",
-   "--include-op-id=v1.endpoint.auto-config.update"
+    "--context={\"package\":\"com.svix.kotlin.internal\"}",
+    "--include-mode=only-specified",
+    "--include-op-id=v1.endpoint.auto-config.update",
 ]
 
 [php]
