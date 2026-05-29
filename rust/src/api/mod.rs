@@ -14,6 +14,7 @@ mod connector;
 mod endpoint;
 mod environment;
 mod event_type;
+mod health;
 mod ingest;
 mod ingest_endpoint;
 mod ingest_source;
@@ -53,6 +54,7 @@ pub use self::{
         EventType, EventTypeCreateOptions, EventTypeDeleteOptions, EventTypeImportOpenapiOptions,
         EventTypeListOptions,
     },
+    health::Health,
     ingest::{Ingest, IngestDashboardOptions},
     ingest_endpoint::{
         IngestEndpoint, IngestEndpointCreateOptions, IngestEndpointListOptions,
@@ -101,59 +103,48 @@ impl Svix {
     pub fn application(&self) -> Application<'_> {
         Application::new(&self.cfg)
     }
-
     pub fn authentication(&self) -> Authentication<'_> {
         Authentication::new(&self.cfg)
     }
-
     pub fn background_task(&self) -> BackgroundTask<'_> {
         BackgroundTask::new(&self.cfg)
     }
-
     pub fn connector(&self) -> Connector<'_> {
         Connector::new(&self.cfg)
     }
-
     pub fn endpoint(&self) -> Endpoint<'_> {
         Endpoint::new(&self.cfg)
     }
-
     pub fn environment(&self) -> Environment<'_> {
         Environment::new(&self.cfg)
     }
-
     pub fn event_type(&self) -> EventType<'_> {
         EventType::new(&self.cfg)
     }
-
+    pub fn health(&self) -> Health<'_> {
+        Health::new(&self.cfg)
+    }
     pub fn ingest(&self) -> Ingest<'_> {
         Ingest::new(&self.cfg)
     }
-
     pub fn integration(&self) -> Integration<'_> {
         Integration::new(&self.cfg)
     }
-
     pub fn message(&self) -> Message<'_> {
         Message::new(&self.cfg)
     }
-
     pub fn message_attempt(&self) -> MessageAttempt<'_> {
         MessageAttempt::new(&self.cfg)
     }
-
     pub fn operational_webhook(&self) -> OperationalWebhook<'_> {
         OperationalWebhook::new(&self.cfg)
     }
-
     pub fn statistics(&self) -> Statistics<'_> {
         Statistics::new(&self.cfg)
     }
-
     pub fn streaming(&self) -> Streaming<'_> {
         Streaming::new(&self.cfg)
     }
-
     #[deprecated = "Use .operational_webhook().endpoint() instead"]
     pub fn operational_webhook_endpoint(&self) -> OperationalWebhookEndpoint<'_> {
         OperationalWebhookEndpoint::new(&self.cfg)

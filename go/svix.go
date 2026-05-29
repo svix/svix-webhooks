@@ -32,6 +32,7 @@ type (
 		Endpoint                   *Endpoint
 		Environment                *Environment
 		EventType                  *EventType
+		Health                     *Health
 		Ingest                     *Ingest
 		Integration                *Integration
 		Message                    *Message
@@ -80,6 +81,7 @@ func New(token string, options *SvixOptions) (*Svix, error) {
 		Endpoint:                   newEndpoint(&svixHttpClient),
 		Environment:                newEnvironment(&svixHttpClient),
 		EventType:                  newEventType(&svixHttpClient),
+		Health:                     newHealth(&svixHttpClient),
 		Ingest:                     newIngest(&svixHttpClient),
 		Integration:                newIntegration(&svixHttpClient),
 		Message:                    newMessage(&svixHttpClient),
