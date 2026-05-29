@@ -1,7 +1,7 @@
 {% set resource_type_name = resource.name | to_upper_camel_case -%}
 {% set resource_self_name = resource.name | to_lower_camel_case -%}
 // Package svix this file is @generated DO NOT EDIT
-package svix
+package {{ context.package }}
 
 import (
 	"fmt"

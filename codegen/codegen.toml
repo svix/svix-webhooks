@@ -129,12 +129,10 @@ extra_codegen_args = [
 
 
 [csharp]
-extra_shell_commands = [
-    "perl -pi -e 's/namespace Svix/namespace Svix.ApiInternal/g' csharp/Svix/ApiInternal/*.cs",
-]
 [[csharp.task]]
 template = "templates/csharp/api_resource.cs.jinja"
 output_dir = "csharp/Svix"
+extra_codegen_args = ["--context={\"namespace\":\"Svix\"}"]
 [[csharp.task]]
 template = "templates/csharp/component_type.cs.jinja"
 output_dir = "csharp/Svix/Models"
@@ -143,18 +141,17 @@ extra_codegen_args = ["--include-op-id=v1.endpoint.auto-config.update"]
 template = "templates/csharp/api_resource.cs.jinja"
 output_dir = "csharp/Svix/ApiInternal"
 extra_codegen_args = [
+    "--context={\"namespace\":\"Svix.ApiInternal\"}",
     "--include-mode=only-specified",
     "--include-op-id=v1.endpoint.auto-config.update",
 ]
 
 
 [java]
-extra_shell_commands = [
-    "perl -pi -e 's/package com\\.svix\\.api/package com.svix.internalapi/g' java/lib/src/main/java/com/svix/internalapi/*.java",
-]
 [[java.task]]
 template = "templates/java/api_resource.java.jinja"
 output_dir = "java/lib/src/main/java/com/svix/api"
+extra_codegen_args = ["--context={\"package\":\"com.svix.api\"}"]
 [[java.task]]
 template = "templates/java/operation_options.java.jinja"
 output_dir = "java/lib/src/main/java/com/svix/api"
@@ -166,15 +163,12 @@ extra_codegen_args = ["--include-op-id=v1.endpoint.auto-config.update"]
 template = "templates/java/api_resource.java.jinja"
 output_dir = "java/lib/src/main/java/com/svix/internalapi"
 extra_codegen_args = [
+    "--context={\"package\":\"com.svix.internalapi\"}",
     "--include-mode=only-specified",
     "--include-op-id=v1.endpoint.auto-config.update",
 ]
 
 [go]
-extra_shell_commands = [
-    "perl -pi -e 's/package svix/package internalapi/g' go/internalapi/management*",
-    "perl -pi -e 's/package svix/package internalapi/g' go/internalapi/endpoint*",
-]
 extra_codegen_args = ["-e=v1.health.get"]
 
 [[go.task]]
@@ -183,6 +177,10 @@ output_dir = "go"
 [[go.task]]
 template = "templates/go/api_resource.go.jinja"
 output_dir = "go"
+extra_codegen_args = [
+    "--context={\"package\":\"svix\"}",
+    "-e=v1.health.get",
+]
 [[go.task]]
 template = "templates/go/component_type_summary.go.jinja"
 output_dir = "go"
@@ -209,6 +207,7 @@ template = "templates/go/api_resource.go.jinja"
 output_dir = "go/internalapi"
 input_files = ["lib-openapi.json"]
 extra_codegen_args = [
+    "--context={\"package\":\"internalapi\"}",
     # This is a limited list of operations required by terraform
     "--include-mode=only-specified",
     "--include-op-id=v1.management.environment.list",
@@ -237,9 +236,6 @@ output_dir = "kotlin/lib/src/main/kotlin"
 
 
 [php]
-extra_shell_commands = [
-    "perl -pi -e 's/^namespace Svix\\\\Api;/namespace Svix\\\\ApiInternal;/g' php/src/ApiInternal/*.php",
-]
 extra_codegen_args = [
     # ingest requires struct enums and is excluded from initial release
     "--exclude-op-id=v1.ingest.source.list",
@@ -262,10 +258,19 @@ extra_codegen_args = [
 [[php.task]]
 template = "templates/php/api_resource.php.jinja"
 output_dir = "php/src/Api"
+extra_codegen_args = [
+    "--context={\"namespace\":\"Svix\\\\Api\"}",
+    "--exclude-op-id=v1.ingest.source.list",
+    "--exclude-op-id=v1.ingest.source.create",
+    "--exclude-op-id=v1.ingest.source.get",
+    "--exclude-op-id=v1.ingest.source.update",
+    "--exclude-op-id=v1.ingest.source.delete",
+]
 [[php.task]]
 template = "templates/php/api_resource.php.jinja"
 output_dir = "php/src/ApiInternal"
 extra_codegen_args = [
+    "--context={\"namespace\":\"Svix\\\\ApiInternal\"}",
     "--include-mode=only-specified",
     "--include-op-id=v1.endpoint.auto-config.update",
 ]

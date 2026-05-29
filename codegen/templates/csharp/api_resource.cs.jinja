@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 {%- set api_name %}{{ r_name_pascal_case }}Api{% endset %}
 
 
-namespace Svix
+namespace {{ context.namespace }}
 {
 {# <Resource><Operation>Options #}
 {%- for op in resource.operations -%}
