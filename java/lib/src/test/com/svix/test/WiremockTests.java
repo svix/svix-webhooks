@@ -424,7 +424,7 @@ public class WiremockTests {
         wireMockRule.verify(
                 1,
                 deleteRequestedFor(urlEqualTo("/api/v1/app/app1"))
-                        .withHeader("User-Agent", matching("svix-libs/.*/java")));
+                        .withHeader("User-Agent", matching("svix-libs/.*/java jre/.*")));
     }
 
     @Test
