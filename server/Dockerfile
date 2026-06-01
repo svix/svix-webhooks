@@ -6,7 +6,7 @@
 # Using https://github.com/LukeMathWalker/cargo-chef for better layer caching
 
 # Base image for planner and build - keep in sync with .github/workflows/server-ci.yml
-FROM docker.io/rust:1.94-slim-trixie AS chef
+FROM docker.io/rust:1.96-slim-trixie AS chef
 RUN cargo install cargo-chef
 WORKDIR /app
 
@@ -49,7 +49,7 @@ COPY . .
 RUN cargo build --release --package svix-server --bin svix-server --frozen
 
 # Production
-FROM docker.io/debian:trixie-slim AS prod
+FROM docker.io/debian:trixie-20260518-slim AS prod
 
 SHELL ["/bin/bash", "-eux", "-o", "pipefail", "-c"]
 RUN <<EOF

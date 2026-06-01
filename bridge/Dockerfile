@@ -4,7 +4,7 @@
 # with `docker build -f bridge/Dockerfile .`
 
 # Base build
-FROM docker.io/rust:1.94-slim-trixie AS build
+FROM docker.io/rust:1.96-slim-trixie AS build
 
 SHELL ["/bin/bash", "-eux", "-o", "pipefail", "-c"]
 RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked --mount=target=/var/cache/apt,type=cache,sharing=locked <<EOF
@@ -62,7 +62,7 @@ RUN touch */src/lib.rs && touch */src/main.rs
 RUN cargo build --release --frozen
 
 # Production
-FROM docker.io/debian:trixie-slim AS prod
+FROM docker.io/debian:trixie-20260518-slim AS prod
 
 SHELL ["/bin/bash", "-eux", "-o", "pipefail", "-c"]
 RUN <<EOF
