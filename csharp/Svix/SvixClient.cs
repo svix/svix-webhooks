@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using System.Runtime.InteropServices;
 
 namespace Svix
 {
@@ -87,7 +88,7 @@ namespace Svix
                 ?? new SvixHttpClient(
                     token,
                     opts.RetryScheduleMilliseconds,
-                    $"svix-libs/{Version.version}/csharp dotnet/{Environment.Version.ToString()}",
+                    $"svix-libs/{Version.version}/csharp dotnet/{RuntimeEnvironment.GetSystemVersion().ToString()}",
                     opts.ServerUrl ?? Utils.DEFAULT_SERVER_URL
                 );
         }

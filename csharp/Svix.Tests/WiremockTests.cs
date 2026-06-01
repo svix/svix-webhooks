@@ -165,7 +165,7 @@ namespace Svix.Tests
                 "svix-libs/",
                 stub.LogEntries[0].RequestMessage.Headers["User-Agent"][0]
             );
-            Assert.Contains("dotnet/4", stub.LogEntries[0].RequestMessage.Headers["User-Agent"][0]);
+            Assert.Contains("dotnet/v", stub.LogEntries[0].RequestMessage.Headers["User-Agent"][0]);
         }
 
         [Fact]
