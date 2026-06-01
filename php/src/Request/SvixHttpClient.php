@@ -22,7 +22,8 @@ class SvixHttpClient
         private string $token,
         private \GuzzleHttp\Client $guzzleClient,
         private SvixOptions $opts
-    ) {}
+    ) {
+    }
 
     public function newReq(
         string $method,
@@ -68,7 +69,7 @@ class SvixHttpClient
             // Build headers
             $headers = array_merge([
                 'Authorization' => 'Bearer ' . $this->token,
-                'User-Agent' => 'svix-libs/' . Version::VERSION . '/php',
+                'User-Agent' => 'svix-libs/' . Version::VERSION . '/php' . ' php/' . phpversion() . ' ' . php_uname('s') . '/' . php_uname('m'),
                 'svix-req-id' => (string)random_int(0, PHP_INT_MAX),
             ], $req->headerParams);
 

@@ -33,8 +33,8 @@ class SvixOptions
          * Takes precedence over `numRetries`.
          */
         public ?array $retryScheduleMs = [60, 120, 240],
-
-    ) {}
+    ) {
+    }
 
     public static function newDefault(string $token): SvixOptions
     {

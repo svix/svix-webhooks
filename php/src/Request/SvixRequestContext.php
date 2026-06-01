@@ -2,8 +2,6 @@
 
 namespace Svix\Request;
 
-
-
 use GuzzleHttp\Client;
 
 class SvixRequestContext
