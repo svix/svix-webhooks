@@ -31,8 +31,12 @@ class Svix(token: String, options: SvixOptions = SvixOptions()) {
             }
         }
         val parsedUrl = options.baseUrl?.toHttpUrlOrNull() ?: throw Exception("Invalid base url")
-        val defaultHeaders =
-            mapOf("User-Agent" to "svix-libs/${Version}/kotlin", "Authorization" to "Bearer $token")
+        var userAgent = "svix-libs/${Version}/kotlin kotlin/${KotlinVersion.CURRENT}"
+        val jreVersion = System.getProperty("java.runtime.version")
+        if (jreVersion != null) {
+            userAgent += " jre/${jreVersion}"
+        }
+        val defaultHeaders = mapOf("User-Agent" to userAgent, "Authorization" to "Bearer $token")
         val httpClient = SvixHttpClient(parsedUrl, defaultHeaders, options.retrySchedule)
         application = Application(httpClient)
         authentication = Authentication(httpClient)
