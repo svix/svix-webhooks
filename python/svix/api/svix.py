@@ -1,8 +1,8 @@
 # this file is @generated
 
+import platform
 import typing as t
 from dataclasses import dataclass, field
-import platform
 
 from .application import Application, ApplicationAsync
 from .authentication import Authentication, AuthenticationAsync
@@ -86,9 +86,7 @@ class ClientBase:
         client = AuthenticatedClient(
             base_url=host,
             token=auth_token,
-            headers={
-                "user-agent": " ".join(user_agent_fields),
-            },
+            headers={"user-agent": " ".join(user_agent_fields)},
             verify_ssl=True,
             retry_schedule=options.retry_schedule,
             timeout=options.timeout,

@@ -67,6 +67,7 @@ dev = [
     "mypy",
     "pytest-docker==3.*",
     "pytest-httpserver>=1.0.7,<2",
+    "pytest-httpx>=0.22,<1.0",
     "pytest>=7.0",
     "requests>=2,<3",
     "ruff>=0.15.6",
