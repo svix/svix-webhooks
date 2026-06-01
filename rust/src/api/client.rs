@@ -67,8 +67,23 @@ impl Svix {
     pub fn new(token: String, options: Option<SvixOptions>) -> Self {
         let options = options.unwrap_or_default();
 
+        let mut user_agent_fields = vec![format!("svix-libs/{CRATE_VERSION}/rust")];
+
+        if let Some(rustc) = version_check::Version::read() {
+            user_agent_fields.push(format!("rust/{rustc}"));
+        }
+
+        #[cfg(unix)]
+        if let Ok(uname) = nix::sys::utsname::uname() {
+            user_agent_fields.push(format!(
+                "{}/{}",
+                uname.sysname().to_string_lossy(),
+                uname.machine().to_string_lossy()
+            ));
+        }
+
         let cfg = Arc::new(Configuration {
-            user_agent: Some(format!("svix-libs/{CRATE_VERSION}/rust")),
+            user_agent: Some(user_agent_fields.join(" ")),
             client: HyperClient::builder(TokioExecutor::new())
                 .build(crate::make_connector(options.proxy_address)),
             timeout: options.timeout,
@@ -136,5 +151,18 @@ mod tests {
         let message_api = svix.message();
         let fut = message_api.expunge_content(String::new(), String::new());
         require_send_sync(fut);
+    }
+
+    #[test]
+    fn test_user_agent() {
+        let svix = Svix::new(String::new(), None);
+        let re =
+            regex::Regex::new(r"^svix-libs/[0-9.]+/rust rust/1\.[0-9.]+ [^ ]+/[^ ]+$").unwrap();
+        let ua = svix
+            .cfg
+            .user_agent
+            .as_ref()
+            .expect("user_agent must be set");
+        assert!(re.is_match(ua));
     }
 }

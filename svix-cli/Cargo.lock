@@ -1082,6 +1082,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "nix"
+version = "0.31.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cf20d2fde8ff38632c426f1165ed7436270b44f199fc55284c38276f9db47c3d"
+dependencies = [
+ "bitflags 2.11.1",
+ "cfg-if",
+ "cfg_aliases",
+ "libc",
+]
+
+[[package]]
 name = "nu-ansi-term"
 version = "0.50.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1724,6 +1736,7 @@ dependencies = [
  "hyper-util",
  "itertools",
  "js_option",
+ "nix",
  "percent-encoding",
  "rand",
  "rustls",
@@ -1736,6 +1749,7 @@ dependencies = [
  "tracing",
  "url",
  "uuid",
+ "version_check",
 ]
 
 [[package]]
