@@ -1,5 +1,6 @@
 import hashlib
 import itertools
+import platform
 import uuid
 from typing import Any, Dict, List, Optional
 
@@ -7,6 +8,7 @@ import pytest
 from pytest_httpserver import HTTPServer
 from werkzeug import Request, Response
 
+from svix import __version__
 from svix.api import (
     ApplicationIn,
     ApplicationOut,
@@ -129,6 +131,30 @@ def svix_endpoint_create_test_params_ids() -> List[str]:
             )
         )
     return ids
+
+
+def test_svix_basic_headers(httpx_mock):
+    svix_api = Svix(auth_token="not-a-real-auth-token")
+    httpx_mock.add_response(
+        url="https://api.svix.com/api/v1/app",
+        json={
+            "data": [],
+            "done": True,
+            "iterator": "app_3EXsi4X5ClkrXn5GqkzvpnNvwqj",
+            "prevIterator": "-app_3EXsi4X5ClkrXn5GqkzvpnNvwqj",
+        },
+    )
+    svix_api.application.list()
+    req = httpx_mock.get_request()
+    assert req.headers["authorization"] is not None
+    assert req.headers["svix-req-id"] is not None
+    assert req.headers["user-agent"] == " ".join(
+        [
+            f"svix-libs/{__version__}/python",
+            f"python/{platform.python_version()}",
+            f"{platform.system()}/{platform.machine()}",
+        ]
+    )
 
 
 @pytest.mark.parametrize(
