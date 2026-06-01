@@ -2,6 +2,7 @@
 
 import typing as t
 from dataclasses import dataclass, field
+import platform
 
 from .application import Application, ApplicationAsync
 from .authentication import Authentication, AuthenticationAsync
@@ -75,11 +76,19 @@ class ClientBase:
         elif region == "au":
             regional_url = "https://api.au.svix.com"
 
+        user_agent_fields = [
+            f"svix-libs/{__version__}/python",
+            f"python/{platform.python_version()}",
+            f"{platform.system()}/{platform.machine()}",
+        ]
+
         host = options.server_url or regional_url or DEFAULT_SERVER_URL
         client = AuthenticatedClient(
             base_url=host,
             token=auth_token,
-            headers={"user-agent": f"svix-libs/{__version__}/python"},
+            headers={
+                "user-agent": " ".join(user_agent_fields),
+            },
             verify_ssl=True,
             retry_schedule=options.retry_schedule,
             timeout=options.timeout,
