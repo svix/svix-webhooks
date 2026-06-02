@@ -123,9 +123,9 @@ func ({{ resource_self_name }} *{{ resource_type_name }}) {{ op.name | to_upper_
 	{% endif -%}
 
 	{% if op | has_query_or_header_params -%}
-	{% set used_err = true -%}
-	var err error
 	if o != nil {
+		var err error
+
 		{# header params -#}
 		{% if op.header_params | length > 0 -%}
 			{% for p in op.header_params -%}
@@ -153,7 +153,11 @@ func ({{ resource_self_name }} *{{ resource_type_name }}) {{ op.name | to_upper_
 	{% else -%}
 		{% set generic_ret_type -%}any,{{ ret_type }}{% endset -%}
 	{% endif -%}
-	{% if has_return %}return {% else %} _,err {% if not used_err%}:{% endif%}= {% endif %}internal.ExecuteRequest[{{ generic_ret_type }}](
+	{% if has_return -%}
+		return
+	{%- else -%}
+		_, err :=
+	{%- endif %} internal.ExecuteRequest[{{ generic_ret_type }}](
 		ctx,
 		{{ resource_self_name }}.client,
 		"{{ op.method | upper }}",

@@ -45,8 +45,9 @@ func (streamingEventType *StreamingEventType) List(
 	o *StreamingEventTypeListOptions,
 ) (*models.ListResponseStreamEventTypeOut, error) {
 	queryMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
 		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
 		internal.SerializeParamToMap("order", o.Order, queryMap, &err)
@@ -74,8 +75,9 @@ func (streamingEventType *StreamingEventType) Create(
 	o *StreamingEventTypeCreateOptions,
 ) (*models.StreamEventTypeOut, error) {
 	headerMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
@@ -144,14 +146,15 @@ func (streamingEventType *StreamingEventType) Delete(
 		"name": name,
 	}
 	queryMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("expunge", o.Expunge, queryMap, &err)
 		if err != nil {
 			return err
 		}
 	}
-	_, err = internal.ExecuteRequest[any, any](
+	_, err := internal.ExecuteRequest[any, any](
 		ctx,
 		streamingEventType.client,
 		"DELETE",

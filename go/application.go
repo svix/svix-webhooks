@@ -44,8 +44,9 @@ func (application *Application) List(
 	o *ApplicationListOptions,
 ) (*models.ListResponseApplicationOut, error) {
 	queryMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("exclude_apps_with_no_endpoints", o.ExcludeAppsWithNoEndpoints, queryMap, &err)
 		internal.SerializeParamToMap("exclude_apps_with_disabled_endpoints", o.ExcludeAppsWithDisabledEndpoints, queryMap, &err)
 		internal.SerializeParamToMap("exclude_apps_with_svix_play_endpoints", o.ExcludeAppsWithSvixPlayEndpoints, queryMap, &err)
@@ -78,8 +79,9 @@ func (application *Application) Create(
 		"get_if_exists": "false",
 	}
 	headerMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err

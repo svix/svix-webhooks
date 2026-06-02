@@ -42,8 +42,9 @@ func (ingestSource *IngestSource) List(
 	o *IngestSourceListOptions,
 ) (*models.ListResponseIngestSourceOut, error) {
 	queryMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
 		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
 		internal.SerializeParamToMap("order", o.Order, queryMap, &err)
@@ -70,8 +71,9 @@ func (ingestSource *IngestSource) Create(
 	o *IngestSourceCreateOptions,
 ) (*models.IngestSourceOut, error) {
 	headerMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
@@ -166,8 +168,9 @@ func (ingestSource *IngestSource) RotateToken(
 		"source_id": sourceId,
 	}
 	headerMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err

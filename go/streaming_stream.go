@@ -38,8 +38,9 @@ func (streamingStream *StreamingStream) List(
 	o *StreamingStreamListOptions,
 ) (*models.ListResponseStreamOut, error) {
 	queryMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
 		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
 		internal.SerializeParamToMap("order", o.Order, queryMap, &err)
@@ -66,8 +67,9 @@ func (streamingStream *StreamingStream) Create(
 	o *StreamingStreamCreateOptions,
 ) (*models.StreamOut, error) {
 	headerMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err

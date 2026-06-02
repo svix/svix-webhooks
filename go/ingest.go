@@ -37,8 +37,9 @@ func (ingest *Ingest) Dashboard(
 		"source_id": sourceId,
 	}
 	headerMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
