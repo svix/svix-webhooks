@@ -15,7 +15,6 @@ use Psr\Http\Message\ResponseInterface;
 use Svix\Exception\ApiException;
 use Svix\Request\SvixRequestContext;
 
-
 enum HttpMethod: string
 {
     case GET = 'GET';

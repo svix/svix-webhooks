@@ -35,7 +35,7 @@ class Utils
 
 
     // Get a string from a json obj, return null if $required is false and key exists but is null
-    static function deserializeString(mixed $data, string $key, bool $required, string $structName): ?string
+    public static function deserializeString(mixed $data, string $key, bool $required, string $structName): ?string
     {
         $val = Utils::getValFromJson($data, $key, $required, $structName);
         if ($val === null) {
@@ -53,7 +53,7 @@ class Utils
         return $val;
     }
 
-    static function deserializeDt(mixed $data, string $key, bool $required, string $structName): ?\DateTimeImmutable
+    public static function deserializeDt(mixed $data, string $key, bool $required, string $structName): ?\DateTimeImmutable
     {
 
         $val = Utils::getValFromJson($data, $key, $required, $structName);
@@ -64,7 +64,7 @@ class Utils
         return new \DateTimeImmutable($val);
     }
 
-    static function deserializeInt(mixed $data, string $key, bool $required, string $structName): ?int
+    public static function deserializeInt(mixed $data, string $key, bool $required, string $structName): ?int
     {
         $val = Utils::getValFromJson($data, $key, $required, $structName);
         if ($val === null) {
@@ -82,7 +82,7 @@ class Utils
         return $val;
     }
 
-    static function deserializeBool(mixed $data, string $key, bool $required, string $structName): ?bool
+    public static function deserializeBool(mixed $data, string $key, bool $required, string $structName): ?bool
     {
         $val = Utils::getValFromJson($data, $key, $required, $structName);
         if ($val === null) {
@@ -100,7 +100,7 @@ class Utils
         return $val;
     }
 
-    static function deserializeObjectArray(mixed $data, string $key, bool $required, string $structName, callable $fromMixed): array
+    public static function deserializeObjectArray(mixed $data, string $key, bool $required, string $structName, callable $fromMixed): array
     {
         $rawData = self::getValFromJson($data, $key, $required, $structName);
         $parsedData = [];
@@ -114,7 +114,7 @@ class Utils
         return $parsedData;
     }
 
-    static function deserializeObject(mixed $data, string $key, bool $required, string $structName, callable $fromMixed): ?object
+    public static function deserializeObject(mixed $data, string $key, bool $required, string $structName, callable $fromMixed): ?object
     {
         $val = Utils::getValFromJson($data, $key, $required, $structName);
         if ($val === null) {
@@ -133,7 +133,7 @@ class Utils
      * Auto-detect the server URL based on the token region.
      * Extracts the region from the token and maps it to the corresponding API URL.
      */
-    static function getServerUrlFromToken(string $token): string
+    public static function getServerUrlFromToken(string $token): string
     {
         $tokenParts = explode('.', $token);
         $region = end($tokenParts);
@@ -149,7 +149,7 @@ class Utils
     }
 
 
-    static function uuid4(): string
+    public static function uuid4(): string
     {
         $data = random_bytes(16);
 
@@ -163,7 +163,7 @@ class Utils
     // if we get in a array type that is empty
     // return a new stdClass instead
     // this will be used in the `jsonSerialize` to ensure empty objects are serialized as `{}` and not as `[]`
-    static function newStdClassIfArrayIsEmpty(mixed $val): mixed
+    public static function newStdClassIfArrayIsEmpty(mixed $val): mixed
     {
         if (is_array($val) && empty($val)) {
             return new \stdClass();

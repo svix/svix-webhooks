@@ -4,8 +4,8 @@ namespace Svix;
 
 class Webhook
 {
-    const SECRET_PREFIX = "whsec_";
-    const TOLERANCE = 5 * 60;
+    public const SECRET_PREFIX = "whsec_";
+    public const TOLERANCE = 5 * 60;
     private $secret;
 
     public function __construct($secret)
