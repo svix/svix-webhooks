@@ -61,7 +61,7 @@ class MessageCreateOptions(BaseOptions):
     def _query_params(self) -> t.Dict[str, str]:
         return serialize_params(
             {
-                "with_content": self.with_content,
+                "with_content": False,
             }
         )
 
@@ -195,7 +195,10 @@ class MessageAsync(ApiBase):
             header_params=options._header_params(),
             json_body=message_in.model_dump_json(exclude_unset=True, by_alias=True),
         )
-        return MessageOut.model_validate(response.json())
+        message_out = MessageOut.model_validate(response.json())
+        if options.with_content is not False:
+            message_out.payload = message_in.payload
+        return message_out
 
     async def expunge_all_contents(
         self,
@@ -338,7 +341,10 @@ class Message(ApiBase):
             header_params=options._header_params(),
             json_body=message_in.model_dump_json(exclude_unset=True, by_alias=True),
         )
-        return MessageOut.model_validate(response.json())
+        message_out = MessageOut.model_validate(response.json())
+        if options.with_content is not False:
+            message_out.payload = message_in.payload
+        return message_out
 
     def expunge_all_contents(
         self,
