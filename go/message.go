@@ -128,12 +128,12 @@ func (message *Message) Create(
 		var err error
 
 		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		internal.SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	return internal.ExecuteRequest[models.MessageIn, models.MessageOut](
+	queryMap["with_content"] = "false"
+	response, err := internal.ExecuteRequest[models.MessageIn, models.MessageOut](
 		ctx,
 		message.client,
 		"POST",
@@ -143,6 +143,13 @@ func (message *Message) Create(
 		headerMap,
 		&messageIn,
 	)
+	if err != nil {
+		return nil, err
+	}
+	if o == nil || o.WithContent == nil || *o.WithContent == true {
+		response.Payload = messageIn.Payload
+	}
+	return response, nil
 }
 
 // Delete all message payloads for the application.
