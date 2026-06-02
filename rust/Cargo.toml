@@ -55,9 +55,14 @@ tower-service = "0.3.3"
 tracing = { version = "0.1.41", default-features = false }
 url = "2.2"
 uuid = { version = "1", features = ["v4"] }
+version_check = "0.9.5"
+
+[target.'cfg(unix)'.dependencies]
+nix = { version = "0.31", features = ["feature"] }
 
 [dev-dependencies]
 tokio = { version = "1.41.0", features = ["macros"] }
+regex = "1"
 wiremock = "0.6.2, <0.6.5"
 
 [package.metadata.cargo-public-api-crates]

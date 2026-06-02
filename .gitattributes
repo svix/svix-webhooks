@@ -19,4 +19,5 @@
 /ruby/lib/svix/api/** linguist-generated
 /ruby/lib/svix/models/** linguist-generated
 /rust/src/api/** linguist-generated
+/rust/src/api/client.rs -linguist-generated
 /rust/src/models/** linguist-generated
