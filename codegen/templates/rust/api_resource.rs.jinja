@@ -115,6 +115,7 @@ impl<'a> {{ resource_type_name }}<'a> {
         {% endif -%}
 
         {# make the request #}
+        {% set make_request -%}
         crate::request::Request::new(http1::Method::{{ op.method | upper }}, "{{ op.path }}")
 
         {% for p in op.path_params -%}
@@ -122,12 +123,16 @@ impl<'a> {{ resource_type_name }}<'a> {
         {% endfor -%}
 
         {% for p in op.query_params -%}
-            {% if p.required -%}
-                .with_query_param
-            {%- else -%}
-                .with_optional_query_param
-            {%- endif -%}
-            ("{{ p.name }}", {{ p.name | to_snake_case }})
+            {% if op.id == "v1.message.create" and p.name == "with_content" -%}
+                .with_query_param("with_content", false)
+            {% else -%}
+                {% if p.required -%}
+                    .with_query_param
+                {%- else -%}
+                    .with_optional_query_param
+                {%- endif -%}
+                ("{{ p.name }}", {{ p.name | to_snake_case }})
+            {% endif -%}
         {% endfor -%}
 
         {% for p in op.header_params -%}
@@ -144,6 +149,18 @@ impl<'a> {{ resource_type_name }}<'a> {
 
             .execute(self.cfg)
             .await
+        {%- endset %}
+        {% if op.id == "v1.message.create" -%}
+            let payload = with_content.unwrap_or(true).then(|| message_in.payload.clone());
+            let mut response: MessageOut = {{ make_request }}?;
+            if let Some(p) = payload {
+                response.payload = p;
+            }
+
+            Ok(response)
+        {%- else -%}
+            {{ make_request }}
+        {%- endif %}
     }
 
     {% set extra_path -%}
