@@ -6,9 +6,9 @@ export class Health {
   public constructor(private readonly requestCtx: SvixRequestContext) {}
 
   /** Verify the API server is up and running. */
-  public get(): Promise<void> {
+  public async get(): Promise<void> {
     const request = new SvixRequest(HttpMethod.GET, "/api/v1/health");
 
-    return request.sendNoResponseBody(this.requestCtx);
+    return await request.sendNoResponseBody(this.requestCtx);
   }
 }

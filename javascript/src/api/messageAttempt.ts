@@ -129,7 +129,7 @@ export class MessageAttempt {
    * by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
    * set the `before` or `after` parameter as appropriate.
    */
-  public listByEndpoint(
+  public async listByEndpoint(
     appId: string,
     endpointId: string,
     options?: MessageAttemptListByEndpointOptions
@@ -156,7 +156,7 @@ export class MessageAttempt {
       event_types: options?.eventTypes,
     });
 
-    return request.send(
+    return await request.send(
       this.requestCtx,
       ListResponseMessageAttemptOutSerializer._fromJsonObject
     );
@@ -170,7 +170,7 @@ export class MessageAttempt {
    * by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
    * set the `before` or `after` parameter as appropriate.
    */
-  public listByMsg(
+  public async listByMsg(
     appId: string,
     msgId: string,
     options?: MessageAttemptListByMsgOptions
@@ -197,7 +197,7 @@ export class MessageAttempt {
       event_types: options?.eventTypes,
     });
 
-    return request.send(
+    return await request.send(
       this.requestCtx,
       ListResponseMessageAttemptOutSerializer._fromJsonObject
     );
@@ -213,7 +213,7 @@ export class MessageAttempt {
    * by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
    * set the `before` or `after` parameter as appropriate.
    */
-  public listAttemptedMessages(
+  public async listAttemptedMessages(
     appId: string,
     endpointId: string,
     options?: MessageAttemptListAttemptedMessagesOptions
@@ -238,14 +238,14 @@ export class MessageAttempt {
       event_types: options?.eventTypes,
     });
 
-    return request.send(
+    return await request.send(
       this.requestCtx,
       ListResponseEndpointMessageOutSerializer._fromJsonObject
     );
   }
 
   /** `msg_id`: Use a message id or a message `eventId` */
-  public get(
+  public async get(
     appId: string,
     msgId: string,
     attemptId: string,
@@ -263,7 +263,10 @@ export class MessageAttempt {
       expanded_statuses: options?.expandedStatuses ?? true,
     });
 
-    return request.send(this.requestCtx, MessageAttemptOutSerializer._fromJsonObject);
+    return await request.send(
+      this.requestCtx,
+      MessageAttemptOutSerializer._fromJsonObject
+    );
   }
 
   /**
@@ -272,7 +275,11 @@ export class MessageAttempt {
    * Useful when an endpoint accidentally returned sensitive content.
    * The message can't be replayed or resent once its payload has been deleted or expired.
    */
-  public expungeContent(appId: string, msgId: string, attemptId: string): Promise<void> {
+  public async expungeContent(
+    appId: string,
+    msgId: string,
+    attemptId: string
+  ): Promise<void> {
     const request = new SvixRequest(
       HttpMethod.DELETE,
       "/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/content"
@@ -282,7 +289,7 @@ export class MessageAttempt {
     request.setPathParam("msg_id", msgId);
     request.setPathParam("attempt_id", attemptId);
 
-    return request.sendNoResponseBody(this.requestCtx);
+    return await request.sendNoResponseBody(this.requestCtx);
   }
 
   /**
@@ -291,7 +298,7 @@ export class MessageAttempt {
    * Additionally includes metadata about the latest message attempt.
    * By default, endpoints are listed in ascending order by ID.
    */
-  public listAttemptedDestinations(
+  public async listAttemptedDestinations(
     appId: string,
     msgId: string,
     options?: MessageAttemptListAttemptedDestinationsOptions
@@ -308,14 +315,14 @@ export class MessageAttempt {
       iterator: options?.iterator,
     });
 
-    return request.send(
+    return await request.send(
       this.requestCtx,
       ListResponseMessageEndpointOutSerializer._fromJsonObject
     );
   }
 
   /** Resend a message to the specified endpoint. */
-  public resend(
+  public async resend(
     appId: string,
     msgId: string,
     endpointId: string,
@@ -331,6 +338,6 @@ export class MessageAttempt {
     request.setPathParam("endpoint_id", endpointId);
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
 
-    return request.send(this.requestCtx, EmptyResponseSerializer._fromJsonObject);
+    return await request.send(this.requestCtx, EmptyResponseSerializer._fromJsonObject);
   }
 }

@@ -68,7 +68,7 @@ export class {{ resource_type_name }} {
         {% set response_type =
             op.response_body_schema_name | default("void") | replace("_", "") -%}
         {{ op.description | with_javadoc_deprecation(op.deprecated) | to_doc_comment(style="js") }}
-        public {{ op.name | to_lower_camel_case }}(
+        public async {{ op.name | to_lower_camel_case }}(
             {# path parameters -#}
             {% for p in op.path_params -%}
                 {{ p | to_lower_camel_case }}: string,
@@ -122,12 +122,12 @@ export class {{ resource_type_name }} {
             {% endif -%}
 
             {% if op.response_body_schema_name is defined %}
-                return request.send(
+                return await request.send(
                     this.requestCtx,
                     {{ op.response_body_schema_name | to_upper_camel_case }}Serializer._fromJsonObject,
                 );
             {% else %}
-                return request.sendNoResponseBody(this.requestCtx);
+                return await request.sendNoResponseBody(this.requestCtx);
             {% endif -%}
         }
 

@@ -38,7 +38,7 @@ export class Integration {
   public constructor(private readonly requestCtx: SvixRequestContext) {}
 
   /** List the application's integrations. */
-  public list(
+  public async list(
     appId: string,
     options?: IntegrationListOptions
   ): Promise<ListResponseIntegrationOut> {
@@ -51,14 +51,14 @@ export class Integration {
       order: options?.order,
     });
 
-    return request.send(
+    return await request.send(
       this.requestCtx,
       ListResponseIntegrationOutSerializer._fromJsonObject
     );
   }
 
   /** Create an integration. */
-  public create(
+  public async create(
     appId: string,
     integrationIn: IntegrationIn,
     options?: IntegrationCreateOptions
@@ -69,11 +69,11 @@ export class Integration {
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
     request.setBody(IntegrationInSerializer._toJsonObject(integrationIn));
 
-    return request.send(this.requestCtx, IntegrationOutSerializer._fromJsonObject);
+    return await request.send(this.requestCtx, IntegrationOutSerializer._fromJsonObject);
   }
 
   /** Get an integration. */
-  public get(appId: string, integId: string): Promise<IntegrationOut> {
+  public async get(appId: string, integId: string): Promise<IntegrationOut> {
     const request = new SvixRequest(
       HttpMethod.GET,
       "/api/v1/app/{app_id}/integration/{integ_id}"
@@ -82,11 +82,11 @@ export class Integration {
     request.setPathParam("app_id", appId);
     request.setPathParam("integ_id", integId);
 
-    return request.send(this.requestCtx, IntegrationOutSerializer._fromJsonObject);
+    return await request.send(this.requestCtx, IntegrationOutSerializer._fromJsonObject);
   }
 
   /** Update an integration. */
-  public update(
+  public async update(
     appId: string,
     integId: string,
     integrationUpdate: IntegrationUpdate
@@ -100,11 +100,11 @@ export class Integration {
     request.setPathParam("integ_id", integId);
     request.setBody(IntegrationUpdateSerializer._toJsonObject(integrationUpdate));
 
-    return request.send(this.requestCtx, IntegrationOutSerializer._fromJsonObject);
+    return await request.send(this.requestCtx, IntegrationOutSerializer._fromJsonObject);
   }
 
   /** Delete an integration. */
-  public delete(appId: string, integId: string): Promise<void> {
+  public async delete(appId: string, integId: string): Promise<void> {
     const request = new SvixRequest(
       HttpMethod.DELETE,
       "/api/v1/app/{app_id}/integration/{integ_id}"
@@ -113,7 +113,7 @@ export class Integration {
     request.setPathParam("app_id", appId);
     request.setPathParam("integ_id", integId);
 
-    return request.sendNoResponseBody(this.requestCtx);
+    return await request.sendNoResponseBody(this.requestCtx);
   }
 
   /**
@@ -121,7 +121,7 @@ export class Integration {
    *
    * @deprecated
    */
-  public getKey(appId: string, integId: string): Promise<IntegrationKeyOut> {
+  public async getKey(appId: string, integId: string): Promise<IntegrationKeyOut> {
     const request = new SvixRequest(
       HttpMethod.GET,
       "/api/v1/app/{app_id}/integration/{integ_id}/key"
@@ -130,11 +130,14 @@ export class Integration {
     request.setPathParam("app_id", appId);
     request.setPathParam("integ_id", integId);
 
-    return request.send(this.requestCtx, IntegrationKeyOutSerializer._fromJsonObject);
+    return await request.send(
+      this.requestCtx,
+      IntegrationKeyOutSerializer._fromJsonObject
+    );
   }
 
   /** Rotate the integration's key. The previous key will be immediately revoked. */
-  public rotateKey(
+  public async rotateKey(
     appId: string,
     integId: string,
     options?: IntegrationRotateKeyOptions
@@ -148,6 +151,9 @@ export class Integration {
     request.setPathParam("integ_id", integId);
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
 
-    return request.send(this.requestCtx, IntegrationKeyOutSerializer._fromJsonObject);
+    return await request.send(
+      this.requestCtx,
+      IntegrationKeyOutSerializer._fromJsonObject
+    );
   }
 }

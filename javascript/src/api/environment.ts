@@ -21,12 +21,12 @@ export class Environment {
    * Note that the schema for [`EnvironmentOut`] is subject to change. The fields
    * herein are provided for convenience but should be treated as JSON blobs.
    */
-  public export(options?: EnvironmentExportOptions): Promise<EnvironmentOut> {
+  public async export(options?: EnvironmentExportOptions): Promise<EnvironmentOut> {
     const request = new SvixRequest(HttpMethod.POST, "/api/v1/environment/export");
 
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
 
-    return request.send(this.requestCtx, EnvironmentOutSerializer._fromJsonObject);
+    return await request.send(this.requestCtx, EnvironmentOutSerializer._fromJsonObject);
   }
 
   /**
@@ -37,7 +37,7 @@ export class Environment {
    * Note that the schema for [`EnvironmentIn`] is subject to change. The fields
    * herein are provided for convenience but should be treated as JSON blobs.
    */
-  public import(
+  public async import(
     environmentIn: EnvironmentIn,
     options?: EnvironmentImportOptions
   ): Promise<void> {
@@ -46,6 +46,6 @@ export class Environment {
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
     request.setBody(EnvironmentInSerializer._toJsonObject(environmentIn));
 
-    return request.sendNoResponseBody(this.requestCtx);
+    return await request.sendNoResponseBody(this.requestCtx);
   }
 }

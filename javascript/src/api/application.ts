@@ -36,7 +36,9 @@ export class Application {
   public constructor(private readonly requestCtx: SvixRequestContext) {}
 
   /** List of all the organization's applications. */
-  public list(options?: ApplicationListOptions): Promise<ListResponseApplicationOut> {
+  public async list(
+    options?: ApplicationListOptions
+  ): Promise<ListResponseApplicationOut> {
     const request = new SvixRequest(HttpMethod.GET, "/api/v1/app");
 
     request.setQueryParams({
@@ -48,14 +50,14 @@ export class Application {
       order: options?.order,
     });
 
-    return request.send(
+    return await request.send(
       this.requestCtx,
       ListResponseApplicationOutSerializer._fromJsonObject
     );
   }
 
   /** Create a new application. */
-  public create(
+  public async create(
     applicationIn: ApplicationIn,
     options?: ApplicationCreateOptions
   ): Promise<ApplicationOut> {
@@ -64,7 +66,7 @@ export class Application {
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
     request.setBody(ApplicationInSerializer._toJsonObject(applicationIn));
 
-    return request.send(this.requestCtx, ApplicationOutSerializer._fromJsonObject);
+    return await request.send(this.requestCtx, ApplicationOutSerializer._fromJsonObject);
   }
 
   /** Get the application with the UID from `applicationIn`, or create it if it doesn't exist yet. */
@@ -82,35 +84,38 @@ export class Application {
   }
 
   /** Get an application. */
-  public get(appId: string): Promise<ApplicationOut> {
+  public async get(appId: string): Promise<ApplicationOut> {
     const request = new SvixRequest(HttpMethod.GET, "/api/v1/app/{app_id}");
 
     request.setPathParam("app_id", appId);
 
-    return request.send(this.requestCtx, ApplicationOutSerializer._fromJsonObject);
+    return await request.send(this.requestCtx, ApplicationOutSerializer._fromJsonObject);
   }
 
   /** Update an application. */
-  public update(appId: string, applicationIn: ApplicationIn): Promise<ApplicationOut> {
+  public async update(
+    appId: string,
+    applicationIn: ApplicationIn
+  ): Promise<ApplicationOut> {
     const request = new SvixRequest(HttpMethod.PUT, "/api/v1/app/{app_id}");
 
     request.setPathParam("app_id", appId);
     request.setBody(ApplicationInSerializer._toJsonObject(applicationIn));
 
-    return request.send(this.requestCtx, ApplicationOutSerializer._fromJsonObject);
+    return await request.send(this.requestCtx, ApplicationOutSerializer._fromJsonObject);
   }
 
   /** Delete an application. */
-  public delete(appId: string): Promise<void> {
+  public async delete(appId: string): Promise<void> {
     const request = new SvixRequest(HttpMethod.DELETE, "/api/v1/app/{app_id}");
 
     request.setPathParam("app_id", appId);
 
-    return request.sendNoResponseBody(this.requestCtx);
+    return await request.sendNoResponseBody(this.requestCtx);
   }
 
   /** Partially update an application. */
-  public patch(
+  public async patch(
     appId: string,
     applicationPatch: ApplicationPatch
   ): Promise<ApplicationOut> {
@@ -119,6 +124,6 @@ export class Application {
     request.setPathParam("app_id", appId);
     request.setBody(ApplicationPatchSerializer._toJsonObject(applicationPatch));
 
-    return request.send(this.requestCtx, ApplicationOutSerializer._fromJsonObject);
+    return await request.send(this.requestCtx, ApplicationOutSerializer._fromJsonObject);
   }
 }

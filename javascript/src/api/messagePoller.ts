@@ -41,7 +41,7 @@ export class MessagePoller {
   public constructor(private readonly requestCtx: SvixRequestContext) {}
 
   /** Reads the stream of created messages for an application, filtered on the Sink's event types and Channels. */
-  public poll(
+  public async poll(
     appId: string,
     sinkId: string,
     options?: MessagePollerPollOptions
@@ -61,14 +61,17 @@ export class MessagePoller {
       after: options?.after,
     });
 
-    return request.send(this.requestCtx, PollingEndpointOutSerializer._fromJsonObject);
+    return await request.send(
+      this.requestCtx,
+      PollingEndpointOutSerializer._fromJsonObject
+    );
   }
 
   /**
    * Reads the stream of created messages for an application, filtered on the Sink's event types and
    * Channels, using server-managed iterator tracking.
    */
-  public consumerPoll(
+  public async consumerPoll(
     appId: string,
     sinkId: string,
     consumerId: string,
@@ -87,11 +90,14 @@ export class MessagePoller {
       iterator: options?.iterator,
     });
 
-    return request.send(this.requestCtx, PollingEndpointOutSerializer._fromJsonObject);
+    return await request.send(
+      this.requestCtx,
+      PollingEndpointOutSerializer._fromJsonObject
+    );
   }
 
   /** Sets the starting offset for the consumer of a polling endpoint. */
-  public consumerSeek(
+  public async consumerSeek(
     appId: string,
     sinkId: string,
     consumerId: string,
@@ -111,7 +117,7 @@ export class MessagePoller {
       PollingEndpointConsumerSeekInSerializer._toJsonObject(pollingEndpointConsumerSeekIn)
     );
 
-    return request.send(
+    return await request.send(
       this.requestCtx,
       PollingEndpointConsumerSeekOutSerializer._fromJsonObject
     );
