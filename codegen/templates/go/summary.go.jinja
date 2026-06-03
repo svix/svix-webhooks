@@ -75,8 +75,7 @@ func New(token string, options *SvixOptions) (*Svix, error) {
 // Add a custom suffix to the default user-agent
 //
 // The default user agent is `svix-libs/<version>/go go/<goversion>`.
-// The default user agent is `svix-libs/<version>/go`.
-// The suffix will be separated from the base user agent with a `/`
+// The suffix will be separated from the base svix-libs component of the user agent with a `/`
 //
 // The suffix must be less then 50 chars, And must match this regex `^[A-Za-z\d\.\-]+$`
 //
@@ -87,8 +86,8 @@ func SetUserAgentSuffix(s *Svix, userAgentSuffix string) error {
 
 // Add a custom suffix to the default user-agent
 //
-// The default user agent is `svix-libs/<version>/go`.
-// The suffix will be separated from the base user agent with a `/`
+// The default user agent is `svix-libs/<version>/go go/<goversion>`.
+// The suffix will be separated from the base svix-libs component of the user agent with a `/`
 //
 // The suffix must be less then 50 chars, And must match this regex `^[A-Za-z\d\.\-]+$`
 func (s Svix) SetUserAgentSuffix(userAgentSuffix string) error {
