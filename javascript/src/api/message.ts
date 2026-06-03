@@ -121,12 +121,19 @@ export class Message {
 
     request.setPathParam("app_id", appId);
     request.setQueryParams({
-      with_content: options?.withContent,
+      with_content: false,
     });
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
     request.setBody(MessageInSerializer._toJsonObject(messageIn));
 
-    return await request.send(this.requestCtx, MessageOutSerializer._fromJsonObject);
+    const response = await request.send(
+      this.requestCtx,
+      MessageOutSerializer._fromJsonObject
+    );
+    if (options?.withContent ?? true) {
+      response.payload = messageIn.payload;
+    }
+    return response;
   }
 
   /**
