@@ -468,7 +468,17 @@ public class WiremockTests {
                         .willReturn(WireMock.ok().withBodyFile("MessageOut.json")));
 
         String jsonPayload = "{\"key\":\"val\",\"key1\":[\"list\"]}";
-        MessageIn msg = new MessageIn().payload(jsonPayload).eventType("event.type").transformationsParams(Map.of("headers",Map.of( "header-key","header-val")));
+
+        HashMap<String, String> headers = new HashMap<>();
+        headers.put("header-key", "header-val");
+
+        HashMap<String, Object> trParam = new HashMap<>();
+        trParam.put("headers", headers);
+
+        MessageIn msg = new MessageIn()
+                .payload(jsonPayload)
+                .eventType("event.type")
+                .transformationsParams(trParam);
         svx.getMessage().create("app1", msg);
 
         // file in java/lib/src/test/resources/__files/ExpectedMsgCreateBodyWithHeaders.json
