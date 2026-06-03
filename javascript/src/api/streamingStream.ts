@@ -27,7 +27,9 @@ export class StreamingStream {
   public constructor(private readonly requestCtx: SvixRequestContext) {}
 
   /** List of all the organization's streams. */
-  public list(options?: StreamingStreamListOptions): Promise<ListResponseStreamOut> {
+  public async list(
+    options?: StreamingStreamListOptions
+  ): Promise<ListResponseStreamOut> {
     const request = new SvixRequest(HttpMethod.GET, "/api/v1/stream");
 
     request.setQueryParams({
@@ -36,11 +38,14 @@ export class StreamingStream {
       order: options?.order,
     });
 
-    return request.send(this.requestCtx, ListResponseStreamOutSerializer._fromJsonObject);
+    return await request.send(
+      this.requestCtx,
+      ListResponseStreamOutSerializer._fromJsonObject
+    );
   }
 
   /** Creates a new stream. */
-  public create(
+  public async create(
     streamIn: StreamIn,
     options?: StreamingStreamCreateOptions
   ): Promise<StreamOut> {
@@ -49,44 +54,44 @@ export class StreamingStream {
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
     request.setBody(StreamInSerializer._toJsonObject(streamIn));
 
-    return request.send(this.requestCtx, StreamOutSerializer._fromJsonObject);
+    return await request.send(this.requestCtx, StreamOutSerializer._fromJsonObject);
   }
 
   /** Get a stream by id or uid. */
-  public get(streamId: string): Promise<StreamOut> {
+  public async get(streamId: string): Promise<StreamOut> {
     const request = new SvixRequest(HttpMethod.GET, "/api/v1/stream/{stream_id}");
 
     request.setPathParam("stream_id", streamId);
 
-    return request.send(this.requestCtx, StreamOutSerializer._fromJsonObject);
+    return await request.send(this.requestCtx, StreamOutSerializer._fromJsonObject);
   }
 
   /** Update a stream. */
-  public update(streamId: string, streamIn: StreamIn): Promise<StreamOut> {
+  public async update(streamId: string, streamIn: StreamIn): Promise<StreamOut> {
     const request = new SvixRequest(HttpMethod.PUT, "/api/v1/stream/{stream_id}");
 
     request.setPathParam("stream_id", streamId);
     request.setBody(StreamInSerializer._toJsonObject(streamIn));
 
-    return request.send(this.requestCtx, StreamOutSerializer._fromJsonObject);
+    return await request.send(this.requestCtx, StreamOutSerializer._fromJsonObject);
   }
 
   /** Delete a stream. */
-  public delete(streamId: string): Promise<void> {
+  public async delete(streamId: string): Promise<void> {
     const request = new SvixRequest(HttpMethod.DELETE, "/api/v1/stream/{stream_id}");
 
     request.setPathParam("stream_id", streamId);
 
-    return request.sendNoResponseBody(this.requestCtx);
+    return await request.sendNoResponseBody(this.requestCtx);
   }
 
   /** Partially update a stream. */
-  public patch(streamId: string, streamPatch: StreamPatch): Promise<StreamOut> {
+  public async patch(streamId: string, streamPatch: StreamPatch): Promise<StreamOut> {
     const request = new SvixRequest(HttpMethod.PATCH, "/api/v1/stream/{stream_id}");
 
     request.setPathParam("stream_id", streamId);
     request.setBody(StreamPatchSerializer._toJsonObject(streamPatch));
 
-    return request.send(this.requestCtx, StreamOutSerializer._fromJsonObject);
+    return await request.send(this.requestCtx, StreamOutSerializer._fromJsonObject);
   }
 }

@@ -19,7 +19,7 @@ export class Endpoint {
    *
    * @deprecated
    */
-  public transformationPartialUpdate(
+  public async transformationPartialUpdate(
     appId: string,
     endpointId: string,
     endpointTransformationIn: EndpointTransformationIn
@@ -35,6 +35,6 @@ export class Endpoint {
       EndpointTransformationInSerializer._toJsonObject(endpointTransformationIn)
     );
 
-    return request.sendNoResponseBody(this.requestCtx);
+    return await request.sendNoResponseBody(this.requestCtx);
   }
 }

@@ -8,7 +8,7 @@ export class EndpointAutoConfig {
   public constructor(private readonly requestCtx: SvixRequestContext) {}
 
   /** Update an auto-config endpoint by providing endpoint details. */
-  public update(
+  public async update(
     appId: string,
     endpointId: string,
     subscribeIn: SubscribeIn
@@ -22,6 +22,6 @@ export class EndpointAutoConfig {
     request.setPathParam("endpoint_id", endpointId);
     request.setBody(SubscribeInSerializer._toJsonObject(subscribeIn));
 
-    return request.send(this.requestCtx, EndpointOutSerializer._fromJsonObject);
+    return await request.send(this.requestCtx, EndpointOutSerializer._fromJsonObject);
   }
 }
