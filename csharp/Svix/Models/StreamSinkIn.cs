@@ -108,6 +108,32 @@ namespace Svix.Models
             GoogleCloudStorageConfig googleCloudStorageConfig
         ) => new(googleCloudStorageConfig, ConfigType.GoogleCloudStorage);
 
+        public static StreamSinkInConfig GoogleCloudPubSub(
+            GoogleCloudPubSubConfig googleCloudPubSubConfig
+        ) => new(googleCloudPubSubConfig, ConfigType.GoogleCloudPubSub);
+
+        public static StreamSinkInConfig Sqs(SqsConfig sqsConfig) => new(sqsConfig, ConfigType.Sqs);
+
+        public static StreamSinkInConfig Sns(SnsConfig snsConfig) => new(snsConfig, ConfigType.Sns);
+
+        public static StreamSinkInConfig BigQuery(BigQueryConfig bigQueryConfig) =>
+            new(bigQueryConfig, ConfigType.BigQuery);
+
+        public static StreamSinkInConfig Clickhouse(ClickhouseConfig clickhouseConfig) =>
+            new(clickhouseConfig, ConfigType.Clickhouse);
+
+        public static StreamSinkInConfig EventBridge(EventBridgeConfig eventBridgeConfig) =>
+            new(eventBridgeConfig, ConfigType.EventBridge);
+
+        public static StreamSinkInConfig Snowflake(SnowflakeConfig snowflakeConfig) =>
+            new(snowflakeConfig, ConfigType.Snowflake);
+
+        public static StreamSinkInConfig RabbitMq(RabbitMqConfig rabbitMqConfig) =>
+            new(rabbitMqConfig, ConfigType.RabbitMq);
+
+        public static StreamSinkInConfig Redshift(RedshiftConfig redshiftConfig) =>
+            new(redshiftConfig, ConfigType.Redshift);
+
         private enum ConfigType
         {
             [EnumMember(Value = "poller")]
@@ -127,6 +153,33 @@ namespace Svix.Models
 
             [EnumMember(Value = "googleCloudStorage")]
             GoogleCloudStorage,
+
+            [EnumMember(Value = "googleCloudPubSub")]
+            GoogleCloudPubSub,
+
+            [EnumMember(Value = "sqs")]
+            Sqs,
+
+            [EnumMember(Value = "sns")]
+            Sns,
+
+            [EnumMember(Value = "bigQuery")]
+            BigQuery,
+
+            [EnumMember(Value = "clickhouse")]
+            Clickhouse,
+
+            [EnumMember(Value = "eventBridge")]
+            EventBridge,
+
+            [EnumMember(Value = "snowflake")]
+            Snowflake,
+
+            [EnumMember(Value = "rabbitMq")]
+            RabbitMq,
+
+            [EnumMember(Value = "redshift")]
+            Redshift,
         }
 
         public TResult Match<TResult>(
@@ -135,7 +188,16 @@ namespace Svix.Models
             Func<SinkOtelV1Config, TResult> onOtelTracing,
             Func<SinkHttpConfig, TResult> onHttp,
             Func<S3Config, TResult> onAmazonS3,
-            Func<GoogleCloudStorageConfig, TResult> onGoogleCloudStorage
+            Func<GoogleCloudStorageConfig, TResult> onGoogleCloudStorage,
+            Func<GoogleCloudPubSubConfig, TResult> onGoogleCloudPubSub,
+            Func<SqsConfig, TResult> onSqs,
+            Func<SnsConfig, TResult> onSns,
+            Func<BigQueryConfig, TResult> onBigQuery,
+            Func<ClickhouseConfig, TResult> onClickhouse,
+            Func<EventBridgeConfig, TResult> onEventBridge,
+            Func<SnowflakeConfig, TResult> onSnowflake,
+            Func<RabbitMqConfig, TResult> onRabbitMq,
+            Func<RedshiftConfig, TResult> onRedshift
         )
         {
             return _type switch
@@ -148,6 +210,17 @@ namespace Svix.Models
                 ConfigType.GoogleCloudStorage => onGoogleCloudStorage(
                     (GoogleCloudStorageConfig)_value
                 ),
+                ConfigType.GoogleCloudPubSub => onGoogleCloudPubSub(
+                    (GoogleCloudPubSubConfig)_value
+                ),
+                ConfigType.Sqs => onSqs((SqsConfig)_value),
+                ConfigType.Sns => onSns((SnsConfig)_value),
+                ConfigType.BigQuery => onBigQuery((BigQueryConfig)_value),
+                ConfigType.Clickhouse => onClickhouse((ClickhouseConfig)_value),
+                ConfigType.EventBridge => onEventBridge((EventBridgeConfig)_value),
+                ConfigType.Snowflake => onSnowflake((SnowflakeConfig)_value),
+                ConfigType.RabbitMq => onRabbitMq((RabbitMqConfig)_value),
+                ConfigType.Redshift => onRedshift((RedshiftConfig)_value),
                 // unreachable
                 _ => throw new InvalidOperationException("Unknown config type"),
             };
@@ -159,7 +232,16 @@ namespace Svix.Models
             Action<SinkOtelV1Config> onOtelTracing,
             Action<SinkHttpConfig> onHttp,
             Action<S3Config> onAmazonS3,
-            Action<GoogleCloudStorageConfig> onGoogleCloudStorage
+            Action<GoogleCloudStorageConfig> onGoogleCloudStorage,
+            Action<GoogleCloudPubSubConfig> onGoogleCloudPubSub,
+            Action<SqsConfig> onSqs,
+            Action<SnsConfig> onSns,
+            Action<BigQueryConfig> onBigQuery,
+            Action<ClickhouseConfig> onClickhouse,
+            Action<EventBridgeConfig> onEventBridge,
+            Action<SnowflakeConfig> onSnowflake,
+            Action<RabbitMqConfig> onRabbitMq,
+            Action<RedshiftConfig> onRedshift
         )
         {
             switch (_type)
@@ -181,6 +263,33 @@ namespace Svix.Models
                     break;
                 case ConfigType.GoogleCloudStorage:
                     onGoogleCloudStorage((GoogleCloudStorageConfig)_value);
+                    break;
+                case ConfigType.GoogleCloudPubSub:
+                    onGoogleCloudPubSub((GoogleCloudPubSubConfig)_value);
+                    break;
+                case ConfigType.Sqs:
+                    onSqs((SqsConfig)_value);
+                    break;
+                case ConfigType.Sns:
+                    onSns((SnsConfig)_value);
+                    break;
+                case ConfigType.BigQuery:
+                    onBigQuery((BigQueryConfig)_value);
+                    break;
+                case ConfigType.Clickhouse:
+                    onClickhouse((ClickhouseConfig)_value);
+                    break;
+                case ConfigType.EventBridge:
+                    onEventBridge((EventBridgeConfig)_value);
+                    break;
+                case ConfigType.Snowflake:
+                    onSnowflake((SnowflakeConfig)_value);
+                    break;
+                case ConfigType.RabbitMq:
+                    onRabbitMq((RabbitMqConfig)_value);
+                    break;
+                case ConfigType.Redshift:
+                    onRedshift((RedshiftConfig)_value);
                     break;
                 default:
                     // unreachable
@@ -293,6 +402,16 @@ namespace Svix.Models
                 ["amazonS3"] = c => StreamSinkInConfig.AmazonS3(ToObj<S3Config>(c)),
                 ["googleCloudStorage"] = c =>
                     StreamSinkInConfig.GoogleCloudStorage(ToObj<GoogleCloudStorageConfig>(c)),
+                ["googleCloudPubSub"] = c =>
+                    StreamSinkInConfig.GoogleCloudPubSub(ToObj<GoogleCloudPubSubConfig>(c)),
+                ["sqs"] = c => StreamSinkInConfig.Sqs(ToObj<SqsConfig>(c)),
+                ["sns"] = c => StreamSinkInConfig.Sns(ToObj<SnsConfig>(c)),
+                ["bigQuery"] = c => StreamSinkInConfig.BigQuery(ToObj<BigQueryConfig>(c)),
+                ["clickhouse"] = c => StreamSinkInConfig.Clickhouse(ToObj<ClickhouseConfig>(c)),
+                ["eventBridge"] = c => StreamSinkInConfig.EventBridge(ToObj<EventBridgeConfig>(c)),
+                ["snowflake"] = c => StreamSinkInConfig.Snowflake(ToObj<SnowflakeConfig>(c)),
+                ["rabbitMq"] = c => StreamSinkInConfig.RabbitMq(ToObj<RabbitMqConfig>(c)),
+                ["redshift"] = c => StreamSinkInConfig.Redshift(ToObj<RedshiftConfig>(c)),
             };
     }
 }

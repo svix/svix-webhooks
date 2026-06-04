@@ -308,8 +308,9 @@ namespace Svix
         }
 
         /// <summary>
-        /// List messages for a particular endpoint. Additionally includes metadata about the latest message attempt.
+        /// List messages for a particular endpoint.
         ///
+        /// Additionally includes metadata about the latest message attempt.
         /// The `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.
         ///
         /// Note that by default this endpoint is limited to retrieving 90 days' worth of data
@@ -350,8 +351,9 @@ namespace Svix
         }
 
         /// <summary>
-        /// List messages for a particular endpoint. Additionally includes metadata about the latest message attempt.
+        /// List messages for a particular endpoint.
         ///
+        /// Additionally includes metadata about the latest message attempt.
         /// The `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.
         ///
         /// Note that by default this endpoint is limited to retrieving 90 days' worth of data

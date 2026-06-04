@@ -20,7 +20,9 @@ pub enum StreamingCommands {
     Events(StreamingEventsArgs),
     Sink(StreamingSinkArgs),
     Stream(StreamingStreamArgs),
-    /// Get the HTTP sink headers. Only valid for `http` or `otelTracing` sinks.
+    /// Get the HTTP sink headers.
+    ///
+    /// Only valid for `http` or `otelTracing` sinks.
     #[command(help_template = concat!(
             "{about-with-newline}\n",
             "{usage-heading} {usage}\n\n",
@@ -41,7 +43,9 @@ pub enum StreamingCommands {
         stream_id: String,
         sink_id: String,
     },
-    /// Updates the Sink's headers. Only valid for `http` or `otelTracing` sinks.
+    /// Updates the Sink's headers.
+    ///
+    /// Only valid for `http` or `otelTracing` sinks.
     #[command(help_template = concat!(
             "{about-with-newline}\n",
             "{usage-heading} {usage}\n\n",

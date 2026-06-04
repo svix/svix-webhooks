@@ -46,7 +46,11 @@ export interface MessageAttemptListByEndpointOptions {
    * Note that message payloads are never included in the response, regardless of this flag.
    */
   withMsg?: boolean;
-  /** When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are returned as Success (0) */
+  /**
+   * When `true`, return the Canceled (4) status in attempts.
+   *
+   * If `false`, canceled attempts are returned as Success (0) for backwards compatibility.
+   */
   expandedStatuses?: boolean;
   /** Filter response based on the event type */
   eventTypes?: string[];
@@ -73,7 +77,11 @@ export interface MessageAttemptListByMsgOptions {
   after?: Date | null;
   /** When `true` attempt content is included in the response */
   withContent?: boolean;
-  /** When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are returned as Success (0) */
+  /**
+   * When `true`, return the Canceled (4) status in attempts.
+   *
+   * If `false`, canceled attempts are returned as Success (0) for backwards compatibility.
+   */
   expandedStatuses?: boolean;
   /** Filter response based on the event type */
   eventTypes?: string[];
@@ -96,14 +104,22 @@ export interface MessageAttemptListAttemptedMessagesOptions {
   after?: Date | null;
   /** When `true` message payloads are included in the response */
   withContent?: boolean;
-  /** When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are returned as Success (0) */
+  /**
+   * When `true`, return the Canceled (4) status in attempts.
+   *
+   * If `false`, canceled attempts are returned as Success (0) for backwards compatibility.
+   */
   expandedStatuses?: boolean;
   /** Filter response based on the event type */
   eventTypes?: string[];
 }
 
 export interface MessageAttemptGetOptions {
-  /** When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are returned as Success (0) */
+  /**
+   * When `true`, return the Canceled (4) status in attempts.
+   *
+   * If `false`, canceled attempts are returned as Success (0) for backwards compatibility.
+   */
   expandedStatuses?: boolean;
 }
 
@@ -204,8 +220,9 @@ export class MessageAttempt {
   }
 
   /**
-   * List messages for a particular endpoint. Additionally includes metadata about the latest message attempt.
+   * List messages for a particular endpoint.
    *
+   * Additionally includes metadata about the latest message attempt.
    * The `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.
    *
    * Note that by default this endpoint is limited to retrieving 90 days' worth of data

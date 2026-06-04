@@ -40,8 +40,9 @@ data class MessageAttemptListByEndpointOptions(
      */
     val withMsg: Boolean? = null,
     /**
-     * When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are
-     * returned as Success (0)
+     * When `true`, return the Canceled (4) status in attempts.
+     *
+     * If `false`, canceled attempts are returned as Success (0) for backwards compatibility.
      */
     val expandedStatuses: Boolean? = null,
     /** Filter response based on the event type */
@@ -73,8 +74,9 @@ data class MessageAttemptListByMsgOptions(
     /** When `true` attempt content is included in the response */
     val withContent: Boolean? = null,
     /**
-     * When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are
-     * returned as Success (0)
+     * When `true`, return the Canceled (4) status in attempts.
+     *
+     * If `false`, canceled attempts are returned as Success (0) for backwards compatibility.
      */
     val expandedStatuses: Boolean? = null,
     /** Filter response based on the event type */
@@ -102,8 +104,9 @@ data class MessageAttemptListAttemptedMessagesOptions(
     /** When `true` message payloads are included in the response */
     val withContent: Boolean? = null,
     /**
-     * When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are
-     * returned as Success (0)
+     * When `true`, return the Canceled (4) status in attempts.
+     *
+     * If `false`, canceled attempts are returned as Success (0) for backwards compatibility.
      */
     val expandedStatuses: Boolean? = null,
     /** Filter response based on the event type */
@@ -112,8 +115,9 @@ data class MessageAttemptListAttemptedMessagesOptions(
 
 data class MessageAttemptGetOptions(
     /**
-     * When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are
-     * returned as Success (0)
+     * When `true`, return the Canceled (4) status in attempts.
+     *
+     * If `false`, canceled attempts are returned as Success (0) for backwards compatibility.
      */
     val expandedStatuses: Boolean? = null
 )
@@ -200,11 +204,10 @@ class MessageAttempt(private val client: SvixHttpClient) {
     }
 
     /**
-     * List messages for a particular endpoint. Additionally includes metadata about the latest
-     * message attempt.
+     * List messages for a particular endpoint.
      *
-     * The `before` parameter lets you filter all items created before a certain date and is ignored
-     * if an iterator is passed.
+     * Additionally includes metadata about the latest message attempt. The `before` parameter lets
+     * you filter all items created before a certain date and is ignored if an iterator is passed.
      *
      * Note that by default this endpoint is limited to retrieving 90 days' worth of data relative
      * to now or, if an iterator is provided, 90 days before/after the time indicated by the

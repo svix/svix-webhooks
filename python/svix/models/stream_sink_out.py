@@ -6,12 +6,21 @@ from pydantic import ModelWrapValidatorHandler, model_validator
 from typing_extensions import Self
 
 from .azure_blob_storage_config import AzureBlobStorageConfig
+from .big_query_config import BigQueryConfig
+from .clickhouse_config import ClickhouseConfig
 from .common import BaseModel
+from .event_bridge_config import EventBridgeConfig
+from .google_cloud_pub_sub_config import GoogleCloudPubSubConfig
 from .google_cloud_storage_config import GoogleCloudStorageConfig
+from .rabbit_mq_config import RabbitMqConfig
+from .redshift_config import RedshiftConfig
 from .s3_config import S3Config
 from .sink_http_config import SinkHttpConfig
 from .sink_otel_v1_config import SinkOtelV1Config
 from .sink_status import SinkStatus
+from .snowflake_config import SnowflakeConfig
+from .sns_config import SnsConfig
+from .sqs_config import SqsConfig
 
 
 class StreamSinkOut(BaseModel):
@@ -48,6 +57,15 @@ class StreamSinkOut(BaseModel):
         t.Literal["http"],
         t.Literal["amazonS3"],
         t.Literal["googleCloudStorage"],
+        t.Literal["googleCloudPubSub"],
+        t.Literal["sqs"],
+        t.Literal["sns"],
+        t.Literal["bigQuery"],
+        t.Literal["clickhouse"],
+        t.Literal["eventBridge"],
+        t.Literal["snowflake"],
+        t.Literal["rabbitMq"],
+        t.Literal["redshift"],
     ]
     config: t.Union[
         t.Dict[str, t.Any],
@@ -56,6 +74,15 @@ class StreamSinkOut(BaseModel):
         SinkHttpConfig,
         S3Config,
         GoogleCloudStorageConfig,
+        GoogleCloudPubSubConfig,
+        SqsConfig,
+        SnsConfig,
+        BigQueryConfig,
+        ClickhouseConfig,
+        EventBridgeConfig,
+        SnowflakeConfig,
+        RabbitMqConfig,
+        RedshiftConfig,
     ]
 
     @model_validator(mode="wrap")
@@ -82,6 +109,26 @@ class StreamSinkOut(BaseModel):
             output.config = GoogleCloudStorageConfig.model_validate(
                 data.get("config", {})
             )
+        elif output.type == "googleCloudPubSub":
+            output.config = GoogleCloudPubSubConfig.model_validate(
+                data.get("config", {})
+            )
+        elif output.type == "sqs":
+            output.config = SqsConfig.model_validate(data.get("config", {}))
+        elif output.type == "sns":
+            output.config = SnsConfig.model_validate(data.get("config", {}))
+        elif output.type == "bigQuery":
+            output.config = BigQueryConfig.model_validate(data.get("config", {}))
+        elif output.type == "clickhouse":
+            output.config = ClickhouseConfig.model_validate(data.get("config", {}))
+        elif output.type == "eventBridge":
+            output.config = EventBridgeConfig.model_validate(data.get("config", {}))
+        elif output.type == "snowflake":
+            output.config = SnowflakeConfig.model_validate(data.get("config", {}))
+        elif output.type == "rabbitMq":
+            output.config = RabbitMqConfig.model_validate(data.get("config", {}))
+        elif output.type == "redshift":
+            output.config = RedshiftConfig.model_validate(data.get("config", {}))
         else:
             raise ValueError(f"Unexpected type `{output.type}`")
         return output

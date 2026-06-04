@@ -14,14 +14,22 @@ class Streaming(private val client: SvixHttpClient) {
 
     val stream: StreamingStream = StreamingStream(client)
 
-    /** Get the HTTP sink headers. Only valid for `http` or `otelTracing` sinks. */
+    /**
+     * Get the HTTP sink headers.
+     *
+     * Only valid for `http` or `otelTracing` sinks.
+     */
     suspend fun sinkHeadersGet(streamId: String, sinkId: String): EndpointHeadersOut {
         val url =
             client.newUrlBuilder().encodedPath("/api/v1/stream/$streamId/sink/$sinkId/headers")
         return client.executeRequest<Any, EndpointHeadersOut>("GET", url.build())
     }
 
-    /** Updates the Sink's headers. Only valid for `http` or `otelTracing` sinks. */
+    /**
+     * Updates the Sink's headers.
+     *
+     * Only valid for `http` or `otelTracing` sinks.
+     */
     suspend fun sinkHeadersPatch(
         streamId: String,
         sinkId: String,

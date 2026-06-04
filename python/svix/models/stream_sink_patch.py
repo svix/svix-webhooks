@@ -6,11 +6,20 @@ from typing_extensions import Self
 
 from .amazon_s3_patch_config import AmazonS3PatchConfig
 from .azure_blob_storage_patch_config import AzureBlobStoragePatchConfig
+from .big_query_patch_config import BigQueryPatchConfig
+from .clickhouse_patch_config import ClickhousePatchConfig
 from .common import BaseModel
+from .event_bridge_patch_config import EventBridgePatchConfig
+from .google_cloud_pub_sub_patch_config import GoogleCloudPubSubPatchConfig
 from .google_cloud_storage_patch_config import GoogleCloudStoragePatchConfig
 from .http_patch_config import HttpPatchConfig
 from .otel_tracing_patch_config import OtelTracingPatchConfig
+from .rabbit_mq_patch_config import RabbitMqPatchConfig
+from .redshift_patch_config import RedshiftPatchConfig
 from .sink_status_in import SinkStatusIn
+from .snowflake_patch_config import SnowflakePatchConfig
+from .sns_patch_config import SnsPatchConfig
+from .sqs_patch_config import SqsPatchConfig
 
 
 class StreamSinkPatch(BaseModel):
@@ -34,6 +43,15 @@ class StreamSinkPatch(BaseModel):
         t.Literal["http"],
         t.Literal["amazonS3"],
         t.Literal["googleCloudStorage"],
+        t.Literal["googleCloudPubSub"],
+        t.Literal["sqs"],
+        t.Literal["sns"],
+        t.Literal["bigQuery"],
+        t.Literal["clickhouse"],
+        t.Literal["eventBridge"],
+        t.Literal["snowflake"],
+        t.Literal["rabbitMq"],
+        t.Literal["redshift"],
     ]
     config: t.Union[
         t.Dict[str, t.Any],
@@ -42,6 +60,15 @@ class StreamSinkPatch(BaseModel):
         HttpPatchConfig,
         AmazonS3PatchConfig,
         GoogleCloudStoragePatchConfig,
+        GoogleCloudPubSubPatchConfig,
+        SqsPatchConfig,
+        SnsPatchConfig,
+        BigQueryPatchConfig,
+        ClickhousePatchConfig,
+        EventBridgePatchConfig,
+        SnowflakePatchConfig,
+        RabbitMqPatchConfig,
+        RedshiftPatchConfig,
     ]
 
     @model_validator(mode="wrap")
@@ -70,6 +97,28 @@ class StreamSinkPatch(BaseModel):
             output.config = GoogleCloudStoragePatchConfig.model_validate(
                 data.get("config", {})
             )
+        elif output.type == "googleCloudPubSub":
+            output.config = GoogleCloudPubSubPatchConfig.model_validate(
+                data.get("config", {})
+            )
+        elif output.type == "sqs":
+            output.config = SqsPatchConfig.model_validate(data.get("config", {}))
+        elif output.type == "sns":
+            output.config = SnsPatchConfig.model_validate(data.get("config", {}))
+        elif output.type == "bigQuery":
+            output.config = BigQueryPatchConfig.model_validate(data.get("config", {}))
+        elif output.type == "clickhouse":
+            output.config = ClickhousePatchConfig.model_validate(data.get("config", {}))
+        elif output.type == "eventBridge":
+            output.config = EventBridgePatchConfig.model_validate(
+                data.get("config", {})
+            )
+        elif output.type == "snowflake":
+            output.config = SnowflakePatchConfig.model_validate(data.get("config", {}))
+        elif output.type == "rabbitMq":
+            output.config = RabbitMqPatchConfig.model_validate(data.get("config", {}))
+        elif output.type == "redshift":
+            output.config = RedshiftPatchConfig.model_validate(data.get("config", {}))
         else:
             raise ValueError(f"Unexpected type `{output.type}`")
         return output
