@@ -38,8 +38,9 @@ public class MessageAttemptListAttemptedMessagesOptions {
     Boolean withContent;
 
     /**
-     * When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are
-     * returned as Success (0)
+     * When `true`, return the Canceled (4) status in attempts.
+     *
+     * <p>If `false`, canceled attempts are returned as Success (0) for backwards compatibility.
      */
     Boolean expandedStatuses;
 

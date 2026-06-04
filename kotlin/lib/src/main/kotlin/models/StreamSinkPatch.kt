@@ -67,6 +67,59 @@ sealed class StreamSinkPatchConfig {
             Json.encodeToJsonElement(GoogleCloudStoragePatchConfig.serializer(), googleCloudStorage)
     }
 
+    @VariantName("googleCloudPubSub")
+    data class GoogleCloudPubSub(val googleCloudPubSub: GoogleCloudPubSubPatchConfig) :
+        StreamSinkPatchConfig() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement(GoogleCloudPubSubPatchConfig.serializer(), googleCloudPubSub)
+    }
+
+    @VariantName("sqs")
+    data class Sqs(val sqs: SqsPatchConfig) : StreamSinkPatchConfig() {
+        override fun toJsonElement() = Json.encodeToJsonElement(SqsPatchConfig.serializer(), sqs)
+    }
+
+    @VariantName("sns")
+    data class Sns(val sns: SnsPatchConfig) : StreamSinkPatchConfig() {
+        override fun toJsonElement() = Json.encodeToJsonElement(SnsPatchConfig.serializer(), sns)
+    }
+
+    @VariantName("bigQuery")
+    data class BigQuery(val bigQuery: BigQueryPatchConfig) : StreamSinkPatchConfig() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement(BigQueryPatchConfig.serializer(), bigQuery)
+    }
+
+    @VariantName("clickhouse")
+    data class Clickhouse(val clickhouse: ClickhousePatchConfig) : StreamSinkPatchConfig() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement(ClickhousePatchConfig.serializer(), clickhouse)
+    }
+
+    @VariantName("eventBridge")
+    data class EventBridge(val eventBridge: EventBridgePatchConfig) : StreamSinkPatchConfig() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement(EventBridgePatchConfig.serializer(), eventBridge)
+    }
+
+    @VariantName("snowflake")
+    data class Snowflake(val snowflake: SnowflakePatchConfig) : StreamSinkPatchConfig() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement(SnowflakePatchConfig.serializer(), snowflake)
+    }
+
+    @VariantName("rabbitMq")
+    data class RabbitMq(val rabbitMq: RabbitMqPatchConfig) : StreamSinkPatchConfig() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement(RabbitMqPatchConfig.serializer(), rabbitMq)
+    }
+
+    @VariantName("redshift")
+    data class Redshift(val redshift: RedshiftPatchConfig) : StreamSinkPatchConfig() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement(RedshiftPatchConfig.serializer(), redshift)
+    }
+
     companion object {
         private val typeMap =
             mapOf<String, (JsonElement) -> StreamSinkPatchConfig>(
@@ -103,6 +156,59 @@ sealed class StreamSinkPatchConfig {
                                 GoogleCloudStoragePatchConfig.serializer(),
                                 config,
                             )
+                        )
+                    },
+                "googleCloudPubSub" to
+                    { config ->
+                        GoogleCloudPubSub(
+                            Json.decodeFromJsonElement(
+                                GoogleCloudPubSubPatchConfig.serializer(),
+                                config,
+                            )
+                        )
+                    },
+                "sqs" to
+                    { config ->
+                        Sqs(Json.decodeFromJsonElement(SqsPatchConfig.serializer(), config))
+                    },
+                "sns" to
+                    { config ->
+                        Sns(Json.decodeFromJsonElement(SnsPatchConfig.serializer(), config))
+                    },
+                "bigQuery" to
+                    { config ->
+                        BigQuery(
+                            Json.decodeFromJsonElement(BigQueryPatchConfig.serializer(), config)
+                        )
+                    },
+                "clickhouse" to
+                    { config ->
+                        Clickhouse(
+                            Json.decodeFromJsonElement(ClickhousePatchConfig.serializer(), config)
+                        )
+                    },
+                "eventBridge" to
+                    { config ->
+                        EventBridge(
+                            Json.decodeFromJsonElement(EventBridgePatchConfig.serializer(), config)
+                        )
+                    },
+                "snowflake" to
+                    { config ->
+                        Snowflake(
+                            Json.decodeFromJsonElement(SnowflakePatchConfig.serializer(), config)
+                        )
+                    },
+                "rabbitMq" to
+                    { config ->
+                        RabbitMq(
+                            Json.decodeFromJsonElement(RabbitMqPatchConfig.serializer(), config)
+                        )
+                    },
+                "redshift" to
+                    { config ->
+                        Redshift(
+                            Json.decodeFromJsonElement(RedshiftPatchConfig.serializer(), config)
                         )
                     },
             )

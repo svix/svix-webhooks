@@ -26,7 +26,9 @@ func newStreaming(client *internal.SvixHttpClient) *Streaming {
 	}
 }
 
-// Get the HTTP sink headers. Only valid for `http` or `otelTracing` sinks.
+// Get the HTTP sink headers.
+//
+// Only valid for `http` or `otelTracing` sinks.
 func (streaming *Streaming) SinkHeadersGet(
 	ctx context.Context,
 	streamId string,
@@ -48,7 +50,9 @@ func (streaming *Streaming) SinkHeadersGet(
 	)
 }
 
-// Updates the Sink's headers. Only valid for `http` or `otelTracing` sinks.
+// Updates the Sink's headers.
+//
+// Only valid for `http` or `otelTracing` sinks.
 func (streaming *Streaming) SinkHeadersPatch(
 	ctx context.Context,
 	streamId string,

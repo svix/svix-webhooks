@@ -63,6 +63,7 @@ pub struct IntegrationArgs {
     pub command: IntegrationCommands,
 }
 
+#[allow(clippy::large_enum_variant)]
 #[derive(Subcommand)]
 pub enum IntegrationCommands {
     /// List the application's integrations.

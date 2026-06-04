@@ -11,9 +11,9 @@ use super::{
     rutter_config_out::RutterConfigOut, segment_config_out::SegmentConfigOut,
     shopify_config_out::ShopifyConfigOut, slack_config_out::SlackConfigOut,
     stripe_config_out::StripeConfigOut, svix_config_out::SvixConfigOut,
-    telnyx_config_out::TelnyxConfigOut, vapi_config_out::VapiConfigOut,
-    veriff_config_out::VeriffConfigOut, vgs_config_out::VgsConfigOut,
-    zoom_config_out::ZoomConfigOut,
+    tailscale_config_out::TailscaleConfigOut, telnyx_config_out::TelnyxConfigOut,
+    vapi_config_out::VapiConfigOut, veriff_config_out::VeriffConfigOut,
+    vgs_config_out::VgsConfigOut, zoom_config_out::ZoomConfigOut,
 };
 
 #[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
@@ -112,6 +112,8 @@ pub enum IngestSourceOutConfig {
     Svix(SvixConfigOut),
     #[serde(rename = "zoom")]
     Zoom(ZoomConfigOut),
+    #[serde(rename = "tailscale")]
+    Tailscale(TailscaleConfigOut),
     #[serde(rename = "telnyx")]
     Telnyx(TelnyxConfigOut),
     #[serde(rename = "vapi")]

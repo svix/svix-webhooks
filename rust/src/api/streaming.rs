@@ -27,7 +27,9 @@ impl<'a> Streaming<'a> {
         StreamingStream::new(self.cfg)
     }
 
-    /// Get the HTTP sink headers. Only valid for `http` or `otelTracing` sinks.
+    /// Get the HTTP sink headers.
+    ///
+    /// Only valid for `http` or `otelTracing` sinks.
     pub async fn sink_headers_get(
         &self,
         stream_id: String,
@@ -43,8 +45,9 @@ impl<'a> Streaming<'a> {
         .await
     }
 
-    /// Updates the Sink's headers. Only valid for `http` or `otelTracing`
-    /// sinks.
+    /// Updates the Sink's headers.
+    ///
+    /// Only valid for `http` or `otelTracing` sinks.
     pub async fn sink_headers_patch(
         &self,
         stream_id: String,

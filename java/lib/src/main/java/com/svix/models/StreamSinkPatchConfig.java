@@ -107,6 +107,141 @@ public abstract class StreamSinkPatchConfig {
         }
     }
 
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
+    @VariantName("googleCloudPubSub")
+    public static class GoogleCloudPubSub extends StreamSinkPatchConfig {
+        private final GoogleCloudPubSubPatchConfig googleCloudPubSub;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(googleCloudPubSub);
+        }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
+    @VariantName("sqs")
+    public static class Sqs extends StreamSinkPatchConfig {
+        private final SqsPatchConfig sqs;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(sqs);
+        }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
+    @VariantName("sns")
+    public static class Sns extends StreamSinkPatchConfig {
+        private final SnsPatchConfig sns;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(sns);
+        }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
+    @VariantName("bigQuery")
+    public static class BigQuery extends StreamSinkPatchConfig {
+        private final BigQueryPatchConfig bigQuery;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(bigQuery);
+        }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
+    @VariantName("clickhouse")
+    public static class Clickhouse extends StreamSinkPatchConfig {
+        private final ClickhousePatchConfig clickhouse;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(clickhouse);
+        }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
+    @VariantName("eventBridge")
+    public static class EventBridge extends StreamSinkPatchConfig {
+        private final EventBridgePatchConfig eventBridge;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(eventBridge);
+        }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
+    @VariantName("snowflake")
+    public static class Snowflake extends StreamSinkPatchConfig {
+        private final SnowflakePatchConfig snowflake;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(snowflake);
+        }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
+    @VariantName("rabbitMq")
+    public static class RabbitMq extends StreamSinkPatchConfig {
+        private final RabbitMqPatchConfig rabbitMq;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(rabbitMq);
+        }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
+    @VariantName("redshift")
+    public static class Redshift extends StreamSinkPatchConfig {
+        private final RedshiftPatchConfig redshift;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(redshift);
+        }
+    }
+
     @FunctionalInterface
     private interface TypeFactory {
         StreamSinkPatchConfig create(JsonNode config);
@@ -130,6 +265,19 @@ public abstract class StreamSinkPatchConfig {
                 c ->
                         new GoogleCloudStorage(
                                 m.convertValue(c, GoogleCloudStoragePatchConfig.class)));
+        TY_M.put(
+                "googleCloudPubSub",
+                c -> new GoogleCloudPubSub(m.convertValue(c, GoogleCloudPubSubPatchConfig.class)));
+        TY_M.put("sqs", c -> new Sqs(m.convertValue(c, SqsPatchConfig.class)));
+        TY_M.put("sns", c -> new Sns(m.convertValue(c, SnsPatchConfig.class)));
+        TY_M.put("bigQuery", c -> new BigQuery(m.convertValue(c, BigQueryPatchConfig.class)));
+        TY_M.put("clickhouse", c -> new Clickhouse(m.convertValue(c, ClickhousePatchConfig.class)));
+        TY_M.put(
+                "eventBridge",
+                c -> new EventBridge(m.convertValue(c, EventBridgePatchConfig.class)));
+        TY_M.put("snowflake", c -> new Snowflake(m.convertValue(c, SnowflakePatchConfig.class)));
+        TY_M.put("rabbitMq", c -> new RabbitMq(m.convertValue(c, RabbitMqPatchConfig.class)));
+        TY_M.put("redshift", c -> new Redshift(m.convertValue(c, RedshiftPatchConfig.class)));
     }
 
     public static StreamSinkPatchConfig fromTypeAndConfig(String type, JsonNode config) {

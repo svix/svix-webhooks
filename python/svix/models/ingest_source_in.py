@@ -23,6 +23,7 @@ from .shopify_config import ShopifyConfig
 from .slack_config import SlackConfig
 from .stripe_config import StripeConfig
 from .svix_config import SvixConfig
+from .tailscale_config import TailscaleConfig
 from .telnyx_config import TelnyxConfig
 from .vapi_config import VapiConfig
 from .veriff_config import VeriffConfig
@@ -72,6 +73,7 @@ class IngestSourceIn(BaseModel):
         t.Literal["stych"],
         t.Literal["svix"],
         t.Literal["zoom"],
+        t.Literal["tailscale"],
         t.Literal["telnyx"],
         t.Literal["vapi"],
         t.Literal["open-ai"],
@@ -100,6 +102,7 @@ class IngestSourceIn(BaseModel):
         SlackConfig,
         StripeConfig,
         ZoomConfig,
+        TailscaleConfig,
         TelnyxConfig,
         VapiConfig,
         VeriffConfig,
@@ -181,6 +184,8 @@ class IngestSourceIn(BaseModel):
             output.config = SvixConfig.model_validate(data.get("config", {}))
         elif output.type == "zoom":
             output.config = ZoomConfig.model_validate(data.get("config", {}))
+        elif output.type == "tailscale":
+            output.config = TailscaleConfig.model_validate(data.get("config", {}))
         elif output.type == "telnyx":
             output.config = TelnyxConfig.model_validate(data.get("config", {}))
         elif output.type == "vapi":

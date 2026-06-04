@@ -29,7 +29,11 @@ public class Streaming {
         this.stream = new StreamingStream(client);
     }
 
-    /** Get the HTTP sink headers. Only valid for `http` or `otelTracing` sinks. */
+    /**
+     * Get the HTTP sink headers.
+     *
+     * <p>Only valid for `http` or `otelTracing` sinks.
+     */
     public EndpointHeadersOut sinkHeadersGet(final String streamId, final String sinkId)
             throws IOException, ApiException {
         HttpUrl.Builder url =
@@ -41,7 +45,11 @@ public class Streaming {
         return this.client.executeRequest("GET", url.build(), null, null, EndpointHeadersOut.class);
     }
 
-    /** Updates the Sink's headers. Only valid for `http` or `otelTracing` sinks. */
+    /**
+     * Updates the Sink's headers.
+     *
+     * <p>Only valid for `http` or `otelTracing` sinks.
+     */
     public EndpointHeadersOut sinkHeadersPatch(
             final String streamId,
             final String sinkId,

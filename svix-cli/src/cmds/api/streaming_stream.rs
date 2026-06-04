@@ -50,6 +50,7 @@ pub struct StreamingStreamArgs {
     pub command: StreamingStreamCommands,
 }
 
+#[allow(clippy::large_enum_variant)]
 #[derive(Subcommand)]
 pub enum StreamingStreamCommands {
     /// List of all the organization's streams.

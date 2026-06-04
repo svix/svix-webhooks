@@ -11,6 +11,7 @@ pub struct OperationalWebhookArgs {
     pub command: OperationalWebhookCommands,
 }
 
+#[allow(clippy::large_enum_variant)]
 #[derive(Subcommand)]
 pub enum OperationalWebhookCommands {
     Endpoint(OperationalWebhookEndpointArgs),

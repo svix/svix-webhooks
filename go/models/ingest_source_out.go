@@ -27,6 +27,7 @@ import (
 //   - "slack": Use SlackConfigOut
 //   - "stripe": Use StripeConfigOut
 //   - "beehiiv","brex","clerk","guesty","incident-io","lithic","nash","psi-fi","pleo","replicate","resend","safebase","sardine","stych","svix","open-ai","render": Use SvixConfigOut
+//   - "tailscale": Use TailscaleConfigOut
 //   - "telnyx": Use TelnyxConfigOut
 //   - "vapi": Use VapiConfigOut
 //   - "veriff": Use VeriffConfigOut
@@ -80,6 +81,7 @@ const (
 	IngestSourceOutTypeStych          IngestSourceOutType = "stych"
 	IngestSourceOutTypeSvix           IngestSourceOutType = "svix"
 	IngestSourceOutTypeZoom           IngestSourceOutType = "zoom"
+	IngestSourceOutTypeTailscale      IngestSourceOutType = "tailscale"
 	IngestSourceOutTypeTelnyx         IngestSourceOutType = "telnyx"
 	IngestSourceOutTypeVapi           IngestSourceOutType = "vapi"
 	IngestSourceOutTypeOpenAi         IngestSourceOutType = "open-ai"
@@ -112,6 +114,7 @@ func (ShopifyConfigOut) isIngestSourceOutConfig()   {}
 func (SlackConfigOut) isIngestSourceOutConfig()     {}
 func (StripeConfigOut) isIngestSourceOutConfig()    {}
 func (ZoomConfigOut) isIngestSourceOutConfig()      {}
+func (TailscaleConfigOut) isIngestSourceOutConfig() {}
 func (TelnyxConfigOut) isIngestSourceOutConfig()    {}
 func (VapiConfigOut) isIngestSourceOutConfig()      {}
 func (VeriffConfigOut) isIngestSourceOutConfig()    {}
@@ -204,6 +207,10 @@ func (i *IngestSourceOut) UnmarshalJSON(data []byte) error {
 		var c SvixConfigOut
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
+	case "tailscale":
+		var c TailscaleConfigOut
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
 	case "telnyx":
 		var c TelnyxConfigOut
 		err = json.Unmarshal(aux.Config, &c)
@@ -277,6 +284,7 @@ var IngestSourceOutTypeFromString = map[string]IngestSourceOutType{
 	"stych":           IngestSourceOutTypeStych,
 	"svix":            IngestSourceOutTypeSvix,
 	"zoom":            IngestSourceOutTypeZoom,
+	"tailscale":       IngestSourceOutTypeTailscale,
 	"telnyx":          IngestSourceOutTypeTelnyx,
 	"vapi":            IngestSourceOutTypeVapi,
 	"open-ai":         IngestSourceOutTypeOpenAi,

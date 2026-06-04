@@ -23,9 +23,13 @@ from .background_task_finished_event2 import BackgroundTaskFinishedEvent2
 from .background_task_out import BackgroundTaskOut
 from .background_task_status import BackgroundTaskStatus
 from .background_task_type import BackgroundTaskType
+from .big_query_config import BigQueryConfig
+from .big_query_patch_config import BigQueryPatchConfig
 from .bulk_replay_in import BulkReplayIn
 from .checkbook_config import CheckbookConfig
 from .checkbook_config_out import CheckbookConfigOut
+from .clickhouse_config import ClickhouseConfig
+from .clickhouse_patch_config import ClickhousePatchConfig
 from .connector_in import ConnectorIn
 from .connector_kind import ConnectorKind
 from .connector_out import ConnectorOut
@@ -68,6 +72,8 @@ from .endpoint_updated_event import EndpointUpdatedEvent
 from .endpoint_updated_event_data import EndpointUpdatedEventData
 from .environment_in import EnvironmentIn
 from .environment_out import EnvironmentOut
+from .event_bridge_config import EventBridgeConfig
+from .event_bridge_patch_config import EventBridgePatchConfig
 from .event_example_in import EventExampleIn
 from .event_in import EventIn
 from .event_out import EventOut
@@ -83,6 +89,8 @@ from .event_type_update import EventTypeUpdate
 from .expunge_all_contents_out import ExpungeAllContentsOut
 from .github_config import GithubConfig
 from .github_config_out import GithubConfigOut
+from .google_cloud_pub_sub_config import GoogleCloudPubSubConfig
+from .google_cloud_pub_sub_patch_config import GoogleCloudPubSubPatchConfig
 from .google_cloud_storage_config import GoogleCloudStorageConfig
 from .google_cloud_storage_patch_config import GoogleCloudStoragePatchConfig
 from .http_attempt_times import HttpAttemptTimes
@@ -179,8 +187,12 @@ from .polling_endpoint_message_out import PollingEndpointMessageOut
 from .polling_endpoint_out import PollingEndpointOut
 from .port_io_config import PortIoConfig
 from .port_io_config_out import PortIoConfigOut
+from .rabbit_mq_config import RabbitMqConfig
+from .rabbit_mq_patch_config import RabbitMqPatchConfig
 from .recover_in import RecoverIn
 from .recover_out import RecoverOut
+from .redshift_config import RedshiftConfig
+from .redshift_patch_config import RedshiftPatchConfig
 from .replay_in import ReplayIn
 from .replay_out import ReplayOut
 from .rotate_poller_token_in import RotatePollerTokenIn
@@ -201,6 +213,12 @@ from .sink_transform_in import SinkTransformIn
 from .sink_transformation_out import SinkTransformationOut
 from .slack_config import SlackConfig
 from .slack_config_out import SlackConfigOut
+from .snowflake_config import SnowflakeConfig
+from .snowflake_patch_config import SnowflakePatchConfig
+from .sns_config import SnsConfig
+from .sns_patch_config import SnsPatchConfig
+from .sqs_config import SqsConfig
+from .sqs_patch_config import SqsPatchConfig
 from .status_code_class import StatusCodeClass
 from .stream_event_type_in import StreamEventTypeIn
 from .stream_event_type_out import StreamEventTypeOut
@@ -218,6 +236,8 @@ from .stripe_config_out import StripeConfigOut
 from .subscribe_in import SubscribeIn
 from .svix_config import SvixConfig
 from .svix_config_out import SvixConfigOut
+from .tailscale_config import TailscaleConfig
+from .tailscale_config_out import TailscaleConfigOut
 from .telnyx_config import TelnyxConfig
 from .telnyx_config_out import TelnyxConfigOut
 from .vapi_config import VapiConfig
@@ -254,9 +274,13 @@ __all__ = [
     "BackgroundTaskOut",
     "BackgroundTaskStatus",
     "BackgroundTaskType",
+    "BigQueryConfig",
+    "BigQueryPatchConfig",
     "BulkReplayIn",
     "CheckbookConfig",
     "CheckbookConfigOut",
+    "ClickhouseConfig",
+    "ClickhousePatchConfig",
     "ConnectorIn",
     "ConnectorKind",
     "ConnectorOut",
@@ -299,6 +323,8 @@ __all__ = [
     "EndpointUpdatedEventData",
     "EnvironmentIn",
     "EnvironmentOut",
+    "EventBridgeConfig",
+    "EventBridgePatchConfig",
     "EventExampleIn",
     "EventIn",
     "EventOut",
@@ -314,6 +340,8 @@ __all__ = [
     "ExpungeAllContentsOut",
     "GithubConfig",
     "GithubConfigOut",
+    "GoogleCloudPubSubConfig",
+    "GoogleCloudPubSubPatchConfig",
     "GoogleCloudStorageConfig",
     "GoogleCloudStoragePatchConfig",
     "HttpAttemptTimes",
@@ -400,8 +428,12 @@ __all__ = [
     "PollingEndpointOut",
     "PortIoConfig",
     "PortIoConfigOut",
+    "RabbitMqConfig",
+    "RabbitMqPatchConfig",
     "RecoverIn",
     "RecoverOut",
+    "RedshiftConfig",
+    "RedshiftPatchConfig",
     "ReplayIn",
     "ReplayOut",
     "RotatePollerTokenIn",
@@ -422,6 +454,12 @@ __all__ = [
     "SinkTransformationOut",
     "SlackConfig",
     "SlackConfigOut",
+    "SnowflakeConfig",
+    "SnowflakePatchConfig",
+    "SnsConfig",
+    "SnsPatchConfig",
+    "SqsConfig",
+    "SqsPatchConfig",
     "StatusCodeClass",
     "StreamEventTypeIn",
     "StreamEventTypeOut",
@@ -439,6 +477,8 @@ __all__ = [
     "SubscribeIn",
     "SvixConfig",
     "SvixConfigOut",
+    "TailscaleConfig",
+    "TailscaleConfigOut",
     "TelnyxConfig",
     "TelnyxConfigOut",
     "VapiConfig",

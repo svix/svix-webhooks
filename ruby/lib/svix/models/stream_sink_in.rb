@@ -3,11 +3,20 @@
 require "json"
 
 require_relative "./azure_blob_storage_config"
+require_relative "./big_query_config"
+require_relative "./clickhouse_config"
+require_relative "./event_bridge_config"
+require_relative "./google_cloud_pub_sub_config"
 require_relative "./google_cloud_storage_config"
+require_relative "./rabbit_mq_config"
+require_relative "./redshift_config"
 require_relative "./s3_config"
 require_relative "./sink_http_config"
 require_relative "./sink_otel_v1_config"
 require_relative "./sink_status_in"
+require_relative "./snowflake_config"
+require_relative "./sns_config"
+require_relative "./sqs_config"
 
 module Svix
   class StreamSinkInConfig
@@ -41,6 +50,33 @@ module Svix
 
     class GoogleCloudStorage < GoogleCloudStorageConfig
     end
+
+    class GoogleCloudPubSub < GoogleCloudPubSubConfig
+    end
+
+    class Sqs < SqsConfig
+    end
+
+    class Sns < SnsConfig
+    end
+
+    class BigQuery < BigQueryConfig
+    end
+
+    class Clickhouse < ClickhouseConfig
+    end
+
+    class EventBridge < EventBridgeConfig
+    end
+
+    class Snowflake < SnowflakeConfig
+    end
+
+    class RabbitMq < RabbitMqConfig
+    end
+
+    class Redshift < RedshiftConfig
+    end
   end
 
   class StreamSinkIn
@@ -73,7 +109,16 @@ module Svix
       StreamSinkInConfig::OtelTracing => "otelTracing",
       StreamSinkInConfig::Http => "http",
       StreamSinkInConfig::AmazonS3 => "amazonS3",
-      StreamSinkInConfig::GoogleCloudStorage => "googleCloudStorage"
+      StreamSinkInConfig::GoogleCloudStorage => "googleCloudStorage",
+      StreamSinkInConfig::GoogleCloudPubSub => "googleCloudPubSub",
+      StreamSinkInConfig::Sqs => "sqs",
+      StreamSinkInConfig::Sns => "sns",
+      StreamSinkInConfig::BigQuery => "bigQuery",
+      StreamSinkInConfig::Clickhouse => "clickhouse",
+      StreamSinkInConfig::EventBridge => "eventBridge",
+      StreamSinkInConfig::Snowflake => "snowflake",
+      StreamSinkInConfig::RabbitMq => "rabbitMq",
+      StreamSinkInConfig::Redshift => "redshift"
     }
     private_constant :TYPE_TO_NAME
     NAME_TO_TYPE = TYPE_TO_NAME.invert

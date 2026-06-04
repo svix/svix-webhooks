@@ -517,6 +517,21 @@ public abstract class IngestSourceInConfig {
     @AllArgsConstructor
     @ToString
     @EqualsAndHashCode(callSuper = false)
+    @VariantName("tailscale")
+    public static class Tailscale extends IngestSourceInConfig {
+        private final TailscaleConfig tailscale;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(tailscale);
+        }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
     @VariantName("telnyx")
     public static class Telnyx extends IngestSourceInConfig {
         private final TelnyxConfig telnyx;
@@ -659,6 +674,7 @@ public abstract class IngestSourceInConfig {
         TY_M.put("stych", c -> new Stych(m.convertValue(c, SvixConfig.class)));
         TY_M.put("svix", c -> new Svix(m.convertValue(c, SvixConfig.class)));
         TY_M.put("zoom", c -> new Zoom(m.convertValue(c, ZoomConfig.class)));
+        TY_M.put("tailscale", c -> new Tailscale(m.convertValue(c, TailscaleConfig.class)));
         TY_M.put("telnyx", c -> new Telnyx(m.convertValue(c, TelnyxConfig.class)));
         TY_M.put("vapi", c -> new Vapi(m.convertValue(c, VapiConfig.class)));
         TY_M.put("open-ai", c -> new OpenAi(m.convertValue(c, SvixConfig.class)));

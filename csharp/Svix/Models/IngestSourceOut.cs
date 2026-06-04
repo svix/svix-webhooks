@@ -191,6 +191,9 @@ namespace Svix.Models
         public static IngestSourceOutConfig Zoom(ZoomConfigOut zoomConfigOut) =>
             new(zoomConfigOut, ConfigType.Zoom);
 
+        public static IngestSourceOutConfig Tailscale(TailscaleConfigOut tailscaleConfigOut) =>
+            new(tailscaleConfigOut, ConfigType.Tailscale);
+
         public static IngestSourceOutConfig Telnyx(TelnyxConfigOut telnyxConfigOut) =>
             new(telnyxConfigOut, ConfigType.Telnyx);
 
@@ -313,6 +316,9 @@ namespace Svix.Models
             [EnumMember(Value = "zoom")]
             Zoom,
 
+            [EnumMember(Value = "tailscale")]
+            Tailscale,
+
             [EnumMember(Value = "telnyx")]
             Telnyx,
 
@@ -369,6 +375,7 @@ namespace Svix.Models
             Func<SvixConfigOut, TResult> onStych,
             Func<SvixConfigOut, TResult> onSvix,
             Func<ZoomConfigOut, TResult> onZoom,
+            Func<TailscaleConfigOut, TResult> onTailscale,
             Func<TelnyxConfigOut, TResult> onTelnyx,
             Func<VapiConfigOut, TResult> onVapi,
             Func<SvixConfigOut, TResult> onOpenAi,
@@ -413,6 +420,7 @@ namespace Svix.Models
                 ConfigType.Stych => onStych((SvixConfigOut)_value),
                 ConfigType.Svix => onSvix((SvixConfigOut)_value),
                 ConfigType.Zoom => onZoom((ZoomConfigOut)_value),
+                ConfigType.Tailscale => onTailscale((TailscaleConfigOut)_value),
                 ConfigType.Telnyx => onTelnyx((TelnyxConfigOut)_value),
                 ConfigType.Vapi => onVapi((VapiConfigOut)_value),
                 ConfigType.OpenAi => onOpenAi((SvixConfigOut)_value),
@@ -459,6 +467,7 @@ namespace Svix.Models
             Action<SvixConfigOut> onStych,
             Action<SvixConfigOut> onSvix,
             Action<ZoomConfigOut> onZoom,
+            Action<TailscaleConfigOut> onTailscale,
             Action<TelnyxConfigOut> onTelnyx,
             Action<VapiConfigOut> onVapi,
             Action<SvixConfigOut> onOpenAi,
@@ -568,6 +577,9 @@ namespace Svix.Models
                     break;
                 case ConfigType.Zoom:
                     onZoom((ZoomConfigOut)_value);
+                    break;
+                case ConfigType.Tailscale:
+                    onTailscale((TailscaleConfigOut)_value);
                     break;
                 case ConfigType.Telnyx:
                     onTelnyx((TelnyxConfigOut)_value);
@@ -732,6 +744,7 @@ namespace Svix.Models
             ["stych"] = c => IngestSourceOutConfig.Stych(ToObj<SvixConfigOut>(c)),
             ["svix"] = c => IngestSourceOutConfig.Svix(ToObj<SvixConfigOut>(c)),
             ["zoom"] = c => IngestSourceOutConfig.Zoom(ToObj<ZoomConfigOut>(c)),
+            ["tailscale"] = c => IngestSourceOutConfig.Tailscale(ToObj<TailscaleConfigOut>(c)),
             ["telnyx"] = c => IngestSourceOutConfig.Telnyx(ToObj<TelnyxConfigOut>(c)),
             ["vapi"] = c => IngestSourceOutConfig.Vapi(ToObj<VapiConfigOut>(c)),
             ["open-ai"] = c => IngestSourceOutConfig.OpenAi(ToObj<SvixConfigOut>(c)),

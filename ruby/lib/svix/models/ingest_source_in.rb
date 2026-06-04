@@ -20,6 +20,7 @@ require_relative "./shopify_config"
 require_relative "./slack_config"
 require_relative "./stripe_config"
 require_relative "./svix_config"
+require_relative "./tailscale_config"
 require_relative "./telnyx_config"
 require_relative "./vapi_config"
 require_relative "./veriff_config"
@@ -140,6 +141,9 @@ module Svix
     class Zoom < ZoomConfig
     end
 
+    class Tailscale < TailscaleConfig
+    end
+
     class Telnyx < TelnyxConfig
     end
 
@@ -205,6 +209,7 @@ module Svix
       IngestSourceInConfig::Stych => "stych",
       IngestSourceInConfig::Svix => "svix",
       IngestSourceInConfig::Zoom => "zoom",
+      IngestSourceInConfig::Tailscale => "tailscale",
       IngestSourceInConfig::Telnyx => "telnyx",
       IngestSourceInConfig::Vapi => "vapi",
       IngestSourceInConfig::OpenAi => "open-ai",

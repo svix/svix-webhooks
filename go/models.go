@@ -27,9 +27,13 @@ type (
 	BackgroundTaskOut                         = models.BackgroundTaskOut
 	BackgroundTaskStatus                      = models.BackgroundTaskStatus
 	BackgroundTaskType                        = models.BackgroundTaskType
+	BigQueryConfig                            = models.BigQueryConfig
+	BigQueryPatchConfig                       = models.BigQueryPatchConfig
 	BulkReplayIn                              = models.BulkReplayIn
 	CheckbookConfig                           = models.CheckbookConfig
 	CheckbookConfigOut                        = models.CheckbookConfigOut
+	ClickhouseConfig                          = models.ClickhouseConfig
+	ClickhousePatchConfig                     = models.ClickhousePatchConfig
 	ConnectorIn                               = models.ConnectorIn
 	ConnectorKind                             = models.ConnectorKind
 	ConnectorOut                              = models.ConnectorOut
@@ -72,6 +76,8 @@ type (
 	EndpointUpdatedEventData                  = models.EndpointUpdatedEventData
 	EnvironmentIn                             = models.EnvironmentIn
 	EnvironmentOut                            = models.EnvironmentOut
+	EventBridgeConfig                         = models.EventBridgeConfig
+	EventBridgePatchConfig                    = models.EventBridgePatchConfig
 	EventExampleIn                            = models.EventExampleIn
 	EventIn                                   = models.EventIn
 	EventOut                                  = models.EventOut
@@ -87,6 +93,8 @@ type (
 	ExpungeAllContentsOut                     = models.ExpungeAllContentsOut
 	GithubConfig                              = models.GithubConfig
 	GithubConfigOut                           = models.GithubConfigOut
+	GoogleCloudPubSubConfig                   = models.GoogleCloudPubSubConfig
+	GoogleCloudPubSubPatchConfig              = models.GoogleCloudPubSubPatchConfig
 	GoogleCloudStorageConfig                  = models.GoogleCloudStorageConfig
 	GoogleCloudStoragePatchConfig             = models.GoogleCloudStoragePatchConfig
 	HttpAttemptTimes                          = models.HttpAttemptTimes
@@ -173,8 +181,12 @@ type (
 	PollingEndpointOut                        = models.PollingEndpointOut
 	PortIoConfig                              = models.PortIoConfig
 	PortIoConfigOut                           = models.PortIoConfigOut
+	RabbitMqConfig                            = models.RabbitMqConfig
+	RabbitMqPatchConfig                       = models.RabbitMqPatchConfig
 	RecoverIn                                 = models.RecoverIn
 	RecoverOut                                = models.RecoverOut
+	RedshiftConfig                            = models.RedshiftConfig
+	RedshiftPatchConfig                       = models.RedshiftPatchConfig
 	ReplayIn                                  = models.ReplayIn
 	ReplayOut                                 = models.ReplayOut
 	RotatePollerTokenIn                       = models.RotatePollerTokenIn
@@ -195,6 +207,12 @@ type (
 	SinkTransformationOut                     = models.SinkTransformationOut
 	SlackConfig                               = models.SlackConfig
 	SlackConfigOut                            = models.SlackConfigOut
+	SnowflakeConfig                           = models.SnowflakeConfig
+	SnowflakePatchConfig                      = models.SnowflakePatchConfig
+	SnsConfig                                 = models.SnsConfig
+	SnsPatchConfig                            = models.SnsPatchConfig
+	SqsConfig                                 = models.SqsConfig
+	SqsPatchConfig                            = models.SqsPatchConfig
 	StatusCodeClass                           = models.StatusCodeClass
 	StreamEventTypeIn                         = models.StreamEventTypeIn
 	StreamEventTypeOut                        = models.StreamEventTypeOut
@@ -211,6 +229,8 @@ type (
 	StripeConfigOut                           = models.StripeConfigOut
 	SvixConfig                                = models.SvixConfig
 	SvixConfigOut                             = models.SvixConfigOut
+	TailscaleConfig                           = models.TailscaleConfig
+	TailscaleConfigOut                        = models.TailscaleConfigOut
 	TelnyxConfig                              = models.TelnyxConfig
 	TelnyxConfigOut                           = models.TelnyxConfigOut
 	VapiConfig                                = models.VapiConfig

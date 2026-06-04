@@ -39,7 +39,9 @@ class StreamingAsync(ApiBase):
     async def sink_headers_get(
         self, stream_id: str, sink_id: str
     ) -> EndpointHeadersOut:
-        """Get the HTTP sink headers. Only valid for `http` or `otelTracing` sinks."""
+        """Get the HTTP sink headers.
+
+        Only valid for `http` or `otelTracing` sinks."""
         response = await self._request_asyncio(
             method="get",
             path="/api/v1/stream/{stream_id}/sink/{sink_id}/headers",
@@ -56,7 +58,9 @@ class StreamingAsync(ApiBase):
         sink_id: str,
         http_sink_headers_patch_in: HttpSinkHeadersPatchIn,
     ) -> EndpointHeadersOut:
-        """Updates the Sink's headers. Only valid for `http` or `otelTracing` sinks."""
+        """Updates the Sink's headers.
+
+        Only valid for `http` or `otelTracing` sinks."""
         response = await self._request_asyncio(
             method="patch",
             path="/api/v1/stream/{stream_id}/sink/{sink_id}/headers",
@@ -103,7 +107,9 @@ class Streaming(ApiBase):
         return StreamingStream(self._client)
 
     def sink_headers_get(self, stream_id: str, sink_id: str) -> EndpointHeadersOut:
-        """Get the HTTP sink headers. Only valid for `http` or `otelTracing` sinks."""
+        """Get the HTTP sink headers.
+
+        Only valid for `http` or `otelTracing` sinks."""
         response = self._request_sync(
             method="get",
             path="/api/v1/stream/{stream_id}/sink/{sink_id}/headers",
@@ -120,7 +126,9 @@ class Streaming(ApiBase):
         sink_id: str,
         http_sink_headers_patch_in: HttpSinkHeadersPatchIn,
     ) -> EndpointHeadersOut:
-        """Updates the Sink's headers. Only valid for `http` or `otelTracing` sinks."""
+        """Updates the Sink's headers.
+
+        Only valid for `http` or `otelTracing` sinks."""
         response = self._request_sync(
             method="patch",
             path="/api/v1/stream/{stream_id}/sink/{sink_id}/headers",

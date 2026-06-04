@@ -37,7 +37,11 @@ export class Streaming {
     return new StreamingStream(this.requestCtx);
   }
 
-  /** Get the HTTP sink headers. Only valid for `http` or `otelTracing` sinks. */
+  /**
+   * Get the HTTP sink headers.
+   *
+   * Only valid for `http` or `otelTracing` sinks.
+   */
   public async sinkHeadersGet(
     streamId: string,
     sinkId: string
@@ -56,7 +60,11 @@ export class Streaming {
     );
   }
 
-  /** Updates the Sink's headers. Only valid for `http` or `otelTracing` sinks. */
+  /**
+   * Updates the Sink's headers.
+   *
+   * Only valid for `http` or `otelTracing` sinks.
+   */
   public async sinkHeadersPatch(
     streamId: string,
     sinkId: string,

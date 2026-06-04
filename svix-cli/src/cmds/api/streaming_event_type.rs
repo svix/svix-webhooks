@@ -69,6 +69,7 @@ pub struct StreamingEventTypeArgs {
     pub command: StreamingEventTypeCommands,
 }
 
+#[allow(clippy::large_enum_variant)]
 #[derive(Subcommand)]
 pub enum StreamingEventTypeCommands {
     /// List of all the organization's event types for streaming.
