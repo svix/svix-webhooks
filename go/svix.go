@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/url"
 	"regexp"
+	"runtime"
 	"strings"
 	"time"
 
@@ -69,7 +70,7 @@ func New(token string, options *SvixOptions) (*Svix, error) {
 	}
 
 	svixHttpClient.DefaultHeaders["Authorization"] = fmt.Sprintf("Bearer %s", token)
-	svixHttpClient.DefaultHeaders["User-Agent"] = fmt.Sprintf("svix-libs/%s/go", Version)
+	svixHttpClient.DefaultHeaders["User-Agent"] = fmt.Sprintf("svix-libs/%s/go go/%s", Version, runtime.Version())
 
 	svx := Svix{
 		client: &svixHttpClient,
@@ -96,11 +97,23 @@ func New(token string, options *SvixOptions) (*Svix, error) {
 
 // Add a custom suffix to the default user-agent
 //
-// The default user agent is `svix-libs/<version>/go`.
-// The suffix will be separated from the base user agent with a `/`
+// The default user agent is `svix-libs/<version>/go go/<goversion>`.
+// The suffix will be separated from the base svix-libs component of the user agent with a `/`
 //
 // The suffix must be less then 50 chars, And must match this regex `^[A-Za-z\d\.\-]+$`
+//
+// Deprecated: Please call the method with the same name instead of this free function.
 func SetUserAgentSuffix(s *Svix, userAgentSuffix string) error {
+	return s.SetUserAgentSuffix(userAgentSuffix)
+}
+
+// Add a custom suffix to the default user-agent
+//
+// The default user agent is `svix-libs/<version>/go go/<goversion>`.
+// The suffix will be separated from the base svix-libs component of the user agent with a `/`
+//
+// The suffix must be less then 50 chars, And must match this regex `^[A-Za-z\d\.\-]+$`
+func (s Svix) SetUserAgentSuffix(userAgentSuffix string) error {
 	if len(userAgentSuffix) > 50 {
 		return fmt.Errorf("user agent suffix must be less then 50 chars")
 	}
@@ -109,7 +122,7 @@ func SetUserAgentSuffix(s *Svix, userAgentSuffix string) error {
 		return fmt.Errorf("invalid user agent suffix")
 	}
 
-	s.client.DefaultHeaders["User-Agent"] = fmt.Sprintf("svix-libs/%s/go/%s", Version, userAgentSuffix)
+	s.client.DefaultHeaders["User-Agent"] = fmt.Sprintf("svix-libs/%s/go/%s go/%s", Version, userAgentSuffix, runtime.Version())
 	return nil
 }
 

@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"os"
 	"reflect"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -934,4 +935,63 @@ func TestMsgInRaw(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+}
+
+func TestUserAgent(t *testing.T) {
+	ctx := context.Background()
+	svx := newMockClient()
+	httpmock.Activate()
+	defer httpmock.DeactivateAndReset()
+
+	httpmock.RegisterResponder("GET", "http://testapi.test/api/v1/app", func(r *http.Request) (*http.Response, error) {
+		defer r.Body.Close()
+		userAgent := r.Header.Get("User-Agent")
+
+		rxp := regexp.MustCompile("^svix-libs/[0-9.]+/go go/go[0-9.]+$")
+
+		if !rxp.Match([]byte(userAgent)) {
+			t.Errorf("Unexpected UA %s", userAgent)
+		}
+		return httpmock.NewStringResponse(200, "{\"data\": [], \"iterator\": \"app_3Ead4bUeXzV2bCjMcrHYjHHzf1w\", \"prevIterator\": \"-app_3Ead4bUeXzV2bCjMcrHYjHHzf1w\"}"), nil
+	})
+	_, err := svx.Application.List(ctx, nil)
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+func TestSetUserAgentSuffix(t *testing.T) {
+	ctx := context.Background()
+	svx := newMockClient()
+	httpmock.Activate()
+	defer httpmock.DeactivateAndReset()
+
+	httpmock.RegisterResponder("GET", "http://testapi.test/api/v1/app", func(r *http.Request) (*http.Response, error) {
+		defer r.Body.Close()
+		userAgent := r.Header.Get("User-Agent")
+
+		rxp := regexp.MustCompile("^svix-libs/[0-9.]+/go/foo go/go[0-9.]+$")
+
+		if !rxp.Match([]byte(userAgent)) {
+			t.Errorf("Unexpected UA %s", userAgent)
+		}
+		return httpmock.NewStringResponse(200, "{\"data\": [], \"iterator\": \"app_3Ead4bUeXzV2bCjMcrHYjHHzf1w\", \"prevIterator\": \"-app_3Ead4bUeXzV2bCjMcrHYjHHzf1w\"}"), nil
+	})
+	err := svx.SetUserAgentSuffix("foo")
+	if err != nil {
+		t.Error(err)
+	}
+	_, err = svx.Application.List(ctx, nil)
+	if err != nil {
+		t.Error(err)
+	}
+	err = svx.SetUserAgentSuffix("g\nr")
+	if err == nil {
+		t.Errorf("expected invalid characters to fail")
+	}
+	err = svx.SetUserAgentSuffix("very long stringaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+	if err == nil {
+		t.Errorf("expected invalid characters to fail")
+	}
+
 }

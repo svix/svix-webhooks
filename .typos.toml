@@ -2,6 +2,9 @@
 typ = "typ" # since type is a keyword in Rust
 ser = "ser" # Java com.fasterxml.jackson.databind.ser.std.StdSerializer
 
+[default.extend-identifiers]
+app_3Ead4bUeXzV2bCjMcrHYjHHzf1w = "app_3Ead4bUeXzV2bCjMcrHYjHHzf1w"  # iterator sample value
+
 [files]
 extend-exclude = [
     # False positives in randomly-generated strings
