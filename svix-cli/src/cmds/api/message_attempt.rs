@@ -276,6 +276,7 @@ pub struct MessageAttemptArgs {
     pub command: MessageAttemptCommands,
 }
 
+#[allow(clippy::large_enum_variant)]
 #[derive(Subcommand)]
 pub enum MessageAttemptCommands {
     /// List attempts by endpoint id

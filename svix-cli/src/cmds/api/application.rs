@@ -65,6 +65,7 @@ pub struct ApplicationArgs {
     pub command: ApplicationCommands,
 }
 
+#[allow(clippy::large_enum_variant)]
 #[derive(Subcommand)]
 pub enum ApplicationCommands {
     /// List of all the organization's applications.

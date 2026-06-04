@@ -108,6 +108,7 @@ pub struct AuthenticationArgs {
     pub command: AuthenticationCommands,
 }
 
+#[allow(clippy::large_enum_variant)]
 #[derive(Subcommand)]
 pub enum AuthenticationCommands {
     /// Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal.

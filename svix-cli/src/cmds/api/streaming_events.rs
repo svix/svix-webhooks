@@ -49,6 +49,7 @@ pub struct StreamingEventsArgs {
     pub command: StreamingEventsCommands,
 }
 
+#[allow(clippy::large_enum_variant)]
 #[derive(Subcommand)]
 pub enum StreamingEventsCommands {
     /// Creates events on the Stream.

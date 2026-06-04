@@ -76,6 +76,7 @@ pub struct MessagePollerArgs {
     pub command: MessagePollerCommands,
 }
 
+#[allow(clippy::large_enum_variant)]
 #[derive(Subcommand)]
 pub enum MessagePollerCommands {
     /// Reads the stream of created messages for an application, filtered on the Sink's event types and Channels.

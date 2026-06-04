@@ -63,6 +63,7 @@ pub struct IngestEndpointArgs {
     pub command: IngestEndpointCommands,
 }
 
+#[allow(clippy::large_enum_variant)]
 #[derive(Subcommand)]
 pub enum IngestEndpointCommands {
     /// List ingest endpoints.

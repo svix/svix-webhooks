@@ -87,6 +87,7 @@ pub struct EventTypeArgs {
     pub command: EventTypeCommands,
 }
 
+#[allow(clippy::large_enum_variant)]
 #[derive(Subcommand)]
 pub enum EventTypeCommands {
     /// Return the list of event types.

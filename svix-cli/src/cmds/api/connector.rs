@@ -54,6 +54,7 @@ pub struct ConnectorArgs {
     pub command: ConnectorCommands,
 }
 
+#[allow(clippy::large_enum_variant)]
 #[derive(Subcommand)]
 pub enum ConnectorCommands {
     /// List all connectors for an application.

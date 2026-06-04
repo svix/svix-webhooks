@@ -14,6 +14,7 @@ pub struct StreamingArgs {
     pub command: StreamingCommands,
 }
 
+#[allow(clippy::large_enum_variant)]
 #[derive(Subcommand)]
 pub enum StreamingCommands {
     EventType(StreamingEventTypeArgs),

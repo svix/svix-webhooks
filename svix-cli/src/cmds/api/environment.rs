@@ -35,6 +35,7 @@ pub struct EnvironmentArgs {
     pub command: EnvironmentCommands,
 }
 
+#[allow(clippy::large_enum_variant)]
 #[derive(Subcommand)]
 pub enum EnvironmentCommands {
     /// Download a JSON file containing all org-settings and event types.
