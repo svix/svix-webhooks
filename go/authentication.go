@@ -57,8 +57,9 @@ func (authentication *Authentication) AppPortalAccess(
 		"app_id": appId,
 	}
 	headerMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
@@ -87,14 +88,15 @@ func (authentication *Authentication) ExpireAll(
 		"app_id": appId,
 	}
 	headerMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return err
 		}
 	}
-	_, err = internal.ExecuteRequest[models.ApplicationTokenExpireIn, any](
+	_, err := internal.ExecuteRequest[models.ApplicationTokenExpireIn, any](
 		ctx,
 		authentication.client,
 		"POST",
@@ -144,14 +146,15 @@ func (authentication *Authentication) Logout(
 	o *AuthenticationLogoutOptions,
 ) error {
 	headerMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return err
 		}
 	}
-	_, err = internal.ExecuteRequest[any, any](
+	_, err := internal.ExecuteRequest[any, any](
 		ctx,
 		authentication.client,
 		"POST",
@@ -172,14 +175,15 @@ func (authentication *Authentication) StreamLogout(
 	o *AuthenticationStreamLogoutOptions,
 ) error {
 	headerMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return err
 		}
 	}
-	_, err = internal.ExecuteRequest[any, any](
+	_, err := internal.ExecuteRequest[any, any](
 		ctx,
 		authentication.client,
 		"POST",
@@ -203,8 +207,9 @@ func (authentication *Authentication) StreamPortalAccess(
 		"stream_id": streamId,
 	}
 	headerMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
@@ -233,14 +238,15 @@ func (authentication *Authentication) StreamExpireAll(
 		"stream_id": streamId,
 	}
 	headerMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return err
 		}
 	}
-	_, err = internal.ExecuteRequest[models.StreamTokenExpireIn, any](
+	_, err := internal.ExecuteRequest[models.StreamTokenExpireIn, any](
 		ctx,
 		authentication.client,
 		"POST",
@@ -288,8 +294,9 @@ func (authentication *Authentication) RotateStreamPollerToken(
 		"sink_id":   sinkId,
 	}
 	headerMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err

@@ -42,8 +42,9 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) List(
 	o *OperationalWebhookEndpointListOptions,
 ) (*models.ListResponseOperationalWebhookEndpointOut, error) {
 	queryMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
 		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
 		internal.SerializeParamToMap("order", o.Order, queryMap, &err)
@@ -70,8 +71,9 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Create(
 	o *OperationalWebhookEndpointCreateOptions,
 ) (*models.OperationalWebhookEndpointOut, error) {
 	headerMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
@@ -229,14 +231,15 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) RotateSecret(
 		"endpoint_id": endpointId,
 	}
 	headerMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return err
 		}
 	}
-	_, err = internal.ExecuteRequest[models.OperationalWebhookEndpointSecretIn, any](
+	_, err := internal.ExecuteRequest[models.OperationalWebhookEndpointSecretIn, any](
 		ctx,
 		operationalWebhookEndpoint.client,
 		"POST",

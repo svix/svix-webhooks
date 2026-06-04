@@ -70,8 +70,9 @@ func (endpoint *Endpoint) List(
 		"app_id": appId,
 	}
 	queryMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
 		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
 		internal.SerializeParamToMap("order", o.Order, queryMap, &err)
@@ -104,8 +105,9 @@ func (endpoint *Endpoint) Create(
 		"app_id": appId,
 	}
 	headerMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
@@ -244,8 +246,9 @@ func (endpoint *Endpoint) BulkReplay(
 		"endpoint_id": endpointId,
 	}
 	headerMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
@@ -362,8 +365,9 @@ func (endpoint *Endpoint) Recover(
 		"endpoint_id": endpointId,
 	}
 	headerMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
@@ -411,8 +415,9 @@ func (endpoint *Endpoint) ReplayMissing(
 		"endpoint_id": endpointId,
 	}
 	headerMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
@@ -470,14 +475,15 @@ func (endpoint *Endpoint) RotateSecret(
 		"endpoint_id": endpointId,
 	}
 	headerMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return err
 		}
 	}
-	_, err = internal.ExecuteRequest[models.EndpointSecretRotateIn, any](
+	_, err := internal.ExecuteRequest[models.EndpointSecretRotateIn, any](
 		ctx,
 		endpoint.client,
 		"POST",
@@ -503,8 +509,9 @@ func (endpoint *Endpoint) SendExample(
 		"endpoint_id": endpointId,
 	}
 	headerMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
@@ -534,8 +541,9 @@ func (endpoint *Endpoint) GetStats(
 		"endpoint_id": endpointId,
 	}
 	queryMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("since", o.Since, queryMap, &err)
 		internal.SerializeParamToMap("until", o.Until, queryMap, &err)
 		if err != nil {

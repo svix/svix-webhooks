@@ -35,8 +35,9 @@ func (environment *Environment) Export(
 	o *EnvironmentExportOptions,
 ) (*models.EnvironmentOut, error) {
 	headerMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
@@ -66,14 +67,15 @@ func (environment *Environment) Import(
 	o *EnvironmentImportOptions,
 ) error {
 	headerMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return err
 		}
 	}
-	_, err = internal.ExecuteRequest[models.EnvironmentIn, any](
+	_, err := internal.ExecuteRequest[models.EnvironmentIn, any](
 		ctx,
 		environment.client,
 		"POST",

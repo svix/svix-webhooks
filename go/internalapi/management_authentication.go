@@ -37,8 +37,9 @@ func (managementAuthentication *ManagementAuthentication) CreateApiToken(
 		"env_id": envId,
 	}
 	headerMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
@@ -92,14 +93,15 @@ func (managementAuthentication *ManagementAuthentication) ExpireApiToken(
 		"key_id": keyId,
 	}
 	headerMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return err
 		}
 	}
-	_, err = internal.ExecuteRequest[models.ApiTokenExpireIn, any](
+	_, err := internal.ExecuteRequest[models.ApiTokenExpireIn, any](
 		ctx,
 		managementAuthentication.client,
 		"POST",

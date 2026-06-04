@@ -40,8 +40,9 @@ func (backgroundTask *BackgroundTask) List(
 	o *BackgroundTaskListOptions,
 ) (*models.ListResponseBackgroundTaskOut, error) {
 	queryMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("status", o.Status, queryMap, &err)
 		internal.SerializeParamToMap("task", o.Task, queryMap, &err)
 		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)

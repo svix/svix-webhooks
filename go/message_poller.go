@@ -54,8 +54,9 @@ func (messagePoller *MessagePoller) Poll(
 		"sink_id": sinkId,
 	}
 	queryMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
 		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
 		internal.SerializeParamToMap("event_type", o.EventType, queryMap, &err)
@@ -92,8 +93,9 @@ func (messagePoller *MessagePoller) ConsumerPoll(
 		"consumer_id": consumerId,
 	}
 	queryMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
 		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
 		if err != nil {
@@ -127,8 +129,9 @@ func (messagePoller *MessagePoller) ConsumerSeek(
 		"consumer_id": consumerId,
 	}
 	headerMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err

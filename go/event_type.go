@@ -51,8 +51,9 @@ func (eventType *EventType) List(
 	o *EventTypeListOptions,
 ) (*models.ListResponseEventTypeOut, error) {
 	queryMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
 		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
 		internal.SerializeParamToMap("order", o.Order, queryMap, &err)
@@ -85,8 +86,9 @@ func (eventType *EventType) Create(
 	o *EventTypeCreateOptions,
 ) (*models.EventTypeOut, error) {
 	headerMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
@@ -115,8 +117,9 @@ func (eventType *EventType) ImportOpenapi(
 	o *EventTypeImportOpenapiOptions,
 ) (*models.EventTypeImportOpenApiOut, error) {
 	headerMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
@@ -190,14 +193,15 @@ func (eventType *EventType) Delete(
 		"event_type_name": eventTypeName,
 	}
 	queryMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("expunge", o.Expunge, queryMap, &err)
 		if err != nil {
 			return err
 		}
 	}
-	_, err = internal.ExecuteRequest[any, any](
+	_, err := internal.ExecuteRequest[any, any](
 		ctx,
 		eventType.client,
 		"DELETE",
