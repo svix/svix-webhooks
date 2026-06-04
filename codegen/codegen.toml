@@ -194,6 +194,9 @@ extra_codegen_args = [
     "--include-op-id=v1.management.authentication.expire-api-token",
     "--include-op-id=v1.management.authentication.patch-api-token",
     "--include-op-id=v1.endpoint.auto-config.update",
+    "--include-op-id=v1.management.environment-settings.get-otel-config",
+    "--include-op-id=v1.management.environment-settings.update-otel-config",
+    "--include-op-id=v1.management.environment-settings.delete-otel-config",
 ]
 [[go.task]]
 template = "templates/go/api_resource.go.jinja"
@@ -215,6 +218,9 @@ extra_codegen_args = [
     "--include-op-id=v1.management.authentication.expire-api-token",
     "--include-op-id=v1.management.authentication.patch-api-token",
     "--include-op-id=v1.endpoint.auto-config.update",
+    "--include-op-id=v1.management.environment-settings.get-otel-config",
+    "--include-op-id=v1.management.environment-settings.update-otel-config",
+    "--include-op-id=v1.management.environment-settings.delete-otel-config",
 ]
 
 

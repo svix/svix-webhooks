@@ -490,6 +490,8 @@
         "go/models/ordering.go",
         "go/models/orum_io_config.go",
         "go/models/orum_io_config_out.go",
+        "go/models/otel_config.go",
+        "go/models/otel_config_out.go",
         "go/models/otel_tracing_patch_config.go",
         "go/models/panda_doc_config.go",
         "go/models/panda_doc_config_out.go",
