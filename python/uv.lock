@@ -1561,7 +1561,7 @@ sdist = { url = "https://files.pythonhosted.org/packages/c4/7d/04fc3aa177403472d
 
 [[package]]
 name = "svix"
-version = "1.95.1"
+version = "1.95.2"
 source = { editable = "." }
 dependencies = [
     { name = "attrs", version = "25.3.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },

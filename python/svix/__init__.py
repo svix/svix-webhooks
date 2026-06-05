@@ -40,4 +40,4 @@ __all__ = [
     "AutoConfigError",
 ]
 
-__version__ = "1.95.1"
+__version__ = "1.95.2"
