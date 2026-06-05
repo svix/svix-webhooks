@@ -61,7 +61,7 @@ class StreamingEventTypeDeleteOptions(BaseOptions):
 
 class StreamingEventTypeAsync(ApiBase):
     async def list(
-        self, options: StreamingEventTypeListOptions = StreamingEventTypeListOptions()
+        self, options: StreamingEventTypeListOptions = (StreamingEventTypeListOptions())
     ) -> ListResponseStreamEventTypeOut:
         """List of all the organization's event types for streaming."""
         response = await self._request_asyncio(
@@ -76,7 +76,7 @@ class StreamingEventTypeAsync(ApiBase):
     async def create(
         self,
         stream_event_type_in: StreamEventTypeIn,
-        options: StreamingEventTypeCreateOptions = StreamingEventTypeCreateOptions(),
+        options: StreamingEventTypeCreateOptions = (StreamingEventTypeCreateOptions()),
     ) -> StreamEventTypeOut:
         """Create an event type for Streams."""
         response = await self._request_asyncio(
@@ -121,7 +121,7 @@ class StreamingEventTypeAsync(ApiBase):
     async def delete(
         self,
         name: str,
-        options: StreamingEventTypeDeleteOptions = StreamingEventTypeDeleteOptions(),
+        options: StreamingEventTypeDeleteOptions = (StreamingEventTypeDeleteOptions()),
     ) -> None:
         """Delete an event type."""
         await self._request_asyncio(
@@ -153,7 +153,7 @@ class StreamingEventTypeAsync(ApiBase):
 
 class StreamingEventType(ApiBase):
     def list(
-        self, options: StreamingEventTypeListOptions = StreamingEventTypeListOptions()
+        self, options: StreamingEventTypeListOptions = (StreamingEventTypeListOptions())
     ) -> ListResponseStreamEventTypeOut:
         """List of all the organization's event types for streaming."""
         response = self._request_sync(
@@ -168,7 +168,7 @@ class StreamingEventType(ApiBase):
     def create(
         self,
         stream_event_type_in: StreamEventTypeIn,
-        options: StreamingEventTypeCreateOptions = StreamingEventTypeCreateOptions(),
+        options: StreamingEventTypeCreateOptions = (StreamingEventTypeCreateOptions()),
     ) -> StreamEventTypeOut:
         """Create an event type for Streams."""
         response = self._request_sync(
@@ -213,7 +213,7 @@ class StreamingEventType(ApiBase):
     def delete(
         self,
         name: str,
-        options: StreamingEventTypeDeleteOptions = StreamingEventTypeDeleteOptions(),
+        options: StreamingEventTypeDeleteOptions = (StreamingEventTypeDeleteOptions()),
     ) -> None:
         """Delete an event type."""
         self._request_sync(

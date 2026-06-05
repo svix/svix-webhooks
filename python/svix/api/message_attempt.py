@@ -210,7 +210,9 @@ class MessageAttemptAsync(ApiBase):
         self,
         app_id: str,
         endpoint_id: str,
-        options: MessageAttemptListByEndpointOptions = MessageAttemptListByEndpointOptions(),
+        options: MessageAttemptListByEndpointOptions = (
+            MessageAttemptListByEndpointOptions()
+        ),
     ) -> ListResponseMessageAttemptOut:
         """List attempts by endpoint id
 
@@ -235,7 +237,7 @@ class MessageAttemptAsync(ApiBase):
         self,
         app_id: str,
         msg_id: str,
-        options: MessageAttemptListByMsgOptions = MessageAttemptListByMsgOptions(),
+        options: MessageAttemptListByMsgOptions = (MessageAttemptListByMsgOptions()),
     ) -> ListResponseMessageAttemptOut:
         """List attempts by message ID.
 
@@ -259,7 +261,9 @@ class MessageAttemptAsync(ApiBase):
         self,
         app_id: str,
         endpoint_id: str,
-        options: MessageAttemptListAttemptedMessagesOptions = MessageAttemptListAttemptedMessagesOptions(),
+        options: MessageAttemptListAttemptedMessagesOptions = (
+            MessageAttemptListAttemptedMessagesOptions()
+        ),
     ) -> ListResponseEndpointMessageOut:
         """List messages for a particular endpoint.
 
@@ -287,7 +291,7 @@ class MessageAttemptAsync(ApiBase):
         app_id: str,
         msg_id: str,
         attempt_id: str,
-        options: MessageAttemptGetOptions = MessageAttemptGetOptions(),
+        options: MessageAttemptGetOptions = (MessageAttemptGetOptions()),
     ) -> MessageAttemptOut:
         """`msg_id`: Use a message id or a message `eventId`"""
         response = await self._request_asyncio(
@@ -322,7 +326,9 @@ class MessageAttemptAsync(ApiBase):
         self,
         app_id: str,
         msg_id: str,
-        options: MessageAttemptListAttemptedDestinationsOptions = MessageAttemptListAttemptedDestinationsOptions(),
+        options: MessageAttemptListAttemptedDestinationsOptions = (
+            MessageAttemptListAttemptedDestinationsOptions()
+        ),
     ) -> ListResponseMessageEndpointOut:
         """List endpoints attempted by a given message.
 
@@ -345,7 +351,7 @@ class MessageAttemptAsync(ApiBase):
         app_id: str,
         msg_id: str,
         endpoint_id: str,
-        options: MessageAttemptResendOptions = MessageAttemptResendOptions(),
+        options: MessageAttemptResendOptions = (MessageAttemptResendOptions()),
     ) -> EmptyResponse:
         """Resend a message to the specified endpoint."""
         response = await self._request_asyncio(
@@ -367,7 +373,9 @@ class MessageAttempt(ApiBase):
         self,
         app_id: str,
         endpoint_id: str,
-        options: MessageAttemptListByEndpointOptions = MessageAttemptListByEndpointOptions(),
+        options: MessageAttemptListByEndpointOptions = (
+            MessageAttemptListByEndpointOptions()
+        ),
     ) -> ListResponseMessageAttemptOut:
         """List attempts by endpoint id
 
@@ -392,7 +400,7 @@ class MessageAttempt(ApiBase):
         self,
         app_id: str,
         msg_id: str,
-        options: MessageAttemptListByMsgOptions = MessageAttemptListByMsgOptions(),
+        options: MessageAttemptListByMsgOptions = (MessageAttemptListByMsgOptions()),
     ) -> ListResponseMessageAttemptOut:
         """List attempts by message ID.
 
@@ -416,7 +424,9 @@ class MessageAttempt(ApiBase):
         self,
         app_id: str,
         endpoint_id: str,
-        options: MessageAttemptListAttemptedMessagesOptions = MessageAttemptListAttemptedMessagesOptions(),
+        options: MessageAttemptListAttemptedMessagesOptions = (
+            MessageAttemptListAttemptedMessagesOptions()
+        ),
     ) -> ListResponseEndpointMessageOut:
         """List messages for a particular endpoint.
 
@@ -444,7 +454,7 @@ class MessageAttempt(ApiBase):
         app_id: str,
         msg_id: str,
         attempt_id: str,
-        options: MessageAttemptGetOptions = MessageAttemptGetOptions(),
+        options: MessageAttemptGetOptions = (MessageAttemptGetOptions()),
     ) -> MessageAttemptOut:
         """`msg_id`: Use a message id or a message `eventId`"""
         response = self._request_sync(
@@ -479,7 +489,9 @@ class MessageAttempt(ApiBase):
         self,
         app_id: str,
         msg_id: str,
-        options: MessageAttemptListAttemptedDestinationsOptions = MessageAttemptListAttemptedDestinationsOptions(),
+        options: MessageAttemptListAttemptedDestinationsOptions = (
+            MessageAttemptListAttemptedDestinationsOptions()
+        ),
     ) -> ListResponseMessageEndpointOut:
         """List endpoints attempted by a given message.
 
@@ -502,7 +514,7 @@ class MessageAttempt(ApiBase):
         app_id: str,
         msg_id: str,
         endpoint_id: str,
-        options: MessageAttemptResendOptions = MessageAttemptResendOptions(),
+        options: MessageAttemptResendOptions = (MessageAttemptResendOptions()),
     ) -> EmptyResponse:
         """Resend a message to the specified endpoint."""
         response = self._request_sync(

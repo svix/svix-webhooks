@@ -29,7 +29,7 @@ def test_endpoint_crud(client) -> None:
     if client is None:
         # the version of pytest that works with python3.8 has a bug in its type
         # annotations that reports pytest.skip() as taking 0 arguments
-        pytest.skip("$SVIX_TOKEN and $SVIX_SERVER_URL must be set to run this test")  # ty: ignore[too-many-positional-arguments]
+        pytest.skip("$SVIX_TOKEN and $SVIX_SERVER_URL must be set to run this test")
     app = client.application.create(ApplicationIn(name="app"))
     try:
         client.event_type.create(

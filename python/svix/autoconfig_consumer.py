@@ -1,5 +1,3 @@
-import typing as t
-
 from .api.client import AuthenticatedClient
 from .api.svix import Svix, SvixOptions
 from .api_internal.endpoint_auto_config import (
@@ -64,7 +62,9 @@ class AutoConfigConsumer:
     def receive(
         self,
         consumer_id: str,
-        options: MessagePollerv2ConsumerPollOptions = MessagePollerv2ConsumerPollOptions(),
+        options: MessagePollerv2ConsumerPollOptions = (
+            MessagePollerv2ConsumerPollOptions()
+        ),
     ) -> PollerV2PollOut:
         return MessagePollerv2(self._client).consumer_poll(
             self._app_id,
@@ -76,7 +76,9 @@ class AutoConfigConsumer:
     async def receive_async(
         self,
         consumer_id: str,
-        options: MessagePollerv2ConsumerPollOptions = MessagePollerv2ConsumerPollOptions(),
+        options: MessagePollerv2ConsumerPollOptions = (
+            MessagePollerv2ConsumerPollOptions()
+        ),
     ) -> PollerV2PollOut:
         return await MessagePollerv2Async(self._client).consumer_poll(
             self._app_id,
@@ -89,7 +91,9 @@ class AutoConfigConsumer:
         self,
         consumer_id: str,
         offset: int,
-        options: MessagePollerv2ConsumerCommitOptions = MessagePollerv2ConsumerCommitOptions(),
+        options: MessagePollerv2ConsumerCommitOptions = (
+            MessagePollerv2ConsumerCommitOptions()
+        ),
     ) -> None:
         MessagePollerv2(self._client).consumer_commit(
             self._app_id,
@@ -103,7 +107,9 @@ class AutoConfigConsumer:
         self,
         consumer_id: str,
         offset: int,
-        options: MessagePollerv2ConsumerCommitOptions = MessagePollerv2ConsumerCommitOptions(),
+        options: MessagePollerv2ConsumerCommitOptions = (
+            MessagePollerv2ConsumerCommitOptions()
+        ),
     ) -> None:
         await MessagePollerv2Async(self._client).consumer_commit(
             self._app_id,

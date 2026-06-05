@@ -1,7 +1,7 @@
 // this file is @generated
 import { type EndpointIn, EndpointInSerializer } from "./endpointIn";
 import { type SinkInCommon, SinkInCommonSerializer } from "./sinkInCommon";
-type _AutoConfigSinkTypeFields = {};
+interface _AutoConfigSinkTypeFields {}
 
 interface AutoConfigSinkTypePoller {
   type: "poller";
