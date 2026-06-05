@@ -35,6 +35,7 @@ import { type VapiConfigOut, VapiConfigOutSerializer } from "./vapiConfigOut";
 import { type VeriffConfigOut, VeriffConfigOutSerializer } from "./veriffConfigOut";
 import { type VgsConfigOut, VgsConfigOutSerializer } from "./vgsConfigOut";
 import { type ZoomConfigOut, ZoomConfigOutSerializer } from "./zoomConfigOut";
+
 interface _IngestSourceOutFields {
   createdAt: Date;
   /** The Source's ID. */

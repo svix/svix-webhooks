@@ -1,6 +1,7 @@
 // this file is @generated
 import { type EndpointIn, EndpointInSerializer } from "./endpointIn";
 import { type SinkInCommon, SinkInCommonSerializer } from "./sinkInCommon";
+// biome-ignore lint/suspicious/noEmptyInterface: backwards compat
 interface _AutoConfigSinkTypeFields {}
 
 interface AutoConfigSinkTypePoller {

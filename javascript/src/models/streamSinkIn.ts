@@ -23,6 +23,7 @@ import { type SinkStatusIn, SinkStatusInSerializer } from "./sinkStatusIn";
 import { type SnowflakeConfig, SnowflakeConfigSerializer } from "./snowflakeConfig";
 import { type SnsConfig, SnsConfigSerializer } from "./snsConfig";
 import { type SqsConfig, SqsConfigSerializer } from "./sqsConfig";
+
 interface _StreamSinkInFields {
   /** How many events will be batched in a request to the Sink. */
   batchSize?: number;
