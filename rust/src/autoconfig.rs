@@ -81,11 +81,7 @@ impl AutoConfig {
         subscribe_in.endpoint = Some(self.endpoint.clone());
 
         api_internal::endpoint_auto_config(self.svix.cfg())
-            .update(
-                self.app_id.clone(),
-                self.endpoint_id.clone(),
-                subscribe_in,
-            )
+            .update(self.app_id.clone(), self.endpoint_id.clone(), subscribe_in)
             .await
     }
 

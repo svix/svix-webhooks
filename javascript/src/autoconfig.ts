@@ -26,7 +26,9 @@ export class AutoConfigError extends Error {
   }
 }
 
-export function isAutoConfigTokenContentV1(value: unknown): value is AutoConfigTokenContentV1 {
+export function isAutoConfigTokenContentV1(
+  value: unknown
+): value is AutoConfigTokenContentV1 {
   if (typeof value !== "object" || value === null) {
     return false;
   }

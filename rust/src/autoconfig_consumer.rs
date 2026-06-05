@@ -14,10 +14,7 @@ pub struct AutoConfigConsumer {
 }
 
 impl AutoConfigConsumer {
-    pub fn new(
-        token: String,
-        sink_in: SinkInCommon,
-    ) -> std::result::Result<Self, AutoConfigError> {
+    pub fn new(token: String, sink_in: SinkInCommon) -> std::result::Result<Self, AutoConfigError> {
         let content = decode_autoconfig_token_v1(&token)?;
 
         let svix = Svix::new(

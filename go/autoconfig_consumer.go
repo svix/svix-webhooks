@@ -10,10 +10,10 @@ import (
 
 // AutoConfigConsumer decodes an auto-configuration token for polling sink consumers.
 type AutoConfigConsumer struct {
-	appID      string
-	sinkID     string
-	sinkIn     models.SinkInCommon
-	svix       *internalapi.InternalSvix
+	appID  string
+	sinkID string
+	sinkIn models.SinkInCommon
+	svix   *internalapi.InternalSvix
 }
 
 // NewAutoConfigConsumer parses a v1 auto-config token and prepares consumer helpers.

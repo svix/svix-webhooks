@@ -76,12 +76,7 @@ namespace Svix
             MessagePollerv2ConsumerPollOptions? options = null
         )
         {
-            return new MessagePollerv2(_client).ConsumerPoll(
-                _appId,
-                _sinkId,
-                consumerId,
-                options
-            );
+            return new MessagePollerv2(_client).ConsumerPoll(_appId, _sinkId, consumerId, options);
         }
 
         public async Task CommitAsync(

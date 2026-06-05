@@ -1,10 +1,14 @@
 import { SvixInternal } from "./api_internal";
 import { Endpoint as InternalEndpoint } from "./api_internal/endpoint";
-import { MessagePollerv2 as InternalMessagePollerv2, MessagePollerv2ConsumerCommitOptions, MessagePollerv2ConsumerPollOptions } from "./api_internal/messagePollerv2";
+import {
+  MessagePollerv2 as InternalMessagePollerv2,
+  type MessagePollerv2ConsumerCommitOptions,
+  type MessagePollerv2ConsumerPollOptions,
+} from "./api_internal/messagePollerv2";
 import { decodeAutoconfigTokenV1 } from "./autoconfig";
 import type { EndpointOut } from "./models/endpointOut";
-import { PollerV2PollOut } from "./models/pollerV2PollOut";
-import { SinkInCommon } from "./models/sinkInCommon";
+import type { PollerV2PollOut } from "./models/pollerV2PollOut";
+import type { SinkInCommon } from "./models/sinkInCommon";
 import type { SvixRequestContext } from "./request";
 
 export class AutoConfigConsumer {
@@ -39,20 +43,20 @@ export class AutoConfigConsumer {
 
   public receive(
     consumerId: string,
-    options?: MessagePollerv2ConsumerPollOptions,
+    options?: MessagePollerv2ConsumerPollOptions
   ): Promise<PollerV2PollOut> {
     return new InternalMessagePollerv2(this.requestCtx).consumerPoll(
       this.appId,
       this.sinkId,
       consumerId,
-      options,
+      options
     );
   }
 
   public commit(
     consumerId: string,
     offset: number,
-    options?: MessagePollerv2ConsumerCommitOptions,
+    options?: MessagePollerv2ConsumerCommitOptions
   ): Promise<void> {
     return new InternalMessagePollerv2(this.requestCtx).consumerCommit(
       this.appId,
@@ -61,7 +65,7 @@ export class AutoConfigConsumer {
       {
         offset,
       },
-      options,
+      options
     );
   }
 }
