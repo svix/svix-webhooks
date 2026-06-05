@@ -48,7 +48,7 @@ class ConnectorCreateOptions(BaseOptions):
 
 class ConnectorAsync(ApiBase):
     async def list(
-        self, options: ConnectorListOptions = (ConnectorListOptions())
+        self, options: ConnectorListOptions = ConnectorListOptions()
     ) -> ListResponseConnectorOut:
         """List all connectors for an application."""
         response = await self._request_asyncio(
@@ -63,7 +63,7 @@ class ConnectorAsync(ApiBase):
     async def create(
         self,
         connector_in: ConnectorIn,
-        options: ConnectorCreateOptions = (ConnectorCreateOptions()),
+        options: ConnectorCreateOptions = ConnectorCreateOptions(),
     ) -> ConnectorOut:
         """Create a new connector."""
         response = await self._request_asyncio(
@@ -132,7 +132,7 @@ class ConnectorAsync(ApiBase):
 
 class Connector(ApiBase):
     def list(
-        self, options: ConnectorListOptions = (ConnectorListOptions())
+        self, options: ConnectorListOptions = ConnectorListOptions()
     ) -> ListResponseConnectorOut:
         """List all connectors for an application."""
         response = self._request_sync(
@@ -147,7 +147,7 @@ class Connector(ApiBase):
     def create(
         self,
         connector_in: ConnectorIn,
-        options: ConnectorCreateOptions = (ConnectorCreateOptions()),
+        options: ConnectorCreateOptions = ConnectorCreateOptions(),
     ) -> ConnectorOut:
         """Create a new connector."""
         response = self._request_sync(

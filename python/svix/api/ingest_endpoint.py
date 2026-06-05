@@ -65,7 +65,7 @@ class IngestEndpointAsync(ApiBase):
     async def list(
         self,
         source_id: str,
-        options: IngestEndpointListOptions = (IngestEndpointListOptions()),
+        options: IngestEndpointListOptions = IngestEndpointListOptions(),
     ) -> ListResponseIngestEndpointOut:
         """List ingest endpoints."""
         response = await self._request_asyncio(
@@ -83,7 +83,7 @@ class IngestEndpointAsync(ApiBase):
         self,
         source_id: str,
         ingest_endpoint_in: IngestEndpointIn,
-        options: IngestEndpointCreateOptions = (IngestEndpointCreateOptions()),
+        options: IngestEndpointCreateOptions = IngestEndpointCreateOptions(),
     ) -> IngestEndpointOut:
         """Create an ingest endpoint."""
         response = await self._request_asyncio(
@@ -198,9 +198,7 @@ class IngestEndpointAsync(ApiBase):
         source_id: str,
         endpoint_id: str,
         ingest_endpoint_secret_in: IngestEndpointSecretIn,
-        options: IngestEndpointRotateSecretOptions = (
-            IngestEndpointRotateSecretOptions()
-        ),
+        options: IngestEndpointRotateSecretOptions = IngestEndpointRotateSecretOptions(),
     ) -> None:
         """Rotates an ingest endpoint's signing secret.
 
@@ -257,7 +255,7 @@ class IngestEndpoint(ApiBase):
     def list(
         self,
         source_id: str,
-        options: IngestEndpointListOptions = (IngestEndpointListOptions()),
+        options: IngestEndpointListOptions = IngestEndpointListOptions(),
     ) -> ListResponseIngestEndpointOut:
         """List ingest endpoints."""
         response = self._request_sync(
@@ -275,7 +273,7 @@ class IngestEndpoint(ApiBase):
         self,
         source_id: str,
         ingest_endpoint_in: IngestEndpointIn,
-        options: IngestEndpointCreateOptions = (IngestEndpointCreateOptions()),
+        options: IngestEndpointCreateOptions = IngestEndpointCreateOptions(),
     ) -> IngestEndpointOut:
         """Create an ingest endpoint."""
         response = self._request_sync(
@@ -386,9 +384,7 @@ class IngestEndpoint(ApiBase):
         source_id: str,
         endpoint_id: str,
         ingest_endpoint_secret_in: IngestEndpointSecretIn,
-        options: IngestEndpointRotateSecretOptions = (
-            IngestEndpointRotateSecretOptions()
-        ),
+        options: IngestEndpointRotateSecretOptions = IngestEndpointRotateSecretOptions(),
     ) -> None:
         """Rotates an ingest endpoint's signing secret.
 

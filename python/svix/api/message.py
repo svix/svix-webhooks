@@ -148,7 +148,7 @@ class MessageAsync(ApiBase):
         return MessagePollerAsync(self._client)
 
     async def list(
-        self, app_id: str, options: MessageListOptions = (MessageListOptions())
+        self, app_id: str, options: MessageListOptions = MessageListOptions()
     ) -> ListResponseMessageOut:
         """List all of the application's messages.
 
@@ -174,7 +174,7 @@ class MessageAsync(ApiBase):
         self,
         app_id: str,
         message_in: MessageIn,
-        options: MessageCreateOptions = (MessageCreateOptions()),
+        options: MessageCreateOptions = MessageCreateOptions(),
     ) -> MessageOut:
         """Creates a new message and dispatches it to all of the application's endpoints.
 
@@ -203,9 +203,7 @@ class MessageAsync(ApiBase):
     async def expunge_all_contents(
         self,
         app_id: str,
-        options: MessageExpungeAllContentsOptions = (
-            MessageExpungeAllContentsOptions()
-        ),
+        options: MessageExpungeAllContentsOptions = MessageExpungeAllContentsOptions(),
     ) -> ExpungeAllContentsOut:
         """Delete all message payloads for the application.
 
@@ -237,7 +235,7 @@ class MessageAsync(ApiBase):
         self,
         app_id: str,
         message_precheck_in: MessagePrecheckIn,
-        options: MessagePrecheckOptions = (MessagePrecheckOptions()),
+        options: MessagePrecheckOptions = MessagePrecheckOptions(),
     ) -> MessagePrecheckOut:
         """A pre-check call for `message.create` that checks whether any active endpoints are
         listening to this message.
@@ -260,10 +258,7 @@ class MessageAsync(ApiBase):
         return MessagePrecheckOut.model_validate(response.json())
 
     async def get(
-        self,
-        app_id: str,
-        msg_id: str,
-        options: MessageGetOptions = (MessageGetOptions()),
+        self, app_id: str, msg_id: str, options: MessageGetOptions = MessageGetOptions()
     ) -> MessageOut:
         """Get a message by its ID or eventID."""
         response = await self._request_asyncio(
@@ -299,7 +294,7 @@ class Message(ApiBase):
         return MessagePoller(self._client)
 
     def list(
-        self, app_id: str, options: MessageListOptions = (MessageListOptions())
+        self, app_id: str, options: MessageListOptions = MessageListOptions()
     ) -> ListResponseMessageOut:
         """List all of the application's messages.
 
@@ -325,7 +320,7 @@ class Message(ApiBase):
         self,
         app_id: str,
         message_in: MessageIn,
-        options: MessageCreateOptions = (MessageCreateOptions()),
+        options: MessageCreateOptions = MessageCreateOptions(),
     ) -> MessageOut:
         """Creates a new message and dispatches it to all of the application's endpoints.
 
@@ -354,9 +349,7 @@ class Message(ApiBase):
     def expunge_all_contents(
         self,
         app_id: str,
-        options: MessageExpungeAllContentsOptions = (
-            MessageExpungeAllContentsOptions()
-        ),
+        options: MessageExpungeAllContentsOptions = MessageExpungeAllContentsOptions(),
     ) -> ExpungeAllContentsOut:
         """Delete all message payloads for the application.
 
@@ -388,7 +381,7 @@ class Message(ApiBase):
         self,
         app_id: str,
         message_precheck_in: MessagePrecheckIn,
-        options: MessagePrecheckOptions = (MessagePrecheckOptions()),
+        options: MessagePrecheckOptions = MessagePrecheckOptions(),
     ) -> MessagePrecheckOut:
         """A pre-check call for `message.create` that checks whether any active endpoints are
         listening to this message.
@@ -411,10 +404,7 @@ class Message(ApiBase):
         return MessagePrecheckOut.model_validate(response.json())
 
     def get(
-        self,
-        app_id: str,
-        msg_id: str,
-        options: MessageGetOptions = (MessageGetOptions()),
+        self, app_id: str, msg_id: str, options: MessageGetOptions = MessageGetOptions()
     ) -> MessageOut:
         """Get a message by its ID or eventID."""
         response = self._request_sync(

@@ -62,9 +62,7 @@ class OperationalWebhookEndpointRotateSecretOptions(BaseOptions):
 class OperationalWebhookEndpointAsync(ApiBase):
     async def list(
         self,
-        options: OperationalWebhookEndpointListOptions = (
-            OperationalWebhookEndpointListOptions()
-        ),
+        options: OperationalWebhookEndpointListOptions = OperationalWebhookEndpointListOptions(),
     ) -> ListResponseOperationalWebhookEndpointOut:
         """List operational webhook endpoints."""
         response = await self._request_asyncio(
@@ -79,9 +77,7 @@ class OperationalWebhookEndpointAsync(ApiBase):
     async def create(
         self,
         operational_webhook_endpoint_in: OperationalWebhookEndpointIn,
-        options: OperationalWebhookEndpointCreateOptions = (
-            OperationalWebhookEndpointCreateOptions()
-        ),
+        options: OperationalWebhookEndpointCreateOptions = OperationalWebhookEndpointCreateOptions(),
     ) -> OperationalWebhookEndpointOut:
         """Create an operational webhook endpoint."""
         response = await self._request_asyncio(
@@ -183,9 +179,7 @@ class OperationalWebhookEndpointAsync(ApiBase):
         self,
         endpoint_id: str,
         operational_webhook_endpoint_secret_in: OperationalWebhookEndpointSecretIn,
-        options: OperationalWebhookEndpointRotateSecretOptions = (
-            OperationalWebhookEndpointRotateSecretOptions()
-        ),
+        options: OperationalWebhookEndpointRotateSecretOptions = OperationalWebhookEndpointRotateSecretOptions(),
     ) -> None:
         """Rotates an operational webhook endpoint's signing secret.
 
@@ -207,9 +201,7 @@ class OperationalWebhookEndpointAsync(ApiBase):
 class OperationalWebhookEndpoint(ApiBase):
     def list(
         self,
-        options: OperationalWebhookEndpointListOptions = (
-            OperationalWebhookEndpointListOptions()
-        ),
+        options: OperationalWebhookEndpointListOptions = OperationalWebhookEndpointListOptions(),
     ) -> ListResponseOperationalWebhookEndpointOut:
         """List operational webhook endpoints."""
         response = self._request_sync(
@@ -224,9 +216,7 @@ class OperationalWebhookEndpoint(ApiBase):
     def create(
         self,
         operational_webhook_endpoint_in: OperationalWebhookEndpointIn,
-        options: OperationalWebhookEndpointCreateOptions = (
-            OperationalWebhookEndpointCreateOptions()
-        ),
+        options: OperationalWebhookEndpointCreateOptions = OperationalWebhookEndpointCreateOptions(),
     ) -> OperationalWebhookEndpointOut:
         """Create an operational webhook endpoint."""
         response = self._request_sync(
@@ -326,9 +316,7 @@ class OperationalWebhookEndpoint(ApiBase):
         self,
         endpoint_id: str,
         operational_webhook_endpoint_secret_in: OperationalWebhookEndpointSecretIn,
-        options: OperationalWebhookEndpointRotateSecretOptions = (
-            OperationalWebhookEndpointRotateSecretOptions()
-        ),
+        options: OperationalWebhookEndpointRotateSecretOptions = OperationalWebhookEndpointRotateSecretOptions(),
     ) -> None:
         """Rotates an operational webhook endpoint's signing secret.
 

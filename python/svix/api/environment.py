@@ -32,7 +32,7 @@ class EnvironmentImportOptions(BaseOptions):
 
 class EnvironmentAsync(ApiBase):
     async def export(
-        self, options: EnvironmentExportOptions = (EnvironmentExportOptions())
+        self, options: EnvironmentExportOptions = EnvironmentExportOptions()
     ) -> EnvironmentOut:
         """Download a JSON file containing all org-settings and event types.
 
@@ -50,7 +50,7 @@ class EnvironmentAsync(ApiBase):
     async def import_(
         self,
         environment_in: EnvironmentIn,
-        options: EnvironmentImportOptions = (EnvironmentImportOptions()),
+        options: EnvironmentImportOptions = EnvironmentImportOptions(),
     ) -> None:
         """Import a configuration into the active organization.
 
@@ -70,7 +70,7 @@ class EnvironmentAsync(ApiBase):
 
 class Environment(ApiBase):
     def export(
-        self, options: EnvironmentExportOptions = (EnvironmentExportOptions())
+        self, options: EnvironmentExportOptions = EnvironmentExportOptions()
     ) -> EnvironmentOut:
         """Download a JSON file containing all org-settings and event types.
 
@@ -88,7 +88,7 @@ class Environment(ApiBase):
     def import_(
         self,
         environment_in: EnvironmentIn,
-        options: EnvironmentImportOptions = (EnvironmentImportOptions()),
+        options: EnvironmentImportOptions = EnvironmentImportOptions(),
     ) -> None:
         """Import a configuration into the active organization.
 

@@ -68,7 +68,7 @@ class MessagePollerAsync(ApiBase):
         self,
         app_id: str,
         sink_id: str,
-        options: MessagePollerPollOptions = (MessagePollerPollOptions()),
+        options: MessagePollerPollOptions = MessagePollerPollOptions(),
     ) -> PollingEndpointOut:
         """Reads the stream of created messages for an application, filtered on the Sink's event types and Channels."""
         response = await self._request_asyncio(
@@ -88,9 +88,7 @@ class MessagePollerAsync(ApiBase):
         app_id: str,
         sink_id: str,
         consumer_id: str,
-        options: MessagePollerConsumerPollOptions = (
-            MessagePollerConsumerPollOptions()
-        ),
+        options: MessagePollerConsumerPollOptions = MessagePollerConsumerPollOptions(),
     ) -> PollingEndpointOut:
         """Reads the stream of created messages for an application, filtered on the Sink's event types and
         Channels, using server-managed iterator tracking."""
@@ -113,9 +111,7 @@ class MessagePollerAsync(ApiBase):
         sink_id: str,
         consumer_id: str,
         polling_endpoint_consumer_seek_in: PollingEndpointConsumerSeekIn,
-        options: MessagePollerConsumerSeekOptions = (
-            MessagePollerConsumerSeekOptions()
-        ),
+        options: MessagePollerConsumerSeekOptions = MessagePollerConsumerSeekOptions(),
     ) -> PollingEndpointConsumerSeekOut:
         """Sets the starting offset for the consumer of a polling endpoint."""
         response = await self._request_asyncio(
@@ -140,7 +136,7 @@ class MessagePoller(ApiBase):
         self,
         app_id: str,
         sink_id: str,
-        options: MessagePollerPollOptions = (MessagePollerPollOptions()),
+        options: MessagePollerPollOptions = MessagePollerPollOptions(),
     ) -> PollingEndpointOut:
         """Reads the stream of created messages for an application, filtered on the Sink's event types and Channels."""
         response = self._request_sync(
@@ -160,9 +156,7 @@ class MessagePoller(ApiBase):
         app_id: str,
         sink_id: str,
         consumer_id: str,
-        options: MessagePollerConsumerPollOptions = (
-            MessagePollerConsumerPollOptions()
-        ),
+        options: MessagePollerConsumerPollOptions = MessagePollerConsumerPollOptions(),
     ) -> PollingEndpointOut:
         """Reads the stream of created messages for an application, filtered on the Sink's event types and
         Channels, using server-managed iterator tracking."""
@@ -185,9 +179,7 @@ class MessagePoller(ApiBase):
         sink_id: str,
         consumer_id: str,
         polling_endpoint_consumer_seek_in: PollingEndpointConsumerSeekIn,
-        options: MessagePollerConsumerSeekOptions = (
-            MessagePollerConsumerSeekOptions()
-        ),
+        options: MessagePollerConsumerSeekOptions = MessagePollerConsumerSeekOptions(),
     ) -> PollingEndpointConsumerSeekOut:
         """Sets the starting offset for the consumer of a polling endpoint."""
         response = self._request_sync(

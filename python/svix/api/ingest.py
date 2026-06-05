@@ -39,7 +39,7 @@ class IngestAsync(ApiBase):
         self,
         source_id: str,
         ingest_source_consumer_portal_access_in: IngestSourceConsumerPortalAccessIn,
-        options: IngestDashboardOptions = (IngestDashboardOptions()),
+        options: IngestDashboardOptions = IngestDashboardOptions(),
     ) -> DashboardAccessOut:
         """Get access to the Ingest Source Consumer Portal."""
         response = await self._request_asyncio(
@@ -70,7 +70,7 @@ class Ingest(ApiBase):
         self,
         source_id: str,
         ingest_source_consumer_portal_access_in: IngestSourceConsumerPortalAccessIn,
-        options: IngestDashboardOptions = (IngestDashboardOptions()),
+        options: IngestDashboardOptions = IngestDashboardOptions(),
     ) -> DashboardAccessOut:
         """Get access to the Ingest Source Consumer Portal."""
         response = self._request_sync(

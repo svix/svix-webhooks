@@ -40,7 +40,7 @@ class StreamingStreamCreateOptions(BaseOptions):
 
 class StreamingStreamAsync(ApiBase):
     async def list(
-        self, options: StreamingStreamListOptions = (StreamingStreamListOptions())
+        self, options: StreamingStreamListOptions = StreamingStreamListOptions()
     ) -> ListResponseStreamOut:
         """List of all the organization's streams."""
         response = await self._request_asyncio(
@@ -55,7 +55,7 @@ class StreamingStreamAsync(ApiBase):
     async def create(
         self,
         stream_in: StreamIn,
-        options: StreamingStreamCreateOptions = (StreamingStreamCreateOptions()),
+        options: StreamingStreamCreateOptions = StreamingStreamCreateOptions(),
     ) -> StreamOut:
         """Creates a new stream."""
         response = await self._request_asyncio(
@@ -116,7 +116,7 @@ class StreamingStreamAsync(ApiBase):
 
 class StreamingStream(ApiBase):
     def list(
-        self, options: StreamingStreamListOptions = (StreamingStreamListOptions())
+        self, options: StreamingStreamListOptions = StreamingStreamListOptions()
     ) -> ListResponseStreamOut:
         """List of all the organization's streams."""
         response = self._request_sync(
@@ -131,7 +131,7 @@ class StreamingStream(ApiBase):
     def create(
         self,
         stream_in: StreamIn,
-        options: StreamingStreamCreateOptions = (StreamingStreamCreateOptions()),
+        options: StreamingStreamCreateOptions = StreamingStreamCreateOptions(),
     ) -> StreamOut:
         """Creates a new stream."""
         response = self._request_sync(

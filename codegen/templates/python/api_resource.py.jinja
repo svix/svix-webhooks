@@ -127,9 +127,7 @@ class {{ resource.name | to_upper_camel_case }}{% if is_async %}Async{% endif %}
             {# add query_options type #}
             {%- if op | has_query_or_header_params %}
             {% set resource_operation_option %}{{ resource_type_name }}{{ op.name | to_upper_camel_case }}Options{% endset %}
-        ,options: {{ resource_operation_option }}{% if not op | has_required_query_or_header_params %} = (
-            {{ resource_operation_option }}()
-        ){% endif %}
+        ,options: {{ resource_operation_option }}{% if not op | has_required_query_or_header_params %} = {{ resource_operation_option }}(){% endif %}
             {%- endif %}
     ) -> {{ return_type }}:
             {% if op.description is defined -%}

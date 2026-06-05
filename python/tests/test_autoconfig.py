@@ -7,7 +7,7 @@ from svix import AutoConfigError
 from svix.autoconfig import _AUTOCONFIG_TOKEN_PREFIX_V1, decode_autoconfig_token_v1
 
 
-def testdecode_autoconfig_token_v1_parses_payload():
+def test_decode_autoconfig_token_v1_parses_payload():
     payload = {
         "aid": "app_1",
         "eid": "ep_2",
@@ -26,7 +26,7 @@ def testdecode_autoconfig_token_v1_parses_payload():
     assert content.token_plaintext == "sk_test_xyz"
 
 
-def testdecode_autoconfig_token_v1_rejects_bad_prefix():
+def test_decode_autoconfig_token_v1_rejects_bad_prefix():
     payload = {
         "aid": "a",
         "eid": "e",
@@ -41,7 +41,7 @@ def testdecode_autoconfig_token_v1_rejects_bad_prefix():
         decode_autoconfig_token_v1(token)
 
 
-def testdecode_autoconfig_token_v1_rejects_invalid_json():
+def test_decode_autoconfig_token_v1_rejects_invalid_json():
     token = (
         f"{_AUTOCONFIG_TOKEN_PREFIX_V1}{base64.b64encode(b'not json').decode('ascii')}"
     )

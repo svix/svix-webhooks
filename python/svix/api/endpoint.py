@@ -141,7 +141,7 @@ class EndpointGetStatsOptions(BaseOptions):
 
 class EndpointAsync(ApiBase):
     async def list(
-        self, app_id: str, options: EndpointListOptions = (EndpointListOptions())
+        self, app_id: str, options: EndpointListOptions = EndpointListOptions()
     ) -> ListResponseEndpointOut:
         """List the application's endpoints."""
         response = await self._request_asyncio(
@@ -159,7 +159,7 @@ class EndpointAsync(ApiBase):
         self,
         app_id: str,
         endpoint_in: EndpointIn,
-        options: EndpointCreateOptions = (EndpointCreateOptions()),
+        options: EndpointCreateOptions = EndpointCreateOptions(),
     ) -> EndpointOut:
         """Create a new endpoint for the application.
 
@@ -236,7 +236,7 @@ class EndpointAsync(ApiBase):
         app_id: str,
         endpoint_id: str,
         bulk_replay_in: BulkReplayIn,
-        options: EndpointBulkReplayOptions = (EndpointBulkReplayOptions()),
+        options: EndpointBulkReplayOptions = EndpointBulkReplayOptions(),
     ) -> ReplayOut:
         """Bulk replay messages sent to the endpoint.
 
@@ -319,7 +319,7 @@ class EndpointAsync(ApiBase):
         app_id: str,
         endpoint_id: str,
         recover_in: RecoverIn,
-        options: EndpointRecoverOptions = (EndpointRecoverOptions()),
+        options: EndpointRecoverOptions = EndpointRecoverOptions(),
     ) -> RecoverOut:
         """Resend all failed messages since a given time.
 
@@ -354,7 +354,7 @@ class EndpointAsync(ApiBase):
         app_id: str,
         endpoint_id: str,
         replay_in: ReplayIn,
-        options: EndpointReplayMissingOptions = (EndpointReplayMissingOptions()),
+        options: EndpointReplayMissingOptions = EndpointReplayMissingOptions(),
     ) -> ReplayOut:
         """Replays messages to the endpoint.
 
@@ -405,7 +405,7 @@ class EndpointAsync(ApiBase):
         app_id: str,
         endpoint_id: str,
         endpoint_secret_rotate_in: EndpointSecretRotateIn,
-        options: EndpointRotateSecretOptions = (EndpointRotateSecretOptions()),
+        options: EndpointRotateSecretOptions = EndpointRotateSecretOptions(),
     ) -> None:
         """Rotates the endpoint's signing secret.
 
@@ -429,7 +429,7 @@ class EndpointAsync(ApiBase):
         app_id: str,
         endpoint_id: str,
         event_example_in: EventExampleIn,
-        options: EndpointSendExampleOptions = (EndpointSendExampleOptions()),
+        options: EndpointSendExampleOptions = EndpointSendExampleOptions(),
     ) -> MessageOut:
         """Send an example message for an event."""
         response = await self._request_asyncio(
@@ -451,7 +451,7 @@ class EndpointAsync(ApiBase):
         self,
         app_id: str,
         endpoint_id: str,
-        options: EndpointGetStatsOptions = (EndpointGetStatsOptions()),
+        options: EndpointGetStatsOptions = EndpointGetStatsOptions(),
     ) -> EndpointStats:
         """Get basic statistics for the endpoint."""
         response = await self._request_asyncio(
@@ -522,7 +522,7 @@ class EndpointAsync(ApiBase):
 
 class Endpoint(ApiBase):
     def list(
-        self, app_id: str, options: EndpointListOptions = (EndpointListOptions())
+        self, app_id: str, options: EndpointListOptions = EndpointListOptions()
     ) -> ListResponseEndpointOut:
         """List the application's endpoints."""
         response = self._request_sync(
@@ -540,7 +540,7 @@ class Endpoint(ApiBase):
         self,
         app_id: str,
         endpoint_in: EndpointIn,
-        options: EndpointCreateOptions = (EndpointCreateOptions()),
+        options: EndpointCreateOptions = EndpointCreateOptions(),
     ) -> EndpointOut:
         """Create a new endpoint for the application.
 
@@ -617,7 +617,7 @@ class Endpoint(ApiBase):
         app_id: str,
         endpoint_id: str,
         bulk_replay_in: BulkReplayIn,
-        options: EndpointBulkReplayOptions = (EndpointBulkReplayOptions()),
+        options: EndpointBulkReplayOptions = EndpointBulkReplayOptions(),
     ) -> ReplayOut:
         """Bulk replay messages sent to the endpoint.
 
@@ -700,7 +700,7 @@ class Endpoint(ApiBase):
         app_id: str,
         endpoint_id: str,
         recover_in: RecoverIn,
-        options: EndpointRecoverOptions = (EndpointRecoverOptions()),
+        options: EndpointRecoverOptions = EndpointRecoverOptions(),
     ) -> RecoverOut:
         """Resend all failed messages since a given time.
 
@@ -735,7 +735,7 @@ class Endpoint(ApiBase):
         app_id: str,
         endpoint_id: str,
         replay_in: ReplayIn,
-        options: EndpointReplayMissingOptions = (EndpointReplayMissingOptions()),
+        options: EndpointReplayMissingOptions = EndpointReplayMissingOptions(),
     ) -> ReplayOut:
         """Replays messages to the endpoint.
 
@@ -786,7 +786,7 @@ class Endpoint(ApiBase):
         app_id: str,
         endpoint_id: str,
         endpoint_secret_rotate_in: EndpointSecretRotateIn,
-        options: EndpointRotateSecretOptions = (EndpointRotateSecretOptions()),
+        options: EndpointRotateSecretOptions = EndpointRotateSecretOptions(),
     ) -> None:
         """Rotates the endpoint's signing secret.
 
@@ -810,7 +810,7 @@ class Endpoint(ApiBase):
         app_id: str,
         endpoint_id: str,
         event_example_in: EventExampleIn,
-        options: EndpointSendExampleOptions = (EndpointSendExampleOptions()),
+        options: EndpointSendExampleOptions = EndpointSendExampleOptions(),
     ) -> MessageOut:
         """Send an example message for an event."""
         response = self._request_sync(
@@ -832,7 +832,7 @@ class Endpoint(ApiBase):
         self,
         app_id: str,
         endpoint_id: str,
-        options: EndpointGetStatsOptions = (EndpointGetStatsOptions()),
+        options: EndpointGetStatsOptions = EndpointGetStatsOptions(),
     ) -> EndpointStats:
         """Get basic statistics for the endpoint."""
         response = self._request_sync(
