@@ -82,7 +82,7 @@ namespace Svix
             _webhook.Verify(payload, headersProvider);
         }
 
-        private sealed class AutoConfigTokenContentV1
+        internal sealed class AutoConfigTokenContentV1
         {
             [JsonProperty("aid", Required = Required.Always)]
             public required string AppId { get; set; }

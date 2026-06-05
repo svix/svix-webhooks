@@ -1,5 +1,7 @@
+#[allow(dead_code)]
 mod endpoint;
 pub mod endpoint_auto_config;
+#[allow(dead_code)]
 mod message;
 pub mod message_pollerv2;
 

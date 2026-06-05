@@ -1,6 +1,7 @@
 // this file is @generated
 package com.svix.kotlin.internal
 
+import com.svix.kotlin.StringAnyMapSerializer
 import com.svix.kotlin.SvixHttpClient
 import com.svix.kotlin.models.ApplicationIn
 import com.svix.kotlin.models.MessageIn

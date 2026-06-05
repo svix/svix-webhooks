@@ -2,6 +2,7 @@
 package com.svix.kotlin.internal
 
 import com.svix.kotlin.SvixHttpClient
+import com.svix.kotlin.serializeQueryParam
 import com.svix.kotlin.models.PollerV2CommitIn
 import com.svix.kotlin.models.PollerV2PollOut
 import com.svix.kotlin.models.StartingPosition

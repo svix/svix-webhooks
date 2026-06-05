@@ -165,5 +165,5 @@ export class Svix {
 }
 
 // Last to avoid circular dependency
-export { AutoConfig } from "./autoconfig";
+export { AutoConfig, AutoConfigError } from "./autoconfig";
 export { AutoConfigConsumer } from "./autoconfigConsumer";
