@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    svix (1.95.1)
+    svix (1.95.2)
       base64 (~> 0.3.0)
       logger (~> 1.0)
 

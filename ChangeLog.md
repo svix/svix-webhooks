@@ -1,8 +1,13 @@
 # Changelog
 
 ## Unreleased
+
+## Version 1.95.2
+* Libs/Kotlin: Webhooks AutoConfig SDK
 * Libs: Add `health.get` to Go, Python and Rust SDK
   * It was previously missing from these SDKs for historical reasons
+* Libs/All: Add versions in user-agent header
+* Libs/Go: Add additional internal management APIs
 
 ## Version 1.95.1
 * Libs/Python: Fix release workflow (1.95.0 of the Python SDK failed publishing)
