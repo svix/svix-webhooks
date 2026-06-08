@@ -1,7 +1,8 @@
-use svix::api::{MessageListOptions, Svix, SvixOptions};
+use serde_json::json;
+use svix::api::{MessageIn, MessageListOptions, Svix, SvixOptions};
 
 use wiremock::{
-    matchers::{method, path},
+    matchers::{method, path, query_param},
     Mock, MockServer, ResponseTemplate,
 };
 
@@ -150,5 +151,49 @@ async fn test_unknown_keys_are_ignored() {
         .await
         .unwrap();
 
+    mock_server.verify().await;
+}
+
+#[tokio::test]
+async fn test_cmg_with_content_default() {
+    let mock_server = MockServer::start().await;
+
+    let app_id = "app_1srOrx2ZWZBpBUvZwXKQmoEYga2";
+    let event_type = "user.signup";
+    let response_body = json!({
+        "channels": null,
+        "deliverAt": null,
+        "eventId": null,
+        "eventType": event_type,
+        "id": "msg_2srOrx2ZWZBpBUvZwXKQmoEYga2",
+        "payload": { "m": "FILTERED" },
+        "tags": null,
+        "timestamp": "2026-06-08T09:25:17.864Z"
+    });
+    Mock::given(method("POST"))
+        .and(path(format!("/api/v1/app/{app_id}/msg")))
+        .and(query_param("with_content", "false"))
+        .respond_with(ResponseTemplate::new(202).set_body_json(response_body))
+        .expect(1)
+        .mount(&mock_server)
+        .await;
+
+    let payload = json!({
+        "email": "test@example.com",
+        "type": event_type,
+        "username": "test_user",
+    });
+    let response = mock_server
+        .svix_client()
+        .message()
+        .create(
+            app_id.to_owned(),
+            MessageIn::new(event_type.to_owned(), payload.clone()),
+            None,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(response.payload, payload);
     mock_server.verify().await;
 }
