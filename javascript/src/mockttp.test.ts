@@ -19,6 +19,7 @@ const EndpointOut = `{"description":"string","rateLimit":0,"uid":"unique-identif
 const ValidationErrorOut = `{"detail":[{"loc":["string"],"msg":"string","type":"string"}]}`;
 const IngestSourceOutCron = `{"type":"cron","config":{"schedule":"hello","payload":"world"},"id":"src_2yZwUhtgs5Ai8T9yRQJXA","uid":"unique-identifier","name":"string","ingestUrl":"http://example.com","createdAt":"2019-08-24T14:15:22Z","updatedAt":"2019-08-24T14:15:22Z"}`;
 const IngestSourceOutGeneric = `{"type":"generic-webhook","config":{},"id":"src_2yZwUhtgs5Ai8T9yRQJXA","uid":"unique-identifier","name":"string","ingestUrl":"http://example.com","createdAt":"2019-08-24T14:15:22Z","updatedAt":"2019-08-24T14:15:22Z"}`;
+const MessageCreateNoContentOut = `{"channels":null,"deliverAt":null,"eventId":null,"eventType":"user.signup","id":"msg_2srOrx2ZWZBpBUvZwXKQmoEYga2","payload":{"m":"FILTERED"},"tags":null,"timestamp":"2026-06-08T09:25:17.864Z"}`;
 const mockServer = mockttp.getLocal();
 
 test("mockttp tests", async (t) => {
@@ -518,5 +519,26 @@ test("mockttp tests", async (t) => {
     const svx = new Svix("token", { serverUrl: mockServer.url, fetch: mockFetch });
     await svx.application.list({ order: Ordering.Ascending });
     assert(customFetchCalled);
+  });
+
+  await t.test("test create-message uses with_content=false by default", async () => {
+    const appId = "app_1srOrx2ZWZBpBUvZwXKQmoEYga2";
+    const endpointMock = await mockServer
+      .forPost(`/api/v1/app/${appId}/msg`)
+      .thenReply(202, MessageCreateNoContentOut);
+    const svx = new Svix("token.eu", { serverUrl: mockServer.url });
+
+    const eventType = "user.signup";
+    const payload = {
+      email: "test@example.com",
+      type: eventType,
+      username: "test_user",
+    };
+    const response = await svx.message.create(appId, { eventType, payload });
+    assert.equal(response.payload, payload);
+
+    const requests = await endpointMock.getSeenRequests();
+    assert.equal(requests.length, 1);
+    assert(requests[0].url.endsWith(`api/v1/app/${appId}/msg?with_content=false`));
   });
 });
