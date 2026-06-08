@@ -5,6 +5,22 @@ use wiremock::{
     Mock, MockServer, ResponseTemplate,
 };
 
+trait MockServerExt {
+    fn svix_client(&self) -> Svix;
+}
+
+impl MockServerExt for MockServer {
+    fn svix_client(&self) -> Svix {
+        Svix::new(
+            "token".to_owned(),
+            Some(SvixOptions {
+                server_url: Some(self.uri()),
+                ..Default::default()
+            }),
+        )
+    }
+}
+
 #[tokio::test]
 async fn test_urlencoded_octothorpe() {
     let mock_server = MockServer::start().await;
@@ -17,15 +33,9 @@ async fn test_urlencoded_octothorpe() {
         .mount(&mock_server)
         .await;
 
-    let svx = Svix::new(
-        "token".to_string(),
-        Some(SvixOptions {
-            server_url: Some(mock_server.uri()),
-            ..Default::default()
-        }),
-    );
-
-    svx.message()
+    mock_server
+        .svix_client()
+        .message()
         .list(
             "app_id".to_string(),
             Some(MessageListOptions {
@@ -56,15 +66,9 @@ async fn test_idempotency_key_is_sent_for_create_request() {
         .mount(&mock_server)
         .await;
 
-    let svx = Svix::new(
-        "token".to_string(),
-        Some(SvixOptions {
-            server_url: Some(mock_server.uri()),
-            ..Default::default()
-        }),
-    );
-
-    svx.application()
+    mock_server
+        .svix_client()
+        .application()
         .create(svix::api::ApplicationIn::new("test app".to_string()), None)
         .await
         .unwrap();
@@ -96,16 +100,10 @@ async fn test_client_provided_idempotency_key_is_not_overridden() {
         .mount(&mock_server)
         .await;
 
-    let svx = Svix::new(
-        "token".to_string(),
-        Some(SvixOptions {
-            server_url: Some(mock_server.uri()),
-            ..Default::default()
-        }),
-    );
-
     let client_provided_key = "test-key-123";
-    svx.application()
+    mock_server
+        .svix_client()
+        .application()
         .create(
             svix::api::ApplicationIn::new("test app".to_string()),
             Some(svix::api::ApplicationCreateOptions {
@@ -145,15 +143,12 @@ async fn test_unknown_keys_are_ignored() {
         .mount(&mock_server)
         .await;
 
-    let svx = Svix::new(
-        "token".to_string(),
-        Some(SvixOptions {
-            server_url: Some(mock_server.uri()),
-            ..Default::default()
-        }),
-    );
-
-    svx.application().list(None).await.unwrap();
+    mock_server
+        .svix_client()
+        .application()
+        .list(None)
+        .await
+        .unwrap();
 
     mock_server.verify().await;
 }
