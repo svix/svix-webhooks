@@ -58,7 +58,13 @@ class {{ resource_type_name }}
 
         {#- query/header params #}
         {%- for p in op.query_params %}
-        $request->setQueryParam('{{ p.name }}', $options?->{{ p.name | to_lower_camel_case }});
+        $request->setQueryParam('{{ p.name }}',
+            {%- if op.id == "v1.message.create" and p.name == "with_content" -%}
+                false
+            {%- else -%}
+                $options?->{{ p.name | to_lower_camel_case }}
+            {%- endif -%}
+        );
         {%- endfor %}
 
         {%- for p in op.header_params %}
@@ -71,7 +77,18 @@ class {{ resource_type_name }}
         {% endif -%}
         {% if op.response_body_schema_name is defined -%}
         $res = $this->client->send($request);
-        return {{ op.response_body_schema_name | to_upper_camel_case }}::fromJson($res);
+            {% set model_expr -%}
+            {{ op.response_body_schema_name | to_upper_camel_case }}::fromJson($res)
+            {%- endset -%}
+            {% if op.id == "v1.message.create" -%}
+            $msgOut = {{ model_expr }};
+            if (is_null($options) || $options->withContent) {
+                $msgOut->payload = $messageIn->payload;
+            }
+            return $msgOut;
+            {% else -%}
+            return {{ model_expr }};
+            {% endif -%}
         {% else -%}
         $res = $this->client->sendNoResponseBody($request);
         {% endif -%}

@@ -74,12 +74,16 @@ class Message
         ?MessageCreateOptions $options = null,
     ): MessageOut {
         $request = $this->client->newReq('POST', "/api/v1/app/{$appId}/msg");
-        $request->setQueryParam('with_content', $options?->withContent);
+        $request->setQueryParam('with_content', false);
         $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
         $request->setBody(json_encode($messageIn));
         $res = $this->client->send($request);
+        $msgOut = MessageOut::fromJson($res);
+        if (is_null($options) || $options->withContent) {
+            $msgOut->payload = $messageIn->payload;
+        }
 
-        return MessageOut::fromJson($res);
+        return $msgOut;
     }
 
     /**
