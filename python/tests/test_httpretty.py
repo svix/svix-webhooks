@@ -6,6 +6,7 @@ from svix.api import (
     ApplicationIn,
     CronConfig,
     IngestSourceIn,
+    MessageIn,
     MessageListOptions,
 )
 from svix.api.ingest_source import IngestSource
@@ -127,3 +128,40 @@ def test_unknown_keys_are_ignored():
     )
 
     svx.application.list()
+
+
+@httpretty.activate(verbose=True, allow_net_connect=False)
+def test_cmg_with_content_default():
+    svx = svix.Svix("token", svix.SvixOptions(server_url="http://test.example"))
+
+    app_id = "app_1srOrx2ZWZBpBUvZwXKQmoEYga2"
+    httpretty.register_uri(
+        httpretty.POST,
+        f"http://test.example/api/v1/app/{app_id}/msg",
+        status=202,
+        body=(
+            """{
+                "channels": null,
+                "deliverAt": null,
+                "eventId": null,
+                "eventType": "user.signup",
+                "id": "msg_2srOrx2ZWZBpBUvZwXKQmoEYga2",
+                "payload": { "m": "FILTERED" },
+                "tags": null,
+                "timestamp": "2026-06-08T09:25:17.864Z"
+            }"""
+        ),
+    )
+
+    payload = {
+        "type": "user.signup",
+        "email": "test@example.com",
+        "username": "test_user",
+    }
+    response = svx.message.create(
+        app_id, MessageIn(event_type="user.signup", payload=payload)
+    )
+
+    assert response.payload == payload
+    reqs = httpretty.latest_requests()
+    assert reqs[0].url.endswith("/msg?with_content=false")
