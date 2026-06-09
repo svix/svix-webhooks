@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"math/rand"
 	"net/http"
@@ -909,7 +910,6 @@ func TestDatetimeInQueryParam(t *testing.T) {
 }
 
 func TestMsgInRaw(t *testing.T) {
-
 	ctx := context.Background()
 	svx := newMockClient()
 	httpmock.Activate()
@@ -994,4 +994,56 @@ func TestSetUserAgentSuffix(t *testing.T) {
 		t.Errorf("expected invalid characters to fail")
 	}
 
+}
+
+func TestCmgWithContentDefault(t *testing.T) {
+	var messageCreateNoContentOut = `{
+		"channels": null,
+		"deliverAt": null,
+		"eventId": null,
+		"eventType": "user.signup",
+		"id": "msg_2srOrx2ZWZBpBUvZwXKQmoEYga2",
+		"payload": { "m": "FILTERED" },
+		"tags": null,
+		"timestamp": "2026-06-08T09:25:17.864Z"}
+	`
+
+	ctx := context.Background()
+	svx := newMockClient()
+	httpmock.Activate()
+	defer httpmock.DeactivateAndReset()
+
+	appId := "app_1srOrx2ZWZBpBUvZwXKQmoEYga2"
+	url := fmt.Sprintf("http://testapi.test/api/v1/app/%s/msg", appId)
+	httpmock.RegisterResponder("POST", url, func(r *http.Request) (*http.Response, error) {
+		defer r.Body.Close()
+		withContent := r.URL.Query().Get("with_content")
+		if withContent != "false" {
+			t.Error("expected with_content=false")
+		}
+		return httpmock.NewStringResponse(202, messageCreateNoContentOut), nil
+	})
+
+	payload := map[string]any{
+		"type":     "user.created",
+		"email":    "test@example.com",
+		"username": "test_user",
+	}
+	out, err := svx.Message.Create(
+		ctx,
+		appId,
+		svix.MessageIn{
+			EventType: "user.signup",
+			Payload:   payload,
+		},
+		nil,
+	)
+	if err != nil {
+		info := httpmock.GetCallCountInfo()
+		t.Fatal(err, info)
+	}
+
+	if !reflect.DeepEqual(out.Payload, payload) {
+		t.Error("Wrong output payload: ", out.Payload)
+	}
 }
