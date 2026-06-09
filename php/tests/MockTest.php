@@ -49,6 +49,7 @@ const IntegrationOut = '{"id":"integ_1srOrx2ZWZBpBUvZwXKQmoEYga2","name":"Test I
 const MessageOut = '{"eventId":"unique-identifier","eventType":"user.signup","payload":{"email":"test@example.com","type":"user.created","username":"test_user"},"channels":["project_123","group_2"],"id":"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2","timestamp":"2019-08-24T14:15:22Z","tags":["project_1337"]}';
 const ReplayOut = '{"id":"qtask_1srOrx2ZWZBpBUvZwXKQmoEYga2","status":"running","task":"endpoint.replay","updatedAt":"2025-03-03T03:03:03.000000Z"}';
 const AppPortalAccessOut = '{"url": "https://app.svix.com/login#key=eyJhcHBJZCI6ICJhcHBfMXRSdFl","token": "appsk_kV3ts5tKPNJN4Dl25cMTfUNdmabxbX0O"}';
+const MessageCreateNoContentOut = '{"channels":null,"deliverAt":null,"eventId":null,"eventType":"user.signup","id":"msg_2srOrx2ZWZBpBUvZwXKQmoEYga2","payload":{"m":"FILTERED"},"tags":null,"timestamp":"2026-06-08T09:25:17.864Z"}';
 
 
 class MockTest extends TestCase
@@ -514,5 +515,20 @@ class MockTest extends TestCase
         $rawBody = $req->getBody()->getContents();
 
         $this->assertEquals('{"eventType":"user.signup","payload":{},"transformationsParams":{"rawPayload":"<xml> not json<\/xml>","headers":{"content-type":"application\/xml"}}}', $rawBody);
+    }
+
+    public function testCmgWithContentDefault(): void
+    {
+        $this->mockHandler->append(new Response(202, [], MessageCreateNoContentOut));
+
+        $appId = "app_1srOrx2ZWZBpBUvZwXKQmoEYga2";
+        $svx = new \Svix\Svix("super_secret", httpClient: $this->httpClient);
+
+        $payload = ['x' => 'y', 'z' => 'foo'];
+        $msgOut = $svx->message->create($appId, MessageIn::create("user.signup", $payload));
+        $this->assertEquals($msgOut->payload, $payload);
+
+        $req = $this->requestHistory[0]['request'];
+        $this->assertEquals('with_content=false', $req->getUri()->getQuery());
     }
 }
