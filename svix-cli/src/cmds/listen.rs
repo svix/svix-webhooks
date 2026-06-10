@@ -8,7 +8,7 @@ pub struct ListenArgs {
     /// The local URL to forward webhooks to
     url: url::Url,
     /// Connect to an existing Play token instead of creating a new one
-    #[arg(long)]
+    #[arg(long, short)]
     token: Option<String>,
     /// Disable TLS certificate verification when connecting to the local URL
     #[arg(long)]
