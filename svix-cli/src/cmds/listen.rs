@@ -21,7 +21,7 @@ impl ListenArgs {
             Some(token) => (token, false),
             None => {
                 let token = crate::relay::token::generate_token()?;
-                (token, true)
+                (format!("c_{token}"), true)
             }
         };
         crate::relay::listen(
