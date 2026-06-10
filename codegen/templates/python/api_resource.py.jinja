@@ -16,6 +16,10 @@ from ..models import {{ c | to_upper_camel_case }}
 {% if resource.name == "authentication" -%}
 from ..models import DashboardAccessOut
 {% endif -%}
+{# HACK: api_internal/message.py generates `message_in_raw` which requires `MessageIn` -#}
+{% if resource.name == "message" -%}
+from ..models import MessageIn
+{% endif -%}
 {% for _, sub in resource.subresources | items -%}
 from .{{ sub.name | to_snake_case }} import (
     {{ sub.name | to_upper_camel_case }},

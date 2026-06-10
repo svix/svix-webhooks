@@ -14,6 +14,7 @@ type (
 	InternalSvix struct {
 		Management *Management
 		Endpoint   *Endpoint
+		Message    *Message
 	}
 )
 
@@ -31,6 +32,7 @@ func New(token string, serverUrl *url.URL, debug bool, userAgentSuffix *string) 
 	svx := InternalSvix{
 		Management: newManagement(&svixHttpClient),
 		Endpoint:   newEndpoint(&svixHttpClient),
+		Message:    newMessage(&svixHttpClient),
 	}
 	return &svx, nil
 }

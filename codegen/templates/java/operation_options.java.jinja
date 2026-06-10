@@ -1,6 +1,6 @@
 {% set resource_type_name = resource.name | to_upper_camel_case -%}
 // this file is @generated
-package com.svix.api;
+package {{ context.package | default("com.svix.api") }};
 
 import java.util.Map;
 import java.util.Set;

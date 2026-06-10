@@ -24,7 +24,6 @@ public class StreamEventTypePatch {
     @JsonProperty private Boolean deprecated;
     @JsonProperty private MaybeUnset<String> description;
     @JsonProperty private MaybeUnset<Set<String>> featureFlags;
-    @JsonProperty private MaybeUnset<String> name;
 
     public StreamEventTypePatch() {}
 
@@ -117,28 +116,6 @@ public class StreamEventTypePatch {
 
     public void setFeatureFlags(Set<String> featureFlags) {
         this.featureFlags = new MaybeUnset<>(featureFlags);
-    }
-
-    public StreamEventTypePatch name(String name) {
-        this.name = new MaybeUnset<>(name);
-        return this;
-    }
-
-    /**
-     * The event type's name
-     *
-     * @return name
-     */
-    @javax.annotation.Nullable
-    public String getName() {
-        if (name == null) {
-            return null;
-        }
-        return name.getValue();
-    }
-
-    public void setName(String name) {
-        this.name = new MaybeUnset<>(name);
     }
 
     /**

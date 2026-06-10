@@ -5,8 +5,6 @@ export interface StreamEventTypePatch {
   deprecated?: boolean;
   description?: string | null;
   featureFlags?: string[] | null;
-  /** The event type's name */
-  name?: string | null;
 }
 
 export const StreamEventTypePatchSerializer = {
@@ -16,7 +14,6 @@ export const StreamEventTypePatchSerializer = {
       deprecated: object["deprecated"],
       description: object["description"],
       featureFlags: object["featureFlags"],
-      name: object["name"],
     };
   },
 
@@ -26,7 +23,6 @@ export const StreamEventTypePatchSerializer = {
       deprecated: self.deprecated,
       description: self.description,
       featureFlags: self.featureFlags,
-      name: self.name,
     };
   },
 };

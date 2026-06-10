@@ -29,7 +29,7 @@ class _AutoConfigTokenContentV1(pydantic.BaseModel):
     token_plaintext: str = pydantic.Field(alias="tok")
 
 
-def _decode_autoconfig_token_v1(token: str) -> _AutoConfigTokenContentV1:
+def decode_autoconfig_token_v1(token: str) -> _AutoConfigTokenContentV1:
     if not token.startswith(_AUTOCONFIG_TOKEN_PREFIX_V1):
         raise AutoConfigError("invalid token")
     b64 = token[len(_AUTOCONFIG_TOKEN_PREFIX_V1) :]
@@ -51,7 +51,7 @@ class AutoConfig:
     _client: AuthenticatedClient
 
     def __init__(self, token: str, endpoint: EndpointIn) -> None:
-        content = _decode_autoconfig_token_v1(token)
+        content = decode_autoconfig_token_v1(token)
         try:
             webhook = Webhook(content.endpoint_secret)
         except Exception as exc:
@@ -86,4 +86,4 @@ class AutoConfig:
         return self._webhook.verify(payload, headers)
 
 
-__all__ = ["AutoConfig", "AutoConfigError"]
+__all__ = ["AutoConfig", "AutoConfigError", "decode_autoconfig_token_v1"]

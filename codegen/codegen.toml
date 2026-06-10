@@ -3,9 +3,7 @@ input_files = ["lib-openapi.json", "api_extra.ron"]
 
 [rust]
 extra_mounts = { "rust/.rustfmt.toml" = "/app/.rustfmt.toml" }
-extra_codegen_args = [
-    "--include-op-id=v1.authentication.whoami",
-]
+extra_codegen_args = ["--include-op-id=v1.authentication.whoami"]
 [[rust.task]]
 template = "templates/rust/api_resource.rs.jinja"
 output_dir = "rust/src/api"
@@ -17,6 +15,8 @@ template = "templates/rust/component_type_summary.rs.jinja"
 output_dir = "rust/src/models"
 extra_codegen_args = [
     "--include-op-id=v1.endpoint.auto-config.update",
+    "--include-op-id=v1.message.pollerv2.consumer-poll",
+    "--include-op-id=v1.message.pollerv2.consumer-commit",
     "--include-op-id=v1.authentication.whoami",
 ]
 [[rust.task]]
@@ -24,6 +24,8 @@ template = "templates/rust/component_type.rs.jinja"
 output_dir = "rust/src/models"
 extra_codegen_args = [
     "--include-op-id=v1.endpoint.auto-config.update",
+    "--include-op-id=v1.message.pollerv2.consumer-poll",
+    "--include-op-id=v1.message.pollerv2.consumer-commit",
     "--include-op-id=v1.authentication.whoami",
 ]
 [[rust.task]]
@@ -32,6 +34,8 @@ output_dir = "rust/src/api_internal"
 extra_codegen_args = [
     "--include-mode=only-specified",
     "--include-op-id=v1.endpoint.auto-config.update",
+    "--include-op-id=v1.message.pollerv2.consumer-poll",
+    "--include-op-id=v1.message.pollerv2.consumer-commit",
 ]
 
 [javascript]
@@ -44,7 +48,11 @@ output_dir = "javascript/src/models"
 [[javascript.task]]
 template = "templates/javascript/component_type.ts.jinja"
 output_dir = "javascript/src/models"
-extra_codegen_args = ["--include-op-id=v1.endpoint.auto-config.update"]
+extra_codegen_args = [
+    "--include-op-id=v1.endpoint.auto-config.update",
+    "--include-op-id=v1.message.pollerv2.consumer-poll",
+    "--include-op-id=v1.message.pollerv2.consumer-commit",
+]
 [[javascript.task]]
 template = "templates/javascript/summary.ts.jinja"
 output_dir = "javascript/src"
@@ -54,6 +62,8 @@ output_dir = "javascript/src/api_internal"
 extra_codegen_args = [
     "--include-mode=only-specified",
     "--include-op-id=v1.endpoint.auto-config.update",
+    "--include-op-id=v1.message.pollerv2.consumer-poll",
+    "--include-op-id=v1.message.pollerv2.consumer-commit",
 ]
 
 
@@ -85,11 +95,19 @@ output_dir = "python/svix/api"
 [[python.task]]
 template = "templates/python/component_type_summary.py.jinja"
 output_dir = "python/svix/models"
-extra_codegen_args = ["--include-op-id=v1.endpoint.auto-config.update"]
+extra_codegen_args = [
+    "--include-op-id=v1.endpoint.auto-config.update",
+    "--include-op-id=v1.message.pollerv2.consumer-poll",
+    "--include-op-id=v1.message.pollerv2.consumer-commit",
+]
 [[python.task]]
 template = "templates/python/component_type.py.jinja"
 output_dir = "python/svix/models"
-extra_codegen_args = ["--include-op-id=v1.endpoint.auto-config.update"]
+extra_codegen_args = [
+    "--include-op-id=v1.endpoint.auto-config.update",
+    "--include-op-id=v1.message.pollerv2.consumer-poll",
+    "--include-op-id=v1.message.pollerv2.consumer-commit",
+]
 [[python.task]]
 template = "templates/python/api_summary.py.jinja"
 output_dir = "python/svix/api"
@@ -102,6 +120,8 @@ output_dir = "python/svix/api_internal"
 extra_codegen_args = [
     "--include-mode=only-specified",
     "--include-op-id=v1.endpoint.auto-config.update",
+    "--include-op-id=v1.message.pollerv2.consumer-poll",
+    "--include-op-id=v1.message.pollerv2.consumer-commit",
 ]
 
 [ruby]
@@ -114,13 +134,19 @@ output_dir = "ruby/lib"
 [[ruby.task]]
 template = "templates/ruby/component_type.rb.jinja"
 output_dir = "ruby/lib/svix/models"
-extra_codegen_args = ["--include-op-id=v1.endpoint.auto-config.update"]
+extra_codegen_args = [
+    "--include-op-id=v1.endpoint.auto-config.update",
+    "--include-op-id=v1.message.pollerv2.consumer-poll",
+    "--include-op-id=v1.message.pollerv2.consumer-commit",
+]
 [[ruby.task]]
 template = "templates/ruby/api_resource.rb.jinja"
 output_dir = "ruby/lib/svix/api_internal"
 extra_codegen_args = [
     "--include-mode=only-specified",
     "--include-op-id=v1.endpoint.auto-config.update",
+    "--include-op-id=v1.message.pollerv2.consumer-poll",
+    "--include-op-id=v1.message.pollerv2.consumer-commit",
 ]
 
 
@@ -132,7 +158,11 @@ extra_codegen_args = ["--context={\"namespace\":\"Svix\"}"]
 [[csharp.task]]
 template = "templates/csharp/component_type.cs.jinja"
 output_dir = "csharp/Svix/Models"
-extra_codegen_args = ["--include-op-id=v1.endpoint.auto-config.update"]
+extra_codegen_args = [
+    "--include-op-id=v1.endpoint.auto-config.update",
+    "--include-op-id=v1.message.pollerv2.consumer-poll",
+    "--include-op-id=v1.message.pollerv2.consumer-commit",
+]
 [[csharp.task]]
 template = "templates/csharp/api_resource.cs.jinja"
 output_dir = "csharp/Svix/ApiInternal"
@@ -140,6 +170,8 @@ extra_codegen_args = [
     "--context={\"namespace\":\"Svix.ApiInternal\"}",
     "--include-mode=only-specified",
     "--include-op-id=v1.endpoint.auto-config.update",
+    "--include-op-id=v1.message.pollerv2.consumer-poll",
+    "--include-op-id=v1.message.pollerv2.consumer-commit",
 ]
 
 
@@ -151,10 +183,25 @@ extra_codegen_args = ["--context={\"package\":\"com.svix.api\"}"]
 [[java.task]]
 template = "templates/java/operation_options.java.jinja"
 output_dir = "java/lib/src/main/java/com/svix/api"
+extra_codegen_args = ["--context={\"package\":\"com.svix.api\"}"]
 [[java.task]]
 template = "templates/java/component_type.java.jinja"
 output_dir = "java/lib/src/main/java/com/svix/models"
-extra_codegen_args = ["--include-op-id=v1.endpoint.auto-config.update"]
+extra_codegen_args = [
+    "--include-op-id=v1.endpoint.auto-config.update",
+    "--include-op-id=v1.message.pollerv2.consumer-poll",
+    "--include-op-id=v1.message.pollerv2.consumer-commit",
+]
+[[java.task]]
+template = "templates/java/operation_options.java.jinja"
+output_dir = "java/lib/src/main/java/com/svix/internalapi"
+extra_codegen_args = [
+    "--context={\"package\":\"com.svix.internalapi\"}",
+    "--include-mode=only-specified",
+    "--include-op-id=v1.endpoint.auto-config.update",
+    "--include-op-id=v1.message.pollerv2.consumer-poll",
+    "--include-op-id=v1.message.pollerv2.consumer-commit",
+]
 [[java.task]]
 template = "templates/java/api_resource.java.jinja"
 output_dir = "java/lib/src/main/java/com/svix/internalapi"
@@ -162,6 +209,8 @@ extra_codegen_args = [
     "--context={\"package\":\"com.svix.internalapi\"}",
     "--include-mode=only-specified",
     "--include-op-id=v1.endpoint.auto-config.update",
+    "--include-op-id=v1.message.pollerv2.consumer-poll",
+    "--include-op-id=v1.message.pollerv2.consumer-commit",
 ]
 
 [go]
@@ -171,9 +220,7 @@ output_dir = "go"
 [[go.task]]
 template = "templates/go/api_resource.go.jinja"
 output_dir = "go"
-extra_codegen_args = [
-    "--context={\"package\":\"svix\"}",
-]
+extra_codegen_args = ["--context={\"package\":\"svix\"}"]
 [[go.task]]
 template = "templates/go/component_type_summary.go.jinja"
 output_dir = "go"
@@ -194,6 +241,8 @@ extra_codegen_args = [
     "--include-op-id=v1.management.authentication.expire-api-token",
     "--include-op-id=v1.management.authentication.patch-api-token",
     "--include-op-id=v1.endpoint.auto-config.update",
+    "--include-op-id=v1.message.pollerv2.consumer-poll",
+    "--include-op-id=v1.message.pollerv2.consumer-commit",
     "--include-op-id=v1.management.environment-settings.get-otel-config",
     "--include-op-id=v1.management.environment-settings.update-otel-config",
     "--include-op-id=v1.management.environment-settings.delete-otel-config",
@@ -218,6 +267,8 @@ extra_codegen_args = [
     "--include-op-id=v1.management.authentication.expire-api-token",
     "--include-op-id=v1.management.authentication.patch-api-token",
     "--include-op-id=v1.endpoint.auto-config.update",
+    "--include-op-id=v1.message.pollerv2.consumer-poll",
+    "--include-op-id=v1.message.pollerv2.consumer-commit",
     "--include-op-id=v1.management.environment-settings.get-otel-config",
     "--include-op-id=v1.management.environment-settings.update-otel-config",
     "--include-op-id=v1.management.environment-settings.delete-otel-config",
@@ -228,7 +279,11 @@ extra_codegen_args = [
 [[kotlin.task]]
 template = "templates/kotlin/component_type.kt.jinja"
 output_dir = "kotlin/lib/src/main/kotlin/models"
-extra_codegen_args = ["--include-op-id=v1.endpoint.auto-config.update"]
+extra_codegen_args = [
+    "--include-op-id=v1.endpoint.auto-config.update",
+    "--include-op-id=v1.message.pollerv2.consumer-poll",
+    "--include-op-id=v1.message.pollerv2.consumer-commit",
+]
 [[kotlin.task]]
 template = "templates/kotlin/api_resource.kt.jinja"
 output_dir = "kotlin/lib/src/main/kotlin"
@@ -240,6 +295,8 @@ extra_codegen_args = [
     "--context={\"package\":\"com.svix.kotlin.internal\"}",
     "--include-mode=only-specified",
     "--include-op-id=v1.endpoint.auto-config.update",
+    "--include-op-id=v1.message.pollerv2.consumer-poll",
+    "--include-op-id=v1.message.pollerv2.consumer-commit",
 ]
 
 [php]
@@ -261,6 +318,8 @@ extra_codegen_args = [
     "--exclude-op-id=v1.ingest.source.update",
     "--exclude-op-id=v1.ingest.source.delete",
     "--include-op-id=v1.endpoint.auto-config.update",
+    "--include-op-id=v1.message.pollerv2.consumer-poll",
+    "--include-op-id=v1.message.pollerv2.consumer-commit",
 ]
 [[php.task]]
 template = "templates/php/api_resource.php.jinja"
@@ -280,6 +339,8 @@ extra_codegen_args = [
     "--context={\"namespace\":\"Svix\\\\ApiInternal\"}",
     "--include-mode=only-specified",
     "--include-op-id=v1.endpoint.auto-config.update",
+    "--include-op-id=v1.message.pollerv2.consumer-poll",
+    "--include-op-id=v1.message.pollerv2.consumer-commit",
 ]
 [[php.task]]
 template = "templates/php/operation_options.php.jinja"

@@ -12,7 +12,6 @@ type StreamEventTypePatch struct {
 	Deprecated   *bool                    `json:"deprecated,omitempty"`
 	Description  utils.Nullable[string]   `json:"description"`
 	FeatureFlags utils.Nullable[[]string] `json:"featureFlags"`
-	Name         utils.Nullable[string]   `json:"name"` // The event type's name
 }
 
 func (o StreamEventTypePatch) MarshalJSON() ([]byte, error) {
@@ -28,9 +27,6 @@ func (o StreamEventTypePatch) MarshalJSON() ([]byte, error) {
 	}
 	if o.FeatureFlags.IsSet() {
 		toSerialize["featureFlags"] = o.FeatureFlags
-	}
-	if o.Name.IsSet() {
-		toSerialize["name"] = o.Name
 	}
 	return json.Marshal(toSerialize)
 }

@@ -10,7 +10,8 @@ class SubscribeIn implements \JsonSerializable
     private array $setFields = [];
 
     private function __construct(
-        public readonly EndpointIn $endpoint,
+        public readonly ?EndpointIn $endpoint = null,
+        public readonly ?AutoConfigSinkType $sink = null,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -20,18 +21,49 @@ class SubscribeIn implements \JsonSerializable
      * Create an instance of SubscribeIn with required fields.
      */
     public static function create(
-        EndpointIn $endpoint,
     ): self {
         return new self(
+            endpoint: null,
+            sink: null,
+            setFields: []
+        );
+    }
+
+    public function withEndpoint(?EndpointIn $endpoint): self
+    {
+        $setFields = $this->setFields;
+        $setFields['endpoint'] = true;
+
+        return new self(
             endpoint: $endpoint,
-            setFields: ['endpoint' => true]
+            sink: $this->sink,
+            setFields: $setFields
+        );
+    }
+
+    public function withSink(?AutoConfigSinkType $sink): self
+    {
+        $setFields = $this->setFields;
+        $setFields['sink'] = true;
+
+        return new self(
+            endpoint: $this->endpoint,
+            sink: $sink,
+            setFields: $setFields
         );
     }
 
     public function jsonSerialize(): mixed
     {
         $data = [
-            'endpoint' => $this->endpoint];
+        ];
+
+        if (isset($this->setFields['endpoint'])) {
+            $data['endpoint'] = $this->endpoint;
+        }
+        if (isset($this->setFields['sink'])) {
+            $data['sink'] = $this->sink;
+        }
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
@@ -42,7 +74,8 @@ class SubscribeIn implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
-            endpoint: \Svix\Utils::deserializeObject($data, 'endpoint', true, 'SubscribeIn', [EndpointIn::class, 'fromMixed'])
+            endpoint: \Svix\Utils::deserializeObject($data, 'endpoint', false, 'SubscribeIn', [EndpointIn::class, 'fromMixed']),
+            sink: \Svix\Utils::deserializeObject($data, 'sink', false, 'SubscribeIn', [AutoConfigSinkType::class, 'fromMixed'])
         );
     }
 

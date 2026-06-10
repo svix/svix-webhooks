@@ -100,7 +100,7 @@ namespace Svix
             public required string TokenPlaintext { get; set; }
         }
 
-        private static AutoConfigTokenContentV1 DecodeAutoConfigTokenV1(string token)
+        internal static AutoConfigTokenContentV1 DecodeAutoConfigTokenV1(string token)
         {
             token = token ?? throw new ArgumentNullException(nameof(token));
 

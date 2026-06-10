@@ -16,10 +16,6 @@ pub struct StreamEventTypePatch {
     #[serde(rename = "featureFlags")]
     #[serde(default, skip_serializing_if = "JsOption::is_undefined")]
     pub feature_flags: JsOption<Vec<String>>,
-
-    /// The event type's name
-    #[serde(default, skip_serializing_if = "JsOption::is_undefined")]
-    pub name: JsOption<String>,
 }
 
 impl StreamEventTypePatch {
@@ -29,7 +25,6 @@ impl StreamEventTypePatch {
             deprecated: None,
             description: JsOption::Undefined,
             feature_flags: JsOption::Undefined,
-            name: JsOption::Undefined,
         }
     }
 }

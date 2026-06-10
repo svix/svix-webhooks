@@ -66,7 +66,7 @@ final class AutoConfig
     /**
      * @return array{app_id: string, endpoint_id: string, server_url: string, endpoint_secret: string, token_plaintext: string}
      */
-    private static function decodeToken(string $token): array
+    public static function decodeToken(string $token): array
     {
         if (!str_starts_with($token, self::AUTOCONFIG_TOKEN_PREFIX_V1)) {
             throw new \InvalidArgumentException('invalid token');
