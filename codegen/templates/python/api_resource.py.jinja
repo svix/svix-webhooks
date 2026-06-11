@@ -166,7 +166,6 @@ class {{ resource.name | to_upper_camel_case }}{% if is_async %}Async{% endif %}
             {% elif op.response_body_schema_name is defined -%}
             return {{ op.response_body_schema_name | to_upper_camel_case }}.model_validate(response.json())
             {% endif %}
-            {% if not (context is defined and context.api_internal) -%}
             {% set api_operation_extra -%}
                 {% if is_async -%}
                 api_extra/{{ resource.name | to_snake_case }}_{{ op.name | to_snake_case }}_asyncio.py
@@ -177,7 +176,6 @@ class {{ resource.name | to_upper_camel_case }}{% if is_async %}Async{% endif %}
             {% set code %}{% include api_operation_extra ignore missing %}{% endset %}
 
 {{ code | indent(4, true) }}
-            {% endif -%}
         {% endfor -%}
     {% endif %}
     {% if resource.subresources | length == 0 and resource.operations | length == 0 %}
