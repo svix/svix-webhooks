@@ -16,10 +16,6 @@ from ..models import {{ c | to_upper_camel_case }}
 {% if resource.name == "authentication" -%}
 from ..models import DashboardAccessOut
 {% endif -%}
-{# HACK: api_internal/message.py generates `message_in_raw` which requires `MessageIn` -#}
-{% if resource.name == "message" -%}
-from ..models import MessageIn
-{% endif -%}
 {% for _, sub in resource.subresources | items -%}
 from .{{ sub.name | to_snake_case }} import (
     {{ sub.name | to_upper_camel_case }},
@@ -79,10 +75,12 @@ class {{ resource_type_name }}{{ op.name | to_upper_camel_case }}Options(BaseOpt
     {%- endif -%}
 {%- endfor %}
 
+{% if not (context is defined and context.api_internal) -%}
 {% set api_resource_extra -%}
     api_extra/{{ resource.name | to_snake_case }}.py
 {%- endset %}
 {% include api_resource_extra ignore missing %}
+{% endif -%}
 
 
 {% for is_async in [true, false] %}
@@ -166,6 +164,7 @@ class {{ resource.name | to_upper_camel_case }}{% if is_async %}Async{% endif %}
             {% elif op.response_body_schema_name is defined -%}
             return {{ op.response_body_schema_name | to_upper_camel_case }}.model_validate(response.json())
             {% endif %}
+            {% if not (context is defined and context.api_internal) -%}
             {% set api_operation_extra -%}
                 {% if is_async -%}
                 api_extra/{{ resource.name | to_snake_case }}_{{ op.name | to_snake_case }}_asyncio.py
@@ -176,6 +175,7 @@ class {{ resource.name | to_upper_camel_case }}{% if is_async %}Async{% endif %}
             {% set code %}{% include api_operation_extra ignore missing %}{% endset %}
 
 {{ code | indent(4, true) }}
+            {% endif -%}
         {% endfor -%}
     {% endif %}
     {% if resource.subresources | length == 0 and resource.operations | length == 0 %}

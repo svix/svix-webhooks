@@ -118,6 +118,7 @@ output_dir = "python/svix/api"
 template = "templates/python/api_resource.py.jinja"
 output_dir = "python/svix/api_internal"
 extra_codegen_args = [
+    "--context={\"api_internal\":true}",
     "--include-mode=only-specified",
     "--include-op-id=v1.endpoint.auto-config.update",
     "--include-op-id=v1.message.pollerv2.consumer-poll",
