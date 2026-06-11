@@ -20,8 +20,8 @@
 /php/src/Models/** linguist-generated
 /php/src/Svix.php linguist-generated
 /python/svix/__init__.py linguist-generated
+/python/svix/api/** linguist-generated
 /python/svix/api_internal/** linguist-generated
-/python/svix/apis/** linguist-generated
 /python/svix/models/** linguist-generated
 /ruby/lib/svix/api/** linguist-generated
 /ruby/lib/svix/api_internal/** linguist-generated
