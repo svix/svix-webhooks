@@ -42,7 +42,9 @@ class MessagePollerv2Async(ApiBase):
         app_id: str,
         sink_id: str,
         consumer_id: str,
-        options: MessagePollerv2ConsumerPollOptions = MessagePollerv2ConsumerPollOptions(),
+        options: MessagePollerv2ConsumerPollOptions = (
+            MessagePollerv2ConsumerPollOptions()
+        ),
     ) -> PollerV2PollOut:
         """Poll messages from a sink."""
         response = await self._request_asyncio(
@@ -64,7 +66,9 @@ class MessagePollerv2Async(ApiBase):
         sink_id: str,
         consumer_id: str,
         poller_v2_commit_in: PollerV2CommitIn,
-        options: MessagePollerv2ConsumerCommitOptions = MessagePollerv2ConsumerCommitOptions(),
+        options: MessagePollerv2ConsumerCommitOptions = (
+            MessagePollerv2ConsumerCommitOptions()
+        ),
     ) -> None:
         """Ack a message offset for a sink's consumer."""
         await self._request_asyncio(
@@ -89,7 +93,9 @@ class MessagePollerv2(ApiBase):
         app_id: str,
         sink_id: str,
         consumer_id: str,
-        options: MessagePollerv2ConsumerPollOptions = MessagePollerv2ConsumerPollOptions(),
+        options: MessagePollerv2ConsumerPollOptions = (
+            MessagePollerv2ConsumerPollOptions()
+        ),
     ) -> PollerV2PollOut:
         """Poll messages from a sink."""
         response = self._request_sync(
@@ -111,7 +117,9 @@ class MessagePollerv2(ApiBase):
         sink_id: str,
         consumer_id: str,
         poller_v2_commit_in: PollerV2CommitIn,
-        options: MessagePollerv2ConsumerCommitOptions = MessagePollerv2ConsumerCommitOptions(),
+        options: MessagePollerv2ConsumerCommitOptions = (
+            MessagePollerv2ConsumerCommitOptions()
+        ),
     ) -> None:
         """Ack a message offset for a sink's consumer."""
         self._request_sync(

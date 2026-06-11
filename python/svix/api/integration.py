@@ -60,7 +60,7 @@ class IntegrationRotateKeyOptions(BaseOptions):
 
 class IntegrationAsync(ApiBase):
     async def list(
-        self, app_id: str, options: IntegrationListOptions = IntegrationListOptions()
+        self, app_id: str, options: IntegrationListOptions = (IntegrationListOptions())
     ) -> ListResponseIntegrationOut:
         """List the application's integrations."""
         response = await self._request_asyncio(
@@ -78,7 +78,7 @@ class IntegrationAsync(ApiBase):
         self,
         app_id: str,
         integration_in: IntegrationIn,
-        options: IntegrationCreateOptions = IntegrationCreateOptions(),
+        options: IntegrationCreateOptions = (IntegrationCreateOptions()),
     ) -> IntegrationOut:
         """Create an integration."""
         response = await self._request_asyncio(
@@ -150,7 +150,7 @@ class IntegrationAsync(ApiBase):
         self,
         app_id: str,
         integ_id: str,
-        options: IntegrationRotateKeyOptions = IntegrationRotateKeyOptions(),
+        options: IntegrationRotateKeyOptions = (IntegrationRotateKeyOptions()),
     ) -> IntegrationKeyOut:
         """Rotate the integration's key. The previous key will be immediately revoked."""
         response = await self._request_asyncio(
@@ -168,7 +168,7 @@ class IntegrationAsync(ApiBase):
 
 class Integration(ApiBase):
     def list(
-        self, app_id: str, options: IntegrationListOptions = IntegrationListOptions()
+        self, app_id: str, options: IntegrationListOptions = (IntegrationListOptions())
     ) -> ListResponseIntegrationOut:
         """List the application's integrations."""
         response = self._request_sync(
@@ -186,7 +186,7 @@ class Integration(ApiBase):
         self,
         app_id: str,
         integration_in: IntegrationIn,
-        options: IntegrationCreateOptions = IntegrationCreateOptions(),
+        options: IntegrationCreateOptions = (IntegrationCreateOptions()),
     ) -> IntegrationOut:
         """Create an integration."""
         response = self._request_sync(
@@ -258,7 +258,7 @@ class Integration(ApiBase):
         self,
         app_id: str,
         integ_id: str,
-        options: IntegrationRotateKeyOptions = IntegrationRotateKeyOptions(),
+        options: IntegrationRotateKeyOptions = (IntegrationRotateKeyOptions()),
     ) -> IntegrationKeyOut:
         """Rotate the integration's key. The previous key will be immediately revoked."""
         response = self._request_sync(

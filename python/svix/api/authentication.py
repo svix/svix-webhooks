@@ -118,7 +118,9 @@ class AuthenticationAsync(ApiBase):
         self,
         app_id: str,
         app_portal_access_in: AppPortalAccessIn,
-        options: AuthenticationAppPortalAccessOptions = AuthenticationAppPortalAccessOptions(),
+        options: AuthenticationAppPortalAccessOptions = (
+            AuthenticationAppPortalAccessOptions()
+        ),
     ) -> AppPortalAccessOut:
         """Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal."""
         response = await self._request_asyncio(
@@ -139,7 +141,7 @@ class AuthenticationAsync(ApiBase):
         self,
         app_id: str,
         application_token_expire_in: ApplicationTokenExpireIn,
-        options: AuthenticationExpireAllOptions = AuthenticationExpireAllOptions(),
+        options: AuthenticationExpireAllOptions = (AuthenticationExpireAllOptions()),
     ) -> None:
         """Expire all of the tokens associated with a specific application."""
         await self._request_asyncio(
@@ -174,7 +176,7 @@ class AuthenticationAsync(ApiBase):
         return DashboardAccessOut.model_validate(response.json())
 
     async def logout(
-        self, options: AuthenticationLogoutOptions = AuthenticationLogoutOptions()
+        self, options: AuthenticationLogoutOptions = (AuthenticationLogoutOptions())
     ) -> None:
         """Logout an app token.
 
@@ -189,7 +191,9 @@ class AuthenticationAsync(ApiBase):
 
     async def stream_logout(
         self,
-        options: AuthenticationStreamLogoutOptions = AuthenticationStreamLogoutOptions(),
+        options: AuthenticationStreamLogoutOptions = (
+            AuthenticationStreamLogoutOptions()
+        ),
     ) -> None:
         """Logout a stream token.
 
@@ -206,7 +210,9 @@ class AuthenticationAsync(ApiBase):
         self,
         stream_id: str,
         stream_portal_access_in: StreamPortalAccessIn,
-        options: AuthenticationStreamPortalAccessOptions = AuthenticationStreamPortalAccessOptions(),
+        options: AuthenticationStreamPortalAccessOptions = (
+            AuthenticationStreamPortalAccessOptions()
+        ),
     ) -> AppPortalAccessOut:
         """Use this function to get magic links (and authentication codes) for connecting your users to the Stream Consumer Portal."""
         response = await self._request_asyncio(
@@ -227,7 +233,9 @@ class AuthenticationAsync(ApiBase):
         self,
         stream_id: str,
         stream_token_expire_in: StreamTokenExpireIn,
-        options: AuthenticationStreamExpireAllOptions = AuthenticationStreamExpireAllOptions(),
+        options: AuthenticationStreamExpireAllOptions = (
+            AuthenticationStreamExpireAllOptions()
+        ),
     ) -> None:
         """Expire all of the tokens associated with a specific stream."""
         await self._request_asyncio(
@@ -262,7 +270,9 @@ class AuthenticationAsync(ApiBase):
         stream_id: str,
         sink_id: str,
         rotate_poller_token_in: RotatePollerTokenIn,
-        options: AuthenticationRotateStreamPollerTokenOptions = AuthenticationRotateStreamPollerTokenOptions(),
+        options: AuthenticationRotateStreamPollerTokenOptions = (
+            AuthenticationRotateStreamPollerTokenOptions()
+        ),
     ) -> ApiTokenOut:
         """Create a new auth token for the stream poller API."""
         response = await self._request_asyncio(
@@ -286,7 +296,9 @@ class Authentication(ApiBase):
         self,
         app_id: str,
         app_portal_access_in: AppPortalAccessIn,
-        options: AuthenticationAppPortalAccessOptions = AuthenticationAppPortalAccessOptions(),
+        options: AuthenticationAppPortalAccessOptions = (
+            AuthenticationAppPortalAccessOptions()
+        ),
     ) -> AppPortalAccessOut:
         """Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal."""
         response = self._request_sync(
@@ -307,7 +319,7 @@ class Authentication(ApiBase):
         self,
         app_id: str,
         application_token_expire_in: ApplicationTokenExpireIn,
-        options: AuthenticationExpireAllOptions = AuthenticationExpireAllOptions(),
+        options: AuthenticationExpireAllOptions = (AuthenticationExpireAllOptions()),
     ) -> None:
         """Expire all of the tokens associated with a specific application."""
         self._request_sync(
@@ -342,7 +354,7 @@ class Authentication(ApiBase):
         return DashboardAccessOut.model_validate(response.json())
 
     def logout(
-        self, options: AuthenticationLogoutOptions = AuthenticationLogoutOptions()
+        self, options: AuthenticationLogoutOptions = (AuthenticationLogoutOptions())
     ) -> None:
         """Logout an app token.
 
@@ -357,7 +369,9 @@ class Authentication(ApiBase):
 
     def stream_logout(
         self,
-        options: AuthenticationStreamLogoutOptions = AuthenticationStreamLogoutOptions(),
+        options: AuthenticationStreamLogoutOptions = (
+            AuthenticationStreamLogoutOptions()
+        ),
     ) -> None:
         """Logout a stream token.
 
@@ -374,7 +388,9 @@ class Authentication(ApiBase):
         self,
         stream_id: str,
         stream_portal_access_in: StreamPortalAccessIn,
-        options: AuthenticationStreamPortalAccessOptions = AuthenticationStreamPortalAccessOptions(),
+        options: AuthenticationStreamPortalAccessOptions = (
+            AuthenticationStreamPortalAccessOptions()
+        ),
     ) -> AppPortalAccessOut:
         """Use this function to get magic links (and authentication codes) for connecting your users to the Stream Consumer Portal."""
         response = self._request_sync(
@@ -395,7 +411,9 @@ class Authentication(ApiBase):
         self,
         stream_id: str,
         stream_token_expire_in: StreamTokenExpireIn,
-        options: AuthenticationStreamExpireAllOptions = AuthenticationStreamExpireAllOptions(),
+        options: AuthenticationStreamExpireAllOptions = (
+            AuthenticationStreamExpireAllOptions()
+        ),
     ) -> None:
         """Expire all of the tokens associated with a specific stream."""
         self._request_sync(
@@ -428,7 +446,9 @@ class Authentication(ApiBase):
         stream_id: str,
         sink_id: str,
         rotate_poller_token_in: RotatePollerTokenIn,
-        options: AuthenticationRotateStreamPollerTokenOptions = AuthenticationRotateStreamPollerTokenOptions(),
+        options: AuthenticationRotateStreamPollerTokenOptions = (
+            AuthenticationRotateStreamPollerTokenOptions()
+        ),
     ) -> ApiTokenOut:
         """Create a new auth token for the stream poller API."""
         response = self._request_sync(

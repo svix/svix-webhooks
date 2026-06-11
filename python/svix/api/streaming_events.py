@@ -42,7 +42,7 @@ class StreamingEventsAsync(ApiBase):
         self,
         stream_id: str,
         create_stream_events_in: CreateStreamEventsIn,
-        options: StreamingEventsCreateOptions = StreamingEventsCreateOptions(),
+        options: StreamingEventsCreateOptions = (StreamingEventsCreateOptions()),
     ) -> CreateStreamEventsOut:
         """Creates events on the Stream."""
         response = await self._request_asyncio(
@@ -63,7 +63,7 @@ class StreamingEventsAsync(ApiBase):
         self,
         stream_id: str,
         sink_id: str,
-        options: StreamingEventsGetOptions = StreamingEventsGetOptions(),
+        options: StreamingEventsGetOptions = (StreamingEventsGetOptions()),
     ) -> EventStreamOut:
         """Iterate over a stream of events.
 
@@ -86,7 +86,7 @@ class StreamingEvents(ApiBase):
         self,
         stream_id: str,
         create_stream_events_in: CreateStreamEventsIn,
-        options: StreamingEventsCreateOptions = StreamingEventsCreateOptions(),
+        options: StreamingEventsCreateOptions = (StreamingEventsCreateOptions()),
     ) -> CreateStreamEventsOut:
         """Creates events on the Stream."""
         response = self._request_sync(
@@ -107,7 +107,7 @@ class StreamingEvents(ApiBase):
         self,
         stream_id: str,
         sink_id: str,
-        options: StreamingEventsGetOptions = StreamingEventsGetOptions(),
+        options: StreamingEventsGetOptions = (StreamingEventsGetOptions()),
     ) -> EventStreamOut:
         """Iterate over a stream of events.
 
