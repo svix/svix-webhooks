@@ -213,6 +213,23 @@ namespace Svix.Tests
         }
 
         [Fact]
+        public void TestMultiSigPayloadValidSignatureLastIsValid()
+        {
+            var testPayload = new TestPayload(DateTimeOffset.UtcNow);
+
+            string[] sigs = new string[]
+            {
+                "v1,Ceo5qEr07ixe2NLpvHk3FH9bwy/WavXrAFQ/9tdO6mc=",
+                testPayload.headers.Get(TestPayload.SVIX_SIGNATURE_HEADER_KEY), // valid signature, last
+            };
+            testPayload.headers.Set(TestPayload.SVIX_SIGNATURE_HEADER_KEY, String.Join(" ", sigs));
+
+            var wh = new Webhook(testPayload.secret);
+
+            wh.Verify(testPayload.payload, testPayload.headers);
+        }
+
+        [Fact]
         public void TestSignatureVerificationWorksWithoutPrefix()
         {
             var testPayload = new TestPayload(DateTimeOffset.UtcNow);
