@@ -274,6 +274,7 @@ impl_query_param_value!(models::BackgroundTaskType);
 impl_query_param_value!(models::ConnectorProduct);
 impl_query_param_value!(models::MessageStatus);
 impl_query_param_value!(models::Ordering);
+impl_query_param_value!(models::StartingPosition);
 impl_query_param_value!(models::StatusCodeClass);
 
 impl QueryParamValue for Vec<String> {

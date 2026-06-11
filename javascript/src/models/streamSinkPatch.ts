@@ -47,6 +47,7 @@ import {
 } from "./snowflakePatchConfig";
 import { type SnsPatchConfig, SnsPatchConfigSerializer } from "./snsPatchConfig";
 import { type SqsPatchConfig, SqsPatchConfigSerializer } from "./sqsPatchConfig";
+
 interface _StreamSinkPatchFields {
   batchSize?: number | null;
   eventTypes?: string[];

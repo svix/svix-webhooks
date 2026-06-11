@@ -82,7 +82,7 @@ namespace Svix
             _webhook.Verify(payload, headersProvider);
         }
 
-        private sealed class AutoConfigTokenContentV1
+        internal sealed class AutoConfigTokenContentV1
         {
             [JsonProperty("aid", Required = Required.Always)]
             public required string AppId { get; set; }
@@ -100,7 +100,7 @@ namespace Svix
             public required string TokenPlaintext { get; set; }
         }
 
-        private static AutoConfigTokenContentV1 DecodeAutoConfigTokenV1(string token)
+        internal static AutoConfigTokenContentV1 DecodeAutoConfigTokenV1(string token)
         {
             token = token ?? throw new ArgumentNullException(nameof(token));
 

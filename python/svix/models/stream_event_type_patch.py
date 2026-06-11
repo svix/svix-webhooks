@@ -12,6 +12,3 @@ class StreamEventTypePatch(BaseModel):
     description: t.Optional[str] = None
 
     feature_flags: t.Optional[t.List[str]] = None
-
-    name: t.Optional[str] = None
-    """The event type's name"""

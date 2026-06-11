@@ -23,6 +23,7 @@ import { type SinkStatus, SinkStatusSerializer } from "./sinkStatus";
 import { type SnowflakeConfig, SnowflakeConfigSerializer } from "./snowflakeConfig";
 import { type SnsConfig, SnsConfigSerializer } from "./snsConfig";
 import { type SqsConfig, SqsConfigSerializer } from "./sqsConfig";
+
 interface _StreamSinkOutFields {
   batchSize: number;
   createdAt: Date;

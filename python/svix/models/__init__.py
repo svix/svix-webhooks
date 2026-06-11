@@ -15,6 +15,7 @@ from .application_in import ApplicationIn
 from .application_out import ApplicationOut
 from .application_patch import ApplicationPatch
 from .application_token_expire_in import ApplicationTokenExpireIn
+from .auto_config_sink_type import AutoConfigSinkType
 from .azure_blob_storage_config import AzureBlobStorageConfig
 from .azure_blob_storage_patch_config import AzureBlobStoragePatchConfig
 from .background_task_data import BackgroundTaskData
@@ -181,6 +182,9 @@ from .orum_io_config_out import OrumIoConfigOut
 from .otel_tracing_patch_config import OtelTracingPatchConfig
 from .panda_doc_config import PandaDocConfig
 from .panda_doc_config_out import PandaDocConfigOut
+from .poller_v2_commit_in import PollerV2CommitIn
+from .poller_v2_message_out import PollerV2MessageOut
+from .poller_v2_poll_out import PollerV2PollOut
 from .polling_endpoint_consumer_seek_in import PollingEndpointConsumerSeekIn
 from .polling_endpoint_consumer_seek_out import PollingEndpointConsumerSeekOut
 from .polling_endpoint_message_out import PollingEndpointMessageOut
@@ -205,6 +209,7 @@ from .segment_config_out import SegmentConfigOut
 from .shopify_config import ShopifyConfig
 from .shopify_config_out import ShopifyConfigOut
 from .sink_http_config import SinkHttpConfig
+from .sink_in_common import SinkInCommon
 from .sink_otel_v1_config import SinkOtelV1Config
 from .sink_secret_out import SinkSecretOut
 from .sink_status import SinkStatus
@@ -219,6 +224,7 @@ from .sns_config import SnsConfig
 from .sns_patch_config import SnsPatchConfig
 from .sqs_config import SqsConfig
 from .sqs_patch_config import SqsPatchConfig
+from .starting_position import StartingPosition
 from .status_code_class import StatusCodeClass
 from .stream_event_type_in import StreamEventTypeIn
 from .stream_event_type_out import StreamEventTypeOut
@@ -267,6 +273,7 @@ __all__ = [
     "ApplicationOut",
     "ApplicationPatch",
     "ApplicationTokenExpireIn",
+    "AutoConfigSinkType",
     "AzureBlobStorageConfig",
     "AzureBlobStoragePatchConfig",
     "BackgroundTaskFinishedEvent",
@@ -422,6 +429,9 @@ __all__ = [
     "OtelTracingPatchConfig",
     "PandaDocConfig",
     "PandaDocConfigOut",
+    "PollerV2CommitIn",
+    "PollerV2MessageOut",
+    "PollerV2PollOut",
     "PollingEndpointConsumerSeekIn",
     "PollingEndpointConsumerSeekOut",
     "PollingEndpointMessageOut",
@@ -446,6 +456,7 @@ __all__ = [
     "ShopifyConfig",
     "ShopifyConfigOut",
     "SinkHttpConfig",
+    "SinkInCommon",
     "SinkOtelV1Config",
     "SinkSecretOut",
     "SinkStatus",
@@ -460,6 +471,7 @@ __all__ = [
     "SnsPatchConfig",
     "SqsConfig",
     "SqsPatchConfig",
+    "StartingPosition",
     "StatusCodeClass",
     "StreamEventTypeIn",
     "StreamEventTypeOut",

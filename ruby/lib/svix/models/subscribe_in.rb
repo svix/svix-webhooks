@@ -5,8 +5,9 @@ require "json"
 module Svix
   class SubscribeIn
     attr_accessor :endpoint
+    attr_accessor :sink
 
-    ALL_FIELD ||= ["endpoint"].freeze
+    ALL_FIELD ||= ["endpoint", "sink"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -27,13 +28,15 @@ module Svix
     def self.deserialize(attributes = {})
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
-      attrs["endpoint"] = Svix::EndpointIn.deserialize(attributes["endpoint"])
+      attrs["endpoint"] = Svix::EndpointIn.deserialize(attributes["endpoint"]) if attributes["endpoint"]
+      attrs["sink"] = Svix::AutoConfigSinkType.deserialize(attributes["sink"]) if attributes["sink"]
       new(attrs)
     end
 
     def serialize
       out = Hash.new
       out["endpoint"] = Svix::serialize_schema_ref(@endpoint) if @endpoint
+      out["sink"] = Svix::serialize_schema_ref(@sink) if @sink
       out
     end
 

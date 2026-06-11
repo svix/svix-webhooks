@@ -17,6 +17,7 @@ import lombok.ToString;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class SubscribeIn {
     @JsonProperty private EndpointIn endpoint;
+    @JsonProperty private AutoConfigSinkType sink;
 
     public SubscribeIn() {}
 
@@ -30,13 +31,32 @@ public class SubscribeIn {
      *
      * @return endpoint
      */
-    @javax.annotation.Nonnull
+    @javax.annotation.Nullable
     public EndpointIn getEndpoint() {
         return endpoint;
     }
 
     public void setEndpoint(EndpointIn endpoint) {
         this.endpoint = endpoint;
+    }
+
+    public SubscribeIn sink(AutoConfigSinkType sink) {
+        this.sink = sink;
+        return this;
+    }
+
+    /**
+     * Get sink
+     *
+     * @return sink
+     */
+    @javax.annotation.Nullable
+    public AutoConfigSinkType getSink() {
+        return sink;
+    }
+
+    public void setSink(AutoConfigSinkType sink) {
+        this.sink = sink;
     }
 
     /**

@@ -63,7 +63,7 @@ class StreamingSinkAsync(ApiBase):
     async def list(
         self,
         stream_id: str,
-        options: StreamingSinkListOptions = StreamingSinkListOptions(),
+        options: StreamingSinkListOptions = (StreamingSinkListOptions()),
     ) -> ListResponseStreamSinkOut:
         """List of all the stream's sinks."""
         response = await self._request_asyncio(
@@ -81,7 +81,7 @@ class StreamingSinkAsync(ApiBase):
         self,
         stream_id: str,
         stream_sink_in: StreamSinkIn,
-        options: StreamingSinkCreateOptions = StreamingSinkCreateOptions(),
+        options: StreamingSinkCreateOptions = (StreamingSinkCreateOptions()),
     ) -> StreamSinkOut:
         """Creates a new sink."""
         response = await self._request_asyncio(
@@ -172,7 +172,9 @@ class StreamingSinkAsync(ApiBase):
         stream_id: str,
         sink_id: str,
         endpoint_secret_rotate_in: EndpointSecretRotateIn,
-        options: StreamingSinkRotateSecretOptions = StreamingSinkRotateSecretOptions(),
+        options: StreamingSinkRotateSecretOptions = (
+            StreamingSinkRotateSecretOptions()
+        ),
     ) -> EmptyResponse:
         """Rotates the signing secret (only supported for http sinks)."""
         response = await self._request_asyncio(
@@ -212,7 +214,7 @@ class StreamingSink(ApiBase):
     def list(
         self,
         stream_id: str,
-        options: StreamingSinkListOptions = StreamingSinkListOptions(),
+        options: StreamingSinkListOptions = (StreamingSinkListOptions()),
     ) -> ListResponseStreamSinkOut:
         """List of all the stream's sinks."""
         response = self._request_sync(
@@ -230,7 +232,7 @@ class StreamingSink(ApiBase):
         self,
         stream_id: str,
         stream_sink_in: StreamSinkIn,
-        options: StreamingSinkCreateOptions = StreamingSinkCreateOptions(),
+        options: StreamingSinkCreateOptions = (StreamingSinkCreateOptions()),
     ) -> StreamSinkOut:
         """Creates a new sink."""
         response = self._request_sync(
@@ -321,7 +323,9 @@ class StreamingSink(ApiBase):
         stream_id: str,
         sink_id: str,
         endpoint_secret_rotate_in: EndpointSecretRotateIn,
-        options: StreamingSinkRotateSecretOptions = StreamingSinkRotateSecretOptions(),
+        options: StreamingSinkRotateSecretOptions = (
+            StreamingSinkRotateSecretOptions()
+        ),
     ) -> EmptyResponse:
         """Rotates the signing secret (only supported for http sinks)."""
         response = self._request_sync(

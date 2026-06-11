@@ -11,14 +11,12 @@ class StreamEventTypePatch implements \JsonSerializable
 
     /**
      * @param list<string>|null $featureFlags
-     * @param string|null       $name         The event type's name
      */
     private function __construct(
         public readonly ?bool $archived = null,
         public readonly ?bool $deprecated = null,
         public readonly ?string $description = null,
         public readonly ?array $featureFlags = null,
-        public readonly ?string $name = null,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -34,7 +32,6 @@ class StreamEventTypePatch implements \JsonSerializable
             deprecated: null,
             description: null,
             featureFlags: null,
-            name: null,
             setFields: []
         );
     }
@@ -49,7 +46,6 @@ class StreamEventTypePatch implements \JsonSerializable
             deprecated: $this->deprecated,
             description: $this->description,
             featureFlags: $this->featureFlags,
-            name: $this->name,
             setFields: $setFields
         );
     }
@@ -64,7 +60,6 @@ class StreamEventTypePatch implements \JsonSerializable
             deprecated: $deprecated,
             description: $this->description,
             featureFlags: $this->featureFlags,
-            name: $this->name,
             setFields: $setFields
         );
     }
@@ -79,7 +74,6 @@ class StreamEventTypePatch implements \JsonSerializable
             deprecated: $this->deprecated,
             description: $description,
             featureFlags: $this->featureFlags,
-            name: $this->name,
             setFields: $setFields
         );
     }
@@ -94,22 +88,6 @@ class StreamEventTypePatch implements \JsonSerializable
             deprecated: $this->deprecated,
             description: $this->description,
             featureFlags: $featureFlags,
-            name: $this->name,
-            setFields: $setFields
-        );
-    }
-
-    public function withName(?string $name): self
-    {
-        $setFields = $this->setFields;
-        $setFields['name'] = true;
-
-        return new self(
-            archived: $this->archived,
-            deprecated: $this->deprecated,
-            description: $this->description,
-            featureFlags: $this->featureFlags,
-            name: $name,
             setFields: $setFields
         );
     }
@@ -131,9 +109,6 @@ class StreamEventTypePatch implements \JsonSerializable
         if (isset($this->setFields['featureFlags'])) {
             $data['featureFlags'] = $this->featureFlags;
         }
-        if (isset($this->setFields['name'])) {
-            $data['name'] = $this->name;
-        }
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
@@ -147,8 +122,7 @@ class StreamEventTypePatch implements \JsonSerializable
             archived: \Svix\Utils::deserializeBool($data, 'archived', false, 'StreamEventTypePatch'),
             deprecated: \Svix\Utils::deserializeBool($data, 'deprecated', false, 'StreamEventTypePatch'),
             description: \Svix\Utils::deserializeString($data, 'description', false, 'StreamEventTypePatch'),
-            featureFlags: \Svix\Utils::getValFromJson($data, 'featureFlags', false, 'StreamEventTypePatch'),
-            name: \Svix\Utils::deserializeString($data, 'name', false, 'StreamEventTypePatch')
+            featureFlags: \Svix\Utils::getValFromJson($data, 'featureFlags', false, 'StreamEventTypePatch')
         );
     }
 

@@ -75,10 +75,12 @@ class {{ resource_type_name }}{{ op.name | to_upper_camel_case }}Options(BaseOpt
     {%- endif -%}
 {%- endfor %}
 
+{% if not (context is defined and context.api_internal) -%}
 {% set api_resource_extra -%}
     api_extra/{{ resource.name | to_snake_case }}.py
 {%- endset %}
 {% include api_resource_extra ignore missing %}
+{% endif -%}
 
 
 {% for is_async in [true, false] %}
@@ -123,7 +125,9 @@ class {{ resource.name | to_upper_camel_case }}{% if is_async %}Async{% endif %}
             {# add query_options type #}
             {%- if op | has_query_or_header_params %}
             {% set resource_operation_option %}{{ resource_type_name }}{{ op.name | to_upper_camel_case }}Options{% endset %}
-        ,options: {{ resource_operation_option }}{% if not op | has_required_query_or_header_params %} = {{ resource_operation_option }}(){% endif %}
+        ,options: {{ resource_operation_option }}{% if not op | has_required_query_or_header_params %} = (
+            {{ resource_operation_option }}()
+        ){% endif %}
             {%- endif %}
     ) -> {{ return_type }}:
             {% if op.description is defined -%}
