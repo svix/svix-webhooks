@@ -256,7 +256,7 @@ pub async fn listen(
             eprintln!("Failed to connect to Webhook Relay: {e:#}");
             if e.downcast_ref::<TokenInUse>().is_some() && allow_token_rotation {
                 eprintln!("Generating a new token for this session.");
-                client.token = generate_token()?;
+                client.token = format!("c_{}", generate_token()?);
             }
         } else {
             eprintln!("Failed to connect to Webhook Relay");
