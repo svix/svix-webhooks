@@ -105,14 +105,20 @@ namespace Svix
             expectedSignature = expectedSignature.Slice(0, charsWritten);
 
             var signaturePtr = msgSignature;
-            var spaceIndex = signaturePtr.IndexOf(' ');
-            do
+            while (!signaturePtr.IsEmpty)
             {
-                var versionedSignature =
-                    spaceIndex < 0 ? msgSignature : signaturePtr.Slice(0, spaceIndex);
-
-                signaturePtr = signaturePtr.Slice(spaceIndex + 1);
-                spaceIndex = signaturePtr.IndexOf(' ');
+                var spaceIndex = signaturePtr.IndexOf(' ');
+                ReadOnlySpan<char> versionedSignature;
+                if (spaceIndex < 0)
+                {
+                    versionedSignature = signaturePtr;
+                    signaturePtr = ReadOnlySpan<char>.Empty;
+                }
+                else
+                {
+                    versionedSignature = signaturePtr.Slice(0, spaceIndex);
+                    signaturePtr = signaturePtr.Slice(spaceIndex + 1);
+                }
 
                 var commaIndex = versionedSignature.IndexOf(',');
                 if (commaIndex < 0)
@@ -129,7 +135,7 @@ namespace Svix
                 {
                     return;
                 }
-            } while (spaceIndex >= 0);
+            }
 
             throw new WebhookVerificationException("No matching signature found");
         }
