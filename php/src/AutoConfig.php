@@ -6,6 +6,7 @@ namespace Svix;
 
 use GuzzleHttp\Client;
 use Svix\ApiInternal\EndpointAutoConfig;
+use Svix\Exception\ApiException;
 use Svix\Models\EndpointIn;
 use Svix\Models\EndpointOut;
 use Svix\Models\SubscribeIn;
@@ -25,6 +26,9 @@ final class AutoConfig
 
     private SvixHttpClient $client;
 
+    /**
+     * @throws \InvalidArgumentException if the token is invalid
+     */
     public function __construct(string $token, EndpointIn $endpoint)
     {
         $content = self::decodeToken($token);
@@ -49,6 +53,9 @@ final class AutoConfig
         );
     }
 
+    /**
+     * @throws ApiException
+     */
     public function subscribe(): EndpointOut
     {
         return (new EndpointAutoConfig($this->client))->update(
@@ -58,13 +65,21 @@ final class AutoConfig
         );
     }
 
+    /**
+     * @throws Exception\WebhookVerificationException
+     * @throws Exception\WebhookSigningException
+     */
     public function verify(string $payload, array $headers): mixed
     {
         return $this->webhook->verify($payload, $headers);
     }
 
     /**
+     * @internal
+     *
      * @return array{app_id: string, endpoint_id: string, server_url: string, endpoint_secret: string, token_plaintext: string}
+     *
+     * @throws \InvalidArgumentException if the token is invalid
      */
     public static function decodeToken(string $token): array
     {

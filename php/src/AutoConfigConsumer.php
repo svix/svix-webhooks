@@ -6,6 +6,7 @@ namespace Svix;
 
 use GuzzleHttp\Client;
 use Svix\ApiInternal\MessagePollerv2;
+use Svix\Exception\ApiException;
 use Svix\Models\EndpointOut;
 use Svix\Models\PollerV2CommitIn;
 use Svix\Models\PollerV2PollOut;
@@ -22,6 +23,9 @@ final class AutoConfigConsumer
 
     private SvixHttpClient $client;
 
+    /**
+     * @throws \InvalidArgumentException if the token is invalid
+     */
     public function __construct(string $token, SinkInCommon $sinkIn)
     {
         $content = AutoConfig::decodeToken($token);
@@ -40,6 +44,10 @@ final class AutoConfigConsumer
         );
     }
 
+    /**
+     * @throws \JsonException
+     * @throws ApiException
+     */
     public function subscribe(): EndpointOut
     {
         $body = json_encode([
@@ -59,6 +67,9 @@ final class AutoConfigConsumer
         return EndpointOut::fromJson($res);
     }
 
+    /**
+     * @throws ApiException
+     */
     public function receive(
         string $consumerId,
         ?MessagePollerv2\MessagePollerv2ConsumerPollOptions $options = null,
@@ -71,6 +82,9 @@ final class AutoConfigConsumer
         );
     }
 
+    /**
+     * @throws ApiException
+     */
     public function commit(
         string $consumerId,
         int $offset,

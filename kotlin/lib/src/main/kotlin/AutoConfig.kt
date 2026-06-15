@@ -64,7 +64,7 @@ constructor(token: String, endpoint: EndpointIn) {
     }
 
     @Serializable
-    data class AutoConfigTokenContentV1(
+    internal data class AutoConfigTokenContentV1(
         @SerialName("aid") val appId: String,
         @SerialName("eid") val endpointId: String,
         @SerialName("surl") val serverUrl: String,
@@ -78,7 +78,7 @@ constructor(token: String, endpoint: EndpointIn) {
         private val json = Json { ignoreUnknownKeys = true }
 
         @Throws(InvalidAutoConfigTokenException::class)
-        fun decodeAutoConfigTokenV1(token: String): AutoConfigTokenContentV1 {
+        internal fun decodeAutoConfigTokenV1(token: String): AutoConfigTokenContentV1 {
             if (!token.startsWith(AUTOCONFIG_TOKEN_PREFIX_V1)) {
                 throw InvalidAutoConfigTokenException()
             }

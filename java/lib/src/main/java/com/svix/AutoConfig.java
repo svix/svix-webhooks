@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 public final class AutoConfig {
-  public static final String AUTOCONFIG_TOKEN_PREFIX_V1 = "auto_v1_";
+  private static final String AUTOCONFIG_TOKEN_PREFIX_V1 = "auto_v1_";
 
   private final String appId;
   private final String endpointId;
@@ -58,8 +58,8 @@ public final class AutoConfig {
 
   /** Registers this endpoint with Svix using the auto-config API. */
   public EndpointOut subscribe() throws IOException, ApiException {
-    return new EndpointAutoConfig(svix.getHttpClient())
-        .update(appId, endpointId, new SubscribeIn().endpoint(endpoint));
+    return new EndpointAutoConfig(svix.getHttpClient()).update(appId, endpointId,
+        new SubscribeIn().endpoint(endpoint));
   }
 
   public void verify(final String payload, final Map<String, List<String>> headers)
@@ -71,9 +71,9 @@ public final class AutoConfig {
    * Parses and validates an auto-config token.
    *
    * @throws InvalidTokenException if the token is missing the expected prefix, is not valid Base64,
-   *     or does not contain a valid JSON payload with the required fields.
+   *         or does not contain a valid JSON payload with the required fields.
    */
-  public static DecodedTokenContent decodeToken(final String token) throws InvalidTokenException {
+  static DecodedTokenContent decodeToken(final String token) throws InvalidTokenException {
     if (token == null || !token.startsWith(AUTOCONFIG_TOKEN_PREFIX_V1)) {
       throw new InvalidTokenException();
     }
@@ -121,12 +121,8 @@ public final class AutoConfig {
     private final String endpointSecret;
     private final String tokenPlaintext;
 
-    private DecodedTokenContent(
-        final String appId,
-        final String endpointId,
-        final String serverUrl,
-        final String endpointSecret,
-        final String tokenPlaintext) {
+    private DecodedTokenContent(final String appId, final String endpointId, final String serverUrl,
+        final String endpointSecret, final String tokenPlaintext) {
       this.appId = appId;
       this.endpointId = endpointId;
       this.serverUrl = serverUrl;

@@ -18,7 +18,7 @@ type AutoConfigConsumer struct {
 
 // NewAutoConfigConsumer parses a v1 auto-config token and prepares consumer helpers.
 func NewAutoConfigConsumer(token string, sinkIn models.SinkInCommon) (*AutoConfigConsumer, error) {
-	content, err := DecodeAutoConfigTokenV1(token)
+	content, err := decodeAutoConfigTokenV1(token)
 	if err != nil {
 		return nil, err
 	}

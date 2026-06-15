@@ -34,8 +34,8 @@ type AutoConfig struct {
 	svix       *internalapi.InternalSvix
 }
 
-// DecodeAutoConfigTokenV1 parses and validates a v1 auto-config token.
-func DecodeAutoConfigTokenV1(token string) (*autoConfigTokenContentV1, error) {
+// decodeAutoConfigTokenV1 parses and validates a v1 auto-config token.
+func decodeAutoConfigTokenV1(token string) (*autoConfigTokenContentV1, error) {
 	token, ok := strings.CutPrefix(token, autoConfigTokenPrefixV1)
 	if !ok {
 		return nil, ErrInvalidAutoConfigToken
@@ -55,7 +55,7 @@ func DecodeAutoConfigTokenV1(token string) (*autoConfigTokenContentV1, error) {
 
 // NewAutoConfig parses a v1 auto-config token and prepares subscribe and verify helpers.
 func NewAutoConfig(token string, endpoint models.EndpointIn) (*AutoConfig, error) {
-	content, err := DecodeAutoConfigTokenV1(token)
+	content, err := decodeAutoConfigTokenV1(token)
 	if err != nil {
 		return nil, err
 	}
