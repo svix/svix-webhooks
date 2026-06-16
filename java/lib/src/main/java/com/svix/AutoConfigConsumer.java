@@ -38,34 +38,26 @@ public final class AutoConfigConsumer {
 
   /** Registers this polling sink with Svix using the auto-config API. */
   public EndpointOut subscribe() throws IOException, ApiException {
-    return new EndpointAutoConfig(svix.getHttpClient())
-        .update(
-            appId,
-            sinkId,
-            new SubscribeIn()
-                .sink(new AutoConfigSinkType(new AutoConfigSinkTypeConfig.Poller(sinkIn))));
+    return new EndpointAutoConfig(svix.getHttpClient()).update(appId, sinkId, new SubscribeIn()
+        .sink(new AutoConfigSinkType(new AutoConfigSinkTypeConfig.Poller(sinkIn))));
   }
 
-  public PollerV2PollOut receive(
-      final String consumerId, final MessagePollerv2ConsumerPollOptions options)
-      throws IOException, ApiException {
-    return new MessagePollerv2(svix.getHttpClient())
-        .consumerPoll(appId, sinkId, consumerId, options);
+  public PollerV2PollOut receive(final String consumerId,
+      final MessagePollerv2ConsumerPollOptions options) throws IOException, ApiException {
+    return new MessagePollerv2(svix.getHttpClient()).consumerPoll(appId, sinkId, consumerId,
+        options);
   }
 
   public PollerV2PollOut receive(final String consumerId) throws IOException, ApiException {
     return receive(consumerId, new MessagePollerv2ConsumerPollOptions());
   }
 
-  public void commit(
-      final String consumerId,
-      final long offset,
-      final MessagePollerv2ConsumerCommitOptions options)
-      throws IOException, ApiException {
+  public void commit(final String consumerId, final long offset,
+      final MessagePollerv2ConsumerCommitOptions options) throws IOException, ApiException {
     PollerV2CommitIn commitIn = new PollerV2CommitIn();
     commitIn.setOffset(offset);
-    new MessagePollerv2(svix.getHttpClient())
-        .consumerCommit(appId, sinkId, consumerId, commitIn, options);
+    new MessagePollerv2(svix.getHttpClient()).consumerCommit(appId, sinkId, consumerId, commitIn,
+        options);
   }
 
   public void commit(final String consumerId, final long offset) throws IOException, ApiException {
