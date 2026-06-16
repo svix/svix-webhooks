@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 public final class AutoConfig {
-  private static final String AUTOCONFIG_TOKEN_PREFIX_V1 = "auto_v1_";
+  static final String AUTOCONFIG_TOKEN_PREFIX_V1 = "auto_v1_";
 
   private final String appId;
   private final String endpointId;

@@ -5,10 +5,10 @@ namespace Svix
 {
     public class AutoConfigConsumer
     {
-        private readonly string _appId;
-        private readonly string _sinkId;
-        private readonly SinkInCommon _sinkIn;
-        private readonly SvixClient _client;
+        private readonly string appId;
+        private readonly string sinkId;
+        private readonly SinkInCommon sinkIn;
+        private readonly SvixClient client;
 
         public AutoConfigConsumer(string token, SinkInCommon sinkIn)
         {
@@ -16,10 +16,10 @@ namespace Svix
 
             var content = AutoConfig.DecodeAutoConfigTokenV1(token);
 
-            _appId = content.AppId;
-            _sinkId = content.EndpointId;
-            _sinkIn = sinkIn;
-            _client = new SvixClient(
+            appId = content.AppId;
+            sinkId = content.EndpointId;
+            this.sinkIn = sinkIn;
+            client = new SvixClient(
                 content.TokenPlaintext,
                 new SvixOptions(serverUrl: content.ServerUrl)
             );
@@ -27,14 +27,14 @@ namespace Svix
 
         public async Task<EndpointOut> SubscribeAsync(CancellationToken cancellationToken = default)
         {
-            return await new EndpointAutoConfig(_client).UpdateAsync(
-                _appId,
-                _sinkId,
+            return await new EndpointAutoConfig(client).UpdateAsync(
+                appId,
+                sinkId,
                 new SubscribeIn
                 {
                     Sink = new AutoConfigSinkType
                     {
-                        Config = AutoConfigSinkTypeConfig.Poller(_sinkIn),
+                        Config = AutoConfigSinkTypeConfig.Poller(sinkIn),
                     },
                 },
                 cancellationToken
@@ -43,14 +43,14 @@ namespace Svix
 
         public EndpointOut Subscribe()
         {
-            return new EndpointAutoConfig(_client).Update(
-                _appId,
-                _sinkId,
+            return new EndpointAutoConfig(client).Update(
+                appId,
+                sinkId,
                 new SubscribeIn
                 {
                     Sink = new AutoConfigSinkType
                     {
-                        Config = AutoConfigSinkTypeConfig.Poller(_sinkIn),
+                        Config = AutoConfigSinkTypeConfig.Poller(sinkIn),
                     },
                 }
             );
@@ -62,9 +62,9 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
-            return await new MessagePollerv2(_client).ConsumerPollAsync(
-                _appId,
-                _sinkId,
+            return await new MessagePollerv2(client).ConsumerPollAsync(
+                appId,
+                sinkId,
                 consumerId,
                 options,
                 cancellationToken
@@ -76,7 +76,7 @@ namespace Svix
             MessagePollerv2ConsumerPollOptions? options = null
         )
         {
-            return new MessagePollerv2(_client).ConsumerPoll(_appId, _sinkId, consumerId, options);
+            return new MessagePollerv2(client).ConsumerPoll(appId, sinkId, consumerId, options);
         }
 
         public async Task CommitAsync(
@@ -86,9 +86,9 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
-            await new MessagePollerv2(_client).ConsumerCommitAsync(
-                _appId,
-                _sinkId,
+            await new MessagePollerv2(client).ConsumerCommitAsync(
+                appId,
+                sinkId,
                 consumerId,
                 new PollerV2CommitIn { Offset = offset },
                 options,
@@ -102,9 +102,9 @@ namespace Svix
             MessagePollerv2ConsumerCommitOptions? options = null
         )
         {
-            new MessagePollerv2(_client).ConsumerCommit(
-                _appId,
-                _sinkId,
+            new MessagePollerv2(client).ConsumerCommit(
+                appId,
+                sinkId,
                 consumerId,
                 new PollerV2CommitIn { Offset = offset },
                 options

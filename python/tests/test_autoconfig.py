@@ -4,7 +4,7 @@ import json
 import pytest
 
 from svix import AutoConfigError
-from svix.autoconfig import _AUTOCONFIG_TOKEN_PREFIX_V1, decode_autoconfig_token_v1
+from svix.autoconfig import _AUTOCONFIG_TOKEN_PREFIX_V1, _decode_autoconfig_token_v1
 
 
 def test_decode_autoconfig_token_v1_parses_payload():
@@ -17,7 +17,7 @@ def test_decode_autoconfig_token_v1_parses_payload():
     }
     raw = json.dumps(payload).encode()
     token = f"{_AUTOCONFIG_TOKEN_PREFIX_V1}{base64.b64encode(raw).decode('ascii')}"
-    content = decode_autoconfig_token_v1(token)
+    content = _decode_autoconfig_token_v1(token)
 
     assert content.app_id == "app_1"
     assert content.endpoint_id == "ep_2"
@@ -38,7 +38,7 @@ def test_decode_autoconfig_token_v1_rejects_bad_prefix():
     token = f"wrong_{base64.b64encode(raw).decode('ascii')}"
 
     with pytest.raises(AutoConfigError):
-        decode_autoconfig_token_v1(token)
+        _decode_autoconfig_token_v1(token)
 
 
 def test_decode_autoconfig_token_v1_rejects_invalid_json():
@@ -47,4 +47,4 @@ def test_decode_autoconfig_token_v1_rejects_invalid_json():
     )
 
     with pytest.raises(AutoConfigError):
-        decode_autoconfig_token_v1(token)
+        _decode_autoconfig_token_v1(token)
