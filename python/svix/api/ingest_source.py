@@ -57,7 +57,7 @@ class IngestSourceRotateTokenOptions(BaseOptions):
 
 class IngestSourceAsync(ApiBase):
     async def list(
-        self, options: IngestSourceListOptions = IngestSourceListOptions()
+        self, options: IngestSourceListOptions = (IngestSourceListOptions())
     ) -> ListResponseIngestSourceOut:
         """List of all the organization's Ingest Sources."""
         response = await self._request_asyncio(
@@ -72,7 +72,7 @@ class IngestSourceAsync(ApiBase):
     async def create(
         self,
         ingest_source_in: IngestSourceIn,
-        options: IngestSourceCreateOptions = IngestSourceCreateOptions(),
+        options: IngestSourceCreateOptions = (IngestSourceCreateOptions()),
     ) -> IngestSourceOut:
         """Create Ingest Source."""
         response = await self._request_asyncio(
@@ -127,7 +127,7 @@ class IngestSourceAsync(ApiBase):
     async def rotate_token(
         self,
         source_id: str,
-        options: IngestSourceRotateTokenOptions = IngestSourceRotateTokenOptions(),
+        options: IngestSourceRotateTokenOptions = (IngestSourceRotateTokenOptions()),
     ) -> RotateTokenOut:
         """Rotate the Ingest Source's Url Token.
 
@@ -149,7 +149,7 @@ class IngestSourceAsync(ApiBase):
 
 class IngestSource(ApiBase):
     def list(
-        self, options: IngestSourceListOptions = IngestSourceListOptions()
+        self, options: IngestSourceListOptions = (IngestSourceListOptions())
     ) -> ListResponseIngestSourceOut:
         """List of all the organization's Ingest Sources."""
         response = self._request_sync(
@@ -164,7 +164,7 @@ class IngestSource(ApiBase):
     def create(
         self,
         ingest_source_in: IngestSourceIn,
-        options: IngestSourceCreateOptions = IngestSourceCreateOptions(),
+        options: IngestSourceCreateOptions = (IngestSourceCreateOptions()),
     ) -> IngestSourceOut:
         """Create Ingest Source."""
         response = self._request_sync(
@@ -219,7 +219,7 @@ class IngestSource(ApiBase):
     def rotate_token(
         self,
         source_id: str,
-        options: IngestSourceRotateTokenOptions = IngestSourceRotateTokenOptions(),
+        options: IngestSourceRotateTokenOptions = (IngestSourceRotateTokenOptions()),
     ) -> RotateTokenOut:
         """Rotate the Ingest Source's Url Token.
 

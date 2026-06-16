@@ -209,8 +209,7 @@ pub enum StreamingEventTypeCommands {
   \"archived\": true,
   \"deprecated\": true,
   \"description\": \"...\",
-  \"featureFlags\": [\"cool-new-feature\"],
-  \"name\": \"user.signup\"
+  \"featureFlags\": [\"cool-new-feature\"]
 }\n\nExample response:
 {
   \"archived\": true,

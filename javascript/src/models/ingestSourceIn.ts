@@ -23,6 +23,7 @@ import { type VapiConfig, VapiConfigSerializer } from "./vapiConfig";
 import { type VeriffConfig, VeriffConfigSerializer } from "./veriffConfig";
 import { type VgsConfig, VgsConfigSerializer } from "./vgsConfig";
 import { type ZoomConfig, ZoomConfigSerializer } from "./zoomConfig";
+
 interface _IngestSourceInFields {
   metadata?: { [key: string]: string };
   name: string;

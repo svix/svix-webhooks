@@ -21,11 +21,11 @@ namespace Svix
     {
         private const string AUTOCONFIG_TOKEN_PREFIX_V1 = "auto_v1_";
 
-        private readonly string _appId;
-        private readonly string _endpointId;
-        private readonly EndpointIn _endpoint;
-        private readonly Webhook _webhook;
-        private readonly SvixClient _client;
+        private readonly string appId;
+        private readonly string endpointId;
+        private readonly EndpointIn endpoint;
+        private readonly Webhook webhook;
+        private readonly SvixClient client;
 
         public AutoConfig(string token, EndpointIn endpoint)
         {
@@ -43,11 +43,11 @@ namespace Svix
                 throw new AutoConfigException("invalid token", e);
             }
 
-            _appId = content.AppId;
-            _endpointId = content.EndpointId;
-            _endpoint = endpoint;
-            _webhook = webhook;
-            _client = new SvixClient(
+            appId = content.AppId;
+            endpointId = content.EndpointId;
+            this.endpoint = endpoint;
+            this.webhook = webhook;
+            client = new SvixClient(
                 content.TokenPlaintext,
                 new SvixOptions(serverUrl: content.ServerUrl)
             );
@@ -55,34 +55,34 @@ namespace Svix
 
         public async Task<EndpointOut> SubscribeAsync(CancellationToken cancellationToken = default)
         {
-            return await new EndpointAutoConfig(_client).UpdateAsync(
-                _appId,
-                _endpointId,
-                new SubscribeIn { Endpoint = _endpoint },
+            return await new EndpointAutoConfig(client).UpdateAsync(
+                appId,
+                endpointId,
+                new SubscribeIn { Endpoint = endpoint },
                 cancellationToken
             );
         }
 
         public EndpointOut Subscribe()
         {
-            return new EndpointAutoConfig(_client).Update(
-                _appId,
-                _endpointId,
-                new SubscribeIn { Endpoint = _endpoint }
+            return new EndpointAutoConfig(client).Update(
+                appId,
+                endpointId,
+                new SubscribeIn { Endpoint = endpoint }
             );
         }
 
         public void Verify(ReadOnlySpan<char> payload, WebHeaderCollection headers)
         {
-            _webhook.Verify(payload, headers);
+            webhook.Verify(payload, headers);
         }
 
         public void Verify(ReadOnlySpan<char> payload, Func<string?, string?> headersProvider)
         {
-            _webhook.Verify(payload, headersProvider);
+            webhook.Verify(payload, headersProvider);
         }
 
-        private sealed class AutoConfigTokenContentV1
+        internal sealed class AutoConfigTokenContentV1
         {
             [JsonProperty("aid", Required = Required.Always)]
             public required string AppId { get; set; }
@@ -100,7 +100,7 @@ namespace Svix
             public required string TokenPlaintext { get; set; }
         }
 
-        private static AutoConfigTokenContentV1 DecodeAutoConfigTokenV1(string token)
+        internal static AutoConfigTokenContentV1 DecodeAutoConfigTokenV1(string token)
         {
             token = token ?? throw new ArgumentNullException(nameof(token));
 

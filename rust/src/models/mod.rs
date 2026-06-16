@@ -18,6 +18,7 @@ pub mod application_out;
 pub mod application_patch;
 pub mod application_token_expire_in;
 pub mod authentication_source;
+pub mod auto_config_sink_type;
 pub mod azure_blob_storage_config;
 pub mod azure_blob_storage_patch_config;
 pub mod background_task_finished_event;
@@ -173,6 +174,9 @@ pub mod orum_io_config_out;
 pub mod otel_tracing_patch_config;
 pub mod panda_doc_config;
 pub mod panda_doc_config_out;
+pub mod poller_v2_commit_in;
+pub mod poller_v2_message_out;
+pub mod poller_v2_poll_out;
 pub mod polling_endpoint_consumer_seek_in;
 pub mod polling_endpoint_consumer_seek_out;
 pub mod polling_endpoint_message_out;
@@ -197,6 +201,7 @@ pub mod segment_config_out;
 pub mod shopify_config;
 pub mod shopify_config_out;
 pub mod sink_http_config;
+pub mod sink_in_common;
 pub mod sink_otel_v1_config;
 pub mod sink_secret_out;
 pub mod sink_status;
@@ -211,6 +216,7 @@ pub mod sns_config;
 pub mod sns_patch_config;
 pub mod sqs_config;
 pub mod sqs_patch_config;
+pub mod starting_position;
 pub mod status_code_class;
 pub mod stream_event_type_in;
 pub mod stream_event_type_out;
@@ -267,6 +273,7 @@ pub use self::{
     application_patch::ApplicationPatch,
     application_token_expire_in::ApplicationTokenExpireIn,
     authentication_source::AuthenticationSource,
+    auto_config_sink_type::AutoConfigSinkType,
     azure_blob_storage_config::AzureBlobStorageConfig,
     azure_blob_storage_patch_config::AzureBlobStoragePatchConfig,
     background_task_finished_event::BackgroundTaskFinishedEvent,
@@ -422,6 +429,9 @@ pub use self::{
     otel_tracing_patch_config::OtelTracingPatchConfig,
     panda_doc_config::PandaDocConfig,
     panda_doc_config_out::PandaDocConfigOut,
+    poller_v2_commit_in::PollerV2CommitIn,
+    poller_v2_message_out::PollerV2MessageOut,
+    poller_v2_poll_out::PollerV2PollOut,
     polling_endpoint_consumer_seek_in::PollingEndpointConsumerSeekIn,
     polling_endpoint_consumer_seek_out::PollingEndpointConsumerSeekOut,
     polling_endpoint_message_out::PollingEndpointMessageOut,
@@ -446,6 +456,7 @@ pub use self::{
     shopify_config::ShopifyConfig,
     shopify_config_out::ShopifyConfigOut,
     sink_http_config::SinkHttpConfig,
+    sink_in_common::SinkInCommon,
     sink_otel_v1_config::SinkOtelV1Config,
     sink_secret_out::SinkSecretOut,
     sink_status::SinkStatus,
@@ -460,6 +471,7 @@ pub use self::{
     sns_patch_config::SnsPatchConfig,
     sqs_config::SqsConfig,
     sqs_patch_config::SqsPatchConfig,
+    starting_position::StartingPosition,
     status_code_class::StatusCodeClass,
     stream_event_type_in::StreamEventTypeIn,
     stream_event_type_out::StreamEventTypeOut,

@@ -22,7 +22,9 @@ class StatisticsAsync(ApiBase):
     async def aggregate_app_stats(
         self,
         app_usage_stats_in: AppUsageStatsIn,
-        options: StatisticsAggregateAppStatsOptions = StatisticsAggregateAppStatsOptions(),
+        options: StatisticsAggregateAppStatsOptions = (
+            StatisticsAggregateAppStatsOptions()
+        ),
     ) -> AppUsageStatsOut:
         """Creates a background task to calculate the number of message attempts (`messageDestinations`) made for all applications in the environment.
 
@@ -91,7 +93,9 @@ class Statistics(ApiBase):
     def aggregate_app_stats(
         self,
         app_usage_stats_in: AppUsageStatsIn,
-        options: StatisticsAggregateAppStatsOptions = StatisticsAggregateAppStatsOptions(),
+        options: StatisticsAggregateAppStatsOptions = (
+            StatisticsAggregateAppStatsOptions()
+        ),
     ) -> AppUsageStatsOut:
         """Creates a background task to calculate the number of message attempts (`messageDestinations`) made for all applications in the environment.
 

@@ -25,5 +25,6 @@ build
 
 # Build files
 bin/
+.kotlin
 
 .idea

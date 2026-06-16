@@ -1,0 +1,18 @@
+// Package svix this file is @generated DO NOT EDIT
+package models
+
+import "time"
+
+// The MessageOut equivalent of polling endpoint
+type PollerV2MessageOut struct {
+	Channels  []string           `json:"channels,omitempty"` // List of free-form identifiers that endpoints can filter by
+	DeliverAt *time.Time         `json:"deliverAt,omitempty"`
+	EventId   *string            `json:"eventId,omitempty"` // Optional unique identifier for the message
+	EventType string             `json:"eventType"`         // The event type's name
+	Headers   *map[string]string `json:"headers,omitempty"`
+	Id        string             `json:"id"` // The Message's ID.
+	Offset    uint64             `json:"offset"`
+	Payload   map[string]any     `json:"payload"`
+	Tags      []string           `json:"tags,omitempty"`
+	Timestamp time.Time          `json:"timestamp"`
+}

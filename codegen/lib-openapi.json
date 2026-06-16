@@ -984,6 +984,46 @@
                 ],
                 "type": "object"
             },
+            "AutoConfigSinkType": {
+                "oneOf": [
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/SinkInCommon"
+                            },
+                            "type": {
+                                "enum": [
+                                    "poller"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/EndpointIn"
+                            },
+                            "type": {
+                                "enum": [
+                                    "http"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    }
+                ]
+            },
             "AzureBlobStorageConfig": {
                 "properties": {
                     "accessKey": {
@@ -11102,6 +11142,94 @@
                 },
                 "type": "object"
             },
+            "SinkInCommon": {
+                "properties": {
+                    "channels": {
+                        "description": "List of message channels this sink listens to (omit for all).",
+                        "example": [
+                            "project_123",
+                            "group_2"
+                        ],
+                        "items": {
+                            "example": "project_1337",
+                            "maxLength": 128,
+                            "pattern": "^[a-zA-Z0-9\\-_.:]+$",
+                            "type": "string"
+                        },
+                        "maxItems": 10,
+                        "minItems": 1,
+                        "nullable": true,
+                        "type": "array",
+                        "uniqueItems": true
+                    },
+                    "description": {
+                        "default": "",
+                        "example": "An example endpoint name",
+                        "type": "string"
+                    },
+                    "disabled": {
+                        "default": false,
+                        "example": false,
+                        "type": "boolean"
+                    },
+                    "filterTypes": {
+                        "example": [
+                            "user.signup",
+                            "user.deleted"
+                        ],
+                        "items": {
+                            "description": "The event type's name",
+                            "example": "user.signup",
+                            "maxLength": 256,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "minItems": 1,
+                        "nullable": true,
+                        "type": "array",
+                        "uniqueItems": true
+                    },
+                    "metadata": {
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "default": {},
+                        "type": "object"
+                    },
+                    "rateLimit": {
+                        "deprecated": true,
+                        "description": "Deprecated, use `throttleRate` instead.",
+                        "format": "uint16",
+                        "minimum": 1,
+                        "nullable": true,
+                        "type": "integer"
+                    },
+                    "secret": {
+                        "description": "The endpoint's verification secret.\n\nFormat: `base64` encoded random bytes optionally prefixed with `whsec_`.\nIt is recommended to not set this and let the server generate the secret.",
+                        "example": "whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD",
+                        "nullable": true,
+                        "pattern": "^(whsec_)?[a-zA-Z0-9+/=]{32,100}$",
+                        "type": "string"
+                    },
+                    "throttleRate": {
+                        "description": "Maximum messages per second to send to this endpoint.\n\nOutgoing messages will be throttled to this rate.",
+                        "format": "uint16",
+                        "minimum": 1,
+                        "nullable": true,
+                        "type": "integer"
+                    },
+                    "uid": {
+                        "description": "Optional unique identifier for the sink.",
+                        "example": "unique-identifier",
+                        "maxLength": 256,
+                        "minLength": 1,
+                        "nullable": true,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
             "SinkOtelV1Config": {
                 "properties": {
                     "headers": {
@@ -11688,14 +11816,6 @@
                         "nullable": true,
                         "type": "array",
                         "uniqueItems": true
-                    },
-                    "name": {
-                        "description": "The event type's name",
-                        "example": "user.signup",
-                        "maxLength": 256,
-                        "nullable": true,
-                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                        "type": "string"
                     }
                 },
                 "type": "object"
@@ -12918,12 +13038,14 @@
             "SubscribeIn": {
                 "properties": {
                     "endpoint": {
-                        "$ref": "#/components/schemas/EndpointIn"
+                        "$ref": "#/components/schemas/EndpointIn",
+                        "nullable": true
+                    },
+                    "sink": {
+                        "$ref": "#/components/schemas/AutoConfigSinkType",
+                        "nullable": true
                     }
                 },
-                "required": [
-                    "endpoint"
-                ],
                 "type": "object"
             },
             "SvixConfig": {
@@ -42955,67 +43077,67 @@
                     {
                         "label": "JavaScript",
                         "lang": "TypeScript",
-                        "source": "const response = await svix.streaming.eventType.patch(\"name\", {\n  archived: true,\n  deprecated: true,\n  description: \"sample string\",\n  featureFlags: [\"cool-new-feature\"],\n  name: \"user.signup\",\n});"
+                        "source": "const response = await svix.streaming.eventType.patch(\"name\", {\n  archived: true,\n  deprecated: true,\n  description: \"sample string\",\n  featureFlags: [\"cool-new-feature\"],\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "TypeScript",
-                        "source": "const response = await svix.streaming.eventType.patch(\"name\", {\n  archived: true,\n  deprecated: true,\n  description: \"sample string\",\n  featureFlags: [\"cool-new-feature\"],\n  name: \"user.signup\",\n});"
+                        "source": "const response = await svix.streaming.eventType.patch(\"name\", {\n  archived: true,\n  deprecated: true,\n  description: \"sample string\",\n  featureFlags: [\"cool-new-feature\"],\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "response = svix.streaming.event_type.patch(\n    \"name\",\n    StreamEventTypePatch(\n        archived=True,\n        deprecated=True,\n        description=\"sample string\",\n        feature_flags=[\n            \"cool-new-feature\",\n        ],\n        name=\"user.signup\",\n    ),\n)"
+                        "source": "response = svix.streaming.event_type.patch(\n    \"name\",\n    StreamEventTypePatch(\n        archived=True,\n        deprecated=True,\n        description=\"sample string\",\n        feature_flags=[\n            \"cool-new-feature\",\n        ],\n    ),\n)"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "response = await svix.streaming.event_type.patch(\n    \"name\",\n    StreamEventTypePatch(\n        archived=True,\n        deprecated=True,\n        description=\"sample string\",\n        feature_flags=[\n            \"cool-new-feature\",\n        ],\n        name=\"user.signup\",\n    ),\n)"
+                        "source": "response = await svix.streaming.event_type.patch(\n    \"name\",\n    StreamEventTypePatch(\n        archived=True,\n        deprecated=True,\n        description=\"sample string\",\n        feature_flags=[\n            \"cool-new-feature\",\n        ],\n    ),\n)"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "response, err := svix.Streaming.EventType.Patch(\n\tctx,\n\t\"name\",\n\tStreamEventTypePatch{\n\t\tArchived:     new(true),\n\t\tDeprecated:   new(true),\n\t\tDescription:  NewNullable(\"sample string\"),\n\t\tFeatureFlags: NewNullable([]string{\"cool-new-feature\"}),\n\t\tName:         NewNullable(\"user.signup\"),\n\t},\n)"
+                        "source": "response, err := svix.Streaming.EventType.Patch(\n\tctx,\n\t\"name\",\n\tStreamEventTypePatch{\n\t\tArchived:     new(true),\n\t\tDeprecated:   new(true),\n\t\tDescription:  NewNullable(\"sample string\"),\n\t\tFeatureFlags: NewNullable([]string{\"cool-new-feature\"}),\n\t},\n)"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val response =\n    svix.streaming.eventType.patch(\n        \"name\",\n        StreamEventTypePatch(\n            archived = true,\n            deprecated = true,\n            description = MaybeUnset.Present(\"sample string\"),\n            featureFlags = MaybeUnset.Present(setOf(\"cool-new-feature\")),\n            name = MaybeUnset.Present(\"user.signup\"),\n        ),\n    )"
+                        "source": "val response =\n    svix.streaming.eventType.patch(\n        \"name\",\n        StreamEventTypePatch(\n            archived = true,\n            deprecated = true,\n            description = MaybeUnset.Present(\"sample string\"),\n            featureFlags = MaybeUnset.Present(setOf(\"cool-new-feature\")),\n        ),\n    )"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "var response = svix.getStreaming()\n        .getEventType()\n        .patch(\n            \"name\",\n            new StreamEventTypePatch()\n                .archived(true)\n                .deprecated(true)\n                .description(\"sample string\")\n                .featureFlags(Set.of(\"cool-new-feature\"))\n                .name(\"user.signup\"));"
+                        "source": "var response = svix.getStreaming()\n        .getEventType()\n        .patch(\n            \"name\",\n            new StreamEventTypePatch()\n                .archived(true)\n                .deprecated(true)\n                .description(\"sample string\")\n                .featureFlags(Set.of(\"cool-new-feature\")));"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "response = svix\n  .streaming\n  .event_type\n  .patch(\n    \"name\",\n    {\n      archived: true,\n      deprecated: true,\n      description: \"sample string\",\n      featureFlags: [\"cool-new-feature\"],\n      name: \"user.signup\"\n    }\n  )"
+                        "source": "response = svix\n  .streaming\n  .event_type\n  .patch(\"name\", {archived: true, deprecated: true, description: \"sample string\", featureFlags: [\"cool-new-feature\"]})"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let response = svix\n    .streaming()\n    .event_type()\n    .patch(\n        \"name\".to_string(),\n        StreamEventTypePatch {\n            archived: Some(true),\n            deprecated: Some(true),\n            description: js_option::JsOption::Some(\"sample string\".to_string()),\n            feature_flags: js_option::JsOption::Some(\n                vec![\"cool-new-feature\".to_string()],\n            ),\n            name: js_option::JsOption::Some(\"user.signup\".to_string()),\n        },\n    )\n    .await?;"
+                        "source": "let response = svix\n    .streaming()\n    .event_type()\n    .patch(\n        \"name\".to_string(),\n        StreamEventTypePatch {\n            archived: Some(true),\n            deprecated: Some(true),\n            description: js_option::JsOption::Some(\"sample string\".to_string()),\n            feature_flags: js_option::JsOption::Some(\n                vec![\"cool-new-feature\".to_string()],\n            ),\n        },\n    )\n    .await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var response = svix.Streaming.EventType.Patch(\n    \"name\",\n    new StreamEventTypePatch\n    {\n        Archived = true,\n        Deprecated = true,\n        Description = \"sample string\",\n        FeatureFlags = MaybeUnset<List<string>?>.Set([\"cool-new-feature\"]),\n        Name = \"user.signup\",\n    }\n);"
+                        "source": "var response = svix.Streaming.EventType.Patch(\n    \"name\",\n    new StreamEventTypePatch\n    {\n        Archived = true,\n        Deprecated = true,\n        Description = \"sample string\",\n        FeatureFlags = MaybeUnset<List<string>?>.Set([\"cool-new-feature\"]),\n    }\n);"
                     },
                     {
                         "label": "PHP",
                         "lang": "PHP",
-                        "source": "$response = $svix->streaming->eventType->patch(\n    \"name\",\n    StreamEventTypePatch::create()\n    ->withArchived(true)\n    ->withDeprecated(true)\n    ->withDescription(\"sample string\")\n    ->withFeatureFlags([\"cool-new-feature\"])\n    ->withName(\"user.signup\")\n);"
+                        "source": "$response = $svix->streaming->eventType->patch(\n    \"name\",\n    StreamEventTypePatch::create()\n    ->withArchived(true)\n    ->withDeprecated(true)\n    ->withDescription(\"sample string\")\n    ->withFeatureFlags([\"cool-new-feature\"])\n);"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix streaming event-type patch \"name\" '{\n    \"archived\": true,\n    \"deprecated\": true,\n    \"description\": \"sample string\",\n    \"featureFlags\": [\n      \"cool-new-feature\"\n    ],\n    \"name\": \"user.signup\"\n  }'"
+                        "source": "svix streaming event-type patch \"name\" '{\n    \"archived\": true,\n    \"deprecated\": true,\n    \"description\": \"sample string\",\n    \"featureFlags\": [\n      \"cool-new-feature\"\n    ]\n  }'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/stream/event-type/name' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"archived\": true,\n    \"deprecated\": true,\n    \"description\": \"sample string\",\n    \"featureFlags\": [\n      \"cool-new-feature\"\n    ],\n    \"name\": \"user.signup\"\n  }'"
+                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/stream/event-type/name' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"archived\": true,\n    \"deprecated\": true,\n    \"description\": \"sample string\",\n    \"featureFlags\": [\n      \"cool-new-feature\"\n    ]\n  }'"
                     }
                 ]
             },

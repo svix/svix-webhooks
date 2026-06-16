@@ -6,8 +6,11 @@ namespace Svix.Models
 {
     public class SubscribeIn
     {
-        [JsonProperty("endpoint", Required = Required.Always)]
-        public required EndpointIn Endpoint { get; set; }
+        [JsonProperty("endpoint")]
+        public EndpointIn? Endpoint { get; set; } = null;
+
+        [JsonProperty("sink")]
+        public AutoConfigSinkType? Sink { get; set; } = null;
 
         public override string ToString()
         {
@@ -15,6 +18,7 @@ namespace Svix.Models
 
             sb.Append("class SubscribeIn {\n");
             sb.Append("  Endpoint: ").Append(Endpoint).Append('\n');
+            sb.Append("  Sink: ").Append(Sink).Append('\n');
             sb.Append("}\n");
             return sb.ToString();
         }
