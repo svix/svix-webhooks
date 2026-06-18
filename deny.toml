@@ -15,8 +15,10 @@ unused-ignored-advisory = "allow"
 ignore = [
     # TODO: Update dependencies that use rsa crate
     "RUSTSEC-2023-0071",
-    # TODO: Wait for dependencies to upgrade off of proc-macro-error
+    # TODO: Wait for dependencies to upgrade off of proc-macro-error (validator)
+    # and proc-macro-error2 (sea-orm/sea-bae)
     "RUSTSEC-2024-0370",
+    "RUSTSEC-2026-0173",
     # TODO: Wait for dependencies to upgrade off of paste
     "RUSTSEC-2024-0436",
     # rustls-pemfile is unmaintained, but we only use it for parsing system
