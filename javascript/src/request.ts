@@ -1,7 +1,7 @@
 import { ApiException, type XOR } from "./util";
 import type { HttpErrorOut, HTTPValidationError } from "./HttpErrors";
 
-export const LIB_VERSION = "1.95.2";
+export const LIB_VERSION = "1.96.0";
 
 function getUserAgent() {
   var fields = [`svix-libs/${LIB_VERSION}/javascript`];
