@@ -1,6 +1,10 @@
 # Changelog
 
-## Unreleased
+## Version 1.96.0
+* CLI **(New)**: Add `--token` option to `svix listen`
+* Libs **(New)**: AutoConfigConsumer SDK to consume Polling Endpoints
+* Libs/Csharp: Accept a valid signature when it is last in a multi-sig header (thanks [@devteamaegis])
+* Libs/All: Stop sending with_content parameter to the backend, handle it client-side
 
 ## Version 1.95.2
 * Libs/Kotlin: Webhooks AutoConfig SDK
