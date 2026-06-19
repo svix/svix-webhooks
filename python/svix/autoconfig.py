@@ -47,6 +47,11 @@ def _decode_autoconfig_token_v1(token: str) -> _AutoConfigTokenContentV1:
     if not token.startswith(_AUTOCONFIG_TOKEN_PREFIX_V1):
         raise AutoConfigError("invalid token")
     b64 = token[len(_AUTOCONFIG_TOKEN_PREFIX_V1) :]
+    # The server emits the token with standard-but-unpadded base64
+    # (Rust `STANDARD_NO_PAD`), so re-add the padding that Python's strict
+    # `b64decode` requires. (Other SDKs decode via padding-tolerant
+    # primitives, e.g. Node's `Buffer.from(b64, "base64")`.)
+    b64 += "=" * (-len(b64) % 4)
     try:
         decoded = base64.b64decode(b64)
     except Exception as exc:

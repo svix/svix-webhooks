@@ -88,6 +88,8 @@ class StreamSinkIn(BaseModel):
     def validate_model(
         cls, data: t.Any, handler: ModelWrapValidatorHandler[Self]
     ) -> Self:
+        if not isinstance(data, dict):
+            return handler(data)
         if "config" not in data:
             data["config"] = {}
         output = handler(data)

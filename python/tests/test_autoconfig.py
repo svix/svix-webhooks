@@ -3,8 +3,24 @@ import json
 
 import pytest
 
-from svix import AutoConfigError
+from svix import AutoConfigConsumer, AutoConfigError
 from svix.autoconfig import _AUTOCONFIG_TOKEN_PREFIX_V1, _decode_autoconfig_token_v1
+from svix.models import SinkInCommon
+from svix.models.auto_config_sink_type import AutoConfigSinkType
+from svix.models.subscribe_in import SubscribeIn
+
+
+def _make_token(**overrides) -> str:
+    payload = {
+        "aid": "app_1",
+        "eid": "ep_2",
+        "surl": "https://api.example.test",
+        "esec": "whsec_Zm9v",
+        "tok": "sk_test_xyz",
+    }
+    payload.update(overrides)
+    raw = json.dumps(payload).encode()
+    return f"{_AUTOCONFIG_TOKEN_PREFIX_V1}{base64.b64encode(raw).decode('ascii')}"
 
 
 def test_decode_autoconfig_token_v1_parses_payload():
@@ -48,3 +64,30 @@ def test_decode_autoconfig_token_v1_rejects_invalid_json():
 
     with pytest.raises(AutoConfigError):
         _decode_autoconfig_token_v1(token)
+
+
+def test_auto_config_sink_type_revalidates_when_nested():
+    # Regression: nesting an already-built AutoConfigSinkType inside another
+    # model re-runs its wrap validator with a model instance (not a dict),
+    # which used to raise TypeError on `data["config"] = {}`.
+    sink = AutoConfigSinkType(type="poller", config=SinkInCommon(filter_types=["a"]))
+    subscribe_in = SubscribeIn(sink=sink)
+
+    assert subscribe_in.sink is not None
+    assert isinstance(subscribe_in.sink.config, SinkInCommon)
+    assert subscribe_in.sink.config.filter_types == ["a"]
+
+
+def test_auto_config_consumer_subscribe_in_payload():
+    consumer = AutoConfigConsumer(
+        _make_token(), SinkInCommon(filter_types=["issue.opened"])
+    )
+    subscribe_in = consumer._subscribe_in()
+
+    assert subscribe_in.sink is not None
+    assert subscribe_in.sink.type == "poller"
+    assert isinstance(subscribe_in.sink.config, SinkInCommon)
+    assert (
+        subscribe_in.model_dump_json(exclude_unset=True, by_alias=True)
+        == '{"sink":{"type":"poller","config":{"filterTypes":["issue.opened"]}}}'
+    )
