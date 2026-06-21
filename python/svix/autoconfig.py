@@ -49,7 +49,9 @@ def _decode_autoconfig_token_v1(token: str) -> _AutoConfigTokenContentV1:
     b64 = token[len(_AUTOCONFIG_TOKEN_PREFIX_V1) :]
     # Ensure b64 has padding, which is required by the python base64 module
     try:
-        decoded = base64.b64decode(b64 + "===") # trick from https://stackoverflow.com/a/49459036
+        decoded = base64.b64decode(
+            b64 + "==="
+        )  # trick from https://stackoverflow.com/a/49459036
     except Exception as exc:
         raise AutoConfigError("invalid token") from exc
     try:
