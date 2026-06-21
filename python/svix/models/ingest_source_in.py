@@ -115,7 +115,7 @@ class IngestSourceIn(BaseModel):
     def validate_model(
         cls, data: t.Any, handler: ModelWrapValidatorHandler[Self]
     ) -> Self:
-        if not isinstance(data, dict):
+        if isinstance(data, cls):
             return handler(data)
         if "config" not in data:
             data["config"] = {}
