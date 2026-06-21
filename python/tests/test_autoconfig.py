@@ -19,8 +19,10 @@ def _make_token(**overrides) -> str:
         "tok": "sk_test_xyz",
     }
     payload.update(overrides)
-    raw = json.dumps(payload).encode()
-    return f"{_AUTOCONFIG_TOKEN_PREFIX_V1}{base64.b64encode(raw).decode('ascii')}"
+    raw = json.dumps(payload).encode("utf-8")
+    # Strip padding so the token emulates the server's unpadded output.
+    b64 = base64.b64encode(raw).decode("ascii").replace("=", "")
+    return f"{_AUTOCONFIG_TOKEN_PREFIX_V1}{b64}"
 
 
 def test_decode_autoconfig_token_v1_parses_payload():
