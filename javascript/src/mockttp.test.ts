@@ -470,6 +470,27 @@ test("mockttp tests", async (t) => {
     assert(idempotencyKey.startsWith("auto_"));
   });
 
+  await t.test("POST retry reuses the same auto idempotency key", async () => {
+    const endpointMock = await mockServer
+      .forPost("/api/v1/app")
+      .thenReply(500, `{"code":"500","detail":"asd"}`);
+    const svx = new Svix("token", {
+      serverUrl: mockServer.url,
+      numRetries: 2,
+    });
+
+    await assert.rejects(svx.application.create({ name: "test app" }), ApiException);
+
+    const requests = await endpointMock.getSeenRequests();
+    assert.equal(requests.length, 3);
+
+    const idempotencyKey = requests[0].headers["idempotency-key"] as string;
+    assert(idempotencyKey.startsWith("auto_"));
+
+    for (const request of requests) {
+      assert.equal(request.headers["idempotency-key"], idempotencyKey);
+    }
+  });
   await t.test("test client provided idempotency key is not overridden", async () => {
     const endpointMock = await mockServer
       .forPost("/api/v1/app")
