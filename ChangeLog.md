@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 1.96.1
+* Libs/Rust: Fix public visibility of MessagePollerv2ConsumerPollOptions
+
 ## Version 1.96.0
 * CLI **(New)**: Add `--token` option to `svix listen`
 * Libs **(New)**: AutoConfigConsumer SDK to consume Polling Endpoints
