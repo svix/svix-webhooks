@@ -73,7 +73,7 @@ First checkout the [core README](../README.md#development) for details on how to
 
 ## Requirements
 
- - [CPython](https://www.python.org/) 3.8+
+ - [CPython](https://www.python.org/) 3.9+
  - [uv](https://github.com/astral-sh/uv)
 
 ## Installing dependencies
