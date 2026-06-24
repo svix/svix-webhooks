@@ -110,6 +110,7 @@ pub struct EndpointMessageOut {
     #[serde(flatten)]
     pub msg: MessageOut,
     pub status: MessageStatus,
+    pub status_text: MessageStatusText,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub next_attempt: Option<DateTimeWithTimeZone>,
 }
@@ -135,6 +136,7 @@ impl EndpointMessageOut {
         EndpointMessageOut {
             msg: MessageOut::from_msg_and_payload(msg, msg_content, with_content),
             status,
+            status_text: status.into(),
             next_attempt: attempt.next_attempt,
         }
     }
@@ -151,6 +153,7 @@ impl<'de> Deserialize<'de> for EndpointMessageOut {
         Ok(Self {
             msg: serde_json::from_str(raw_value.get()).unwrap(),
             status: serde_json::from_str(rest.get("status").unwrap().get()).unwrap(),
+            status_text: serde_json::from_str(rest.get("statusText").unwrap().get()).unwrap(),
             next_attempt: rest
                 .get("next_attempt")
                 .map(|x| serde_json::from_str(x.get()).unwrap()),

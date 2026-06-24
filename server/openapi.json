@@ -611,6 +611,9 @@
                     "status": {
                         "$ref": "#/components/schemas/MessageStatus"
                     },
+                    "statusText": {
+                        "$ref": "#/components/schemas/MessageStatusText"
+                    },
                     "timestamp": {
                         "format": "date-time",
                         "type": "string"
@@ -621,6 +624,7 @@
                     "id",
                     "payload",
                     "status",
+                    "statusText",
                     "timestamp"
                 ],
                 "type": "object"
