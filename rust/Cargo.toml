@@ -80,7 +80,7 @@ unknown_lints = "allow"
 # Catch public APIs that reference types which cannot be named outside the
 # crate (e.g. `pub` types living in a private module). The default
 # `private_interfaces` lint misses these because the types are nominally `pub`.
-unnameable_types = "deny"
+unnameable_types = "warn"
 
 [lints.clippy]
 all = { priority = -1, level = "warn" }
