@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 1.96.1
+* Libs/Java: Upgrade jackson dependency to v2.21.4
+* Libs/Rust: Make `MessagePollerv2Consumer*Options` public
+
 ## Version 1.96.0
 * CLI **(New)**: Add `--token` option to `svix listen`
 * Libs **(New)**: AutoConfigConsumer SDK to consume Polling Endpoints

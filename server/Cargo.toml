@@ -22,7 +22,7 @@ uninlined_format_args = "warn"
 [workspace.package]
 edition = "2021"
 license = "MIT"
-version = "1.96.0"
+version = "1.96.1"
 
 [profile.dev]
 # optimize host dependencies for faster rebuilds.
