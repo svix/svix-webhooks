@@ -6,6 +6,14 @@ use crate::{
     models::{AutoConfigSinkType, PollerV2CommitIn, PollerV2PollOut, SinkInCommon, SubscribeIn},
 };
 
+// Re-exported so callers can name and construct the `options` arguments of
+// `receive`/`commit`. The types are `pub` but live in the crate-private
+// `api_internal` module, so without this they would be reachable yet
+// unnameable.
+pub use crate::api_internal::message_pollerv2::{
+    MessagePollerv2ConsumerCommitOptions, MessagePollerv2ConsumerPollOptions,
+};
+
 pub struct AutoConfigConsumer {
     app_id: String,
     sink_id: String,
