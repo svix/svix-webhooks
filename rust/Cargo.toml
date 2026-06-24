@@ -77,6 +77,10 @@ allowed = [
 [lints.rust]
 # below clippy allow rule is for a lint that's not on stable yet 😒
 unknown_lints = "allow"
+# Catch public APIs that reference types which cannot be named outside the
+# crate (e.g. `pub` types living in a private module). The default
+# `private_interfaces` lint misses these because the types are nominally `pub`.
+unnameable_types = "deny"
 
 [lints.clippy]
 all = { priority = -1, level = "warn" }

@@ -195,6 +195,10 @@ pub trait HeaderMap: private::HeaderMapSealed {}
 impl HeaderMap for http02::HeaderMap {}
 impl HeaderMap for http1::HeaderMap {}
 
+// Intentional sealed-trait pattern: these traits are reachable as supertrait
+// bounds of the public `HeaderMap`/`HeaderValue` traits but must not be
+// nameable or implementable downstream
+#[allow(unnameable_types)]
 mod private {
     pub trait HeaderMapSealed {
         type HeaderValue: HeaderValueSealed;
