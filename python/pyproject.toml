@@ -6,7 +6,7 @@ authors = [
     { name = "Svix", email = "development@svix.com" }
 ]
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 license = "MIT"
 dependencies = [
     "pydantic >=2.10",
@@ -34,7 +34,6 @@ classifiers = [
     "Typing :: Typed",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -68,7 +67,7 @@ dev = [
     "pytest-docker==3.*",
     "pytest-httpserver>=1.0.7,<2",
     "pytest-httpx>=0.22,<1.0",
-    "pytest>=7.0",
+    "pytest>=8.0",
     "requests>=2,<3",
     "ruff>=0.15.6",
     "ty>=0.0.23",
@@ -108,7 +107,7 @@ ignore = [
 "svix/models/**.py" = ["I001", "E501"]  # ignore in generated code
 
 [tool.ty.environment]
-python-version = "3.8"
+python-version = "3.9"
 
 [tool.black]
 line-length = 88

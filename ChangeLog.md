@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+* Libs/Python: Bump minimum-supported Python interpreter version to 3.9
+
 ## Version 1.96.1
 * Libs/Java: Upgrade jackson dependency to v2.21.4
 * Libs/Rust: Make `MessagePollerv2Consumer*Options` public
