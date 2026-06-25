@@ -2205,12 +2205,17 @@
                     },
                     "task": {
                         "$ref": "#/components/schemas/BackgroundTaskType"
+                    },
+                    "updatedAt": {
+                        "format": "date-time",
+                        "type": "string"
                     }
                 },
                 "required": [
                     "id",
                     "status",
-                    "task"
+                    "task",
+                    "updatedAt"
                 ],
                 "type": "object"
             },
