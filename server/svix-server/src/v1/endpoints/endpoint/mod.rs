@@ -743,6 +743,7 @@ pub struct EndpointStatsOut {
     pub pending: i64,
     pub sending: i64,
     pub fail: i64,
+    pub canceled: i64,
 }
 
 #[derive(Debug, FromQueryResult)]
@@ -788,6 +789,7 @@ async fn endpoint_stats(
         pending: query_out.remove(&MessageStatus::Pending).unwrap_or(0),
         fail: query_out.remove(&MessageStatus::Fail).unwrap_or(0),
         sending: query_out.remove(&MessageStatus::Sending).unwrap_or(0),
+        canceled: 0,
     }))
 }
 
