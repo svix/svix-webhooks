@@ -844,6 +844,10 @@
             },
             "EndpointStats": {
                 "properties": {
+                    "canceled": {
+                        "format": "int64",
+                        "type": "integer"
+                    },
                     "fail": {
                         "format": "int64",
                         "type": "integer"
@@ -862,6 +866,7 @@
                     }
                 },
                 "required": [
+                    "canceled",
                     "fail",
                     "pending",
                     "sending",
