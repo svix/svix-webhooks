@@ -2,6 +2,7 @@
 
 ## Unreleased
 * Server: add `statusText` to `EndpointMessageOut` (the response type for `v1.message-attempt.list-attempted-messages`), matching the cloud version
+* Server: add `statusText` to `MessageEndpointOut` (the response type for `v1.message-attempt.list-attempted-destinations`), matching the cloud version
 * Libs/Python: Bump minimum-supported Python interpreter version to 3.9
 
 ## Version 1.96.1

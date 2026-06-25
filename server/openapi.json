@@ -1968,6 +1968,9 @@
                     "status": {
                         "$ref": "#/components/schemas/MessageStatus"
                     },
+                    "statusText": {
+                        "$ref": "#/components/schemas/MessageStatusText"
+                    },
                     "throttleRate": {
                         "description": "Maximum messages per second to send to this endpoint.\n\nOutgoing messages will be throttled to this rate.",
                         "format": "uint16",
@@ -2008,6 +2011,7 @@
                     "description",
                     "id",
                     "status",
+                    "statusText",
                     "updatedAt",
                     "url",
                     "version"
