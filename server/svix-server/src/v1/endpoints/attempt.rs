@@ -699,6 +699,7 @@ pub struct MessageEndpointOut {
     endpoint: super::endpoint::EndpointOutCommon,
     pub id: EndpointId,
     status: MessageStatus,
+    status_text: MessageStatusText,
     next_attempt: Option<DateTime<Utc>>,
 }
 
@@ -782,6 +783,7 @@ async fn list_attempted_destinations(
             Some(MessageEndpointOut {
                 id: msg_attempt.endp_id,
                 status: msg_attempt.status,
+                status_text: msg_attempt.status.into(),
                 next_attempt: msg_attempt.next_attempt.map(Into::into),
                 endpoint: endp.into(),
             })
