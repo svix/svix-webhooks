@@ -251,13 +251,11 @@ mod tests {
 
         let unexpired_old_key = ExpiringSigningKey {
             key: key.clone(),
-            expiration: Utc::now()
-                + chrono::Duration::hours(ExpiringSigningKeys::OLD_KEY_EXPIRY_HOURS),
+            expiration: Utc::now() + chrono::Duration::hours(1),
         };
         let expired_old_key = ExpiringSigningKey {
             key: key.clone(),
-            expiration: Utc::now()
-                - chrono::Duration::hours(ExpiringSigningKeys::OLD_KEY_EXPIRY_HOURS),
+            expiration: Utc::now() - chrono::Duration::hours(1),
         };
         let old_signing_keys = Some(ExpiringSigningKeys(vec![
             unexpired_old_key,
