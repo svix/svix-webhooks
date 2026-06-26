@@ -77,8 +77,9 @@ func (message *Message) List(
 		"app_id": appId,
 	}
 	queryMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
 		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
 		internal.SerializeParamToMap("channel", o.Channel, queryMap, &err)
@@ -123,15 +124,16 @@ func (message *Message) Create(
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		internal.SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
 		if err != nil {
 			return nil, err
 		}
 	}
-	return internal.ExecuteRequest[models.MessageIn, models.MessageOut](
+	queryMap["with_content"] = "false"
+	response, err := internal.ExecuteRequest[models.MessageIn, models.MessageOut](
 		ctx,
 		message.client,
 		"POST",
@@ -141,6 +143,13 @@ func (message *Message) Create(
 		headerMap,
 		&messageIn,
 	)
+	if err != nil {
+		return nil, err
+	}
+	if o == nil || o.WithContent == nil || *o.WithContent == true {
+		response.Payload = messageIn.Payload
+	}
+	return response, nil
 }
 
 // Delete all message payloads for the application.
@@ -169,8 +178,9 @@ func (message *Message) ExpungeAllContents(
 		"app_id": appId,
 	}
 	headerMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
@@ -204,8 +214,9 @@ func (message *Message) Precheck(
 		"app_id": appId,
 	}
 	headerMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err
@@ -235,8 +246,9 @@ func (message *Message) Get(
 		"msg_id": msgId,
 	}
 	queryMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
 		if err != nil {
 			return nil, err

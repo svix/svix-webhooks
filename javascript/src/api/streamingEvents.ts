@@ -27,7 +27,7 @@ export class StreamingEvents {
   public constructor(private readonly requestCtx: SvixRequestContext) {}
 
   /** Creates events on the Stream. */
-  public create(
+  public async create(
     streamId: string,
     createStreamEventsIn: CreateStreamEventsIn,
     options?: StreamingEventsCreateOptions
@@ -38,7 +38,10 @@ export class StreamingEvents {
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
     request.setBody(CreateStreamEventsInSerializer._toJsonObject(createStreamEventsIn));
 
-    return request.send(this.requestCtx, CreateStreamEventsOutSerializer._fromJsonObject);
+    return await request.send(
+      this.requestCtx,
+      CreateStreamEventsOutSerializer._fromJsonObject
+    );
   }
 
   /**
@@ -46,7 +49,7 @@ export class StreamingEvents {
    *
    * The sink must be of type `poller` to use the poller endpoint.
    */
-  public get(
+  public async get(
     streamId: string,
     sinkId: string,
     options?: StreamingEventsGetOptions
@@ -64,6 +67,6 @@ export class StreamingEvents {
       after: options?.after,
     });
 
-    return request.send(this.requestCtx, EventStreamOutSerializer._fromJsonObject);
+    return await request.send(this.requestCtx, EventStreamOutSerializer._fromJsonObject);
   }
 }

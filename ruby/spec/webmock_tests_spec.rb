@@ -1,7 +1,7 @@
 require "spec_helper"
 require "svix"
 
-require_relative "./json_responses"
+require_relative "json_responses"
 
 describe "API Client" do
   let!(:svx) { Svix::Client.new("testsk_token.eu", Svix::SvixOptions.new(false, "http://api.example")) }
@@ -20,7 +20,7 @@ describe "API Client" do
         .with(
           headers: {
             "Authorization" => "Bearer testsk_token.eu",
-            "User-Agent" => "svix-libs/#{Svix::VERSION}/ruby"
+            "User-Agent" => "svix-libs/#{Svix::VERSION}/ruby ruby/#{RUBY_VERSION} #{RbConfig::CONFIG["host_os"]}/#{RbConfig::CONFIG["host_cpu"]}"
           }
         )
     )
@@ -153,7 +153,7 @@ describe "API Client" do
         body: MessageOut_JSON
       )
 
-    svx.message.create("app_id", Svix::MessageIn.new(event_type: "event.type"), {:"idempotency-key" => "random-key"})
+    svx.message.create("app_id", Svix::MessageIn.new(event_type: "event.type"), {"idempotency-key": "random-key"})
     expect(WebMock).to(
       have_requested(
         :post,
@@ -338,7 +338,7 @@ describe "API Client" do
   end
 
   it "struct enum with extra fields" do
-    json_source_in = '{"name":"My Stripe Source","uid":"src_123","type":"cron","config":{"contentType":"test","payload":"boom","schedule":"* * * * *"}}';
+    json_source_in = '{"name":"My Stripe Source","uid":"src_123","type":"cron","config":{"contentType":"test","payload":"boom","schedule":"* * * * *"}}'
     source_in = Svix::IngestSourceIn.new(
       {
         "name" => "My Stripe Source",
@@ -353,9 +353,9 @@ describe "API Client" do
       }
     )
     loaded_from_json = Svix::IngestSourceIn.deserialize(JSON.parse(json_source_in))
-    expect(loaded_from_json).to( have_attributes(
+    expect(loaded_from_json).to(have_attributes(
       name: source_in.name,
-      uid: source_in.uid,
+      uid: source_in.uid
     ))
     expect(loaded_from_json.config.class).to eql(Svix::IngestSourceInConfig::Cron)
     expect(loaded_from_json.config.content_type).to eql(source_in.config.content_type)
@@ -364,24 +364,24 @@ describe "API Client" do
   end
 
   it "struct enum without any fields" do
-    json_source_in = '{"name":"My Stripe Source","uid":"src_123","type":"generic-webhook","config":{}}';
+    json_source_in = '{"name":"My Stripe Source","uid":"src_123","type":"generic-webhook","config":{}}'
     source_in = Svix::IngestSourceIn.new(
       {
         "name" => "My Stripe Source",
         "uid" => "src_123",
-        "config" => Svix::IngestSourceInConfig::GenericWebhook.new()
+        "config" => Svix::IngestSourceInConfig::GenericWebhook.new
       }
     )
     loaded_from_json = Svix::IngestSourceIn.deserialize(JSON.parse(json_source_in))
-    expect(loaded_from_json).to( have_attributes(
+    expect(loaded_from_json).to(have_attributes(
       name: source_in.name,
-      uid: source_in.uid,
+      uid: source_in.uid
     ))
     expect(loaded_from_json.config.class).to eql(Svix::IngestSourceInConfig::GenericWebhook)
   end
 
   it "op webhook body" do
-    json_event = '{"data":{"data":{"appStats":[{"appId":"app_1srOrx2ZWZBpBUvZwXKQmoEYga2","appUid":null,"messageDestinations":343}]},"status":"finished","task":"application.stats","taskId":"qtask_1srOrx2ZWZBpBUvZwXKQmoEYga2"},"type":"background_task.finished"}';
+    json_event = '{"data":{"data":{"appStats":[{"appId":"app_1srOrx2ZWZBpBUvZwXKQmoEYga2","appUid":null,"messageDestinations":343}]},"status":"finished","task":"application.stats","taskId":"qtask_1srOrx2ZWZBpBUvZwXKQmoEYga2"},"type":"background_task.finished"}'
     loaded_from_json = Svix::BackgroundTaskFinishedEvent.deserialize(JSON.parse(json_event))
 
     expect(loaded_from_json.to_json).to eql(json_event)
@@ -445,7 +445,7 @@ describe "API Client" do
         body: '{"data":[],"done":true,"iterator":null,"prevIterator":null,"extra-key":"ignored"}'
       )
 
-    svx.application.list()
+    svx.application.list
 
     expect(WebMock).to(
       have_requested(:get, "#{host}/api/v1/app")

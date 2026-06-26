@@ -44,7 +44,7 @@ export class StreamingSink {
   public constructor(private readonly requestCtx: SvixRequestContext) {}
 
   /** List of all the stream's sinks. */
-  public list(
+  public async list(
     streamId: string,
     options?: StreamingSinkListOptions
   ): Promise<ListResponseStreamSinkOut> {
@@ -57,14 +57,14 @@ export class StreamingSink {
       order: options?.order,
     });
 
-    return request.send(
+    return await request.send(
       this.requestCtx,
       ListResponseStreamSinkOutSerializer._fromJsonObject
     );
   }
 
   /** Creates a new sink. */
-  public create(
+  public async create(
     streamId: string,
     streamSinkIn: StreamSinkIn,
     options?: StreamingSinkCreateOptions
@@ -75,11 +75,11 @@ export class StreamingSink {
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
     request.setBody(StreamSinkInSerializer._toJsonObject(streamSinkIn));
 
-    return request.send(this.requestCtx, StreamSinkOutSerializer._fromJsonObject);
+    return await request.send(this.requestCtx, StreamSinkOutSerializer._fromJsonObject);
   }
 
   /** Get a sink by id or uid. */
-  public get(streamId: string, sinkId: string): Promise<StreamSinkOut> {
+  public async get(streamId: string, sinkId: string): Promise<StreamSinkOut> {
     const request = new SvixRequest(
       HttpMethod.GET,
       "/api/v1/stream/{stream_id}/sink/{sink_id}"
@@ -88,11 +88,11 @@ export class StreamingSink {
     request.setPathParam("stream_id", streamId);
     request.setPathParam("sink_id", sinkId);
 
-    return request.send(this.requestCtx, StreamSinkOutSerializer._fromJsonObject);
+    return await request.send(this.requestCtx, StreamSinkOutSerializer._fromJsonObject);
   }
 
   /** Update a sink. */
-  public update(
+  public async update(
     streamId: string,
     sinkId: string,
     streamSinkIn: StreamSinkIn
@@ -106,11 +106,11 @@ export class StreamingSink {
     request.setPathParam("sink_id", sinkId);
     request.setBody(StreamSinkInSerializer._toJsonObject(streamSinkIn));
 
-    return request.send(this.requestCtx, StreamSinkOutSerializer._fromJsonObject);
+    return await request.send(this.requestCtx, StreamSinkOutSerializer._fromJsonObject);
   }
 
   /** Delete a sink. */
-  public delete(streamId: string, sinkId: string): Promise<void> {
+  public async delete(streamId: string, sinkId: string): Promise<void> {
     const request = new SvixRequest(
       HttpMethod.DELETE,
       "/api/v1/stream/{stream_id}/sink/{sink_id}"
@@ -119,11 +119,11 @@ export class StreamingSink {
     request.setPathParam("stream_id", streamId);
     request.setPathParam("sink_id", sinkId);
 
-    return request.sendNoResponseBody(this.requestCtx);
+    return await request.sendNoResponseBody(this.requestCtx);
   }
 
   /** Partially update a sink. */
-  public patch(
+  public async patch(
     streamId: string,
     sinkId: string,
     streamSinkPatch: StreamSinkPatch
@@ -137,7 +137,7 @@ export class StreamingSink {
     request.setPathParam("sink_id", sinkId);
     request.setBody(StreamSinkPatchSerializer._toJsonObject(streamSinkPatch));
 
-    return request.send(this.requestCtx, StreamSinkOutSerializer._fromJsonObject);
+    return await request.send(this.requestCtx, StreamSinkOutSerializer._fromJsonObject);
   }
 
   /**
@@ -147,7 +147,7 @@ export class StreamingSink {
    *
    * For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
    */
-  public getSecret(streamId: string, sinkId: string): Promise<SinkSecretOut> {
+  public async getSecret(streamId: string, sinkId: string): Promise<SinkSecretOut> {
     const request = new SvixRequest(
       HttpMethod.GET,
       "/api/v1/stream/{stream_id}/sink/{sink_id}/secret"
@@ -156,11 +156,11 @@ export class StreamingSink {
     request.setPathParam("stream_id", streamId);
     request.setPathParam("sink_id", sinkId);
 
-    return request.send(this.requestCtx, SinkSecretOutSerializer._fromJsonObject);
+    return await request.send(this.requestCtx, SinkSecretOutSerializer._fromJsonObject);
   }
 
   /** Rotates the signing secret (only supported for http sinks). */
-  public rotateSecret(
+  public async rotateSecret(
     streamId: string,
     sinkId: string,
     endpointSecretRotateIn: EndpointSecretRotateIn,
@@ -178,11 +178,11 @@ export class StreamingSink {
       EndpointSecretRotateInSerializer._toJsonObject(endpointSecretRotateIn)
     );
 
-    return request.send(this.requestCtx, EmptyResponseSerializer._fromJsonObject);
+    return await request.send(this.requestCtx, EmptyResponseSerializer._fromJsonObject);
   }
 
   /** Set or unset the transformation code associated with this sink. */
-  public transformationPartialUpdate(
+  public async transformationPartialUpdate(
     streamId: string,
     sinkId: string,
     sinkTransformIn: SinkTransformIn
@@ -196,6 +196,6 @@ export class StreamingSink {
     request.setPathParam("sink_id", sinkId);
     request.setBody(SinkTransformInSerializer._toJsonObject(sinkTransformIn));
 
-    return request.send(this.requestCtx, EmptyResponseSerializer._fromJsonObject);
+    return await request.send(this.requestCtx, EmptyResponseSerializer._fromJsonObject);
   }
 }

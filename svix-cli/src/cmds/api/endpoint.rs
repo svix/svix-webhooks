@@ -135,6 +135,7 @@ pub struct EndpointArgs {
     pub command: EndpointCommands,
 }
 
+#[allow(clippy::large_enum_variant)]
 #[derive(Subcommand)]
 pub enum EndpointCommands {
     /// List the application's endpoints.

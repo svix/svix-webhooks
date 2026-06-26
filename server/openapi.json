@@ -611,6 +611,9 @@
                     "status": {
                         "$ref": "#/components/schemas/MessageStatus"
                     },
+                    "statusText": {
+                        "$ref": "#/components/schemas/MessageStatusText"
+                    },
                     "timestamp": {
                         "format": "date-time",
                         "type": "string"
@@ -621,6 +624,7 @@
                     "id",
                     "payload",
                     "status",
+                    "statusText",
                     "timestamp"
                 ],
                 "type": "object"
@@ -840,6 +844,10 @@
             },
             "EndpointStats": {
                 "properties": {
+                    "canceled": {
+                        "format": "int64",
+                        "type": "integer"
+                    },
                     "fail": {
                         "format": "int64",
                         "type": "integer"
@@ -858,6 +866,7 @@
                     }
                 },
                 "required": [
+                    "canceled",
                     "fail",
                     "pending",
                     "sending",
@@ -1964,6 +1973,9 @@
                     "status": {
                         "$ref": "#/components/schemas/MessageStatus"
                     },
+                    "statusText": {
+                        "$ref": "#/components/schemas/MessageStatusText"
+                    },
                     "throttleRate": {
                         "description": "Maximum messages per second to send to this endpoint.\n\nOutgoing messages will be throttled to this rate.",
                         "format": "uint16",
@@ -2004,6 +2016,7 @@
                     "description",
                     "id",
                     "status",
+                    "statusText",
                     "updatedAt",
                     "url",
                     "version"
@@ -2192,12 +2205,17 @@
                     },
                     "task": {
                         "$ref": "#/components/schemas/BackgroundTaskType"
+                    },
+                    "updatedAt": {
+                        "format": "date-time",
+                        "type": "string"
                     }
                 },
                 "required": [
                     "id",
                     "status",
-                    "task"
+                    "task",
+                    "updatedAt"
                 ],
                 "type": "object"
             },

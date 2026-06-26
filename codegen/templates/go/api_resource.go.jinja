@@ -1,7 +1,7 @@
 {% set resource_type_name = resource.name | to_upper_camel_case -%}
 {% set resource_self_name = resource.name | to_lower_camel_case -%}
 // Package svix this file is @generated DO NOT EDIT
-package svix
+package {{ context.package }}
 
 import (
 	"fmt"
@@ -123,9 +123,9 @@ func ({{ resource_self_name }} *{{ resource_type_name }}) {{ op.name | to_upper_
 	{% endif -%}
 
 	{% if op | has_query_or_header_params -%}
-	{% set used_err = true -%}
-	var err error
 	if o != nil {
+		var err error
+
 		{# header params -#}
 		{% if op.header_params | length > 0 -%}
 			{% for p in op.header_params -%}
@@ -134,7 +134,7 @@ func ({{ resource_self_name }} *{{ resource_type_name }}) {{ op.name | to_upper_
 		{% endif -%}
 
 		{# query params -#}
-		{% if op.query_params | length >0 -%}
+		{% if op.id != "v1.message.create" and op.query_params | length > 0 -%}
 			{% for p in op.query_params -%}
 		internal.SerializeParamToMap("{{ p.name }}", o.{{ p.name | to_upper_camel_case }}, queryMap, &err)
 			{% endfor -%}
@@ -144,6 +144,9 @@ func ({{ resource_self_name }} *{{ resource_type_name }}) {{ op.name | to_upper_
 			return {% if has_return %}nil,{% endif %} err
 		}
 	}
+	{% if op.id == "v1.message.create" -%}
+	queryMap["with_content"] = "false"
+	{% endif -%}
 	{% endif -%}
 
 	{# make template ugly, but generated code nice -#}
@@ -153,7 +156,8 @@ func ({{ resource_self_name }} *{{ resource_type_name }}) {{ op.name | to_upper_
 	{% else -%}
 		{% set generic_ret_type -%}any,{{ ret_type }}{% endset -%}
 	{% endif -%}
-	{% if has_return %}return {% else %} _,err {% if not used_err%}:{% endif%}= {% endif %}internal.ExecuteRequest[{{ generic_ret_type }}](
+	{% set execute_request -%}
+	internal.ExecuteRequest[{{ generic_ret_type }}](
 		ctx,
 		{{ resource_self_name }}.client,
 		"{{ op.method | upper }}",
@@ -185,8 +189,21 @@ func ({{ resource_self_name }} *{{ resource_type_name }}) {{ op.name | to_upper_
 		nil,
 		{% endif -%}
 	)
-	{% if not has_return -%}
-	return err
+	{%- endset %}
+	{%- if op.id == "v1.message.create" -%}
+		response, err := {{ execute_request }}
+		if err != nil {
+			return nil, err
+		}
+		if o == nil || o.WithContent == nil || *o.WithContent == true {
+			response.Payload = messageIn.Payload
+		}
+		return response, nil
+	{%- elif has_return -%}
+		return {{ execute_request }}
+	{%- else -%}
+		_, err := {{ execute_request }}
+		return err
 	{% endif -%}
 }
 	{% set extra_path -%}

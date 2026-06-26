@@ -1,5 +1,5 @@
 # this file is @generated
-{% set excluded_resources = ["environment", "health", "ingest"] -%}
+{% set excluded_resources = ["environment", "ingest"] -%}
 
 {%- for resource in api.resources -%}
     {%- if resource.name not in excluded_resources -%}

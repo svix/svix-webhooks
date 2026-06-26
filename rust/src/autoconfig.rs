@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-struct AutoConfigTokenContentV1 {
+pub struct AutoConfigTokenContentV1 {
     #[serde(rename = "aid")]
     pub app_id: String,
     #[serde(rename = "eid")]
@@ -40,7 +40,7 @@ pub enum AutoConfigError {
     InvalidToken,
 }
 
-fn decode_autoconfig_token_v1(
+pub fn decode_autoconfig_token_v1(
     token: &str,
 ) -> std::result::Result<AutoConfigTokenContentV1, AutoConfigError> {
     let token = token
@@ -77,12 +77,11 @@ impl AutoConfig {
     }
 
     pub async fn subscribe(&self) -> Result<EndpointOut> {
+        let mut subscribe_in = SubscribeIn::new();
+        subscribe_in.endpoint = Some(self.endpoint.clone());
+
         api_internal::endpoint_auto_config(self.svix.cfg())
-            .update(
-                self.app_id.clone(),
-                self.endpoint_id.clone(),
-                SubscribeIn::new(self.endpoint.clone()),
-            )
+            .update(self.app_id.clone(), self.endpoint_id.clone(), subscribe_in)
             .await
     }
 

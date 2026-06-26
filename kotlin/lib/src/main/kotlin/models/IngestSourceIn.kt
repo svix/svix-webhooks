@@ -197,6 +197,12 @@ sealed class IngestSourceInConfig {
         override fun toJsonElement() = Json.encodeToJsonElement(ZoomConfig.serializer(), zoom)
     }
 
+    @VariantName("tailscale")
+    data class Tailscale(val tailscale: TailscaleConfig) : IngestSourceInConfig() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement(TailscaleConfig.serializer(), tailscale)
+    }
+
     @VariantName("telnyx")
     data class Telnyx(val telnyx: TelnyxConfig) : IngestSourceInConfig() {
         override fun toJsonElement() = Json.encodeToJsonElement(TelnyxConfig.serializer(), telnyx)
@@ -364,6 +370,10 @@ sealed class IngestSourceInConfig {
                 "zoom" to
                     { config ->
                         Zoom(Json.decodeFromJsonElement(ZoomConfig.serializer(), config))
+                    },
+                "tailscale" to
+                    { config ->
+                        Tailscale(Json.decodeFromJsonElement(TailscaleConfig.serializer(), config))
                     },
                 "telnyx" to
                     { config ->

@@ -37,8 +37,15 @@ export class Streaming {
     return new StreamingStream(this.requestCtx);
   }
 
-  /** Get the HTTP sink headers. Only valid for `http` or `otelTracing` sinks. */
-  public sinkHeadersGet(streamId: string, sinkId: string): Promise<EndpointHeadersOut> {
+  /**
+   * Get the HTTP sink headers.
+   *
+   * Only valid for `http` or `otelTracing` sinks.
+   */
+  public async sinkHeadersGet(
+    streamId: string,
+    sinkId: string
+  ): Promise<EndpointHeadersOut> {
     const request = new SvixRequest(
       HttpMethod.GET,
       "/api/v1/stream/{stream_id}/sink/{sink_id}/headers"
@@ -47,11 +54,18 @@ export class Streaming {
     request.setPathParam("stream_id", streamId);
     request.setPathParam("sink_id", sinkId);
 
-    return request.send(this.requestCtx, EndpointHeadersOutSerializer._fromJsonObject);
+    return await request.send(
+      this.requestCtx,
+      EndpointHeadersOutSerializer._fromJsonObject
+    );
   }
 
-  /** Updates the Sink's headers. Only valid for `http` or `otelTracing` sinks. */
-  public sinkHeadersPatch(
+  /**
+   * Updates the Sink's headers.
+   *
+   * Only valid for `http` or `otelTracing` sinks.
+   */
+  public async sinkHeadersPatch(
     streamId: string,
     sinkId: string,
     httpSinkHeadersPatchIn: HttpSinkHeadersPatchIn
@@ -67,11 +81,14 @@ export class Streaming {
       HttpSinkHeadersPatchInSerializer._toJsonObject(httpSinkHeadersPatchIn)
     );
 
-    return request.send(this.requestCtx, EndpointHeadersOutSerializer._fromJsonObject);
+    return await request.send(
+      this.requestCtx,
+      EndpointHeadersOutSerializer._fromJsonObject
+    );
   }
 
   /** Get the transformation code associated with this sink. */
-  public sinkTransformationGet(
+  public async sinkTransformationGet(
     streamId: string,
     sinkId: string
   ): Promise<SinkTransformationOut> {
@@ -83,6 +100,9 @@ export class Streaming {
     request.setPathParam("stream_id", streamId);
     request.setPathParam("sink_id", sinkId);
 
-    return request.send(this.requestCtx, SinkTransformationOutSerializer._fromJsonObject);
+    return await request.send(
+      this.requestCtx,
+      SinkTransformationOutSerializer._fromJsonObject
+    );
   }
 }

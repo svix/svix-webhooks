@@ -26,6 +26,7 @@ import (
 //   - "slack": Use SlackConfig
 //   - "stripe": Use StripeConfig
 //   - "beehiiv","brex","clerk","guesty","incident-io","lithic","nash","pleo","psi-fi","replicate","resend","safebase","sardine","stych","svix","open-ai","render": Use SvixConfig
+//   - "tailscale": Use TailscaleConfig
 //   - "telnyx": Use TelnyxConfig
 //   - "vapi": Use VapiConfig
 //   - "veriff": Use VeriffConfig
@@ -75,6 +76,7 @@ const (
 	IngestSourceInTypeStych          IngestSourceInType = "stych"
 	IngestSourceInTypeSvix           IngestSourceInType = "svix"
 	IngestSourceInTypeZoom           IngestSourceInType = "zoom"
+	IngestSourceInTypeTailscale      IngestSourceInType = "tailscale"
 	IngestSourceInTypeTelnyx         IngestSourceInType = "telnyx"
 	IngestSourceInTypeVapi           IngestSourceInType = "vapi"
 	IngestSourceInTypeOpenAi         IngestSourceInType = "open-ai"
@@ -107,6 +109,7 @@ func (ShopifyConfig) isIngestSourceInConfig()   {}
 func (SlackConfig) isIngestSourceInConfig()     {}
 func (StripeConfig) isIngestSourceInConfig()    {}
 func (ZoomConfig) isIngestSourceInConfig()      {}
+func (TailscaleConfig) isIngestSourceInConfig() {}
 func (TelnyxConfig) isIngestSourceInConfig()    {}
 func (VapiConfig) isIngestSourceInConfig()      {}
 func (VeriffConfig) isIngestSourceInConfig()    {}
@@ -199,6 +202,10 @@ func (i *IngestSourceIn) UnmarshalJSON(data []byte) error {
 		var c SvixConfig
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
+	case "tailscale":
+		var c TailscaleConfig
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
 	case "telnyx":
 		var c TelnyxConfig
 		err = json.Unmarshal(aux.Config, &c)
@@ -272,6 +279,7 @@ var IngestSourceInTypeFromString = map[string]IngestSourceInType{
 	"stych":           IngestSourceInTypeStych,
 	"svix":            IngestSourceInTypeSvix,
 	"zoom":            IngestSourceInTypeZoom,
+	"tailscale":       IngestSourceInTypeTailscale,
 	"telnyx":          IngestSourceInTypeTelnyx,
 	"vapi":            IngestSourceInTypeVapi,
 	"open-ai":         IngestSourceInTypeOpenAi,

@@ -28,7 +28,9 @@ class Streaming
     }
 
     /**
-     * Get the HTTP sink headers. Only valid for `http` or `otelTracing` sinks.
+     * Get the HTTP sink headers.
+     *
+     * Only valid for `http` or `otelTracing` sinks.
      *
      * @throws ApiException
      */
@@ -43,7 +45,9 @@ class Streaming
     }
 
     /**
-     * Updates the Sink's headers. Only valid for `http` or `otelTracing` sinks.
+     * Updates the Sink's headers.
+     *
+     * Only valid for `http` or `otelTracing` sinks.
      *
      * @throws ApiException
      */

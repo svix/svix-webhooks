@@ -1,5 +1,11 @@
 //! Extensions of the auto-generated "models" (schema structs).
 
+// The `*FromStrError` types below are the `Err` of public `FromStr` impls.
+// They are reachable but not nameable outside the crate; that is acceptable
+// here since they are trivial unit error structs with nothing to match on or
+// configure, so we don't surface them as named public API.
+#![allow(unnameable_types)]
+
 use std::str::FromStr;
 
 use serde_json::json;

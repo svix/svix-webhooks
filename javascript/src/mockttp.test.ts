@@ -5,7 +5,6 @@ import * as mockttp from "mockttp";
 import { ApiException } from "./util";
 import { Ordering } from "./models/ordering";
 import type { ValidationError, HttpErrorOut } from "./HttpErrors";
-import { LIB_VERSION } from "./request";
 
 const ApplicationOut = `{"uid":"unique-identifier","name":"My first application","rateLimit":0,"id":"app_1srOrx2ZWZBpBUvZwXKQmoEYga2","createdAt":"2019-08-24T14:15:22Z","updatedAt":"2019-08-24T14:15:22Z","metadata":{"property1":"string","property2":"string"}}`;
 const ListResponseMessageOut = `{"data":[{"eventId":"unique-identifier","eventType":"user.signup","payload":{"email":"test@example.com","type":"user.created","username":"test_user"},"channels":["project_123","group_2"],"id":"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2","timestamp":"2019-08-24T14:15:22Z","tags":["project_1337"]}],"iterator":"iterator","prevIterator":"-iterator","done":true}`;
@@ -19,6 +18,7 @@ const EndpointOut = `{"description":"string","rateLimit":0,"uid":"unique-identif
 const ValidationErrorOut = `{"detail":[{"loc":["string"],"msg":"string","type":"string"}]}`;
 const IngestSourceOutCron = `{"type":"cron","config":{"schedule":"hello","payload":"world"},"id":"src_2yZwUhtgs5Ai8T9yRQJXA","uid":"unique-identifier","name":"string","ingestUrl":"http://example.com","createdAt":"2019-08-24T14:15:22Z","updatedAt":"2019-08-24T14:15:22Z"}`;
 const IngestSourceOutGeneric = `{"type":"generic-webhook","config":{},"id":"src_2yZwUhtgs5Ai8T9yRQJXA","uid":"unique-identifier","name":"string","ingestUrl":"http://example.com","createdAt":"2019-08-24T14:15:22Z","updatedAt":"2019-08-24T14:15:22Z"}`;
+const MessageCreateNoContentOut = `{"channels":null,"deliverAt":null,"eventId":null,"eventType":"user.signup","id":"msg_2srOrx2ZWZBpBUvZwXKQmoEYga2","payload":{"m":"FILTERED"},"tags":null,"timestamp":"2026-06-08T09:25:17.864Z"}`;
 const mockServer = mockttp.getLocal();
 
 test("mockttp tests", async (t) => {
@@ -335,9 +335,10 @@ test("mockttp tests", async (t) => {
     const requests = await endpointMock.getSeenRequests();
     assert.equal(requests.length, 1);
     assert.equal(requests[0].headers["authorization"], "Bearer token.eu");
-    assert.equal(
+    assert.ok(requests[0].headers["user-agent"]);
+    assert.match(
       requests[0].headers["user-agent"],
-      `svix-libs/${LIB_VERSION}/javascript`
+      /^svix-libs\/[0-9.]+\/javascript node\/v[0-9.]+ (aix|darwin|freebsd|linux|openbsd|sunos|win32)\/(arm|arm64|ia32|x64)$/
     );
   });
 
@@ -469,6 +470,27 @@ test("mockttp tests", async (t) => {
     assert(idempotencyKey.startsWith("auto_"));
   });
 
+  await t.test("POST retry reuses the same auto idempotency key", async () => {
+    const endpointMock = await mockServer
+      .forPost("/api/v1/app")
+      .thenReply(500, `{"code":"500","detail":"asd"}`);
+    const svx = new Svix("token", {
+      serverUrl: mockServer.url,
+      numRetries: 2,
+    });
+
+    await assert.rejects(svx.application.create({ name: "test app" }), ApiException);
+
+    const requests = await endpointMock.getSeenRequests();
+    assert.equal(requests.length, 3);
+
+    const idempotencyKey = requests[0].headers["idempotency-key"] as string;
+    assert(idempotencyKey.startsWith("auto_"));
+
+    for (const request of requests) {
+      assert.equal(request.headers["idempotency-key"], idempotencyKey);
+    }
+  });
   await t.test("test client provided idempotency key is not overridden", async () => {
     const endpointMock = await mockServer
       .forPost("/api/v1/app")
@@ -517,5 +539,26 @@ test("mockttp tests", async (t) => {
     const svx = new Svix("token", { serverUrl: mockServer.url, fetch: mockFetch });
     await svx.application.list({ order: Ordering.Ascending });
     assert(customFetchCalled);
+  });
+
+  await t.test("test create-message uses with_content=false by default", async () => {
+    const appId = "app_1srOrx2ZWZBpBUvZwXKQmoEYga2";
+    const endpointMock = await mockServer
+      .forPost(`/api/v1/app/${appId}/msg`)
+      .thenReply(202, MessageCreateNoContentOut);
+    const svx = new Svix("token.eu", { serverUrl: mockServer.url });
+
+    const eventType = "user.signup";
+    const payload = {
+      email: "test@example.com",
+      type: eventType,
+      username: "test_user",
+    };
+    const response = await svx.message.create(appId, { eventType, payload });
+    assert.equal(response.payload, payload);
+
+    const requests = await endpointMock.getSeenRequests();
+    assert.equal(requests.length, 1);
+    assert(requests[0].url.endsWith(`api/v1/app/${appId}/msg?with_content=false`));
   });
 });

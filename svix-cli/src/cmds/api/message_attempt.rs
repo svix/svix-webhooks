@@ -36,7 +36,9 @@ pub struct MessageAttemptListByEndpointOptions {
     /// Note that message payloads are never included in the response, regardless of this flag.
     #[arg(long)]
     pub with_msg: Option<bool>,
-    /// When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are returned as Success (0)
+    /// When `true`, return the Canceled (4) status in attempts.
+    ///
+    /// If `false`, canceled attempts are returned as Success (0) for backwards compatibility.
     #[arg(long)]
     pub expanded_statuses: Option<bool>,
     /// Filter response based on the event type
@@ -109,7 +111,9 @@ pub struct MessageAttemptListByMsgOptions {
     /// When `true` attempt content is included in the response
     #[arg(long)]
     pub with_content: Option<bool>,
-    /// When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are returned as Success (0)
+    /// When `true`, return the Canceled (4) status in attempts.
+    ///
+    /// If `false`, canceled attempts are returned as Success (0) for backwards compatibility.
     #[arg(long)]
     pub expanded_statuses: Option<bool>,
     /// Filter response based on the event type
@@ -176,7 +180,9 @@ pub struct MessageAttemptListAttemptedMessagesOptions {
     /// When `true` message payloads are included in the response
     #[arg(long)]
     pub with_content: Option<bool>,
-    /// When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are returned as Success (0)
+    /// When `true`, return the Canceled (4) status in attempts.
+    ///
+    /// If `false`, canceled attempts are returned as Success (0) for backwards compatibility.
     #[arg(long)]
     pub expanded_statuses: Option<bool>,
     /// Filter response based on the event type
@@ -217,7 +223,9 @@ impl From<MessageAttemptListAttemptedMessagesOptions>
 
 #[derive(Args, Clone)]
 pub struct MessageAttemptGetOptions {
-    /// When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are returned as Success (0)
+    /// When `true`, return the Canceled (4) status in attempts.
+    ///
+    /// If `false`, canceled attempts are returned as Success (0) for backwards compatibility.
     #[arg(long)]
     pub expanded_statuses: Option<bool>,
 }
@@ -268,6 +276,7 @@ pub struct MessageAttemptArgs {
     pub command: MessageAttemptCommands,
 }
 
+#[allow(clippy::large_enum_variant)]
 #[derive(Subcommand)]
 pub enum MessageAttemptCommands {
     /// List attempts by endpoint id
@@ -376,8 +385,9 @@ pub enum MessageAttemptCommands {
         #[clap(flatten)]
         options: MessageAttemptListByMsgOptions,
     },
-    /// List messages for a particular endpoint. Additionally includes metadata about the latest message attempt.
+    /// List messages for a particular endpoint.
     ///
+    /// Additionally includes metadata about the latest message attempt.
     /// The `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.
     ///
     /// Note that by default this endpoint is limited to retrieving 90 days' worth of data

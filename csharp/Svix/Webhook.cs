@@ -35,11 +35,21 @@ namespace Svix
             }
 
             this.key = Convert.FromBase64String(key);
+
+            if (this.key == null || this.key.Length == 0)
+            {
+                throw new EmptyWebhookSecretException("Missing webhook secret");
+            }
         }
 
         public Webhook(byte[] key)
         {
             this.key = key;
+
+            if (this.key == null || this.key.Length == 0)
+            {
+                throw new EmptyWebhookSecretException("Missing webhook secret");
+            }
         }
 
         public void Verify(ReadOnlySpan<char> payload, WebHeaderCollection headers)
@@ -95,14 +105,20 @@ namespace Svix
             expectedSignature = expectedSignature.Slice(0, charsWritten);
 
             var signaturePtr = msgSignature;
-            var spaceIndex = signaturePtr.IndexOf(' ');
-            do
+            while (!signaturePtr.IsEmpty)
             {
-                var versionedSignature =
-                    spaceIndex < 0 ? msgSignature : signaturePtr.Slice(0, spaceIndex);
-
-                signaturePtr = signaturePtr.Slice(spaceIndex + 1);
-                spaceIndex = signaturePtr.IndexOf(' ');
+                var spaceIndex = signaturePtr.IndexOf(' ');
+                ReadOnlySpan<char> versionedSignature;
+                if (spaceIndex < 0)
+                {
+                    versionedSignature = signaturePtr;
+                    signaturePtr = ReadOnlySpan<char>.Empty;
+                }
+                else
+                {
+                    versionedSignature = signaturePtr.Slice(0, spaceIndex);
+                    signaturePtr = signaturePtr.Slice(spaceIndex + 1);
+                }
 
                 var commaIndex = versionedSignature.IndexOf(',');
                 if (commaIndex < 0)
@@ -119,7 +135,7 @@ namespace Svix
                 {
                     return;
                 }
-            } while (spaceIndex >= 0);
+            }
 
             throw new WebhookVerificationException("No matching signature found");
         }

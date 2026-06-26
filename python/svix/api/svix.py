@@ -1,5 +1,6 @@
 # this file is @generated
 
+import platform
 import typing as t
 from dataclasses import dataclass, field
 
@@ -11,6 +12,7 @@ from .connector import Connector, ConnectorAsync
 from .endpoint import Endpoint, EndpointAsync
 from .environment import Environment, EnvironmentAsync
 from .event_type import EventType, EventTypeAsync
+from .health import Health, HealthAsync
 from .ingest import Ingest, IngestAsync
 from .integration import Integration, IntegrationAsync
 from .message import Message, MessageAsync
@@ -74,11 +76,17 @@ class ClientBase:
         elif region == "au":
             regional_url = "https://api.au.svix.com"
 
+        user_agent_fields = [
+            f"svix-libs/{__version__}/python",
+            f"python/{platform.python_version()}",
+            f"{platform.system()}/{platform.machine()}",
+        ]
+
         host = options.server_url or regional_url or DEFAULT_SERVER_URL
         client = AuthenticatedClient(
             base_url=host,
             token=auth_token,
-            headers={"user-agent": f"svix-libs/{__version__}/python"},
+            headers={"user-agent": " ".join(user_agent_fields)},
             verify_ssl=True,
             retry_schedule=options.retry_schedule,
             timeout=options.timeout,
@@ -117,6 +125,10 @@ class SvixAsync(ClientBase):
     @property
     def event_type(self) -> EventTypeAsync:
         return EventTypeAsync(self._client)
+
+    @property
+    def health(self) -> HealthAsync:
+        return HealthAsync(self._client)
 
     @property
     def ingest(self) -> IngestAsync:
@@ -179,6 +191,10 @@ class Svix(ClientBase):
     @property
     def event_type(self) -> EventType:
         return EventType(self._client)
+
+    @property
+    def health(self) -> Health:
+        return Health(self._client)
 
     @property
     def ingest(self) -> Ingest:

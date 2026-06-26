@@ -45,7 +45,7 @@ export class Statistics {
    * }
    * ```
    */
-  public aggregateAppStats(
+  public async aggregateAppStats(
     appUsageStatsIn: AppUsageStatsIn,
     options?: StatisticsAggregateAppStatsOptions
   ): Promise<AppUsageStatsOut> {
@@ -54,7 +54,10 @@ export class Statistics {
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
     request.setBody(AppUsageStatsInSerializer._toJsonObject(appUsageStatsIn));
 
-    return request.send(this.requestCtx, AppUsageStatsOutSerializer._fromJsonObject);
+    return await request.send(
+      this.requestCtx,
+      AppUsageStatsOutSerializer._fromJsonObject
+    );
   }
 
   /**
@@ -81,10 +84,10 @@ export class Statistics {
    * }
    * ```
    */
-  public aggregateEventTypes(): Promise<AggregateEventTypesOut> {
+  public async aggregateEventTypes(): Promise<AggregateEventTypesOut> {
     const request = new SvixRequest(HttpMethod.PUT, "/api/v1/stats/usage/event-types");
 
-    return request.send(
+    return await request.send(
       this.requestCtx,
       AggregateEventTypesOutSerializer._fromJsonObject
     );

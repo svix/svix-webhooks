@@ -27,6 +27,7 @@ var (
 	errNoMatchingSignature = fmt.Errorf("no matching signature found")
 	errMessageTooOld       = fmt.Errorf("message timestamp too old")
 	errMessageTooNew       = fmt.Errorf("message timestamp too new")
+	errEmptySecret         = fmt.Errorf("webhook secret may not be empty")
 )
 
 func NewWebhook(secret string) (*Webhook, error) {
@@ -34,12 +35,18 @@ func NewWebhook(secret string) (*Webhook, error) {
 	if err != nil {
 		return nil, err
 	}
+	if len(key) == 0 {
+		return nil, errEmptySecret
+	}
 	return &Webhook{
 		key: key,
 	}, nil
 }
 
 func NewWebhookRaw(secret []byte) (*Webhook, error) {
+	if len(secret) == 0 {
+		return nil, errEmptySecret
+	}
 	return &Webhook{
 		key: secret,
 	}, nil

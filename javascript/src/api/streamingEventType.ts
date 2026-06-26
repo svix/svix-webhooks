@@ -43,7 +43,7 @@ export class StreamingEventType {
   public constructor(private readonly requestCtx: SvixRequestContext) {}
 
   /** List of all the organization's event types for streaming. */
-  public list(
+  public async list(
     options?: StreamingEventTypeListOptions
   ): Promise<ListResponseStreamEventTypeOut> {
     const request = new SvixRequest(HttpMethod.GET, "/api/v1/stream/event-type");
@@ -55,14 +55,14 @@ export class StreamingEventType {
       include_archived: options?.includeArchived,
     });
 
-    return request.send(
+    return await request.send(
       this.requestCtx,
       ListResponseStreamEventTypeOutSerializer._fromJsonObject
     );
   }
 
   /** Create an event type for Streams. */
-  public create(
+  public async create(
     streamEventTypeIn: StreamEventTypeIn,
     options?: StreamingEventTypeCreateOptions
   ): Promise<StreamEventTypeOut> {
@@ -71,20 +71,26 @@ export class StreamingEventType {
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
     request.setBody(StreamEventTypeInSerializer._toJsonObject(streamEventTypeIn));
 
-    return request.send(this.requestCtx, StreamEventTypeOutSerializer._fromJsonObject);
+    return await request.send(
+      this.requestCtx,
+      StreamEventTypeOutSerializer._fromJsonObject
+    );
   }
 
   /** Get an event type. */
-  public get(name: string): Promise<StreamEventTypeOut> {
+  public async get(name: string): Promise<StreamEventTypeOut> {
     const request = new SvixRequest(HttpMethod.GET, "/api/v1/stream/event-type/{name}");
 
     request.setPathParam("name", name);
 
-    return request.send(this.requestCtx, StreamEventTypeOutSerializer._fromJsonObject);
+    return await request.send(
+      this.requestCtx,
+      StreamEventTypeOutSerializer._fromJsonObject
+    );
   }
 
   /** Update or create a event type for Streams. */
-  public update(
+  public async update(
     name: string,
     streamEventTypeIn: StreamEventTypeIn
   ): Promise<StreamEventTypeOut> {
@@ -93,11 +99,17 @@ export class StreamingEventType {
     request.setPathParam("name", name);
     request.setBody(StreamEventTypeInSerializer._toJsonObject(streamEventTypeIn));
 
-    return request.send(this.requestCtx, StreamEventTypeOutSerializer._fromJsonObject);
+    return await request.send(
+      this.requestCtx,
+      StreamEventTypeOutSerializer._fromJsonObject
+    );
   }
 
   /** Delete an event type. */
-  public delete(name: string, options?: StreamingEventTypeDeleteOptions): Promise<void> {
+  public async delete(
+    name: string,
+    options?: StreamingEventTypeDeleteOptions
+  ): Promise<void> {
     const request = new SvixRequest(
       HttpMethod.DELETE,
       "/api/v1/stream/event-type/{name}"
@@ -108,11 +120,11 @@ export class StreamingEventType {
       expunge: options?.expunge,
     });
 
-    return request.sendNoResponseBody(this.requestCtx);
+    return await request.sendNoResponseBody(this.requestCtx);
   }
 
   /** Patch an event type for Streams. */
-  public patch(
+  public async patch(
     name: string,
     streamEventTypePatch: StreamEventTypePatch
   ): Promise<StreamEventTypeOut> {
@@ -121,6 +133,9 @@ export class StreamingEventType {
     request.setPathParam("name", name);
     request.setBody(StreamEventTypePatchSerializer._toJsonObject(streamEventTypePatch));
 
-    return request.send(this.requestCtx, StreamEventTypeOutSerializer._fromJsonObject);
+    return await request.send(
+      this.requestCtx,
+      StreamEventTypeOutSerializer._fromJsonObject
+    );
   }
 }

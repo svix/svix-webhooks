@@ -18,6 +18,9 @@ ignored = [
 default = ["jemalloc"]
 jemalloc = ["dep:tikv-jemallocator"]
 
+[target.'cfg(not(target_env = "msvc"))'.dependencies]
+tikv-jemallocator = { version = "0.7.0", optional = true }
+
 [dependencies]
 aide = { version = "0.13.4", features = ["axum", "redoc", "macros", "axum-headers"] }
 anyhow = "1.0.56"
@@ -44,7 +47,7 @@ hmac-sha256 = "1"
 http = "1.1.0"
 http-body-util = "0.1.2"
 http02 = { package = "http", version = "0.2.12" }
-hyper = { version = "=1.9.0", features = ["full"] }
+hyper.workspace = true
 hyper-openssl = { version = "0.10.2", features = ["client-legacy", "tokio"] }
 hyper-util = { version = "0.1.16", features = ["client-legacy", "client-proxy", "tokio"] }
 # Reduce compile times for idna (we don't need the fastest possible impl of UTS 46)
@@ -69,17 +72,17 @@ redis = { version = "0.32.5", features = ["tokio-comp", "tokio-native-tls-comp",
 regex = "1.5.5"
 reqwest = { version = "0.13.4", default-features = false, features = ["json", "rustls", "hickory-dns"] }
 schemars = { version = "0.8.11", features = ["chrono", "url", "preserve_order"] }
-sea-orm = { version = "1.1.1", features = [ "sqlx-postgres", "runtime-tokio-rustls", "macros", "with-chrono", "with-json" ], default-features = false }
+sea-orm = { version = "1.1.1", features = ["sqlx-postgres", "runtime-tokio-rustls", "macros", "with-chrono", "with-json"], default-features = false }
 sentry = { version = "0.48.2", default-features = false, features = ["backtrace", "contexts", "debug-images", "panic", "tracing", "transport"] }
 serde = { version = "1.0.184", features = ["derive"] }
 serde_json = { version = "1.0.74", features = ["arbitrary_precision", "raw_value"] }
 serde_path_to_error = "0.1.7"
-sqlx = { version = "0.8.2", features = [ "runtime-tokio-rustls", "postgres", "migrate" ] }
+sqlx = { version = "0.8.2", features = ["runtime-tokio-rustls", "postgres", "migrate"] }
 svix = "1.17.0"
 svix-ksuid = { version = "0.10.0", default-features = false, features = ["chrono04"] }
 svix-server-derive = { path = "../svix-server-derive" }
 thiserror = "2.0.11"
-time = { version = "0.3.47", features = [ "std" ] }
+time = { version = "0.3.47", features = ["std"] }
 tokio = { version = "1.24.2", features = ["full"] }
 tokio-util = "0.7"
 tower = "0.5.1"
@@ -93,9 +96,6 @@ urlencoding = "2.1.2"
 # haven't gotten around to doing a proper upgrade yet (0.17 is a large
 # rewrite with a barely-useful changelog)
 validator = { git = "https://github.com/svix/validator.git", rev = "aebdc34a4ed72524902ff6d63397b9c435b0578f", features = ["derive"] }
-
-[target.'cfg(not(target_env = "msvc"))'.dependencies]
-tikv-jemallocator = { version = "0.7.0", optional = true }
 
 [dev-dependencies]
 assert_matches = "1.5.0"

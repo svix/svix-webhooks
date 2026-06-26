@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <PackageId>Svix</PackageId>
-    <Version>1.94.0</Version>
+    <Version>1.96.1</Version>
     <Authors>Svix</Authors>
     <Company>Svix</Company>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -16,5 +16,6 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Polly" Version="7.2.3" />
+    <PackageReference Include="System.Runtime.InteropServices" Version="4.3.0" />
   </ItemGroup>
 </Project>

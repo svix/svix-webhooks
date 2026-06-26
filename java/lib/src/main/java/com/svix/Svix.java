@@ -63,7 +63,10 @@ public class Svix {
         }
 
         Map<String, String> defaultHeaders = new HashMap<>();
-        defaultHeaders.put("User-Agent", "svix-libs/" + Version.VERSION + "/java");
+        String userAgent = (
+            "svix-libs/" + Version.VERSION + "/java jre/" + System.getProperty("java.runtime.version")
+        );
+        defaultHeaders.put("User-Agent", userAgent);
         defaultHeaders.put("Authorization", "Bearer " + token);
 
         this.httpClient = new SvixHttpClient(parsedUrl, defaultHeaders, options.getRetrySchedule());

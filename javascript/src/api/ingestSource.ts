@@ -34,7 +34,9 @@ export class IngestSource {
   public constructor(private readonly requestCtx: SvixRequestContext) {}
 
   /** List of all the organization's Ingest Sources. */
-  public list(options?: IngestSourceListOptions): Promise<ListResponseIngestSourceOut> {
+  public async list(
+    options?: IngestSourceListOptions
+  ): Promise<ListResponseIngestSourceOut> {
     const request = new SvixRequest(HttpMethod.GET, "/ingest/api/v1/source");
 
     request.setQueryParams({
@@ -43,14 +45,14 @@ export class IngestSource {
       order: options?.order,
     });
 
-    return request.send(
+    return await request.send(
       this.requestCtx,
       ListResponseIngestSourceOutSerializer._fromJsonObject
     );
   }
 
   /** Create Ingest Source. */
-  public create(
+  public async create(
     ingestSourceIn: IngestSourceIn,
     options?: IngestSourceCreateOptions
   ): Promise<IngestSourceOut> {
@@ -59,20 +61,20 @@ export class IngestSource {
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
     request.setBody(IngestSourceInSerializer._toJsonObject(ingestSourceIn));
 
-    return request.send(this.requestCtx, IngestSourceOutSerializer._fromJsonObject);
+    return await request.send(this.requestCtx, IngestSourceOutSerializer._fromJsonObject);
   }
 
   /** Get an Ingest Source by id or uid. */
-  public get(sourceId: string): Promise<IngestSourceOut> {
+  public async get(sourceId: string): Promise<IngestSourceOut> {
     const request = new SvixRequest(HttpMethod.GET, "/ingest/api/v1/source/{source_id}");
 
     request.setPathParam("source_id", sourceId);
 
-    return request.send(this.requestCtx, IngestSourceOutSerializer._fromJsonObject);
+    return await request.send(this.requestCtx, IngestSourceOutSerializer._fromJsonObject);
   }
 
   /** Update an Ingest Source. */
-  public update(
+  public async update(
     sourceId: string,
     ingestSourceIn: IngestSourceIn
   ): Promise<IngestSourceOut> {
@@ -81,11 +83,11 @@ export class IngestSource {
     request.setPathParam("source_id", sourceId);
     request.setBody(IngestSourceInSerializer._toJsonObject(ingestSourceIn));
 
-    return request.send(this.requestCtx, IngestSourceOutSerializer._fromJsonObject);
+    return await request.send(this.requestCtx, IngestSourceOutSerializer._fromJsonObject);
   }
 
   /** Delete an Ingest Source. */
-  public delete(sourceId: string): Promise<void> {
+  public async delete(sourceId: string): Promise<void> {
     const request = new SvixRequest(
       HttpMethod.DELETE,
       "/ingest/api/v1/source/{source_id}"
@@ -93,7 +95,7 @@ export class IngestSource {
 
     request.setPathParam("source_id", sourceId);
 
-    return request.sendNoResponseBody(this.requestCtx);
+    return await request.sendNoResponseBody(this.requestCtx);
   }
 
   /**
@@ -104,7 +106,7 @@ export class IngestSource {
    * will remain valid for 48 hours after rotation. The token can be
    * rotated a maximum of three times within the 48-hour period.
    */
-  public rotateToken(
+  public async rotateToken(
     sourceId: string,
     options?: IngestSourceRotateTokenOptions
   ): Promise<RotateTokenOut> {
@@ -116,6 +118,6 @@ export class IngestSource {
     request.setPathParam("source_id", sourceId);
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
 
-    return request.send(this.requestCtx, RotateTokenOutSerializer._fromJsonObject);
+    return await request.send(this.requestCtx, RotateTokenOutSerializer._fromJsonObject);
   }
 }

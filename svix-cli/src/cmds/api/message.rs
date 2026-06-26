@@ -126,6 +126,7 @@ pub struct MessageArgs {
     pub command: MessageCommands,
 }
 
+#[allow(clippy::large_enum_variant)]
 #[derive(Subcommand)]
 pub enum MessageCommands {
     Poller(MessagePollerArgs),

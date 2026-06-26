@@ -68,7 +68,7 @@ export class {{ resource_type_name }} {
         {% set response_type =
             op.response_body_schema_name | default("void") | replace("_", "") -%}
         {{ op.description | with_javadoc_deprecation(op.deprecated) | to_doc_comment(style="js") }}
-        public {{ op.name | to_lower_camel_case }}(
+        public async {{ op.name | to_lower_camel_case }}(
             {# path parameters -#}
             {% for p in op.path_params -%}
                 {{ p | to_lower_camel_case }}: string,
@@ -99,10 +99,15 @@ export class {{ resource_type_name }} {
             {% if op.query_params | length > 0 -%}
             request.setQueryParams({
                 {% for p in op.query_params -%}
-                "{{ p.name }}": options{% if not p.required %}?{% endif %}.{{ p.name | to_lower_camel_case }}
+                "{{ p.name }}":
+                {%- if op.id == "v1.message.create" and p.name == "with_content" -%}
+                    false,
+                {%- else -%}
+                options{% if not p.required %}?{% endif %}.{{ p.name | to_lower_camel_case }}
                     {#- HACK: default expanded_statuses to true, it only defaults to false
                         server-side because of backwards-compatibility for old SDKs #}
                     {%- if p.name == "expanded_statuses" %} ?? true{% endif %},
+                {%- endif %}
                 {% endfor -%}
             });
             {% endif -%}
@@ -121,13 +126,24 @@ export class {{ resource_type_name }} {
                 );
             {% endif -%}
 
-            {% if op.response_body_schema_name is defined %}
-                return request.send(
+            {% if op.response_body_schema_name is defined -%}
+                {% set send_request -%}
+                await request.send(
                     this.requestCtx,
                     {{ op.response_body_schema_name | to_upper_camel_case }}Serializer._fromJsonObject,
-                );
+                )
+                {%- endset %}
+                {% if op.id == "v1.message.create" -%}
+                    const response = {{ send_request }};
+                    if (options?.withContent ?? true) {
+                        response.payload = messageIn.payload;
+                    }
+                    return response;
+                {% else -%}
+                    return {{ send_request }};
+                {% endif -%}
             {% else %}
-                return request.sendNoResponseBody(this.requestCtx);
+                return await request.sendNoResponseBody(this.requestCtx);
             {% endif -%}
         }
 

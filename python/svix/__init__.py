@@ -15,7 +15,7 @@ from .api import (
     SvixAsync,
     SvixOptions,
 )
-from .autoconfig import AutoConfig, AutoConfigError
+from .autoconfig import AutoConfig, AutoConfigConsumer, AutoConfigError
 from .webhooks import Webhook, WebhookVerificationError
 
 __all__ = [
@@ -37,7 +37,8 @@ __all__ = [
     "Webhook",
     "WebhookVerificationError",
     "AutoConfig",
+    "AutoConfigConsumer",
     "AutoConfigError",
 ]
 
-__version__ = "1.94.0"
+__version__ = "1.96.1"

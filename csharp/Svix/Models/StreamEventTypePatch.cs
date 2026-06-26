@@ -27,11 +27,6 @@ namespace Svix.Models
 
         public bool ShouldSerializeFeatureFlags() => !FeatureFlags.IsUnset;
 
-        [JsonProperty("name")]
-        public MaybeUnset<string?> Name { get; set; } = MaybeUnset<string?>.Unset();
-
-        public bool ShouldSerializeName() => !Name.IsUnset;
-
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
@@ -41,7 +36,6 @@ namespace Svix.Models
             sb.Append("  Deprecated: ").Append(Deprecated).Append('\n');
             sb.Append("  Description: ").Append(Description).Append('\n');
             sb.Append("  FeatureFlags: ").Append(FeatureFlags).Append('\n');
-            sb.Append("  Name: ").Append(Name).Append('\n');
             sb.Append("}\n");
             return sb.ToString();
         }

@@ -69,6 +69,7 @@ pub struct StreamingEventTypeArgs {
     pub command: StreamingEventTypeCommands,
 }
 
+#[allow(clippy::large_enum_variant)]
 #[derive(Subcommand)]
 pub enum StreamingEventTypeCommands {
     /// List of all the organization's event types for streaming.
@@ -208,8 +209,7 @@ pub enum StreamingEventTypeCommands {
   \"archived\": true,
   \"deprecated\": true,
   \"description\": \"...\",
-  \"featureFlags\": [\"cool-new-feature\"],
-  \"name\": \"user.signup\"
+  \"featureFlags\": [\"cool-new-feature\"]
 }\n\nExample response:
 {
   \"archived\": true,

@@ -67,3 +67,54 @@ func (managementEnvironmentSettings *ManagementEnvironmentSettings) Patch(
 		&settingsInternalPatch,
 	)
 }
+
+// Get customer otel config.
+func (managementEnvironmentSettings *ManagementEnvironmentSettings) GetOtelConfig(
+	ctx context.Context,
+) (*models.OtelConfigOut, error) {
+	return internal.ExecuteRequest[any, models.OtelConfigOut](
+		ctx,
+		managementEnvironmentSettings.client,
+		"GET",
+		"/api/v1/management/environment-settings/customer-otel",
+		nil,
+		nil,
+		nil,
+		nil,
+	)
+}
+
+// Update customer otel config.
+func (managementEnvironmentSettings *ManagementEnvironmentSettings) UpdateOtelConfig(
+	ctx context.Context,
+	otelConfig models.OtelConfig,
+) error {
+	_, err := internal.ExecuteRequest[models.OtelConfig, any](
+		ctx,
+		managementEnvironmentSettings.client,
+		"PUT",
+		"/api/v1/management/environment-settings/customer-otel",
+		nil,
+		nil,
+		nil,
+		&otelConfig,
+	)
+	return err
+}
+
+// Delete customer otel config.
+func (managementEnvironmentSettings *ManagementEnvironmentSettings) DeleteOtelConfig(
+	ctx context.Context,
+) error {
+	_, err := internal.ExecuteRequest[any, any](
+		ctx,
+		managementEnvironmentSettings.client,
+		"DELETE",
+		"/api/v1/management/environment-settings/customer-otel",
+		nil,
+		nil,
+		nil,
+		nil,
+	)
+	return err
+}

@@ -50,7 +50,12 @@ class {{ resource_type_name }}{{ op.name | to_upper_camel_case }}Options(BaseOpt
     def _query_params(self) -> t.Dict[str, str]:
         return serialize_params({
         {%- for p in op.query_params %}
-            "{{ p.name }}": self.{{ p.name | to_snake_case }}
+            "{{ p.name }}":
+            {%- if op.id == "v1.message.create" and p.name == "with_content" -%}
+                False
+            {%- else -%}
+                self.{{ p.name | to_snake_case }}
+            {%- endif -%}
             {%- if p.name == "expanded_statuses"
                 %} if self.{{ p.name | to_snake_case }} is not None else True
             {%- endif %},
@@ -70,10 +75,12 @@ class {{ resource_type_name }}{{ op.name | to_upper_camel_case }}Options(BaseOpt
     {%- endif -%}
 {%- endfor %}
 
+{% if not (context is defined and context.api_internal) -%}
 {% set api_resource_extra -%}
     api_extra/{{ resource.name | to_snake_case }}.py
 {%- endset %}
 {% include api_resource_extra ignore missing %}
+{% endif -%}
 
 
 {% for is_async in [true, false] %}
@@ -118,7 +125,9 @@ class {{ resource.name | to_upper_camel_case }}{% if is_async %}Async{% endif %}
             {# add query_options type #}
             {%- if op | has_query_or_header_params %}
             {% set resource_operation_option %}{{ resource_type_name }}{{ op.name | to_upper_camel_case }}Options{% endset %}
-        ,options: {{ resource_operation_option }}{% if not op | has_required_query_or_header_params %} = {{ resource_operation_option }}(){% endif %}
+        ,options: {{ resource_operation_option }}{% if not op | has_required_query_or_header_params %} = (
+            {{ resource_operation_option }}()
+        ){% endif %}
             {%- endif %}
     ) -> {{ return_type }}:
             {% if op.description is defined -%}
@@ -149,7 +158,12 @@ class {{ resource.name | to_upper_camel_case }}{% if is_async %}Async{% endif %}
                 {% if op.request_body_schema_name is defined -%}
                 ,json_body={{ op.request_body_schema_name | to_snake_case }}.model_dump_json(exclude_unset=True, by_alias=True)
                 {%- endif -%})
-            {% if op.response_body_schema_name is defined -%}
+            {% if op.id == "v1.message.create" -%}
+            message_out = MessageOut.model_validate(response.json())
+            if options.with_content is not False:
+                message_out.payload = message_in.payload
+            return message_out
+            {% elif op.response_body_schema_name is defined -%}
             return {{ op.response_body_schema_name | to_upper_camel_case }}.model_validate(response.json())
             {% endif %}
             {% set api_operation_extra -%}

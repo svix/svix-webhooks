@@ -2,5 +2,6 @@
 package models
 
 type SubscribeIn struct {
-	Endpoint EndpointIn `json:"endpoint"`
+	Endpoint *EndpointIn         `json:"endpoint,omitempty"`
+	Sink     *AutoConfigSinkType `json:"sink,omitempty"`
 }

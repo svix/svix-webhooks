@@ -26,11 +26,16 @@ import { type ShopifyConfigOut, ShopifyConfigOutSerializer } from "./shopifyConf
 import { type SlackConfigOut, SlackConfigOutSerializer } from "./slackConfigOut";
 import { type StripeConfigOut, StripeConfigOutSerializer } from "./stripeConfigOut";
 import { type SvixConfigOut, SvixConfigOutSerializer } from "./svixConfigOut";
+import {
+  type TailscaleConfigOut,
+  TailscaleConfigOutSerializer,
+} from "./tailscaleConfigOut";
 import { type TelnyxConfigOut, TelnyxConfigOutSerializer } from "./telnyxConfigOut";
 import { type VapiConfigOut, VapiConfigOutSerializer } from "./vapiConfigOut";
 import { type VeriffConfigOut, VeriffConfigOutSerializer } from "./veriffConfigOut";
 import { type VgsConfigOut, VgsConfigOutSerializer } from "./vgsConfigOut";
 import { type ZoomConfigOut, ZoomConfigOutSerializer } from "./zoomConfigOut";
+
 interface _IngestSourceOutFields {
   createdAt: Date;
   /** The Source's ID. */
@@ -211,6 +216,11 @@ interface IngestSourceOutZoom {
   config: ZoomConfigOut;
 }
 
+interface IngestSourceOutTailscale {
+  type: "tailscale";
+  config: TailscaleConfigOut;
+}
+
 interface IngestSourceOutTelnyx {
   type: "telnyx";
   config: TelnyxConfigOut;
@@ -281,6 +291,7 @@ export type IngestSourceOut = _IngestSourceOutFields &
     | IngestSourceOutStych
     | IngestSourceOutSvix
     | IngestSourceOutZoom
+    | IngestSourceOutTailscale
     | IngestSourceOutTelnyx
     | IngestSourceOutVapi
     | IngestSourceOutOpenAi
@@ -362,6 +373,8 @@ export const IngestSourceOutSerializer = {
           return SvixConfigOutSerializer._fromJsonObject(object["config"]);
         case "zoom":
           return ZoomConfigOutSerializer._fromJsonObject(object["config"]);
+        case "tailscale":
+          return TailscaleConfigOutSerializer._fromJsonObject(object["config"]);
         case "telnyx":
           return TelnyxConfigOutSerializer._fromJsonObject(object["config"]);
         case "vapi":
@@ -496,6 +509,9 @@ export const IngestSourceOutSerializer = {
         break;
       case "zoom":
         config = ZoomConfigOutSerializer._toJsonObject(self.config);
+        break;
+      case "tailscale":
+        config = TailscaleConfigOutSerializer._toJsonObject(self.config);
         break;
       case "telnyx":
         config = TelnyxConfigOutSerializer._toJsonObject(self.config);

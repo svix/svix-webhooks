@@ -10,7 +10,9 @@ from . {{ c | to_snake_case }} import {{ c | to_upper_camel_case }}
 {%- endfor %}
 
 class {{ type_name }}(BaseModel):
+    {%- if type.fields | length > 0 %}
     {% include "types/struct_fields.py.jinja" %}
+    {%- endif %}
     {{ type.discriminator_field }}: t.Union[
         {% for variant in type.variants -%}
             t.Literal["{{ variant.name }}"] {% if not loop.last %},{% endif %}

@@ -34,7 +34,7 @@ class BackgroundTaskListOptions(BaseOptions):
 
 class BackgroundTaskAsync(ApiBase):
     async def list(
-        self, options: BackgroundTaskListOptions = BackgroundTaskListOptions()
+        self, options: BackgroundTaskListOptions = (BackgroundTaskListOptions())
     ) -> ListResponseBackgroundTaskOut:
         """List background tasks executed in the past 90 days."""
         response = await self._request_asyncio(
@@ -60,7 +60,7 @@ class BackgroundTaskAsync(ApiBase):
 
 class BackgroundTask(ApiBase):
     def list(
-        self, options: BackgroundTaskListOptions = BackgroundTaskListOptions()
+        self, options: BackgroundTaskListOptions = (BackgroundTaskListOptions())
     ) -> ListResponseBackgroundTaskOut:
         """List background tasks executed in the past 90 days."""
         response = self._request_sync(

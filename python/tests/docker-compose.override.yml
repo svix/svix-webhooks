@@ -4,7 +4,10 @@ services:
     environment:
       SVIX_JWT_SECRET: "x"
       SVIX_ENDPOINT_HTTPS_ONLY: "false"
-      SVIX_WHITELIST_SUBNETS: "[127.0.0.1/32, 172.17.0.0/16]"
+      SVIX_WHITELIST_SUBNETS: "[127.0.0.1/32, 172.17.0.0/16, 0.250.250.0/24]"
+      SVIX_LOG_LEVEL: "trace"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
   pgbouncer:
     ports:
       - "8079:5432" # Needed for sqlx

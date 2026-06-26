@@ -25,7 +25,7 @@ export SVIX_WHITELIST_SUBNETS="[127.0.0.1/32]"
 export SVIX_DB_POOL_MAX_SIZE="500"
 export SVIX_REDIS_POOL_MAX_SIZE="10000"
 
-echo "*********** RUN 1 ***********"
+echo "*********** RUN 1/7: queue=redis,cache=redis ***********"
 (
     export SVIX_QUEUE_TYPE="redis"
     export SVIX_CACHE_TYPE="redis"
@@ -36,7 +36,7 @@ echo "*********** RUN 1 ***********"
     fi
 )
 
-echo "*********** RUN 2 ***********"
+echo "*********** RUN 2/7: queue=redis,cache=memory ***********"
 (
     export SVIX_QUEUE_TYPE="redis"
     export SVIX_CACHE_TYPE="memory"
@@ -44,7 +44,7 @@ echo "*********** RUN 2 ***********"
     ${TEST_COMMAND} "$@"
 )
 
-echo "*********** RUN 3 ***********"
+echo "*********** RUN 3/7: queue=redis,cache=none ***********"
 (
     export SVIX_QUEUE_TYPE="redis"
     export SVIX_CACHE_TYPE="none"
@@ -52,7 +52,7 @@ echo "*********** RUN 3 ***********"
     ${TEST_COMMAND} "$@"
 )
 
-echo "*********** RUN 4 ***********"
+echo "*********** RUN 4/7: queue=rediscluster,cache=rediscluster ***********"
 (
     export SVIX_QUEUE_TYPE="rediscluster"
     export SVIX_CACHE_TYPE="rediscluster"
@@ -63,14 +63,14 @@ echo "*********** RUN 4 ***********"
     fi
 )
 
-echo "*********** RUN 5 ***********"
+echo "*********** RUN 5/7: queue=memory,cache=none ***********"
 (
     export SVIX_QUEUE_TYPE="memory"
     export SVIX_CACHE_TYPE="none"
     ${TEST_COMMAND} "$@"
 )
 
-echo "*********** RUN 6 ***********"
+echo "*********** RUN 6/7: queue=rabbitmq,cache=redis ***********"
 (
     export SVIX_QUEUE_TYPE="rabbitmq"
     export SVIX_CACHE_TYPE="redis"
@@ -82,7 +82,7 @@ echo "*********** RUN 6 ***********"
     fi
 )
 
-echo "*********** RUN 7 ***********"
+echo "*********** RUN 7/7: queue=redissentinel,cache=redissentinel ***********"
 (
     export SVIX_QUEUE_TYPE="redissentinel"
     export SVIX_CACHE_TYPE="redissentinel"

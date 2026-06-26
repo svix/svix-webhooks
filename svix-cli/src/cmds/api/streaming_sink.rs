@@ -63,6 +63,7 @@ pub struct StreamingSinkArgs {
     pub command: StreamingSinkCommands,
 }
 
+#[allow(clippy::large_enum_variant)]
 #[derive(Subcommand)]
 pub enum StreamingSinkCommands {
     /// List of all the stream's sinks.

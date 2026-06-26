@@ -4,6 +4,7 @@ package internalapi
 import (
 	"fmt"
 	"net/url"
+	"runtime"
 
 	"github.com/svix/svix-webhooks/go/internal"
 )
@@ -13,6 +14,7 @@ type (
 	InternalSvix struct {
 		Management *Management
 		Endpoint   *Endpoint
+		Message    *Message
 	}
 )
 
@@ -21,7 +23,7 @@ func New(token string, serverUrl *url.URL, debug bool, userAgentSuffix *string) 
 	svixHttpClient.Debug = debug
 
 	svixHttpClient.DefaultHeaders["Authorization"] = fmt.Sprintf("Bearer %s", token)
-	userAgent := fmt.Sprintf("svix-libs/%s/go", internal.Version)
+	userAgent := fmt.Sprintf("svix-libs/%s/go go/%s", internal.Version, runtime.Version())
 	if userAgentSuffix != nil {
 		userAgent = fmt.Sprintf("%s/%s", userAgent, *userAgentSuffix)
 	}
@@ -30,6 +32,7 @@ func New(token string, serverUrl *url.URL, debug bool, userAgentSuffix *string) 
 	svx := InternalSvix{
 		Management: newManagement(&svixHttpClient),
 		Endpoint:   newEndpoint(&svixHttpClient),
+		Message:    newMessage(&svixHttpClient),
 	}
 	return &svx, nil
 }

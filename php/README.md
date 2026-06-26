@@ -82,7 +82,7 @@ First checkout the [core README](../README.md#development) for details on how to
 
 ## Building the library
 ```sh
-dotnet build
+composer install
 ```
 
 ## Contributing

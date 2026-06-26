@@ -10,6 +10,7 @@ import {
 {% set disc_field_name = type.discriminator_field | to_lower_camel_case -%}
 {% set content_field_name = type.content_field | to_lower_camel_case -%}
 
+{% if type.fields | length == 0 %}// biome-ignore lint/suspicious/noEmptyInterface: backwards compat{% endif %}
 interface _{{ type_name }}Fields {
     {% include "types/struct_fields.ts.jinja" -%}
 }

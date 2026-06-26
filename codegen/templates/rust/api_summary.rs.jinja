@@ -8,12 +8,10 @@ pub use self::client::{Svix, SvixOptions};
 pub use crate::models::*;
 
 {% macro resource_mods(resource) -%}
-{% if resource.name != "health" -%}
-    mod {{ resource.name | to_snake_case }};
-    {%- for _, sub in resource.subresources | items -%}
-        {{- resource_mods(sub) -}}
-    {%- endfor -%}
-{% endif -%}
+mod {{ resource.name | to_snake_case }};
+{%- for _, sub in resource.subresources | items -%}
+    {{- resource_mods(sub) -}}
+{%- endfor -%}
 {% endmacro -%}
 
 {% for res in api.resources -%}
@@ -21,7 +19,6 @@ pub use crate::models::*;
 {% endfor %}
 
 {% macro resource_reexports(resource) -%}
-{% if resource.name != "health" -%}
     {% set resource_type_name = resource.name | to_upper_camel_case -%}
     {{ resource.name | to_snake_case }}::{
         {{ resource_type_name }},
@@ -34,7 +31,6 @@ pub use crate::models::*;
     {% for _, sub in resource.subresources | items -%}
         {{ resource_reexports(sub) -}}
     {% endfor -%}
-{% endif -%}
 {% endmacro -%}
 
 #[cfg(feature = "svix_beta")]
@@ -48,12 +44,10 @@ pub use self::deprecated::*;
 
 impl Svix {
     {% for resource in api.resources -%}
-        {% if resource.name != "health" -%}
-            {% set resource_type_name = resource.name | to_upper_camel_case -%}
-            pub fn {{ resource.name | to_snake_case }}(&self) -> {{ resource_type_name }}<'_> {
-                {{ resource_type_name }}::new(&self.cfg)
-            }
-        {% endif%}
+        {% set resource_type_name = resource.name | to_upper_camel_case -%}
+        pub fn {{ resource.name | to_snake_case }}(&self) -> {{ resource_type_name }}<'_> {
+            {{ resource_type_name }}::new(&self.cfg)
+        }
     {% endfor -%}
 
     #[deprecated = "Use .operational_webhook().endpoint() instead"]

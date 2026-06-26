@@ -16,6 +16,7 @@ use hyper_util::client::legacy::Client as HyperClient;
 pub mod api;
 mod api_internal;
 pub mod autoconfig;
+pub mod autoconfig_consumer;
 mod connector;
 pub mod error;
 mod model_ext;

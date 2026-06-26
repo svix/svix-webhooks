@@ -18,6 +18,7 @@ pub mod application_out;
 pub mod application_patch;
 pub mod application_token_expire_in;
 pub mod authentication_source;
+pub mod auto_config_sink_type;
 pub mod azure_blob_storage_config;
 pub mod azure_blob_storage_patch_config;
 pub mod background_task_finished_event;
@@ -25,9 +26,13 @@ pub mod background_task_finished_event2;
 pub mod background_task_out;
 pub mod background_task_status;
 pub mod background_task_type;
+pub mod big_query_config;
+pub mod big_query_patch_config;
 pub mod bulk_replay_in;
 pub mod checkbook_config;
 pub mod checkbook_config_out;
+pub mod clickhouse_config;
+pub mod clickhouse_patch_config;
 pub mod connector_in;
 pub mod connector_kind;
 pub mod connector_out;
@@ -70,6 +75,8 @@ pub mod endpoint_updated_event;
 pub mod endpoint_updated_event_data;
 pub mod environment_in;
 pub mod environment_out;
+pub mod event_bridge_config;
+pub mod event_bridge_patch_config;
 pub mod event_example_in;
 pub mod event_in;
 pub mod event_out;
@@ -85,6 +92,8 @@ pub mod event_type_update;
 pub mod expunge_all_contents_out;
 pub mod github_config;
 pub mod github_config_out;
+pub mod google_cloud_pub_sub_config;
+pub mod google_cloud_pub_sub_patch_config;
 pub mod google_cloud_storage_config;
 pub mod google_cloud_storage_patch_config;
 pub mod http_attempt_times;
@@ -165,14 +174,21 @@ pub mod orum_io_config_out;
 pub mod otel_tracing_patch_config;
 pub mod panda_doc_config;
 pub mod panda_doc_config_out;
+pub mod poller_v2_commit_in;
+pub mod poller_v2_message_out;
+pub mod poller_v2_poll_out;
 pub mod polling_endpoint_consumer_seek_in;
 pub mod polling_endpoint_consumer_seek_out;
 pub mod polling_endpoint_message_out;
 pub mod polling_endpoint_out;
 pub mod port_io_config;
 pub mod port_io_config_out;
+pub mod rabbit_mq_config;
+pub mod rabbit_mq_patch_config;
 pub mod recover_in;
 pub mod recover_out;
+pub mod redshift_config;
+pub mod redshift_patch_config;
 pub mod replay_in;
 pub mod replay_out;
 pub mod rotate_poller_token_in;
@@ -185,6 +201,7 @@ pub mod segment_config_out;
 pub mod shopify_config;
 pub mod shopify_config_out;
 pub mod sink_http_config;
+pub mod sink_in_common;
 pub mod sink_otel_v1_config;
 pub mod sink_secret_out;
 pub mod sink_status;
@@ -193,6 +210,13 @@ pub mod sink_transform_in;
 pub mod sink_transformation_out;
 pub mod slack_config;
 pub mod slack_config_out;
+pub mod snowflake_config;
+pub mod snowflake_patch_config;
+pub mod sns_config;
+pub mod sns_patch_config;
+pub mod sqs_config;
+pub mod sqs_patch_config;
+pub mod starting_position;
 pub mod status_code_class;
 pub mod stream_event_type_in;
 pub mod stream_event_type_out;
@@ -210,6 +234,8 @@ pub mod stripe_config_out;
 pub mod subscribe_in;
 pub mod svix_config;
 pub mod svix_config_out;
+pub mod tailscale_config;
+pub mod tailscale_config_out;
 pub mod telnyx_config;
 pub mod telnyx_config_out;
 pub mod vapi_config;
@@ -247,6 +273,7 @@ pub use self::{
     application_patch::ApplicationPatch,
     application_token_expire_in::ApplicationTokenExpireIn,
     authentication_source::AuthenticationSource,
+    auto_config_sink_type::AutoConfigSinkType,
     azure_blob_storage_config::AzureBlobStorageConfig,
     azure_blob_storage_patch_config::AzureBlobStoragePatchConfig,
     background_task_finished_event::BackgroundTaskFinishedEvent,
@@ -254,9 +281,13 @@ pub use self::{
     background_task_out::BackgroundTaskOut,
     background_task_status::BackgroundTaskStatus,
     background_task_type::BackgroundTaskType,
+    big_query_config::BigQueryConfig,
+    big_query_patch_config::BigQueryPatchConfig,
     bulk_replay_in::BulkReplayIn,
     checkbook_config::CheckbookConfig,
     checkbook_config_out::CheckbookConfigOut,
+    clickhouse_config::ClickhouseConfig,
+    clickhouse_patch_config::ClickhousePatchConfig,
     connector_in::ConnectorIn,
     connector_kind::ConnectorKind,
     connector_out::ConnectorOut,
@@ -299,6 +330,8 @@ pub use self::{
     endpoint_updated_event_data::EndpointUpdatedEventData,
     environment_in::EnvironmentIn,
     environment_out::EnvironmentOut,
+    event_bridge_config::EventBridgeConfig,
+    event_bridge_patch_config::EventBridgePatchConfig,
     event_example_in::EventExampleIn,
     event_in::EventIn,
     event_out::EventOut,
@@ -314,6 +347,8 @@ pub use self::{
     expunge_all_contents_out::ExpungeAllContentsOut,
     github_config::GithubConfig,
     github_config_out::GithubConfigOut,
+    google_cloud_pub_sub_config::GoogleCloudPubSubConfig,
+    google_cloud_pub_sub_patch_config::GoogleCloudPubSubPatchConfig,
     google_cloud_storage_config::GoogleCloudStorageConfig,
     google_cloud_storage_patch_config::GoogleCloudStoragePatchConfig,
     http_attempt_times::HttpAttemptTimes,
@@ -394,14 +429,21 @@ pub use self::{
     otel_tracing_patch_config::OtelTracingPatchConfig,
     panda_doc_config::PandaDocConfig,
     panda_doc_config_out::PandaDocConfigOut,
+    poller_v2_commit_in::PollerV2CommitIn,
+    poller_v2_message_out::PollerV2MessageOut,
+    poller_v2_poll_out::PollerV2PollOut,
     polling_endpoint_consumer_seek_in::PollingEndpointConsumerSeekIn,
     polling_endpoint_consumer_seek_out::PollingEndpointConsumerSeekOut,
     polling_endpoint_message_out::PollingEndpointMessageOut,
     polling_endpoint_out::PollingEndpointOut,
     port_io_config::PortIoConfig,
     port_io_config_out::PortIoConfigOut,
+    rabbit_mq_config::RabbitMqConfig,
+    rabbit_mq_patch_config::RabbitMqPatchConfig,
     recover_in::RecoverIn,
     recover_out::RecoverOut,
+    redshift_config::RedshiftConfig,
+    redshift_patch_config::RedshiftPatchConfig,
     replay_in::ReplayIn,
     replay_out::ReplayOut,
     rotate_poller_token_in::RotatePollerTokenIn,
@@ -414,6 +456,7 @@ pub use self::{
     shopify_config::ShopifyConfig,
     shopify_config_out::ShopifyConfigOut,
     sink_http_config::SinkHttpConfig,
+    sink_in_common::SinkInCommon,
     sink_otel_v1_config::SinkOtelV1Config,
     sink_secret_out::SinkSecretOut,
     sink_status::SinkStatus,
@@ -422,6 +465,13 @@ pub use self::{
     sink_transformation_out::SinkTransformationOut,
     slack_config::SlackConfig,
     slack_config_out::SlackConfigOut,
+    snowflake_config::SnowflakeConfig,
+    snowflake_patch_config::SnowflakePatchConfig,
+    sns_config::SnsConfig,
+    sns_patch_config::SnsPatchConfig,
+    sqs_config::SqsConfig,
+    sqs_patch_config::SqsPatchConfig,
+    starting_position::StartingPosition,
     status_code_class::StatusCodeClass,
     stream_event_type_in::StreamEventTypeIn,
     stream_event_type_out::StreamEventTypeOut,
@@ -439,6 +489,8 @@ pub use self::{
     subscribe_in::SubscribeIn,
     svix_config::SvixConfig,
     svix_config_out::SvixConfigOut,
+    tailscale_config::TailscaleConfig,
+    tailscale_config_out::TailscaleConfigOut,
     telnyx_config::TelnyxConfig,
     telnyx_config_out::TelnyxConfigOut,
     vapi_config::VapiConfig,

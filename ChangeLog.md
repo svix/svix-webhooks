@@ -1,9 +1,42 @@
 # Changelog
 
-## Unrelease
+## Unreleased
+* Server: add `statusText` to `EndpointMessageOut` (the response type for `v1.message-attempt.list-attempted-messages`), matching the cloud version
+* Server: add `statusText` to `MessageEndpointOut` (the response type for `v1.message-attempt.list-attempted-destinations`), matching the cloud version
+* Server: add `canceled` to `EndpointStatsOut`, matching the cloud version. This is always 0 in the OSS server, which doesn't currently track message cancellations.
+* Server: add `updatedAt` to `RecoverOut` (the response type for `v1.endpoint.recover`), matching the cloud version. Note that EE does not support incrementally checking background job status, so this always contains the timestamp at which the job was created.
+* Libs/Python: Bump minimum-supported Python interpreter version to 3.9
+
+## Version 1.96.1
+* Libs/Java: Upgrade jackson dependency to v2.21.4
+* Libs/Rust: Make `MessagePollerv2Consumer*Options` public
+
+## Version 1.96.0
+* CLI **(New)**: Add `--token` option to `svix listen`
+* Libs **(New)**: AutoConfigConsumer SDK to consume Polling Endpoints
+* Libs/Csharp: Accept a valid signature when it is last in a multi-sig header (thanks [@devteamaegis])
+* Libs/All: Stop sending with_content parameter to the backend, handle it client-side
+
+## Version 1.95.2
+* Libs/Kotlin: Webhooks AutoConfig SDK
+* Libs: Add `health.get` to Go, Python and Rust SDK
+  * It was previously missing from these SDKs for historical reasons
+* Libs/All: Add versions in user-agent header
+* Libs/Go: Add additional internal management APIs
+
+## Version 1.95.1
+* Libs/Python: Fix release workflow (1.95.0 of the Python SDK failed publishing)
+
+## Version 1.95.0
 * Libs/All: Enable server-side support of 'canceled' message-attempt status by default
   * If you were previously comparing attempt statuses against 'success', note that the
     result of the comparison will now change for messages canceled by a transformation script
+* Libs/Python: Move from `setup.py` to [PEP-518](https://peps.python.org/pep-0518/)-compliant `pyproject.toml` build system
+* Libs/Python: Clarify that the minimum-supported Python interpreter version is 3.8
+* Libs/Python: Actually run tests against all supported python versions
+* Libs/PHP: Fix deprecation warning for `DateTimeImmutable` construction from `null` (thanks [@VincentLanglet])
+
+[@VincentLanglet]: https://github.com/VincentLanglet
 
 ## Version 1.94.0
 * Libs **(New)**: Webhooks AutoConfig SDK

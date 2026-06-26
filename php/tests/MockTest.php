@@ -2,7 +2,6 @@
 
 namespace Svix\Tests;
 
-
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
@@ -36,7 +35,6 @@ use Svix\Models\StatusCodeClass;
 use Svix\SvixClient;
 use Svix\SvixOptions;
 use Svix\Version;
-
 
 const AppOut = '{"uid":"unique-identifier","name":"My first application","rateLimit":0,"id":"app_1srOrx2ZWZBpBUvZwXKQmoEYga2","createdAt":"2025-08-27T17:43:50+00:00","updatedAt":"2019-08-24T14:15:22Z","metadata":{"property1":"string","property2":"string"}}';
 const ListResAppOut = '{"data":[{"uid":"unique-identifier","name":"My first application","rateLimit":0,"id":"app_1srOrx2ZWZBpBUvZwXKQmoEYga2","createdAt":"2025-08-27T17:43:50Z","updatedAt":"2019-08-24T14:15:22Z","metadata":{"property1":"string","property2":"string"}}],"iterator":"iterator","prevIterator":"-iterator","done":true}';
@@ -99,7 +97,7 @@ class MockTest extends TestCase
         $svx->application->list();
 
         $getReq = $this->requestHistory[0]['request'];
-        $this->assertEquals('svix-libs/' . Version::VERSION . '/php', $getReq->getHeaderLine('User-Agent'));
+        $this->assertMatchesRegularExpression('/^svix-libs\/[0-9.]+\/php php\/[0-9.]+ [^ ]+\/[^ ]+$/', $getReq->getHeaderLine('User-Agent'));
         $this->assertEquals('Bearer super_secret', $getReq->getHeaderLine('Authorization'));
         $this->assertIsString($getReq->getHeaderLine('svix-req-id'));
     }
@@ -168,7 +166,7 @@ class MockTest extends TestCase
         $svx = new \Svix\Svix("super_secret", httpClient: $this->httpClient);
 
         $apps = $svx->application->list();
-        $createdAt = $apps->data[0]->createdAt->getTimestamp();;
+        $createdAt = $apps->data[0]->createdAt->getTimestamp();
         $this->assertEquals(1756316630, $createdAt);
     }
 
@@ -180,8 +178,6 @@ class MockTest extends TestCase
             new Response(200, [], AppOut),
             new Response(200, [], AppOut),
             new Response(200, [], AppOut)
-
-
         );
 
         $svx = new \Svix\Svix("super_secret", httpClient: $this->httpClient);
@@ -416,7 +412,7 @@ class MockTest extends TestCase
             new Response(500, [], '{"error": "Internal Server Error"}')
         );
 
-        $svx = new \Svix\Svix("super_secret", new SvixOptions(debug: true),  httpClient: $this->httpClient);
+        $svx = new \Svix\Svix("super_secret", new SvixOptions(debug: true), httpClient: $this->httpClient);
 
         // Expect an ApiException to be thrown after all retries are exhausted
         $this->expectException(\Svix\Exception\ApiException::class);

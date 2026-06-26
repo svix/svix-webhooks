@@ -39,7 +39,9 @@ class MessageAttemptListByEndpointOptions(BaseOptions):
 
 Note that message payloads are never included in the response, regardless of this flag."""
     expanded_statuses: t.Optional[bool] = None
-    """When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are returned as Success (0)"""
+    """When `true`, return the Canceled (4) status in attempts.
+
+If `false`, canceled attempts are returned as Success (0) for backwards compatibility."""
     event_types: t.Optional[t.List[str]] = None
     """Filter response based on the event type"""
 
@@ -87,7 +89,9 @@ class MessageAttemptListByMsgOptions(BaseOptions):
     with_content: t.Optional[bool] = None
     """When `true` attempt content is included in the response"""
     expanded_statuses: t.Optional[bool] = None
-    """When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are returned as Success (0)"""
+    """When `true`, return the Canceled (4) status in attempts.
+
+If `false`, canceled attempts are returned as Success (0) for backwards compatibility."""
     event_types: t.Optional[t.List[str]] = None
     """Filter response based on the event type"""
 
@@ -131,7 +135,9 @@ class MessageAttemptListAttemptedMessagesOptions(BaseOptions):
     with_content: t.Optional[bool] = None
     """When `true` message payloads are included in the response"""
     expanded_statuses: t.Optional[bool] = None
-    """When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are returned as Success (0)"""
+    """When `true`, return the Canceled (4) status in attempts.
+
+If `false`, canceled attempts are returned as Success (0) for backwards compatibility."""
     event_types: t.Optional[t.List[str]] = None
     """Filter response based on the event type"""
 
@@ -157,7 +163,9 @@ class MessageAttemptListAttemptedMessagesOptions(BaseOptions):
 @dataclass
 class MessageAttemptGetOptions(BaseOptions):
     expanded_statuses: t.Optional[bool] = None
-    """When `true`, return the Canceled (4) status in attempts. If `false`, canceled attempts are returned as Success (0)"""
+    """When `true`, return the Canceled (4) status in attempts.
+
+If `false`, canceled attempts are returned as Success (0) for backwards compatibility."""
 
     def _query_params(self) -> t.Dict[str, str]:
         return serialize_params(
@@ -202,7 +210,9 @@ class MessageAttemptAsync(ApiBase):
         self,
         app_id: str,
         endpoint_id: str,
-        options: MessageAttemptListByEndpointOptions = MessageAttemptListByEndpointOptions(),
+        options: MessageAttemptListByEndpointOptions = (
+            MessageAttemptListByEndpointOptions()
+        ),
     ) -> ListResponseMessageAttemptOut:
         """List attempts by endpoint id
 
@@ -227,7 +237,7 @@ class MessageAttemptAsync(ApiBase):
         self,
         app_id: str,
         msg_id: str,
-        options: MessageAttemptListByMsgOptions = MessageAttemptListByMsgOptions(),
+        options: MessageAttemptListByMsgOptions = (MessageAttemptListByMsgOptions()),
     ) -> ListResponseMessageAttemptOut:
         """List attempts by message ID.
 
@@ -251,17 +261,19 @@ class MessageAttemptAsync(ApiBase):
         self,
         app_id: str,
         endpoint_id: str,
-        options: MessageAttemptListAttemptedMessagesOptions = MessageAttemptListAttemptedMessagesOptions(),
+        options: MessageAttemptListAttemptedMessagesOptions = (
+            MessageAttemptListAttemptedMessagesOptions()
+        ),
     ) -> ListResponseEndpointMessageOut:
-        """List messages for a particular endpoint. Additionally includes metadata about the latest message attempt.
+        """List messages for a particular endpoint.
 
+        Additionally includes metadata about the latest message attempt.
         The `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.
 
         Note that by default this endpoint is limited to retrieving 90 days' worth of data
         relative to now or, if an iterator is provided, 90 days before/after the time indicated
         by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
-        set the `before` or `after` parameter as appropriate.
-        """
+        set the `before` or `after` parameter as appropriate."""
         response = await self._request_asyncio(
             method="get",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/msg",
@@ -279,7 +291,7 @@ class MessageAttemptAsync(ApiBase):
         app_id: str,
         msg_id: str,
         attempt_id: str,
-        options: MessageAttemptGetOptions = MessageAttemptGetOptions(),
+        options: MessageAttemptGetOptions = (MessageAttemptGetOptions()),
     ) -> MessageAttemptOut:
         """`msg_id`: Use a message id or a message `eventId`"""
         response = await self._request_asyncio(
@@ -314,7 +326,9 @@ class MessageAttemptAsync(ApiBase):
         self,
         app_id: str,
         msg_id: str,
-        options: MessageAttemptListAttemptedDestinationsOptions = MessageAttemptListAttemptedDestinationsOptions(),
+        options: MessageAttemptListAttemptedDestinationsOptions = (
+            MessageAttemptListAttemptedDestinationsOptions()
+        ),
     ) -> ListResponseMessageEndpointOut:
         """List endpoints attempted by a given message.
 
@@ -337,7 +351,7 @@ class MessageAttemptAsync(ApiBase):
         app_id: str,
         msg_id: str,
         endpoint_id: str,
-        options: MessageAttemptResendOptions = MessageAttemptResendOptions(),
+        options: MessageAttemptResendOptions = (MessageAttemptResendOptions()),
     ) -> EmptyResponse:
         """Resend a message to the specified endpoint."""
         response = await self._request_asyncio(
@@ -359,7 +373,9 @@ class MessageAttempt(ApiBase):
         self,
         app_id: str,
         endpoint_id: str,
-        options: MessageAttemptListByEndpointOptions = MessageAttemptListByEndpointOptions(),
+        options: MessageAttemptListByEndpointOptions = (
+            MessageAttemptListByEndpointOptions()
+        ),
     ) -> ListResponseMessageAttemptOut:
         """List attempts by endpoint id
 
@@ -384,7 +400,7 @@ class MessageAttempt(ApiBase):
         self,
         app_id: str,
         msg_id: str,
-        options: MessageAttemptListByMsgOptions = MessageAttemptListByMsgOptions(),
+        options: MessageAttemptListByMsgOptions = (MessageAttemptListByMsgOptions()),
     ) -> ListResponseMessageAttemptOut:
         """List attempts by message ID.
 
@@ -408,17 +424,19 @@ class MessageAttempt(ApiBase):
         self,
         app_id: str,
         endpoint_id: str,
-        options: MessageAttemptListAttemptedMessagesOptions = MessageAttemptListAttemptedMessagesOptions(),
+        options: MessageAttemptListAttemptedMessagesOptions = (
+            MessageAttemptListAttemptedMessagesOptions()
+        ),
     ) -> ListResponseEndpointMessageOut:
-        """List messages for a particular endpoint. Additionally includes metadata about the latest message attempt.
+        """List messages for a particular endpoint.
 
+        Additionally includes metadata about the latest message attempt.
         The `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.
 
         Note that by default this endpoint is limited to retrieving 90 days' worth of data
         relative to now or, if an iterator is provided, 90 days before/after the time indicated
         by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
-        set the `before` or `after` parameter as appropriate.
-        """
+        set the `before` or `after` parameter as appropriate."""
         response = self._request_sync(
             method="get",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/msg",
@@ -436,7 +454,7 @@ class MessageAttempt(ApiBase):
         app_id: str,
         msg_id: str,
         attempt_id: str,
-        options: MessageAttemptGetOptions = MessageAttemptGetOptions(),
+        options: MessageAttemptGetOptions = (MessageAttemptGetOptions()),
     ) -> MessageAttemptOut:
         """`msg_id`: Use a message id or a message `eventId`"""
         response = self._request_sync(
@@ -471,7 +489,9 @@ class MessageAttempt(ApiBase):
         self,
         app_id: str,
         msg_id: str,
-        options: MessageAttemptListAttemptedDestinationsOptions = MessageAttemptListAttemptedDestinationsOptions(),
+        options: MessageAttemptListAttemptedDestinationsOptions = (
+            MessageAttemptListAttemptedDestinationsOptions()
+        ),
     ) -> ListResponseMessageEndpointOut:
         """List endpoints attempted by a given message.
 
@@ -494,7 +514,7 @@ class MessageAttempt(ApiBase):
         app_id: str,
         msg_id: str,
         endpoint_id: str,
-        options: MessageAttemptResendOptions = MessageAttemptResendOptions(),
+        options: MessageAttemptResendOptions = (MessageAttemptResendOptions()),
     ) -> EmptyResponse:
         """Resend a message to the specified endpoint."""
         response = self._request_sync(

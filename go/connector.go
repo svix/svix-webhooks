@@ -40,8 +40,9 @@ func (connector *Connector) List(
 	o *ConnectorListOptions,
 ) (*models.ListResponseConnectorOut, error) {
 	queryMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
 		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
 		internal.SerializeParamToMap("order", o.Order, queryMap, &err)
@@ -69,8 +70,9 @@ func (connector *Connector) Create(
 	o *ConnectorCreateOptions,
 ) (*models.ConnectorOut, error) {
 	headerMap := map[string]string{}
-	var err error
 	if o != nil {
+		var err error
+
 		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
 			return nil, err

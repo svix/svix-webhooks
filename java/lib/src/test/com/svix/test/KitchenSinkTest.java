@@ -71,7 +71,7 @@ public class KitchenSinkTest {
 
         EndpointPatch epPatched = new EndpointPatch();
 
-        epPatched.setFilterTypes(Set.of("event.started", "event.ended"));
+        epPatched.setFilterTypes(new HashSet<>(Arrays.asList("event.started", "event.ended")));
 
         EndpointOut ep2 = client.getEndpoint().patch(app.getId(), ep1.getId(), epPatched);
 

@@ -37,6 +37,19 @@ class TestPayload
 end
 
 describe Svix::Webhook do
+  describe ".new" do
+    it "rejects empty webhook secrets" do
+      expect { Svix::Webhook.new("") }.to raise_error(Svix::EmptyWebhookSecretError)
+      expect { Svix::Webhook.new("whsec_") }.to raise_error(Svix::EmptyWebhookSecretError)
+    end
+  end
+
+  describe ".new_using_raw_bytes" do
+    it "rejects empty webhook secrets" do
+      expect { Svix::Webhook.new("") }.to raise_error(Svix::EmptyWebhookSecretError)
+    end
+  end
+
   it "missing id raises error" do
     testPayload = TestPayload.new
     testPayload.headers.delete("svix-id")

@@ -285,7 +285,7 @@ class WiremockTests {
         wireMockServer.verify(
             1,
             getRequestedFor(urlEqualTo("/api/v1/app/ap/msg"))
-                .withHeader("User-Agent", matching("svix-libs/.*/kotlin")),
+                .withHeader("User-Agent", matching("svix-libs/.*/kotlin kotlin/2.* jre/.*")),
         )
     }
 

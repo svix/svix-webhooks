@@ -4,5 +4,5 @@ namespace Svix;
 
 class Version
 {
-    const VERSION = '1.94.0';
+    public const VERSION = '1.96.1';
 }

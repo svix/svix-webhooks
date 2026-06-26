@@ -73,6 +73,59 @@ sealed class StreamSinkOutConfig {
             Json.encodeToJsonElement(GoogleCloudStorageConfig.serializer(), googleCloudStorage)
     }
 
+    @VariantName("googleCloudPubSub")
+    data class GoogleCloudPubSub(val googleCloudPubSub: GoogleCloudPubSubConfig) :
+        StreamSinkOutConfig() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement(GoogleCloudPubSubConfig.serializer(), googleCloudPubSub)
+    }
+
+    @VariantName("sqs")
+    data class Sqs(val sqs: SqsConfig) : StreamSinkOutConfig() {
+        override fun toJsonElement() = Json.encodeToJsonElement(SqsConfig.serializer(), sqs)
+    }
+
+    @VariantName("sns")
+    data class Sns(val sns: SnsConfig) : StreamSinkOutConfig() {
+        override fun toJsonElement() = Json.encodeToJsonElement(SnsConfig.serializer(), sns)
+    }
+
+    @VariantName("bigQuery")
+    data class BigQuery(val bigQuery: BigQueryConfig) : StreamSinkOutConfig() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement(BigQueryConfig.serializer(), bigQuery)
+    }
+
+    @VariantName("clickhouse")
+    data class Clickhouse(val clickhouse: ClickhouseConfig) : StreamSinkOutConfig() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement(ClickhouseConfig.serializer(), clickhouse)
+    }
+
+    @VariantName("eventBridge")
+    data class EventBridge(val eventBridge: EventBridgeConfig) : StreamSinkOutConfig() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement(EventBridgeConfig.serializer(), eventBridge)
+    }
+
+    @VariantName("snowflake")
+    data class Snowflake(val snowflake: SnowflakeConfig) : StreamSinkOutConfig() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement(SnowflakeConfig.serializer(), snowflake)
+    }
+
+    @VariantName("rabbitMq")
+    data class RabbitMq(val rabbitMq: RabbitMqConfig) : StreamSinkOutConfig() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement(RabbitMqConfig.serializer(), rabbitMq)
+    }
+
+    @VariantName("redshift")
+    data class Redshift(val redshift: RedshiftConfig) : StreamSinkOutConfig() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement(RedshiftConfig.serializer(), redshift)
+    }
+
     companion object {
         private val typeMap =
             mapOf<String, (JsonElement) -> StreamSinkOutConfig>(
@@ -105,6 +158,48 @@ sealed class StreamSinkOutConfig {
                                 config,
                             )
                         )
+                    },
+                "googleCloudPubSub" to
+                    { config ->
+                        GoogleCloudPubSub(
+                            Json.decodeFromJsonElement(GoogleCloudPubSubConfig.serializer(), config)
+                        )
+                    },
+                "sqs" to
+                    { config ->
+                        Sqs(Json.decodeFromJsonElement(SqsConfig.serializer(), config))
+                    },
+                "sns" to
+                    { config ->
+                        Sns(Json.decodeFromJsonElement(SnsConfig.serializer(), config))
+                    },
+                "bigQuery" to
+                    { config ->
+                        BigQuery(Json.decodeFromJsonElement(BigQueryConfig.serializer(), config))
+                    },
+                "clickhouse" to
+                    { config ->
+                        Clickhouse(
+                            Json.decodeFromJsonElement(ClickhouseConfig.serializer(), config)
+                        )
+                    },
+                "eventBridge" to
+                    { config ->
+                        EventBridge(
+                            Json.decodeFromJsonElement(EventBridgeConfig.serializer(), config)
+                        )
+                    },
+                "snowflake" to
+                    { config ->
+                        Snowflake(Json.decodeFromJsonElement(SnowflakeConfig.serializer(), config))
+                    },
+                "rabbitMq" to
+                    { config ->
+                        RabbitMq(Json.decodeFromJsonElement(RabbitMqConfig.serializer(), config))
+                    },
+                "redshift" to
+                    { config ->
+                        Redshift(Json.decodeFromJsonElement(RedshiftConfig.serializer(), config))
                     },
             )
 

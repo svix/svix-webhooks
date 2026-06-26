@@ -30,7 +30,7 @@ export class BackgroundTask {
   public constructor(private readonly requestCtx: SvixRequestContext) {}
 
   /** List background tasks executed in the past 90 days. */
-  public list(
+  public async list(
     options?: BackgroundTaskListOptions
   ): Promise<ListResponseBackgroundTaskOut> {
     const request = new SvixRequest(HttpMethod.GET, "/api/v1/background-task");
@@ -43,7 +43,7 @@ export class BackgroundTask {
       order: options?.order,
     });
 
-    return request.send(
+    return await request.send(
       this.requestCtx,
       ListResponseBackgroundTaskOutSerializer._fromJsonObject
     );
@@ -61,11 +61,14 @@ export class BackgroundTask {
   }
 
   /** Get a background task by ID. */
-  public get(taskId: string): Promise<BackgroundTaskOut> {
+  public async get(taskId: string): Promise<BackgroundTaskOut> {
     const request = new SvixRequest(HttpMethod.GET, "/api/v1/background-task/{task_id}");
 
     request.setPathParam("task_id", taskId);
 
-    return request.send(this.requestCtx, BackgroundTaskOutSerializer._fromJsonObject);
+    return await request.send(
+      this.requestCtx,
+      BackgroundTaskOutSerializer._fromJsonObject
+    );
   }
 }

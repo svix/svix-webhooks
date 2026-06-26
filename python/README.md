@@ -44,7 +44,7 @@ You can find general usage documentation at <https://docs.svix.com>.  For comple
 # Installation
 
 ```sh
-pip install Svix
+pip install svix
 ```
 
 ## Usage
@@ -73,13 +73,13 @@ First checkout the [core README](../README.md#development) for details on how to
 
 ## Requirements
 
- - python 3
+ - [CPython](https://www.python.org/) 3.9+
+ - [uv](https://github.com/astral-sh/uv)
 
 ## Installing dependencies
 
 ```sh
-python -m venv .venv
-pip install -r requirements.txt && pip install -r requirements-dev.txt
+uv sync --frozen --all-groups
 ```
 
 ## Contributing
@@ -87,7 +87,8 @@ pip install -r requirements.txt && pip install -r requirements-dev.txt
 Before opening a PR be sure to format your code!
 
 ```sh
-./scripts/format.sh
+uv run ./scripts/format.sh
+uv run ./scripts/lint.sh
 ```
 
 ## Running Tests
@@ -95,5 +96,7 @@ Before opening a PR be sure to format your code!
 Simply run:
 
 ```sh
-pytest
+uv run pytest
 ```
+
+Note that this will run integration tests that require a running Docker/Podman/etc server and working [`docker-compose`](https://docs.docker.com/compose/)

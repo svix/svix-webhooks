@@ -162,6 +162,7 @@ pub struct {{ resource_type_name }}Args {
     pub command: {{ resource_type_name }}Commands,
 }
 
+#[allow(clippy::large_enum_variant)]
 #[derive(Subcommand)]
 pub enum {{ resource_type_name }}Commands {
     {% for name, sub in resource.subresources | items -%}

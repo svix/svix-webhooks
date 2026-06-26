@@ -5,9 +5,14 @@ use serde::{Deserialize, Serialize};
 use super::{
     amazon_s3_patch_config::AmazonS3PatchConfig,
     azure_blob_storage_patch_config::AzureBlobStoragePatchConfig,
+    big_query_patch_config::BigQueryPatchConfig, clickhouse_patch_config::ClickhousePatchConfig,
+    event_bridge_patch_config::EventBridgePatchConfig,
+    google_cloud_pub_sub_patch_config::GoogleCloudPubSubPatchConfig,
     google_cloud_storage_patch_config::GoogleCloudStoragePatchConfig,
     http_patch_config::HttpPatchConfig, otel_tracing_patch_config::OtelTracingPatchConfig,
-    sink_status_in::SinkStatusIn,
+    rabbit_mq_patch_config::RabbitMqPatchConfig, redshift_patch_config::RedshiftPatchConfig,
+    sink_status_in::SinkStatusIn, snowflake_patch_config::SnowflakePatchConfig,
+    sns_patch_config::SnsPatchConfig, sqs_patch_config::SqsPatchConfig,
 };
 
 #[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
@@ -53,6 +58,24 @@ pub enum StreamSinkPatchConfig {
     AmazonS3(AmazonS3PatchConfig),
     #[serde(rename = "googleCloudStorage")]
     GoogleCloudStorage(GoogleCloudStoragePatchConfig),
+    #[serde(rename = "googleCloudPubSub")]
+    GoogleCloudPubSub(GoogleCloudPubSubPatchConfig),
+    #[serde(rename = "sqs")]
+    Sqs(SqsPatchConfig),
+    #[serde(rename = "sns")]
+    Sns(SnsPatchConfig),
+    #[serde(rename = "bigQuery")]
+    BigQuery(BigQueryPatchConfig),
+    #[serde(rename = "clickhouse")]
+    Clickhouse(ClickhousePatchConfig),
+    #[serde(rename = "eventBridge")]
+    EventBridge(EventBridgePatchConfig),
+    #[serde(rename = "snowflake")]
+    Snowflake(SnowflakePatchConfig),
+    #[serde(rename = "rabbitMq")]
+    RabbitMq(RabbitMqPatchConfig),
+    #[serde(rename = "redshift")]
+    Redshift(RedshiftPatchConfig),
 }
 
 #[allow(clippy::derivable_impls)]

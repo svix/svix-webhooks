@@ -1,6 +1,6 @@
 [package]
 name = "svix"
-version = "1.94.0"
+version = "1.96.1"
 authors = ["Svix Inc. <oss@svix.com>"]
 edition = "2021"
 description = "Svix webhooks API client and webhook verification library"
@@ -55,9 +55,14 @@ tower-service = "0.3.3"
 tracing = { version = "0.1.41", default-features = false }
 url = "2.2"
 uuid = { version = "1", features = ["v4"] }
+version_check = "0.9.5"
+
+[target.'cfg(unix)'.dependencies]
+nix = { version = "0.31", features = ["feature"] }
 
 [dev-dependencies]
 tokio = { version = "1.41.0", features = ["macros"] }
+regex = "1"
 wiremock = "0.6.2, <0.6.5"
 
 [package.metadata.cargo-public-api-crates]
@@ -72,6 +77,10 @@ allowed = [
 [lints.rust]
 # below clippy allow rule is for a lint that's not on stable yet 😒
 unknown_lints = "allow"
+# Catch public APIs that reference types which cannot be named outside the
+# crate (e.g. `pub` types living in a private module). The default
+# `private_interfaces` lint misses these because the types are nominally `pub`.
+unnameable_types = "warn"
 
 [lints.clippy]
 all = { priority = -1, level = "warn" }

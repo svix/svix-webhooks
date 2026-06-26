@@ -104,6 +104,7 @@ pub struct RecoverOut {
     id: QueueBackgroundTaskId,
     status: BackgroundTaskStatus,
     task: BackgroundTaskType,
+    updated_at: DateTime<Utc>,
 }
 
 /// Resend all failed messages since a given time.
@@ -146,9 +147,12 @@ pub(super) async fn recover_failed_webhooks(
         }
     });
 
+    let id = QueueBackgroundTaskId::new(None, None);
+
     Ok(JsonStatus(RecoverOut {
-        id: QueueBackgroundTaskId::new(None, None),
         status: BackgroundTaskStatus::Running,
         task: BackgroundTaskType::Recover,
+        updated_at: id.timestamp(),
+        id,
     }))
 }

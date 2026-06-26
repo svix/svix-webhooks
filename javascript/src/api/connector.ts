@@ -33,7 +33,7 @@ export class Connector {
   public constructor(private readonly requestCtx: SvixRequestContext) {}
 
   /** List all connectors for an application. */
-  public list(options?: ConnectorListOptions): Promise<ListResponseConnectorOut> {
+  public async list(options?: ConnectorListOptions): Promise<ListResponseConnectorOut> {
     const request = new SvixRequest(HttpMethod.GET, "/api/v1/connector");
 
     request.setQueryParams({
@@ -43,14 +43,14 @@ export class Connector {
       product_type: options?.productType,
     });
 
-    return request.send(
+    return await request.send(
       this.requestCtx,
       ListResponseConnectorOutSerializer._fromJsonObject
     );
   }
 
   /** Create a new connector. */
-  public create(
+  public async create(
     connectorIn: ConnectorIn,
     options?: ConnectorCreateOptions
   ): Promise<ConnectorOut> {
@@ -59,20 +59,20 @@ export class Connector {
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
     request.setBody(ConnectorInSerializer._toJsonObject(connectorIn));
 
-    return request.send(this.requestCtx, ConnectorOutSerializer._fromJsonObject);
+    return await request.send(this.requestCtx, ConnectorOutSerializer._fromJsonObject);
   }
 
   /** Get a connector. */
-  public get(connectorId: string): Promise<ConnectorOut> {
+  public async get(connectorId: string): Promise<ConnectorOut> {
     const request = new SvixRequest(HttpMethod.GET, "/api/v1/connector/{connector_id}");
 
     request.setPathParam("connector_id", connectorId);
 
-    return request.send(this.requestCtx, ConnectorOutSerializer._fromJsonObject);
+    return await request.send(this.requestCtx, ConnectorOutSerializer._fromJsonObject);
   }
 
   /** Update a connector. */
-  public update(
+  public async update(
     connectorId: string,
     connectorUpdate: ConnectorUpdate
   ): Promise<ConnectorOut> {
@@ -81,11 +81,11 @@ export class Connector {
     request.setPathParam("connector_id", connectorId);
     request.setBody(ConnectorUpdateSerializer._toJsonObject(connectorUpdate));
 
-    return request.send(this.requestCtx, ConnectorOutSerializer._fromJsonObject);
+    return await request.send(this.requestCtx, ConnectorOutSerializer._fromJsonObject);
   }
 
   /** Delete a connector. */
-  public delete(connectorId: string): Promise<void> {
+  public async delete(connectorId: string): Promise<void> {
     const request = new SvixRequest(
       HttpMethod.DELETE,
       "/api/v1/connector/{connector_id}"
@@ -93,11 +93,11 @@ export class Connector {
 
     request.setPathParam("connector_id", connectorId);
 
-    return request.sendNoResponseBody(this.requestCtx);
+    return await request.sendNoResponseBody(this.requestCtx);
   }
 
   /** Partially update a connector. */
-  public patch(
+  public async patch(
     connectorId: string,
     connectorPatch: ConnectorPatch
   ): Promise<ConnectorOut> {
@@ -106,6 +106,6 @@ export class Connector {
     request.setPathParam("connector_id", connectorId);
     request.setBody(ConnectorPatchSerializer._toJsonObject(connectorPatch));
 
-    return request.send(this.requestCtx, ConnectorOutSerializer._fromJsonObject);
+    return await request.send(this.requestCtx, ConnectorOutSerializer._fromJsonObject);
   }
 }

@@ -21,8 +21,6 @@ pub struct Config {
     debug_url: Option<String>,
 
     // Relay stuff relates to the `listen` command.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub relay_token: Option<String>,
     #[serde(alias = "relay_debug_url")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub relay_debug_hostname: Option<String>,

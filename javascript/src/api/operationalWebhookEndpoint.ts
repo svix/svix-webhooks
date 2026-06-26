@@ -56,7 +56,7 @@ export class OperationalWebhookEndpoint {
   public constructor(private readonly requestCtx: SvixRequestContext) {}
 
   /** List operational webhook endpoints. */
-  public list(
+  public async list(
     options?: OperationalWebhookEndpointListOptions
   ): Promise<ListResponseOperationalWebhookEndpointOut> {
     const request = new SvixRequest(
@@ -70,14 +70,14 @@ export class OperationalWebhookEndpoint {
       order: options?.order,
     });
 
-    return request.send(
+    return await request.send(
       this.requestCtx,
       ListResponseOperationalWebhookEndpointOutSerializer._fromJsonObject
     );
   }
 
   /** Create an operational webhook endpoint. */
-  public create(
+  public async create(
     operationalWebhookEndpointIn: OperationalWebhookEndpointIn,
     options?: OperationalWebhookEndpointCreateOptions
   ): Promise<OperationalWebhookEndpointOut> {
@@ -91,14 +91,14 @@ export class OperationalWebhookEndpoint {
       OperationalWebhookEndpointInSerializer._toJsonObject(operationalWebhookEndpointIn)
     );
 
-    return request.send(
+    return await request.send(
       this.requestCtx,
       OperationalWebhookEndpointOutSerializer._fromJsonObject
     );
   }
 
   /** Get an operational webhook endpoint. */
-  public get(endpointId: string): Promise<OperationalWebhookEndpointOut> {
+  public async get(endpointId: string): Promise<OperationalWebhookEndpointOut> {
     const request = new SvixRequest(
       HttpMethod.GET,
       "/api/v1/operational-webhook/endpoint/{endpoint_id}"
@@ -106,14 +106,14 @@ export class OperationalWebhookEndpoint {
 
     request.setPathParam("endpoint_id", endpointId);
 
-    return request.send(
+    return await request.send(
       this.requestCtx,
       OperationalWebhookEndpointOutSerializer._fromJsonObject
     );
   }
 
   /** Update an operational webhook endpoint. */
-  public update(
+  public async update(
     endpointId: string,
     operationalWebhookEndpointUpdate: OperationalWebhookEndpointUpdate
   ): Promise<OperationalWebhookEndpointOut> {
@@ -129,14 +129,14 @@ export class OperationalWebhookEndpoint {
       )
     );
 
-    return request.send(
+    return await request.send(
       this.requestCtx,
       OperationalWebhookEndpointOutSerializer._fromJsonObject
     );
   }
 
   /** Delete an operational webhook endpoint. */
-  public delete(endpointId: string): Promise<void> {
+  public async delete(endpointId: string): Promise<void> {
     const request = new SvixRequest(
       HttpMethod.DELETE,
       "/api/v1/operational-webhook/endpoint/{endpoint_id}"
@@ -144,11 +144,13 @@ export class OperationalWebhookEndpoint {
 
     request.setPathParam("endpoint_id", endpointId);
 
-    return request.sendNoResponseBody(this.requestCtx);
+    return await request.sendNoResponseBody(this.requestCtx);
   }
 
   /** Get the additional headers to be sent with the operational webhook. */
-  public getHeaders(endpointId: string): Promise<OperationalWebhookEndpointHeadersOut> {
+  public async getHeaders(
+    endpointId: string
+  ): Promise<OperationalWebhookEndpointHeadersOut> {
     const request = new SvixRequest(
       HttpMethod.GET,
       "/api/v1/operational-webhook/endpoint/{endpoint_id}/headers"
@@ -156,14 +158,14 @@ export class OperationalWebhookEndpoint {
 
     request.setPathParam("endpoint_id", endpointId);
 
-    return request.send(
+    return await request.send(
       this.requestCtx,
       OperationalWebhookEndpointHeadersOutSerializer._fromJsonObject
     );
   }
 
   /** Set the additional headers to be sent with the operational webhook. */
-  public updateHeaders(
+  public async updateHeaders(
     endpointId: string,
     operationalWebhookEndpointHeadersIn: OperationalWebhookEndpointHeadersIn
   ): Promise<void> {
@@ -179,7 +181,7 @@ export class OperationalWebhookEndpoint {
       )
     );
 
-    return request.sendNoResponseBody(this.requestCtx);
+    return await request.sendNoResponseBody(this.requestCtx);
   }
 
   /**
@@ -188,7 +190,9 @@ export class OperationalWebhookEndpoint {
    * This is used to verify the authenticity of the webhook.
    * For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
    */
-  public getSecret(endpointId: string): Promise<OperationalWebhookEndpointSecretOut> {
+  public async getSecret(
+    endpointId: string
+  ): Promise<OperationalWebhookEndpointSecretOut> {
     const request = new SvixRequest(
       HttpMethod.GET,
       "/api/v1/operational-webhook/endpoint/{endpoint_id}/secret"
@@ -196,7 +200,7 @@ export class OperationalWebhookEndpoint {
 
     request.setPathParam("endpoint_id", endpointId);
 
-    return request.send(
+    return await request.send(
       this.requestCtx,
       OperationalWebhookEndpointSecretOutSerializer._fromJsonObject
     );
@@ -207,7 +211,7 @@ export class OperationalWebhookEndpoint {
    *
    * The previous secret will remain valid for the next 24 hours.
    */
-  public rotateSecret(
+  public async rotateSecret(
     endpointId: string,
     operationalWebhookEndpointSecretIn: OperationalWebhookEndpointSecretIn,
     options?: OperationalWebhookEndpointRotateSecretOptions
@@ -225,6 +229,6 @@ export class OperationalWebhookEndpoint {
       )
     );
 
-    return request.sendNoResponseBody(this.requestCtx);
+    return await request.sendNoResponseBody(this.requestCtx);
   }
 }

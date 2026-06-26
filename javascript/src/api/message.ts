@@ -77,7 +77,7 @@ export class Message {
    * by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
    * set the `before` or `after` parameter as appropriate.
    */
-  public list(
+  public async list(
     appId: string,
     options?: MessageListOptions
   ): Promise<ListResponseMessageOut> {
@@ -95,7 +95,7 @@ export class Message {
       event_types: options?.eventTypes,
     });
 
-    return request.send(
+    return await request.send(
       this.requestCtx,
       ListResponseMessageOutSerializer._fromJsonObject
     );
@@ -112,7 +112,7 @@ export class Message {
    *
    * The `payload` property is the webhook's body (the actual webhook message). Svix supports payload sizes of up to 1MiB, though it's generally a good idea to keep webhook payloads small, probably no larger than 40kb.
    */
-  public create(
+  public async create(
     appId: string,
     messageIn: MessageIn,
     options?: MessageCreateOptions
@@ -121,12 +121,19 @@ export class Message {
 
     request.setPathParam("app_id", appId);
     request.setQueryParams({
-      with_content: options?.withContent,
+      with_content: false,
     });
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
     request.setBody(MessageInSerializer._toJsonObject(messageIn));
 
-    return request.send(this.requestCtx, MessageOutSerializer._fromJsonObject);
+    const response = await request.send(
+      this.requestCtx,
+      MessageOutSerializer._fromJsonObject
+    );
+    if (options?.withContent ?? true) {
+      response.payload = messageIn.payload;
+    }
+    return response;
   }
 
   /**
@@ -146,7 +153,7 @@ export class Message {
    * }
    * ```
    */
-  public expungeAllContents(
+  public async expungeAllContents(
     appId: string,
     options?: MessageExpungeAllContentsOptions
   ): Promise<ExpungeAllContentsOut> {
@@ -158,7 +165,10 @@ export class Message {
     request.setPathParam("app_id", appId);
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
 
-    return request.send(this.requestCtx, ExpungeAllContentsOutSerializer._fromJsonObject);
+    return await request.send(
+      this.requestCtx,
+      ExpungeAllContentsOutSerializer._fromJsonObject
+    );
   }
 
   /**
@@ -169,7 +179,7 @@ export class Message {
    * messages not actually sent, so using this API doesn't save money.
    * If unsure, please ask Svix support before using this API.
    */
-  public precheck(
+  public async precheck(
     appId: string,
     messagePrecheckIn: MessagePrecheckIn,
     options?: MessagePrecheckOptions
@@ -183,11 +193,14 @@ export class Message {
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
     request.setBody(MessagePrecheckInSerializer._toJsonObject(messagePrecheckIn));
 
-    return request.send(this.requestCtx, MessagePrecheckOutSerializer._fromJsonObject);
+    return await request.send(
+      this.requestCtx,
+      MessagePrecheckOutSerializer._fromJsonObject
+    );
   }
 
   /** Get a message by its ID or eventID. */
-  public get(
+  public async get(
     appId: string,
     msgId: string,
     options?: MessageGetOptions
@@ -200,7 +213,7 @@ export class Message {
       with_content: options?.withContent,
     });
 
-    return request.send(this.requestCtx, MessageOutSerializer._fromJsonObject);
+    return await request.send(this.requestCtx, MessageOutSerializer._fromJsonObject);
   }
 
   /**
@@ -209,7 +222,7 @@ export class Message {
    * Useful in cases when a message was accidentally sent with sensitive content.
    * The message can't be replayed or resent once its payload has been deleted or expired.
    */
-  public expungeContent(appId: string, msgId: string): Promise<void> {
+  public async expungeContent(appId: string, msgId: string): Promise<void> {
     const request = new SvixRequest(
       HttpMethod.DELETE,
       "/api/v1/app/{app_id}/msg/{msg_id}/content"
@@ -218,7 +231,7 @@ export class Message {
     request.setPathParam("app_id", appId);
     request.setPathParam("msg_id", msgId);
 
-    return request.sendNoResponseBody(this.requestCtx);
+    return await request.sendNoResponseBody(this.requestCtx);
   }
 }
 

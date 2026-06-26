@@ -11,7 +11,7 @@ import {
 
 const AUTOCONFIG_TOKEN_PREFIX_V1 = "auto_v1_";
 
-interface AutoConfigTokenContentV1 {
+export interface AutoConfigTokenContentV1 {
   aid: string;
   eid: string;
   surl: string;
@@ -26,7 +26,9 @@ export class AutoConfigError extends Error {
   }
 }
 
-function isAutoConfigTokenContentV1(value: unknown): value is AutoConfigTokenContentV1 {
+export function isAutoConfigTokenContentV1(
+  value: unknown
+): value is AutoConfigTokenContentV1 {
   if (typeof value !== "object" || value === null) {
     return false;
   }
@@ -41,7 +43,7 @@ function isAutoConfigTokenContentV1(value: unknown): value is AutoConfigTokenCon
   );
 }
 
-function decodeAutoconfigTokenV1(token: string): AutoConfigTokenContentV1 {
+export function decodeAutoconfigTokenV1(token: string): AutoConfigTokenContentV1 {
   if (!token.startsWith(AUTOCONFIG_TOKEN_PREFIX_V1)) {
     throw new AutoConfigError();
   }

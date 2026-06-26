@@ -95,7 +95,7 @@ export class Endpoint {
   public constructor(private readonly requestCtx: SvixRequestContext) {}
 
   /** List the application's endpoints. */
-  public list(
+  public async list(
     appId: string,
     options?: EndpointListOptions
   ): Promise<ListResponseEndpointOut> {
@@ -108,7 +108,7 @@ export class Endpoint {
       order: options?.order,
     });
 
-    return request.send(
+    return await request.send(
       this.requestCtx,
       ListResponseEndpointOutSerializer._fromJsonObject
     );
@@ -119,7 +119,7 @@ export class Endpoint {
    *
    * When `secret` is `null` the secret is automatically generated (recommended).
    */
-  public create(
+  public async create(
     appId: string,
     endpointIn: EndpointIn,
     options?: EndpointCreateOptions
@@ -130,11 +130,11 @@ export class Endpoint {
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
     request.setBody(EndpointInSerializer._toJsonObject(endpointIn));
 
-    return request.send(this.requestCtx, EndpointOutSerializer._fromJsonObject);
+    return await request.send(this.requestCtx, EndpointOutSerializer._fromJsonObject);
   }
 
   /** Get an endpoint. */
-  public get(appId: string, endpointId: string): Promise<EndpointOut> {
+  public async get(appId: string, endpointId: string): Promise<EndpointOut> {
     const request = new SvixRequest(
       HttpMethod.GET,
       "/api/v1/app/{app_id}/endpoint/{endpoint_id}"
@@ -143,11 +143,11 @@ export class Endpoint {
     request.setPathParam("app_id", appId);
     request.setPathParam("endpoint_id", endpointId);
 
-    return request.send(this.requestCtx, EndpointOutSerializer._fromJsonObject);
+    return await request.send(this.requestCtx, EndpointOutSerializer._fromJsonObject);
   }
 
   /** Update an endpoint. */
-  public update(
+  public async update(
     appId: string,
     endpointId: string,
     endpointUpdate: EndpointUpdate
@@ -161,11 +161,11 @@ export class Endpoint {
     request.setPathParam("endpoint_id", endpointId);
     request.setBody(EndpointUpdateSerializer._toJsonObject(endpointUpdate));
 
-    return request.send(this.requestCtx, EndpointOutSerializer._fromJsonObject);
+    return await request.send(this.requestCtx, EndpointOutSerializer._fromJsonObject);
   }
 
   /** Delete an endpoint. */
-  public delete(appId: string, endpointId: string): Promise<void> {
+  public async delete(appId: string, endpointId: string): Promise<void> {
     const request = new SvixRequest(
       HttpMethod.DELETE,
       "/api/v1/app/{app_id}/endpoint/{endpoint_id}"
@@ -174,11 +174,11 @@ export class Endpoint {
     request.setPathParam("app_id", appId);
     request.setPathParam("endpoint_id", endpointId);
 
-    return request.sendNoResponseBody(this.requestCtx);
+    return await request.sendNoResponseBody(this.requestCtx);
   }
 
   /** Partially update an endpoint. */
-  public patch(
+  public async patch(
     appId: string,
     endpointId: string,
     endpointPatch: EndpointPatch
@@ -192,7 +192,7 @@ export class Endpoint {
     request.setPathParam("endpoint_id", endpointId);
     request.setBody(EndpointPatchSerializer._toJsonObject(endpointPatch));
 
-    return request.send(this.requestCtx, EndpointOutSerializer._fromJsonObject);
+    return await request.send(this.requestCtx, EndpointOutSerializer._fromJsonObject);
   }
 
   /**
@@ -213,7 +213,7 @@ export class Endpoint {
    * }
    * ```
    */
-  public bulkReplay(
+  public async bulkReplay(
     appId: string,
     endpointId: string,
     bulkReplayIn: BulkReplayIn,
@@ -229,11 +229,14 @@ export class Endpoint {
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
     request.setBody(BulkReplayInSerializer._toJsonObject(bulkReplayIn));
 
-    return request.send(this.requestCtx, ReplayOutSerializer._fromJsonObject);
+    return await request.send(this.requestCtx, ReplayOutSerializer._fromJsonObject);
   }
 
   /** Get the additional headers to be sent with the webhook. */
-  public getHeaders(appId: string, endpointId: string): Promise<EndpointHeadersOut> {
+  public async getHeaders(
+    appId: string,
+    endpointId: string
+  ): Promise<EndpointHeadersOut> {
     const request = new SvixRequest(
       HttpMethod.GET,
       "/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers"
@@ -242,11 +245,14 @@ export class Endpoint {
     request.setPathParam("app_id", appId);
     request.setPathParam("endpoint_id", endpointId);
 
-    return request.send(this.requestCtx, EndpointHeadersOutSerializer._fromJsonObject);
+    return await request.send(
+      this.requestCtx,
+      EndpointHeadersOutSerializer._fromJsonObject
+    );
   }
 
   /** Set the additional headers to be sent with the webhook. */
-  public updateHeaders(
+  public async updateHeaders(
     appId: string,
     endpointId: string,
     endpointHeadersIn: EndpointHeadersIn
@@ -260,7 +266,7 @@ export class Endpoint {
     request.setPathParam("endpoint_id", endpointId);
     request.setBody(EndpointHeadersInSerializer._toJsonObject(endpointHeadersIn));
 
-    return request.sendNoResponseBody(this.requestCtx);
+    return await request.sendNoResponseBody(this.requestCtx);
   }
 
   public headersUpdate(
@@ -272,7 +278,7 @@ export class Endpoint {
   }
 
   /** Partially set the additional headers to be sent with the webhook. */
-  public patchHeaders(
+  public async patchHeaders(
     appId: string,
     endpointId: string,
     endpointHeadersPatchIn: EndpointHeadersPatchIn
@@ -288,7 +294,7 @@ export class Endpoint {
       EndpointHeadersPatchInSerializer._toJsonObject(endpointHeadersPatchIn)
     );
 
-    return request.sendNoResponseBody(this.requestCtx);
+    return await request.sendNoResponseBody(this.requestCtx);
   }
 
   public headersPatch(
@@ -316,7 +322,7 @@ export class Endpoint {
    * }
    * ```
    */
-  public recover(
+  public async recover(
     appId: string,
     endpointId: string,
     recoverIn: RecoverIn,
@@ -332,7 +338,7 @@ export class Endpoint {
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
     request.setBody(RecoverInSerializer._toJsonObject(recoverIn));
 
-    return request.send(this.requestCtx, RecoverOutSerializer._fromJsonObject);
+    return await request.send(this.requestCtx, RecoverOutSerializer._fromJsonObject);
   }
 
   /**
@@ -353,7 +359,7 @@ export class Endpoint {
    * }
    * ```
    */
-  public replayMissing(
+  public async replayMissing(
     appId: string,
     endpointId: string,
     replayIn: ReplayIn,
@@ -369,7 +375,7 @@ export class Endpoint {
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
     request.setBody(ReplayInSerializer._toJsonObject(replayIn));
 
-    return request.send(this.requestCtx, ReplayOutSerializer._fromJsonObject);
+    return await request.send(this.requestCtx, ReplayOutSerializer._fromJsonObject);
   }
 
   /**
@@ -378,7 +384,7 @@ export class Endpoint {
    * This is used to verify the authenticity of the webhook.
    * For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
    */
-  public getSecret(appId: string, endpointId: string): Promise<EndpointSecretOut> {
+  public async getSecret(appId: string, endpointId: string): Promise<EndpointSecretOut> {
     const request = new SvixRequest(
       HttpMethod.GET,
       "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret"
@@ -387,7 +393,10 @@ export class Endpoint {
     request.setPathParam("app_id", appId);
     request.setPathParam("endpoint_id", endpointId);
 
-    return request.send(this.requestCtx, EndpointSecretOutSerializer._fromJsonObject);
+    return await request.send(
+      this.requestCtx,
+      EndpointSecretOutSerializer._fromJsonObject
+    );
   }
 
   /**
@@ -395,7 +404,7 @@ export class Endpoint {
    *
    * The previous secret will remain valid for the next 24 hours.
    */
-  public rotateSecret(
+  public async rotateSecret(
     appId: string,
     endpointId: string,
     endpointSecretRotateIn: EndpointSecretRotateIn,
@@ -413,11 +422,11 @@ export class Endpoint {
       EndpointSecretRotateInSerializer._toJsonObject(endpointSecretRotateIn)
     );
 
-    return request.sendNoResponseBody(this.requestCtx);
+    return await request.sendNoResponseBody(this.requestCtx);
   }
 
   /** Send an example message for an event. */
-  public sendExample(
+  public async sendExample(
     appId: string,
     endpointId: string,
     eventExampleIn: EventExampleIn,
@@ -433,11 +442,11 @@ export class Endpoint {
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
     request.setBody(EventExampleInSerializer._toJsonObject(eventExampleIn));
 
-    return request.send(this.requestCtx, MessageOutSerializer._fromJsonObject);
+    return await request.send(this.requestCtx, MessageOutSerializer._fromJsonObject);
   }
 
   /** Get basic statistics for the endpoint. */
-  public getStats(
+  public async getStats(
     appId: string,
     endpointId: string,
     options?: EndpointGetStatsOptions
@@ -454,11 +463,11 @@ export class Endpoint {
       until: options?.until,
     });
 
-    return request.send(this.requestCtx, EndpointStatsSerializer._fromJsonObject);
+    return await request.send(this.requestCtx, EndpointStatsSerializer._fromJsonObject);
   }
 
   /** Get the transformation code associated with this endpoint. */
-  public transformationGet(
+  public async transformationGet(
     appId: string,
     endpointId: string
   ): Promise<EndpointTransformationOut> {
@@ -470,14 +479,14 @@ export class Endpoint {
     request.setPathParam("app_id", appId);
     request.setPathParam("endpoint_id", endpointId);
 
-    return request.send(
+    return await request.send(
       this.requestCtx,
       EndpointTransformationOutSerializer._fromJsonObject
     );
   }
 
   /** Set or unset the transformation code associated with this endpoint. */
-  public patchTransformation(
+  public async patchTransformation(
     appId: string,
     endpointId: string,
     endpointTransformationPatch: EndpointTransformationPatch
@@ -493,7 +502,7 @@ export class Endpoint {
       EndpointTransformationPatchSerializer._toJsonObject(endpointTransformationPatch)
     );
 
-    return request.sendNoResponseBody(this.requestCtx);
+    return await request.sendNoResponseBody(this.requestCtx);
   }
 
   /**
@@ -501,7 +510,7 @@ export class Endpoint {
    *
    * @deprecated
    */
-  public transformationPartialUpdate(
+  public async transformationPartialUpdate(
     appId: string,
     endpointId: string,
     endpointTransformationIn: EndpointTransformationIn
@@ -517,6 +526,6 @@ export class Endpoint {
       EndpointTransformationInSerializer._toJsonObject(endpointTransformationIn)
     );
 
-    return request.sendNoResponseBody(this.requestCtx);
+    return await request.sendNoResponseBody(this.requestCtx);
   }
 }

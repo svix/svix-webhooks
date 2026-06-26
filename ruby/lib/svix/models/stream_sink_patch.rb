@@ -4,10 +4,19 @@ require "json"
 
 require_relative "./amazon_s3_patch_config"
 require_relative "./azure_blob_storage_patch_config"
+require_relative "./big_query_patch_config"
+require_relative "./clickhouse_patch_config"
+require_relative "./event_bridge_patch_config"
+require_relative "./google_cloud_pub_sub_patch_config"
 require_relative "./google_cloud_storage_patch_config"
 require_relative "./http_patch_config"
 require_relative "./otel_tracing_patch_config"
+require_relative "./rabbit_mq_patch_config"
+require_relative "./redshift_patch_config"
 require_relative "./sink_status_in"
+require_relative "./snowflake_patch_config"
+require_relative "./sns_patch_config"
+require_relative "./sqs_patch_config"
 
 module Svix
   class StreamSinkPatchConfig
@@ -41,6 +50,33 @@ module Svix
 
     class GoogleCloudStorage < GoogleCloudStoragePatchConfig
     end
+
+    class GoogleCloudPubSub < GoogleCloudPubSubPatchConfig
+    end
+
+    class Sqs < SqsPatchConfig
+    end
+
+    class Sns < SnsPatchConfig
+    end
+
+    class BigQuery < BigQueryPatchConfig
+    end
+
+    class Clickhouse < ClickhousePatchConfig
+    end
+
+    class EventBridge < EventBridgePatchConfig
+    end
+
+    class Snowflake < SnowflakePatchConfig
+    end
+
+    class RabbitMq < RabbitMqPatchConfig
+    end
+
+    class Redshift < RedshiftPatchConfig
+    end
   end
 
   class StreamSinkPatch
@@ -61,7 +97,16 @@ module Svix
       StreamSinkPatchConfig::OtelTracing => "otelTracing",
       StreamSinkPatchConfig::Http => "http",
       StreamSinkPatchConfig::AmazonS3 => "amazonS3",
-      StreamSinkPatchConfig::GoogleCloudStorage => "googleCloudStorage"
+      StreamSinkPatchConfig::GoogleCloudStorage => "googleCloudStorage",
+      StreamSinkPatchConfig::GoogleCloudPubSub => "googleCloudPubSub",
+      StreamSinkPatchConfig::Sqs => "sqs",
+      StreamSinkPatchConfig::Sns => "sns",
+      StreamSinkPatchConfig::BigQuery => "bigQuery",
+      StreamSinkPatchConfig::Clickhouse => "clickhouse",
+      StreamSinkPatchConfig::EventBridge => "eventBridge",
+      StreamSinkPatchConfig::Snowflake => "snowflake",
+      StreamSinkPatchConfig::RabbitMq => "rabbitMq",
+      StreamSinkPatchConfig::Redshift => "redshift"
     }
     private_constant :TYPE_TO_NAME
     NAME_TO_TYPE = TYPE_TO_NAME.invert

@@ -165,6 +165,7 @@ namespace Svix.Tests
                 "svix-libs/",
                 stub.LogEntries[0].RequestMessage.Headers["User-Agent"][0]
             );
+            Assert.Contains("dotnet/v", stub.LogEntries[0].RequestMessage.Headers["User-Agent"][0]);
         }
 
         [Fact]
@@ -374,6 +375,42 @@ namespace Svix.Tests
                 .RespondWith(Response.Create().WithStatusCode(200).WithBody(res));
 
             client.Application.List();
+        }
+
+        [Fact]
+        public void CreateMessageWithContentDefaultsToFalse()
+        {
+            var appId = "app_1srOrx2ZWZBpBUvZwXKQmoEYga2";
+            var responseJson = """
+                    {
+                        "channels": null,
+                        "deliverAt": null,
+                        "eventId": null,
+                        "eventType": "user.signup",
+                        "id": "msg_2srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "payload": { "m": "FILTERED" },
+                        "tags": null,
+                        "timestamp": "2026-06-08T09:25:17.864Z"
+                    }
+                """;
+            stub.Given(Request.Create().WithPath($"/api/v1/app/{appId}/msg").UsingPost())
+                .RespondWith(Response.Create().WithStatusCode(202).WithBody(responseJson));
+
+            var payload = new Dictionary<string, string>
+            {
+                { "type", "user.signup" },
+                { "email", "test@example.com" },
+                { "username", "test_user" },
+            };
+            var response = client.Message.Create(
+                appId,
+                new MessageIn { EventType = "user.signup", Payload = payload }
+            );
+
+            Assert.Equal(response.Payload, payload);
+
+            Assert.Equal(1, stub.LogEntries.Count);
+            Assert.Equal("?with_content=false", stub.LogEntries[0].RequestMessage.RawQuery);
         }
     }
 }

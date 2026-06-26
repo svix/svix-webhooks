@@ -1,5 +1,116 @@
+[project]
+name = "svix"
+version = "1.96.1"
+description = "Svix webhooks API client and webhook verification library"
+authors = [
+    { name = "Svix", email = "development@svix.com" }
+]
+readme = "README.md"
+requires-python = ">=3.9"
+license = "MIT"
+dependencies = [
+    "pydantic >=2.10",
+    "httpx >=0.23.0",
+    "attrs >=21.3.0",
+    "standardwebhooks",
+    "python-dateutil",
+    "Deprecated",
+]
+keywords = [
+    "svix",
+    "diahook",
+    "webhooks",
+]
+classifiers = [
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development",
+    "Typing :: Typed",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
+
+[project.urls]
+Repository = "https://github.com/svix/svix-webhooks/"
+Issues = "https://github.com/svix/svix-webhooks/issues"
+Changelog = "https://github.com/svix/svix-webhooks/blob/main/ChangeLog.md"
+
+[build-system]
+requires = ["hatchling >= 1.26"]
+build-backend = "hatchling.build"
+
+[tool.setuptools.package-data]
+"svix" = ["py.typed"]
+
+[tool.hatch.build]
+exclude = [".github/*", "scripts/*", "tests/*", 'uv.lock', "mypy.ini", "example.py", ".gitignore", "/.*"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["svix"]
+
+[dependency-groups]
+dev = [
+    "httpretty>=1,<2",
+    "mypy",
+    "pytest-docker==3.*",
+    "pytest-httpserver>=1.0.7,<2",
+    "pytest-httpx>=0.22,<1.0",
+    "pytest>=8.0",
+    "requests>=2,<3",
+    "ruff>=0.15.6",
+    "ty>=0.0.23",
+    "types-Deprecated",
+    "types-python-dateutil",
+    "types-requests",
+    "typing-extensions",
+]
+
+[tool.ruff]
+line-length = 88
+target-version = "py38"
+
+[tool.ruff.lint]
+select = [
+    # pycodestyle
+    "E",
+    # Pyflakes
+    "F",
+    # pyupgrade
+    "UP",
+    # isort
+    "I",
+    # ruff
+    "RUF",
+]
+ignore = [
+    "UP006", # Use `dict` instead of `t.Dict` for type annotation
+    "UP007", # Use `X | Y` for type annotations
+    "UP045", # Use `X | None` for type annotations
+    "UP035", # deprecated typing aliases
+    "RUF022", # __all__ is not sorted
+]
+
+[tool.ruff.lint.per-file-ignores]
+"svix/api/**.py" = ["I001", "E501"]  # ignore style in generated code
+"svix/models/**.py" = ["I001", "E501"]  # ignore in generated code
+
+[tool.ty.environment]
+python-version = "3.9"
+
 [tool.black]
-line-length = 120
+line-length = 88
 
 [tool.isort]
 multi_line_output = 3
@@ -7,5 +118,8 @@ include_trailing_comma = true
 force_grid_wrap = 0
 use_parentheses = true
 ensure_newline_before_comments = true
-line_length = 120
+line_length = 88
 skip_gitignore = true
+
+[tool.flake8]
+max-line-length = 88

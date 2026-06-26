@@ -52,7 +52,7 @@ export class EventType {
   public constructor(private readonly requestCtx: SvixRequestContext) {}
 
   /** Return the list of event types. */
-  public list(options?: EventTypeListOptions): Promise<ListResponseEventTypeOut> {
+  public async list(options?: EventTypeListOptions): Promise<ListResponseEventTypeOut> {
     const request = new SvixRequest(HttpMethod.GET, "/api/v1/event-type");
 
     request.setQueryParams({
@@ -63,7 +63,7 @@ export class EventType {
       with_content: options?.withContent,
     });
 
-    return request.send(
+    return await request.send(
       this.requestCtx,
       ListResponseEventTypeOutSerializer._fromJsonObject
     );
@@ -76,7 +76,7 @@ export class EventType {
    * Endpoints filtering on the event type before archival will continue to filter on it.
    * This operation does not preserve the description and schemas.
    */
-  public create(
+  public async create(
     eventTypeIn: EventTypeIn,
     options?: EventTypeCreateOptions
   ): Promise<EventTypeOut> {
@@ -85,7 +85,7 @@ export class EventType {
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
     request.setBody(EventTypeInSerializer._toJsonObject(eventTypeIn));
 
-    return request.send(this.requestCtx, EventTypeOutSerializer._fromJsonObject);
+    return await request.send(this.requestCtx, EventTypeOutSerializer._fromJsonObject);
   }
 
   /**
@@ -95,7 +95,7 @@ export class EventType {
    * The importer will convert all webhooks found in the either the `webhooks` or `x-webhooks`
    * top-level.
    */
-  public importOpenapi(
+  public async importOpenapi(
     eventTypeImportOpenApiIn: EventTypeImportOpenApiIn,
     options?: EventTypeImportOpenapiOptions
   ): Promise<EventTypeImportOpenApiOut> {
@@ -106,14 +106,14 @@ export class EventType {
       EventTypeImportOpenApiInSerializer._toJsonObject(eventTypeImportOpenApiIn)
     );
 
-    return request.send(
+    return await request.send(
       this.requestCtx,
       EventTypeImportOpenApiOutSerializer._fromJsonObject
     );
   }
 
   /** Get an event type. */
-  public get(eventTypeName: string): Promise<EventTypeOut> {
+  public async get(eventTypeName: string): Promise<EventTypeOut> {
     const request = new SvixRequest(
       HttpMethod.GET,
       "/api/v1/event-type/{event_type_name}"
@@ -121,11 +121,11 @@ export class EventType {
 
     request.setPathParam("event_type_name", eventTypeName);
 
-    return request.send(this.requestCtx, EventTypeOutSerializer._fromJsonObject);
+    return await request.send(this.requestCtx, EventTypeOutSerializer._fromJsonObject);
   }
 
   /** Update an event type. */
-  public update(
+  public async update(
     eventTypeName: string,
     eventTypeUpdate: EventTypeUpdate
   ): Promise<EventTypeOut> {
@@ -137,7 +137,7 @@ export class EventType {
     request.setPathParam("event_type_name", eventTypeName);
     request.setBody(EventTypeUpdateSerializer._toJsonObject(eventTypeUpdate));
 
-    return request.send(this.requestCtx, EventTypeOutSerializer._fromJsonObject);
+    return await request.send(this.requestCtx, EventTypeOutSerializer._fromJsonObject);
   }
 
   /**
@@ -148,7 +148,10 @@ export class EventType {
    * An event type can be unarchived with the
    * [create operation](#operation/create_event_type_api_v1_event_type__post).
    */
-  public delete(eventTypeName: string, options?: EventTypeDeleteOptions): Promise<void> {
+  public async delete(
+    eventTypeName: string,
+    options?: EventTypeDeleteOptions
+  ): Promise<void> {
     const request = new SvixRequest(
       HttpMethod.DELETE,
       "/api/v1/event-type/{event_type_name}"
@@ -159,11 +162,11 @@ export class EventType {
       expunge: options?.expunge,
     });
 
-    return request.sendNoResponseBody(this.requestCtx);
+    return await request.sendNoResponseBody(this.requestCtx);
   }
 
   /** Partially update an event type. */
-  public patch(
+  public async patch(
     eventTypeName: string,
     eventTypePatch: EventTypePatch
   ): Promise<EventTypeOut> {
@@ -175,6 +178,6 @@ export class EventType {
     request.setPathParam("event_type_name", eventTypeName);
     request.setBody(EventTypePatchSerializer._toJsonObject(eventTypePatch));
 
-    return request.send(this.requestCtx, EventTypeOutSerializer._fromJsonObject);
+    return await request.send(this.requestCtx, EventTypeOutSerializer._fromJsonObject);
   }
 }

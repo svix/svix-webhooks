@@ -64,7 +64,7 @@ export class IngestEndpoint {
   public constructor(private readonly requestCtx: SvixRequestContext) {}
 
   /** List ingest endpoints. */
-  public list(
+  public async list(
     sourceId: string,
     options?: IngestEndpointListOptions
   ): Promise<ListResponseIngestEndpointOut> {
@@ -80,14 +80,14 @@ export class IngestEndpoint {
       order: options?.order,
     });
 
-    return request.send(
+    return await request.send(
       this.requestCtx,
       ListResponseIngestEndpointOutSerializer._fromJsonObject
     );
   }
 
   /** Create an ingest endpoint. */
-  public create(
+  public async create(
     sourceId: string,
     ingestEndpointIn: IngestEndpointIn,
     options?: IngestEndpointCreateOptions
@@ -101,11 +101,14 @@ export class IngestEndpoint {
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
     request.setBody(IngestEndpointInSerializer._toJsonObject(ingestEndpointIn));
 
-    return request.send(this.requestCtx, IngestEndpointOutSerializer._fromJsonObject);
+    return await request.send(
+      this.requestCtx,
+      IngestEndpointOutSerializer._fromJsonObject
+    );
   }
 
   /** Get an ingest endpoint. */
-  public get(sourceId: string, endpointId: string): Promise<IngestEndpointOut> {
+  public async get(sourceId: string, endpointId: string): Promise<IngestEndpointOut> {
     const request = new SvixRequest(
       HttpMethod.GET,
       "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}"
@@ -114,11 +117,14 @@ export class IngestEndpoint {
     request.setPathParam("source_id", sourceId);
     request.setPathParam("endpoint_id", endpointId);
 
-    return request.send(this.requestCtx, IngestEndpointOutSerializer._fromJsonObject);
+    return await request.send(
+      this.requestCtx,
+      IngestEndpointOutSerializer._fromJsonObject
+    );
   }
 
   /** Update an ingest endpoint. */
-  public update(
+  public async update(
     sourceId: string,
     endpointId: string,
     ingestEndpointUpdate: IngestEndpointUpdate
@@ -132,11 +138,14 @@ export class IngestEndpoint {
     request.setPathParam("endpoint_id", endpointId);
     request.setBody(IngestEndpointUpdateSerializer._toJsonObject(ingestEndpointUpdate));
 
-    return request.send(this.requestCtx, IngestEndpointOutSerializer._fromJsonObject);
+    return await request.send(
+      this.requestCtx,
+      IngestEndpointOutSerializer._fromJsonObject
+    );
   }
 
   /** Delete an ingest endpoint. */
-  public delete(sourceId: string, endpointId: string): Promise<void> {
+  public async delete(sourceId: string, endpointId: string): Promise<void> {
     const request = new SvixRequest(
       HttpMethod.DELETE,
       "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}"
@@ -145,11 +154,11 @@ export class IngestEndpoint {
     request.setPathParam("source_id", sourceId);
     request.setPathParam("endpoint_id", endpointId);
 
-    return request.sendNoResponseBody(this.requestCtx);
+    return await request.sendNoResponseBody(this.requestCtx);
   }
 
   /** Get the additional headers to be sent with the ingest. */
-  public getHeaders(
+  public async getHeaders(
     sourceId: string,
     endpointId: string
   ): Promise<IngestEndpointHeadersOut> {
@@ -161,14 +170,14 @@ export class IngestEndpoint {
     request.setPathParam("source_id", sourceId);
     request.setPathParam("endpoint_id", endpointId);
 
-    return request.send(
+    return await request.send(
       this.requestCtx,
       IngestEndpointHeadersOutSerializer._fromJsonObject
     );
   }
 
   /** Set the additional headers to be sent to the endpoint. */
-  public updateHeaders(
+  public async updateHeaders(
     sourceId: string,
     endpointId: string,
     ingestEndpointHeadersIn: IngestEndpointHeadersIn
@@ -184,7 +193,7 @@ export class IngestEndpoint {
       IngestEndpointHeadersInSerializer._toJsonObject(ingestEndpointHeadersIn)
     );
 
-    return request.sendNoResponseBody(this.requestCtx);
+    return await request.sendNoResponseBody(this.requestCtx);
   }
 
   /**
@@ -193,7 +202,7 @@ export class IngestEndpoint {
    * This is used to verify the authenticity of the webhook.
    * For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
    */
-  public getSecret(
+  public async getSecret(
     sourceId: string,
     endpointId: string
   ): Promise<IngestEndpointSecretOut> {
@@ -205,7 +214,7 @@ export class IngestEndpoint {
     request.setPathParam("source_id", sourceId);
     request.setPathParam("endpoint_id", endpointId);
 
-    return request.send(
+    return await request.send(
       this.requestCtx,
       IngestEndpointSecretOutSerializer._fromJsonObject
     );
@@ -216,7 +225,7 @@ export class IngestEndpoint {
    *
    * The previous secret will remain valid for the next 24 hours.
    */
-  public rotateSecret(
+  public async rotateSecret(
     sourceId: string,
     endpointId: string,
     ingestEndpointSecretIn: IngestEndpointSecretIn,
@@ -234,11 +243,11 @@ export class IngestEndpoint {
       IngestEndpointSecretInSerializer._toJsonObject(ingestEndpointSecretIn)
     );
 
-    return request.sendNoResponseBody(this.requestCtx);
+    return await request.sendNoResponseBody(this.requestCtx);
   }
 
   /** Get the transformation code associated with this ingest endpoint. */
-  public getTransformation(
+  public async getTransformation(
     sourceId: string,
     endpointId: string
   ): Promise<IngestEndpointTransformationOut> {
@@ -250,14 +259,14 @@ export class IngestEndpoint {
     request.setPathParam("source_id", sourceId);
     request.setPathParam("endpoint_id", endpointId);
 
-    return request.send(
+    return await request.send(
       this.requestCtx,
       IngestEndpointTransformationOutSerializer._fromJsonObject
     );
   }
 
   /** Set or unset the transformation code associated with this ingest endpoint. */
-  public setTransformation(
+  public async setTransformation(
     sourceId: string,
     endpointId: string,
     ingestEndpointTransformationPatch: IngestEndpointTransformationPatch
@@ -275,6 +284,6 @@ export class IngestEndpoint {
       )
     );
 
-    return request.sendNoResponseBody(this.requestCtx);
+    return await request.sendNoResponseBody(this.requestCtx);
   }
 }

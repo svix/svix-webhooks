@@ -30,7 +30,9 @@ namespace Svix
         }
 
         /// <summary>
-        /// Get the HTTP sink headers. Only valid for `http` or `otelTracing` sinks.
+        /// Get the HTTP sink headers.
+        ///
+        /// Only valid for `http` or `otelTracing` sinks.
         /// </summary>
         public async Task<EndpointHeadersOut> SinkHeadersGetAsync(
             string streamId,
@@ -61,7 +63,9 @@ namespace Svix
         }
 
         /// <summary>
-        /// Get the HTTP sink headers. Only valid for `http` or `otelTracing` sinks.
+        /// Get the HTTP sink headers.
+        ///
+        /// Only valid for `http` or `otelTracing` sinks.
         /// </summary>
         public EndpointHeadersOut SinkHeadersGet(string streamId, string sinkId)
         {
@@ -87,7 +91,9 @@ namespace Svix
         }
 
         /// <summary>
-        /// Updates the Sink's headers. Only valid for `http` or `otelTracing` sinks.
+        /// Updates the Sink's headers.
+        ///
+        /// Only valid for `http` or `otelTracing` sinks.
         /// </summary>
         public async Task<EndpointHeadersOut> SinkHeadersPatchAsync(
             string streamId,
@@ -123,7 +129,9 @@ namespace Svix
         }
 
         /// <summary>
-        /// Updates the Sink's headers. Only valid for `http` or `otelTracing` sinks.
+        /// Updates the Sink's headers.
+        ///
+        /// Only valid for `http` or `otelTracing` sinks.
         /// </summary>
         public EndpointHeadersOut SinkHeadersPatch(
             string streamId,

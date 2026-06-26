@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 {%- set api_name %}{{ r_name_pascal_case }}Api{% endset %}
 
 
-namespace Svix
+namespace {{ context.namespace }}
 {
 {# <Resource><Operation>Options #}
 {%- for op in resource.operations -%}
@@ -48,7 +48,6 @@ namespace Svix
     {%- endif %}
 {% endfor %}
 
-    {# high-level API #}
     public class {{ r_name_pascal_case }}(SvixClient client)
     {
         readonly SvixClient _client = client;
@@ -118,23 +117,35 @@ namespace Svix
                     method: HttpMethod.{{ op.method | to_upper_camel_case }},
                     path: "{{ op.path }}"
         {%- if op.path_params | length > 0 %}
-                    ,pathParams: new Dictionary<string, string>{
+                    , pathParams: new Dictionary<string, string>{
             {%- for p in op.path_params %}
                     { "{{ p }}", {{ p | to_lower_camel_case }} },
             {%- endfor %}
                     }
         {%- endif %}
         {%- if op | has_query_or_header_params %}
-                    ,queryParams: options?.QueryParams()
-                    ,headerParams: options?.HeaderParams()
+                    , queryParams:
+                    {%- if op.id == "v1.message.create" -%}
+                        new Dictionary<string, string>{
+                            { "with_content", "false" },
+                        }
+                    {%- else -%}
+                        options?.QueryParams()
+                    {%- endif %}
+                    , headerParams: options?.HeaderParams()
         {%- endif %}
         {%- if op.request_body_schema_name is defined %}
-                    ,content: {{ req_body_varname }}
+                    , content: {{ req_body_varname }}
         {%- endif %}
         {%- if async %}
-                    ,cancellationToken: cancellationToken
+                    , cancellationToken: cancellationToken
         {%- endif %}
                 );
+                {% if op.id == "v1.message.create" -%}
+                    if (options?.WithContent ?? true) {
+                        response.Data.Payload = messageIn.Payload;
+                    }
+                {% endif -%}
                 return response.Data;
             }
             catch (ApiException e)

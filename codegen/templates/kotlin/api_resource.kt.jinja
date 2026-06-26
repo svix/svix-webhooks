@@ -1,7 +1,14 @@
 {% set resource_type_name = resource.name | to_upper_camel_case -%}
 // this file is @generated
-package com.svix.kotlin
+package {{ context.package }}
 
+import com.svix.kotlin.SvixHttpClient
+{% if context.package == "com.svix.kotlin.internal" -%}
+import com.svix.kotlin.serializeQueryParam
+{% if resource.name == "message" -%}
+import com.svix.kotlin.StringAnyMapSerializer
+{% endif -%}
+{% endif -%}
 import com.svix.kotlin.models.ApplicationIn
 import com.svix.kotlin.models.ListResponseMessageOut
 import com.svix.kotlin.models.MessageIn

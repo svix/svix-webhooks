@@ -213,13 +213,13 @@ impl Client {
 pub async fn listen(
     local_url: url::Url,
     relay_token: String,
+    allow_token_rotation: bool,
     relay_debug_url: Option<&str>,
     relay_disable_security: bool,
     disable_tls_verification: bool,
 ) -> Result<()> {
     let scheme = if relay_disable_security { "ws" } else { "wss" };
     let api_host = relay_debug_url.unwrap_or(DEFAULT_API_HOST);
-    let token = format!("c_{relay_token}");
 
     let websocket_url = format!("{scheme}://{api_host}/{API_PREFIX}/listen/").parse()?;
 
@@ -228,7 +228,7 @@ pub async fn listen(
         .build()?;
 
     let mut client = Client {
-        token,
+        token: relay_token,
         websocket_url,
         local_url,
         http_client,
@@ -254,12 +254,9 @@ pub async fn listen(
 
         if let Err(e) = client.connect(show_welcome_message).await {
             eprintln!("Failed to connect to Webhook Relay: {e:#}");
-            if e.downcast_ref::<TokenInUse>().is_some() {
+            if e.downcast_ref::<TokenInUse>().is_some() && allow_token_rotation {
                 eprintln!("Generating a new token for this session.");
-                client.token = {
-                    let relay_token = generate_token()?;
-                    format!("c_{relay_token}")
-                };
+                client.token = format!("c_{}", generate_token()?);
             }
         } else {
             eprintln!("Failed to connect to Webhook Relay");

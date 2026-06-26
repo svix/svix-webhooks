@@ -1,8 +1,22 @@
 import { ApiException, type XOR } from "./util";
 import type { HttpErrorOut, HTTPValidationError } from "./HttpErrors";
 
-export const LIB_VERSION = "1.94.0";
-const USER_AGENT = `svix-libs/${LIB_VERSION}/javascript`;
+export const LIB_VERSION = "1.96.1";
+
+function getUserAgent() {
+  var fields = [`svix-libs/${LIB_VERSION}/javascript`];
+  if (process !== undefined) {
+    if (process.version !== undefined) {
+      fields.push(`node/${process.version}`);
+    }
+    if (process.platform !== undefined && process.arch !== undefined) {
+      fields.push(`${process.platform}/${process.arch}`);
+    }
+  } else if (navigator?.userAgent !== undefined) {
+    fields.push(navigator.userAgent);
+  }
+  return fields.join(" ");
+}
 
 export enum HttpMethod {
   GET = "GET",
@@ -160,7 +174,7 @@ export class SvixRequest {
         headers: {
           accept: "application/json, */*;q=0.8",
           authorization: `Bearer ${ctx.token}`,
-          "user-agent": USER_AGENT,
+          "user-agent": getUserAgent(),
           "svix-req-id": randomId.toString(),
           ...this.headerParams,
         },
