@@ -47,7 +47,7 @@ RUN touch src/main.rs
 RUN cargo build --release --frozen
 
 # Production
-FROM docker.io/debian:trixie-20260518-slim AS prod
+FROM docker.io/debian:trixie-20260623-slim AS prod
 
 SHELL ["/bin/bash", "-eux", "-o", "pipefail", "-c"]
 RUN <<EOF

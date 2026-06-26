@@ -49,7 +49,7 @@ COPY . .
 RUN cargo build --release --package svix-server --bin svix-server --frozen
 
 # Production
-FROM docker.io/debian:trixie-20260518-slim AS prod
+FROM docker.io/debian:trixie-20260623-slim AS prod
 
 SHELL ["/bin/bash", "-eux", "-o", "pipefail", "-c"]
 RUN <<EOF
