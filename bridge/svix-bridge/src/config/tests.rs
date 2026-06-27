@@ -694,8 +694,5 @@ fn test_pollers_parse_garbage_token_err() {
           exchange: ""
           routing_key: "example"
           "#;
-    // Unfortunately the actual message is not great and won't help users:
-    // `Failed to parse config: receivers: data did not match any variant of untagged enum EitherReceiver at line 3 column 7`
-    // FIXME: need to do an overhaul on the config parser diagnostics. This isn't the only weak spot.
     assert!(Config::from_src(src, None).is_err());
 }
