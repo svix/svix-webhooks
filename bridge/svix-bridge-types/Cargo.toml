@@ -8,10 +8,10 @@ license.workspace = true
 
 [dependencies]
 async-trait = "0.1"
-tokio.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 svix = { path = "../../rust", features = ["svix_beta"] }
+tokio.workspace = true
 
 [lints]
 workspace = true

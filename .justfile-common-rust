@@ -1,0 +1,20 @@
+# Reformat both this justfile and the rust sources.
+[no-exit-message]
+fmt:
+    cargo +nightly fmt --all
+    cargo sort --workspace
+    cargo machete --fix
+    just --fmt --unstable
+
+# Run `cargo clippy` for the rfust codebase.
+clippy *args='':
+    cargo clippy --all-targets {{ args }} -- -D warnings
+
+# Run lints (fmt and clippy)
+lint: fmt clippy && fmt
+
+# Run `cargo check` on the rust codebase
+check:
+    cargo check --all-targets
+
+# vim: set syntax=just:
