@@ -107,7 +107,7 @@ fn setup_tracing(cfg: &Config) -> Option<SdkTracerProvider> {
             provider.tracer_with_scope(InstrumentationScope::builder("svix_bridge").build()),
         );
 
-        _ = opentelemetry::global::set_tracer_provider(provider.clone());
+        opentelemetry::global::set_tracer_provider(provider.clone());
         (layer, provider)
     });
 
