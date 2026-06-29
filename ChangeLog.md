@@ -7,6 +7,8 @@
 * Server: add `updatedAt` to `RecoverOut` (the response type for `v1.endpoint.recover`), matching the cloud version. Note that EE does not support incrementally checking background job status, so this always contains the timestamp at which the job was created
 * Server: add `gracePeriodSeconds` to `EndpointSecretRotateIn`, allowing users to customize how long the old key is still valid for (in a range from 0, which means immediate expiry, to 7 days)
 * Libs/Python: Bump minimum-supported Python interpreter version to 3.9
+* Libs/Rust: [`http` 0.2](https://crates.io/crates/http) is now an optional dependency; if you require integration with 0.2.x, please enable the `http02` feature
+* Libs/Rust: (minor breaking change) The `status` field of `svix::Error` is now a StatusCode from `http` 1.0 instead of `http` 0.2.
 
 ## Version 1.96.1
 * Libs/Java: Upgrade jackson dependency to v2.21.4

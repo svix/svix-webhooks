@@ -6,8 +6,6 @@ use std::fmt;
 use http_body_util::BodyExt;
 use hyper::body::Incoming;
 
-use crate::http1_to_02_status_code;
-
 pub type Result<T> = std::result::Result<T, Error>;
 
 /// The error type returned from the Svix API
@@ -32,12 +30,12 @@ impl Error {
                 let bytes = collected.to_bytes();
                 if status_code == http1::StatusCode::UNPROCESSABLE_ENTITY {
                     Self::Validation(HttpErrorContent {
-                        status: http02::StatusCode::UNPROCESSABLE_ENTITY,
+                        status: http1::StatusCode::UNPROCESSABLE_ENTITY,
                         payload: serde_json::from_slice(&bytes).ok(),
                     })
                 } else {
                     Error::Http(HttpErrorContent {
-                        status: http1_to_02_status_code(status_code),
+                        status: status_code,
                         payload: serde_json::from_slice(&bytes).ok(),
                     })
                 }
@@ -68,6 +66,6 @@ impl std::error::Error for Error {}
 
 #[derive(Debug, Clone)]
 pub struct HttpErrorContent<T> {
-    pub status: http02::StatusCode,
+    pub status: http1::StatusCode,
     pub payload: Option<T>,
 }

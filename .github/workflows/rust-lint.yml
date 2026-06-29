@@ -68,3 +68,12 @@ jobs:
 
       - name: Run tests
         run: cargo nextest run
+
+      - name: Run tests with http 0.2 support
+        run: cargo nextest run --features http02
+
+      - name: Run tests with all features
+        run: cargo nextest run --all-features
+
+      - name: Run tests with native-tls
+        run: cargo nextest run --no-default-features --features=http1,http2,native-tls
