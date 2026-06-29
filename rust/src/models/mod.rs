@@ -161,6 +161,10 @@ pub mod message_status;
 pub mod message_status_text;
 pub mod meta_config;
 pub mod meta_config_out;
+pub mod nango_config;
+pub mod nango_config_out;
+pub mod open_claw_config;
+pub mod open_claw_config_out;
 pub mod operational_webhook_endpoint_headers_in;
 pub mod operational_webhook_endpoint_headers_out;
 pub mod operational_webhook_endpoint_in;
@@ -416,6 +420,10 @@ pub use self::{
     message_status_text::MessageStatusText,
     meta_config::MetaConfig,
     meta_config_out::MetaConfigOut,
+    nango_config::NangoConfig,
+    nango_config_out::NangoConfigOut,
+    open_claw_config::OpenClawConfig,
+    open_claw_config_out::OpenClawConfigOut,
     operational_webhook_endpoint_headers_in::OperationalWebhookEndpointHeadersIn,
     operational_webhook_endpoint_headers_out::OperationalWebhookEndpointHeadersOut,
     operational_webhook_endpoint_in::OperationalWebhookEndpointIn,

@@ -15,6 +15,8 @@ from .easypost_config_out import EasypostConfigOut
 from .github_config_out import GithubConfigOut
 from .hubspot_config_out import HubspotConfigOut
 from .meta_config_out import MetaConfigOut
+from .nango_config_out import NangoConfigOut
+from .open_claw_config_out import OpenClawConfigOut
 from .orum_io_config_out import OrumIoConfigOut
 from .panda_doc_config_out import PandaDocConfigOut
 from .port_io_config_out import PortIoConfigOut
@@ -65,7 +67,9 @@ class IngestSourceOut(BaseModel):
         t.Literal["incident-io"],
         t.Literal["lithic"],
         t.Literal["meta"],
+        t.Literal["nango"],
         t.Literal["nash"],
+        t.Literal["openclaw"],
         t.Literal["orum-io"],
         t.Literal["panda-doc"],
         t.Literal["port-io"],
@@ -103,6 +107,8 @@ class IngestSourceOut(BaseModel):
         GithubConfigOut,
         HubspotConfigOut,
         MetaConfigOut,
+        NangoConfigOut,
+        OpenClawConfigOut,
         OrumIoConfigOut,
         PandaDocConfigOut,
         PortIoConfigOut,
@@ -160,8 +166,12 @@ class IngestSourceOut(BaseModel):
             output.config = SvixConfigOut.model_validate(data.get("config", {}))
         elif output.type == "meta":
             output.config = MetaConfigOut.model_validate(data.get("config", {}))
+        elif output.type == "nango":
+            output.config = NangoConfigOut.model_validate(data.get("config", {}))
         elif output.type == "nash":
             output.config = SvixConfigOut.model_validate(data.get("config", {}))
+        elif output.type == "openclaw":
+            output.config = OpenClawConfigOut.model_validate(data.get("config", {}))
         elif output.type == "orum-io":
             output.config = OrumIoConfigOut.model_validate(data.get("config", {}))
         elif output.type == "panda-doc":

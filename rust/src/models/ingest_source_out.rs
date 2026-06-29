@@ -6,7 +6,8 @@ use super::{
     checkbook_config_out::CheckbookConfigOut, cron_config::CronConfig,
     docusign_config_out::DocusignConfigOut, easypost_config_out::EasypostConfigOut,
     github_config_out::GithubConfigOut, hubspot_config_out::HubspotConfigOut,
-    meta_config_out::MetaConfigOut, orum_io_config_out::OrumIoConfigOut,
+    meta_config_out::MetaConfigOut, nango_config_out::NangoConfigOut,
+    open_claw_config_out::OpenClawConfigOut, orum_io_config_out::OrumIoConfigOut,
     panda_doc_config_out::PandaDocConfigOut, port_io_config_out::PortIoConfigOut,
     rutter_config_out::RutterConfigOut, segment_config_out::SegmentConfigOut,
     shopify_config_out::ShopifyConfigOut, slack_config_out::SlackConfigOut,
@@ -76,8 +77,12 @@ pub enum IngestSourceOutConfig {
     Lithic(SvixConfigOut),
     #[serde(rename = "meta")]
     Meta(MetaConfigOut),
+    #[serde(rename = "nango")]
+    Nango(NangoConfigOut),
     #[serde(rename = "nash")]
     Nash(SvixConfigOut),
+    #[serde(rename = "openclaw")]
+    Openclaw(OpenClawConfigOut),
     #[serde(rename = "orum-io")]
     OrumIo(OrumIoConfigOut),
     #[serde(rename = "panda-doc")]

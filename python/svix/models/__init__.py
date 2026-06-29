@@ -167,6 +167,10 @@ from .message_status import MessageStatus
 from .message_status_text import MessageStatusText
 from .meta_config import MetaConfig
 from .meta_config_out import MetaConfigOut
+from .nango_config import NangoConfig
+from .nango_config_out import NangoConfigOut
+from .open_claw_config import OpenClawConfig
+from .open_claw_config_out import OpenClawConfigOut
 from .operational_webhook_endpoint_headers_in import OperationalWebhookEndpointHeadersIn
 from .operational_webhook_endpoint_headers_out import (
     OperationalWebhookEndpointHeadersOut,
@@ -416,6 +420,10 @@ __all__ = [
     "MessageStatusText",
     "MetaConfig",
     "MetaConfigOut",
+    "NangoConfig",
+    "NangoConfigOut",
+    "OpenClawConfig",
+    "OpenClawConfigOut",
     "OperationalWebhookEndpointHeadersIn",
     "OperationalWebhookEndpointHeadersOut",
     "OperationalWebhookEndpointIn",

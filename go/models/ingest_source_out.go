@@ -18,6 +18,8 @@ import (
 //   - "github": Use GithubConfigOut
 //   - "hubspot": Use HubspotConfigOut
 //   - "meta": Use MetaConfigOut
+//   - "nango": Use NangoConfigOut
+//   - "openclaw": Use OpenClawConfigOut
 //   - "orum-io": Use OrumIoConfigOut
 //   - "panda-doc": Use PandaDocConfigOut
 //   - "port-io": Use PortIoConfigOut
@@ -63,7 +65,9 @@ const (
 	IngestSourceOutTypeIncidentIo     IngestSourceOutType = "incident-io"
 	IngestSourceOutTypeLithic         IngestSourceOutType = "lithic"
 	IngestSourceOutTypeMeta           IngestSourceOutType = "meta"
+	IngestSourceOutTypeNango          IngestSourceOutType = "nango"
 	IngestSourceOutTypeNash           IngestSourceOutType = "nash"
+	IngestSourceOutTypeOpenclaw       IngestSourceOutType = "openclaw"
 	IngestSourceOutTypeOrumIo         IngestSourceOutType = "orum-io"
 	IngestSourceOutTypePandaDoc       IngestSourceOutType = "panda-doc"
 	IngestSourceOutTypePortIo         IngestSourceOutType = "port-io"
@@ -105,6 +109,8 @@ func (EasypostConfigOut) isIngestSourceOutConfig()  {}
 func (GithubConfigOut) isIngestSourceOutConfig()    {}
 func (HubspotConfigOut) isIngestSourceOutConfig()   {}
 func (MetaConfigOut) isIngestSourceOutConfig()      {}
+func (NangoConfigOut) isIngestSourceOutConfig()     {}
+func (OpenClawConfigOut) isIngestSourceOutConfig()  {}
 func (OrumIoConfigOut) isIngestSourceOutConfig()    {}
 func (PandaDocConfigOut) isIngestSourceOutConfig()  {}
 func (PortIoConfigOut) isIngestSourceOutConfig()    {}
@@ -169,6 +175,14 @@ func (i *IngestSourceOut) UnmarshalJSON(data []byte) error {
 		i.Config = c
 	case "meta":
 		var c MetaConfigOut
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
+	case "nango":
+		var c NangoConfigOut
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
+	case "openclaw":
+		var c OpenClawConfigOut
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "orum-io":
@@ -266,7 +280,9 @@ var IngestSourceOutTypeFromString = map[string]IngestSourceOutType{
 	"incident-io":     IngestSourceOutTypeIncidentIo,
 	"lithic":          IngestSourceOutTypeLithic,
 	"meta":            IngestSourceOutTypeMeta,
+	"nango":           IngestSourceOutTypeNango,
 	"nash":            IngestSourceOutTypeNash,
+	"openclaw":        IngestSourceOutTypeOpenclaw,
 	"orum-io":         IngestSourceOutTypeOrumIo,
 	"panda-doc":       IngestSourceOutTypePandaDoc,
 	"port-io":         IngestSourceOutTypePortIo,

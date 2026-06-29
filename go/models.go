@@ -162,6 +162,10 @@ type (
 	MessageStatusText                         = models.MessageStatusText
 	MetaConfig                                = models.MetaConfig
 	MetaConfigOut                             = models.MetaConfigOut
+	NangoConfig                               = models.NangoConfig
+	NangoConfigOut                            = models.NangoConfigOut
+	OpenClawConfig                            = models.OpenClawConfig
+	OpenClawConfigOut                         = models.OpenClawConfigOut
 	OperationalWebhookEndpointHeadersIn       = models.OperationalWebhookEndpointHeadersIn
 	OperationalWebhookEndpointHeadersOut      = models.OperationalWebhookEndpointHeadersOut
 	OperationalWebhookEndpointIn              = models.OperationalWebhookEndpointIn

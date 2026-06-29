@@ -5,12 +5,12 @@ use super::{
     adobe_sign_config::AdobeSignConfig, airwallex_config::AirwallexConfig,
     checkbook_config::CheckbookConfig, cron_config::CronConfig, docusign_config::DocusignConfig,
     easypost_config::EasypostConfig, github_config::GithubConfig, hubspot_config::HubspotConfig,
-    meta_config::MetaConfig, orum_io_config::OrumIoConfig, panda_doc_config::PandaDocConfig,
-    port_io_config::PortIoConfig, rutter_config::RutterConfig, segment_config::SegmentConfig,
-    shopify_config::ShopifyConfig, slack_config::SlackConfig, stripe_config::StripeConfig,
-    svix_config::SvixConfig, tailscale_config::TailscaleConfig, telnyx_config::TelnyxConfig,
-    vapi_config::VapiConfig, veriff_config::VeriffConfig, vgs_config::VgsConfig,
-    zoom_config::ZoomConfig,
+    meta_config::MetaConfig, nango_config::NangoConfig, open_claw_config::OpenClawConfig,
+    orum_io_config::OrumIoConfig, panda_doc_config::PandaDocConfig, port_io_config::PortIoConfig,
+    rutter_config::RutterConfig, segment_config::SegmentConfig, shopify_config::ShopifyConfig,
+    slack_config::SlackConfig, stripe_config::StripeConfig, svix_config::SvixConfig,
+    tailscale_config::TailscaleConfig, telnyx_config::TelnyxConfig, vapi_config::VapiConfig,
+    veriff_config::VeriffConfig, vgs_config::VgsConfig, zoom_config::ZoomConfig,
 };
 
 #[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
@@ -61,8 +61,12 @@ pub enum IngestSourceInConfig {
     Lithic(SvixConfig),
     #[serde(rename = "meta")]
     Meta(MetaConfig),
+    #[serde(rename = "nango")]
+    Nango(NangoConfig),
     #[serde(rename = "nash")]
     Nash(SvixConfig),
+    #[serde(rename = "openclaw")]
+    Openclaw(OpenClawConfig),
     #[serde(rename = "orum-io")]
     OrumIo(OrumIoConfig),
     #[serde(rename = "panda-doc")]

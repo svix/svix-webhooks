@@ -6,6 +6,9 @@ namespace Svix.Models
 {
     public class EndpointSecretRotateIn
     {
+        [JsonProperty("gracePeriodSeconds")]
+        public uint? GracePeriodSeconds { get; set; } = null;
+
         [JsonProperty("key")]
         public string? Key { get; set; } = null;
 
@@ -14,6 +17,7 @@ namespace Svix.Models
             StringBuilder sb = new StringBuilder();
 
             sb.Append("class EndpointSecretRotateIn {\n");
+            sb.Append("  GracePeriodSeconds: ").Append(GracePeriodSeconds).Append('\n');
             sb.Append("  Key: ").Append(Key).Append('\n');
             sb.Append("}\n");
             return sb.ToString();
