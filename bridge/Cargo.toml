@@ -7,9 +7,9 @@ resolver = "2"
 
 members = [
     "svix-bridge",
-    "svix-bridge-types",
-    "svix-bridge-plugin-queue",
     "svix-bridge-plugin-kafka",
+    "svix-bridge-plugin-queue",
+    "svix-bridge-types",
 ]
 
 [workspace.package]
@@ -32,8 +32,8 @@ uninlined_format_args = "warn"
 
 [workspace.dependencies]
 opentelemetry = "0.32.0"
-opentelemetry_sdk = { version = "0.32.0", features = ["metrics", "rt-tokio", "experimental_metrics_periodicreader_with_async_runtime", "experimental_trace_batch_span_processor_with_async_runtime"] }
 opentelemetry-otlp = { version = "0.32.0", features = ["metrics", "grpc-tonic", "reqwest-client"] }
+opentelemetry_sdk = { version = "0.32.0", features = ["metrics", "rt-tokio", "experimental_metrics_periodicreader_with_async_runtime", "experimental_trace_batch_span_processor_with_async_runtime"] }
 serde = { version = "1.0.203", features = ["derive"] }
 serde_json = "1.0.117"
 svix-bridge-types = { path = "svix-bridge-types" }

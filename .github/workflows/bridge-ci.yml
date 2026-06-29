@@ -25,6 +25,21 @@ jobs:
       - name: rustfmt
         run: cargo fmt -- --check
 
+  cargo-sort:
+    name: 'Run cargo-sort'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+        name: Checkout
+
+      - name: Install cargo sort
+        uses: taiki-e/install-action@7a79fe8c3a13344501c80d99cae481c1c9085912 # v2.81.10
+        with:
+          tool: cargo-sort
+
+      - name: Run cargo sort
+        run: cargo sort --workspace --check --check-format
+
   check-unused-deps:
     name: Check for unused dependencies
     runs-on: ubuntu-24.04
