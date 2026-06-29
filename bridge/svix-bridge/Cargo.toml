@@ -26,7 +26,7 @@ svix-bridge-plugin-kafka = { optional = true, path = "../svix-bridge-plugin-kafk
 svix-bridge-types.workspace = true
 tokio.workspace = true
 tracing.workspace = true
-tracing-opentelemetry = "0.30.0"
+tracing-opentelemetry = "0.33.0"
 tracing-subscriber = { workspace = true, features = ["fmt", "json"] }
 deno_core = "0.352.1"
 deno_ast = "0.53.0"
