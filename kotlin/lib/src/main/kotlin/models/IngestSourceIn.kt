@@ -106,9 +106,20 @@ sealed class IngestSourceInConfig {
         override fun toJsonElement() = Json.encodeToJsonElement(MetaConfig.serializer(), meta)
     }
 
+    @VariantName("nango")
+    data class Nango(val nango: NangoConfig) : IngestSourceInConfig() {
+        override fun toJsonElement() = Json.encodeToJsonElement(NangoConfig.serializer(), nango)
+    }
+
     @VariantName("nash")
     data class Nash(val nash: SvixConfig) : IngestSourceInConfig() {
         override fun toJsonElement() = Json.encodeToJsonElement(SvixConfig.serializer(), nash)
+    }
+
+    @VariantName("openclaw")
+    data class Openclaw(val openclaw: OpenClawConfig) : IngestSourceInConfig() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement(OpenClawConfig.serializer(), openclaw)
     }
 
     @VariantName("orum-io")
@@ -299,9 +310,17 @@ sealed class IngestSourceInConfig {
                     { config ->
                         Meta(Json.decodeFromJsonElement(MetaConfig.serializer(), config))
                     },
+                "nango" to
+                    { config ->
+                        Nango(Json.decodeFromJsonElement(NangoConfig.serializer(), config))
+                    },
                 "nash" to
                     { config ->
                         Nash(Json.decodeFromJsonElement(SvixConfig.serializer(), config))
+                    },
+                "openclaw" to
+                    { config ->
+                        Openclaw(Json.decodeFromJsonElement(OpenClawConfig.serializer(), config))
                     },
                 "orum-io" to
                     { config ->

@@ -2034,6 +2034,20 @@
             },
             "CountAppParams": {
                 "properties": {
+                    "exclude_disabled": {
+                        "default": true,
+                        "type": "boolean"
+                    },
+                    "exclude_svix_play": {
+                        "default": true,
+                        "description": "Exclude endpoints that point to a play.svix.com url from the count",
+                        "type": "boolean"
+                    }
+                },
+                "type": "object"
+            },
+            "CountEndpointParams": {
+                "properties": {
                     "exclude_svix_play": {
                         "default": true,
                         "description": "Exclude endpoints that point to a play.svix.com url from the count",
@@ -2475,6 +2489,25 @@
             "EmptyResponse": {
                 "type": "object"
             },
+            "EndpointCountOut": {
+                "properties": {
+                    "active": {
+                        "format": "uint64",
+                        "minimum": 0,
+                        "type": "integer"
+                    },
+                    "disabled": {
+                        "format": "uint64",
+                        "minimum": 0,
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "active",
+                    "disabled"
+                ],
+                "type": "object"
+            },
             "EndpointCreatedEvent": {
                 "description": "Sent when an endpoint is created.",
                 "properties": {
@@ -2899,7 +2932,7 @@
                         "description": "The endpoint's verification secret.\n\nFormat: `base64` encoded random bytes optionally prefixed with `whsec_`.\nIt is recommended to not set this and let the server generate the secret.",
                         "example": "whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD",
                         "nullable": true,
-                        "pattern": "^(whsec_)?[a-zA-Z0-9+/=]{32,100}$",
+                        "pattern": "^(whsec_|whsk_|whsk1_|whpk_|whpk1_)?[a-zA-Z0-9+/=]{32,100}$",
                         "type": "string"
                     },
                     "throttleRate": {
@@ -3359,7 +3392,7 @@
                         "description": "The endpoint's verification secret.\n\nFormat: `base64` encoded random bytes optionally prefixed with `whsec_`.\nIt is recommended to not set this and let the server generate the secret.",
                         "example": "whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD",
                         "nullable": true,
-                        "pattern": "^(whsec_)?[a-zA-Z0-9+/=]{32,100}$",
+                        "pattern": "^(whsec_|whsk_|whsk1_|whpk_|whpk1_)?[a-zA-Z0-9+/=]{32,100}$",
                         "type": "string"
                     },
                     "throttleRate": {
@@ -3421,7 +3454,7 @@
                     "key": {
                         "description": "The endpoint's verification secret.\n\nFormat: `base64` encoded random bytes optionally prefixed with `whsec_`.\nIt is recommended to not set this and let the server generate the secret.",
                         "example": "whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD",
-                        "pattern": "^(whsec_)?[a-zA-Z0-9+/=]{32,100}$",
+                        "pattern": "^(whsec_|whsk_|whsk1_|whpk_|whpk1_)?[a-zA-Z0-9+/=]{32,100}$",
                         "type": "string"
                     }
                 },
@@ -3432,12 +3465,21 @@
             },
             "EndpointSecretRotateIn": {
                 "properties": {
+                    "gracePeriodSeconds": {
+                        "default": 86400,
+                        "description": "How long the old secret will be valid for, in seconds.\n\nValid values are between 0 (immediate expiry) and 7 days. The default is 24 hours.",
+                        "format": "uint32",
+                        "maximum": 604800,
+                        "minimum": 0,
+                        "nullable": true,
+                        "type": "integer"
+                    },
                     "key": {
                         "default": null,
                         "description": "The endpoint's verification secret.\n\nFormat: `base64` encoded random bytes optionally prefixed with `whsec_`.\nIt is recommended to not set this and let the server generate the secret.",
                         "example": "whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD",
                         "nullable": true,
-                        "pattern": "^(whsec_)?[a-zA-Z0-9+/=]{32,100}$",
+                        "pattern": "^(whsec_|whsk_|whsk1_|whpk_|whpk1_)?[a-zA-Z0-9+/=]{32,100}$",
                         "type": "string"
                     }
                 },
@@ -5134,7 +5176,7 @@
                         "description": "The endpoint's verification secret.\n\nFormat: `base64` encoded random bytes optionally prefixed with `whsec_`.\nIt is recommended to not set this and let the server generate the secret.",
                         "example": "whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD",
                         "nullable": true,
-                        "pattern": "^(whsec_)?[a-zA-Z0-9+/=]{32,100}$",
+                        "pattern": "^(whsec_|whsk_|whsk1_|whpk_|whpk1_)?[a-zA-Z0-9+/=]{32,100}$",
                         "type": "string"
                     },
                     "uid": {
@@ -5232,7 +5274,7 @@
                         "description": "The endpoint's verification secret.\n\nFormat: `base64` encoded random bytes optionally prefixed with `whsec_`.\nIt is recommended to not set this and let the server generate the secret.",
                         "example": "whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD",
                         "nullable": true,
-                        "pattern": "^(whsec_)?[a-zA-Z0-9+/=]{32,100}$",
+                        "pattern": "^(whsec_|whsk_|whsk1_|whpk_|whpk1_)?[a-zA-Z0-9+/=]{32,100}$",
                         "type": "string"
                     }
                 },
@@ -5243,7 +5285,7 @@
                     "key": {
                         "description": "The endpoint's verification secret.\n\nFormat: `base64` encoded random bytes optionally prefixed with `whsec_`.\nIt is recommended to not set this and let the server generate the secret.",
                         "example": "whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD",
-                        "pattern": "^(whsec_)?[a-zA-Z0-9+/=]{32,100}$",
+                        "pattern": "^(whsec_|whsk_|whsk1_|whpk_|whpk1_)?[a-zA-Z0-9+/=]{32,100}$",
                         "type": "string"
                     }
                 },
@@ -5940,11 +5982,47 @@
                     {
                         "properties": {
                             "config": {
+                                "$ref": "#/components/schemas/NangoConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "nango"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
                                 "$ref": "#/components/schemas/SvixConfig"
                             },
                             "type": {
                                 "enum": [
                                     "nash"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/OpenClawConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "openclaw"
                                 ],
                                 "type": "string"
                             }
@@ -6705,11 +6783,47 @@
                     {
                         "properties": {
                             "config": {
+                                "$ref": "#/components/schemas/NangoConfigOut"
+                            },
+                            "type": {
+                                "enum": [
+                                    "nango"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
                                 "$ref": "#/components/schemas/SvixConfigOut"
                             },
                             "type": {
                                 "enum": [
                                     "nash"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/OpenClawConfigOut"
+                            },
+                            "type": {
+                                "enum": [
+                                    "openclaw"
                                 ],
                                 "type": "string"
                             }
@@ -9123,6 +9237,73 @@
                 ],
                 "type": "object"
             },
+            "MessageSearchIn": {
+                "properties": {
+                    "after": {
+                        "description": "Only include items created after a certain date.",
+                        "format": "date-time",
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "before": {
+                        "description": "Only include items created before a certain date.",
+                        "format": "date-time",
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "channel": {
+                        "description": "Filter response based on the channel.",
+                        "example": "project_1337",
+                        "maxLength": 128,
+                        "nullable": true,
+                        "pattern": "^[a-zA-Z0-9\\-_.:]+$",
+                        "type": "string"
+                    },
+                    "event_types": {
+                        "description": "Filter response based on the event type",
+                        "items": {
+                            "description": "The event type's name",
+                            "example": "user.signup",
+                            "maxLength": 256,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "nullable": true,
+                        "type": "array",
+                        "uniqueItems": true
+                    },
+                    "iterator": {
+                        "description": "The iterator returned from a prior invocation",
+                        "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "maxLength": 31,
+                        "minLength": 31,
+                        "nullable": true,
+                        "pattern": "^msg_[A-Za-z0-9]{27}$",
+                        "type": "string"
+                    },
+                    "limit": {
+                        "description": "Limit the number of returned items",
+                        "format": "uint64",
+                        "maximum": 250,
+                        "minimum": 1,
+                        "type": "integer"
+                    },
+                    "tag": {
+                        "description": "Filter messages matching the provided tag.",
+                        "example": "project_1337",
+                        "maxLength": 128,
+                        "nullable": true,
+                        "pattern": "^[a-zA-Z0-9\\-_./\\\\#]+$",
+                        "type": "string"
+                    },
+                    "with_content": {
+                        "default": false,
+                        "description": "When `true` message payloads are included in the response.",
+                        "type": "boolean"
+                    }
+                },
+                "type": "object"
+            },
             "MessageStatus": {
                 "description": "The sending status of the message:\n\n- Success = 0\n- Pending = 1\n- Fail = 2\n- Sending = 3\n- Canceled = 4",
                 "enum": [
@@ -9168,6 +9349,20 @@
                 "type": "object"
             },
             "MetaConfigOut": {
+                "type": "object"
+            },
+            "NangoConfig": {
+                "properties": {
+                    "secret": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "secret"
+                ],
+                "type": "object"
+            },
+            "NangoConfigOut": {
                 "type": "object"
             },
             "OAuthPayloadIn": {
@@ -9251,6 +9446,20 @@
                     "capabilities",
                     "token"
                 ],
+                "type": "object"
+            },
+            "OpenClawConfig": {
+                "properties": {
+                    "secret": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "secret"
+                ],
+                "type": "object"
+            },
+            "OpenClawConfigOut": {
                 "type": "object"
             },
             "OperationalWebhookEndpointHeadersIn": {
@@ -9347,7 +9556,7 @@
                         "description": "The endpoint's verification secret.\n\nFormat: `base64` encoded random bytes optionally prefixed with `whsec_`.\nIt is recommended to not set this and let the server generate the secret.",
                         "example": "whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD",
                         "nullable": true,
-                        "pattern": "^(whsec_)?[a-zA-Z0-9+/=]{32,100}$",
+                        "pattern": "^(whsec_|whsk_|whsk1_|whpk_|whpk1_)?[a-zA-Z0-9+/=]{32,100}$",
                         "type": "string"
                     },
                     "throttleRate": {
@@ -9477,7 +9686,7 @@
                         "description": "The endpoint's verification secret.\n\nFormat: `base64` encoded random bytes optionally prefixed with `whsec_`.\nIt is recommended to not set this and let the server generate the secret.",
                         "example": "whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD",
                         "nullable": true,
-                        "pattern": "^(whsec_)?[a-zA-Z0-9+/=]{32,100}$",
+                        "pattern": "^(whsec_|whsk_|whsk1_|whpk_|whpk1_)?[a-zA-Z0-9+/=]{32,100}$",
                         "type": "string"
                     }
                 },
@@ -9488,7 +9697,7 @@
                     "key": {
                         "description": "The endpoint's verification secret.\n\nFormat: `base64` encoded random bytes optionally prefixed with `whsec_`.\nIt is recommended to not set this and let the server generate the secret.",
                         "example": "whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD",
-                        "pattern": "^(whsec_)?[a-zA-Z0-9+/=]{32,100}$",
+                        "pattern": "^(whsec_|whsk_|whsk1_|whpk_|whpk1_)?[a-zA-Z0-9+/=]{32,100}$",
                         "type": "string"
                     }
                 },
@@ -11120,7 +11329,7 @@
                         "description": "The endpoint's verification secret.\n\nFormat: `base64` encoded random bytes optionally prefixed with `whsec_`.\nIt is recommended to not set this and let the server generate the secret.",
                         "example": "whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD",
                         "nullable": true,
-                        "pattern": "^(whsec_)?[a-zA-Z0-9+/=]{32,100}$",
+                        "pattern": "^(whsec_|whsk_|whsk1_|whpk_|whpk1_)?[a-zA-Z0-9+/=]{32,100}$",
                         "type": "string"
                     },
                     "throttleRate": {
@@ -11208,7 +11417,7 @@
                         "description": "The endpoint's verification secret.\n\nFormat: `base64` encoded random bytes optionally prefixed with `whsec_`.\nIt is recommended to not set this and let the server generate the secret.",
                         "example": "whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD",
                         "nullable": true,
-                        "pattern": "^(whsec_)?[a-zA-Z0-9+/=]{32,100}$",
+                        "pattern": "^(whsec_|whsk_|whsk1_|whpk_|whpk1_)?[a-zA-Z0-9+/=]{32,100}$",
                         "type": "string"
                     },
                     "throttleRate": {
@@ -11406,7 +11615,7 @@
                         "description": "The endpoint's verification secret.\n\nFormat: `base64` encoded random bytes optionally prefixed with `whsec_`.\nIt is recommended to not set this and let the server generate the secret.",
                         "example": "whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD",
                         "nullable": true,
-                        "pattern": "^(whsec_)?[a-zA-Z0-9+/=]{32,100}$",
+                        "pattern": "^(whsec_|whsk_|whsk1_|whpk_|whpk1_)?[a-zA-Z0-9+/=]{32,100}$",
                         "type": "string"
                     }
                 },
@@ -13335,7 +13544,7 @@
     "info": {
         "description": "Welcome to the Svix API documentation!\n\nUseful links: [Homepage](https://www.svix.com) | [Support email](mailto:support+docs@svix.com) | [Blog](https://www.svix.com/blog/) | [Slack Community](https://www.svix.com/slack/)\n\n# Introduction\n\nThis is the reference documentation and schemas for the [Svix webhook service](https://www.svix.com) API. For tutorials and other documentation please refer to [the documentation](https://docs.svix.com).\n\n## Main concepts\n\nIn Svix you have four important entities you will be interacting with:\n\n- `messages`: these are the webhooks being sent. They can have contents and a few other properties.\n- `application`: this is where `messages` are sent to. Usually you want to create one application for each user on your platform.\n- `endpoint`: endpoints are the URLs messages will be sent to. Each application can have multiple `endpoints` and each message sent to that application will be sent to all of them (unless they are not subscribed to the sent event type).\n- `event-type`: event types are identifiers denoting the type of the message being sent. Event types are primarily used to decide which events are sent to which endpoint.\n\n\n## Authentication\n\nGet your authentication token (`AUTH_TOKEN`) from the [Svix dashboard](https://dashboard.svix.com) and use it as part of the `Authorization` header as such: `Authorization: Bearer ${AUTH_TOKEN}`. For more information on authentication, please refer to the [authentication token docs](https://docs.svix.com/api-keys).\n\n<SecurityDefinitions />\n\n\n## Code samples\n\nThe code samples assume you already have the respective libraries installed and you know how to use them. For the latest information on how to do that, please refer to [the documentation](https://docs.svix.com/).\n\n\n## Idempotency\n\nSvix supports [idempotency](https://en.wikipedia.org/wiki/Idempotence) for safely retrying requests without accidentally performing the same operation twice. This is useful when an API call is disrupted in transit and you do not receive a response.\n\nTo perform an idempotent request, pass the idempotency key in the `Idempotency-Key` header to the request. The idempotency key should be a unique value generated by the client. You can create the key in however way you like, though we suggest using UUID v4, or any other string with enough entropy to avoid collisions. Your idempotency key should not begin with the string `auto_`, which is reserved for internal use by the client libraries.\n\nSvix's idempotency works by saving the resulting status code and body of the first request made for any given idempotency key for any successful request. Subsequent requests with the same key return the same result for a period of up to 12 hours.\n\nPlease note that idempotency is only supported for `POST` requests.\n\n\n## Cross-Origin Resource Sharing\n\nThis API features Cross-Origin Resource Sharing (CORS) implemented in compliance with [W3C spec](https://www.w3.org/TR/cors/). And that allows cross-domain communication from the browser. All responses have a wildcard same-origin which makes them completely public and accessible to everyone, including any code on any site.\n",
         "title": "Svix API",
-        "version": "1.96.1",
+        "version": "1.902.0",
         "x-logo": {
             "altText": "Svix Logo",
             "url": "https://www.svix.com/static/img/brand-padded.svg"
@@ -13783,6 +13992,126 @@
                         "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"metadata\": {},\n    \"name\": \"My first application\",\n    \"throttleRate\": 1,\n    \"uid\": \"unique-identifier\"\n  }'"
                     }
                 ]
+            }
+        },
+        "/api/v1/app/stats/count-active": {
+            "get": {
+                "description": "Count apps with at least one active endpoint",
+                "operationId": "v1.application.count-active",
+                "parameters": [
+                    {
+                        "description": "Exclude endpoints that point to a play.svix.com url from the count",
+                        "in": "query",
+                        "name": "exclude_svix_play",
+                        "schema": {
+                            "default": true,
+                            "description": "Exclude endpoints that point to a play.svix.com url from the count",
+                            "type": "boolean"
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "in": "query",
+                        "name": "exclude_disabled",
+                        "schema": {
+                            "default": true,
+                            "type": "boolean"
+                        },
+                        "style": "form"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ActiveAppCount"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Count Active Apps",
+                "tags": [
+                    "Application"
+                ],
+                "x-internal": true
             }
         },
         "/api/v1/app/{app_id}": {
@@ -18991,7 +19320,7 @@
         "/api/v1/app/{app_id}/endpoint/{endpoint_id}/msg/test-attempt": {
             "post": {
                 "description": "Creates and sends a message to the specified endpoint.\n\nThe message attempt and response from the endpoint is returned.",
-                "operationId": "create_message_attempt_for_endpoint",
+                "operationId": "v1.message.test-attempt",
                 "parameters": [
                     {
                         "description": "The Application's ID or UID.",
@@ -21060,67 +21389,67 @@
                     {
                         "label": "JavaScript",
                         "lang": "TypeScript",
-                        "source": "await svix.endpoint.rotateSecret(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n  {\n    key: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n  }\n);"
+                        "source": "await svix.endpoint.rotateSecret(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n  {\n    gracePeriodSeconds: 1,\n    key: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n  }\n);"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "TypeScript",
-                        "source": "await svix.endpoint.rotateSecret(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n  {\n    key: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n  }\n);"
+                        "source": "await svix.endpoint.rotateSecret(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n  {\n    gracePeriodSeconds: 1,\n    key: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n  }\n);"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "svix.endpoint.rotate_secret(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointSecretRotateIn(\n        key=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    ),\n)"
+                        "source": "svix.endpoint.rotate_secret(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointSecretRotateIn(\n        grace_period_seconds=1,\n        key=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    ),\n)"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "await svix.endpoint.rotate_secret(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointSecretRotateIn(\n        key=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    ),\n)"
+                        "source": "await svix.endpoint.rotate_secret(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointSecretRotateIn(\n        grace_period_seconds=1,\n        key=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    ),\n)"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "err := svix.Endpoint.RotateSecret(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tEndpointSecretRotateIn{Key: new(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")},\n\tnil,\n)"
+                        "source": "err := svix.Endpoint.RotateSecret(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tEndpointSecretRotateIn{\n\t\tGracePeriodSeconds: new(uint32(1)),\n\t\tKey:                new(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"),\n\t},\n\tnil,\n)"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "svix.endpoint.rotateSecret(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointSecretRotateIn(key = \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"),\n)"
+                        "source": "svix.endpoint.rotateSecret(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointSecretRotateIn(gracePeriodSeconds = 1, key = \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"),\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "svix.getEndpoint()\n        .rotateSecret(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n            new EndpointSecretRotateIn().key(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"));"
+                        "source": "svix.getEndpoint()\n        .rotateSecret(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n            new EndpointSecretRotateIn()\n                .gracePeriodSeconds(1)\n                .key(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"));"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "response = svix\n  .endpoint\n  .rotate_secret(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    {key: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"}\n  )"
+                        "source": "response = svix\n  .endpoint\n  .rotate_secret(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    {gracePeriodSeconds: 1, key: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"}\n  )"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "svix.endpoint()\n    .rotate_secret(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n        \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\".to_string(),\n        EndpointSecretRotateIn {\n            key: Some(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\".to_string()),\n        },\n        None,\n    )\n    .await?;"
+                        "source": "svix.endpoint()\n    .rotate_secret(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n        \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\".to_string(),\n        EndpointSecretRotateIn {\n            grace_period_seconds: Some(1),\n            key: Some(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\".to_string()),\n        },\n        None,\n    )\n    .await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var response = svix.Endpoint.RotateSecret(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    new EndpointSecretRotateIn { Key = \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\" }\n);"
+                        "source": "var response = svix.Endpoint.RotateSecret(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    new EndpointSecretRotateIn\n    {\n        GracePeriodSeconds = 1,\n        Key = \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    }\n);"
                     },
                     {
                         "label": "PHP",
                         "lang": "PHP",
-                        "source": "$svix->endpoint->rotateSecret(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointSecretRotateIn::create()\n    ->withKey(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n);"
+                        "source": "$svix->endpoint->rotateSecret(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointSecretRotateIn::create()\n    ->withGracePeriodSeconds(1)\n    ->withKey(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n);"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix endpoint rotate-secret \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\" '{\n    \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n  }'"
+                        "source": "svix endpoint rotate-secret \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\" '{\n    \"gracePeriodSeconds\": 1,\n    \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n  }'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/app_1srOrx2ZWZBpBUvZwXKQmoEYga2/endpoint/ep_33ZIBDmz66FcPG35FnsbM6Ie4X1/secret/rotate' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n  }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/app_1srOrx2ZWZBpBUvZwXKQmoEYga2/endpoint/ep_33ZIBDmz66FcPG35FnsbM6Ie4X1/secret/rotate' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"gracePeriodSeconds\": 1,\n    \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n  }'"
                     }
                 ]
             }
@@ -24717,6 +25046,140 @@
                         "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/app_1srOrx2ZWZBpBUvZwXKQmoEYga2/msg/precheck/active' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"channels\": [\n      \"project_123\",\n      \"group_2\"\n    ],\n    \"eventType\": \"user.signup\"\n  }'"
                     }
                 ]
+            }
+        },
+        "/api/v1/app/{app_id}/msg/search": {
+            "post": {
+                "description": "Search for messages matching the given criteria.\n\nThe `before` and `after` parameters let you filter all items created before or after a certain date. These can be\nused alongside an iterator to paginate over results within a certain window.\n\nNote that by default this endpoint is limited to retrieving 90 days' worth of data\nrelative to now or, if an iterator is provided, 90 days before/after the time indicated\nby the iterator ID. If you require data beyond those time ranges, you will need to explicitly\nset the `before` or `after` parameter as appropriate.",
+                "operationId": "v1.message.search",
+                "parameters": [
+                    {
+                        "description": "The Application's ID or UID.",
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The Application's ID or UID.",
+                            "example": "unique-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MessageSearchIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ListResponse_MessageOut_"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Search Messages",
+                "tags": [
+                    "Message"
+                ],
+                "x-internal": true
             }
         },
         "/api/v1/app/{app_id}/msg/{msg_id}": {
@@ -37219,7 +37682,7 @@
         "/api/v1/events": {
             "get": {
                 "description": "Reads the stream of operational webhook events for this environment.",
-                "operationId": "v1.events",
+                "operationId": "v1.events.stream",
                 "parameters": [
                     {
                         "description": "Limit the number of returned items",
@@ -39505,7 +39968,7 @@
         "/api/v1/msg/broadcast": {
             "post": {
                 "description": "Creates a background task to send the same message to each application in your organization.\n\nA completed task will return a payload like the following:\n```json\n{\n  \"id\": \"qtask_33qen93MNuelBAq1T9G7eHLJRsF\",\n  \"status\": \"finished\",\n  \"task\": \"message.broadcast\",\n  \"data\": {\n    \"messagesCreated\": [\n      {\n        \"appId\": \"app_33s1An2Zz5cO9SWbhHsYyDmVC6m\",\n        \"msgId\": \"msg_33s1An2Zz5cO9SWbhHsYyDmVC6m\"\n      },\n      {\n        \"appId\": \"app_33sXYjcO6bkWeZIXDI8w6ZYMivz\",\n        \"msgId\": \"msg_33sZJfmYMOQGApyIgRdteOX0xlX\"\n      }\n    ]\n  }\n}\n```",
-                "operationId": "create_broadcast_message",
+                "operationId": "v1.message.broadcast",
                 "parameters": [
                     {
                         "description": "The request's idempotency key",
@@ -41451,6 +41914,117 @@
                     }
                 ],
                 "summary": "Get App Attempt Stats",
+                "tags": [
+                    "Statistics"
+                ],
+                "x-internal": true
+            }
+        },
+        "/api/v1/stats/endpoint/count": {
+            "get": {
+                "description": "Count the number of active and disabled endpoints in the environment.",
+                "operationId": "v1.statistics.endpoint-count",
+                "parameters": [
+                    {
+                        "description": "Exclude endpoints that point to a play.svix.com url from the count",
+                        "in": "query",
+                        "name": "exclude_svix_play",
+                        "schema": {
+                            "default": true,
+                            "description": "Exclude endpoints that point to a play.svix.com url from the count",
+                            "type": "boolean"
+                        },
+                        "style": "form"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EndpointCountOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Count Endpoints",
                 "tags": [
                     "Statistics"
                 ],
@@ -47199,67 +47773,67 @@
                     {
                         "label": "JavaScript",
                         "lang": "TypeScript",
-                        "source": "const response = await svix.streaming.sink.rotateSecret(\n  \"strm_31Dc0DD72P5AddYUguyBd\",\n  \"sink_31Dc11sPYY9aLDkwPuGMa\",\n  {\n    key: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n  }\n);"
+                        "source": "const response = await svix.streaming.sink.rotateSecret(\n  \"strm_31Dc0DD72P5AddYUguyBd\",\n  \"sink_31Dc11sPYY9aLDkwPuGMa\",\n  {\n    gracePeriodSeconds: 1,\n    key: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n  }\n);"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "TypeScript",
-                        "source": "const response = await svix.streaming.sink.rotateSecret(\n  \"strm_31Dc0DD72P5AddYUguyBd\",\n  \"sink_31Dc11sPYY9aLDkwPuGMa\",\n  {\n    key: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n  }\n);"
+                        "source": "const response = await svix.streaming.sink.rotateSecret(\n  \"strm_31Dc0DD72P5AddYUguyBd\",\n  \"sink_31Dc11sPYY9aLDkwPuGMa\",\n  {\n    gracePeriodSeconds: 1,\n    key: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n  }\n);"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "response = svix.streaming.sink.rotate_secret(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    EndpointSecretRotateIn(\n        key=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    ),\n)"
+                        "source": "response = svix.streaming.sink.rotate_secret(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    EndpointSecretRotateIn(\n        grace_period_seconds=1,\n        key=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    ),\n)"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "response = await svix.streaming.sink.rotate_secret(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    EndpointSecretRotateIn(\n        key=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    ),\n)"
+                        "source": "response = await svix.streaming.sink.rotate_secret(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    EndpointSecretRotateIn(\n        grace_period_seconds=1,\n        key=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    ),\n)"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "response, err := svix.Streaming.Sink.RotateSecret(\n\tctx,\n\t\"strm_31Dc0DD72P5AddYUguyBd\",\n\t\"sink_31Dc11sPYY9aLDkwPuGMa\",\n\tEndpointSecretRotateIn{Key: new(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")},\n\tnil,\n)"
+                        "source": "response, err := svix.Streaming.Sink.RotateSecret(\n\tctx,\n\t\"strm_31Dc0DD72P5AddYUguyBd\",\n\t\"sink_31Dc11sPYY9aLDkwPuGMa\",\n\tEndpointSecretRotateIn{\n\t\tGracePeriodSeconds: new(uint32(1)),\n\t\tKey:                new(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"),\n\t},\n\tnil,\n)"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val response =\n    svix.streaming.sink.rotateSecret(\n        \"strm_31Dc0DD72P5AddYUguyBd\",\n        \"sink_31Dc11sPYY9aLDkwPuGMa\",\n        EndpointSecretRotateIn(key = \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"),\n    )"
+                        "source": "val response =\n    svix.streaming.sink.rotateSecret(\n        \"strm_31Dc0DD72P5AddYUguyBd\",\n        \"sink_31Dc11sPYY9aLDkwPuGMa\",\n        EndpointSecretRotateIn(\n            gracePeriodSeconds = 1,\n            key = \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n        ),\n    )"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "var response = svix.getStreaming()\n        .getSink()\n        .rotateSecret(\n            \"strm_31Dc0DD72P5AddYUguyBd\",\n            \"sink_31Dc11sPYY9aLDkwPuGMa\",\n            new EndpointSecretRotateIn().key(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"));"
+                        "source": "var response = svix.getStreaming()\n        .getSink()\n        .rotateSecret(\n            \"strm_31Dc0DD72P5AddYUguyBd\",\n            \"sink_31Dc11sPYY9aLDkwPuGMa\",\n            new EndpointSecretRotateIn()\n                .gracePeriodSeconds(1)\n                .key(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"));"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "response = svix\n  .streaming\n  .sink\n  .rotate_secret(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    {key: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"}\n  )"
+                        "source": "response = svix\n  .streaming\n  .sink\n  .rotate_secret(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    {gracePeriodSeconds: 1, key: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"}\n  )"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let response = svix\n    .streaming()\n    .sink()\n    .rotate_secret(\n        \"strm_31Dc0DD72P5AddYUguyBd\".to_string(),\n        \"sink_31Dc11sPYY9aLDkwPuGMa\".to_string(),\n        EndpointSecretRotateIn {\n            key: Some(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\".to_string()),\n        },\n        None,\n    )\n    .await?;"
+                        "source": "let response = svix\n    .streaming()\n    .sink()\n    .rotate_secret(\n        \"strm_31Dc0DD72P5AddYUguyBd\".to_string(),\n        \"sink_31Dc11sPYY9aLDkwPuGMa\".to_string(),\n        EndpointSecretRotateIn {\n            grace_period_seconds: Some(1),\n            key: Some(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\".to_string()),\n        },\n        None,\n    )\n    .await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var response = svix.Streaming.Sink.RotateSecret(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    new EndpointSecretRotateIn { Key = \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\" }\n);"
+                        "source": "var response = svix.Streaming.Sink.RotateSecret(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    new EndpointSecretRotateIn\n    {\n        GracePeriodSeconds = 1,\n        Key = \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    }\n);"
                     },
                     {
                         "label": "PHP",
                         "lang": "PHP",
-                        "source": "$response = $svix->streaming->sink->rotateSecret(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    EndpointSecretRotateIn::create()\n    ->withKey(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n);"
+                        "source": "$response = $svix->streaming->sink->rotateSecret(\n    \"strm_31Dc0DD72P5AddYUguyBd\",\n    \"sink_31Dc11sPYY9aLDkwPuGMa\",\n    EndpointSecretRotateIn::create()\n    ->withGracePeriodSeconds(1)\n    ->withKey(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n);"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix streaming sink rotate-secret \"strm_31Dc0DD72P5AddYUguyBd\" \"sink_31Dc11sPYY9aLDkwPuGMa\" '{\n    \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n  }'"
+                        "source": "svix streaming sink rotate-secret \"strm_31Dc0DD72P5AddYUguyBd\" \"sink_31Dc11sPYY9aLDkwPuGMa\" '{\n    \"gracePeriodSeconds\": 1,\n    \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n  }'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/stream/strm_31Dc0DD72P5AddYUguyBd/sink/sink_31Dc11sPYY9aLDkwPuGMa/secret/rotate' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n  }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/stream/strm_31Dc0DD72P5AddYUguyBd/sink/sink_31Dc11sPYY9aLDkwPuGMa/secret/rotate' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"gracePeriodSeconds\": 1,\n    \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n  }'"
                     }
                 ]
             }
@@ -51249,285 +51823,6 @@
                         "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/ingest/api/v1/source/src_31Dc4Mx7vQVLfxFgArIhq/endpoint/ep_33ZIBDmz66FcPG35FnsbM6Ie4X1/transformation' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"code\": \"sample string\",\n    \"enabled\": true\n  }'"
                     }
                 ]
-            }
-        },
-        "/ingest/api/v1/source/{source_id}/in/{token}": {
-            "get": {
-                "description": "Non-legacy (using a token) ingest webhook.",
-                "operationId": "v1.ingest",
-                "parameters": [
-                    {
-                        "description": "The Source's ID.",
-                        "in": "path",
-                        "name": "source_id",
-                        "required": true,
-                        "schema": {
-                            "description": "The Source's ID.",
-                            "example": "src_2yZwUhtgs5Ai8T9yRQJXA",
-                            "maxLength": 26,
-                            "minLength": 25,
-                            "pattern": "^src_[A-Za-z0-9]{21,22}$",
-                            "type": "string"
-                        },
-                        "style": "simple"
-                    },
-                    {
-                        "in": "path",
-                        "name": "token",
-                        "required": true,
-                        "schema": {
-                            "maxLength": 16,
-                            "minLength": 16,
-                            "pattern": "^[A-Za-z0-9]+$",
-                            "type": "string"
-                        },
-                        "style": "simple"
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/octet-stream": {}
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/IngestResponse"
-                                }
-                            }
-                        },
-                        "description": "Some providers need to generate responses to incoming ingest requests."
-                    },
-                    "204": {
-                        "description": "no content"
-                    },
-                    "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Bad request"
-                    },
-                    "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Forbidden"
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Not Found"
-                    },
-                    "409": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Conflict"
-                    },
-                    "422": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        },
-                        "description": "Validation Error"
-                    },
-                    "429": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Too Many Requests"
-                    }
-                },
-                "security": [
-                    {
-                        "HTTPBearer": []
-                    }
-                ],
-                "summary": "Ingest",
-                "tags": [
-                    "Ingest Message"
-                ],
-                "x-internal": true
-            },
-            "post": {
-                "description": "Non-legacy (using a token) ingest webhook.",
-                "operationId": "v1.ingest",
-                "parameters": [
-                    {
-                        "description": "The Source's ID.",
-                        "in": "path",
-                        "name": "source_id",
-                        "required": true,
-                        "schema": {
-                            "description": "The Source's ID.",
-                            "example": "src_2yZwUhtgs5Ai8T9yRQJXA",
-                            "maxLength": 26,
-                            "minLength": 25,
-                            "pattern": "^src_[A-Za-z0-9]{21,22}$",
-                            "type": "string"
-                        },
-                        "style": "simple"
-                    },
-                    {
-                        "in": "path",
-                        "name": "token",
-                        "required": true,
-                        "schema": {
-                            "maxLength": 16,
-                            "minLength": 16,
-                            "pattern": "^[A-Za-z0-9]+$",
-                            "type": "string"
-                        },
-                        "style": "simple"
-                    },
-                    {
-                        "description": "The request's idempotency key",
-                        "in": "header",
-                        "name": "idempotency-key",
-                        "schema": {
-                            "type": "string"
-                        },
-                        "style": "simple"
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/octet-stream": {}
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/IngestResponse"
-                                }
-                            }
-                        },
-                        "description": "Some providers need to generate responses to incoming ingest requests."
-                    },
-                    "204": {
-                        "description": "no content"
-                    },
-                    "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Bad request"
-                    },
-                    "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Forbidden"
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Not Found"
-                    },
-                    "409": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Conflict"
-                    },
-                    "422": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        },
-                        "description": "Validation Error"
-                    },
-                    "429": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Too Many Requests"
-                    }
-                },
-                "security": [
-                    {
-                        "HTTPBearer": []
-                    }
-                ],
-                "summary": "Ingest",
-                "tags": [
-                    "Ingest Message"
-                ],
-                "x-internal": true
             }
         },
         "/ingest/api/v1/source/{source_id}/log": {

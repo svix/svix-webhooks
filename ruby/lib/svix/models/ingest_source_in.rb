@@ -11,6 +11,8 @@ require_relative "./easypost_config"
 require_relative "./github_config"
 require_relative "./hubspot_config"
 require_relative "./meta_config"
+require_relative "./nango_config"
+require_relative "./open_claw_config"
 require_relative "./orum_io_config"
 require_relative "./panda_doc_config"
 require_relative "./port_io_config"
@@ -87,7 +89,13 @@ module Svix
     class Meta < MetaConfig
     end
 
+    class Nango < NangoConfig
+    end
+
     class Nash < SvixConfig
+    end
+
+    class Openclaw < OpenClawConfig
     end
 
     class OrumIo < OrumIoConfig
@@ -191,7 +199,9 @@ module Svix
       IngestSourceInConfig::IncidentIo => "incident-io",
       IngestSourceInConfig::Lithic => "lithic",
       IngestSourceInConfig::Meta => "meta",
+      IngestSourceInConfig::Nango => "nango",
       IngestSourceInConfig::Nash => "nash",
+      IngestSourceInConfig::Openclaw => "openclaw",
       IngestSourceInConfig::OrumIo => "orum-io",
       IngestSourceInConfig::PandaDoc => "panda-doc",
       IngestSourceInConfig::PortIo => "port-io",
