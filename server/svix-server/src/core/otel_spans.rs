@@ -92,7 +92,9 @@ impl<B> MakeSpan<B> for AxumOtelSpanCreator {
             app_id = tracing::field::Empty,
         );
 
-        span.set_parent(remote_context);
+        if let Err(err) = span.set_parent(remote_context) {
+            tracing::warn!(?err, "failed to set span parent from remote context");
+        }
 
         span
     }
