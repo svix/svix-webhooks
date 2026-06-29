@@ -831,6 +831,15 @@
             },
             "EndpointSecretRotateIn": {
                 "properties": {
+                    "gracePeriodSeconds": {
+                        "default": 86400,
+                        "description": "How long the old secret will be valid for, in seconds.\n\nValid values are between 0 (immediate expiry) and 7 days. The default is 24 hours.",
+                        "format": "uint32",
+                        "maximum": 604800,
+                        "minimum": 0,
+                        "nullable": true,
+                        "type": "integer"
+                    },
                     "key": {
                         "default": null,
                         "description": "The endpoint's verification secret. If `null` is passed, a secret is automatically generated. Format: `base64` encoded random bytes optionally prefixed with `whsec_`. Recommended size: 24.",

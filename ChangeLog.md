@@ -3,8 +3,9 @@
 ## Unreleased
 * Server: add `statusText` to `EndpointMessageOut` (the response type for `v1.message-attempt.list-attempted-messages`), matching the cloud version
 * Server: add `statusText` to `MessageEndpointOut` (the response type for `v1.message-attempt.list-attempted-destinations`), matching the cloud version
-* Server: add `canceled` to `EndpointStatsOut`, matching the cloud version. This is always 0 in the OSS server, which doesn't currently track message cancellations.
-* Server: add `updatedAt` to `RecoverOut` (the response type for `v1.endpoint.recover`), matching the cloud version. Note that EE does not support incrementally checking background job status, so this always contains the timestamp at which the job was created.
+* Server: add `canceled` to `EndpointStatsOut`, matching the cloud version. This is always 0 in the OSS server, which doesn't currently track message cancellations
+* Server: add `updatedAt` to `RecoverOut` (the response type for `v1.endpoint.recover`), matching the cloud version. Note that EE does not support incrementally checking background job status, so this always contains the timestamp at which the job was created
+* Server: add `gracePeriodSeconds` to `EndpointSecretRotateIn`, allowing users to customize how long the old key is still valid for (in a range from 0, which means immediate expiry, to 7 days)
 * Libs/Python: Bump minimum-supported Python interpreter version to 3.9
 
 ## Version 1.96.1

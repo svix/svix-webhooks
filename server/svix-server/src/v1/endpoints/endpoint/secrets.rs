@@ -46,6 +46,7 @@ pub fn rotate_key(
     current_data: SigningKeysData,
     new_key: Option<EndpointSecret>,
     cfg: &ConfigurationInner,
+    grace_period: Duration,
 ) -> Result<SigningKeysData> {
     let now = Utc::now();
     let last_key = current_data
@@ -53,26 +54,31 @@ pub fn rotate_key(
         .clone()
         .map(|current_key| ExpiringSigningKey {
             key: current_key,
-            expiration: now + Duration::hours(ExpiringSigningKeys::OLD_KEY_EXPIRY_HOURS),
+            expiration: now + grace_period,
         });
 
-    let unexpired_old_keys = current_data
+    let mut unexpired_old_keys = current_data
         .old_keys
         .as_ref()
-        .map(|k| k.unexpired_keys().cloned().collect::<Vec<_>>());
+        .map(|k| k.unexpired_keys().cloned().collect::<Vec<_>>())
+        .unwrap_or_default();
 
-    if let Some(old_keys) = &unexpired_old_keys {
-        if old_keys.len() + 1 > ExpiringSigningKeys::MAX_OLD_KEYS {
-            return Err(HttpError::bad_request(
-                Some("limit_reached".to_owned()),
-                Some(format!(
-                    "You can only rotate a key {} times within the last {} hours.",
-                    ExpiringSigningKeys::MAX_OLD_KEYS,
-                    ExpiringSigningKeys::OLD_KEY_EXPIRY_HOURS
-                )),
-            )
-            .into());
-        }
+    if let Some(last_key) = last_key.filter(|k| k.is_unexpired()) {
+        unexpired_old_keys.push(last_key)
+    }
+
+    unexpired_old_keys.sort_by_key(|x| x.expiration);
+
+    if unexpired_old_keys.len() > ExpiringSigningKeys::MAX_OLD_KEYS {
+        return Err(HttpError::bad_request(
+            Some("limit_reached".to_owned()),
+            Some(format!(
+                "You can only rotate a key {} times; please wait for old keys to expire. Your next key expires at {}.",
+                ExpiringSigningKeys::MAX_OLD_KEYS,
+                unexpired_old_keys.first().expect("we just checked that this is non-empty").expiration
+            )),
+        )
+        .into());
     }
 
     Ok(SigningKeysData {
@@ -81,12 +87,7 @@ pub fn rotate_key(
         } else {
             generate_secret(&cfg.encryption, &cfg.default_signature_type)?
         }),
-        old_keys: Some(ExpiringSigningKeys(
-            last_key
-                .into_iter()
-                .chain(unexpired_old_keys.unwrap_or_default())
-                .collect(),
-        )),
+        old_keys: Some(ExpiringSigningKeys(unexpired_old_keys)),
     })
 }
 
@@ -128,6 +129,8 @@ pub(super) async fn rotate_endpoint_secret(
         .await?
         .ok_or_else(|| HttpError::not_found(None, None))?;
 
+    let grace_period = data.grace_period();
+
     let new_data = rotate_key(
         SigningKeysData {
             current_key: Some(endp.key.clone()),
@@ -135,6 +138,7 @@ pub(super) async fn rotate_endpoint_secret(
         },
         data.key,
         &cfg,
+        grace_period,
     )?;
 
     let endp = endpoint::ActiveModel {
