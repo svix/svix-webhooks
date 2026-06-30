@@ -5,8 +5,8 @@
 use std::{fmt::Debug, time::Duration};
 
 use lapin::{
-    options::QueueDeclareOptions, types::FieldTable, Channel, Connection, ConnectionProperties,
-    Queue,
+    Channel, Connection, ConnectionProperties, Queue, options::QueueDeclareOptions,
+    types::FieldTable,
 };
 use serde_json::json;
 use svix_bridge_plugin_queue::config::{QueueForwarder, QueueOutputOpts, RabbitMqOutputOpts};

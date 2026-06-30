@@ -1,19 +1,18 @@
 use std::{convert::Infallible, net::SocketAddr, sync::Arc, time::Duration};
 
 use axum::{
+    Router,
     extract::{FromRequestParts, Path, State},
     http::{self, request},
     routing::{get, post},
-    Router,
 };
 use svix_bridge_types::{
-    async_trait,
+    ForwardRequest, PollerInput, ReceiverOutput, TransformationConfig, TransformerInput,
+    TransformerInputFormat, TransformerJob, TransformerOutput, TransformerTx, async_trait,
     svix::{
         api::{MessagePollerConsumerPollOptions, PollingEndpointMessageOut, Svix},
         error::Error,
     },
-    ForwardRequest, PollerInput, ReceiverOutput, TransformationConfig, TransformerInput,
-    TransformerInputFormat, TransformerJob, TransformerOutput, TransformerTx,
 };
 use tracing::instrument;
 use types::{IntegrationId, IntegrationState, InternalState, SerializableRequest, Unvalidated};

@@ -12,4 +12,4 @@ run *args='':
 # Invokes `docker compose` with the testing configuration in the 'bridge' directory
 [no-exit-message]
 dc *args='':
-    docker compose -p svix-oss -f {{ HERE / "testing-docker-compose.yml" }} {{ args }}
+    docker compose -p svix-bridge -f {{ HERE / "testing-docker-compose.yml" }} {{ args }}
