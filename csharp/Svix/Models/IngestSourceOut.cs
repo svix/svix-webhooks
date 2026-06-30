@@ -137,8 +137,14 @@ namespace Svix.Models
         public static IngestSourceOutConfig Meta(MetaConfigOut metaConfigOut) =>
             new(metaConfigOut, ConfigType.Meta);
 
+        public static IngestSourceOutConfig Nango(NangoConfigOut nangoConfigOut) =>
+            new(nangoConfigOut, ConfigType.Nango);
+
         public static IngestSourceOutConfig Nash(SvixConfigOut svixConfigOut) =>
             new(svixConfigOut, ConfigType.Nash);
+
+        public static IngestSourceOutConfig Openclaw(OpenClawConfigOut openClawConfigOut) =>
+            new(openClawConfigOut, ConfigType.Openclaw);
 
         public static IngestSourceOutConfig OrumIo(OrumIoConfigOut orumIoConfigOut) =>
             new(orumIoConfigOut, ConfigType.OrumIo);
@@ -262,8 +268,14 @@ namespace Svix.Models
             [EnumMember(Value = "meta")]
             Meta,
 
+            [EnumMember(Value = "nango")]
+            Nango,
+
             [EnumMember(Value = "nash")]
             Nash,
+
+            [EnumMember(Value = "openclaw")]
+            Openclaw,
 
             [EnumMember(Value = "orum-io")]
             OrumIo,
@@ -357,7 +369,9 @@ namespace Svix.Models
             Func<SvixConfigOut, TResult> onIncidentIo,
             Func<SvixConfigOut, TResult> onLithic,
             Func<MetaConfigOut, TResult> onMeta,
+            Func<NangoConfigOut, TResult> onNango,
             Func<SvixConfigOut, TResult> onNash,
+            Func<OpenClawConfigOut, TResult> onOpenclaw,
             Func<OrumIoConfigOut, TResult> onOrumIo,
             Func<PandaDocConfigOut, TResult> onPandaDoc,
             Func<PortIoConfigOut, TResult> onPortIo,
@@ -402,7 +416,9 @@ namespace Svix.Models
                 ConfigType.IncidentIo => onIncidentIo((SvixConfigOut)_value),
                 ConfigType.Lithic => onLithic((SvixConfigOut)_value),
                 ConfigType.Meta => onMeta((MetaConfigOut)_value),
+                ConfigType.Nango => onNango((NangoConfigOut)_value),
                 ConfigType.Nash => onNash((SvixConfigOut)_value),
+                ConfigType.Openclaw => onOpenclaw((OpenClawConfigOut)_value),
                 ConfigType.OrumIo => onOrumIo((OrumIoConfigOut)_value),
                 ConfigType.PandaDoc => onPandaDoc((PandaDocConfigOut)_value),
                 ConfigType.PortIo => onPortIo((PortIoConfigOut)_value),
@@ -449,7 +465,9 @@ namespace Svix.Models
             Action<SvixConfigOut> onIncidentIo,
             Action<SvixConfigOut> onLithic,
             Action<MetaConfigOut> onMeta,
+            Action<NangoConfigOut> onNango,
             Action<SvixConfigOut> onNash,
+            Action<OpenClawConfigOut> onOpenclaw,
             Action<OrumIoConfigOut> onOrumIo,
             Action<PandaDocConfigOut> onPandaDoc,
             Action<PortIoConfigOut> onPortIo,
@@ -524,8 +542,14 @@ namespace Svix.Models
                 case ConfigType.Meta:
                     onMeta((MetaConfigOut)_value);
                     break;
+                case ConfigType.Nango:
+                    onNango((NangoConfigOut)_value);
+                    break;
                 case ConfigType.Nash:
                     onNash((SvixConfigOut)_value);
+                    break;
+                case ConfigType.Openclaw:
+                    onOpenclaw((OpenClawConfigOut)_value);
                     break;
                 case ConfigType.OrumIo:
                     onOrumIo((OrumIoConfigOut)_value);
@@ -726,7 +750,9 @@ namespace Svix.Models
             ["incident-io"] = c => IngestSourceOutConfig.IncidentIo(ToObj<SvixConfigOut>(c)),
             ["lithic"] = c => IngestSourceOutConfig.Lithic(ToObj<SvixConfigOut>(c)),
             ["meta"] = c => IngestSourceOutConfig.Meta(ToObj<MetaConfigOut>(c)),
+            ["nango"] = c => IngestSourceOutConfig.Nango(ToObj<NangoConfigOut>(c)),
             ["nash"] = c => IngestSourceOutConfig.Nash(ToObj<SvixConfigOut>(c)),
+            ["openclaw"] = c => IngestSourceOutConfig.Openclaw(ToObj<OpenClawConfigOut>(c)),
             ["orum-io"] = c => IngestSourceOutConfig.OrumIo(ToObj<OrumIoConfigOut>(c)),
             ["panda-doc"] = c => IngestSourceOutConfig.PandaDoc(ToObj<PandaDocConfigOut>(c)),
             ["port-io"] = c => IngestSourceOutConfig.PortIo(ToObj<PortIoConfigOut>(c)),

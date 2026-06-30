@@ -343,7 +343,7 @@ pub fn setup_tracing(
             ),
         );
 
-        _ = opentelemetry::global::set_tracer_provider(provider.clone());
+        opentelemetry::global::set_tracer_provider(provider.clone());
         (layer, provider)
     });
 

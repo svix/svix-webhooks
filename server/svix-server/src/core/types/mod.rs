@@ -641,7 +641,6 @@ json_wrapper!(ExpiringSigningKeys);
 
 impl ExpiringSigningKeys {
     pub const MAX_OLD_KEYS: usize = 10;
-    pub const OLD_KEY_EXPIRY_HOURS: i64 = 24;
 
     pub fn unexpired_keys(&self) -> impl Iterator<Item = &ExpiringSigningKey> {
         let now = Utc::now();
@@ -1114,6 +1113,12 @@ pub struct ExpiringSigningKey {
     #[serde(rename = "signingKey")]
     pub key: EndpointSecretInternal,
     pub expiration: DateTime<Utc>,
+}
+
+impl ExpiringSigningKey {
+    pub fn is_unexpired(&self) -> bool {
+        self.expiration > Utc::now()
+    }
 }
 
 const FORBIDDEN_KEYS: [&str; 19] = [

@@ -16,9 +16,31 @@ import lombok.ToString;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class EndpointSecretRotateIn {
+    @JsonProperty private Integer gracePeriodSeconds;
     @JsonProperty private String key;
 
     public EndpointSecretRotateIn() {}
+
+    public EndpointSecretRotateIn gracePeriodSeconds(Integer gracePeriodSeconds) {
+        this.gracePeriodSeconds = gracePeriodSeconds;
+        return this;
+    }
+
+    /**
+     * How long the old secret will be valid for, in seconds.
+     *
+     * <p>Valid values are between 0 (immediate expiry) and 7 days. The default is 24 hours.
+     *
+     * @return gracePeriodSeconds
+     */
+    @javax.annotation.Nullable
+    public Integer getGracePeriodSeconds() {
+        return gracePeriodSeconds;
+    }
+
+    public void setGracePeriodSeconds(Integer gracePeriodSeconds) {
+        this.gracePeriodSeconds = gracePeriodSeconds;
+    }
 
     public EndpointSecretRotateIn key(String key) {
         this.key = key;

@@ -17,6 +17,8 @@ import (
 //   - "github": Use GithubConfig
 //   - "hubspot": Use HubspotConfig
 //   - "meta": Use MetaConfig
+//   - "nango": Use NangoConfig
+//   - "openclaw": Use OpenClawConfig
 //   - "orum-io": Use OrumIoConfig
 //   - "panda-doc": Use PandaDocConfig
 //   - "port-io": Use PortIoConfig
@@ -58,7 +60,9 @@ const (
 	IngestSourceInTypeIncidentIo     IngestSourceInType = "incident-io"
 	IngestSourceInTypeLithic         IngestSourceInType = "lithic"
 	IngestSourceInTypeMeta           IngestSourceInType = "meta"
+	IngestSourceInTypeNango          IngestSourceInType = "nango"
 	IngestSourceInTypeNash           IngestSourceInType = "nash"
+	IngestSourceInTypeOpenclaw       IngestSourceInType = "openclaw"
 	IngestSourceInTypeOrumIo         IngestSourceInType = "orum-io"
 	IngestSourceInTypePandaDoc       IngestSourceInType = "panda-doc"
 	IngestSourceInTypePortIo         IngestSourceInType = "port-io"
@@ -100,6 +104,8 @@ func (EasypostConfig) isIngestSourceInConfig()  {}
 func (GithubConfig) isIngestSourceInConfig()    {}
 func (HubspotConfig) isIngestSourceInConfig()   {}
 func (MetaConfig) isIngestSourceInConfig()      {}
+func (NangoConfig) isIngestSourceInConfig()     {}
+func (OpenClawConfig) isIngestSourceInConfig()  {}
 func (OrumIoConfig) isIngestSourceInConfig()    {}
 func (PandaDocConfig) isIngestSourceInConfig()  {}
 func (PortIoConfig) isIngestSourceInConfig()    {}
@@ -164,6 +170,14 @@ func (i *IngestSourceIn) UnmarshalJSON(data []byte) error {
 		i.Config = c
 	case "meta":
 		var c MetaConfig
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
+	case "nango":
+		var c NangoConfig
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
+	case "openclaw":
+		var c OpenClawConfig
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "orum-io":
@@ -261,7 +275,9 @@ var IngestSourceInTypeFromString = map[string]IngestSourceInType{
 	"incident-io":     IngestSourceInTypeIncidentIo,
 	"lithic":          IngestSourceInTypeLithic,
 	"meta":            IngestSourceInTypeMeta,
+	"nango":           IngestSourceInTypeNango,
 	"nash":            IngestSourceInTypeNash,
+	"openclaw":        IngestSourceInTypeOpenclaw,
 	"orum-io":         IngestSourceInTypeOrumIo,
 	"panda-doc":       IngestSourceInTypePandaDoc,
 	"port-io":         IngestSourceInTypePortIo,

@@ -4,13 +4,17 @@ require "json"
 
 module Svix
   class EndpointSecretRotateIn
+    # How long the old secret will be valid for, in seconds.
+    #
+    # Valid values are between 0 (immediate expiry) and 7 days. The default is 24 hours.
+    attr_accessor :grace_period_seconds
     # The endpoint's verification secret.
     #
     # Format: `base64` encoded random bytes optionally prefixed with `whsec_`.
     # It is recommended to not set this and let the server generate the secret.
     attr_accessor :key
 
-    ALL_FIELD ||= ["key"].freeze
+    ALL_FIELD ||= ["grace_period_seconds", "key"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -34,12 +38,14 @@ module Svix
     def self.deserialize(attributes = {})
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
+      attrs["grace_period_seconds"] = attributes["gracePeriodSeconds"]
       attrs["key"] = attributes["key"]
       new(attrs)
     end
 
     def serialize
       out = Hash.new
+      out["gracePeriodSeconds"] = Svix::serialize_primitive(@grace_period_seconds) if @grace_period_seconds
       out["key"] = Svix::serialize_primitive(@key) if @key
       out
     end

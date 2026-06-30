@@ -14,6 +14,8 @@ from .easypost_config import EasypostConfig
 from .github_config import GithubConfig
 from .hubspot_config import HubspotConfig
 from .meta_config import MetaConfig
+from .nango_config import NangoConfig
+from .open_claw_config import OpenClawConfig
 from .orum_io_config import OrumIoConfig
 from .panda_doc_config import PandaDocConfig
 from .port_io_config import PortIoConfig
@@ -55,7 +57,9 @@ class IngestSourceIn(BaseModel):
         t.Literal["incident-io"],
         t.Literal["lithic"],
         t.Literal["meta"],
+        t.Literal["nango"],
         t.Literal["nash"],
+        t.Literal["openclaw"],
         t.Literal["orum-io"],
         t.Literal["panda-doc"],
         t.Literal["port-io"],
@@ -93,6 +97,8 @@ class IngestSourceIn(BaseModel):
         GithubConfig,
         HubspotConfig,
         MetaConfig,
+        NangoConfig,
+        OpenClawConfig,
         OrumIoConfig,
         PandaDocConfig,
         PortIoConfig,
@@ -115,6 +121,8 @@ class IngestSourceIn(BaseModel):
     def validate_model(
         cls, data: t.Any, handler: ModelWrapValidatorHandler[Self]
     ) -> Self:
+        if isinstance(data, cls):
+            return handler(data)
         if "config" not in data:
             data["config"] = {}
         output = handler(data)
@@ -148,8 +156,12 @@ class IngestSourceIn(BaseModel):
             output.config = SvixConfig.model_validate(data.get("config", {}))
         elif output.type == "meta":
             output.config = MetaConfig.model_validate(data.get("config", {}))
+        elif output.type == "nango":
+            output.config = NangoConfig.model_validate(data.get("config", {}))
         elif output.type == "nash":
             output.config = SvixConfig.model_validate(data.get("config", {}))
+        elif output.type == "openclaw":
+            output.config = OpenClawConfig.model_validate(data.get("config", {}))
         elif output.type == "orum-io":
             output.config = OrumIoConfig.model_validate(data.get("config", {}))
         elif output.type == "panda-doc":

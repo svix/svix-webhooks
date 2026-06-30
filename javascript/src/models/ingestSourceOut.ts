@@ -17,6 +17,8 @@ import { type EasypostConfigOut, EasypostConfigOutSerializer } from "./easypostC
 import { type GithubConfigOut, GithubConfigOutSerializer } from "./githubConfigOut";
 import { type HubspotConfigOut, HubspotConfigOutSerializer } from "./hubspotConfigOut";
 import { type MetaConfigOut, MetaConfigOutSerializer } from "./metaConfigOut";
+import { type NangoConfigOut, NangoConfigOutSerializer } from "./nangoConfigOut";
+import { type OpenClawConfigOut, OpenClawConfigOutSerializer } from "./openClawConfigOut";
 import { type OrumIoConfigOut, OrumIoConfigOutSerializer } from "./orumIoConfigOut";
 import { type PandaDocConfigOut, PandaDocConfigOutSerializer } from "./pandaDocConfigOut";
 import { type PortIoConfigOut, PortIoConfigOutSerializer } from "./portIoConfigOut";
@@ -126,9 +128,19 @@ interface IngestSourceOutMeta {
   config: MetaConfigOut;
 }
 
+interface IngestSourceOutNango {
+  type: "nango";
+  config: NangoConfigOut;
+}
+
 interface IngestSourceOutNash {
   type: "nash";
   config: SvixConfigOut;
+}
+
+interface IngestSourceOutOpenclaw {
+  type: "openclaw";
+  config: OpenClawConfigOut;
 }
 
 interface IngestSourceOutOrumIo {
@@ -273,7 +285,9 @@ export type IngestSourceOut = _IngestSourceOutFields &
     | IngestSourceOutIncidentIo
     | IngestSourceOutLithic
     | IngestSourceOutMeta
+    | IngestSourceOutNango
     | IngestSourceOutNash
+    | IngestSourceOutOpenclaw
     | IngestSourceOutOrumIo
     | IngestSourceOutPandaDoc
     | IngestSourceOutPortIo
@@ -337,8 +351,12 @@ export const IngestSourceOutSerializer = {
           return SvixConfigOutSerializer._fromJsonObject(object["config"]);
         case "meta":
           return MetaConfigOutSerializer._fromJsonObject(object["config"]);
+        case "nango":
+          return NangoConfigOutSerializer._fromJsonObject(object["config"]);
         case "nash":
           return SvixConfigOutSerializer._fromJsonObject(object["config"]);
+        case "openclaw":
+          return OpenClawConfigOutSerializer._fromJsonObject(object["config"]);
         case "orum-io":
           return OrumIoConfigOutSerializer._fromJsonObject(object["config"]);
         case "panda-doc":
@@ -456,8 +474,14 @@ export const IngestSourceOutSerializer = {
       case "meta":
         config = MetaConfigOutSerializer._toJsonObject(self.config);
         break;
+      case "nango":
+        config = NangoConfigOutSerializer._toJsonObject(self.config);
+        break;
       case "nash":
         config = SvixConfigOutSerializer._toJsonObject(self.config);
+        break;
+      case "openclaw":
+        config = OpenClawConfigOutSerializer._toJsonObject(self.config);
         break;
       case "orum-io":
         config = OrumIoConfigOutSerializer._toJsonObject(self.config);

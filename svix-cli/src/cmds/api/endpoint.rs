@@ -565,6 +565,7 @@ pub enum EndpointCommands {
         ))]
     #[command(after_help = "Example body:
 {
+  \"gracePeriodSeconds\": 123,
   \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"
 }\n")]
     RotateSecret {
