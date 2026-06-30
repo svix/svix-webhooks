@@ -19,7 +19,7 @@ use svix_bridge_types::{
 use tracing::info;
 use wiremock::{
     Mock, MockServer, ResponseTemplate,
-    matchers::{body_partial_json, method},
+    matchers::{body_partial_json, header, method},
 };
 
 use crate::{BROKER_HOST, create_topic, delete_topic, kafka_admin_client};
@@ -100,6 +100,8 @@ async fn publish(producer: &FutureProducer, topic: &str, payload: &[u8]) {
 #[tokio::test]
 async fn test_consume_ok() {
     let topic = unique_topic_name!();
+    let expected_idempotency_key =
+        format!("svix_bridge_kafka_svix_bridge_test_group_id_{topic}_0_0");
 
     let admin_client = kafka_admin_client();
     create_topic(&admin_client, topic).await;
@@ -111,6 +113,7 @@ async fn test_consume_ok() {
     // The `expect` call should ensure we see exactly 1 POST request.
     // <https://docs.rs/wiremock/latest/wiremock/struct.Mock.html#method.expect>
     let mock = Mock::given(method("POST"))
+        .and(header("idempotency-key", expected_idempotency_key))
         .respond_with(ResponseTemplate::new(202).set_body_json(json!({
           "eventType": "testing.things",
           "payload": {
