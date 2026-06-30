@@ -192,6 +192,7 @@ impl Webhook {
 /// `http` crate.
 pub trait HeaderMap: private::HeaderMapSealed {}
 
+#[cfg(feature = "http02")]
 impl HeaderMap for http02::HeaderMap {}
 impl HeaderMap for http1::HeaderMap {}
 
@@ -203,18 +204,40 @@ mod private {
     pub trait HeaderMapSealed {
         type HeaderValue: HeaderValueSealed;
         fn _get(&self, name: &str) -> Option<&Self::HeaderValue>;
+        #[cfg(test)]
+        fn _insert(&mut self, name: &'static str, val: Self::HeaderValue);
+        #[cfg(test)]
+        fn _new() -> Self;
     }
 
+    #[cfg(feature = "http02")]
     impl HeaderMapSealed for http02::HeaderMap {
         type HeaderValue = http02::HeaderValue;
         fn _get(&self, name: &str) -> Option<&Self::HeaderValue> {
             self.get(name)
         }
+        #[cfg(test)]
+        fn _insert(&mut self, name: &'static str, val: Self::HeaderValue) {
+            self.insert(name, val);
+        }
+        #[cfg(test)]
+        fn _new() -> Self {
+            Self::new()
+        }
     }
+
     impl HeaderMapSealed for http1::HeaderMap {
         type HeaderValue = http1::HeaderValue;
         fn _get(&self, name: &str) -> Option<&Self::HeaderValue> {
             self.get(name)
+        }
+        #[cfg(test)]
+        fn _insert(&mut self, name: &'static str, val: Self::HeaderValue) {
+            self.insert(name, val);
+        }
+        #[cfg(test)]
+        fn _new() -> Self {
+            Self::new()
         }
     }
 
@@ -222,6 +245,7 @@ mod private {
         fn _to_str(&self) -> Option<&str>;
     }
 
+    #[cfg(feature = "http02")]
     impl HeaderValueSealed for http02::HeaderValue {
         fn _to_str(&self) -> Option<&str> {
             self.to_str().ok()
@@ -236,30 +260,38 @@ mod private {
 
 #[cfg(test)]
 mod tests {
-    use http02::HeaderMap;
-
     use super::{
-        Webhook, SVIX_MSG_ID_KEY, SVIX_MSG_SIGNATURE_KEY, SVIX_MSG_TIMESTAMP_KEY,
-        UNBRANDED_MSG_ID_KEY, UNBRANDED_MSG_SIGNATURE_KEY, UNBRANDED_MSG_TIMESTAMP_KEY,
+        private::HeaderMapSealed, Webhook, SVIX_MSG_ID_KEY, SVIX_MSG_SIGNATURE_KEY,
+        SVIX_MSG_TIMESTAMP_KEY, UNBRANDED_MSG_ID_KEY, UNBRANDED_MSG_SIGNATURE_KEY,
+        UNBRANDED_MSG_TIMESTAMP_KEY,
     };
+    use std::{fmt::Debug, str::FromStr};
 
     fn now() -> i64 {
         std::time::UNIX_EPOCH.elapsed().unwrap().as_secs() as _
     }
 
-    fn get_svix_headers(msg_id: &str, signature: &str) -> HeaderMap {
-        let mut headers = HeaderMap::new();
-        headers.insert(SVIX_MSG_ID_KEY, msg_id.parse().unwrap());
-        headers.insert(SVIX_MSG_SIGNATURE_KEY, signature.parse().unwrap());
-        headers.insert(SVIX_MSG_TIMESTAMP_KEY, now().to_string().parse().unwrap());
+    fn get_svix_headers<H: super::HeaderMap>(msg_id: &str, signature: &str) -> H
+    where
+        <H as HeaderMapSealed>::HeaderValue: FromStr,
+        <<H as HeaderMapSealed>::HeaderValue as FromStr>::Err: Debug,
+    {
+        let mut headers = H::_new();
+        headers._insert(SVIX_MSG_ID_KEY, msg_id.parse().unwrap());
+        headers._insert(SVIX_MSG_SIGNATURE_KEY, signature.parse().unwrap());
+        headers._insert(SVIX_MSG_TIMESTAMP_KEY, now().to_string().parse().unwrap());
         headers
     }
 
-    fn get_unbranded_headers(msg_id: &str, signature: &str) -> HeaderMap {
-        let mut headers = HeaderMap::new();
-        headers.insert(UNBRANDED_MSG_ID_KEY, msg_id.parse().unwrap());
-        headers.insert(UNBRANDED_MSG_SIGNATURE_KEY, signature.parse().unwrap());
-        headers.insert(
+    fn get_unbranded_headers<H: super::HeaderMap>(msg_id: &str, signature: &str) -> H
+    where
+        <H as HeaderMapSealed>::HeaderValue: FromStr,
+        <<H as HeaderMapSealed>::HeaderValue as FromStr>::Err: Debug,
+    {
+        let mut headers = H::_new();
+        headers._insert(UNBRANDED_MSG_ID_KEY, msg_id.parse().unwrap());
+        headers._insert(UNBRANDED_MSG_SIGNATURE_KEY, signature.parse().unwrap());
+        headers._insert(
             UNBRANDED_MSG_TIMESTAMP_KEY,
             now().to_string().parse().unwrap(),
         );
@@ -288,11 +320,22 @@ mod tests {
         let wh = Webhook::new(&secret).unwrap();
 
         let signature = wh.sign(msg_id, now(), payload).unwrap();
-        for headers in [
-            get_svix_headers(msg_id, &signature),
-            get_unbranded_headers(msg_id, &signature),
-        ] {
-            wh.verify(payload, &headers).unwrap();
+        #[cfg(feature = "http02")]
+        {
+            for headers in [
+                get_svix_headers::<http02::HeaderMap>(msg_id, &signature),
+                get_unbranded_headers::<http02::HeaderMap>(msg_id, &signature),
+            ] {
+                wh.verify(payload, &headers).unwrap();
+            }
+        }
+        {
+            for headers in [
+                get_svix_headers::<http1::HeaderMap>(msg_id, &signature),
+                get_unbranded_headers::<http1::HeaderMap>(msg_id, &signature),
+            ] {
+                wh.verify(payload, &headers).unwrap();
+            }
         }
     }
 
@@ -304,11 +347,22 @@ mod tests {
         let wh = Webhook::new(&secret).unwrap();
 
         let signature = "v1,R3PTzyfHASBKHH98a7yexTwaJ4yNIcGhFQc1yuN+BPU=".to_owned();
-        for headers in [
-            get_svix_headers(msg_id, &signature),
-            get_unbranded_headers(msg_id, &signature),
-        ] {
-            assert!(wh.verify(payload, &headers).is_err());
+        #[cfg(feature = "http02")]
+        {
+            for headers in [
+                get_svix_headers::<http02::HeaderMap>(msg_id, &signature),
+                get_unbranded_headers::<http02::HeaderMap>(msg_id, &signature),
+            ] {
+                assert!(wh.verify(payload, &headers).is_err());
+            }
+        }
+        {
+            for headers in [
+                get_svix_headers::<http1::HeaderMap>(msg_id, &signature),
+                get_unbranded_headers::<http1::HeaderMap>(msg_id, &signature),
+            ] {
+                assert!(wh.verify(payload, &headers).is_err());
+            }
         }
     }
 
@@ -322,28 +376,56 @@ mod tests {
         let signature = wh.sign(msg_id, now(), payload).unwrap();
 
         // Just `v1,`
-        for mut headers in [
-            get_svix_headers(msg_id, &signature),
-            get_unbranded_headers(msg_id, &signature),
-        ] {
-            let partial = format!(
-                "{},",
-                signature.split(',').collect::<Vec<&str>>().first().unwrap()
-            );
-            headers.insert(SVIX_MSG_SIGNATURE_KEY, partial.parse().unwrap());
-            headers.insert(UNBRANDED_MSG_SIGNATURE_KEY, partial.parse().unwrap());
-            assert!(wh.verify(payload, &headers).is_err());
-        }
+        #[cfg(feature = "http02")]
+        {
+            for mut headers in [
+                get_svix_headers::<http02::HeaderMap>(msg_id, &signature),
+                get_unbranded_headers::<http02::HeaderMap>(msg_id, &signature),
+            ] {
+                let partial = format!(
+                    "{},",
+                    signature.split(',').collect::<Vec<&str>>().first().unwrap()
+                );
+                headers.insert(SVIX_MSG_SIGNATURE_KEY, partial.parse().unwrap());
+                headers.insert(UNBRANDED_MSG_SIGNATURE_KEY, partial.parse().unwrap());
+                assert!(wh.verify(payload, &headers).is_err());
+            }
 
-        // Non-empty but still partial signature (first few bytes)
-        for mut headers in [
-            get_svix_headers(msg_id, &signature),
-            get_unbranded_headers(msg_id, &signature),
-        ] {
-            let partial = &signature[0..8];
-            headers.insert(SVIX_MSG_SIGNATURE_KEY, partial.parse().unwrap());
-            headers.insert(UNBRANDED_MSG_SIGNATURE_KEY, partial.parse().unwrap());
-            assert!(wh.verify(payload, &headers).is_err());
+            // Non-empty but still partial signature (first few bytes)
+            for mut headers in [
+                get_svix_headers::<http02::HeaderMap>(msg_id, &signature),
+                get_unbranded_headers::<http02::HeaderMap>(msg_id, &signature),
+            ] {
+                let partial = &signature[0..8];
+                headers.insert(SVIX_MSG_SIGNATURE_KEY, partial.parse().unwrap());
+                headers.insert(UNBRANDED_MSG_SIGNATURE_KEY, partial.parse().unwrap());
+                assert!(wh.verify(payload, &headers).is_err());
+            }
+        }
+        {
+            for mut headers in [
+                get_svix_headers::<http1::HeaderMap>(msg_id, &signature),
+                get_unbranded_headers::<http1::HeaderMap>(msg_id, &signature),
+            ] {
+                let partial = format!(
+                    "{},",
+                    signature.split(',').collect::<Vec<&str>>().first().unwrap()
+                );
+                headers.insert(SVIX_MSG_SIGNATURE_KEY, partial.parse().unwrap());
+                headers.insert(UNBRANDED_MSG_SIGNATURE_KEY, partial.parse().unwrap());
+                assert!(wh.verify(payload, &headers).is_err());
+            }
+
+            // Non-empty but still partial signature (first few bytes)
+            for mut headers in [
+                get_svix_headers::<http1::HeaderMap>(msg_id, &signature),
+                get_unbranded_headers::<http1::HeaderMap>(msg_id, &signature),
+            ] {
+                let partial = &signature[0..8];
+                headers.insert(SVIX_MSG_SIGNATURE_KEY, partial.parse().unwrap());
+                headers.insert(UNBRANDED_MSG_SIGNATURE_KEY, partial.parse().unwrap());
+                assert!(wh.verify(payload, &headers).is_err());
+            }
         }
     }
 
@@ -356,35 +438,70 @@ mod tests {
 
         // Checks that timestamps that are in the future or too old are rejected by
         // `verify` but okay for `verify_ignoring_timestamp`.
-        for ts in [
-            now() - (super::TOLERANCE_IN_SECONDS as i64 + 1),
-            now() + (super::TOLERANCE_IN_SECONDS as i64 + 1),
-        ] {
+
+        #[cfg(feature = "http02")]
+        {
+            for ts in [
+                now() - (super::TOLERANCE_IN_SECONDS as i64 + 1),
+                now() + (super::TOLERANCE_IN_SECONDS as i64 + 1),
+            ] {
+                let signature = wh.sign(msg_id, ts, payload).unwrap();
+                let mut headers = get_svix_headers::<http02::HeaderMap>(msg_id, &signature);
+                headers.insert(
+                    super::SVIX_MSG_TIMESTAMP_KEY,
+                    ts.to_string().parse().unwrap(),
+                );
+
+                assert!(wh.verify(payload, &headers,).is_err());
+                // Timestamp tolerance is not considered in this case.
+                assert!(wh.verify_ignoring_timestamp(payload, &headers,).is_ok());
+            }
+
+            let ts = now();
             let signature = wh.sign(msg_id, ts, payload).unwrap();
-            let mut headers = get_svix_headers(msg_id, &signature);
+            let mut headers = get_svix_headers::<http02::HeaderMap>(msg_id, &signature);
             headers.insert(
                 super::SVIX_MSG_TIMESTAMP_KEY,
-                ts.to_string().parse().unwrap(),
+                // Timestamp mismatch!
+                (ts + 1).to_string().parse().unwrap(),
             );
 
+            // Both versions should reject the timestamp if it's not the same one used to
+            // produce the signature.
             assert!(wh.verify(payload, &headers,).is_err());
-            // Timestamp tolerance is not considered in this case.
-            assert!(wh.verify_ignoring_timestamp(payload, &headers,).is_ok());
+            assert!(wh.verify_ignoring_timestamp(payload, &headers,).is_err());
         }
+        {
+            for ts in [
+                now() - (super::TOLERANCE_IN_SECONDS as i64 + 1),
+                now() + (super::TOLERANCE_IN_SECONDS as i64 + 1),
+            ] {
+                let signature = wh.sign(msg_id, ts, payload).unwrap();
+                let mut headers = get_svix_headers::<http1::HeaderMap>(msg_id, &signature);
+                headers.insert(
+                    super::SVIX_MSG_TIMESTAMP_KEY,
+                    ts.to_string().parse().unwrap(),
+                );
 
-        let ts = now();
-        let signature = wh.sign(msg_id, ts, payload).unwrap();
-        let mut headers = get_svix_headers(msg_id, &signature);
-        headers.insert(
-            super::SVIX_MSG_TIMESTAMP_KEY,
-            // Timestamp mismatch!
-            (ts + 1).to_string().parse().unwrap(),
-        );
+                assert!(wh.verify(payload, &headers,).is_err());
+                // Timestamp tolerance is not considered in this case.
+                assert!(wh.verify_ignoring_timestamp(payload, &headers,).is_ok());
+            }
 
-        // Both versions should reject the timestamp if it's not the same one used to
-        // produce the signature.
-        assert!(wh.verify(payload, &headers,).is_err());
-        assert!(wh.verify_ignoring_timestamp(payload, &headers,).is_err());
+            let ts = now();
+            let signature = wh.sign(msg_id, ts, payload).unwrap();
+            let mut headers = get_svix_headers::<http1::HeaderMap>(msg_id, &signature);
+            headers.insert(
+                super::SVIX_MSG_TIMESTAMP_KEY,
+                // Timestamp mismatch!
+                (ts + 1).to_string().parse().unwrap(),
+            );
+
+            // Both versions should reject the timestamp if it's not the same one used to
+            // produce the signature.
+            assert!(wh.verify(payload, &headers,).is_err());
+            assert!(wh.verify_ignoring_timestamp(payload, &headers,).is_err());
+        }
     }
 
     #[test]
@@ -396,15 +513,30 @@ mod tests {
 
         let ts = -1;
         let signature = wh.sign(msg_id, ts, payload).unwrap();
-        let mut headers = get_svix_headers(msg_id, &signature);
-        headers.insert(
-            super::SVIX_MSG_TIMESTAMP_KEY,
-            ts.to_string().parse().unwrap(),
-        );
 
-        wh.verify(payload, &headers)
-            .expect_err("negative timestamp should not be allowed");
-        assert!(wh.verify_ignoring_timestamp(payload, &headers,).is_ok());
+        #[cfg(feature = "http02")]
+        {
+            let mut headers = get_svix_headers::<http02::HeaderMap>(msg_id, &signature);
+            headers.insert(
+                super::SVIX_MSG_TIMESTAMP_KEY,
+                ts.to_string().parse().unwrap(),
+            );
+
+            wh.verify(payload, &headers)
+                .expect_err("negative timestamp should not be allowed");
+            assert!(wh.verify_ignoring_timestamp(payload, &headers,).is_ok());
+        }
+        {
+            let mut headers = get_svix_headers::<http1::HeaderMap>(msg_id, &signature);
+            headers.insert(
+                super::SVIX_MSG_TIMESTAMP_KEY,
+                ts.to_string().parse().unwrap(),
+            );
+
+            wh.verify(payload, &headers)
+                .expect_err("negative timestamp should not be allowed");
+            assert!(wh.verify_ignoring_timestamp(payload, &headers,).is_ok());
+        }
     }
 
     #[test]
@@ -424,9 +556,15 @@ mod tests {
             "v1,9DfC1c3eeOrXB6w/5dIDydLNQaEyww5KalE5jLBZucE=",
         );
 
-        let headers = get_svix_headers(msg_id, &multi_sig);
-
-        wh.verify(payload, &headers).unwrap();
+        #[cfg(feature = "http02")]
+        {
+            let headers = get_svix_headers::<http02::HeaderMap>(msg_id, &multi_sig);
+            wh.verify(payload, &headers).unwrap();
+        }
+        {
+            let headers = get_svix_headers::<http1::HeaderMap>(msg_id, &multi_sig);
+            wh.verify(payload, &headers).unwrap();
+        }
     }
 
     #[test]
@@ -443,9 +581,15 @@ mod tests {
             "v1,9DfC1c3eeOrXB6w/5dIDydLNQaEyww5KalE5jLBZucE=",
         );
 
-        let headers = get_svix_headers(msg_id, &missing_sig);
-
-        assert!(wh.verify(payload, &headers).is_err());
+        #[cfg(feature = "http02")]
+        {
+            let headers = get_svix_headers::<http02::HeaderMap>(msg_id, &missing_sig);
+            assert!(wh.verify(payload, &headers).is_err());
+        }
+        {
+            let headers = get_svix_headers::<http1::HeaderMap>(msg_id, &missing_sig);
+            assert!(wh.verify(payload, &headers).is_err());
+        }
     }
 
     #[test]
@@ -456,27 +600,55 @@ mod tests {
         let wh = Webhook::new(&secret).unwrap();
 
         let signature = wh.sign(msg_id, now(), payload).unwrap();
-        for (mut hdr_map, hdrs) in [
-            (
-                get_svix_headers(msg_id, &signature),
-                [
-                    SVIX_MSG_ID_KEY,
-                    SVIX_MSG_SIGNATURE_KEY,
-                    SVIX_MSG_TIMESTAMP_KEY,
-                ],
-            ),
-            (
-                get_unbranded_headers(msg_id, &signature),
-                [
-                    UNBRANDED_MSG_ID_KEY,
-                    UNBRANDED_MSG_SIGNATURE_KEY,
-                    UNBRANDED_MSG_TIMESTAMP_KEY,
-                ],
-            ),
-        ] {
-            for hdr in hdrs {
-                hdr_map.remove(hdr);
-                assert!(wh.verify(payload, &hdr_map).is_err());
+        #[cfg(feature = "http02")]
+        {
+            for (mut hdr_map, hdrs) in [
+                (
+                    get_svix_headers::<http02::HeaderMap>(msg_id, &signature),
+                    [
+                        SVIX_MSG_ID_KEY,
+                        SVIX_MSG_SIGNATURE_KEY,
+                        SVIX_MSG_TIMESTAMP_KEY,
+                    ],
+                ),
+                (
+                    get_unbranded_headers::<http02::HeaderMap>(msg_id, &signature),
+                    [
+                        UNBRANDED_MSG_ID_KEY,
+                        UNBRANDED_MSG_SIGNATURE_KEY,
+                        UNBRANDED_MSG_TIMESTAMP_KEY,
+                    ],
+                ),
+            ] {
+                for hdr in hdrs {
+                    hdr_map.remove(hdr);
+                    assert!(wh.verify(payload, &hdr_map).is_err());
+                }
+            }
+        }
+        {
+            for (mut hdr_map, hdrs) in [
+                (
+                    get_svix_headers::<http1::HeaderMap>(msg_id, &signature),
+                    [
+                        SVIX_MSG_ID_KEY,
+                        SVIX_MSG_SIGNATURE_KEY,
+                        SVIX_MSG_TIMESTAMP_KEY,
+                    ],
+                ),
+                (
+                    get_unbranded_headers::<http1::HeaderMap>(msg_id, &signature),
+                    [
+                        UNBRANDED_MSG_ID_KEY,
+                        UNBRANDED_MSG_SIGNATURE_KEY,
+                        UNBRANDED_MSG_TIMESTAMP_KEY,
+                    ],
+                ),
+            ] {
+                for hdr in hdrs {
+                    hdr_map.remove(hdr);
+                    assert!(wh.verify(payload, &hdr_map).is_err());
+                }
             }
         }
     }

@@ -4563,7 +4563,6 @@ version = "1.96.1"
 dependencies = [
  "base64 0.13.1",
  "hmac-sha256",
- "http 0.2.12",
  "http 1.4.1",
  "http-body-util",
  "hyper",

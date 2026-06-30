@@ -36,10 +36,3 @@ pub struct Configuration {
 
     client: HyperClient<Connector, http_body_util::Full<Bytes>>,
 }
-
-/// Convert a `StatusCode` from the http crate v1 to one from the http crate
-/// v0.2.
-fn http1_to_02_status_code(code: http1::StatusCode) -> http02::StatusCode {
-    http02::StatusCode::from_u16(code.as_u16())
-        .expect("both versions of the http crate enforce the same numerical limits for StatusCode")
-}
