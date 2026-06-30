@@ -5,8 +5,8 @@
 use std::time::Duration;
 
 use lapin::{
-    options::QueueDeclareOptions, types::FieldTable, Channel, Connection, ConnectionProperties,
-    Queue,
+    Channel, Connection, ConnectionProperties, Queue, options::QueueDeclareOptions,
+    types::FieldTable,
 };
 use serde_json::json;
 use svix_bridge_plugin_queue::{
@@ -14,13 +14,13 @@ use svix_bridge_plugin_queue::{
     sender_input::QueueSender,
 };
 use svix_bridge_types::{
-    svix::api::MessageIn, CreateMessageRequest, SenderInput, SenderOutputOpts, SvixOptions,
-    SvixSenderOutputOpts, TransformationConfig, TransformerInput, TransformerInputFormat,
-    TransformerJob, TransformerOutput,
+    CreateMessageRequest, SenderInput, SenderOutputOpts, SvixOptions, SvixSenderOutputOpts,
+    TransformationConfig, TransformerInput, TransformerInputFormat, TransformerJob,
+    TransformerOutput, svix::api::MessageIn,
 };
 use wiremock::{
-    matchers::{body_partial_json, method},
     Mock, MockServer, ResponseTemplate,
+    matchers::{body_partial_json, method},
 };
 
 fn get_test_plugin(

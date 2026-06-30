@@ -5,6 +5,7 @@
 
 use std::time::Duration;
 
+use aws_config::Region;
 use aws_sdk_sqs::Client;
 use serde_json::json;
 use svix_bridge_plugin_queue::{
@@ -12,21 +13,16 @@ use svix_bridge_plugin_queue::{
     sender_input::QueueSender,
 };
 use svix_bridge_types::{
-    svix::api::MessageIn, CreateMessageRequest, SenderInput, SenderOutputOpts, SvixOptions,
-    SvixSenderOutputOpts, TransformationConfig, TransformerInput, TransformerInputFormat,
-    TransformerJob, TransformerOutput,
+    CreateMessageRequest, SenderInput, SenderOutputOpts, SvixOptions, SvixSenderOutputOpts,
+    TransformationConfig, TransformerInput, TransformerInputFormat, TransformerJob,
+    TransformerOutput, svix::api::MessageIn,
 };
 use wiremock::{
-    matchers::{body_partial_json, method},
     Mock, MockServer, ResponseTemplate,
+    matchers::{body_partial_json, method},
 };
 
 const ROOT_URL: &str = "http://localhost:9324";
-const DEFAULT_CFG: [(&str, &str); 3] = [
-    ("AWS_DEFAULT_REGION", "localhost"),
-    ("AWS_ACCESS_KEY_ID", "x"),
-    ("AWS_SECRET_ACCESS_KEY", "x"),
-];
 
 fn get_test_plugin(
     svix_url: String,
@@ -54,12 +50,16 @@ fn get_test_plugin(
 }
 
 async fn mq_connection() -> Client {
-    for (var, val) in &DEFAULT_CFG {
-        if std::env::var(var).is_err() {
-            std::env::set_var(var, val);
-        }
-    }
-    let config = aws_config::from_env().endpoint_url(ROOT_URL).load().await;
+    let config = aws_config::ConfigLoader::default()
+        .empty_test_environment()
+        .behavior_version(aws_config::BehaviorVersion::latest())
+        .credentials_provider(aws_credential_types::Credentials::new(
+            "x", "x", None, None, "testing",
+        ))
+        .region(Region::new("localhost"))
+        .endpoint_url(ROOT_URL)
+        .load()
+        .await;
     Client::new(&config)
 }
 

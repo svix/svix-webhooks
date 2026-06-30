@@ -3,7 +3,7 @@
 //!
 //! Use `run-tests.sh` to use the requisite environment for testing.
 
-use std::time::Duration;
+use std::{sync::Mutex, time::Duration};
 
 use gcloud_googleapis::pubsub::v1::{DeadLetterPolicy, PubsubMessage};
 use gcloud_pubsub::{
@@ -17,13 +17,13 @@ use svix_bridge_plugin_queue::{
     sender_input::QueueSender,
 };
 use svix_bridge_types::{
-    svix::api::MessageIn, CreateMessageRequest, SenderInput, SenderOutputOpts, SvixOptions,
-    SvixSenderOutputOpts, TransformationConfig, TransformerInput, TransformerInputFormat,
-    TransformerJob, TransformerOutput,
+    CreateMessageRequest, SenderInput, SenderOutputOpts, SvixOptions, SvixSenderOutputOpts,
+    TransformationConfig, TransformerInput, TransformerInputFormat, TransformerJob,
+    TransformerOutput, svix::api::MessageIn,
 };
 use wiremock::{
-    matchers::{body_partial_json, method},
     Mock, MockServer, ResponseTemplate,
+    matchers::{body_partial_json, method},
 };
 
 const DEFAULT_PUBSUB_EMULATOR_HOST: &str = "localhost:8085";
@@ -53,12 +53,20 @@ fn get_test_plugin(
     )
 }
 
+static ENV_VAR_NONSENSE_MUTEX: Mutex<()> = Mutex::new(());
+
 async fn mq_connection() -> Client {
+    let _guard = ENV_VAR_NONSENSE_MUTEX.lock();
     // The `Default` impl for `ClientConfig` looks for this env var. When set it branches for
     // local-mode use using the addr in the env var and a hardcoded project id of `local-project`.
     if std::env::var("PUBSUB_EMULATOR_HOST").is_err() {
-        std::env::set_var("PUBSUB_EMULATOR_HOST", DEFAULT_PUBSUB_EMULATOR_HOST);
+        // safety: this is unsafe and can panic if called from concurrent threads, but gcloud_pubsub
+        // doesn't provide any safe way to use an emulator. Sad day. At least it's only in tests?
+        unsafe {
+            std::env::set_var("PUBSUB_EMULATOR_HOST", DEFAULT_PUBSUB_EMULATOR_HOST);
+        }
     }
+    drop(_guard);
     Client::new(ClientConfig::default()).await.unwrap()
 }
 

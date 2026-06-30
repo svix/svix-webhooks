@@ -7,11 +7,11 @@ use std::{
 use clap::Parser;
 use itertools::{Either, Itertools};
 use once_cell::sync::Lazy;
-use opentelemetry::{trace::TracerProvider as _, InstrumentationScope};
+use opentelemetry::{InstrumentationScope, trace::TracerProvider as _};
 use opentelemetry_otlp::WithExportConfig as _;
 use opentelemetry_sdk::{
-    metrics::{periodic_reader_with_async_runtime::PeriodicReader, SdkMeterProvider},
-    trace::{span_processor_with_async_runtime::BatchSpanProcessor, SdkTracerProvider},
+    metrics::{SdkMeterProvider, periodic_reader_with_async_runtime::PeriodicReader},
+    trace::{SdkTracerProvider, span_processor_with_async_runtime::BatchSpanProcessor},
 };
 use svix_bridge_types::{PollerInput, SenderInput, TransformerJob};
 use svix_ksuid::{KsuidLike as _, KsuidMs};
