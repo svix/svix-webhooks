@@ -110,6 +110,8 @@ enum RootCommands {
     Seed(SeedArgs),
     /// Verifying and signing webhooks with the Svix signature scheme
     Signature(SignatureArgs),
+    /// Show the loaded CLI configuration, with all interpolated environment variables
+    ShowConfig,
     /// Get the version of the Svix CLI
     Version,
 }
@@ -197,6 +199,16 @@ async fn main() -> Result<()> {
             let client = get_client(&cfg?)?;
             cmds::seed::exec(&client, args, color_mode).await?;
         }
+        RootCommands::ShowConfig => {
+            eprintln!(
+                "Merged output of '{}' and SVIX_ environment variables:",
+                config::get_config_file_path()?.display()
+            );
+            let stdout = std::io::stdout();
+            let stdout = stdout.lock();
+            serde_json::to_writer_pretty(stdout, &cfg?)?;
+            println!();
+        }
     }
 
     Ok(())
@@ -214,7 +226,7 @@ fn get_client_options(cfg: &Config) -> Result<svix::api::SvixOptions> {
     Ok(svix::api::SvixOptions {
         debug: false,
         server_url: cfg.server_url().map(Into::into),
-        timeout: None,
+        timeout: cfg.timeout(),
         ..SvixOptions::default()
     })
 }
