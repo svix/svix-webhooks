@@ -10,8 +10,8 @@ use shellexpand::LookupError;
 use svix_bridge_plugin_kafka::{KafkaInputOpts, KafkaOutputOpts};
 use svix_bridge_plugin_queue::config::{QueueInputOpts, QueueOutputOpts};
 use svix_bridge_types::{
-    svix::api::Svix, ReceiverInputOpts, ReceiverOutput, SenderInput, SenderOutputOpts, SvixOptions,
-    TransformationConfig,
+    ReceiverInputOpts, ReceiverOutput, SenderInput, SenderOutputOpts, SvixOptions,
+    TransformationConfig, svix::api::Svix,
 };
 use tracing::Level;
 

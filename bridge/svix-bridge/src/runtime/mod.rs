@@ -4,9 +4,8 @@ use anyhow::Result;
 use deadpool::unmanaged::Pool;
 use deno_ast::{MediaType, ParseParams};
 use deno_core::{
-    serde_v8, url,
+    JsRuntime, serde_v8, url,
     v8::{self},
-    JsRuntime,
 };
 use svix_bridge_types::{JsObject, TransformerInput, TransformerOutput};
 use tokio::sync::oneshot;

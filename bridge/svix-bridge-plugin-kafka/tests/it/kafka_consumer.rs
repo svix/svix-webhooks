@@ -5,24 +5,24 @@
 use std::time::Duration;
 
 use rdkafka::{
+    ClientConfig,
     producer::{FutureProducer, FutureRecord},
     util::Timeout,
-    ClientConfig,
 };
 use serde_json::json;
 use svix_bridge_plugin_kafka::{KafkaConsumer, KafkaInputOpts};
 use svix_bridge_types::{
-    svix::api::MessageIn, CreateMessageRequest, SenderInput, SenderOutputOpts, SvixOptions,
-    SvixSenderOutputOpts, TransformationConfig, TransformerInput, TransformerInputFormat,
-    TransformerJob, TransformerOutput,
+    CreateMessageRequest, SenderInput, SenderOutputOpts, SvixOptions, SvixSenderOutputOpts,
+    TransformationConfig, TransformerInput, TransformerInputFormat, TransformerJob,
+    TransformerOutput, svix::api::MessageIn,
 };
 use tracing::info;
 use wiremock::{
-    matchers::{body_partial_json, method},
     Mock, MockServer, ResponseTemplate,
+    matchers::{body_partial_json, method},
 };
 
-use crate::{create_topic, delete_topic, kafka_admin_client, BROKER_HOST};
+use crate::{BROKER_HOST, create_topic, delete_topic, kafka_admin_client};
 
 #[ctor::ctor]
 fn test_setup() {

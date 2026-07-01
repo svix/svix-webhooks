@@ -1,10 +1,10 @@
 use omniqueue::DynConsumer;
 use svix_bridge_types::{
-    async_trait, svix::api::Svix, SenderInput, SenderOutputOpts, TransformationConfig,
-    TransformerTx,
+    SenderInput, SenderOutputOpts, TransformationConfig, TransformerTx, async_trait,
+    svix::api::Svix,
 };
 
-use crate::{config::QueueInputOpts, gcp_pubsub, rabbitmq, run_inner, sqs, Consumer};
+use crate::{Consumer, config::QueueInputOpts, gcp_pubsub, rabbitmq, run_inner, sqs};
 
 pub struct QueueSender {
     name: String,

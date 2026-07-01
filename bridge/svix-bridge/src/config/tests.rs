@@ -640,9 +640,10 @@ fn test_transformation_validation_bad_syntax_is_err() {
           token: "xxx"
     "#;
     let err = Config::from_src(src, None).err().unwrap();
-    assert!(err
-        .to_string()
-        .contains("failed to parse transformation for sender `bad xform`"))
+    assert!(
+        err.to_string()
+            .contains("failed to parse transformation for sender `bad xform`")
+    )
 }
 
 #[test]

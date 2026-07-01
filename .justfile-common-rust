@@ -8,7 +8,7 @@ fmt:
 
 # Run `cargo clippy` for the rfust codebase.
 clippy *args='':
-    cargo clippy --all-targets {{ args }} -- -D warnings
+    cargo clippy --all-targets --all-features {{ args }} -- -D warnings
 
 # Run lints (fmt and clippy)
 lint: fmt clippy && fmt

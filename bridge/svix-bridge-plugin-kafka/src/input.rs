@@ -4,19 +4,19 @@ use std::{
 };
 
 use rdkafka::{
+    Message as _,
     consumer::{CommitMode, Consumer as _},
     error::KafkaError,
-    Message as _,
 };
 use svix_bridge_types::{
-    async_trait,
-    svix::api::{MessageCreateOptions, Svix},
     CreateMessageRequest, JsObject, SenderInput, SenderOutputOpts, TransformationConfig,
     TransformerInput, TransformerInputFormat, TransformerJob, TransformerOutput, TransformerTx,
+    async_trait,
+    svix::api::{MessageCreateOptions, Svix},
 };
 use tokio::task::spawn_blocking;
 
-use crate::{config::KafkaInputOpts, Error, Result};
+use crate::{Error, Result, config::KafkaInputOpts};
 
 pub struct KafkaConsumer {
     name: String,

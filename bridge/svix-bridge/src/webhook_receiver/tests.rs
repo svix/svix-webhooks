@@ -6,9 +6,9 @@ use axum::{
 };
 use serde_json::json;
 use svix_bridge_types::{
-    async_trait, svix::webhooks::Webhook, BoxError, ForwardRequest, ReceiverOutput,
-    TransformationConfig, TransformerInput, TransformerInputFormat, TransformerJob,
-    TransformerOutput,
+    BoxError, ForwardRequest, ReceiverOutput, TransformationConfig, TransformerInput,
+    TransformerInputFormat, TransformerJob, TransformerOutput, async_trait,
+    svix::webhooks::Webhook,
 };
 use tower::{Service, ServiceExt};
 

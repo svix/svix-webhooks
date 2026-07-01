@@ -9,7 +9,7 @@ use axum::{
 };
 use serde::{Deserialize, Serialize};
 use svix_bridge_types::{
-    svix, ReceiverInputOpts, ReceiverOutput, TransformationConfig, TransformerTx, WebhookVerifier,
+    ReceiverInputOpts, ReceiverOutput, TransformationConfig, TransformerTx, WebhookVerifier, svix,
 };
 
 use super::verification::{NoVerifier, SvixVerifier, VerificationMethod, Verifier};

@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use omniqueue::{backends, DynConsumer, DynProducer};
+use omniqueue::{DynConsumer, DynProducer, backends};
 use serde::Deserialize;
 
 use crate::error::{Error, Result};

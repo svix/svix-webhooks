@@ -1,10 +1,10 @@
 use rdkafka::{
-    consumer::StreamConsumer, error::KafkaResult, producer::FutureProducer, ClientConfig,
+    ClientConfig, consumer::StreamConsumer, error::KafkaResult, producer::FutureProducer,
 };
 use serde::Deserialize;
 use svix_bridge_types::{ReceiverOutput, SenderInput, SenderOutputOpts, TransformationConfig};
 
-use crate::{input::KafkaConsumer, KafkaProducer, Result};
+use crate::{KafkaProducer, Result, input::KafkaConsumer};
 
 #[derive(Clone, Deserialize)]
 #[serde(tag = "type")]
@@ -56,10 +56,10 @@ impl KafkaInputOpts {
             .set("enable.auto.commit", "false");
 
         security_protocol.apply(&mut config);
-        if let Some(debug_contexts) = debug_contexts {
-            if !debug_contexts.is_empty() {
-                config.set("debug", debug_contexts);
-            }
+        if let Some(debug_contexts) = debug_contexts
+            && !debug_contexts.is_empty()
+        {
+            config.set("debug", debug_contexts);
         }
 
         config.create()
@@ -106,10 +106,10 @@ impl KafkaOutputOpts {
         config.set("bootstrap.servers", bootstrap_brokers);
 
         security_protocol.apply(&mut config);
-        if let Some(debug_contexts) = debug_contexts {
-            if !debug_contexts.is_empty() {
-                config.set("debug", debug_contexts);
-            }
+        if let Some(debug_contexts) = debug_contexts
+            && !debug_contexts.is_empty()
+        {
+            config.set("debug", debug_contexts);
         }
 
         config.create()

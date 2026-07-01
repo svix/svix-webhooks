@@ -1,7 +1,7 @@
 [package]
 name = "svix-bridge-plugin-queue"
 version.workspace = true
-edition = "2021"
+edition = "2024"
 rust-version = "1.91"
 publish = false
 license.workspace = true
@@ -24,6 +24,7 @@ features = ["gcp_pubsub", "rabbitmq", "redis", "sqs"]
 
 [dev-dependencies]
 aws-config = "1.8.12"
+aws-credential-types = "1.2"
 aws-sdk-sqs = { version = "1.97.0", default-features = false, features = ["default-https-client", "rt-tokio"] }
 fastrand = "2.0.1"
 gcloud-googleapis = "1.2.0"

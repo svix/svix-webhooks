@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use omniqueue::{DynProducer, QueueError};
-use svix_bridge_types::{async_trait, BoxError, ForwardRequest, ReceiverOutput};
+use svix_bridge_types::{BoxError, ForwardRequest, ReceiverOutput, async_trait};
 use tokio::sync::Mutex;
 
 use crate::{config::QueueOutputOpts, error::Result};
