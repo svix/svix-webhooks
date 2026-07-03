@@ -134,7 +134,7 @@ impl Request {
 
             let status = response.status();
             if !status.is_success() {
-                Err(Error::from_response(status, response.into_body()).await)
+                Err(Error::from_response(status, response.into_body(), conf.timeout).await)
             } else if no_return_type {
                 Ok(None)
             } else {
@@ -149,11 +149,15 @@ impl Request {
         };
 
         loop {
+            let start = std::time::Instant::now();
             let request_fut = execute_request(request.clone());
             let res = if let Some(duration) = conf.timeout {
                 tokio::time::timeout(duration, request_fut)
                     .await
-                    .map_err(Error::generic)?
+                    .map_err(|_| Error::Timeout {
+                        elapsed: Some(start.elapsed()),
+                        timeout: Some(duration),
+                    })?
             } else {
                 request_fut.await
             };
