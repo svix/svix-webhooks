@@ -135,7 +135,7 @@ pub enum IngestSourceCommands {
   \"updatedAt\": \"2030-01-01T00:00:00Z\"
 }\n")]
     Get { source_id: String },
-    /// Update an Ingest Source.
+    /// Create or update an Ingest Source.
     #[command(help_template = concat!(
             "{about-with-newline}\n",
             "{usage-heading} {usage}\n\n",

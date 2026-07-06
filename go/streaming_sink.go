@@ -121,7 +121,7 @@ func (streamingSink *StreamingSink) Get(
 	)
 }
 
-// Update a sink.
+// Create or update a sink.
 func (streamingSink *StreamingSink) Update(
 	ctx context.Context,
 	streamId string,

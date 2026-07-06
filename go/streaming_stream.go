@@ -107,7 +107,7 @@ func (streamingStream *StreamingStream) Get(
 	)
 }
 
-// Update a stream.
+// Create or update a stream.
 func (streamingStream *StreamingStream) Update(
 	ctx context.Context,
 	streamId string,

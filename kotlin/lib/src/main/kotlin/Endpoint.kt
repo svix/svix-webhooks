@@ -95,7 +95,7 @@ class Endpoint(private val client: SvixHttpClient) {
         return client.executeRequest<Any, EndpointOut>("GET", url.build())
     }
 
-    /** Update an endpoint. */
+    /** Create or update an endpoint. */
     suspend fun update(
         appId: String,
         endpointId: String,

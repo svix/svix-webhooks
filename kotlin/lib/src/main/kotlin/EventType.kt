@@ -103,7 +103,7 @@ class EventType(private val client: SvixHttpClient) {
         return client.executeRequest<Any, EventTypeOut>("GET", url.build())
     }
 
-    /** Update an event type. */
+    /** Create or update an event type. */
     suspend fun update(eventTypeName: String, eventTypeUpdate: EventTypeUpdate): EventTypeOut {
         val url = client.newUrlBuilder().encodedPath("/api/v1/event-type/$eventTypeName")
 

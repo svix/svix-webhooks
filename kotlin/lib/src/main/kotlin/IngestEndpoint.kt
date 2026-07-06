@@ -67,7 +67,7 @@ class IngestEndpoint(private val client: SvixHttpClient) {
         return client.executeRequest<Any, IngestEndpointOut>("GET", url.build())
     }
 
-    /** Update an ingest endpoint. */
+    /** Create or update an ingest endpoint. */
     suspend fun update(
         sourceId: String,
         endpointId: String,

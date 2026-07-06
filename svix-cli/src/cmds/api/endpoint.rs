@@ -249,7 +249,7 @@ pub enum EndpointCommands {
   \"version\": 1
 }\n")]
     Get { app_id: String, id: String },
-    /// Update an endpoint.
+    /// Create or update an endpoint.
     #[command(help_template = concat!(
             "{about-with-newline}\n",
             "{usage-heading} {usage}\n\n",

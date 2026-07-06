@@ -64,7 +64,7 @@ class OperationalWebhookEndpoint(private val client: SvixHttpClient) {
         return client.executeRequest<Any, OperationalWebhookEndpointOut>("GET", url.build())
     }
 
-    /** Update an operational webhook endpoint. */
+    /** Create or update an operational webhook endpoint. */
     suspend fun update(
         endpointId: String,
         operationalWebhookEndpointUpdate: OperationalWebhookEndpointUpdate,

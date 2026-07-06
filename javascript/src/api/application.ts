@@ -92,7 +92,7 @@ export class Application {
     return await request.send(this.requestCtx, ApplicationOutSerializer._fromJsonObject);
   }
 
-  /** Update an application. */
+  /** Create or update an application. */
   public async update(
     appId: string,
     applicationIn: ApplicationIn

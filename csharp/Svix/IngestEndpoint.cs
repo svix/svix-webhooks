@@ -231,7 +231,7 @@ namespace Svix
         }
 
         /// <summary>
-        /// Update an ingest endpoint.
+        /// Create or update an ingest endpoint.
         /// </summary>
         public async Task<IngestEndpointOut> UpdateAsync(
             string sourceId,
@@ -267,7 +267,7 @@ namespace Svix
         }
 
         /// <summary>
-        /// Update an ingest endpoint.
+        /// Create or update an ingest endpoint.
         /// </summary>
         public IngestEndpointOut Update(
             string sourceId,

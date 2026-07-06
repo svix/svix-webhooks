@@ -105,7 +105,7 @@ class StreamingEventTypeAsync(ApiBase):
     async def update(
         self, name: str, stream_event_type_in: StreamEventTypeIn
     ) -> StreamEventTypeOut:
-        """Update or create a event type for Streams."""
+        """Create or update or create a event type for Streams."""
         response = await self._request_asyncio(
             method="put",
             path="/api/v1/stream/event-type/{name}",
@@ -197,7 +197,7 @@ class StreamingEventType(ApiBase):
     def update(
         self, name: str, stream_event_type_in: StreamEventTypeIn
     ) -> StreamEventTypeOut:
-        """Update or create a event type for Streams."""
+        """Create or update or create a event type for Streams."""
         response = self._request_sync(
             method="put",
             path="/api/v1/stream/event-type/{name}",

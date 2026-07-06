@@ -157,7 +157,7 @@ func (eventType *EventType) Get(
 	)
 }
 
-// Update an event type.
+// Create or update an event type.
 func (eventType *EventType) Update(
 	ctx context.Context,
 	eventTypeName string,

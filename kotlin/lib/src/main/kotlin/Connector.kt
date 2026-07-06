@@ -58,7 +58,7 @@ class Connector(private val client: SvixHttpClient) {
         return client.executeRequest<Any, ConnectorOut>("GET", url.build())
     }
 
-    /** Update a connector. */
+    /** Create or update a connector. */
     suspend fun update(connectorId: String, connectorUpdate: ConnectorUpdate): ConnectorOut {
         val url = client.newUrlBuilder().encodedPath("/api/v1/connector/$connectorId")
 

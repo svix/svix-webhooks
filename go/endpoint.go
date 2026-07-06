@@ -147,7 +147,7 @@ func (endpoint *Endpoint) Get(
 	)
 }
 
-// Update an endpoint.
+// Create or update an endpoint.
 func (endpoint *Endpoint) Update(
 	ctx context.Context,
 	appId string,

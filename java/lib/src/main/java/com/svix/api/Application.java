@@ -107,7 +107,7 @@ public class Application {
         return this.client.executeRequest("GET", url.build(), null, null, ApplicationOut.class);
     }
 
-    /** Update an application. */
+    /** Create or update an application. */
     public ApplicationOut update(final String appId, final ApplicationIn applicationIn)
             throws IOException, ApiException {
         HttpUrl.Builder url =

@@ -73,7 +73,7 @@ impl<'a> Connector<'a> {
             .await
     }
 
-    /// Update a connector.
+    /// Create or update a connector.
     pub async fn update(
         &self,
         connector_id: String,

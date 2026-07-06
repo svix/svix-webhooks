@@ -75,7 +75,7 @@ class StreamingSink
     }
 
     /**
-     * Update a sink.
+     * Create or update a sink.
      *
      * @throws ApiException
      */

@@ -115,7 +115,7 @@ func (streamingEventType *StreamingEventType) Get(
 	)
 }
 
-// Update or create a event type for Streams.
+// Create or update or create a event type for Streams.
 func (streamingEventType *StreamingEventType) Update(
 	ctx context.Context,
 	name string,

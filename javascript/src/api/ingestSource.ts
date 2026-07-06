@@ -73,7 +73,7 @@ export class IngestSource {
     return await request.send(this.requestCtx, IngestSourceOutSerializer._fromJsonObject);
   }
 
-  /** Update an Ingest Source. */
+  /** Create or update an Ingest Source. */
   public async update(
     sourceId: string,
     ingestSourceIn: IngestSourceIn

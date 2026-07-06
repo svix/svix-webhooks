@@ -112,7 +112,7 @@ impl<'a> Application<'a> {
             .await
     }
 
-    /// Update an application.
+    /// Create or update an application.
     pub async fn update(
         &self,
         app_id: String,

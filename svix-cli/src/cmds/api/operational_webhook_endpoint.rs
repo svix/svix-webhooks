@@ -167,7 +167,7 @@ pub enum OperationalWebhookEndpointCommands {
   \"url\": \"https://example.com/webhook/\"
 }\n")]
     Get { endpoint_id: String },
-    /// Update an operational webhook endpoint.
+    /// Create or update an operational webhook endpoint.
     #[command(help_template = concat!(
             "{about-with-newline}\n",
             "{usage-heading} {usage}\n\n",

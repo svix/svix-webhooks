@@ -91,7 +91,7 @@ export class StreamingSink {
     return await request.send(this.requestCtx, StreamSinkOutSerializer._fromJsonObject);
   }
 
-  /** Update a sink. */
+  /** Create or update a sink. */
   public async update(
     streamId: string,
     sinkId: string,

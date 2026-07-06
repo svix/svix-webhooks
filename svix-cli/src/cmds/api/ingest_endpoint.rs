@@ -158,7 +158,7 @@ pub enum IngestEndpointCommands {
         source_id: String,
         endpoint_id: String,
     },
-    /// Update an ingest endpoint.
+    /// Create or update an ingest endpoint.
     #[command(help_template = concat!(
             "{about-with-newline}\n",
             "{usage-heading} {usage}\n\n",

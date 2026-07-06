@@ -165,7 +165,7 @@ pub enum ConnectorCommands {
   \"updatedAt\": \"2030-01-01T00:00:00Z\"
 }\n")]
     Get { id: String },
-    /// Update a connector.
+    /// Create or update a connector.
     #[command(help_template = concat!(
             "{about-with-newline}\n",
             "{usage-heading} {usage}\n\n",

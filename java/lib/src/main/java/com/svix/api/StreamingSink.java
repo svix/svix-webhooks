@@ -87,7 +87,7 @@ public class StreamingSink {
         return this.client.executeRequest("GET", url.build(), null, null, StreamSinkOut.class);
     }
 
-    /** Update a sink. */
+    /** Create or update a sink. */
     public StreamSinkOut update(
             final String streamId, final String sinkId, final StreamSinkIn streamSinkIn)
             throws IOException, ApiException {

@@ -69,7 +69,7 @@ impl<'a> StreamingStream<'a> {
             .await
     }
 
-    /// Update a stream.
+    /// Create or update a stream.
     pub async fn update(&self, stream_id: String, stream_in: StreamIn) -> Result<StreamOut> {
         crate::request::Request::new(http1::Method::PUT, "/api/v1/stream/{stream_id}")
             .with_path_param("stream_id", stream_id)

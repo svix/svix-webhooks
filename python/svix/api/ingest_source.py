@@ -101,7 +101,7 @@ class IngestSourceAsync(ApiBase):
     async def update(
         self, source_id: str, ingest_source_in: IngestSourceIn
     ) -> IngestSourceOut:
-        """Update an Ingest Source."""
+        """Create or update an Ingest Source."""
         response = await self._request_asyncio(
             method="put",
             path="/ingest/api/v1/source/{source_id}",
@@ -193,7 +193,7 @@ class IngestSource(ApiBase):
     def update(
         self, source_id: str, ingest_source_in: IngestSourceIn
     ) -> IngestSourceOut:
-        """Update an Ingest Source."""
+        """Create or update an Ingest Source."""
         response = self._request_sync(
             method="put",
             path="/ingest/api/v1/source/{source_id}",

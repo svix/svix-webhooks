@@ -150,7 +150,7 @@ func (application *Application) Get(
 	)
 }
 
-// Update an application.
+// Create or update an application.
 func (application *Application) Update(
 	ctx context.Context,
 	appId string,

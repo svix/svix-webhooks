@@ -91,7 +91,7 @@ public class OperationalWebhookEndpoint {
                 "GET", url.build(), null, null, OperationalWebhookEndpointOut.class);
     }
 
-    /** Update an operational webhook endpoint. */
+    /** Create or update an operational webhook endpoint. */
     public OperationalWebhookEndpointOut update(
             final String endpointId,
             final OperationalWebhookEndpointUpdate operationalWebhookEndpointUpdate)

@@ -111,7 +111,7 @@ func (ingestSource *IngestSource) Get(
 	)
 }
 
-// Update an Ingest Source.
+// Create or update an Ingest Source.
 func (ingestSource *IngestSource) Update(
 	ctx context.Context,
 	sourceId string,

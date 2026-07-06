@@ -72,7 +72,7 @@ public class StreamingStream {
         return this.client.executeRequest("GET", url.build(), null, null, StreamOut.class);
     }
 
-    /** Update a stream. */
+    /** Create or update a stream. */
     public StreamOut update(final String streamId, final StreamIn streamIn)
             throws IOException, ApiException {
         HttpUrl.Builder url =

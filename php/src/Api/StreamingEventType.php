@@ -69,7 +69,7 @@ class StreamingEventType
     }
 
     /**
-     * Update or create a event type for Streams.
+     * Create or update or create a event type for Streams.
      *
      * @throws ApiException
      */

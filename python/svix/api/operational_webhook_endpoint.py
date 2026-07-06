@@ -112,7 +112,7 @@ class OperationalWebhookEndpointAsync(ApiBase):
         endpoint_id: str,
         operational_webhook_endpoint_update: OperationalWebhookEndpointUpdate,
     ) -> OperationalWebhookEndpointOut:
-        """Update an operational webhook endpoint."""
+        """Create or update an operational webhook endpoint."""
         response = await self._request_asyncio(
             method="put",
             path="/api/v1/operational-webhook/endpoint/{endpoint_id}",
@@ -257,7 +257,7 @@ class OperationalWebhookEndpoint(ApiBase):
         endpoint_id: str,
         operational_webhook_endpoint_update: OperationalWebhookEndpointUpdate,
     ) -> OperationalWebhookEndpointOut:
-        """Update an operational webhook endpoint."""
+        """Create or update an operational webhook endpoint."""
         response = self._request_sync(
             method="put",
             path="/api/v1/operational-webhook/endpoint/{endpoint_id}",

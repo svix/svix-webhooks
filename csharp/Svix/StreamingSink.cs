@@ -229,7 +229,7 @@ namespace Svix
         }
 
         /// <summary>
-        /// Update a sink.
+        /// Create or update a sink.
         /// </summary>
         public async Task<StreamSinkOut> UpdateAsync(
             string streamId,
@@ -263,7 +263,7 @@ namespace Svix
         }
 
         /// <summary>
-        /// Update a sink.
+        /// Create or update a sink.
         /// </summary>
         public StreamSinkOut Update(string streamId, string sinkId, StreamSinkIn streamSinkIn)
         {

@@ -81,7 +81,7 @@ impl<'a> StreamingEventType<'a> {
             .await
     }
 
-    /// Update or create a event type for Streams.
+    /// Create or update or create a event type for Streams.
     pub async fn update(
         &self,
         name: String,

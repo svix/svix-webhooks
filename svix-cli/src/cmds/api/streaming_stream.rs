@@ -127,7 +127,7 @@ pub enum StreamingStreamCommands {
   \"updatedAt\": \"2030-01-01T00:00:00Z\"
 }\n")]
     Get { stream_id: String },
-    /// Update a stream.
+    /// Create or update a stream.
     #[command(help_template = concat!(
             "{about-with-newline}\n",
             "{usage-heading} {usage}\n\n",

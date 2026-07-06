@@ -88,7 +88,7 @@ impl<'a> IngestEndpoint<'a> {
         .await
     }
 
-    /// Update an ingest endpoint.
+    /// Create or update an ingest endpoint.
     pub async fn update(
         &self,
         source_id: String,

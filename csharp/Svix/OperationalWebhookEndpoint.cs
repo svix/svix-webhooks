@@ -222,7 +222,7 @@ namespace Svix
         }
 
         /// <summary>
-        /// Update an operational webhook endpoint.
+        /// Create or update an operational webhook endpoint.
         /// </summary>
         public async Task<OperationalWebhookEndpointOut> UpdateAsync(
             string endpointId,
@@ -257,7 +257,7 @@ namespace Svix
         }
 
         /// <summary>
-        /// Update an operational webhook endpoint.
+        /// Create or update an operational webhook endpoint.
         /// </summary>
         public OperationalWebhookEndpointOut Update(
             string endpointId,
