@@ -1181,7 +1181,7 @@ async fn test_endpoint_rotate_signing_symmetric_and_asymmetric() {
         .await
         .unwrap();
 
-    // Rotate to asmmetric
+    // Rotate to asymmetric
     client
         .post_without_response(
             &format!("api/v1/app/{app_id}/endpoint/{}/secret/rotate/", endp.id),
@@ -1280,7 +1280,7 @@ async fn test_endpoint_secret_config() {
 
     assert!(key1.starts_with("whpk_"));
 
-    // Rotate to asmmetric
+    // Rotate to asymmetric
     client
         .post_without_response(
             &format!("api/v1/app/{app_id}/endpoint/{}/secret/rotate/", ep.id),
