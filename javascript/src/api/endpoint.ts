@@ -146,7 +146,7 @@ export class Endpoint {
     return await request.send(this.requestCtx, EndpointOutSerializer._fromJsonObject);
   }
 
-  /** Update an endpoint. */
+  /** Create or update an endpoint. */
   public async update(
     appId: string,
     endpointId: string,

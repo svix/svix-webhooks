@@ -90,7 +90,7 @@ class Application(private val client: SvixHttpClient) {
         return client.executeRequest<Any, ApplicationOut>("GET", url.build())
     }
 
-    /** Update an application. */
+    /** Create or update an application. */
     suspend fun update(appId: String, applicationIn: ApplicationIn): ApplicationOut {
         val url = client.newUrlBuilder().encodedPath("/api/v1/app/$appId")
 

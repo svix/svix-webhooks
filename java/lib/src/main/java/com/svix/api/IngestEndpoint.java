@@ -97,7 +97,7 @@ public class IngestEndpoint {
         return this.client.executeRequest("GET", url.build(), null, null, IngestEndpointOut.class);
     }
 
-    /** Update an ingest endpoint. */
+    /** Create or update an ingest endpoint. */
     public IngestEndpointOut update(
             final String sourceId,
             final String endpointId,

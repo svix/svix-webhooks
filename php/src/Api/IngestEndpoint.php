@@ -77,7 +77,7 @@ class IngestEndpoint
     }
 
     /**
-     * Update an ingest endpoint.
+     * Create or update an ingest endpoint.
      *
      * @throws ApiException
      */

@@ -111,7 +111,7 @@ class StreamingSinkAsync(ApiBase):
     async def update(
         self, stream_id: str, sink_id: str, stream_sink_in: StreamSinkIn
     ) -> StreamSinkOut:
-        """Update a sink."""
+        """Create or update a sink."""
         response = await self._request_asyncio(
             method="put",
             path="/api/v1/stream/{stream_id}/sink/{sink_id}",
@@ -262,7 +262,7 @@ class StreamingSink(ApiBase):
     def update(
         self, stream_id: str, sink_id: str, stream_sink_in: StreamSinkIn
     ) -> StreamSinkOut:
-        """Update a sink."""
+        """Create or update a sink."""
         response = self._request_sync(
             method="put",
             path="/api/v1/stream/{stream_id}/sink/{sink_id}",

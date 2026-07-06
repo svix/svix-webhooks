@@ -80,7 +80,7 @@ class StreamingStreamAsync(ApiBase):
         return StreamOut.model_validate(response.json())
 
     async def update(self, stream_id: str, stream_in: StreamIn) -> StreamOut:
-        """Update a stream."""
+        """Create or update a stream."""
         response = await self._request_asyncio(
             method="put",
             path="/api/v1/stream/{stream_id}",
@@ -156,7 +156,7 @@ class StreamingStream(ApiBase):
         return StreamOut.model_validate(response.json())
 
     def update(self, stream_id: str, stream_in: StreamIn) -> StreamOut:
-        """Update a stream."""
+        """Create or update a stream."""
         response = self._request_sync(
             method="put",
             path="/api/v1/stream/{stream_id}",

@@ -110,7 +110,7 @@ func (connector *Connector) Get(
 	)
 }
 
-// Update a connector.
+// Create or update a connector.
 func (connector *Connector) Update(
 	ctx context.Context,
 	connectorId string,

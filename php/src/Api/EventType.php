@@ -98,7 +98,7 @@ class EventType
     }
 
     /**
-     * Update an event type.
+     * Create or update an event type.
      *
      * @throws ApiException
      */

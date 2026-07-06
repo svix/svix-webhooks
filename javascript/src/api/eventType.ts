@@ -124,7 +124,7 @@ export class EventType {
     return await request.send(this.requestCtx, EventTypeOutSerializer._fromJsonObject);
   }
 
-  /** Update an event type. */
+  /** Create or update an event type. */
   public async update(
     eventTypeName: string,
     eventTypeUpdate: EventTypeUpdate

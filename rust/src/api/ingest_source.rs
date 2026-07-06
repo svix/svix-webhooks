@@ -74,7 +74,7 @@ impl<'a> IngestSource<'a> {
             .await
     }
 
-    /// Update an Ingest Source.
+    /// Create or update an Ingest Source.
     pub async fn update(
         &self,
         source_id: String,

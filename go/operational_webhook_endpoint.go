@@ -111,7 +111,7 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Get(
 	)
 }
 
-// Update an operational webhook endpoint.
+// Create or update an operational webhook endpoint.
 func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Update(
 	ctx context.Context,
 	endpointId string,

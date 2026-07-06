@@ -268,7 +268,7 @@ namespace Svix
         }
 
         /// <summary>
-        /// Update an application.
+        /// Create or update an application.
         /// </summary>
         public async Task<ApplicationOut> UpdateAsync(
             string appId,
@@ -297,7 +297,7 @@ namespace Svix
         }
 
         /// <summary>
-        /// Update an application.
+        /// Create or update an application.
         /// </summary>
         public ApplicationOut Update(string appId, ApplicationIn applicationIn)
         {

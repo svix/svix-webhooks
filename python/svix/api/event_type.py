@@ -147,7 +147,7 @@ class EventTypeAsync(ApiBase):
     async def update(
         self, event_type_name: str, event_type_update: EventTypeUpdate
     ) -> EventTypeOut:
-        """Update an event type."""
+        """Create or update an event type."""
         response = await self._request_asyncio(
             method="put",
             path="/api/v1/event-type/{event_type_name}",
@@ -268,7 +268,7 @@ class EventType(ApiBase):
     def update(
         self, event_type_name: str, event_type_update: EventTypeUpdate
     ) -> EventTypeOut:
-        """Update an event type."""
+        """Create or update an event type."""
         response = self._request_sync(
             method="put",
             path="/api/v1/event-type/{event_type_name}",

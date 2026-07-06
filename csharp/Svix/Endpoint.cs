@@ -291,7 +291,7 @@ namespace Svix
         }
 
         /// <summary>
-        /// Update an endpoint.
+        /// Create or update an endpoint.
         /// </summary>
         public async Task<EndpointOut> UpdateAsync(
             string appId,
@@ -326,7 +326,7 @@ namespace Svix
         }
 
         /// <summary>
-        /// Update an endpoint.
+        /// Create or update an endpoint.
         /// </summary>
         public EndpointOut Update(string appId, string endpointId, EndpointUpdate endpointUpdate)
         {

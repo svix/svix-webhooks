@@ -121,7 +121,7 @@ func (ingestEndpoint *IngestEndpoint) Get(
 	)
 }
 
-// Update an ingest endpoint.
+// Create or update an ingest endpoint.
 func (ingestEndpoint *IngestEndpoint) Update(
 	ctx context.Context,
 	sourceId string,

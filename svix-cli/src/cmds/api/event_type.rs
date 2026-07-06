@@ -346,7 +346,7 @@ pub enum EventTypeCommands {
   \"updatedAt\": \"2030-01-01T00:00:00Z\"
 }\n")]
     Get { event_type_name: String },
-    /// Update an event type.
+    /// Create or update an event type.
     #[command(help_template = concat!(
             "{about-with-newline}\n",
             "{usage-heading} {usage}\n\n",

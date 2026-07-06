@@ -72,7 +72,7 @@ class OperationalWebhookEndpoint
     }
 
     /**
-     * Update an operational webhook endpoint.
+     * Create or update an operational webhook endpoint.
      *
      * @throws ApiException
      */

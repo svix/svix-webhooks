@@ -118,7 +118,7 @@ impl<'a> Endpoint<'a> {
         .await
     }
 
-    /// Update an endpoint.
+    /// Create or update an endpoint.
     pub async fn update(
         &self,
         app_id: String,

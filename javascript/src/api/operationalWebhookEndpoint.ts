@@ -112,7 +112,7 @@ export class OperationalWebhookEndpoint {
     );
   }
 
-  /** Update an operational webhook endpoint. */
+  /** Create or update an operational webhook endpoint. */
   public async update(
     endpointId: string,
     operationalWebhookEndpointUpdate: OperationalWebhookEndpointUpdate

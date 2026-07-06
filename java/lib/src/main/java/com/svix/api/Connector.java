@@ -76,7 +76,7 @@ public class Connector {
         return this.client.executeRequest("GET", url.build(), null, null, ConnectorOut.class);
     }
 
-    /** Update a connector. */
+    /** Create or update a connector. */
     public ConnectorOut update(final String connectorId, final ConnectorUpdate connectorUpdate)
             throws IOException, ApiException {
         HttpUrl.Builder url =

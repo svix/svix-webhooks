@@ -123,7 +123,7 @@ export class IngestEndpoint {
     );
   }
 
-  /** Update an ingest endpoint. */
+  /** Create or update an ingest endpoint. */
   public async update(
     sourceId: string,
     endpointId: string,

@@ -78,7 +78,7 @@ impl<'a> OperationalWebhookEndpoint<'a> {
         .await
     }
 
-    /// Update an operational webhook endpoint.
+    /// Create or update an operational webhook endpoint.
     pub async fn update(
         &self,
         endpoint_id: String,

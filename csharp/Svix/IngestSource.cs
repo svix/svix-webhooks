@@ -212,7 +212,7 @@ namespace Svix
         }
 
         /// <summary>
-        /// Update an Ingest Source.
+        /// Create or update an Ingest Source.
         /// </summary>
         public async Task<IngestSourceOut> UpdateAsync(
             string sourceId,
@@ -242,7 +242,7 @@ namespace Svix
         }
 
         /// <summary>
-        /// Update an Ingest Source.
+        /// Create or update an Ingest Source.
         /// </summary>
         public IngestSourceOut Update(string sourceId, IngestSourceIn ingestSourceIn)
         {

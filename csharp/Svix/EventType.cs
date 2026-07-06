@@ -306,7 +306,7 @@ namespace Svix
         }
 
         /// <summary>
-        /// Update an event type.
+        /// Create or update an event type.
         /// </summary>
         public async Task<EventTypeOut> UpdateAsync(
             string eventTypeName,
@@ -339,7 +339,7 @@ namespace Svix
         }
 
         /// <summary>
-        /// Update an event type.
+        /// Create or update an event type.
         /// </summary>
         public EventTypeOut Update(string eventTypeName, EventTypeUpdate eventTypeUpdate)
         {

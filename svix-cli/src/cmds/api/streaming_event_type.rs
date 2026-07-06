@@ -151,7 +151,7 @@ pub enum StreamingEventTypeCommands {
   \"updatedAt\": \"2030-01-01T00:00:00Z\"
 }\n")]
     Get { name: String },
-    /// Update or create a event type for Streams.
+    /// Create or update or create a event type for Streams.
     #[command(help_template = concat!(
             "{about-with-newline}\n",
             "{usage-heading} {usage}\n\n",

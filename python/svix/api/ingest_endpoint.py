@@ -118,7 +118,7 @@ class IngestEndpointAsync(ApiBase):
         endpoint_id: str,
         ingest_endpoint_update: IngestEndpointUpdate,
     ) -> IngestEndpointOut:
-        """Update an ingest endpoint."""
+        """Create or update an ingest endpoint."""
         response = await self._request_asyncio(
             method="put",
             path="/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}",
@@ -310,7 +310,7 @@ class IngestEndpoint(ApiBase):
         endpoint_id: str,
         ingest_endpoint_update: IngestEndpointUpdate,
     ) -> IngestEndpointOut:
-        """Update an ingest endpoint."""
+        """Create or update an ingest endpoint."""
         response = self._request_sync(
             method="put",
             path="/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}",

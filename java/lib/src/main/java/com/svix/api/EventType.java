@@ -130,7 +130,7 @@ public class EventType {
         return this.client.executeRequest("GET", url.build(), null, null, EventTypeOut.class);
     }
 
-    /** Update an event type. */
+    /** Create or update an event type. */
     public EventTypeOut update(final String eventTypeName, final EventTypeUpdate eventTypeUpdate)
             throws IOException, ApiException {
         HttpUrl.Builder url =

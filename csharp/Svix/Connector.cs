@@ -197,7 +197,7 @@ namespace Svix
         }
 
         /// <summary>
-        /// Update a connector.
+        /// Create or update a connector.
         /// </summary>
         public async Task<ConnectorOut> UpdateAsync(
             string connectorId,
@@ -227,7 +227,7 @@ namespace Svix
         }
 
         /// <summary>
-        /// Update a connector.
+        /// Create or update a connector.
         /// </summary>
         public ConnectorOut Update(string connectorId, ConnectorUpdate connectorUpdate)
         {

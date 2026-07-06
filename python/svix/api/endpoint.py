@@ -191,7 +191,7 @@ class EndpointAsync(ApiBase):
     async def update(
         self, app_id: str, endpoint_id: str, endpoint_update: EndpointUpdate
     ) -> EndpointOut:
-        """Update an endpoint."""
+        """Create or update an endpoint."""
         response = await self._request_asyncio(
             method="put",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}",
@@ -572,7 +572,7 @@ class Endpoint(ApiBase):
     def update(
         self, app_id: str, endpoint_id: str, endpoint_update: EndpointUpdate
     ) -> EndpointOut:
-        """Update an endpoint."""
+        """Create or update an endpoint."""
         response = self._request_sync(
             method="put",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}",

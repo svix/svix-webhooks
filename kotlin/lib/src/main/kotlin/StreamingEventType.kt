@@ -67,7 +67,7 @@ class StreamingEventType(private val client: SvixHttpClient) {
         return client.executeRequest<Any, StreamEventTypeOut>("GET", url.build())
     }
 
-    /** Update or create a event type for Streams. */
+    /** Create or update or create a event type for Streams. */
     suspend fun update(name: String, streamEventTypeIn: StreamEventTypeIn): StreamEventTypeOut {
         val url = client.newUrlBuilder().encodedPath("/api/v1/stream/event-type/$name")
 

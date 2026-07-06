@@ -91,7 +91,7 @@ class Application
     }
 
     /**
-     * Update an application.
+     * Create or update an application.
      *
      * @throws ApiException
      */

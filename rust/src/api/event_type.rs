@@ -117,7 +117,7 @@ impl<'a> EventType<'a> {
             .await
     }
 
-    /// Update an event type.
+    /// Create or update an event type.
     pub async fn update(
         &self,
         event_type_name: String,

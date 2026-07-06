@@ -212,7 +212,7 @@ namespace Svix
         }
 
         /// <summary>
-        /// Update or create a event type for Streams.
+        /// Create or update or create a event type for Streams.
         /// </summary>
         public async Task<StreamEventTypeOut> UpdateAsync(
             string name,
@@ -242,7 +242,7 @@ namespace Svix
         }
 
         /// <summary>
-        /// Update or create a event type for Streams.
+        /// Create or update or create a event type for Streams.
         /// </summary>
         public StreamEventTypeOut Update(string name, StreamEventTypeIn streamEventTypeIn)
         {

@@ -62,7 +62,7 @@ class StreamingSink(private val client: SvixHttpClient) {
         return client.executeRequest<Any, StreamSinkOut>("GET", url.build())
     }
 
-    /** Update a sink. */
+    /** Create or update a sink. */
     suspend fun update(
         streamId: String,
         sinkId: String,

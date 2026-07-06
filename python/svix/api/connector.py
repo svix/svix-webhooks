@@ -90,7 +90,7 @@ class ConnectorAsync(ApiBase):
     async def update(
         self, connector_id: str, connector_update: ConnectorUpdate
     ) -> ConnectorOut:
-        """Update a connector."""
+        """Create or update a connector."""
         response = await self._request_asyncio(
             method="put",
             path="/api/v1/connector/{connector_id}",
@@ -174,7 +174,7 @@ class Connector(ApiBase):
     def update(
         self, connector_id: str, connector_update: ConnectorUpdate
     ) -> ConnectorOut:
-        """Update a connector."""
+        """Create or update a connector."""
         response = self._request_sync(
             method="put",
             path="/api/v1/connector/{connector_id}",

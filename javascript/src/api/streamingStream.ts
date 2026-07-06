@@ -66,7 +66,7 @@ export class StreamingStream {
     return await request.send(this.requestCtx, StreamOutSerializer._fromJsonObject);
   }
 
-  /** Update a stream. */
+  /** Create or update a stream. */
   public async update(streamId: string, streamIn: StreamIn): Promise<StreamOut> {
     const request = new SvixRequest(HttpMethod.PUT, "/api/v1/stream/{stream_id}");
 

@@ -70,7 +70,7 @@ class Connector
     }
 
     /**
-     * Update a connector.
+     * Create or update a connector.
      *
      * @throws ApiException
      */

@@ -90,7 +90,7 @@ class Endpoint
     }
 
     /**
-     * Update an endpoint.
+     * Create or update an endpoint.
      *
      * @throws ApiException
      */

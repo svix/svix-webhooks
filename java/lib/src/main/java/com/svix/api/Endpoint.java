@@ -106,7 +106,7 @@ public class Endpoint {
         return this.client.executeRequest("GET", url.build(), null, null, EndpointOut.class);
     }
 
-    /** Update an endpoint. */
+    /** Create or update an endpoint. */
     public EndpointOut update(
             final String appId, final String endpointId, final EndpointUpdate endpointUpdate)
             throws IOException, ApiException {

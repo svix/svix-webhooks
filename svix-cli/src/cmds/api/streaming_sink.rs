@@ -150,7 +150,7 @@ pub enum StreamingSinkCommands {
   \"updatedAt\": \"2030-01-01T00:00:00Z\"
 }\n")]
     Get { stream_id: String, sink_id: String },
-    /// Update a sink.
+    /// Create or update a sink.
     #[command(help_template = concat!(
             "{about-with-newline}\n",
             "{usage-heading} {usage}\n\n",

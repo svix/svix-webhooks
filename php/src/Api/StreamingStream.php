@@ -68,7 +68,7 @@ class StreamingStream
     }
 
     /**
-     * Update a stream.
+     * Create or update a stream.
      *
      * @throws ApiException
      */

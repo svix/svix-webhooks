@@ -71,7 +71,7 @@ export class Connector {
     return await request.send(this.requestCtx, ConnectorOutSerializer._fromJsonObject);
   }
 
-  /** Update a connector. */
+  /** Create or update a connector. */
   public async update(
     connectorId: string,
     connectorUpdate: ConnectorUpdate

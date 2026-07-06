@@ -82,7 +82,7 @@ impl<'a> StreamingSink<'a> {
         .await
     }
 
-    /// Update a sink.
+    /// Create or update a sink.
     pub async fn update(
         &self,
         stream_id: String,
