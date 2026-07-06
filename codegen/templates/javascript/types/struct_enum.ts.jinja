@@ -56,8 +56,8 @@ export const {{ type.name | to_upper_camel_case }}Serializer = {
                 {%- else %}
                 case '{{ variant.name }}':
                     return {}
-                {%- endif -%}
-            {%- endfor -%}
+                {%- endif %}
+            {%- endfor %}
                 default:
                     throw new Error(`Unexpected {{ type.discriminator_field }}: ${ {{ disc_field_name}} }`);
             }
