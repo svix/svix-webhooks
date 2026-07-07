@@ -8,8 +8,12 @@ class Webhook
     public const TOLERANCE = 5 * 60;
     private $secret;
 
-    public function __construct($secret)
+    public function __construct($secret = null)
     {
+        // fromRaw() constructs via `new self()` and sets the raw secret directly.
+        if ($secret === null) {
+            return;
+        }
         if (substr($secret, 0, strlen(Webhook::SECRET_PREFIX)) === Webhook::SECRET_PREFIX) {
             $secret = substr($secret, strlen(Webhook::SECRET_PREFIX));
         }

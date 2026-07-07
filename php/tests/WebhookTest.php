@@ -20,6 +20,20 @@ final class WebhookTest extends \PHPUnit\Framework\TestCase
         );
     }
 
+    public function testFromRawSignatureIsValidAndReturnsJson()
+    {
+        $testPayload = new TestPayload(time());
+
+        $wh = \Svix\Webhook::fromRaw(base64_decode($testPayload->secret));
+        $json = $wh->verify($testPayload->payload, $testPayload->header);
+
+        $this->assertEquals(
+            $json['test'],
+            2432232315,
+            "did not return expected json"
+        );
+    }
+
     public function testValidBrandlessSignatureIsValidAndReturnsJson()
     {
         $testPayload = new TestPayload(time());
