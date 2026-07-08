@@ -14,6 +14,15 @@ class Streaming(private val client: SvixHttpClient) {
 
     val stream: StreamingStream = StreamingStream(client)
 
+    /** Get the transformation code associated with this sink. */
+    suspend fun sinkTransformationGet(streamId: String, sinkId: String): SinkTransformationOut {
+        val url =
+            client
+                .newUrlBuilder()
+                .encodedPath("/api/v1/stream/$streamId/sink/$sinkId/transformation")
+        return client.executeRequest<Any, SinkTransformationOut>("GET", url.build())
+    }
+
     /**
      * Get the HTTP sink headers.
      *
@@ -43,14 +52,5 @@ class Streaming(private val client: SvixHttpClient) {
             url.build(),
             reqBody = httpSinkHeadersPatchIn,
         )
-    }
-
-    /** Get the transformation code associated with this sink. */
-    suspend fun sinkTransformationGet(streamId: String, sinkId: String): SinkTransformationOut {
-        val url =
-            client
-                .newUrlBuilder()
-                .encodedPath("/api/v1/stream/$streamId/sink/$sinkId/transformation")
-        return client.executeRequest<Any, SinkTransformationOut>("GET", url.build())
     }
 }

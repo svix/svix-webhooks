@@ -151,6 +151,23 @@ class StreamingSinkAsync(ApiBase):
         )
         return StreamSinkOut.model_validate(response.json())
 
+    async def transformation_partial_update(
+        self, stream_id: str, sink_id: str, sink_transform_in: SinkTransformIn
+    ) -> EmptyResponse:
+        """Set or unset the transformation code associated with this sink."""
+        response = await self._request_asyncio(
+            method="patch",
+            path="/api/v1/stream/{stream_id}/sink/{sink_id}/transformation",
+            path_params={
+                "stream_id": stream_id,
+                "sink_id": sink_id,
+            },
+            json_body=sink_transform_in.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
+        )
+        return EmptyResponse.model_validate(response.json())
+
     async def get_secret(self, stream_id: str, sink_id: str) -> SinkSecretOut:
         """Get the sink's signing secret (only supported for http sinks)
 
@@ -187,23 +204,6 @@ class StreamingSinkAsync(ApiBase):
             query_params=options._query_params(),
             header_params=options._header_params(),
             json_body=endpoint_secret_rotate_in.model_dump_json(
-                exclude_unset=True, by_alias=True
-            ),
-        )
-        return EmptyResponse.model_validate(response.json())
-
-    async def transformation_partial_update(
-        self, stream_id: str, sink_id: str, sink_transform_in: SinkTransformIn
-    ) -> EmptyResponse:
-        """Set or unset the transformation code associated with this sink."""
-        response = await self._request_asyncio(
-            method="patch",
-            path="/api/v1/stream/{stream_id}/sink/{sink_id}/transformation",
-            path_params={
-                "stream_id": stream_id,
-                "sink_id": sink_id,
-            },
-            json_body=sink_transform_in.model_dump_json(
                 exclude_unset=True, by_alias=True
             ),
         )
@@ -302,6 +302,23 @@ class StreamingSink(ApiBase):
         )
         return StreamSinkOut.model_validate(response.json())
 
+    def transformation_partial_update(
+        self, stream_id: str, sink_id: str, sink_transform_in: SinkTransformIn
+    ) -> EmptyResponse:
+        """Set or unset the transformation code associated with this sink."""
+        response = self._request_sync(
+            method="patch",
+            path="/api/v1/stream/{stream_id}/sink/{sink_id}/transformation",
+            path_params={
+                "stream_id": stream_id,
+                "sink_id": sink_id,
+            },
+            json_body=sink_transform_in.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
+        )
+        return EmptyResponse.model_validate(response.json())
+
     def get_secret(self, stream_id: str, sink_id: str) -> SinkSecretOut:
         """Get the sink's signing secret (only supported for http sinks)
 
@@ -338,23 +355,6 @@ class StreamingSink(ApiBase):
             query_params=options._query_params(),
             header_params=options._header_params(),
             json_body=endpoint_secret_rotate_in.model_dump_json(
-                exclude_unset=True, by_alias=True
-            ),
-        )
-        return EmptyResponse.model_validate(response.json())
-
-    def transformation_partial_update(
-        self, stream_id: str, sink_id: str, sink_transform_in: SinkTransformIn
-    ) -> EmptyResponse:
-        """Set or unset the transformation code associated with this sink."""
-        response = self._request_sync(
-            method="patch",
-            path="/api/v1/stream/{stream_id}/sink/{sink_id}/transformation",
-            path_params={
-                "stream_id": stream_id,
-                "sink_id": sink_id,
-            },
-            json_body=sink_transform_in.model_dump_json(
                 exclude_unset=True, by_alias=True
             ),
         )

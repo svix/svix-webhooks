@@ -144,184 +144,6 @@ public class Endpoint {
     }
 
     /**
-     * Bulk replay messages sent to the endpoint.
-     *
-     * <p>Only messages that were created after `since` will be sent. This will replay both
-     * successful, and failed messages
-     *
-     * <p>A completed task will return a payload like the following: ```json { "id":
-     * "qtask_33qen93MNuelBAq1T9G7eHLJRsF", "status": "finished", "task": "endpoint.bulk-replay",
-     * "data": { "messagesSent": 2 } } ```
-     */
-    public ReplayOut bulkReplay(
-            final String appId, final String endpointId, final BulkReplayIn bulkReplayIn)
-            throws IOException, ApiException {
-        return this.bulkReplay(appId, endpointId, bulkReplayIn, new EndpointBulkReplayOptions());
-    }
-
-    /**
-     * Bulk replay messages sent to the endpoint.
-     *
-     * <p>Only messages that were created after `since` will be sent. This will replay both
-     * successful, and failed messages
-     *
-     * <p>A completed task will return a payload like the following: ```json { "id":
-     * "qtask_33qen93MNuelBAq1T9G7eHLJRsF", "status": "finished", "task": "endpoint.bulk-replay",
-     * "data": { "messagesSent": 2 } } ```
-     */
-    public ReplayOut bulkReplay(
-            final String appId,
-            final String endpointId,
-            final BulkReplayIn bulkReplayIn,
-            final EndpointBulkReplayOptions options)
-            throws IOException, ApiException {
-        HttpUrl.Builder url =
-                this.client
-                        .newUrlBuilder()
-                        .encodedPath(
-                                String.format(
-                                        "/api/v1/app/%s/endpoint/%s/bulk-replay",
-                                        appId, endpointId));
-        Map<String, String> headers = new HashMap<>();
-        if (options.idempotencyKey != null) {
-            headers.put("idempotency-key", options.idempotencyKey);
-        }
-        return this.client.executeRequest(
-                "POST", url.build(), Headers.of(headers), bulkReplayIn, ReplayOut.class);
-    }
-
-    /** Get the additional headers to be sent with the webhook. */
-    public EndpointHeadersOut getHeaders(final String appId, final String endpointId)
-            throws IOException, ApiException {
-        HttpUrl.Builder url =
-                this.client
-                        .newUrlBuilder()
-                        .encodedPath(
-                                String.format(
-                                        "/api/v1/app/%s/endpoint/%s/headers", appId, endpointId));
-        return this.client.executeRequest("GET", url.build(), null, null, EndpointHeadersOut.class);
-    }
-
-    /** Set the additional headers to be sent with the webhook. */
-    public void updateHeaders(
-            final String appId, final String endpointId, final EndpointHeadersIn endpointHeadersIn)
-            throws IOException, ApiException {
-        HttpUrl.Builder url =
-                this.client
-                        .newUrlBuilder()
-                        .encodedPath(
-                                String.format(
-                                        "/api/v1/app/%s/endpoint/%s/headers", appId, endpointId));
-        this.client.executeRequest("PUT", url.build(), null, endpointHeadersIn, null);
-    }
-
-    /** Partially set the additional headers to be sent with the webhook. */
-    public void patchHeaders(
-            final String appId,
-            final String endpointId,
-            final EndpointHeadersPatchIn endpointHeadersPatchIn)
-            throws IOException, ApiException {
-        HttpUrl.Builder url =
-                this.client
-                        .newUrlBuilder()
-                        .encodedPath(
-                                String.format(
-                                        "/api/v1/app/%s/endpoint/%s/headers", appId, endpointId));
-        this.client.executeRequest("PATCH", url.build(), null, endpointHeadersPatchIn, null);
-    }
-
-    /**
-     * Resend all failed messages since a given time.
-     *
-     * <p>Messages that were sent successfully, even if failed initially, are not resent.
-     *
-     * <p>A completed task will return a payload like the following: ```json { "id":
-     * "qtask_33qen93MNuelBAq1T9G7eHLJRsF", "status": "finished", "task": "endpoint.recover",
-     * "data": { "messagesSent": 2 } } ```
-     */
-    public RecoverOut recover(
-            final String appId, final String endpointId, final RecoverIn recoverIn)
-            throws IOException, ApiException {
-        return this.recover(appId, endpointId, recoverIn, new EndpointRecoverOptions());
-    }
-
-    /**
-     * Resend all failed messages since a given time.
-     *
-     * <p>Messages that were sent successfully, even if failed initially, are not resent.
-     *
-     * <p>A completed task will return a payload like the following: ```json { "id":
-     * "qtask_33qen93MNuelBAq1T9G7eHLJRsF", "status": "finished", "task": "endpoint.recover",
-     * "data": { "messagesSent": 2 } } ```
-     */
-    public RecoverOut recover(
-            final String appId,
-            final String endpointId,
-            final RecoverIn recoverIn,
-            final EndpointRecoverOptions options)
-            throws IOException, ApiException {
-        HttpUrl.Builder url =
-                this.client
-                        .newUrlBuilder()
-                        .encodedPath(
-                                String.format(
-                                        "/api/v1/app/%s/endpoint/%s/recover", appId, endpointId));
-        Map<String, String> headers = new HashMap<>();
-        if (options.idempotencyKey != null) {
-            headers.put("idempotency-key", options.idempotencyKey);
-        }
-        return this.client.executeRequest(
-                "POST", url.build(), Headers.of(headers), recoverIn, RecoverOut.class);
-    }
-
-    /**
-     * Replays messages to the endpoint.
-     *
-     * <p>Only messages that were created after `since` will be sent. Messages that were previously
-     * sent to the endpoint are not resent.
-     *
-     * <p>A completed task will return a payload like the following: ```json { "id":
-     * "qtask_33qen93MNuelBAq1T9G7eHLJRsF", "status": "finished", "task": "endpoint.replay", "data":
-     * { "messagesSent": 2 } } ```
-     */
-    public ReplayOut replayMissing(
-            final String appId, final String endpointId, final ReplayIn replayIn)
-            throws IOException, ApiException {
-        return this.replayMissing(appId, endpointId, replayIn, new EndpointReplayMissingOptions());
-    }
-
-    /**
-     * Replays messages to the endpoint.
-     *
-     * <p>Only messages that were created after `since` will be sent. Messages that were previously
-     * sent to the endpoint are not resent.
-     *
-     * <p>A completed task will return a payload like the following: ```json { "id":
-     * "qtask_33qen93MNuelBAq1T9G7eHLJRsF", "status": "finished", "task": "endpoint.replay", "data":
-     * { "messagesSent": 2 } } ```
-     */
-    public ReplayOut replayMissing(
-            final String appId,
-            final String endpointId,
-            final ReplayIn replayIn,
-            final EndpointReplayMissingOptions options)
-            throws IOException, ApiException {
-        HttpUrl.Builder url =
-                this.client
-                        .newUrlBuilder()
-                        .encodedPath(
-                                String.format(
-                                        "/api/v1/app/%s/endpoint/%s/replay-missing",
-                                        appId, endpointId));
-        Map<String, String> headers = new HashMap<>();
-        if (options.idempotencyKey != null) {
-            headers.put("idempotency-key", options.idempotencyKey);
-        }
-        return this.client.executeRequest(
-                "POST", url.build(), Headers.of(headers), replayIn, ReplayOut.class);
-    }
-
-    /**
      * Get the endpoint's signing secret.
      *
      * <p>This is used to verify the authenticity of the webhook. For more information please refer
@@ -378,59 +200,44 @@ public class Endpoint {
                 "POST", url.build(), Headers.of(headers), endpointSecretRotateIn, null);
     }
 
-    /** Send an example message for an event. */
-    public MessageOut sendExample(
-            final String appId, final String endpointId, final EventExampleIn eventExampleIn)
+    /** Get the additional headers to be sent with the webhook. */
+    public EndpointHeadersOut getHeaders(final String appId, final String endpointId)
             throws IOException, ApiException {
-        return this.sendExample(
-                appId, endpointId, eventExampleIn, new EndpointSendExampleOptions());
+        HttpUrl.Builder url =
+                this.client
+                        .newUrlBuilder()
+                        .encodedPath(
+                                String.format(
+                                        "/api/v1/app/%s/endpoint/%s/headers", appId, endpointId));
+        return this.client.executeRequest("GET", url.build(), null, null, EndpointHeadersOut.class);
     }
 
-    /** Send an example message for an event. */
-    public MessageOut sendExample(
+    /** Set the additional headers to be sent with the webhook. */
+    public void updateHeaders(
+            final String appId, final String endpointId, final EndpointHeadersIn endpointHeadersIn)
+            throws IOException, ApiException {
+        HttpUrl.Builder url =
+                this.client
+                        .newUrlBuilder()
+                        .encodedPath(
+                                String.format(
+                                        "/api/v1/app/%s/endpoint/%s/headers", appId, endpointId));
+        this.client.executeRequest("PUT", url.build(), null, endpointHeadersIn, null);
+    }
+
+    /** Partially set the additional headers to be sent with the webhook. */
+    public void patchHeaders(
             final String appId,
             final String endpointId,
-            final EventExampleIn eventExampleIn,
-            final EndpointSendExampleOptions options)
+            final EndpointHeadersPatchIn endpointHeadersPatchIn)
             throws IOException, ApiException {
         HttpUrl.Builder url =
                 this.client
                         .newUrlBuilder()
                         .encodedPath(
                                 String.format(
-                                        "/api/v1/app/%s/endpoint/%s/send-example",
-                                        appId, endpointId));
-        Map<String, String> headers = new HashMap<>();
-        if (options.idempotencyKey != null) {
-            headers.put("idempotency-key", options.idempotencyKey);
-        }
-        return this.client.executeRequest(
-                "POST", url.build(), Headers.of(headers), eventExampleIn, MessageOut.class);
-    }
-
-    /** Get basic statistics for the endpoint. */
-    public EndpointStats getStats(final String appId, final String endpointId)
-            throws IOException, ApiException {
-        return this.getStats(appId, endpointId, new EndpointGetStatsOptions());
-    }
-
-    /** Get basic statistics for the endpoint. */
-    public EndpointStats getStats(
-            final String appId, final String endpointId, final EndpointGetStatsOptions options)
-            throws IOException, ApiException {
-        HttpUrl.Builder url =
-                this.client
-                        .newUrlBuilder()
-                        .encodedPath(
-                                String.format(
-                                        "/api/v1/app/%s/endpoint/%s/stats", appId, endpointId));
-        if (options.since != null) {
-            url.addQueryParameter("since", Utils.serializeQueryParam(options.since));
-        }
-        if (options.until != null) {
-            url.addQueryParameter("until", Utils.serializeQueryParam(options.until));
-        }
-        return this.client.executeRequest("GET", url.build(), null, null, EndpointStats.class);
+                                        "/api/v1/app/%s/endpoint/%s/headers", appId, endpointId));
+        this.client.executeRequest("PATCH", url.build(), null, endpointHeadersPatchIn, null);
     }
 
     /** Get the transformation code associated with this endpoint. */
@@ -461,6 +268,199 @@ public class Endpoint {
                                         "/api/v1/app/%s/endpoint/%s/transformation",
                                         appId, endpointId));
         this.client.executeRequest("PATCH", url.build(), null, endpointTransformationPatch, null);
+    }
+
+    /**
+     * Replays messages to the endpoint.
+     *
+     * <p>Only messages that were created after `since` will be sent. Messages that were previously
+     * sent to the endpoint are not resent.
+     *
+     * <p>A completed task will return a payload like the following: ```json { "id":
+     * "qtask_33qen93MNuelBAq1T9G7eHLJRsF", "status": "finished", "task": "endpoint.replay", "data":
+     * { "messagesSent": 2 } } ```
+     */
+    public ReplayOut replayMissing(
+            final String appId, final String endpointId, final ReplayIn replayIn)
+            throws IOException, ApiException {
+        return this.replayMissing(appId, endpointId, replayIn, new EndpointReplayMissingOptions());
+    }
+
+    /**
+     * Replays messages to the endpoint.
+     *
+     * <p>Only messages that were created after `since` will be sent. Messages that were previously
+     * sent to the endpoint are not resent.
+     *
+     * <p>A completed task will return a payload like the following: ```json { "id":
+     * "qtask_33qen93MNuelBAq1T9G7eHLJRsF", "status": "finished", "task": "endpoint.replay", "data":
+     * { "messagesSent": 2 } } ```
+     */
+    public ReplayOut replayMissing(
+            final String appId,
+            final String endpointId,
+            final ReplayIn replayIn,
+            final EndpointReplayMissingOptions options)
+            throws IOException, ApiException {
+        HttpUrl.Builder url =
+                this.client
+                        .newUrlBuilder()
+                        .encodedPath(
+                                String.format(
+                                        "/api/v1/app/%s/endpoint/%s/replay-missing",
+                                        appId, endpointId));
+        Map<String, String> headers = new HashMap<>();
+        if (options.idempotencyKey != null) {
+            headers.put("idempotency-key", options.idempotencyKey);
+        }
+        return this.client.executeRequest(
+                "POST", url.build(), Headers.of(headers), replayIn, ReplayOut.class);
+    }
+
+    /**
+     * Bulk replay messages sent to the endpoint.
+     *
+     * <p>Only messages that were created after `since` will be sent. This will replay both
+     * successful, and failed messages
+     *
+     * <p>A completed task will return a payload like the following: ```json { "id":
+     * "qtask_33qen93MNuelBAq1T9G7eHLJRsF", "status": "finished", "task": "endpoint.bulk-replay",
+     * "data": { "messagesSent": 2 } } ```
+     */
+    public ReplayOut bulkReplay(
+            final String appId, final String endpointId, final BulkReplayIn bulkReplayIn)
+            throws IOException, ApiException {
+        return this.bulkReplay(appId, endpointId, bulkReplayIn, new EndpointBulkReplayOptions());
+    }
+
+    /**
+     * Bulk replay messages sent to the endpoint.
+     *
+     * <p>Only messages that were created after `since` will be sent. This will replay both
+     * successful, and failed messages
+     *
+     * <p>A completed task will return a payload like the following: ```json { "id":
+     * "qtask_33qen93MNuelBAq1T9G7eHLJRsF", "status": "finished", "task": "endpoint.bulk-replay",
+     * "data": { "messagesSent": 2 } } ```
+     */
+    public ReplayOut bulkReplay(
+            final String appId,
+            final String endpointId,
+            final BulkReplayIn bulkReplayIn,
+            final EndpointBulkReplayOptions options)
+            throws IOException, ApiException {
+        HttpUrl.Builder url =
+                this.client
+                        .newUrlBuilder()
+                        .encodedPath(
+                                String.format(
+                                        "/api/v1/app/%s/endpoint/%s/bulk-replay",
+                                        appId, endpointId));
+        Map<String, String> headers = new HashMap<>();
+        if (options.idempotencyKey != null) {
+            headers.put("idempotency-key", options.idempotencyKey);
+        }
+        return this.client.executeRequest(
+                "POST", url.build(), Headers.of(headers), bulkReplayIn, ReplayOut.class);
+    }
+
+    /** Get basic statistics for the endpoint. */
+    public EndpointStats getStats(final String appId, final String endpointId)
+            throws IOException, ApiException {
+        return this.getStats(appId, endpointId, new EndpointGetStatsOptions());
+    }
+
+    /** Get basic statistics for the endpoint. */
+    public EndpointStats getStats(
+            final String appId, final String endpointId, final EndpointGetStatsOptions options)
+            throws IOException, ApiException {
+        HttpUrl.Builder url =
+                this.client
+                        .newUrlBuilder()
+                        .encodedPath(
+                                String.format(
+                                        "/api/v1/app/%s/endpoint/%s/stats", appId, endpointId));
+        if (options.since != null) {
+            url.addQueryParameter("since", Utils.serializeQueryParam(options.since));
+        }
+        if (options.until != null) {
+            url.addQueryParameter("until", Utils.serializeQueryParam(options.until));
+        }
+        return this.client.executeRequest("GET", url.build(), null, null, EndpointStats.class);
+    }
+
+    /**
+     * Resend all failed messages since a given time.
+     *
+     * <p>Messages that were sent successfully, even if failed initially, are not resent.
+     *
+     * <p>A completed task will return a payload like the following: ```json { "id":
+     * "qtask_33qen93MNuelBAq1T9G7eHLJRsF", "status": "finished", "task": "endpoint.recover",
+     * "data": { "messagesSent": 2 } } ```
+     */
+    public RecoverOut recover(
+            final String appId, final String endpointId, final RecoverIn recoverIn)
+            throws IOException, ApiException {
+        return this.recover(appId, endpointId, recoverIn, new EndpointRecoverOptions());
+    }
+
+    /**
+     * Resend all failed messages since a given time.
+     *
+     * <p>Messages that were sent successfully, even if failed initially, are not resent.
+     *
+     * <p>A completed task will return a payload like the following: ```json { "id":
+     * "qtask_33qen93MNuelBAq1T9G7eHLJRsF", "status": "finished", "task": "endpoint.recover",
+     * "data": { "messagesSent": 2 } } ```
+     */
+    public RecoverOut recover(
+            final String appId,
+            final String endpointId,
+            final RecoverIn recoverIn,
+            final EndpointRecoverOptions options)
+            throws IOException, ApiException {
+        HttpUrl.Builder url =
+                this.client
+                        .newUrlBuilder()
+                        .encodedPath(
+                                String.format(
+                                        "/api/v1/app/%s/endpoint/%s/recover", appId, endpointId));
+        Map<String, String> headers = new HashMap<>();
+        if (options.idempotencyKey != null) {
+            headers.put("idempotency-key", options.idempotencyKey);
+        }
+        return this.client.executeRequest(
+                "POST", url.build(), Headers.of(headers), recoverIn, RecoverOut.class);
+    }
+
+    /** Send an example message for an event. */
+    public MessageOut sendExample(
+            final String appId, final String endpointId, final EventExampleIn eventExampleIn)
+            throws IOException, ApiException {
+        return this.sendExample(
+                appId, endpointId, eventExampleIn, new EndpointSendExampleOptions());
+    }
+
+    /** Send an example message for an event. */
+    public MessageOut sendExample(
+            final String appId,
+            final String endpointId,
+            final EventExampleIn eventExampleIn,
+            final EndpointSendExampleOptions options)
+            throws IOException, ApiException {
+        HttpUrl.Builder url =
+                this.client
+                        .newUrlBuilder()
+                        .encodedPath(
+                                String.format(
+                                        "/api/v1/app/%s/endpoint/%s/send-example",
+                                        appId, endpointId));
+        Map<String, String> headers = new HashMap<>();
+        if (options.idempotencyKey != null) {
+            headers.put("idempotency-key", options.idempotencyKey);
+        }
+        return this.client.executeRequest(
+                "POST", url.build(), Headers.of(headers), eventExampleIn, MessageOut.class);
     }
 
     /**

@@ -131,6 +131,24 @@ impl<'a> StreamingSink<'a> {
         .await
     }
 
+    /// Set or unset the transformation code associated with this sink.
+    pub async fn transformation_partial_update(
+        &self,
+        stream_id: String,
+        sink_id: String,
+        sink_transform_in: SinkTransformIn,
+    ) -> Result<EmptyResponse> {
+        crate::request::Request::new(
+            http1::Method::PATCH,
+            "/api/v1/stream/{stream_id}/sink/{sink_id}/transformation",
+        )
+        .with_path_param("stream_id", stream_id)
+        .with_path_param("sink_id", sink_id)
+        .with_body_param(sink_transform_in)
+        .execute(self.cfg)
+        .await
+    }
+
     /// Get the sink's signing secret (only supported for http sinks)
     ///
     /// This is used to verify the authenticity of the delivery.
@@ -165,24 +183,6 @@ impl<'a> StreamingSink<'a> {
         .with_path_param("sink_id", sink_id)
         .with_optional_header_param("idempotency-key", idempotency_key)
         .with_body_param(endpoint_secret_rotate_in)
-        .execute(self.cfg)
-        .await
-    }
-
-    /// Set or unset the transformation code associated with this sink.
-    pub async fn transformation_partial_update(
-        &self,
-        stream_id: String,
-        sink_id: String,
-        sink_transform_in: SinkTransformIn,
-    ) -> Result<EmptyResponse> {
-        crate::request::Request::new(
-            http1::Method::PATCH,
-            "/api/v1/stream/{stream_id}/sink/{sink_id}/transformation",
-        )
-        .with_path_param("stream_id", stream_id)
-        .with_path_param("sink_id", sink_id)
-        .with_body_param(sink_transform_in)
         .execute(self.cfg)
         .await
     }

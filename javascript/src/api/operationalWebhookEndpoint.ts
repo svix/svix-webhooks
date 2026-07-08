@@ -147,43 +147,6 @@ export class OperationalWebhookEndpoint {
     return await request.sendNoResponseBody(this.requestCtx);
   }
 
-  /** Get the additional headers to be sent with the operational webhook. */
-  public async getHeaders(
-    endpointId: string
-  ): Promise<OperationalWebhookEndpointHeadersOut> {
-    const request = new SvixRequest(
-      HttpMethod.GET,
-      "/api/v1/operational-webhook/endpoint/{endpoint_id}/headers"
-    );
-
-    request.setPathParam("endpoint_id", endpointId);
-
-    return await request.send(
-      this.requestCtx,
-      OperationalWebhookEndpointHeadersOutSerializer._fromJsonObject
-    );
-  }
-
-  /** Set the additional headers to be sent with the operational webhook. */
-  public async updateHeaders(
-    endpointId: string,
-    operationalWebhookEndpointHeadersIn: OperationalWebhookEndpointHeadersIn
-  ): Promise<void> {
-    const request = new SvixRequest(
-      HttpMethod.PUT,
-      "/api/v1/operational-webhook/endpoint/{endpoint_id}/headers"
-    );
-
-    request.setPathParam("endpoint_id", endpointId);
-    request.setBody(
-      OperationalWebhookEndpointHeadersInSerializer._toJsonObject(
-        operationalWebhookEndpointHeadersIn
-      )
-    );
-
-    return await request.sendNoResponseBody(this.requestCtx);
-  }
-
   /**
    * Get an operational webhook endpoint's signing secret.
    *
@@ -226,6 +189,43 @@ export class OperationalWebhookEndpoint {
     request.setBody(
       OperationalWebhookEndpointSecretInSerializer._toJsonObject(
         operationalWebhookEndpointSecretIn
+      )
+    );
+
+    return await request.sendNoResponseBody(this.requestCtx);
+  }
+
+  /** Get the additional headers to be sent with the operational webhook. */
+  public async getHeaders(
+    endpointId: string
+  ): Promise<OperationalWebhookEndpointHeadersOut> {
+    const request = new SvixRequest(
+      HttpMethod.GET,
+      "/api/v1/operational-webhook/endpoint/{endpoint_id}/headers"
+    );
+
+    request.setPathParam("endpoint_id", endpointId);
+
+    return await request.send(
+      this.requestCtx,
+      OperationalWebhookEndpointHeadersOutSerializer._fromJsonObject
+    );
+  }
+
+  /** Set the additional headers to be sent with the operational webhook. */
+  public async updateHeaders(
+    endpointId: string,
+    operationalWebhookEndpointHeadersIn: OperationalWebhookEndpointHeadersIn
+  ): Promise<void> {
+    const request = new SvixRequest(
+      HttpMethod.PUT,
+      "/api/v1/operational-webhook/endpoint/{endpoint_id}/headers"
+    );
+
+    request.setPathParam("endpoint_id", endpointId);
+    request.setBody(
+      OperationalWebhookEndpointHeadersInSerializer._toJsonObject(
+        operationalWebhookEndpointHeadersIn
       )
     );
 

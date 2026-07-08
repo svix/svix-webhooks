@@ -106,37 +106,6 @@ impl<'a> OperationalWebhookEndpoint<'a> {
         .await
     }
 
-    /// Get the additional headers to be sent with the operational webhook.
-    pub async fn get_headers(
-        &self,
-        endpoint_id: String,
-    ) -> Result<OperationalWebhookEndpointHeadersOut> {
-        crate::request::Request::new(
-            http1::Method::GET,
-            "/api/v1/operational-webhook/endpoint/{endpoint_id}/headers",
-        )
-        .with_path_param("endpoint_id", endpoint_id)
-        .execute(self.cfg)
-        .await
-    }
-
-    /// Set the additional headers to be sent with the operational webhook.
-    pub async fn update_headers(
-        &self,
-        endpoint_id: String,
-        operational_webhook_endpoint_headers_in: OperationalWebhookEndpointHeadersIn,
-    ) -> Result<()> {
-        crate::request::Request::new(
-            http1::Method::PUT,
-            "/api/v1/operational-webhook/endpoint/{endpoint_id}/headers",
-        )
-        .with_path_param("endpoint_id", endpoint_id)
-        .with_body_param(operational_webhook_endpoint_headers_in)
-        .returns_nothing()
-        .execute(self.cfg)
-        .await
-    }
-
     /// Get an operational webhook endpoint's signing secret.
     ///
     /// This is used to verify the authenticity of the webhook.
@@ -173,6 +142,37 @@ impl<'a> OperationalWebhookEndpoint<'a> {
         .with_path_param("endpoint_id", endpoint_id)
         .with_optional_header_param("idempotency-key", idempotency_key)
         .with_body_param(operational_webhook_endpoint_secret_in)
+        .returns_nothing()
+        .execute(self.cfg)
+        .await
+    }
+
+    /// Get the additional headers to be sent with the operational webhook.
+    pub async fn get_headers(
+        &self,
+        endpoint_id: String,
+    ) -> Result<OperationalWebhookEndpointHeadersOut> {
+        crate::request::Request::new(
+            http1::Method::GET,
+            "/api/v1/operational-webhook/endpoint/{endpoint_id}/headers",
+        )
+        .with_path_param("endpoint_id", endpoint_id)
+        .execute(self.cfg)
+        .await
+    }
+
+    /// Set the additional headers to be sent with the operational webhook.
+    pub async fn update_headers(
+        &self,
+        endpoint_id: String,
+        operational_webhook_endpoint_headers_in: OperationalWebhookEndpointHeadersIn,
+    ) -> Result<()> {
+        crate::request::Request::new(
+            http1::Method::PUT,
+            "/api/v1/operational-webhook/endpoint/{endpoint_id}/headers",
+        )
+        .with_path_param("endpoint_id", endpoint_id)
+        .with_body_param(operational_webhook_endpoint_headers_in)
         .returns_nothing()
         .execute(self.cfg)
         .await

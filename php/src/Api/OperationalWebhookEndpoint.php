@@ -100,34 +100,6 @@ class OperationalWebhookEndpoint
     }
 
     /**
-     * Get the additional headers to be sent with the operational webhook.
-     *
-     * @throws ApiException
-     */
-    public function getHeaders(
-        string $endpointId,
-    ): OperationalWebhookEndpointHeadersOut {
-        $request = $this->client->newReq('GET', "/api/v1/operational-webhook/endpoint/{$endpointId}/headers");
-        $res = $this->client->send($request);
-
-        return OperationalWebhookEndpointHeadersOut::fromJson($res);
-    }
-
-    /**
-     * Set the additional headers to be sent with the operational webhook.
-     *
-     * @throws ApiException
-     */
-    public function updateHeaders(
-        string $endpointId,
-        OperationalWebhookEndpointHeadersIn $operationalWebhookEndpointHeadersIn,
-    ): void {
-        $request = $this->client->newReq('PUT', "/api/v1/operational-webhook/endpoint/{$endpointId}/headers");
-        $request->setBody(json_encode($operationalWebhookEndpointHeadersIn));
-        $res = $this->client->sendNoResponseBody($request);
-    }
-
-    /**
      * Get an operational webhook endpoint's signing secret.
      *
      * This is used to verify the authenticity of the webhook.
@@ -159,6 +131,34 @@ class OperationalWebhookEndpoint
         $request = $this->client->newReq('POST', "/api/v1/operational-webhook/endpoint/{$endpointId}/secret/rotate");
         $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
         $request->setBody(json_encode($operationalWebhookEndpointSecretIn));
+        $res = $this->client->sendNoResponseBody($request);
+    }
+
+    /**
+     * Get the additional headers to be sent with the operational webhook.
+     *
+     * @throws ApiException
+     */
+    public function getHeaders(
+        string $endpointId,
+    ): OperationalWebhookEndpointHeadersOut {
+        $request = $this->client->newReq('GET', "/api/v1/operational-webhook/endpoint/{$endpointId}/headers");
+        $res = $this->client->send($request);
+
+        return OperationalWebhookEndpointHeadersOut::fromJson($res);
+    }
+
+    /**
+     * Set the additional headers to be sent with the operational webhook.
+     *
+     * @throws ApiException
+     */
+    public function updateHeaders(
+        string $endpointId,
+        OperationalWebhookEndpointHeadersIn $operationalWebhookEndpointHeadersIn,
+    ): void {
+        $request = $this->client->newReq('PUT', "/api/v1/operational-webhook/endpoint/{$endpointId}/headers");
+        $request->setBody(json_encode($operationalWebhookEndpointHeadersIn));
         $res = $this->client->sendNoResponseBody($request);
     }
 }

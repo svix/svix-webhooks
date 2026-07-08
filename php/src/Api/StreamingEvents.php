@@ -19,24 +19,6 @@ class StreamingEvents
     }
 
     /**
-     * Creates events on the Stream.
-     *
-     * @throws ApiException
-     */
-    public function create(
-        string $streamId,
-        CreateStreamEventsIn $createStreamEventsIn,
-        ?StreamingEventsCreateOptions $options = null,
-    ): CreateStreamEventsOut {
-        $request = $this->client->newReq('POST', "/api/v1/stream/{$streamId}/events");
-        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
-        $request->setBody(json_encode($createStreamEventsIn));
-        $res = $this->client->send($request);
-
-        return CreateStreamEventsOut::fromJson($res);
-    }
-
-    /**
      * Iterate over a stream of events.
      *
      * The sink must be of type `poller` to use the poller endpoint.
@@ -55,5 +37,23 @@ class StreamingEvents
         $res = $this->client->send($request);
 
         return EventStreamOut::fromJson($res);
+    }
+
+    /**
+     * Creates events on the Stream.
+     *
+     * @throws ApiException
+     */
+    public function create(
+        string $streamId,
+        CreateStreamEventsIn $createStreamEventsIn,
+        ?StreamingEventsCreateOptions $options = null,
+    ): CreateStreamEventsOut {
+        $request = $this->client->newReq('POST', "/api/v1/stream/{$streamId}/events");
+        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
+        $request->setBody(json_encode($createStreamEventsIn));
+        $res = $this->client->send($request);
+
+        return CreateStreamEventsOut::fromJson($res);
     }
 }

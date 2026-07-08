@@ -153,48 +153,6 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Delete(
 	return err
 }
 
-// Get the additional headers to be sent with the operational webhook.
-func (operationalWebhookEndpoint *OperationalWebhookEndpoint) GetHeaders(
-	ctx context.Context,
-	endpointId string,
-) (*models.OperationalWebhookEndpointHeadersOut, error) {
-	pathMap := map[string]string{
-		"endpoint_id": endpointId,
-	}
-	return internal.ExecuteRequest[any, models.OperationalWebhookEndpointHeadersOut](
-		ctx,
-		operationalWebhookEndpoint.client,
-		"GET",
-		"/api/v1/operational-webhook/endpoint/{endpoint_id}/headers",
-		pathMap,
-		nil,
-		nil,
-		nil,
-	)
-}
-
-// Set the additional headers to be sent with the operational webhook.
-func (operationalWebhookEndpoint *OperationalWebhookEndpoint) UpdateHeaders(
-	ctx context.Context,
-	endpointId string,
-	operationalWebhookEndpointHeadersIn models.OperationalWebhookEndpointHeadersIn,
-) error {
-	pathMap := map[string]string{
-		"endpoint_id": endpointId,
-	}
-	_, err := internal.ExecuteRequest[models.OperationalWebhookEndpointHeadersIn, any](
-		ctx,
-		operationalWebhookEndpoint.client,
-		"PUT",
-		"/api/v1/operational-webhook/endpoint/{endpoint_id}/headers",
-		pathMap,
-		nil,
-		nil,
-		&operationalWebhookEndpointHeadersIn,
-	)
-	return err
-}
-
 // Get an operational webhook endpoint's signing secret.
 //
 // This is used to verify the authenticity of the webhook.
@@ -248,6 +206,48 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) RotateSecret(
 		nil,
 		headerMap,
 		&operationalWebhookEndpointSecretIn,
+	)
+	return err
+}
+
+// Get the additional headers to be sent with the operational webhook.
+func (operationalWebhookEndpoint *OperationalWebhookEndpoint) GetHeaders(
+	ctx context.Context,
+	endpointId string,
+) (*models.OperationalWebhookEndpointHeadersOut, error) {
+	pathMap := map[string]string{
+		"endpoint_id": endpointId,
+	}
+	return internal.ExecuteRequest[any, models.OperationalWebhookEndpointHeadersOut](
+		ctx,
+		operationalWebhookEndpoint.client,
+		"GET",
+		"/api/v1/operational-webhook/endpoint/{endpoint_id}/headers",
+		pathMap,
+		nil,
+		nil,
+		nil,
+	)
+}
+
+// Set the additional headers to be sent with the operational webhook.
+func (operationalWebhookEndpoint *OperationalWebhookEndpoint) UpdateHeaders(
+	ctx context.Context,
+	endpointId string,
+	operationalWebhookEndpointHeadersIn models.OperationalWebhookEndpointHeadersIn,
+) error {
+	pathMap := map[string]string{
+		"endpoint_id": endpointId,
+	}
+	_, err := internal.ExecuteRequest[models.OperationalWebhookEndpointHeadersIn, any](
+		ctx,
+		operationalWebhookEndpoint.client,
+		"PUT",
+		"/api/v1/operational-webhook/endpoint/{endpoint_id}/headers",
+		pathMap,
+		nil,
+		nil,
+		&operationalWebhookEndpointHeadersIn,
 	)
 	return err
 }

@@ -33,11 +33,7 @@ type EndpointCreateOptions struct {
 	IdempotencyKey *string
 }
 
-type EndpointBulkReplayOptions struct {
-	IdempotencyKey *string
-}
-
-type EndpointRecoverOptions struct {
+type EndpointRotateSecretOptions struct {
 	IdempotencyKey *string
 }
 
@@ -45,11 +41,7 @@ type EndpointReplayMissingOptions struct {
 	IdempotencyKey *string
 }
 
-type EndpointRotateSecretOptions struct {
-	IdempotencyKey *string
-}
-
-type EndpointSendExampleOptions struct {
+type EndpointBulkReplayOptions struct {
 	IdempotencyKey *string
 }
 
@@ -58,6 +50,14 @@ type EndpointGetStatsOptions struct {
 	Since *time.Time
 	// Filter the range to data ending by this date.
 	Until *time.Time
+}
+
+type EndpointRecoverOptions struct {
+	IdempotencyKey *string
+}
+
+type EndpointSendExampleOptions struct {
+	IdempotencyKey *string
 }
 
 // List the application's endpoints.
@@ -216,31 +216,41 @@ func (endpoint *Endpoint) Patch(
 	)
 }
 
-// Bulk replay messages sent to the endpoint.
+// Get the endpoint's signing secret.
 //
-// Only messages that were created after `since` will be sent.
-// This will replay both successful, and failed messages
-//
-// A completed task will return a payload like the following:
-// ```json
-//
-//	{
-//	  "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
-//	  "status": "finished",
-//	  "task": "endpoint.bulk-replay",
-//	  "data": {
-//	    "messagesSent": 2
-//	  }
-//	}
-//
-// ```
-func (endpoint *Endpoint) BulkReplay(
+// This is used to verify the authenticity of the webhook.
+// For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
+func (endpoint *Endpoint) GetSecret(
 	ctx context.Context,
 	appId string,
 	endpointId string,
-	bulkReplayIn models.BulkReplayIn,
-	o *EndpointBulkReplayOptions,
-) (*models.ReplayOut, error) {
+) (*models.EndpointSecretOut, error) {
+	pathMap := map[string]string{
+		"app_id":      appId,
+		"endpoint_id": endpointId,
+	}
+	return internal.ExecuteRequest[any, models.EndpointSecretOut](
+		ctx,
+		endpoint.client,
+		"GET",
+		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret",
+		pathMap,
+		nil,
+		nil,
+		nil,
+	)
+}
+
+// Rotates the endpoint's signing secret.
+//
+// The previous secret will remain valid for the next 24 hours.
+func (endpoint *Endpoint) RotateSecret(
+	ctx context.Context,
+	appId string,
+	endpointId string,
+	endpointSecretRotateIn models.EndpointSecretRotateIn,
+	o *EndpointRotateSecretOptions,
+) error {
 	pathMap := map[string]string{
 		"app_id":      appId,
 		"endpoint_id": endpointId,
@@ -251,19 +261,20 @@ func (endpoint *Endpoint) BulkReplay(
 
 		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 		if err != nil {
-			return nil, err
+			return err
 		}
 	}
-	return internal.ExecuteRequest[models.BulkReplayIn, models.ReplayOut](
+	_, err := internal.ExecuteRequest[models.EndpointSecretRotateIn, any](
 		ctx,
 		endpoint.client,
 		"POST",
-		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/bulk-replay",
+		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate",
 		pathMap,
 		nil,
 		headerMap,
-		&bulkReplayIn,
+		&endpointSecretRotateIn,
 	)
+	return err
 }
 
 // Get the additional headers to be sent with the webhook.
@@ -336,53 +347,50 @@ func (endpoint *Endpoint) PatchHeaders(
 	return err
 }
 
-// Resend all failed messages since a given time.
-//
-// Messages that were sent successfully, even if failed initially, are not resent.
-//
-// A completed task will return a payload like the following:
-// ```json
-//
-//	{
-//	  "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
-//	  "status": "finished",
-//	  "task": "endpoint.recover",
-//	  "data": {
-//	    "messagesSent": 2
-//	  }
-//	}
-//
-// ```
-func (endpoint *Endpoint) Recover(
+// Get the transformation code associated with this endpoint.
+func (endpoint *Endpoint) TransformationGet(
 	ctx context.Context,
 	appId string,
 	endpointId string,
-	recoverIn models.RecoverIn,
-	o *EndpointRecoverOptions,
-) (*models.RecoverOut, error) {
+) (*models.EndpointTransformationOut, error) {
 	pathMap := map[string]string{
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
-	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return internal.ExecuteRequest[models.RecoverIn, models.RecoverOut](
+	return internal.ExecuteRequest[any, models.EndpointTransformationOut](
 		ctx,
 		endpoint.client,
-		"POST",
-		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/recover",
+		"GET",
+		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
 		pathMap,
 		nil,
-		headerMap,
-		&recoverIn,
+		nil,
+		nil,
 	)
+}
+
+// Set or unset the transformation code associated with this endpoint.
+func (endpoint *Endpoint) PatchTransformation(
+	ctx context.Context,
+	appId string,
+	endpointId string,
+	endpointTransformationPatch models.EndpointTransformationPatch,
+) error {
+	pathMap := map[string]string{
+		"app_id":      appId,
+		"endpoint_id": endpointId,
+	}
+	_, err := internal.ExecuteRequest[models.EndpointTransformationPatch, any](
+		ctx,
+		endpoint.client,
+		"PATCH",
+		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
+		pathMap,
+		nil,
+		nil,
+		&endpointTransformationPatch,
+	)
+	return err
 }
 
 // Replays messages to the endpoint.
@@ -435,75 +443,31 @@ func (endpoint *Endpoint) ReplayMissing(
 	)
 }
 
-// Get the endpoint's signing secret.
+// Bulk replay messages sent to the endpoint.
 //
-// This is used to verify the authenticity of the webhook.
-// For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
-func (endpoint *Endpoint) GetSecret(
-	ctx context.Context,
-	appId string,
-	endpointId string,
-) (*models.EndpointSecretOut, error) {
-	pathMap := map[string]string{
-		"app_id":      appId,
-		"endpoint_id": endpointId,
-	}
-	return internal.ExecuteRequest[any, models.EndpointSecretOut](
-		ctx,
-		endpoint.client,
-		"GET",
-		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret",
-		pathMap,
-		nil,
-		nil,
-		nil,
-	)
-}
-
-// Rotates the endpoint's signing secret.
+// Only messages that were created after `since` will be sent.
+// This will replay both successful, and failed messages
 //
-// The previous secret will remain valid for the next 24 hours.
-func (endpoint *Endpoint) RotateSecret(
+// A completed task will return a payload like the following:
+// ```json
+//
+//	{
+//	  "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+//	  "status": "finished",
+//	  "task": "endpoint.bulk-replay",
+//	  "data": {
+//	    "messagesSent": 2
+//	  }
+//	}
+//
+// ```
+func (endpoint *Endpoint) BulkReplay(
 	ctx context.Context,
 	appId string,
 	endpointId string,
-	endpointSecretRotateIn models.EndpointSecretRotateIn,
-	o *EndpointRotateSecretOptions,
-) error {
-	pathMap := map[string]string{
-		"app_id":      appId,
-		"endpoint_id": endpointId,
-	}
-	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return err
-		}
-	}
-	_, err := internal.ExecuteRequest[models.EndpointSecretRotateIn, any](
-		ctx,
-		endpoint.client,
-		"POST",
-		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate",
-		pathMap,
-		nil,
-		headerMap,
-		&endpointSecretRotateIn,
-	)
-	return err
-}
-
-// Send an example message for an event.
-func (endpoint *Endpoint) SendExample(
-	ctx context.Context,
-	appId string,
-	endpointId string,
-	eventExampleIn models.EventExampleIn,
-	o *EndpointSendExampleOptions,
-) (*models.MessageOut, error) {
+	bulkReplayIn models.BulkReplayIn,
+	o *EndpointBulkReplayOptions,
+) (*models.ReplayOut, error) {
 	pathMap := map[string]string{
 		"app_id":      appId,
 		"endpoint_id": endpointId,
@@ -517,15 +481,15 @@ func (endpoint *Endpoint) SendExample(
 			return nil, err
 		}
 	}
-	return internal.ExecuteRequest[models.EventExampleIn, models.MessageOut](
+	return internal.ExecuteRequest[models.BulkReplayIn, models.ReplayOut](
 		ctx,
 		endpoint.client,
 		"POST",
-		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/send-example",
+		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/bulk-replay",
 		pathMap,
 		nil,
 		headerMap,
-		&eventExampleIn,
+		&bulkReplayIn,
 	)
 }
 
@@ -562,50 +526,86 @@ func (endpoint *Endpoint) GetStats(
 	)
 }
 
-// Get the transformation code associated with this endpoint.
-func (endpoint *Endpoint) TransformationGet(
+// Resend all failed messages since a given time.
+//
+// Messages that were sent successfully, even if failed initially, are not resent.
+//
+// A completed task will return a payload like the following:
+// ```json
+//
+//	{
+//	  "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+//	  "status": "finished",
+//	  "task": "endpoint.recover",
+//	  "data": {
+//	    "messagesSent": 2
+//	  }
+//	}
+//
+// ```
+func (endpoint *Endpoint) Recover(
 	ctx context.Context,
 	appId string,
 	endpointId string,
-) (*models.EndpointTransformationOut, error) {
+	recoverIn models.RecoverIn,
+	o *EndpointRecoverOptions,
+) (*models.RecoverOut, error) {
 	pathMap := map[string]string{
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
-	return internal.ExecuteRequest[any, models.EndpointTransformationOut](
+	headerMap := map[string]string{}
+	if o != nil {
+		var err error
+
+		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return internal.ExecuteRequest[models.RecoverIn, models.RecoverOut](
 		ctx,
 		endpoint.client,
-		"GET",
-		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
+		"POST",
+		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/recover",
 		pathMap,
 		nil,
-		nil,
-		nil,
+		headerMap,
+		&recoverIn,
 	)
 }
 
-// Set or unset the transformation code associated with this endpoint.
-func (endpoint *Endpoint) PatchTransformation(
+// Send an example message for an event.
+func (endpoint *Endpoint) SendExample(
 	ctx context.Context,
 	appId string,
 	endpointId string,
-	endpointTransformationPatch models.EndpointTransformationPatch,
-) error {
+	eventExampleIn models.EventExampleIn,
+	o *EndpointSendExampleOptions,
+) (*models.MessageOut, error) {
 	pathMap := map[string]string{
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
-	_, err := internal.ExecuteRequest[models.EndpointTransformationPatch, any](
+	headerMap := map[string]string{}
+	if o != nil {
+		var err error
+
+		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return internal.ExecuteRequest[models.EventExampleIn, models.MessageOut](
 		ctx,
 		endpoint.client,
-		"PATCH",
-		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
+		"POST",
+		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/send-example",
 		pathMap,
 		nil,
-		nil,
-		&endpointTransformationPatch,
+		headerMap,
+		&eventExampleIn,
 	)
-	return err
 }
 
 // This operation was renamed to `set-transformation`.

@@ -40,14 +40,14 @@ data class MessageCreateOptions(
     val idempotencyKey: String? = null,
 )
 
-data class MessageExpungeAllContentsOptions(val idempotencyKey: String? = null)
-
 data class MessagePrecheckOptions(val idempotencyKey: String? = null)
 
 data class MessageGetOptions(
     /** When `true` message payloads are included in the response. */
     val withContent: Boolean? = null
 )
+
+data class MessageExpungeAllContentsOptions(val idempotencyKey: String? = null)
 
 class Message(private val client: SvixHttpClient) {
     val poller: MessagePoller = MessagePoller(client)
@@ -139,38 +139,6 @@ class Message(private val client: SvixHttpClient) {
     }
 
     /**
-     * Delete all message payloads for the application.
-     *
-     * This operation is only available in the <a href="https://svix.com/pricing"
-     * target="_blank">Enterprise</a> plan.
-     *
-     * A completed task will return a payload like the following:
-     * ```json
-     * {
-     *   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
-     *   "status": "finished",
-     *   "task": "application.purge_content",
-     *   "data": {
-     *     "messagesPurged": 150
-     *   }
-     * }
-     * ```
-     */
-    suspend fun expungeAllContents(
-        appId: String,
-        options: MessageExpungeAllContentsOptions = MessageExpungeAllContentsOptions(),
-    ): ExpungeAllContentsOut {
-        val url = client.newUrlBuilder().encodedPath("/api/v1/app/$appId/msg/expunge-all-contents")
-        val headers = Headers.Builder()
-        options.idempotencyKey?.let { headers.add("idempotency-key", it) }
-        return client.executeRequest<Any, ExpungeAllContentsOut>(
-            "POST",
-            url.build(),
-            headers = headers.build(),
-        )
-    }
-
-    /**
      * A pre-check call for `message.create` that checks whether any active endpoints are listening
      * to this message.
      *
@@ -215,6 +183,38 @@ class Message(private val client: SvixHttpClient) {
     suspend fun expungeContent(appId: String, msgId: String) {
         val url = client.newUrlBuilder().encodedPath("/api/v1/app/$appId/msg/$msgId/content")
         client.executeRequest<Any, Boolean>("DELETE", url.build())
+    }
+
+    /**
+     * Delete all message payloads for the application.
+     *
+     * This operation is only available in the <a href="https://svix.com/pricing"
+     * target="_blank">Enterprise</a> plan.
+     *
+     * A completed task will return a payload like the following:
+     * ```json
+     * {
+     *   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+     *   "status": "finished",
+     *   "task": "application.purge_content",
+     *   "data": {
+     *     "messagesPurged": 150
+     *   }
+     * }
+     * ```
+     */
+    suspend fun expungeAllContents(
+        appId: String,
+        options: MessageExpungeAllContentsOptions = MessageExpungeAllContentsOptions(),
+    ): ExpungeAllContentsOut {
+        val url = client.newUrlBuilder().encodedPath("/api/v1/app/$appId/msg/expunge-all-contents")
+        val headers = Headers.Builder()
+        options.idempotencyKey?.let { headers.add("idempotency-key", it) }
+        return client.executeRequest<Any, ExpungeAllContentsOut>(
+            "POST",
+            url.build(),
+            headers = headers.build(),
+        )
     }
 }
 

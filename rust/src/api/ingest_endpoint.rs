@@ -119,41 +119,6 @@ impl<'a> IngestEndpoint<'a> {
         .await
     }
 
-    /// Get the additional headers to be sent with the ingest.
-    pub async fn get_headers(
-        &self,
-        source_id: String,
-        endpoint_id: String,
-    ) -> Result<IngestEndpointHeadersOut> {
-        crate::request::Request::new(
-            http1::Method::GET,
-            "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/headers",
-        )
-        .with_path_param("source_id", source_id)
-        .with_path_param("endpoint_id", endpoint_id)
-        .execute(self.cfg)
-        .await
-    }
-
-    /// Set the additional headers to be sent to the endpoint.
-    pub async fn update_headers(
-        &self,
-        source_id: String,
-        endpoint_id: String,
-        ingest_endpoint_headers_in: IngestEndpointHeadersIn,
-    ) -> Result<()> {
-        crate::request::Request::new(
-            http1::Method::PUT,
-            "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/headers",
-        )
-        .with_path_param("source_id", source_id)
-        .with_path_param("endpoint_id", endpoint_id)
-        .with_body_param(ingest_endpoint_headers_in)
-        .returns_nothing()
-        .execute(self.cfg)
-        .await
-    }
-
     /// Get an ingest endpoint's signing secret.
     ///
     /// This is used to verify the authenticity of the webhook.
@@ -193,6 +158,41 @@ impl<'a> IngestEndpoint<'a> {
         .with_path_param("endpoint_id", endpoint_id)
         .with_optional_header_param("idempotency-key", idempotency_key)
         .with_body_param(ingest_endpoint_secret_in)
+        .returns_nothing()
+        .execute(self.cfg)
+        .await
+    }
+
+    /// Get the additional headers to be sent with the ingest.
+    pub async fn get_headers(
+        &self,
+        source_id: String,
+        endpoint_id: String,
+    ) -> Result<IngestEndpointHeadersOut> {
+        crate::request::Request::new(
+            http1::Method::GET,
+            "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/headers",
+        )
+        .with_path_param("source_id", source_id)
+        .with_path_param("endpoint_id", endpoint_id)
+        .execute(self.cfg)
+        .await
+    }
+
+    /// Set the additional headers to be sent to the endpoint.
+    pub async fn update_headers(
+        &self,
+        source_id: String,
+        endpoint_id: String,
+        ingest_endpoint_headers_in: IngestEndpointHeadersIn,
+    ) -> Result<()> {
+        crate::request::Request::new(
+            http1::Method::PUT,
+            "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/headers",
+        )
+        .with_path_param("source_id", source_id)
+        .with_path_param("endpoint_id", endpoint_id)
+        .with_body_param(ingest_endpoint_headers_in)
         .returns_nothing()
         .execute(self.cfg)
         .await

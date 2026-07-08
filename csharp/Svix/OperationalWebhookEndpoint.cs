@@ -334,119 +334,6 @@ namespace Svix
         }
 
         /// <summary>
-        /// Get the additional headers to be sent with the operational webhook.
-        /// </summary>
-        public async Task<OperationalWebhookEndpointHeadersOut> GetHeadersAsync(
-            string endpointId,
-            CancellationToken cancellationToken = default
-        )
-        {
-            try
-            {
-                var response =
-                    await _client.SvixHttpClient.SendRequestAsync<OperationalWebhookEndpointHeadersOut>(
-                        method: HttpMethod.Get,
-                        path: "/api/v1/operational-webhook/endpoint/{endpoint_id}/headers",
-                        pathParams: new Dictionary<string, string>
-                        {
-                            { "endpoint_id", endpointId },
-                        },
-                        cancellationToken: cancellationToken
-                    );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(GetHeadersAsync)} failed");
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Get the additional headers to be sent with the operational webhook.
-        /// </summary>
-        public OperationalWebhookEndpointHeadersOut GetHeaders(string endpointId)
-        {
-            try
-            {
-                var response =
-                    _client.SvixHttpClient.SendRequest<OperationalWebhookEndpointHeadersOut>(
-                        method: HttpMethod.Get,
-                        path: "/api/v1/operational-webhook/endpoint/{endpoint_id}/headers",
-                        pathParams: new Dictionary<string, string> { { "endpoint_id", endpointId } }
-                    );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(GetHeaders)} failed");
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Set the additional headers to be sent with the operational webhook.
-        /// </summary>
-        public async Task<bool> UpdateHeadersAsync(
-            string endpointId,
-            OperationalWebhookEndpointHeadersIn operationalWebhookEndpointHeadersIn,
-            CancellationToken cancellationToken = default
-        )
-        {
-            operationalWebhookEndpointHeadersIn =
-                operationalWebhookEndpointHeadersIn
-                ?? throw new ArgumentNullException(nameof(operationalWebhookEndpointHeadersIn));
-            try
-            {
-                var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
-                    method: HttpMethod.Put,
-                    path: "/api/v1/operational-webhook/endpoint/{endpoint_id}/headers",
-                    pathParams: new Dictionary<string, string> { { "endpoint_id", endpointId } },
-                    content: operationalWebhookEndpointHeadersIn,
-                    cancellationToken: cancellationToken
-                );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(UpdateHeadersAsync)} failed");
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Set the additional headers to be sent with the operational webhook.
-        /// </summary>
-        public bool UpdateHeaders(
-            string endpointId,
-            OperationalWebhookEndpointHeadersIn operationalWebhookEndpointHeadersIn
-        )
-        {
-            operationalWebhookEndpointHeadersIn =
-                operationalWebhookEndpointHeadersIn
-                ?? throw new ArgumentNullException(nameof(operationalWebhookEndpointHeadersIn));
-            try
-            {
-                var response = _client.SvixHttpClient.SendRequest<bool>(
-                    method: HttpMethod.Put,
-                    path: "/api/v1/operational-webhook/endpoint/{endpoint_id}/headers",
-                    pathParams: new Dictionary<string, string> { { "endpoint_id", endpointId } },
-                    content: operationalWebhookEndpointHeadersIn
-                );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(UpdateHeaders)} failed");
-
-                throw;
-            }
-        }
-
-        /// <summary>
         /// Get an operational webhook endpoint's signing secret.
         ///
         /// This is used to verify the authenticity of the webhook.
@@ -570,6 +457,119 @@ namespace Svix
             catch (ApiException e)
             {
                 _client.Logger?.LogError(e, $"{nameof(RotateSecret)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Get the additional headers to be sent with the operational webhook.
+        /// </summary>
+        public async Task<OperationalWebhookEndpointHeadersOut> GetHeadersAsync(
+            string endpointId,
+            CancellationToken cancellationToken = default
+        )
+        {
+            try
+            {
+                var response =
+                    await _client.SvixHttpClient.SendRequestAsync<OperationalWebhookEndpointHeadersOut>(
+                        method: HttpMethod.Get,
+                        path: "/api/v1/operational-webhook/endpoint/{endpoint_id}/headers",
+                        pathParams: new Dictionary<string, string>
+                        {
+                            { "endpoint_id", endpointId },
+                        },
+                        cancellationToken: cancellationToken
+                    );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(GetHeadersAsync)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Get the additional headers to be sent with the operational webhook.
+        /// </summary>
+        public OperationalWebhookEndpointHeadersOut GetHeaders(string endpointId)
+        {
+            try
+            {
+                var response =
+                    _client.SvixHttpClient.SendRequest<OperationalWebhookEndpointHeadersOut>(
+                        method: HttpMethod.Get,
+                        path: "/api/v1/operational-webhook/endpoint/{endpoint_id}/headers",
+                        pathParams: new Dictionary<string, string> { { "endpoint_id", endpointId } }
+                    );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(GetHeaders)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Set the additional headers to be sent with the operational webhook.
+        /// </summary>
+        public async Task<bool> UpdateHeadersAsync(
+            string endpointId,
+            OperationalWebhookEndpointHeadersIn operationalWebhookEndpointHeadersIn,
+            CancellationToken cancellationToken = default
+        )
+        {
+            operationalWebhookEndpointHeadersIn =
+                operationalWebhookEndpointHeadersIn
+                ?? throw new ArgumentNullException(nameof(operationalWebhookEndpointHeadersIn));
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
+                    method: HttpMethod.Put,
+                    path: "/api/v1/operational-webhook/endpoint/{endpoint_id}/headers",
+                    pathParams: new Dictionary<string, string> { { "endpoint_id", endpointId } },
+                    content: operationalWebhookEndpointHeadersIn,
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(UpdateHeadersAsync)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Set the additional headers to be sent with the operational webhook.
+        /// </summary>
+        public bool UpdateHeaders(
+            string endpointId,
+            OperationalWebhookEndpointHeadersIn operationalWebhookEndpointHeadersIn
+        )
+        {
+            operationalWebhookEndpointHeadersIn =
+                operationalWebhookEndpointHeadersIn
+                ?? throw new ArgumentNullException(nameof(operationalWebhookEndpointHeadersIn));
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<bool>(
+                    method: HttpMethod.Put,
+                    path: "/api/v1/operational-webhook/endpoint/{endpoint_id}/headers",
+                    pathParams: new Dictionary<string, string> { { "endpoint_id", endpointId } },
+                    content: operationalWebhookEndpointHeadersIn
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(UpdateHeaders)} failed");
 
                 throw;
             }

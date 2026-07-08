@@ -36,6 +36,20 @@ class StreamingAsync(ApiBase):
     def stream(self) -> StreamingStreamAsync:
         return StreamingStreamAsync(self._client)
 
+    async def sink_transformation_get(
+        self, stream_id: str, sink_id: str
+    ) -> SinkTransformationOut:
+        """Get the transformation code associated with this sink."""
+        response = await self._request_asyncio(
+            method="get",
+            path="/api/v1/stream/{stream_id}/sink/{sink_id}/transformation",
+            path_params={
+                "stream_id": stream_id,
+                "sink_id": sink_id,
+            },
+        )
+        return SinkTransformationOut.model_validate(response.json())
+
     async def sink_headers_get(
         self, stream_id: str, sink_id: str
     ) -> EndpointHeadersOut:
@@ -74,20 +88,6 @@ class StreamingAsync(ApiBase):
         )
         return EndpointHeadersOut.model_validate(response.json())
 
-    async def sink_transformation_get(
-        self, stream_id: str, sink_id: str
-    ) -> SinkTransformationOut:
-        """Get the transformation code associated with this sink."""
-        response = await self._request_asyncio(
-            method="get",
-            path="/api/v1/stream/{stream_id}/sink/{sink_id}/transformation",
-            path_params={
-                "stream_id": stream_id,
-                "sink_id": sink_id,
-            },
-        )
-        return SinkTransformationOut.model_validate(response.json())
-
 
 class Streaming(ApiBase):
     @property
@@ -105,6 +105,20 @@ class Streaming(ApiBase):
     @property
     def stream(self) -> StreamingStream:
         return StreamingStream(self._client)
+
+    def sink_transformation_get(
+        self, stream_id: str, sink_id: str
+    ) -> SinkTransformationOut:
+        """Get the transformation code associated with this sink."""
+        response = self._request_sync(
+            method="get",
+            path="/api/v1/stream/{stream_id}/sink/{sink_id}/transformation",
+            path_params={
+                "stream_id": stream_id,
+                "sink_id": sink_id,
+            },
+        )
+        return SinkTransformationOut.model_validate(response.json())
 
     def sink_headers_get(self, stream_id: str, sink_id: str) -> EndpointHeadersOut:
         """Get the HTTP sink headers.
@@ -141,17 +155,3 @@ class Streaming(ApiBase):
             ),
         )
         return EndpointHeadersOut.model_validate(response.json())
-
-    def sink_transformation_get(
-        self, stream_id: str, sink_id: str
-    ) -> SinkTransformationOut:
-        """Get the transformation code associated with this sink."""
-        response = self._request_sync(
-            method="get",
-            path="/api/v1/stream/{stream_id}/sink/{sink_id}/transformation",
-            path_params={
-                "stream_id": stream_id,
-                "sink_id": sink_id,
-            },
-        )
-        return SinkTransformationOut.model_validate(response.json())

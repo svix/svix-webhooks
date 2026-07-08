@@ -60,22 +60,6 @@ module Svix
       )
     end
 
-    def get_headers(source_id, endpoint_id)
-      res = @client.execute_request(
-        "GET",
-        "/ingest/api/v1/source/#{source_id}/endpoint/#{endpoint_id}/headers"
-      )
-      IngestEndpointHeadersOut.deserialize(res)
-    end
-
-    def update_headers(source_id, endpoint_id, ingest_endpoint_headers_in)
-      @client.execute_request(
-        "PUT",
-        "/ingest/api/v1/source/#{source_id}/endpoint/#{endpoint_id}/headers",
-        body: ingest_endpoint_headers_in
-      )
-    end
-
     def get_secret(source_id, endpoint_id)
       res = @client.execute_request(
         "GET",
@@ -93,6 +77,22 @@ module Svix
           "idempotency-key" => options["idempotency-key"]
         },
         body: ingest_endpoint_secret_in
+      )
+    end
+
+    def get_headers(source_id, endpoint_id)
+      res = @client.execute_request(
+        "GET",
+        "/ingest/api/v1/source/#{source_id}/endpoint/#{endpoint_id}/headers"
+      )
+      IngestEndpointHeadersOut.deserialize(res)
+    end
+
+    def update_headers(source_id, endpoint_id, ingest_endpoint_headers_in)
+      @client.execute_request(
+        "PUT",
+        "/ingest/api/v1/source/#{source_id}/endpoint/#{endpoint_id}/headers",
+        body: ingest_endpoint_headers_in
       )
     end
 

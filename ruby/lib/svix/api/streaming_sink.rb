@@ -69,6 +69,15 @@ module Svix
       StreamSinkOut.deserialize(res)
     end
 
+    def transformation_partial_update(stream_id, sink_id, sink_transform_in)
+      res = @client.execute_request(
+        "PATCH",
+        "/api/v1/stream/#{stream_id}/sink/#{sink_id}/transformation",
+        body: sink_transform_in
+      )
+      EmptyResponse.deserialize(res)
+    end
+
     def get_secret(stream_id, sink_id)
       res = @client.execute_request(
         "GET",
@@ -86,15 +95,6 @@ module Svix
           "idempotency-key" => options["idempotency-key"]
         },
         body: endpoint_secret_rotate_in
-      )
-      EmptyResponse.deserialize(res)
-    end
-
-    def transformation_partial_update(stream_id, sink_id, sink_transform_in)
-      res = @client.execute_request(
-        "PATCH",
-        "/api/v1/stream/#{stream_id}/sink/#{sink_id}/transformation",
-        body: sink_transform_in
       )
       EmptyResponse.deserialize(res)
     end

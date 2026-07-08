@@ -205,48 +205,6 @@ pub enum IngestEndpointCommands {
         source_id: String,
         endpoint_id: String,
     },
-    /// Get the additional headers to be sent with the ingest.
-    #[command(help_template = concat!(
-            "{about-with-newline}\n",
-            "{usage-heading} {usage}\n\n",
-            "Example: svix ingest endpoint get-headers src_abc000000000000000000 ep_abc000000000000000000000000\n",
-            "{after-help}",
-            "\n",
-            "{all-args}",
-        ))]
-    #[command(after_help = "Example response:
-{
-  \"headers\": {
-    \"X-Example\": \"123\",
-    \"X-Foobar\": \"Bar\"
-  },
-  \"sensitive\": [\"Authorization\"]
-}\n")]
-    GetHeaders {
-        source_id: String,
-        endpoint_id: String,
-    },
-    /// Set the additional headers to be sent to the endpoint.
-    #[command(help_template = concat!(
-            "{about-with-newline}\n",
-            "{usage-heading} {usage}\n\n",
-            "Example: svix ingest endpoint update-headers src_abc000000000000000000 ep_abc000000000000000000000000 {...}\n",
-            "{after-help}",
-            "\n",
-            "{all-args}",
-        ))]
-    #[command(after_help = "Example body:
-{
-  \"headers\": {
-    \"X-Example\": \"123\",
-    \"X-Foobar\": \"Bar\"
-  }
-}\n")]
-    UpdateHeaders {
-        source_id: String,
-        endpoint_id: String,
-        ingest_endpoint_headers_in: crate::json::JsonOf<IngestEndpointHeadersIn>,
-    },
     /// Get an ingest endpoint's signing secret.
     ///
     /// This is used to verify the authenticity of the webhook.
@@ -288,6 +246,48 @@ pub enum IngestEndpointCommands {
         ingest_endpoint_secret_in: Option<crate::json::JsonOf<IngestEndpointSecretIn>>,
         #[clap(flatten)]
         options: IngestEndpointRotateSecretOptions,
+    },
+    /// Get the additional headers to be sent with the ingest.
+    #[command(help_template = concat!(
+            "{about-with-newline}\n",
+            "{usage-heading} {usage}\n\n",
+            "Example: svix ingest endpoint get-headers src_abc000000000000000000 ep_abc000000000000000000000000\n",
+            "{after-help}",
+            "\n",
+            "{all-args}",
+        ))]
+    #[command(after_help = "Example response:
+{
+  \"headers\": {
+    \"X-Example\": \"123\",
+    \"X-Foobar\": \"Bar\"
+  },
+  \"sensitive\": [\"Authorization\"]
+}\n")]
+    GetHeaders {
+        source_id: String,
+        endpoint_id: String,
+    },
+    /// Set the additional headers to be sent to the endpoint.
+    #[command(help_template = concat!(
+            "{about-with-newline}\n",
+            "{usage-heading} {usage}\n\n",
+            "Example: svix ingest endpoint update-headers src_abc000000000000000000 ep_abc000000000000000000000000 {...}\n",
+            "{after-help}",
+            "\n",
+            "{all-args}",
+        ))]
+    #[command(after_help = "Example body:
+{
+  \"headers\": {
+    \"X-Example\": \"123\",
+    \"X-Foobar\": \"Bar\"
+  }
+}\n")]
+    UpdateHeaders {
+        source_id: String,
+        endpoint_id: String,
+        ingest_endpoint_headers_in: crate::json::JsonOf<IngestEndpointHeadersIn>,
     },
     /// Get the transformation code associated with this ingest endpoint.
     #[command(help_template = concat!(
@@ -393,32 +393,6 @@ impl IngestEndpointCommands {
                     .delete(source_id, endpoint_id)
                     .await?;
             }
-            Self::GetHeaders {
-                source_id,
-                endpoint_id,
-            } => {
-                let resp = client
-                    .ingest()
-                    .endpoint()
-                    .get_headers(source_id, endpoint_id)
-                    .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
-            }
-            Self::UpdateHeaders {
-                source_id,
-                endpoint_id,
-                ingest_endpoint_headers_in,
-            } => {
-                client
-                    .ingest()
-                    .endpoint()
-                    .update_headers(
-                        source_id,
-                        endpoint_id,
-                        ingest_endpoint_headers_in.into_inner(),
-                    )
-                    .await?;
-            }
             Self::GetSecret {
                 source_id,
                 endpoint_id,
@@ -444,6 +418,32 @@ impl IngestEndpointCommands {
                         endpoint_id,
                         ingest_endpoint_secret_in.unwrap_or_default().into_inner(),
                         Some(options.into()),
+                    )
+                    .await?;
+            }
+            Self::GetHeaders {
+                source_id,
+                endpoint_id,
+            } => {
+                let resp = client
+                    .ingest()
+                    .endpoint()
+                    .get_headers(source_id, endpoint_id)
+                    .await?;
+                crate::json::print_json_output(&resp, color_mode)?;
+            }
+            Self::UpdateHeaders {
+                source_id,
+                endpoint_id,
+                ingest_endpoint_headers_in,
+            } => {
+                client
+                    .ingest()
+                    .endpoint()
+                    .update_headers(
+                        source_id,
+                        endpoint_id,
+                        ingest_endpoint_headers_in.into_inner(),
                     )
                     .await?;
             }

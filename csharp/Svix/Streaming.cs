@@ -30,6 +30,63 @@ namespace Svix
         }
 
         /// <summary>
+        /// Get the transformation code associated with this sink.
+        /// </summary>
+        public async Task<SinkTransformationOut> SinkTransformationGetAsync(
+            string streamId,
+            string sinkId,
+            CancellationToken cancellationToken = default
+        )
+        {
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<SinkTransformationOut>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/stream/{stream_id}/sink/{sink_id}/transformation",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "stream_id", streamId },
+                        { "sink_id", sinkId },
+                    },
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(SinkTransformationGetAsync)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Get the transformation code associated with this sink.
+        /// </summary>
+        public SinkTransformationOut SinkTransformationGet(string streamId, string sinkId)
+        {
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<SinkTransformationOut>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/stream/{stream_id}/sink/{sink_id}/transformation",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "stream_id", streamId },
+                        { "sink_id", sinkId },
+                    }
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(SinkTransformationGet)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
         /// Get the HTTP sink headers.
         ///
         /// Only valid for `http` or `otelTracing` sinks.
@@ -159,63 +216,6 @@ namespace Svix
             catch (ApiException e)
             {
                 _client.Logger?.LogError(e, $"{nameof(SinkHeadersPatch)} failed");
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Get the transformation code associated with this sink.
-        /// </summary>
-        public async Task<SinkTransformationOut> SinkTransformationGetAsync(
-            string streamId,
-            string sinkId,
-            CancellationToken cancellationToken = default
-        )
-        {
-            try
-            {
-                var response = await _client.SvixHttpClient.SendRequestAsync<SinkTransformationOut>(
-                    method: HttpMethod.Get,
-                    path: "/api/v1/stream/{stream_id}/sink/{sink_id}/transformation",
-                    pathParams: new Dictionary<string, string>
-                    {
-                        { "stream_id", streamId },
-                        { "sink_id", sinkId },
-                    },
-                    cancellationToken: cancellationToken
-                );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(SinkTransformationGetAsync)} failed");
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Get the transformation code associated with this sink.
-        /// </summary>
-        public SinkTransformationOut SinkTransformationGet(string streamId, string sinkId)
-        {
-            try
-            {
-                var response = _client.SvixHttpClient.SendRequest<SinkTransformationOut>(
-                    method: HttpMethod.Get,
-                    path: "/api/v1/stream/{stream_id}/sink/{sink_id}/transformation",
-                    pathParams: new Dictionary<string, string>
-                    {
-                        { "stream_id", streamId },
-                        { "sink_id", sinkId },
-                    }
-                );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(SinkTransformationGet)} failed");
 
                 throw;
             }

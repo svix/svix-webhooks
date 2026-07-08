@@ -83,36 +83,6 @@ class Message
     }
 
     /**
-     * Delete all message payloads for the application.
-     *
-     * This operation is only available in the <a href="https://svix.com/pricing" target="_blank">Enterprise</a> plan.
-     *
-     * A completed task will return a payload like the following:
-     * ```json
-     * {
-     *   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
-     *   "status": "finished",
-     *   "task": "application.purge_content",
-     *   "data": {
-     *     "messagesPurged": 150
-     *   }
-     * }
-     * ```
-     *
-     * @throws ApiException
-     */
-    public function expungeAllContents(
-        string $appId,
-        ?MessageExpungeAllContentsOptions $options = null,
-    ): ExpungeAllContentsOut {
-        $request = $this->client->newReq('POST', "/api/v1/app/{$appId}/msg/expunge-all-contents");
-        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
-        $res = $this->client->send($request);
-
-        return ExpungeAllContentsOut::fromJson($res);
-    }
-
-    /**
      * A pre-check call for `message.create` that checks whether any active endpoints are
      * listening to this message.
      *
@@ -166,5 +136,35 @@ class Message
     ): void {
         $request = $this->client->newReq('DELETE', "/api/v1/app/{$appId}/msg/{$msgId}/content");
         $res = $this->client->sendNoResponseBody($request);
+    }
+
+    /**
+     * Delete all message payloads for the application.
+     *
+     * This operation is only available in the <a href="https://svix.com/pricing" target="_blank">Enterprise</a> plan.
+     *
+     * A completed task will return a payload like the following:
+     * ```json
+     * {
+     *   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+     *   "status": "finished",
+     *   "task": "application.purge_content",
+     *   "data": {
+     *     "messagesPurged": 150
+     *   }
+     * }
+     * ```
+     *
+     * @throws ApiException
+     */
+    public function expungeAllContents(
+        string $appId,
+        ?MessageExpungeAllContentsOptions $options = null,
+    ): ExpungeAllContentsOut {
+        $request = $this->client->newReq('POST', "/api/v1/app/{$appId}/msg/expunge-all-contents");
+        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
+        $res = $this->client->send($request);
+
+        return ExpungeAllContentsOut::fromJson($res);
     }
 }

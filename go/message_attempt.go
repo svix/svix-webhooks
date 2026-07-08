@@ -109,18 +109,18 @@ type MessageAttemptListAttemptedMessagesOptions struct {
 	EventTypes *[]string
 }
 
-type MessageAttemptGetOptions struct {
-	// When `true`, return the Canceled (4) status in attempts.
-	//
-	// If `false`, canceled attempts are returned as Success (0) for backwards compatibility.
-	ExpandedStatuses *bool
-}
-
 type MessageAttemptListAttemptedDestinationsOptions struct {
 	// Limit the number of returned items
 	Limit *uint64
 	// The iterator returned from a prior invocation
 	Iterator *string
+}
+
+type MessageAttemptGetOptions struct {
+	// When `true`, return the Canceled (4) status in attempts.
+	//
+	// If `false`, canceled attempts are returned as Success (0) for backwards compatibility.
+	ExpandedStatuses *bool
 }
 
 type MessageAttemptResendOptions struct {
@@ -272,6 +272,42 @@ func (messageAttempt *MessageAttempt) ListAttemptedMessages(
 	)
 }
 
+// List endpoints attempted by a given message.
+//
+// Additionally includes metadata about the latest message attempt.
+// By default, endpoints are listed in ascending order by ID.
+func (messageAttempt *MessageAttempt) ListAttemptedDestinations(
+	ctx context.Context,
+	appId string,
+	msgId string,
+	o *MessageAttemptListAttemptedDestinationsOptions,
+) (*models.ListResponseMessageEndpointOut, error) {
+	pathMap := map[string]string{
+		"app_id": appId,
+		"msg_id": msgId,
+	}
+	queryMap := map[string]string{}
+	if o != nil {
+		var err error
+
+		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
+		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return internal.ExecuteRequest[any, models.ListResponseMessageEndpointOut](
+		ctx,
+		messageAttempt.client,
+		"GET",
+		"/api/v1/app/{app_id}/msg/{msg_id}/endpoint",
+		pathMap,
+		queryMap,
+		nil,
+		nil,
+	)
+}
+
 // `msg_id`: Use a message id or a message `eventId`
 func (messageAttempt *MessageAttempt) Get(
 	ctx context.Context,
@@ -332,42 +368,6 @@ func (messageAttempt *MessageAttempt) ExpungeContent(
 		nil,
 	)
 	return err
-}
-
-// List endpoints attempted by a given message.
-//
-// Additionally includes metadata about the latest message attempt.
-// By default, endpoints are listed in ascending order by ID.
-func (messageAttempt *MessageAttempt) ListAttemptedDestinations(
-	ctx context.Context,
-	appId string,
-	msgId string,
-	o *MessageAttemptListAttemptedDestinationsOptions,
-) (*models.ListResponseMessageEndpointOut, error) {
-	pathMap := map[string]string{
-		"app_id": appId,
-		"msg_id": msgId,
-	}
-	queryMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
-		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return internal.ExecuteRequest[any, models.ListResponseMessageEndpointOut](
-		ctx,
-		messageAttempt.client,
-		"GET",
-		"/api/v1/app/{app_id}/msg/{msg_id}/endpoint",
-		pathMap,
-		queryMap,
-		nil,
-		nil,
-	)
 }
 
 // Resend a message to the specified endpoint.

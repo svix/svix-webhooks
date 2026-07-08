@@ -351,65 +351,6 @@ namespace Svix
         }
 
         /// <summary>
-        /// Get an integration's key.
-        /// </summary>
-        [Obsolete]
-        public async Task<IntegrationKeyOut> GetKeyAsync(
-            string appId,
-            string integId,
-            CancellationToken cancellationToken = default
-        )
-        {
-            try
-            {
-                var response = await _client.SvixHttpClient.SendRequestAsync<IntegrationKeyOut>(
-                    method: HttpMethod.Get,
-                    path: "/api/v1/app/{app_id}/integration/{integ_id}/key",
-                    pathParams: new Dictionary<string, string>
-                    {
-                        { "app_id", appId },
-                        { "integ_id", integId },
-                    },
-                    cancellationToken: cancellationToken
-                );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(GetKeyAsync)} failed");
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Get an integration's key.
-        /// </summary>
-        [Obsolete]
-        public IntegrationKeyOut GetKey(string appId, string integId)
-        {
-            try
-            {
-                var response = _client.SvixHttpClient.SendRequest<IntegrationKeyOut>(
-                    method: HttpMethod.Get,
-                    path: "/api/v1/app/{app_id}/integration/{integ_id}/key",
-                    pathParams: new Dictionary<string, string>
-                    {
-                        { "app_id", appId },
-                        { "integ_id", integId },
-                    }
-                );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(GetKey)} failed");
-
-                throw;
-            }
-        }
-
-        /// <summary>
         /// Rotate the integration's key. The previous key will be immediately revoked.
         /// </summary>
         public async Task<IntegrationKeyOut> RotateKeyAsync(
@@ -470,6 +411,65 @@ namespace Svix
             catch (ApiException e)
             {
                 _client.Logger?.LogError(e, $"{nameof(RotateKey)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Get an integration's key.
+        /// </summary>
+        [Obsolete]
+        public async Task<IntegrationKeyOut> GetKeyAsync(
+            string appId,
+            string integId,
+            CancellationToken cancellationToken = default
+        )
+        {
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<IntegrationKeyOut>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/app/{app_id}/integration/{integ_id}/key",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "integ_id", integId },
+                    },
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(GetKeyAsync)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Get an integration's key.
+        /// </summary>
+        [Obsolete]
+        public IntegrationKeyOut GetKey(string appId, string integId)
+        {
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<IntegrationKeyOut>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/app/{app_id}/integration/{integ_id}/key",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "integ_id", integId },
+                    }
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(GetKey)} failed");
 
                 throw;
             }

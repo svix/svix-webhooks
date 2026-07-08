@@ -19,12 +19,7 @@ pub struct EndpointCreateOptions {
 }
 
 #[derive(Default)]
-pub struct EndpointBulkReplayOptions {
-    pub idempotency_key: Option<String>,
-}
-
-#[derive(Default)]
-pub struct EndpointRecoverOptions {
+pub struct EndpointRotateSecretOptions {
     pub idempotency_key: Option<String>,
 }
 
@@ -34,12 +29,7 @@ pub struct EndpointReplayMissingOptions {
 }
 
 #[derive(Default)]
-pub struct EndpointRotateSecretOptions {
-    pub idempotency_key: Option<String>,
-}
-
-#[derive(Default)]
-pub struct EndpointSendExampleOptions {
+pub struct EndpointBulkReplayOptions {
     pub idempotency_key: Option<String>,
 }
 
@@ -54,6 +44,16 @@ pub struct EndpointGetStatsOptions {
     ///
     /// RFC3339 date string.
     pub until: Option<String>,
+}
+
+#[derive(Default)]
+pub struct EndpointRecoverOptions {
+    pub idempotency_key: Option<String>,
+}
+
+#[derive(Default)]
+pub struct EndpointSendExampleOptions {
+    pub idempotency_key: Option<String>,
 }
 
 pub struct Endpoint<'a> {
@@ -167,39 +167,46 @@ impl<'a> Endpoint<'a> {
         .await
     }
 
-    /// Bulk replay messages sent to the endpoint.
+    /// Get the endpoint's signing secret.
     ///
-    /// Only messages that were created after `since` will be sent.
-    /// This will replay both successful, and failed messages
-    ///
-    /// A completed task will return a payload like the following:
-    /// ```json
-    /// {
-    ///   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
-    ///   "status": "finished",
-    ///   "task": "endpoint.bulk-replay",
-    ///   "data": {
-    ///     "messagesSent": 2
-    ///   }
-    /// }
-    /// ```
-    pub async fn bulk_replay(
+    /// This is used to verify the authenticity of the webhook.
+    /// For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
+    pub async fn get_secret(
         &self,
         app_id: String,
         endpoint_id: String,
-        bulk_replay_in: BulkReplayIn,
-        options: Option<EndpointBulkReplayOptions>,
-    ) -> Result<ReplayOut> {
-        let EndpointBulkReplayOptions { idempotency_key } = options.unwrap_or_default();
+    ) -> Result<EndpointSecretOut> {
+        crate::request::Request::new(
+            http1::Method::GET,
+            "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret",
+        )
+        .with_path_param("app_id", app_id)
+        .with_path_param("endpoint_id", endpoint_id)
+        .execute(self.cfg)
+        .await
+    }
+
+    /// Rotates the endpoint's signing secret.
+    ///
+    /// The previous secret will remain valid for the next 24 hours.
+    pub async fn rotate_secret(
+        &self,
+        app_id: String,
+        endpoint_id: String,
+        endpoint_secret_rotate_in: EndpointSecretRotateIn,
+        options: Option<EndpointRotateSecretOptions>,
+    ) -> Result<()> {
+        let EndpointRotateSecretOptions { idempotency_key } = options.unwrap_or_default();
 
         crate::request::Request::new(
             http1::Method::POST,
-            "/api/v1/app/{app_id}/endpoint/{endpoint_id}/bulk-replay",
+            "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate",
         )
         .with_path_param("app_id", app_id)
         .with_path_param("endpoint_id", endpoint_id)
         .with_optional_header_param("idempotency-key", idempotency_key)
-        .with_body_param(bulk_replay_in)
+        .with_body_param(endpoint_secret_rotate_in)
+        .returns_nothing()
         .execute(self.cfg)
         .await
     }
@@ -258,39 +265,37 @@ impl<'a> Endpoint<'a> {
         .await
     }
 
-    /// Resend all failed messages since a given time.
-    ///
-    /// Messages that were sent successfully, even if failed initially, are not
-    /// resent.
-    ///
-    /// A completed task will return a payload like the following:
-    /// ```json
-    /// {
-    ///   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
-    ///   "status": "finished",
-    ///   "task": "endpoint.recover",
-    ///   "data": {
-    ///     "messagesSent": 2
-    ///   }
-    /// }
-    /// ```
-    pub async fn recover(
+    /// Get the transformation code associated with this endpoint.
+    pub async fn transformation_get(
         &self,
         app_id: String,
         endpoint_id: String,
-        recover_in: RecoverIn,
-        options: Option<EndpointRecoverOptions>,
-    ) -> Result<RecoverOut> {
-        let EndpointRecoverOptions { idempotency_key } = options.unwrap_or_default();
-
+    ) -> Result<EndpointTransformationOut> {
         crate::request::Request::new(
-            http1::Method::POST,
-            "/api/v1/app/{app_id}/endpoint/{endpoint_id}/recover",
+            http1::Method::GET,
+            "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
         )
         .with_path_param("app_id", app_id)
         .with_path_param("endpoint_id", endpoint_id)
-        .with_optional_header_param("idempotency-key", idempotency_key)
-        .with_body_param(recover_in)
+        .execute(self.cfg)
+        .await
+    }
+
+    /// Set or unset the transformation code associated with this endpoint.
+    pub async fn patch_transformation(
+        &self,
+        app_id: String,
+        endpoint_id: String,
+        endpoint_transformation_patch: EndpointTransformationPatch,
+    ) -> Result<()> {
+        crate::request::Request::new(
+            http1::Method::PATCH,
+            "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
+        )
+        .with_path_param("app_id", app_id)
+        .with_path_param("endpoint_id", endpoint_id)
+        .with_body_param(endpoint_transformation_patch)
+        .returns_nothing()
         .execute(self.cfg)
         .await
     }
@@ -332,68 +337,39 @@ impl<'a> Endpoint<'a> {
         .await
     }
 
-    /// Get the endpoint's signing secret.
+    /// Bulk replay messages sent to the endpoint.
     ///
-    /// This is used to verify the authenticity of the webhook.
-    /// For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
-    pub async fn get_secret(
+    /// Only messages that were created after `since` will be sent.
+    /// This will replay both successful, and failed messages
+    ///
+    /// A completed task will return a payload like the following:
+    /// ```json
+    /// {
+    ///   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+    ///   "status": "finished",
+    ///   "task": "endpoint.bulk-replay",
+    ///   "data": {
+    ///     "messagesSent": 2
+    ///   }
+    /// }
+    /// ```
+    pub async fn bulk_replay(
         &self,
         app_id: String,
         endpoint_id: String,
-    ) -> Result<EndpointSecretOut> {
-        crate::request::Request::new(
-            http1::Method::GET,
-            "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret",
-        )
-        .with_path_param("app_id", app_id)
-        .with_path_param("endpoint_id", endpoint_id)
-        .execute(self.cfg)
-        .await
-    }
-
-    /// Rotates the endpoint's signing secret.
-    ///
-    /// The previous secret will remain valid for the next 24 hours.
-    pub async fn rotate_secret(
-        &self,
-        app_id: String,
-        endpoint_id: String,
-        endpoint_secret_rotate_in: EndpointSecretRotateIn,
-        options: Option<EndpointRotateSecretOptions>,
-    ) -> Result<()> {
-        let EndpointRotateSecretOptions { idempotency_key } = options.unwrap_or_default();
+        bulk_replay_in: BulkReplayIn,
+        options: Option<EndpointBulkReplayOptions>,
+    ) -> Result<ReplayOut> {
+        let EndpointBulkReplayOptions { idempotency_key } = options.unwrap_or_default();
 
         crate::request::Request::new(
             http1::Method::POST,
-            "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate",
+            "/api/v1/app/{app_id}/endpoint/{endpoint_id}/bulk-replay",
         )
         .with_path_param("app_id", app_id)
         .with_path_param("endpoint_id", endpoint_id)
         .with_optional_header_param("idempotency-key", idempotency_key)
-        .with_body_param(endpoint_secret_rotate_in)
-        .returns_nothing()
-        .execute(self.cfg)
-        .await
-    }
-
-    /// Send an example message for an event.
-    pub async fn send_example(
-        &self,
-        app_id: String,
-        endpoint_id: String,
-        event_example_in: EventExampleIn,
-        options: Option<EndpointSendExampleOptions>,
-    ) -> Result<MessageOut> {
-        let EndpointSendExampleOptions { idempotency_key } = options.unwrap_or_default();
-
-        crate::request::Request::new(
-            http1::Method::POST,
-            "/api/v1/app/{app_id}/endpoint/{endpoint_id}/send-example",
-        )
-        .with_path_param("app_id", app_id)
-        .with_path_param("endpoint_id", endpoint_id)
-        .with_optional_header_param("idempotency-key", idempotency_key)
-        .with_body_param(event_example_in)
+        .with_body_param(bulk_replay_in)
         .execute(self.cfg)
         .await
     }
@@ -419,37 +395,61 @@ impl<'a> Endpoint<'a> {
         .await
     }
 
-    /// Get the transformation code associated with this endpoint.
-    pub async fn transformation_get(
+    /// Resend all failed messages since a given time.
+    ///
+    /// Messages that were sent successfully, even if failed initially, are not
+    /// resent.
+    ///
+    /// A completed task will return a payload like the following:
+    /// ```json
+    /// {
+    ///   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+    ///   "status": "finished",
+    ///   "task": "endpoint.recover",
+    ///   "data": {
+    ///     "messagesSent": 2
+    ///   }
+    /// }
+    /// ```
+    pub async fn recover(
         &self,
         app_id: String,
         endpoint_id: String,
-    ) -> Result<EndpointTransformationOut> {
+        recover_in: RecoverIn,
+        options: Option<EndpointRecoverOptions>,
+    ) -> Result<RecoverOut> {
+        let EndpointRecoverOptions { idempotency_key } = options.unwrap_or_default();
+
         crate::request::Request::new(
-            http1::Method::GET,
-            "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
+            http1::Method::POST,
+            "/api/v1/app/{app_id}/endpoint/{endpoint_id}/recover",
         )
         .with_path_param("app_id", app_id)
         .with_path_param("endpoint_id", endpoint_id)
+        .with_optional_header_param("idempotency-key", idempotency_key)
+        .with_body_param(recover_in)
         .execute(self.cfg)
         .await
     }
 
-    /// Set or unset the transformation code associated with this endpoint.
-    pub async fn patch_transformation(
+    /// Send an example message for an event.
+    pub async fn send_example(
         &self,
         app_id: String,
         endpoint_id: String,
-        endpoint_transformation_patch: EndpointTransformationPatch,
-    ) -> Result<()> {
+        event_example_in: EventExampleIn,
+        options: Option<EndpointSendExampleOptions>,
+    ) -> Result<MessageOut> {
+        let EndpointSendExampleOptions { idempotency_key } = options.unwrap_or_default();
+
         crate::request::Request::new(
-            http1::Method::PATCH,
-            "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
+            http1::Method::POST,
+            "/api/v1/app/{app_id}/endpoint/{endpoint_id}/send-example",
         )
         .with_path_param("app_id", app_id)
         .with_path_param("endpoint_id", endpoint_id)
-        .with_body_param(endpoint_transformation_patch)
-        .returns_nothing()
+        .with_optional_header_param("idempotency-key", idempotency_key)
+        .with_body_param(event_example_in)
         .execute(self.cfg)
         .await
     }

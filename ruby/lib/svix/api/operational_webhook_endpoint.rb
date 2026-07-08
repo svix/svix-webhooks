@@ -60,22 +60,6 @@ module Svix
       )
     end
 
-    def get_headers(endpoint_id)
-      res = @client.execute_request(
-        "GET",
-        "/api/v1/operational-webhook/endpoint/#{endpoint_id}/headers"
-      )
-      OperationalWebhookEndpointHeadersOut.deserialize(res)
-    end
-
-    def update_headers(endpoint_id, operational_webhook_endpoint_headers_in)
-      @client.execute_request(
-        "PUT",
-        "/api/v1/operational-webhook/endpoint/#{endpoint_id}/headers",
-        body: operational_webhook_endpoint_headers_in
-      )
-    end
-
     def get_secret(endpoint_id)
       res = @client.execute_request(
         "GET",
@@ -93,6 +77,22 @@ module Svix
           "idempotency-key" => options["idempotency-key"]
         },
         body: operational_webhook_endpoint_secret_in
+      )
+    end
+
+    def get_headers(endpoint_id)
+      res = @client.execute_request(
+        "GET",
+        "/api/v1/operational-webhook/endpoint/#{endpoint_id}/headers"
+      )
+      OperationalWebhookEndpointHeadersOut.deserialize(res)
+    end
+
+    def update_headers(endpoint_id, operational_webhook_endpoint_headers_in)
+      @client.execute_request(
+        "PUT",
+        "/api/v1/operational-webhook/endpoint/#{endpoint_id}/headers",
+        body: operational_webhook_endpoint_headers_in
       )
     end
 

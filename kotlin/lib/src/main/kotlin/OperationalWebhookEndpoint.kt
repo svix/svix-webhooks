@@ -89,32 +89,6 @@ class OperationalWebhookEndpoint(private val client: SvixHttpClient) {
         client.executeRequest<Any, Boolean>("DELETE", url.build())
     }
 
-    /** Get the additional headers to be sent with the operational webhook. */
-    suspend fun getHeaders(endpointId: String): OperationalWebhookEndpointHeadersOut {
-        val url =
-            client
-                .newUrlBuilder()
-                .encodedPath("/api/v1/operational-webhook/endpoint/$endpointId/headers")
-        return client.executeRequest<Any, OperationalWebhookEndpointHeadersOut>("GET", url.build())
-    }
-
-    /** Set the additional headers to be sent with the operational webhook. */
-    suspend fun updateHeaders(
-        endpointId: String,
-        operationalWebhookEndpointHeadersIn: OperationalWebhookEndpointHeadersIn,
-    ) {
-        val url =
-            client
-                .newUrlBuilder()
-                .encodedPath("/api/v1/operational-webhook/endpoint/$endpointId/headers")
-
-        client.executeRequest<OperationalWebhookEndpointHeadersIn, Boolean>(
-            "PUT",
-            url.build(),
-            reqBody = operationalWebhookEndpointHeadersIn,
-        )
-    }
-
     /**
      * Get an operational webhook endpoint's signing secret.
      *
@@ -152,6 +126,32 @@ class OperationalWebhookEndpoint(private val client: SvixHttpClient) {
             url.build(),
             headers = headers.build(),
             reqBody = operationalWebhookEndpointSecretIn,
+        )
+    }
+
+    /** Get the additional headers to be sent with the operational webhook. */
+    suspend fun getHeaders(endpointId: String): OperationalWebhookEndpointHeadersOut {
+        val url =
+            client
+                .newUrlBuilder()
+                .encodedPath("/api/v1/operational-webhook/endpoint/$endpointId/headers")
+        return client.executeRequest<Any, OperationalWebhookEndpointHeadersOut>("GET", url.build())
+    }
+
+    /** Set the additional headers to be sent with the operational webhook. */
+    suspend fun updateHeaders(
+        endpointId: String,
+        operationalWebhookEndpointHeadersIn: OperationalWebhookEndpointHeadersIn,
+    ) {
+        val url =
+            client
+                .newUrlBuilder()
+                .encodedPath("/api/v1/operational-webhook/endpoint/$endpointId/headers")
+
+        client.executeRequest<OperationalWebhookEndpointHeadersIn, Boolean>(
+            "PUT",
+            url.build(),
+            reqBody = operationalWebhookEndpointHeadersIn,
         )
     }
 }

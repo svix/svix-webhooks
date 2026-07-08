@@ -60,14 +60,6 @@ module Svix
       )
     end
 
-    def get_key(app_id, integ_id)
-      res = @client.execute_request(
-        "GET",
-        "/api/v1/app/#{app_id}/integration/#{integ_id}/key"
-      )
-      IntegrationKeyOut.deserialize(res)
-    end
-
     def rotate_key(app_id, integ_id, options = {})
       options = options.transform_keys(&:to_s)
       res = @client.execute_request(
@@ -76,6 +68,14 @@ module Svix
         headers: {
           "idempotency-key" => options["idempotency-key"]
         }
+      )
+      IntegrationKeyOut.deserialize(res)
+    end
+
+    def get_key(app_id, integ_id)
+      res = @client.execute_request(
+        "GET",
+        "/api/v1/app/#{app_id}/integration/#{integ_id}/key"
       )
       IntegrationKeyOut.deserialize(res)
     end

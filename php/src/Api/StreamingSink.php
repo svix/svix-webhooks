@@ -122,6 +122,23 @@ class StreamingSink
     }
 
     /**
+     * Set or unset the transformation code associated with this sink.
+     *
+     * @throws ApiException
+     */
+    public function transformationPartialUpdate(
+        string $streamId,
+        string $sinkId,
+        SinkTransformIn $sinkTransformIn,
+    ): EmptyResponse {
+        $request = $this->client->newReq('PATCH', "/api/v1/stream/{$streamId}/sink/{$sinkId}/transformation");
+        $request->setBody(json_encode($sinkTransformIn));
+        $res = $this->client->send($request);
+
+        return EmptyResponse::fromJson($res);
+    }
+
+    /**
      * Get the sink's signing secret (only supported for http sinks).
      *
      * This is used to verify the authenticity of the delivery.
@@ -154,23 +171,6 @@ class StreamingSink
         $request = $this->client->newReq('POST', "/api/v1/stream/{$streamId}/sink/{$sinkId}/secret/rotate");
         $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
         $request->setBody(json_encode($endpointSecretRotateIn));
-        $res = $this->client->send($request);
-
-        return EmptyResponse::fromJson($res);
-    }
-
-    /**
-     * Set or unset the transformation code associated with this sink.
-     *
-     * @throws ApiException
-     */
-    public function transformationPartialUpdate(
-        string $streamId,
-        string $sinkId,
-        SinkTransformIn $sinkTransformIn,
-    ): EmptyResponse {
-        $request = $this->client->newReq('PATCH', "/api/v1/stream/{$streamId}/sink/{$sinkId}/transformation");
-        $request->setBody(json_encode($sinkTransformIn));
         $res = $this->client->send($request);
 
         return EmptyResponse::fromJson($res);

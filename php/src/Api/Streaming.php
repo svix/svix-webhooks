@@ -28,6 +28,21 @@ class Streaming
     }
 
     /**
+     * Get the transformation code associated with this sink.
+     *
+     * @throws ApiException
+     */
+    public function sinkTransformationGet(
+        string $streamId,
+        string $sinkId,
+    ): SinkTransformationOut {
+        $request = $this->client->newReq('GET', "/api/v1/stream/{$streamId}/sink/{$sinkId}/transformation");
+        $res = $this->client->send($request);
+
+        return SinkTransformationOut::fromJson($res);
+    }
+
+    /**
      * Get the HTTP sink headers.
      *
      * Only valid for `http` or `otelTracing` sinks.
@@ -61,20 +76,5 @@ class Streaming
         $res = $this->client->send($request);
 
         return EndpointHeadersOut::fromJson($res);
-    }
-
-    /**
-     * Get the transformation code associated with this sink.
-     *
-     * @throws ApiException
-     */
-    public function sinkTransformationGet(
-        string $streamId,
-        string $sinkId,
-    ): SinkTransformationOut {
-        $request = $this->client->newReq('GET', "/api/v1/stream/{$streamId}/sink/{$sinkId}/transformation");
-        $res = $this->client->send($request);
-
-        return SinkTransformationOut::fromJson($res);
     }
 }

@@ -116,26 +116,6 @@ export class Integration {
     return await request.sendNoResponseBody(this.requestCtx);
   }
 
-  /**
-   * Get an integration's key.
-   *
-   * @deprecated
-   */
-  public async getKey(appId: string, integId: string): Promise<IntegrationKeyOut> {
-    const request = new SvixRequest(
-      HttpMethod.GET,
-      "/api/v1/app/{app_id}/integration/{integ_id}/key"
-    );
-
-    request.setPathParam("app_id", appId);
-    request.setPathParam("integ_id", integId);
-
-    return await request.send(
-      this.requestCtx,
-      IntegrationKeyOutSerializer._fromJsonObject
-    );
-  }
-
   /** Rotate the integration's key. The previous key will be immediately revoked. */
   public async rotateKey(
     appId: string,
@@ -150,6 +130,26 @@ export class Integration {
     request.setPathParam("app_id", appId);
     request.setPathParam("integ_id", integId);
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
+
+    return await request.send(
+      this.requestCtx,
+      IntegrationKeyOutSerializer._fromJsonObject
+    );
+  }
+
+  /**
+   * Get an integration's key.
+   *
+   * @deprecated
+   */
+  public async getKey(appId: string, integId: string): Promise<IntegrationKeyOut> {
+    const request = new SvixRequest(
+      HttpMethod.GET,
+      "/api/v1/app/{app_id}/integration/{integ_id}/key"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("integ_id", integId);
 
     return await request.send(
       this.requestCtx,

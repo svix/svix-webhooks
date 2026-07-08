@@ -412,6 +412,74 @@ namespace Svix
         }
 
         /// <summary>
+        /// Set or unset the transformation code associated with this sink.
+        /// </summary>
+        public async Task<EmptyResponse> TransformationPartialUpdateAsync(
+            string streamId,
+            string sinkId,
+            SinkTransformIn sinkTransformIn,
+            CancellationToken cancellationToken = default
+        )
+        {
+            sinkTransformIn =
+                sinkTransformIn ?? throw new ArgumentNullException(nameof(sinkTransformIn));
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<EmptyResponse>(
+                    method: HttpMethod.Patch,
+                    path: "/api/v1/stream/{stream_id}/sink/{sink_id}/transformation",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "stream_id", streamId },
+                        { "sink_id", sinkId },
+                    },
+                    content: sinkTransformIn,
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(TransformationPartialUpdateAsync)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Set or unset the transformation code associated with this sink.
+        /// </summary>
+        public EmptyResponse TransformationPartialUpdate(
+            string streamId,
+            string sinkId,
+            SinkTransformIn sinkTransformIn
+        )
+        {
+            sinkTransformIn =
+                sinkTransformIn ?? throw new ArgumentNullException(nameof(sinkTransformIn));
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<EmptyResponse>(
+                    method: HttpMethod.Patch,
+                    path: "/api/v1/stream/{stream_id}/sink/{sink_id}/transformation",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "stream_id", streamId },
+                        { "sink_id", sinkId },
+                    },
+                    content: sinkTransformIn
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(TransformationPartialUpdate)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
         /// Get the sink's signing secret (only supported for http sinks)
         ///
         /// This is used to verify the authenticity of the delivery.
@@ -547,74 +615,6 @@ namespace Svix
             catch (ApiException e)
             {
                 _client.Logger?.LogError(e, $"{nameof(RotateSecret)} failed");
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Set or unset the transformation code associated with this sink.
-        /// </summary>
-        public async Task<EmptyResponse> TransformationPartialUpdateAsync(
-            string streamId,
-            string sinkId,
-            SinkTransformIn sinkTransformIn,
-            CancellationToken cancellationToken = default
-        )
-        {
-            sinkTransformIn =
-                sinkTransformIn ?? throw new ArgumentNullException(nameof(sinkTransformIn));
-            try
-            {
-                var response = await _client.SvixHttpClient.SendRequestAsync<EmptyResponse>(
-                    method: HttpMethod.Patch,
-                    path: "/api/v1/stream/{stream_id}/sink/{sink_id}/transformation",
-                    pathParams: new Dictionary<string, string>
-                    {
-                        { "stream_id", streamId },
-                        { "sink_id", sinkId },
-                    },
-                    content: sinkTransformIn,
-                    cancellationToken: cancellationToken
-                );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(TransformationPartialUpdateAsync)} failed");
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Set or unset the transformation code associated with this sink.
-        /// </summary>
-        public EmptyResponse TransformationPartialUpdate(
-            string streamId,
-            string sinkId,
-            SinkTransformIn sinkTransformIn
-        )
-        {
-            sinkTransformIn =
-                sinkTransformIn ?? throw new ArgumentNullException(nameof(sinkTransformIn));
-            try
-            {
-                var response = _client.SvixHttpClient.SendRequest<EmptyResponse>(
-                    method: HttpMethod.Patch,
-                    path: "/api/v1/stream/{stream_id}/sink/{sink_id}/transformation",
-                    pathParams: new Dictionary<string, string>
-                    {
-                        { "stream_id", streamId },
-                        { "sink_id", sinkId },
-                    },
-                    content: sinkTransformIn
-                );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(TransformationPartialUpdate)} failed");
 
                 throw;
             }

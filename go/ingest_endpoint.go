@@ -167,52 +167,6 @@ func (ingestEndpoint *IngestEndpoint) Delete(
 	return err
 }
 
-// Get the additional headers to be sent with the ingest.
-func (ingestEndpoint *IngestEndpoint) GetHeaders(
-	ctx context.Context,
-	sourceId string,
-	endpointId string,
-) (*models.IngestEndpointHeadersOut, error) {
-	pathMap := map[string]string{
-		"source_id":   sourceId,
-		"endpoint_id": endpointId,
-	}
-	return internal.ExecuteRequest[any, models.IngestEndpointHeadersOut](
-		ctx,
-		ingestEndpoint.client,
-		"GET",
-		"/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/headers",
-		pathMap,
-		nil,
-		nil,
-		nil,
-	)
-}
-
-// Set the additional headers to be sent to the endpoint.
-func (ingestEndpoint *IngestEndpoint) UpdateHeaders(
-	ctx context.Context,
-	sourceId string,
-	endpointId string,
-	ingestEndpointHeadersIn models.IngestEndpointHeadersIn,
-) error {
-	pathMap := map[string]string{
-		"source_id":   sourceId,
-		"endpoint_id": endpointId,
-	}
-	_, err := internal.ExecuteRequest[models.IngestEndpointHeadersIn, any](
-		ctx,
-		ingestEndpoint.client,
-		"PUT",
-		"/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/headers",
-		pathMap,
-		nil,
-		nil,
-		&ingestEndpointHeadersIn,
-	)
-	return err
-}
-
 // Get an ingest endpoint's signing secret.
 //
 // This is used to verify the authenticity of the webhook.
@@ -270,6 +224,52 @@ func (ingestEndpoint *IngestEndpoint) RotateSecret(
 		nil,
 		headerMap,
 		&ingestEndpointSecretIn,
+	)
+	return err
+}
+
+// Get the additional headers to be sent with the ingest.
+func (ingestEndpoint *IngestEndpoint) GetHeaders(
+	ctx context.Context,
+	sourceId string,
+	endpointId string,
+) (*models.IngestEndpointHeadersOut, error) {
+	pathMap := map[string]string{
+		"source_id":   sourceId,
+		"endpoint_id": endpointId,
+	}
+	return internal.ExecuteRequest[any, models.IngestEndpointHeadersOut](
+		ctx,
+		ingestEndpoint.client,
+		"GET",
+		"/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/headers",
+		pathMap,
+		nil,
+		nil,
+		nil,
+	)
+}
+
+// Set the additional headers to be sent to the endpoint.
+func (ingestEndpoint *IngestEndpoint) UpdateHeaders(
+	ctx context.Context,
+	sourceId string,
+	endpointId string,
+	ingestEndpointHeadersIn models.IngestEndpointHeadersIn,
+) error {
+	pathMap := map[string]string{
+		"source_id":   sourceId,
+		"endpoint_id": endpointId,
+	}
+	_, err := internal.ExecuteRequest[models.IngestEndpointHeadersIn, any](
+		ctx,
+		ingestEndpoint.client,
+		"PUT",
+		"/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/headers",
+		pathMap,
+		nil,
+		nil,
+		&ingestEndpointHeadersIn,
 	)
 	return err
 }

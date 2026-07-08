@@ -113,6 +113,13 @@ data class MessageAttemptListAttemptedMessagesOptions(
     val eventTypes: Set<String>? = null,
 )
 
+data class MessageAttemptListAttemptedDestinationsOptions(
+    /** Limit the number of returned items */
+    val limit: ULong? = null,
+    /** The iterator returned from a prior invocation */
+    val iterator: String? = null,
+)
+
 data class MessageAttemptGetOptions(
     /**
      * When `true`, return the Canceled (4) status in attempts.
@@ -120,13 +127,6 @@ data class MessageAttemptGetOptions(
      * If `false`, canceled attempts are returned as Success (0) for backwards compatibility.
      */
     val expandedStatuses: Boolean? = null
-)
-
-data class MessageAttemptListAttemptedDestinationsOptions(
-    /** Limit the number of returned items */
-    val limit: ULong? = null,
-    /** The iterator returned from a prior invocation */
-    val iterator: String? = null,
 )
 
 data class MessageAttemptResendOptions(val idempotencyKey: String? = null)
@@ -238,6 +238,24 @@ class MessageAttempt(private val client: SvixHttpClient) {
         return client.executeRequest<Any, ListResponseEndpointMessageOut>("GET", url.build())
     }
 
+    /**
+     * List endpoints attempted by a given message.
+     *
+     * Additionally includes metadata about the latest message attempt. By default, endpoints are
+     * listed in ascending order by ID.
+     */
+    suspend fun listAttemptedDestinations(
+        appId: String,
+        msgId: String,
+        options: MessageAttemptListAttemptedDestinationsOptions =
+            MessageAttemptListAttemptedDestinationsOptions(),
+    ): ListResponseMessageEndpointOut {
+        val url = client.newUrlBuilder().encodedPath("/api/v1/app/$appId/msg/$msgId/endpoint")
+        options.limit?.let { url.addQueryParameter("limit", serializeQueryParam(it)) }
+        options.iterator?.let { url.addQueryParameter("iterator", it) }
+        return client.executeRequest<Any, ListResponseMessageEndpointOut>("GET", url.build())
+    }
+
     /** `msg_id`: Use a message id or a message `eventId` */
     suspend fun get(
         appId: String,
@@ -267,24 +285,6 @@ class MessageAttempt(private val client: SvixHttpClient) {
                 .newUrlBuilder()
                 .encodedPath("/api/v1/app/$appId/msg/$msgId/attempt/$attemptId/content")
         client.executeRequest<Any, Boolean>("DELETE", url.build())
-    }
-
-    /**
-     * List endpoints attempted by a given message.
-     *
-     * Additionally includes metadata about the latest message attempt. By default, endpoints are
-     * listed in ascending order by ID.
-     */
-    suspend fun listAttemptedDestinations(
-        appId: String,
-        msgId: String,
-        options: MessageAttemptListAttemptedDestinationsOptions =
-            MessageAttemptListAttemptedDestinationsOptions(),
-    ): ListResponseMessageEndpointOut {
-        val url = client.newUrlBuilder().encodedPath("/api/v1/app/$appId/msg/$msgId/endpoint")
-        options.limit?.let { url.addQueryParameter("limit", serializeQueryParam(it)) }
-        options.iterator?.let { url.addQueryParameter("iterator", it) }
-        return client.executeRequest<Any, ListResponseMessageEndpointOut>("GET", url.build())
     }
 
     /** Resend a message to the specified endpoint. */

@@ -2,11 +2,6 @@
 use crate::{error::Result, models::*, Configuration};
 
 #[derive(Default)]
-pub struct StreamingEventsCreateOptions {
-    pub idempotency_key: Option<String>,
-}
-
-#[derive(Default)]
 pub struct StreamingEventsGetOptions {
     /// Limit the number of returned items
     pub limit: Option<i32>,
@@ -17,6 +12,11 @@ pub struct StreamingEventsGetOptions {
     pub after: Option<String>,
 }
 
+#[derive(Default)]
+pub struct StreamingEventsCreateOptions {
+    pub idempotency_key: Option<String>,
+}
+
 pub struct StreamingEvents<'a> {
     cfg: &'a Configuration,
 }
@@ -24,23 +24,6 @@ pub struct StreamingEvents<'a> {
 impl<'a> StreamingEvents<'a> {
     pub(super) fn new(cfg: &'a Configuration) -> Self {
         Self { cfg }
-    }
-
-    /// Creates events on the Stream.
-    pub async fn create(
-        &self,
-        stream_id: String,
-        create_stream_events_in: CreateStreamEventsIn,
-        options: Option<StreamingEventsCreateOptions>,
-    ) -> Result<CreateStreamEventsOut> {
-        let StreamingEventsCreateOptions { idempotency_key } = options.unwrap_or_default();
-
-        crate::request::Request::new(http1::Method::POST, "/api/v1/stream/{stream_id}/events")
-            .with_path_param("stream_id", stream_id)
-            .with_optional_header_param("idempotency-key", idempotency_key)
-            .with_body_param(create_stream_events_in)
-            .execute(self.cfg)
-            .await
     }
 
     /// Iterate over a stream of events.
@@ -69,5 +52,22 @@ impl<'a> StreamingEvents<'a> {
         .with_optional_query_param("after", after)
         .execute(self.cfg)
         .await
+    }
+
+    /// Creates events on the Stream.
+    pub async fn create(
+        &self,
+        stream_id: String,
+        create_stream_events_in: CreateStreamEventsIn,
+        options: Option<StreamingEventsCreateOptions>,
+    ) -> Result<CreateStreamEventsOut> {
+        let StreamingEventsCreateOptions { idempotency_key } = options.unwrap_or_default();
+
+        crate::request::Request::new(http1::Method::POST, "/api/v1/stream/{stream_id}/events")
+            .with_path_param("stream_id", stream_id)
+            .with_optional_header_param("idempotency-key", idempotency_key)
+            .with_body_param(create_stream_events_in)
+            .execute(self.cfg)
+            .await
     }
 }

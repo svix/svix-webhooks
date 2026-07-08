@@ -98,6 +98,24 @@ class StreamingSink(private val client: SvixHttpClient) {
         )
     }
 
+    /** Set or unset the transformation code associated with this sink. */
+    suspend fun transformationPartialUpdate(
+        streamId: String,
+        sinkId: String,
+        sinkTransformIn: SinkTransformIn,
+    ): EmptyResponse {
+        val url =
+            client
+                .newUrlBuilder()
+                .encodedPath("/api/v1/stream/$streamId/sink/$sinkId/transformation")
+
+        return client.executeRequest<SinkTransformIn, EmptyResponse>(
+            "PATCH",
+            url.build(),
+            reqBody = sinkTransformIn,
+        )
+    }
+
     /**
      * Get the sink's signing secret (only supported for http sinks)
      *
@@ -130,24 +148,6 @@ class StreamingSink(private val client: SvixHttpClient) {
             url.build(),
             headers = headers.build(),
             reqBody = endpointSecretRotateIn,
-        )
-    }
-
-    /** Set or unset the transformation code associated with this sink. */
-    suspend fun transformationPartialUpdate(
-        streamId: String,
-        sinkId: String,
-        sinkTransformIn: SinkTransformIn,
-    ): EmptyResponse {
-        val url =
-            client
-                .newUrlBuilder()
-                .encodedPath("/api/v1/stream/$streamId/sink/$sinkId/transformation")
-
-        return client.executeRequest<SinkTransformIn, EmptyResponse>(
-            "PATCH",
-            url.build(),
-            reqBody = sinkTransformIn,
         )
     }
 }

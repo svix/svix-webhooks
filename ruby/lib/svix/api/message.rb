@@ -74,18 +74,6 @@ module Svix
       MessageOut.deserialize(res)
     end
 
-    def expunge_all_contents(app_id, options = {})
-      options = options.transform_keys(&:to_s)
-      res = @client.execute_request(
-        "POST",
-        "/api/v1/app/#{app_id}/msg/expunge-all-contents",
-        headers: {
-          "idempotency-key" => options["idempotency-key"]
-        }
-      )
-      ExpungeAllContentsOut.deserialize(res)
-    end
-
     def precheck(app_id, message_precheck_in, options = {})
       options = options.transform_keys(&:to_s)
       res = @client.execute_request(
@@ -116,6 +104,18 @@ module Svix
         "DELETE",
         "/api/v1/app/#{app_id}/msg/#{msg_id}/content"
       )
+    end
+
+    def expunge_all_contents(app_id, options = {})
+      options = options.transform_keys(&:to_s)
+      res = @client.execute_request(
+        "POST",
+        "/api/v1/app/#{app_id}/msg/expunge-all-contents",
+        headers: {
+          "idempotency-key" => options["idempotency-key"]
+        }
+      )
+      ExpungeAllContentsOut.deserialize(res)
     end
 
   end

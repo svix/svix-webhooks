@@ -157,45 +157,6 @@ export class IngestEndpoint {
     return await request.sendNoResponseBody(this.requestCtx);
   }
 
-  /** Get the additional headers to be sent with the ingest. */
-  public async getHeaders(
-    sourceId: string,
-    endpointId: string
-  ): Promise<IngestEndpointHeadersOut> {
-    const request = new SvixRequest(
-      HttpMethod.GET,
-      "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/headers"
-    );
-
-    request.setPathParam("source_id", sourceId);
-    request.setPathParam("endpoint_id", endpointId);
-
-    return await request.send(
-      this.requestCtx,
-      IngestEndpointHeadersOutSerializer._fromJsonObject
-    );
-  }
-
-  /** Set the additional headers to be sent to the endpoint. */
-  public async updateHeaders(
-    sourceId: string,
-    endpointId: string,
-    ingestEndpointHeadersIn: IngestEndpointHeadersIn
-  ): Promise<void> {
-    const request = new SvixRequest(
-      HttpMethod.PUT,
-      "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/headers"
-    );
-
-    request.setPathParam("source_id", sourceId);
-    request.setPathParam("endpoint_id", endpointId);
-    request.setBody(
-      IngestEndpointHeadersInSerializer._toJsonObject(ingestEndpointHeadersIn)
-    );
-
-    return await request.sendNoResponseBody(this.requestCtx);
-  }
-
   /**
    * Get an ingest endpoint's signing secret.
    *
@@ -241,6 +202,45 @@ export class IngestEndpoint {
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
     request.setBody(
       IngestEndpointSecretInSerializer._toJsonObject(ingestEndpointSecretIn)
+    );
+
+    return await request.sendNoResponseBody(this.requestCtx);
+  }
+
+  /** Get the additional headers to be sent with the ingest. */
+  public async getHeaders(
+    sourceId: string,
+    endpointId: string
+  ): Promise<IngestEndpointHeadersOut> {
+    const request = new SvixRequest(
+      HttpMethod.GET,
+      "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/headers"
+    );
+
+    request.setPathParam("source_id", sourceId);
+    request.setPathParam("endpoint_id", endpointId);
+
+    return await request.send(
+      this.requestCtx,
+      IngestEndpointHeadersOutSerializer._fromJsonObject
+    );
+  }
+
+  /** Set the additional headers to be sent to the endpoint. */
+  public async updateHeaders(
+    sourceId: string,
+    endpointId: string,
+    ingestEndpointHeadersIn: IngestEndpointHeadersIn
+  ): Promise<void> {
+    const request = new SvixRequest(
+      HttpMethod.PUT,
+      "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/headers"
+    );
+
+    request.setPathParam("source_id", sourceId);
+    request.setPathParam("endpoint_id", endpointId);
+    request.setBody(
+      IngestEndpointHeadersInSerializer._toJsonObject(ingestEndpointHeadersIn)
     );
 
     return await request.sendNoResponseBody(this.requestCtx);

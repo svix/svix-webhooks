@@ -46,10 +46,6 @@ export interface MessageCreateOptions {
   idempotencyKey?: string;
 }
 
-export interface MessageExpungeAllContentsOptions {
-  idempotencyKey?: string;
-}
-
 export interface MessagePrecheckOptions {
   idempotencyKey?: string;
 }
@@ -57,6 +53,10 @@ export interface MessagePrecheckOptions {
 export interface MessageGetOptions {
   /** When `true` message payloads are included in the response. */
   withContent?: boolean;
+}
+
+export interface MessageExpungeAllContentsOptions {
+  idempotencyKey?: string;
 }
 
 export class Message {
@@ -137,41 +137,6 @@ export class Message {
   }
 
   /**
-   * Delete all message payloads for the application.
-   *
-   * This operation is only available in the <a href="https://svix.com/pricing" target="_blank">Enterprise</a> plan.
-   *
-   * A completed task will return a payload like the following:
-   * ```json
-   * {
-   *   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
-   *   "status": "finished",
-   *   "task": "application.purge_content",
-   *   "data": {
-   *     "messagesPurged": 150
-   *   }
-   * }
-   * ```
-   */
-  public async expungeAllContents(
-    appId: string,
-    options?: MessageExpungeAllContentsOptions
-  ): Promise<ExpungeAllContentsOut> {
-    const request = new SvixRequest(
-      HttpMethod.POST,
-      "/api/v1/app/{app_id}/msg/expunge-all-contents"
-    );
-
-    request.setPathParam("app_id", appId);
-    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
-
-    return await request.send(
-      this.requestCtx,
-      ExpungeAllContentsOutSerializer._fromJsonObject
-    );
-  }
-
-  /**
    * A pre-check call for `message.create` that checks whether any active endpoints are
    * listening to this message.
    *
@@ -232,6 +197,41 @@ export class Message {
     request.setPathParam("msg_id", msgId);
 
     return await request.sendNoResponseBody(this.requestCtx);
+  }
+
+  /**
+   * Delete all message payloads for the application.
+   *
+   * This operation is only available in the <a href="https://svix.com/pricing" target="_blank">Enterprise</a> plan.
+   *
+   * A completed task will return a payload like the following:
+   * ```json
+   * {
+   *   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+   *   "status": "finished",
+   *   "task": "application.purge_content",
+   *   "data": {
+   *     "messagesPurged": 150
+   *   }
+   * }
+   * ```
+   */
+  public async expungeAllContents(
+    appId: string,
+    options?: MessageExpungeAllContentsOptions
+  ): Promise<ExpungeAllContentsOut> {
+    const request = new SvixRequest(
+      HttpMethod.POST,
+      "/api/v1/app/{app_id}/msg/expunge-all-contents"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
+
+    return await request.send(
+      this.requestCtx,
+      ExpungeAllContentsOutSerializer._fromJsonObject
+    );
   }
 }
 

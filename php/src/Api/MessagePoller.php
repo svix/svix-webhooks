@@ -40,26 +40,6 @@ class MessagePoller
     }
 
     /**
-     * Reads the stream of created messages for an application, filtered on the Sink's event types and
-     * Channels, using server-managed iterator tracking.
-     *
-     * @throws ApiException
-     */
-    public function consumerPoll(
-        string $appId,
-        string $sinkId,
-        string $consumerId,
-        ?MessagePollerConsumerPollOptions $options = null,
-    ): PollingEndpointOut {
-        $request = $this->client->newReq('GET', "/api/v1/app/{$appId}/poller/{$sinkId}/consumer/{$consumerId}");
-        $request->setQueryParam('limit', $options?->limit);
-        $request->setQueryParam('iterator', $options?->iterator);
-        $res = $this->client->send($request);
-
-        return PollingEndpointOut::fromJson($res);
-    }
-
-    /**
      * Sets the starting offset for the consumer of a polling endpoint.
      *
      * @throws ApiException
@@ -77,5 +57,25 @@ class MessagePoller
         $res = $this->client->send($request);
 
         return PollingEndpointConsumerSeekOut::fromJson($res);
+    }
+
+    /**
+     * Reads the stream of created messages for an application, filtered on the Sink's event types and
+     * Channels, using server-managed iterator tracking.
+     *
+     * @throws ApiException
+     */
+    public function consumerPoll(
+        string $appId,
+        string $sinkId,
+        string $consumerId,
+        ?MessagePollerConsumerPollOptions $options = null,
+    ): PollingEndpointOut {
+        $request = $this->client->newReq('GET', "/api/v1/app/{$appId}/poller/{$sinkId}/consumer/{$consumerId}");
+        $request->setQueryParam('limit', $options?->limit);
+        $request->setQueryParam('iterator', $options?->iterator);
+        $res = $this->client->send($request);
+
+        return PollingEndpointOut::fromJson($res);
     }
 }

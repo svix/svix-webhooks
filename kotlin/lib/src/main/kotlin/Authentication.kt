@@ -12,13 +12,13 @@ import okhttp3.Headers
 
 data class AuthenticationAppPortalAccessOptions(val idempotencyKey: String? = null)
 
-data class AuthenticationExpireAllOptions(val idempotencyKey: String? = null)
-
 data class AuthenticationLogoutOptions(val idempotencyKey: String? = null)
 
-data class AuthenticationStreamLogoutOptions(val idempotencyKey: String? = null)
+data class AuthenticationExpireAllOptions(val idempotencyKey: String? = null)
 
 data class AuthenticationStreamPortalAccessOptions(val idempotencyKey: String? = null)
+
+data class AuthenticationStreamLogoutOptions(val idempotencyKey: String? = null)
 
 data class AuthenticationStreamExpireAllOptions(val idempotencyKey: String? = null)
 
@@ -44,6 +44,18 @@ class Authentication(private val client: SvixHttpClient) {
             headers = headers.build(),
             reqBody = appPortalAccessIn,
         )
+    }
+
+    /**
+     * Logout an app token.
+     *
+     * Trying to log out other tokens will fail.
+     */
+    suspend fun logout(options: AuthenticationLogoutOptions = AuthenticationLogoutOptions()) {
+        val url = client.newUrlBuilder().encodedPath("/api/v1/auth/logout")
+        val headers = Headers.Builder()
+        options.idempotencyKey?.let { headers.add("idempotency-key", it) }
+        client.executeRequest<Any, Boolean>("POST", url.build(), headers = headers.build())
     }
 
     /** Expire all of the tokens associated with a specific application. */
@@ -81,32 +93,6 @@ class Authentication(private val client: SvixHttpClient) {
     }
 
     /**
-     * Logout an app token.
-     *
-     * Trying to log out other tokens will fail.
-     */
-    suspend fun logout(options: AuthenticationLogoutOptions = AuthenticationLogoutOptions()) {
-        val url = client.newUrlBuilder().encodedPath("/api/v1/auth/logout")
-        val headers = Headers.Builder()
-        options.idempotencyKey?.let { headers.add("idempotency-key", it) }
-        client.executeRequest<Any, Boolean>("POST", url.build(), headers = headers.build())
-    }
-
-    /**
-     * Logout a stream token.
-     *
-     * Trying to log out other tokens will fail.
-     */
-    suspend fun streamLogout(
-        options: AuthenticationStreamLogoutOptions = AuthenticationStreamLogoutOptions()
-    ) {
-        val url = client.newUrlBuilder().encodedPath("/api/v1/auth/stream-logout")
-        val headers = Headers.Builder()
-        options.idempotencyKey?.let { headers.add("idempotency-key", it) }
-        client.executeRequest<Any, Boolean>("POST", url.build(), headers = headers.build())
-    }
-
-    /**
      * Use this function to get magic links (and authentication codes) for connecting your users to
      * the Stream Consumer Portal.
      */
@@ -127,6 +113,20 @@ class Authentication(private val client: SvixHttpClient) {
         )
     }
 
+    /**
+     * Logout a stream token.
+     *
+     * Trying to log out other tokens will fail.
+     */
+    suspend fun streamLogout(
+        options: AuthenticationStreamLogoutOptions = AuthenticationStreamLogoutOptions()
+    ) {
+        val url = client.newUrlBuilder().encodedPath("/api/v1/auth/stream-logout")
+        val headers = Headers.Builder()
+        options.idempotencyKey?.let { headers.add("idempotency-key", it) }
+        client.executeRequest<Any, Boolean>("POST", url.build(), headers = headers.build())
+    }
+
     /** Expire all of the tokens associated with a specific stream. */
     suspend fun streamExpireAll(
         streamId: String,
@@ -143,15 +143,6 @@ class Authentication(private val client: SvixHttpClient) {
             headers = headers.build(),
             reqBody = streamTokenExpireIn,
         )
-    }
-
-    /** Get the current auth token for the stream poller. */
-    suspend fun getStreamPollerToken(streamId: String, sinkId: String): ApiTokenOut {
-        val url =
-            client
-                .newUrlBuilder()
-                .encodedPath("/api/v1/auth/stream/$streamId/sink/$sinkId/poller/token")
-        return client.executeRequest<Any, ApiTokenOut>("GET", url.build())
     }
 
     /** Create a new auth token for the stream poller API. */
@@ -175,5 +166,14 @@ class Authentication(private val client: SvixHttpClient) {
             headers = headers.build(),
             reqBody = rotatePollerTokenIn,
         )
+    }
+
+    /** Get the current auth token for the stream poller. */
+    suspend fun getStreamPollerToken(streamId: String, sinkId: String): ApiTokenOut {
+        val url =
+            client
+                .newUrlBuilder()
+                .encodedPath("/api/v1/auth/stream/$streamId/sink/$sinkId/poller/token")
+        return client.executeRequest<Any, ApiTokenOut>("GET", url.build())
     }
 }

@@ -36,19 +36,7 @@ namespace Svix
         }
     }
 
-    public class EndpointBulkReplayOptions : SvixOptionsBase
-    {
-        public string? IdempotencyKey { get; set; }
-
-        public new Dictionary<string, string> HeaderParams()
-        {
-            return SerializeParams(
-                new Dictionary<string, object?> { { "idempotency-key", IdempotencyKey } }
-            );
-        }
-    }
-
-    public class EndpointRecoverOptions : SvixOptionsBase
+    public class EndpointRotateSecretOptions : SvixOptionsBase
     {
         public string? IdempotencyKey { get; set; }
 
@@ -72,19 +60,7 @@ namespace Svix
         }
     }
 
-    public class EndpointRotateSecretOptions : SvixOptionsBase
-    {
-        public string? IdempotencyKey { get; set; }
-
-        public new Dictionary<string, string> HeaderParams()
-        {
-            return SerializeParams(
-                new Dictionary<string, object?> { { "idempotency-key", IdempotencyKey } }
-            );
-        }
-    }
-
-    public class EndpointSendExampleOptions : SvixOptionsBase
+    public class EndpointBulkReplayOptions : SvixOptionsBase
     {
         public string? IdempotencyKey { get; set; }
 
@@ -105,6 +81,30 @@ namespace Svix
         {
             return SerializeParams(
                 new Dictionary<string, object?> { { "since", Since }, { "until", Until } }
+            );
+        }
+    }
+
+    public class EndpointRecoverOptions : SvixOptionsBase
+    {
+        public string? IdempotencyKey { get; set; }
+
+        public new Dictionary<string, string> HeaderParams()
+        {
+            return SerializeParams(
+                new Dictionary<string, object?> { { "idempotency-key", IdempotencyKey } }
+            );
+        }
+    }
+
+    public class EndpointSendExampleOptions : SvixOptionsBase
+    {
+        public string? IdempotencyKey { get; set; }
+
+        public new Dictionary<string, string> HeaderParams()
+        {
+            return SerializeParams(
+                new Dictionary<string, object?> { { "idempotency-key", IdempotencyKey } }
             );
         }
     }
@@ -474,88 +474,89 @@ namespace Svix
         }
 
         /// <summary>
-        /// Bulk replay messages sent to the endpoint.
+        /// Get the endpoint's signing secret.
         ///
-        /// Only messages that were created after `since` will be sent.
-        /// This will replay both successful, and failed messages
-        ///
-        /// A completed task will return a payload like the following:
-        /// ```json
-        /// {
-        ///   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
-        ///   "status": "finished",
-        ///   "task": "endpoint.bulk-replay",
-        ///   "data": {
-        ///     "messagesSent": 2
-        ///   }
-        /// }
-        /// ```
+        /// This is used to verify the authenticity of the webhook.
+        /// For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
         /// </summary>
-        public async Task<ReplayOut> BulkReplayAsync(
+        public async Task<EndpointSecretOut> GetSecretAsync(
             string appId,
             string endpointId,
-            BulkReplayIn bulkReplayIn,
-            EndpointBulkReplayOptions? options = null,
             CancellationToken cancellationToken = default
         )
         {
-            bulkReplayIn = bulkReplayIn ?? throw new ArgumentNullException(nameof(bulkReplayIn));
             try
             {
-                var response = await _client.SvixHttpClient.SendRequestAsync<ReplayOut>(
-                    method: HttpMethod.Post,
-                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/bulk-replay",
+                var response = await _client.SvixHttpClient.SendRequestAsync<EndpointSecretOut>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret",
                     pathParams: new Dictionary<string, string>
                     {
                         { "app_id", appId },
                         { "endpoint_id", endpointId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
-                    content: bulkReplayIn,
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(BulkReplayAsync)} failed");
+                _client.Logger?.LogError(e, $"{nameof(GetSecretAsync)} failed");
 
                 throw;
             }
         }
 
         /// <summary>
-        /// Bulk replay messages sent to the endpoint.
+        /// Get the endpoint's signing secret.
         ///
-        /// Only messages that were created after `since` will be sent.
-        /// This will replay both successful, and failed messages
-        ///
-        /// A completed task will return a payload like the following:
-        /// ```json
-        /// {
-        ///   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
-        ///   "status": "finished",
-        ///   "task": "endpoint.bulk-replay",
-        ///   "data": {
-        ///     "messagesSent": 2
-        ///   }
-        /// }
-        /// ```
+        /// This is used to verify the authenticity of the webhook.
+        /// For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
         /// </summary>
-        public ReplayOut BulkReplay(
-            string appId,
-            string endpointId,
-            BulkReplayIn bulkReplayIn,
-            EndpointBulkReplayOptions? options = null
-        )
+        public EndpointSecretOut GetSecret(string appId, string endpointId)
         {
-            bulkReplayIn = bulkReplayIn ?? throw new ArgumentNullException(nameof(bulkReplayIn));
             try
             {
-                var response = _client.SvixHttpClient.SendRequest<ReplayOut>(
+                var response = _client.SvixHttpClient.SendRequest<EndpointSecretOut>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    }
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(GetSecret)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Rotates the endpoint's signing secret.
+        ///
+        /// The previous secret will remain valid for the next 24 hours.
+        /// </summary>
+        public async Task<bool> RotateSecretAsync(
+            string appId,
+            string endpointId,
+            EndpointSecretRotateIn endpointSecretRotateIn,
+            EndpointRotateSecretOptions? options = null,
+            CancellationToken cancellationToken = default
+        )
+        {
+            endpointSecretRotateIn =
+                endpointSecretRotateIn
+                ?? throw new ArgumentNullException(nameof(endpointSecretRotateIn));
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
                     method: HttpMethod.Post,
-                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/bulk-replay",
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate",
                     pathParams: new Dictionary<string, string>
                     {
                         { "app_id", appId },
@@ -563,13 +564,53 @@ namespace Svix
                     },
                     queryParams: options?.QueryParams(),
                     headerParams: options?.HeaderParams(),
-                    content: bulkReplayIn
+                    content: endpointSecretRotateIn,
+                    cancellationToken: cancellationToken
                 );
                 return response.Data;
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(BulkReplay)} failed");
+                _client.Logger?.LogError(e, $"{nameof(RotateSecretAsync)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Rotates the endpoint's signing secret.
+        ///
+        /// The previous secret will remain valid for the next 24 hours.
+        /// </summary>
+        public bool RotateSecret(
+            string appId,
+            string endpointId,
+            EndpointSecretRotateIn endpointSecretRotateIn,
+            EndpointRotateSecretOptions? options = null
+        )
+        {
+            endpointSecretRotateIn =
+                endpointSecretRotateIn
+                ?? throw new ArgumentNullException(nameof(endpointSecretRotateIn));
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<bool>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    content: endpointSecretRotateIn
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(RotateSecret)} failed");
 
                 throw;
             }
@@ -771,491 +812,6 @@ namespace Svix
         }
 
         /// <summary>
-        /// Resend all failed messages since a given time.
-        ///
-        /// Messages that were sent successfully, even if failed initially, are not resent.
-        ///
-        /// A completed task will return a payload like the following:
-        /// ```json
-        /// {
-        ///   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
-        ///   "status": "finished",
-        ///   "task": "endpoint.recover",
-        ///   "data": {
-        ///     "messagesSent": 2
-        ///   }
-        /// }
-        /// ```
-        /// </summary>
-        public async Task<RecoverOut> RecoverAsync(
-            string appId,
-            string endpointId,
-            RecoverIn recoverIn,
-            EndpointRecoverOptions? options = null,
-            CancellationToken cancellationToken = default
-        )
-        {
-            recoverIn = recoverIn ?? throw new ArgumentNullException(nameof(recoverIn));
-            try
-            {
-                var response = await _client.SvixHttpClient.SendRequestAsync<RecoverOut>(
-                    method: HttpMethod.Post,
-                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/recover",
-                    pathParams: new Dictionary<string, string>
-                    {
-                        { "app_id", appId },
-                        { "endpoint_id", endpointId },
-                    },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
-                    content: recoverIn,
-                    cancellationToken: cancellationToken
-                );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(RecoverAsync)} failed");
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Resend all failed messages since a given time.
-        ///
-        /// Messages that were sent successfully, even if failed initially, are not resent.
-        ///
-        /// A completed task will return a payload like the following:
-        /// ```json
-        /// {
-        ///   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
-        ///   "status": "finished",
-        ///   "task": "endpoint.recover",
-        ///   "data": {
-        ///     "messagesSent": 2
-        ///   }
-        /// }
-        /// ```
-        /// </summary>
-        public RecoverOut Recover(
-            string appId,
-            string endpointId,
-            RecoverIn recoverIn,
-            EndpointRecoverOptions? options = null
-        )
-        {
-            recoverIn = recoverIn ?? throw new ArgumentNullException(nameof(recoverIn));
-            try
-            {
-                var response = _client.SvixHttpClient.SendRequest<RecoverOut>(
-                    method: HttpMethod.Post,
-                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/recover",
-                    pathParams: new Dictionary<string, string>
-                    {
-                        { "app_id", appId },
-                        { "endpoint_id", endpointId },
-                    },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
-                    content: recoverIn
-                );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(Recover)} failed");
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Replays messages to the endpoint.
-        ///
-        /// Only messages that were created after `since` will be sent.
-        /// Messages that were previously sent to the endpoint are not resent.
-        ///
-        /// A completed task will return a payload like the following:
-        /// ```json
-        /// {
-        ///   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
-        ///   "status": "finished",
-        ///   "task": "endpoint.replay",
-        ///   "data": {
-        ///     "messagesSent": 2
-        ///   }
-        /// }
-        /// ```
-        /// </summary>
-        public async Task<ReplayOut> ReplayMissingAsync(
-            string appId,
-            string endpointId,
-            ReplayIn replayIn,
-            EndpointReplayMissingOptions? options = null,
-            CancellationToken cancellationToken = default
-        )
-        {
-            replayIn = replayIn ?? throw new ArgumentNullException(nameof(replayIn));
-            try
-            {
-                var response = await _client.SvixHttpClient.SendRequestAsync<ReplayOut>(
-                    method: HttpMethod.Post,
-                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/replay-missing",
-                    pathParams: new Dictionary<string, string>
-                    {
-                        { "app_id", appId },
-                        { "endpoint_id", endpointId },
-                    },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
-                    content: replayIn,
-                    cancellationToken: cancellationToken
-                );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(ReplayMissingAsync)} failed");
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Replays messages to the endpoint.
-        ///
-        /// Only messages that were created after `since` will be sent.
-        /// Messages that were previously sent to the endpoint are not resent.
-        ///
-        /// A completed task will return a payload like the following:
-        /// ```json
-        /// {
-        ///   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
-        ///   "status": "finished",
-        ///   "task": "endpoint.replay",
-        ///   "data": {
-        ///     "messagesSent": 2
-        ///   }
-        /// }
-        /// ```
-        /// </summary>
-        public ReplayOut ReplayMissing(
-            string appId,
-            string endpointId,
-            ReplayIn replayIn,
-            EndpointReplayMissingOptions? options = null
-        )
-        {
-            replayIn = replayIn ?? throw new ArgumentNullException(nameof(replayIn));
-            try
-            {
-                var response = _client.SvixHttpClient.SendRequest<ReplayOut>(
-                    method: HttpMethod.Post,
-                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/replay-missing",
-                    pathParams: new Dictionary<string, string>
-                    {
-                        { "app_id", appId },
-                        { "endpoint_id", endpointId },
-                    },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
-                    content: replayIn
-                );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(ReplayMissing)} failed");
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Get the endpoint's signing secret.
-        ///
-        /// This is used to verify the authenticity of the webhook.
-        /// For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
-        /// </summary>
-        public async Task<EndpointSecretOut> GetSecretAsync(
-            string appId,
-            string endpointId,
-            CancellationToken cancellationToken = default
-        )
-        {
-            try
-            {
-                var response = await _client.SvixHttpClient.SendRequestAsync<EndpointSecretOut>(
-                    method: HttpMethod.Get,
-                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret",
-                    pathParams: new Dictionary<string, string>
-                    {
-                        { "app_id", appId },
-                        { "endpoint_id", endpointId },
-                    },
-                    cancellationToken: cancellationToken
-                );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(GetSecretAsync)} failed");
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Get the endpoint's signing secret.
-        ///
-        /// This is used to verify the authenticity of the webhook.
-        /// For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
-        /// </summary>
-        public EndpointSecretOut GetSecret(string appId, string endpointId)
-        {
-            try
-            {
-                var response = _client.SvixHttpClient.SendRequest<EndpointSecretOut>(
-                    method: HttpMethod.Get,
-                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret",
-                    pathParams: new Dictionary<string, string>
-                    {
-                        { "app_id", appId },
-                        { "endpoint_id", endpointId },
-                    }
-                );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(GetSecret)} failed");
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Rotates the endpoint's signing secret.
-        ///
-        /// The previous secret will remain valid for the next 24 hours.
-        /// </summary>
-        public async Task<bool> RotateSecretAsync(
-            string appId,
-            string endpointId,
-            EndpointSecretRotateIn endpointSecretRotateIn,
-            EndpointRotateSecretOptions? options = null,
-            CancellationToken cancellationToken = default
-        )
-        {
-            endpointSecretRotateIn =
-                endpointSecretRotateIn
-                ?? throw new ArgumentNullException(nameof(endpointSecretRotateIn));
-            try
-            {
-                var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
-                    method: HttpMethod.Post,
-                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate",
-                    pathParams: new Dictionary<string, string>
-                    {
-                        { "app_id", appId },
-                        { "endpoint_id", endpointId },
-                    },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
-                    content: endpointSecretRotateIn,
-                    cancellationToken: cancellationToken
-                );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(RotateSecretAsync)} failed");
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Rotates the endpoint's signing secret.
-        ///
-        /// The previous secret will remain valid for the next 24 hours.
-        /// </summary>
-        public bool RotateSecret(
-            string appId,
-            string endpointId,
-            EndpointSecretRotateIn endpointSecretRotateIn,
-            EndpointRotateSecretOptions? options = null
-        )
-        {
-            endpointSecretRotateIn =
-                endpointSecretRotateIn
-                ?? throw new ArgumentNullException(nameof(endpointSecretRotateIn));
-            try
-            {
-                var response = _client.SvixHttpClient.SendRequest<bool>(
-                    method: HttpMethod.Post,
-                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate",
-                    pathParams: new Dictionary<string, string>
-                    {
-                        { "app_id", appId },
-                        { "endpoint_id", endpointId },
-                    },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
-                    content: endpointSecretRotateIn
-                );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(RotateSecret)} failed");
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Send an example message for an event.
-        /// </summary>
-        public async Task<MessageOut> SendExampleAsync(
-            string appId,
-            string endpointId,
-            EventExampleIn eventExampleIn,
-            EndpointSendExampleOptions? options = null,
-            CancellationToken cancellationToken = default
-        )
-        {
-            eventExampleIn =
-                eventExampleIn ?? throw new ArgumentNullException(nameof(eventExampleIn));
-            try
-            {
-                var response = await _client.SvixHttpClient.SendRequestAsync<MessageOut>(
-                    method: HttpMethod.Post,
-                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/send-example",
-                    pathParams: new Dictionary<string, string>
-                    {
-                        { "app_id", appId },
-                        { "endpoint_id", endpointId },
-                    },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
-                    content: eventExampleIn,
-                    cancellationToken: cancellationToken
-                );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(SendExampleAsync)} failed");
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Send an example message for an event.
-        /// </summary>
-        public MessageOut SendExample(
-            string appId,
-            string endpointId,
-            EventExampleIn eventExampleIn,
-            EndpointSendExampleOptions? options = null
-        )
-        {
-            eventExampleIn =
-                eventExampleIn ?? throw new ArgumentNullException(nameof(eventExampleIn));
-            try
-            {
-                var response = _client.SvixHttpClient.SendRequest<MessageOut>(
-                    method: HttpMethod.Post,
-                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/send-example",
-                    pathParams: new Dictionary<string, string>
-                    {
-                        { "app_id", appId },
-                        { "endpoint_id", endpointId },
-                    },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
-                    content: eventExampleIn
-                );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(SendExample)} failed");
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Get basic statistics for the endpoint.
-        /// </summary>
-        public async Task<EndpointStats> GetStatsAsync(
-            string appId,
-            string endpointId,
-            EndpointGetStatsOptions? options = null,
-            CancellationToken cancellationToken = default
-        )
-        {
-            try
-            {
-                var response = await _client.SvixHttpClient.SendRequestAsync<EndpointStats>(
-                    method: HttpMethod.Get,
-                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/stats",
-                    pathParams: new Dictionary<string, string>
-                    {
-                        { "app_id", appId },
-                        { "endpoint_id", endpointId },
-                    },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
-                    cancellationToken: cancellationToken
-                );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(GetStatsAsync)} failed");
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Get basic statistics for the endpoint.
-        /// </summary>
-        public EndpointStats GetStats(
-            string appId,
-            string endpointId,
-            EndpointGetStatsOptions? options = null
-        )
-        {
-            try
-            {
-                var response = _client.SvixHttpClient.SendRequest<EndpointStats>(
-                    method: HttpMethod.Get,
-                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/stats",
-                    pathParams: new Dictionary<string, string>
-                    {
-                        { "app_id", appId },
-                        { "endpoint_id", endpointId },
-                    },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
-                );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(GetStats)} failed");
-
-                throw;
-            }
-        }
-
-        /// <summary>
         /// Get the transformation code associated with this endpoint.
         /// </summary>
         public async Task<EndpointTransformationOut> TransformationGetAsync(
@@ -1378,6 +934,450 @@ namespace Svix
             catch (ApiException e)
             {
                 _client.Logger?.LogError(e, $"{nameof(PatchTransformation)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Replays messages to the endpoint.
+        ///
+        /// Only messages that were created after `since` will be sent.
+        /// Messages that were previously sent to the endpoint are not resent.
+        ///
+        /// A completed task will return a payload like the following:
+        /// ```json
+        /// {
+        ///   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+        ///   "status": "finished",
+        ///   "task": "endpoint.replay",
+        ///   "data": {
+        ///     "messagesSent": 2
+        ///   }
+        /// }
+        /// ```
+        /// </summary>
+        public async Task<ReplayOut> ReplayMissingAsync(
+            string appId,
+            string endpointId,
+            ReplayIn replayIn,
+            EndpointReplayMissingOptions? options = null,
+            CancellationToken cancellationToken = default
+        )
+        {
+            replayIn = replayIn ?? throw new ArgumentNullException(nameof(replayIn));
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<ReplayOut>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/replay-missing",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    content: replayIn,
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(ReplayMissingAsync)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Replays messages to the endpoint.
+        ///
+        /// Only messages that were created after `since` will be sent.
+        /// Messages that were previously sent to the endpoint are not resent.
+        ///
+        /// A completed task will return a payload like the following:
+        /// ```json
+        /// {
+        ///   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+        ///   "status": "finished",
+        ///   "task": "endpoint.replay",
+        ///   "data": {
+        ///     "messagesSent": 2
+        ///   }
+        /// }
+        /// ```
+        /// </summary>
+        public ReplayOut ReplayMissing(
+            string appId,
+            string endpointId,
+            ReplayIn replayIn,
+            EndpointReplayMissingOptions? options = null
+        )
+        {
+            replayIn = replayIn ?? throw new ArgumentNullException(nameof(replayIn));
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<ReplayOut>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/replay-missing",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    content: replayIn
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(ReplayMissing)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Bulk replay messages sent to the endpoint.
+        ///
+        /// Only messages that were created after `since` will be sent.
+        /// This will replay both successful, and failed messages
+        ///
+        /// A completed task will return a payload like the following:
+        /// ```json
+        /// {
+        ///   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+        ///   "status": "finished",
+        ///   "task": "endpoint.bulk-replay",
+        ///   "data": {
+        ///     "messagesSent": 2
+        ///   }
+        /// }
+        /// ```
+        /// </summary>
+        public async Task<ReplayOut> BulkReplayAsync(
+            string appId,
+            string endpointId,
+            BulkReplayIn bulkReplayIn,
+            EndpointBulkReplayOptions? options = null,
+            CancellationToken cancellationToken = default
+        )
+        {
+            bulkReplayIn = bulkReplayIn ?? throw new ArgumentNullException(nameof(bulkReplayIn));
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<ReplayOut>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/bulk-replay",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    content: bulkReplayIn,
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(BulkReplayAsync)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Bulk replay messages sent to the endpoint.
+        ///
+        /// Only messages that were created after `since` will be sent.
+        /// This will replay both successful, and failed messages
+        ///
+        /// A completed task will return a payload like the following:
+        /// ```json
+        /// {
+        ///   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+        ///   "status": "finished",
+        ///   "task": "endpoint.bulk-replay",
+        ///   "data": {
+        ///     "messagesSent": 2
+        ///   }
+        /// }
+        /// ```
+        /// </summary>
+        public ReplayOut BulkReplay(
+            string appId,
+            string endpointId,
+            BulkReplayIn bulkReplayIn,
+            EndpointBulkReplayOptions? options = null
+        )
+        {
+            bulkReplayIn = bulkReplayIn ?? throw new ArgumentNullException(nameof(bulkReplayIn));
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<ReplayOut>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/bulk-replay",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    content: bulkReplayIn
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(BulkReplay)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Get basic statistics for the endpoint.
+        /// </summary>
+        public async Task<EndpointStats> GetStatsAsync(
+            string appId,
+            string endpointId,
+            EndpointGetStatsOptions? options = null,
+            CancellationToken cancellationToken = default
+        )
+        {
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<EndpointStats>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/stats",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(GetStatsAsync)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Get basic statistics for the endpoint.
+        /// </summary>
+        public EndpointStats GetStats(
+            string appId,
+            string endpointId,
+            EndpointGetStatsOptions? options = null
+        )
+        {
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<EndpointStats>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/stats",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams()
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(GetStats)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Resend all failed messages since a given time.
+        ///
+        /// Messages that were sent successfully, even if failed initially, are not resent.
+        ///
+        /// A completed task will return a payload like the following:
+        /// ```json
+        /// {
+        ///   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+        ///   "status": "finished",
+        ///   "task": "endpoint.recover",
+        ///   "data": {
+        ///     "messagesSent": 2
+        ///   }
+        /// }
+        /// ```
+        /// </summary>
+        public async Task<RecoverOut> RecoverAsync(
+            string appId,
+            string endpointId,
+            RecoverIn recoverIn,
+            EndpointRecoverOptions? options = null,
+            CancellationToken cancellationToken = default
+        )
+        {
+            recoverIn = recoverIn ?? throw new ArgumentNullException(nameof(recoverIn));
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<RecoverOut>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/recover",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    content: recoverIn,
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(RecoverAsync)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Resend all failed messages since a given time.
+        ///
+        /// Messages that were sent successfully, even if failed initially, are not resent.
+        ///
+        /// A completed task will return a payload like the following:
+        /// ```json
+        /// {
+        ///   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+        ///   "status": "finished",
+        ///   "task": "endpoint.recover",
+        ///   "data": {
+        ///     "messagesSent": 2
+        ///   }
+        /// }
+        /// ```
+        /// </summary>
+        public RecoverOut Recover(
+            string appId,
+            string endpointId,
+            RecoverIn recoverIn,
+            EndpointRecoverOptions? options = null
+        )
+        {
+            recoverIn = recoverIn ?? throw new ArgumentNullException(nameof(recoverIn));
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<RecoverOut>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/recover",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    content: recoverIn
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(Recover)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Send an example message for an event.
+        /// </summary>
+        public async Task<MessageOut> SendExampleAsync(
+            string appId,
+            string endpointId,
+            EventExampleIn eventExampleIn,
+            EndpointSendExampleOptions? options = null,
+            CancellationToken cancellationToken = default
+        )
+        {
+            eventExampleIn =
+                eventExampleIn ?? throw new ArgumentNullException(nameof(eventExampleIn));
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<MessageOut>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/send-example",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    content: eventExampleIn,
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(SendExampleAsync)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Send an example message for an event.
+        /// </summary>
+        public MessageOut SendExample(
+            string appId,
+            string endpointId,
+            EventExampleIn eventExampleIn,
+            EndpointSendExampleOptions? options = null
+        )
+        {
+            eventExampleIn =
+                eventExampleIn ?? throw new ArgumentNullException(nameof(eventExampleIn));
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<MessageOut>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/send-example",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    queryParams: options?.QueryParams(),
+                    headerParams: options?.HeaderParams(),
+                    content: eventExampleIn
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(SendExample)} failed");
 
                 throw;
             }
