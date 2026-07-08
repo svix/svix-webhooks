@@ -10,6 +10,36 @@ data class StatisticsAggregateAppStatsOptions(val idempotencyKey: String? = null
 
 class Statistics(private val client: SvixHttpClient) {
     /**
+     * Creates a background task to calculate the listed event types for all apps in the
+     * organization.
+     *
+     * Note that this endpoint is asynchronous. You will need to poll the `Get Background Task`
+     * endpoint to retrieve the results of the operation.
+     *
+     * The completed background task will return a payload like the following:
+     * ```json
+     * {
+     *   "id": "qtask_33qe39Stble9Rn3ZxFrqL5ZSsjT",
+     *   "status": "finished",
+     *   "task": "event-type.aggregate",
+     *   "data": {
+     *     "event_types": [
+     *       {
+     *         "appId": "app_33W1An2Zz5cO9SWbhHsYyDmVC6m",
+     *         "explicitlySubscribedEventTypes": ["user.signup", "user.deleted"],
+     *         "hasCatchAllEndpoint": false
+     *       }
+     *     ]
+     *   }
+     * }
+     * ```
+     */
+    suspend fun aggregateEventTypes(): AggregateEventTypesOut {
+        val url = client.newUrlBuilder().encodedPath("/api/v1/stats/usage/event-types")
+        return client.executeRequest<Any, AggregateEventTypesOut>("PUT", url.build())
+    }
+
+    /**
      * Creates a background task to calculate the number of message attempts (`messageDestinations`)
      * made for all applications in the environment.
      *
@@ -48,35 +78,5 @@ class Statistics(private val client: SvixHttpClient) {
             headers = headers.build(),
             reqBody = appUsageStatsIn,
         )
-    }
-
-    /**
-     * Creates a background task to calculate the listed event types for all apps in the
-     * organization.
-     *
-     * Note that this endpoint is asynchronous. You will need to poll the `Get Background Task`
-     * endpoint to retrieve the results of the operation.
-     *
-     * The completed background task will return a payload like the following:
-     * ```json
-     * {
-     *   "id": "qtask_33qe39Stble9Rn3ZxFrqL5ZSsjT",
-     *   "status": "finished",
-     *   "task": "event-type.aggregate",
-     *   "data": {
-     *     "event_types": [
-     *       {
-     *         "appId": "app_33W1An2Zz5cO9SWbhHsYyDmVC6m",
-     *         "explicitlySubscribedEventTypes": ["user.signup", "user.deleted"],
-     *         "hasCatchAllEndpoint": false
-     *       }
-     *     ]
-     *   }
-     * }
-     * ```
-     */
-    suspend fun aggregateEventTypes(): AggregateEventTypesOut {
-        val url = client.newUrlBuilder().encodedPath("/api/v1/stats/usage/event-types")
-        return client.executeRequest<Any, AggregateEventTypesOut>("PUT", url.build())
     }
 }

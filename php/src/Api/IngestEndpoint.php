@@ -107,36 +107,6 @@ class IngestEndpoint
     }
 
     /**
-     * Get the additional headers to be sent with the ingest.
-     *
-     * @throws ApiException
-     */
-    public function getHeaders(
-        string $sourceId,
-        string $endpointId,
-    ): IngestEndpointHeadersOut {
-        $request = $this->client->newReq('GET', "/ingest/api/v1/source/{$sourceId}/endpoint/{$endpointId}/headers");
-        $res = $this->client->send($request);
-
-        return IngestEndpointHeadersOut::fromJson($res);
-    }
-
-    /**
-     * Set the additional headers to be sent to the endpoint.
-     *
-     * @throws ApiException
-     */
-    public function updateHeaders(
-        string $sourceId,
-        string $endpointId,
-        IngestEndpointHeadersIn $ingestEndpointHeadersIn,
-    ): void {
-        $request = $this->client->newReq('PUT', "/ingest/api/v1/source/{$sourceId}/endpoint/{$endpointId}/headers");
-        $request->setBody(json_encode($ingestEndpointHeadersIn));
-        $res = $this->client->sendNoResponseBody($request);
-    }
-
-    /**
      * Get an ingest endpoint's signing secret.
      *
      * This is used to verify the authenticity of the webhook.
@@ -170,6 +140,36 @@ class IngestEndpoint
         $request = $this->client->newReq('POST', "/ingest/api/v1/source/{$sourceId}/endpoint/{$endpointId}/secret/rotate");
         $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
         $request->setBody(json_encode($ingestEndpointSecretIn));
+        $res = $this->client->sendNoResponseBody($request);
+    }
+
+    /**
+     * Get the additional headers to be sent with the ingest.
+     *
+     * @throws ApiException
+     */
+    public function getHeaders(
+        string $sourceId,
+        string $endpointId,
+    ): IngestEndpointHeadersOut {
+        $request = $this->client->newReq('GET', "/ingest/api/v1/source/{$sourceId}/endpoint/{$endpointId}/headers");
+        $res = $this->client->send($request);
+
+        return IngestEndpointHeadersOut::fromJson($res);
+    }
+
+    /**
+     * Set the additional headers to be sent to the endpoint.
+     *
+     * @throws ApiException
+     */
+    public function updateHeaders(
+        string $sourceId,
+        string $endpointId,
+        IngestEndpointHeadersIn $ingestEndpointHeadersIn,
+    ): void {
+        $request = $this->client->newReq('PUT', "/ingest/api/v1/source/{$sourceId}/endpoint/{$endpointId}/headers");
+        $request->setBody(json_encode($ingestEndpointHeadersIn));
         $res = $this->client->sendNoResponseBody($request);
     }
 

@@ -113,19 +113,6 @@ impl<'a> Integration<'a> {
         .await
     }
 
-    /// Get an integration's key.
-    #[deprecated]
-    pub async fn get_key(&self, app_id: String, integ_id: String) -> Result<IntegrationKeyOut> {
-        crate::request::Request::new(
-            http1::Method::GET,
-            "/api/v1/app/{app_id}/integration/{integ_id}/key",
-        )
-        .with_path_param("app_id", app_id)
-        .with_path_param("integ_id", integ_id)
-        .execute(self.cfg)
-        .await
-    }
-
     /// Rotate the integration's key. The previous key will be immediately
     /// revoked.
     pub async fn rotate_key(
@@ -143,6 +130,19 @@ impl<'a> Integration<'a> {
         .with_path_param("app_id", app_id)
         .with_path_param("integ_id", integ_id)
         .with_optional_header_param("idempotency-key", idempotency_key)
+        .execute(self.cfg)
+        .await
+    }
+
+    /// Get an integration's key.
+    #[deprecated]
+    pub async fn get_key(&self, app_id: String, integ_id: String) -> Result<IntegrationKeyOut> {
+        crate::request::Request::new(
+            http1::Method::GET,
+            "/api/v1/app/{app_id}/integration/{integ_id}/key",
+        )
+        .with_path_param("app_id", app_id)
+        .with_path_param("integ_id", integ_id)
         .execute(self.cfg)
         .await
     }

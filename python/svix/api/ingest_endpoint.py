@@ -143,39 +143,6 @@ class IngestEndpointAsync(ApiBase):
             },
         )
 
-    async def get_headers(
-        self, source_id: str, endpoint_id: str
-    ) -> IngestEndpointHeadersOut:
-        """Get the additional headers to be sent with the ingest."""
-        response = await self._request_asyncio(
-            method="get",
-            path="/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/headers",
-            path_params={
-                "source_id": source_id,
-                "endpoint_id": endpoint_id,
-            },
-        )
-        return IngestEndpointHeadersOut.model_validate(response.json())
-
-    async def update_headers(
-        self,
-        source_id: str,
-        endpoint_id: str,
-        ingest_endpoint_headers_in: IngestEndpointHeadersIn,
-    ) -> None:
-        """Set the additional headers to be sent to the endpoint."""
-        await self._request_asyncio(
-            method="put",
-            path="/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/headers",
-            path_params={
-                "source_id": source_id,
-                "endpoint_id": endpoint_id,
-            },
-            json_body=ingest_endpoint_headers_in.model_dump_json(
-                exclude_unset=True, by_alias=True
-            ),
-        )
-
     async def get_secret(
         self, source_id: str, endpoint_id: str
     ) -> IngestEndpointSecretOut:
@@ -215,6 +182,39 @@ class IngestEndpointAsync(ApiBase):
             query_params=options._query_params(),
             header_params=options._header_params(),
             json_body=ingest_endpoint_secret_in.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
+        )
+
+    async def get_headers(
+        self, source_id: str, endpoint_id: str
+    ) -> IngestEndpointHeadersOut:
+        """Get the additional headers to be sent with the ingest."""
+        response = await self._request_asyncio(
+            method="get",
+            path="/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/headers",
+            path_params={
+                "source_id": source_id,
+                "endpoint_id": endpoint_id,
+            },
+        )
+        return IngestEndpointHeadersOut.model_validate(response.json())
+
+    async def update_headers(
+        self,
+        source_id: str,
+        endpoint_id: str,
+        ingest_endpoint_headers_in: IngestEndpointHeadersIn,
+    ) -> None:
+        """Set the additional headers to be sent to the endpoint."""
+        await self._request_asyncio(
+            method="put",
+            path="/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/headers",
+            path_params={
+                "source_id": source_id,
+                "endpoint_id": endpoint_id,
+            },
+            json_body=ingest_endpoint_headers_in.model_dump_json(
                 exclude_unset=True, by_alias=True
             ),
         )
@@ -335,37 +335,6 @@ class IngestEndpoint(ApiBase):
             },
         )
 
-    def get_headers(self, source_id: str, endpoint_id: str) -> IngestEndpointHeadersOut:
-        """Get the additional headers to be sent with the ingest."""
-        response = self._request_sync(
-            method="get",
-            path="/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/headers",
-            path_params={
-                "source_id": source_id,
-                "endpoint_id": endpoint_id,
-            },
-        )
-        return IngestEndpointHeadersOut.model_validate(response.json())
-
-    def update_headers(
-        self,
-        source_id: str,
-        endpoint_id: str,
-        ingest_endpoint_headers_in: IngestEndpointHeadersIn,
-    ) -> None:
-        """Set the additional headers to be sent to the endpoint."""
-        self._request_sync(
-            method="put",
-            path="/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/headers",
-            path_params={
-                "source_id": source_id,
-                "endpoint_id": endpoint_id,
-            },
-            json_body=ingest_endpoint_headers_in.model_dump_json(
-                exclude_unset=True, by_alias=True
-            ),
-        )
-
     def get_secret(self, source_id: str, endpoint_id: str) -> IngestEndpointSecretOut:
         """Get an ingest endpoint's signing secret.
 
@@ -403,6 +372,37 @@ class IngestEndpoint(ApiBase):
             query_params=options._query_params(),
             header_params=options._header_params(),
             json_body=ingest_endpoint_secret_in.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
+        )
+
+    def get_headers(self, source_id: str, endpoint_id: str) -> IngestEndpointHeadersOut:
+        """Get the additional headers to be sent with the ingest."""
+        response = self._request_sync(
+            method="get",
+            path="/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/headers",
+            path_params={
+                "source_id": source_id,
+                "endpoint_id": endpoint_id,
+            },
+        )
+        return IngestEndpointHeadersOut.model_validate(response.json())
+
+    def update_headers(
+        self,
+        source_id: str,
+        endpoint_id: str,
+        ingest_endpoint_headers_in: IngestEndpointHeadersIn,
+    ) -> None:
+        """Set the additional headers to be sent to the endpoint."""
+        self._request_sync(
+            method="put",
+            path="/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/headers",
+            path_params={
+                "source_id": source_id,
+                "endpoint_id": endpoint_id,
+            },
+            json_body=ingest_endpoint_headers_in.model_dump_json(
                 exclude_unset=True, by_alias=True
             ),
         )

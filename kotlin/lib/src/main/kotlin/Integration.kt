@@ -80,17 +80,6 @@ class Integration(private val client: SvixHttpClient) {
         client.executeRequest<Any, Boolean>("DELETE", url.build())
     }
 
-    /**
-     * Get an integration's key.
-     *
-     * @deprecated
-     */
-    @Deprecated("")
-    suspend fun getKey(appId: String, integId: String): IntegrationKeyOut {
-        val url = client.newUrlBuilder().encodedPath("/api/v1/app/$appId/integration/$integId/key")
-        return client.executeRequest<Any, IntegrationKeyOut>("GET", url.build())
-    }
-
     /** Rotate the integration's key. The previous key will be immediately revoked. */
     suspend fun rotateKey(
         appId: String,
@@ -106,5 +95,16 @@ class Integration(private val client: SvixHttpClient) {
             url.build(),
             headers = headers.build(),
         )
+    }
+
+    /**
+     * Get an integration's key.
+     *
+     * @deprecated
+     */
+    @Deprecated("")
+    suspend fun getKey(appId: String, integId: String): IntegrationKeyOut {
+        val url = client.newUrlBuilder().encodedPath("/api/v1/app/$appId/integration/$integId/key")
+        return client.executeRequest<Any, IntegrationKeyOut>("GET", url.build())
     }
 }

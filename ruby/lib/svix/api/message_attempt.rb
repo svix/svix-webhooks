@@ -76,6 +76,19 @@ module Svix
       ListResponseEndpointMessageOut.deserialize(res)
     end
 
+    def list_attempted_destinations(app_id, msg_id, options = {})
+      options = options.transform_keys(&:to_s)
+      res = @client.execute_request(
+        "GET",
+        "/api/v1/app/#{app_id}/msg/#{msg_id}/endpoint",
+        query_params: {
+          "limit" => options["limit"],
+          "iterator" => options["iterator"]
+        }
+      )
+      ListResponseMessageEndpointOut.deserialize(res)
+    end
+
     def get(app_id, msg_id, attempt_id, options = {})
       options = options.transform_keys(&:to_s)
       res = @client.execute_request(
@@ -93,19 +106,6 @@ module Svix
         "DELETE",
         "/api/v1/app/#{app_id}/msg/#{msg_id}/attempt/#{attempt_id}/content"
       )
-    end
-
-    def list_attempted_destinations(app_id, msg_id, options = {})
-      options = options.transform_keys(&:to_s)
-      res = @client.execute_request(
-        "GET",
-        "/api/v1/app/#{app_id}/msg/#{msg_id}/endpoint",
-        query_params: {
-          "limit" => options["limit"],
-          "iterator" => options["iterator"]
-        }
-      )
-      ListResponseMessageEndpointOut.deserialize(res)
     end
 
     def resend(app_id, msg_id, endpoint_id, options = {})

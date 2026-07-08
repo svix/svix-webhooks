@@ -22,6 +22,17 @@ module Svix
       AppPortalAccessOut.deserialize(res)
     end
 
+    def logout(options = {})
+      options = options.transform_keys(&:to_s)
+      @client.execute_request(
+        "POST",
+        "/api/v1/auth/logout",
+        headers: {
+          "idempotency-key" => options["idempotency-key"]
+        }
+      )
+    end
+
     def expire_all(app_id, application_token_expire_in, options = {})
       options = options.transform_keys(&:to_s)
       @client.execute_request(
@@ -46,28 +57,6 @@ module Svix
       DashboardAccessOut.deserialize(res)
     end
 
-    def logout(options = {})
-      options = options.transform_keys(&:to_s)
-      @client.execute_request(
-        "POST",
-        "/api/v1/auth/logout",
-        headers: {
-          "idempotency-key" => options["idempotency-key"]
-        }
-      )
-    end
-
-    def stream_logout(options = {})
-      options = options.transform_keys(&:to_s)
-      @client.execute_request(
-        "POST",
-        "/api/v1/auth/stream-logout",
-        headers: {
-          "idempotency-key" => options["idempotency-key"]
-        }
-      )
-    end
-
     def stream_portal_access(stream_id, stream_portal_access_in, options = {})
       options = options.transform_keys(&:to_s)
       res = @client.execute_request(
@@ -79,6 +68,17 @@ module Svix
         body: stream_portal_access_in
       )
       AppPortalAccessOut.deserialize(res)
+    end
+
+    def stream_logout(options = {})
+      options = options.transform_keys(&:to_s)
+      @client.execute_request(
+        "POST",
+        "/api/v1/auth/stream-logout",
+        headers: {
+          "idempotency-key" => options["idempotency-key"]
+        }
+      )
     end
 
     def stream_expire_all(stream_id, stream_token_expire_in, options = {})
@@ -93,14 +93,6 @@ module Svix
       )
     end
 
-    def get_stream_poller_token(stream_id, sink_id)
-      res = @client.execute_request(
-        "GET",
-        "/api/v1/auth/stream/#{stream_id}/sink/#{sink_id}/poller/token"
-      )
-      ApiTokenOut.deserialize(res)
-    end
-
     def rotate_stream_poller_token(stream_id, sink_id, rotate_poller_token_in, options = {})
       options = options.transform_keys(&:to_s)
       res = @client.execute_request(
@@ -110,6 +102,14 @@ module Svix
           "idempotency-key" => options["idempotency-key"]
         },
         body: rotate_poller_token_in
+      )
+      ApiTokenOut.deserialize(res)
+    end
+
+    def get_stream_poller_token(stream_id, sink_id)
+      res = @client.execute_request(
+        "GET",
+        "/api/v1/auth/stream/#{stream_id}/sink/#{sink_id}/poller/token"
       )
       ApiTokenOut.deserialize(res)
     end

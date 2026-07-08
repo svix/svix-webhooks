@@ -167,30 +167,6 @@ func (integration *Integration) Delete(
 	return err
 }
 
-// Get an integration's key.
-//
-// Deprecated: GetKey is deprecated.
-func (integration *Integration) GetKey(
-	ctx context.Context,
-	appId string,
-	integId string,
-) (*models.IntegrationKeyOut, error) {
-	pathMap := map[string]string{
-		"app_id":   appId,
-		"integ_id": integId,
-	}
-	return internal.ExecuteRequest[any, models.IntegrationKeyOut](
-		ctx,
-		integration.client,
-		"GET",
-		"/api/v1/app/{app_id}/integration/{integ_id}/key",
-		pathMap,
-		nil,
-		nil,
-		nil,
-	)
-}
-
 // Rotate the integration's key. The previous key will be immediately revoked.
 func (integration *Integration) RotateKey(
 	ctx context.Context,
@@ -219,6 +195,30 @@ func (integration *Integration) RotateKey(
 		pathMap,
 		nil,
 		headerMap,
+		nil,
+	)
+}
+
+// Get an integration's key.
+//
+// Deprecated: GetKey is deprecated.
+func (integration *Integration) GetKey(
+	ctx context.Context,
+	appId string,
+	integId string,
+) (*models.IntegrationKeyOut, error) {
+	pathMap := map[string]string{
+		"app_id":   appId,
+		"integ_id": integId,
+	}
+	return internal.ExecuteRequest[any, models.IntegrationKeyOut](
+		ctx,
+		integration.client,
+		"GET",
+		"/api/v1/app/{app_id}/integration/{integ_id}/key",
+		pathMap,
+		nil,
+		nil,
 		nil,
 	)
 }

@@ -11,10 +11,6 @@ import {
 import { type EventStreamOut, EventStreamOutSerializer } from "../models/eventStreamOut";
 import { HttpMethod, SvixRequest, type SvixRequestContext } from "../request";
 
-export interface StreamingEventsCreateOptions {
-  idempotencyKey?: string;
-}
-
 export interface StreamingEventsGetOptions {
   /** Limit the number of returned items */
   limit?: number;
@@ -23,26 +19,12 @@ export interface StreamingEventsGetOptions {
   after?: Date | null;
 }
 
+export interface StreamingEventsCreateOptions {
+  idempotencyKey?: string;
+}
+
 export class StreamingEvents {
   public constructor(private readonly requestCtx: SvixRequestContext) {}
-
-  /** Creates events on the Stream. */
-  public async create(
-    streamId: string,
-    createStreamEventsIn: CreateStreamEventsIn,
-    options?: StreamingEventsCreateOptions
-  ): Promise<CreateStreamEventsOut> {
-    const request = new SvixRequest(HttpMethod.POST, "/api/v1/stream/{stream_id}/events");
-
-    request.setPathParam("stream_id", streamId);
-    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
-    request.setBody(CreateStreamEventsInSerializer._toJsonObject(createStreamEventsIn));
-
-    return await request.send(
-      this.requestCtx,
-      CreateStreamEventsOutSerializer._fromJsonObject
-    );
-  }
 
   /**
    * Iterate over a stream of events.
@@ -68,5 +50,23 @@ export class StreamingEvents {
     });
 
     return await request.send(this.requestCtx, EventStreamOutSerializer._fromJsonObject);
+  }
+
+  /** Creates events on the Stream. */
+  public async create(
+    streamId: string,
+    createStreamEventsIn: CreateStreamEventsIn,
+    options?: StreamingEventsCreateOptions
+  ): Promise<CreateStreamEventsOut> {
+    const request = new SvixRequest(HttpMethod.POST, "/api/v1/stream/{stream_id}/events");
+
+    request.setPathParam("stream_id", streamId);
+    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
+    request.setBody(CreateStreamEventsInSerializer._toJsonObject(createStreamEventsIn));
+
+    return await request.send(
+      this.requestCtx,
+      CreateStreamEventsOutSerializer._fromJsonObject
+    );
   }
 }

@@ -31,15 +31,15 @@ type MessagePollerPollOptions struct {
 	After   *time.Time
 }
 
+type MessagePollerConsumerSeekOptions struct {
+	IdempotencyKey *string
+}
+
 type MessagePollerConsumerPollOptions struct {
 	// Limit the number of returned items
 	Limit *uint64
 	// The iterator returned from a prior invocation
 	Iterator *string
-}
-
-type MessagePollerConsumerSeekOptions struct {
-	IdempotencyKey *string
 }
 
 // Reads the stream of created messages for an application, filtered on the Sink's event types and Channels.
@@ -71,42 +71,6 @@ func (messagePoller *MessagePoller) Poll(
 		messagePoller.client,
 		"GET",
 		"/api/v1/app/{app_id}/poller/{sink_id}",
-		pathMap,
-		queryMap,
-		nil,
-		nil,
-	)
-}
-
-// Reads the stream of created messages for an application, filtered on the Sink's event types and
-// Channels, using server-managed iterator tracking.
-func (messagePoller *MessagePoller) ConsumerPoll(
-	ctx context.Context,
-	appId string,
-	sinkId string,
-	consumerId string,
-	o *MessagePollerConsumerPollOptions,
-) (*models.PollingEndpointOut, error) {
-	pathMap := map[string]string{
-		"app_id":      appId,
-		"sink_id":     sinkId,
-		"consumer_id": consumerId,
-	}
-	queryMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
-		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return internal.ExecuteRequest[any, models.PollingEndpointOut](
-		ctx,
-		messagePoller.client,
-		"GET",
-		"/api/v1/app/{app_id}/poller/{sink_id}/consumer/{consumer_id}",
 		pathMap,
 		queryMap,
 		nil,
@@ -146,5 +110,41 @@ func (messagePoller *MessagePoller) ConsumerSeek(
 		nil,
 		headerMap,
 		&pollingEndpointConsumerSeekIn,
+	)
+}
+
+// Reads the stream of created messages for an application, filtered on the Sink's event types and
+// Channels, using server-managed iterator tracking.
+func (messagePoller *MessagePoller) ConsumerPoll(
+	ctx context.Context,
+	appId string,
+	sinkId string,
+	consumerId string,
+	o *MessagePollerConsumerPollOptions,
+) (*models.PollingEndpointOut, error) {
+	pathMap := map[string]string{
+		"app_id":      appId,
+		"sink_id":     sinkId,
+		"consumer_id": consumerId,
+	}
+	queryMap := map[string]string{}
+	if o != nil {
+		var err error
+
+		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
+		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return internal.ExecuteRequest[any, models.PollingEndpointOut](
+		ctx,
+		messagePoller.client,
+		"GET",
+		"/api/v1/app/{app_id}/poller/{sink_id}/consumer/{consumer_id}",
+		pathMap,
+		queryMap,
+		nil,
+		nil,
 	)
 }

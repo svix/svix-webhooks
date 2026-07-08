@@ -8,18 +8,6 @@ from .common import ApiBase, BaseOptions, serialize_params
 
 
 @dataclass
-class StreamingEventsCreateOptions(BaseOptions):
-    idempotency_key: t.Optional[str] = None
-
-    def _header_params(self) -> t.Dict[str, str]:
-        return serialize_params(
-            {
-                "idempotency-key": self.idempotency_key,
-            }
-        )
-
-
-@dataclass
 class StreamingEventsGetOptions(BaseOptions):
     limit: t.Optional[int] = None
     """Limit the number of returned items"""
@@ -37,28 +25,19 @@ class StreamingEventsGetOptions(BaseOptions):
         )
 
 
-class StreamingEventsAsync(ApiBase):
-    async def create(
-        self,
-        stream_id: str,
-        create_stream_events_in: CreateStreamEventsIn,
-        options: StreamingEventsCreateOptions = (StreamingEventsCreateOptions()),
-    ) -> CreateStreamEventsOut:
-        """Creates events on the Stream."""
-        response = await self._request_asyncio(
-            method="post",
-            path="/api/v1/stream/{stream_id}/events",
-            path_params={
-                "stream_id": stream_id,
-            },
-            query_params=options._query_params(),
-            header_params=options._header_params(),
-            json_body=create_stream_events_in.model_dump_json(
-                exclude_unset=True, by_alias=True
-            ),
-        )
-        return CreateStreamEventsOut.model_validate(response.json())
+@dataclass
+class StreamingEventsCreateOptions(BaseOptions):
+    idempotency_key: t.Optional[str] = None
 
+    def _header_params(self) -> t.Dict[str, str]:
+        return serialize_params(
+            {
+                "idempotency-key": self.idempotency_key,
+            }
+        )
+
+
+class StreamingEventsAsync(ApiBase):
     async def get(
         self,
         stream_id: str,
@@ -80,16 +59,14 @@ class StreamingEventsAsync(ApiBase):
         )
         return EventStreamOut.model_validate(response.json())
 
-
-class StreamingEvents(ApiBase):
-    def create(
+    async def create(
         self,
         stream_id: str,
         create_stream_events_in: CreateStreamEventsIn,
         options: StreamingEventsCreateOptions = (StreamingEventsCreateOptions()),
     ) -> CreateStreamEventsOut:
         """Creates events on the Stream."""
-        response = self._request_sync(
+        response = await self._request_asyncio(
             method="post",
             path="/api/v1/stream/{stream_id}/events",
             path_params={
@@ -103,6 +80,8 @@ class StreamingEvents(ApiBase):
         )
         return CreateStreamEventsOut.model_validate(response.json())
 
+
+class StreamingEvents(ApiBase):
     def get(
         self,
         stream_id: str,
@@ -123,3 +102,24 @@ class StreamingEvents(ApiBase):
             header_params=options._header_params(),
         )
         return EventStreamOut.model_validate(response.json())
+
+    def create(
+        self,
+        stream_id: str,
+        create_stream_events_in: CreateStreamEventsIn,
+        options: StreamingEventsCreateOptions = (StreamingEventsCreateOptions()),
+    ) -> CreateStreamEventsOut:
+        """Creates events on the Stream."""
+        response = self._request_sync(
+            method="post",
+            path="/api/v1/stream/{stream_id}/events",
+            path_params={
+                "stream_id": stream_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
+            json_body=create_stream_events_in.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
+        )
+        return CreateStreamEventsOut.model_validate(response.json())

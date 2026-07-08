@@ -114,6 +114,13 @@ export interface MessageAttemptListAttemptedMessagesOptions {
   eventTypes?: string[];
 }
 
+export interface MessageAttemptListAttemptedDestinationsOptions {
+  /** Limit the number of returned items */
+  limit?: number;
+  /** The iterator returned from a prior invocation */
+  iterator?: string | null;
+}
+
 export interface MessageAttemptGetOptions {
   /**
    * When `true`, return the Canceled (4) status in attempts.
@@ -121,13 +128,6 @@ export interface MessageAttemptGetOptions {
    * If `false`, canceled attempts are returned as Success (0) for backwards compatibility.
    */
   expandedStatuses?: boolean;
-}
-
-export interface MessageAttemptListAttemptedDestinationsOptions {
-  /** Limit the number of returned items */
-  limit?: number;
-  /** The iterator returned from a prior invocation */
-  iterator?: string | null;
 }
 
 export interface MessageAttemptResendOptions {
@@ -261,6 +261,35 @@ export class MessageAttempt {
     );
   }
 
+  /**
+   * List endpoints attempted by a given message.
+   *
+   * Additionally includes metadata about the latest message attempt.
+   * By default, endpoints are listed in ascending order by ID.
+   */
+  public async listAttemptedDestinations(
+    appId: string,
+    msgId: string,
+    options?: MessageAttemptListAttemptedDestinationsOptions
+  ): Promise<ListResponseMessageEndpointOut> {
+    const request = new SvixRequest(
+      HttpMethod.GET,
+      "/api/v1/app/{app_id}/msg/{msg_id}/endpoint"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("msg_id", msgId);
+    request.setQueryParams({
+      limit: options?.limit,
+      iterator: options?.iterator,
+    });
+
+    return await request.send(
+      this.requestCtx,
+      ListResponseMessageEndpointOutSerializer._fromJsonObject
+    );
+  }
+
   /** `msg_id`: Use a message id or a message `eventId` */
   public async get(
     appId: string,
@@ -307,35 +336,6 @@ export class MessageAttempt {
     request.setPathParam("attempt_id", attemptId);
 
     return await request.sendNoResponseBody(this.requestCtx);
-  }
-
-  /**
-   * List endpoints attempted by a given message.
-   *
-   * Additionally includes metadata about the latest message attempt.
-   * By default, endpoints are listed in ascending order by ID.
-   */
-  public async listAttemptedDestinations(
-    appId: string,
-    msgId: string,
-    options?: MessageAttemptListAttemptedDestinationsOptions
-  ): Promise<ListResponseMessageEndpointOut> {
-    const request = new SvixRequest(
-      HttpMethod.GET,
-      "/api/v1/app/{app_id}/msg/{msg_id}/endpoint"
-    );
-
-    request.setPathParam("app_id", appId);
-    request.setPathParam("msg_id", msgId);
-    request.setQueryParams({
-      limit: options?.limit,
-      iterator: options?.iterator,
-    });
-
-    return await request.send(
-      this.requestCtx,
-      ListResponseMessageEndpointOutSerializer._fromJsonObject
-    );
   }
 
   /** Resend a message to the specified endpoint. */

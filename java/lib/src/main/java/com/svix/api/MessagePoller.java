@@ -60,42 +60,6 @@ public class MessagePoller {
         return this.client.executeRequest("GET", url.build(), null, null, PollingEndpointOut.class);
     }
 
-    /**
-     * Reads the stream of created messages for an application, filtered on the Sink's event types
-     * and Channels, using server-managed iterator tracking.
-     */
-    public PollingEndpointOut consumerPoll(
-            final String appId, final String sinkId, final String consumerId)
-            throws IOException, ApiException {
-        return this.consumerPoll(appId, sinkId, consumerId, new MessagePollerConsumerPollOptions());
-    }
-
-    /**
-     * Reads the stream of created messages for an application, filtered on the Sink's event types
-     * and Channels, using server-managed iterator tracking.
-     */
-    public PollingEndpointOut consumerPoll(
-            final String appId,
-            final String sinkId,
-            final String consumerId,
-            final MessagePollerConsumerPollOptions options)
-            throws IOException, ApiException {
-        HttpUrl.Builder url =
-                this.client
-                        .newUrlBuilder()
-                        .encodedPath(
-                                String.format(
-                                        "/api/v1/app/%s/poller/%s/consumer/%s",
-                                        appId, sinkId, consumerId));
-        if (options.limit != null) {
-            url.addQueryParameter("limit", Utils.serializeQueryParam(options.limit));
-        }
-        if (options.iterator != null) {
-            url.addQueryParameter("iterator", options.iterator);
-        }
-        return this.client.executeRequest("GET", url.build(), null, null, PollingEndpointOut.class);
-    }
-
     /** Sets the starting offset for the consumer of a polling endpoint. */
     public PollingEndpointConsumerSeekOut consumerSeek(
             final String appId,
@@ -136,5 +100,41 @@ public class MessagePoller {
                 Headers.of(headers),
                 pollingEndpointConsumerSeekIn,
                 PollingEndpointConsumerSeekOut.class);
+    }
+
+    /**
+     * Reads the stream of created messages for an application, filtered on the Sink's event types
+     * and Channels, using server-managed iterator tracking.
+     */
+    public PollingEndpointOut consumerPoll(
+            final String appId, final String sinkId, final String consumerId)
+            throws IOException, ApiException {
+        return this.consumerPoll(appId, sinkId, consumerId, new MessagePollerConsumerPollOptions());
+    }
+
+    /**
+     * Reads the stream of created messages for an application, filtered on the Sink's event types
+     * and Channels, using server-managed iterator tracking.
+     */
+    public PollingEndpointOut consumerPoll(
+            final String appId,
+            final String sinkId,
+            final String consumerId,
+            final MessagePollerConsumerPollOptions options)
+            throws IOException, ApiException {
+        HttpUrl.Builder url =
+                this.client
+                        .newUrlBuilder()
+                        .encodedPath(
+                                String.format(
+                                        "/api/v1/app/%s/poller/%s/consumer/%s",
+                                        appId, sinkId, consumerId));
+        if (options.limit != null) {
+            url.addQueryParameter("limit", Utils.serializeQueryParam(options.limit));
+        }
+        if (options.iterator != null) {
+            url.addQueryParameter("iterator", options.iterator);
+        }
+        return this.client.executeRequest("GET", url.build(), null, null, PollingEndpointOut.class);
     }
 }

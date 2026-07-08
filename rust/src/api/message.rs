@@ -42,11 +42,6 @@ pub struct MessageCreateOptions {
 }
 
 #[derive(Default)]
-pub struct MessageExpungeAllContentsOptions {
-    pub idempotency_key: Option<String>,
-}
-
-#[derive(Default)]
 pub struct MessagePrecheckOptions {
     pub idempotency_key: Option<String>,
 }
@@ -55,6 +50,11 @@ pub struct MessagePrecheckOptions {
 pub struct MessageGetOptions {
     /// When `true` message payloads are included in the response.
     pub with_content: Option<bool>,
+}
+
+#[derive(Default)]
+pub struct MessageExpungeAllContentsOptions {
+    pub idempotency_key: Option<String>,
 }
 
 pub struct Message<'a> {
@@ -157,38 +157,6 @@ impl<'a> Message<'a> {
         }
 
         Ok(response)
-    }
-
-    /// Delete all message payloads for the application.
-    ///
-    /// This operation is only available in the <a href="https://svix.com/pricing" target="_blank">Enterprise</a> plan.
-    ///
-    /// A completed task will return a payload like the following:
-    /// ```json
-    /// {
-    ///   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
-    ///   "status": "finished",
-    ///   "task": "application.purge_content",
-    ///   "data": {
-    ///     "messagesPurged": 150
-    ///   }
-    /// }
-    /// ```
-    pub async fn expunge_all_contents(
-        &self,
-        app_id: String,
-        options: Option<MessageExpungeAllContentsOptions>,
-    ) -> Result<ExpungeAllContentsOut> {
-        let MessageExpungeAllContentsOptions { idempotency_key } = options.unwrap_or_default();
-
-        crate::request::Request::new(
-            http1::Method::POST,
-            "/api/v1/app/{app_id}/msg/expunge-all-contents",
-        )
-        .with_path_param("app_id", app_id)
-        .with_optional_header_param("idempotency-key", idempotency_key)
-        .execute(self.cfg)
-        .await
     }
 
     /// A pre-check call for `message.create` that checks whether any active
@@ -301,6 +269,38 @@ impl<'a> Message<'a> {
         .with_optional_query_param("event_types", event_types)
         .with_optional_query_param("channels", channels)
         .with_optional_query_param("after", after)
+        .execute(self.cfg)
+        .await
+    }
+
+    /// Delete all message payloads for the application.
+    ///
+    /// This operation is only available in the <a href="https://svix.com/pricing" target="_blank">Enterprise</a> plan.
+    ///
+    /// A completed task will return a payload like the following:
+    /// ```json
+    /// {
+    ///   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+    ///   "status": "finished",
+    ///   "task": "application.purge_content",
+    ///   "data": {
+    ///     "messagesPurged": 150
+    ///   }
+    /// }
+    /// ```
+    pub async fn expunge_all_contents(
+        &self,
+        app_id: String,
+        options: Option<MessageExpungeAllContentsOptions>,
+    ) -> Result<ExpungeAllContentsOut> {
+        let MessageExpungeAllContentsOptions { idempotency_key } = options.unwrap_or_default();
+
+        crate::request::Request::new(
+            http1::Method::POST,
+            "/api/v1/app/{app_id}/msg/expunge-all-contents",
+        )
+        .with_path_param("app_id", app_id)
+        .with_optional_header_param("idempotency-key", idempotency_key)
         .execute(self.cfg)
         .await
     }

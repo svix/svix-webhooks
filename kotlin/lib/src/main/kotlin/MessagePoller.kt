@@ -19,14 +19,14 @@ data class MessagePollerPollOptions(
     val after: Instant? = null,
 )
 
+data class MessagePollerConsumerSeekOptions(val idempotencyKey: String? = null)
+
 data class MessagePollerConsumerPollOptions(
     /** Limit the number of returned items */
     val limit: ULong? = null,
     /** The iterator returned from a prior invocation */
     val iterator: String? = null,
 )
-
-data class MessagePollerConsumerSeekOptions(val idempotencyKey: String? = null)
 
 class MessagePoller(private val client: SvixHttpClient) {
     /**
@@ -44,25 +44,6 @@ class MessagePoller(private val client: SvixHttpClient) {
         options.eventType?.let { url.addQueryParameter("event_type", it) }
         options.channel?.let { url.addQueryParameter("channel", it) }
         options.after?.let { url.addQueryParameter("after", serializeQueryParam(it)) }
-        return client.executeRequest<Any, PollingEndpointOut>("GET", url.build())
-    }
-
-    /**
-     * Reads the stream of created messages for an application, filtered on the Sink's event types
-     * and Channels, using server-managed iterator tracking.
-     */
-    suspend fun consumerPoll(
-        appId: String,
-        sinkId: String,
-        consumerId: String,
-        options: MessagePollerConsumerPollOptions = MessagePollerConsumerPollOptions(),
-    ): PollingEndpointOut {
-        val url =
-            client
-                .newUrlBuilder()
-                .encodedPath("/api/v1/app/$appId/poller/$sinkId/consumer/$consumerId")
-        options.limit?.let { url.addQueryParameter("limit", serializeQueryParam(it)) }
-        options.iterator?.let { url.addQueryParameter("iterator", it) }
         return client.executeRequest<Any, PollingEndpointOut>("GET", url.build())
     }
 
@@ -87,5 +68,24 @@ class MessagePoller(private val client: SvixHttpClient) {
             headers = headers.build(),
             reqBody = pollingEndpointConsumerSeekIn,
         )
+    }
+
+    /**
+     * Reads the stream of created messages for an application, filtered on the Sink's event types
+     * and Channels, using server-managed iterator tracking.
+     */
+    suspend fun consumerPoll(
+        appId: String,
+        sinkId: String,
+        consumerId: String,
+        options: MessagePollerConsumerPollOptions = MessagePollerConsumerPollOptions(),
+    ): PollingEndpointOut {
+        val url =
+            client
+                .newUrlBuilder()
+                .encodedPath("/api/v1/app/$appId/poller/$sinkId/consumer/$consumerId")
+        options.limit?.let { url.addQueryParameter("limit", serializeQueryParam(it)) }
+        options.iterator?.let { url.addQueryParameter("iterator", it) }
+        return client.executeRequest<Any, PollingEndpointOut>("GET", url.build())
     }
 }

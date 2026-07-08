@@ -9,19 +9,6 @@ module Svix
       @client = client
     end
 
-    def create(stream_id, create_stream_events_in, options = {})
-      options = options.transform_keys(&:to_s)
-      res = @client.execute_request(
-        "POST",
-        "/api/v1/stream/#{stream_id}/events",
-        headers: {
-          "idempotency-key" => options["idempotency-key"]
-        },
-        body: create_stream_events_in
-      )
-      CreateStreamEventsOut.deserialize(res)
-    end
-
     def get(stream_id, sink_id, options = {})
       options = options.transform_keys(&:to_s)
       res = @client.execute_request(
@@ -34,6 +21,19 @@ module Svix
         }
       )
       EventStreamOut.deserialize(res)
+    end
+
+    def create(stream_id, create_stream_events_in, options = {})
+      options = options.transform_keys(&:to_s)
+      res = @client.execute_request(
+        "POST",
+        "/api/v1/stream/#{stream_id}/events",
+        headers: {
+          "idempotency-key" => options["idempotency-key"]
+        },
+        body: create_stream_events_in
+      )
+      CreateStreamEventsOut.deserialize(res)
     end
 
   end

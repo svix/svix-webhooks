@@ -121,6 +121,27 @@ class MessageAttempt
     }
 
     /**
+     * List endpoints attempted by a given message.
+     *
+     * Additionally includes metadata about the latest message attempt.
+     * By default, endpoints are listed in ascending order by ID.
+     *
+     * @throws ApiException
+     */
+    public function listAttemptedDestinations(
+        string $appId,
+        string $msgId,
+        ?MessageAttemptListAttemptedDestinationsOptions $options = null,
+    ): ListResponseMessageEndpointOut {
+        $request = $this->client->newReq('GET', "/api/v1/app/{$appId}/msg/{$msgId}/endpoint");
+        $request->setQueryParam('limit', $options?->limit);
+        $request->setQueryParam('iterator', $options?->iterator);
+        $res = $this->client->send($request);
+
+        return ListResponseMessageEndpointOut::fromJson($res);
+    }
+
+    /**
      * `msg_id`: Use a message id or a message `eventId`.
      *
      * @throws ApiException
@@ -153,27 +174,6 @@ class MessageAttempt
     ): void {
         $request = $this->client->newReq('DELETE', "/api/v1/app/{$appId}/msg/{$msgId}/attempt/{$attemptId}/content");
         $res = $this->client->sendNoResponseBody($request);
-    }
-
-    /**
-     * List endpoints attempted by a given message.
-     *
-     * Additionally includes metadata about the latest message attempt.
-     * By default, endpoints are listed in ascending order by ID.
-     *
-     * @throws ApiException
-     */
-    public function listAttemptedDestinations(
-        string $appId,
-        string $msgId,
-        ?MessageAttemptListAttemptedDestinationsOptions $options = null,
-    ): ListResponseMessageEndpointOut {
-        $request = $this->client->newReq('GET', "/api/v1/app/{$appId}/msg/{$msgId}/endpoint");
-        $request->setQueryParam('limit', $options?->limit);
-        $request->setQueryParam('iterator', $options?->iterator);
-        $res = $this->client->send($request);
-
-        return ListResponseMessageEndpointOut::fromJson($res);
     }
 
     /**

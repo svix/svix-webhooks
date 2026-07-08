@@ -18,66 +18,12 @@ func newManagementAuthentication(client *internal.SvixHttpClient) *ManagementAut
 	}
 }
 
-type ManagementAuthenticationCreateApiTokenOptions struct {
-	IdempotencyKey *string
-}
-
 type ManagementAuthenticationExpireApiTokenOptions struct {
 	IdempotencyKey *string
 }
 
-// Create a new API Token.
-func (managementAuthentication *ManagementAuthentication) CreateApiToken(
-	ctx context.Context,
-	envId string,
-	apiTokenIn models.ApiTokenIn,
-	o *ManagementAuthenticationCreateApiTokenOptions,
-) (*models.ApiTokenOut, error) {
-	pathMap := map[string]string{
-		"env_id": envId,
-	}
-	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return internal.ExecuteRequest[models.ApiTokenIn, models.ApiTokenOut](
-		ctx,
-		managementAuthentication.client,
-		"POST",
-		"/api/v1/management/authentication/{env_id}/api-token",
-		pathMap,
-		nil,
-		headerMap,
-		&apiTokenIn,
-	)
-}
-
-// Patch an API token
-func (managementAuthentication *ManagementAuthentication) PatchApiToken(
-	ctx context.Context,
-	envId string,
-	keyId string,
-	apiTokenPatch models.ApiTokenPatch,
-) (*models.ApiTokenCensoredOut, error) {
-	pathMap := map[string]string{
-		"env_id": envId,
-		"key_id": keyId,
-	}
-	return internal.ExecuteRequest[models.ApiTokenPatch, models.ApiTokenCensoredOut](
-		ctx,
-		managementAuthentication.client,
-		"PATCH",
-		"/api/v1/management/authentication/{env_id}/api-token/{key_id}",
-		pathMap,
-		nil,
-		nil,
-		&apiTokenPatch,
-	)
+type ManagementAuthenticationCreateApiTokenOptions struct {
+	IdempotencyKey *string
 }
 
 // Expire the selected API Token.
@@ -112,4 +58,58 @@ func (managementAuthentication *ManagementAuthentication) ExpireApiToken(
 		&apiTokenExpireIn,
 	)
 	return err
+}
+
+// Patch an API token
+func (managementAuthentication *ManagementAuthentication) PatchApiToken(
+	ctx context.Context,
+	envId string,
+	keyId string,
+	apiTokenPatch models.ApiTokenPatch,
+) (*models.ApiTokenCensoredOut, error) {
+	pathMap := map[string]string{
+		"env_id": envId,
+		"key_id": keyId,
+	}
+	return internal.ExecuteRequest[models.ApiTokenPatch, models.ApiTokenCensoredOut](
+		ctx,
+		managementAuthentication.client,
+		"PATCH",
+		"/api/v1/management/authentication/{env_id}/api-token/{key_id}",
+		pathMap,
+		nil,
+		nil,
+		&apiTokenPatch,
+	)
+}
+
+// Create a new API Token.
+func (managementAuthentication *ManagementAuthentication) CreateApiToken(
+	ctx context.Context,
+	envId string,
+	apiTokenIn models.ApiTokenIn,
+	o *ManagementAuthenticationCreateApiTokenOptions,
+) (*models.ApiTokenOut, error) {
+	pathMap := map[string]string{
+		"env_id": envId,
+	}
+	headerMap := map[string]string{}
+	if o != nil {
+		var err error
+
+		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return internal.ExecuteRequest[models.ApiTokenIn, models.ApiTokenOut](
+		ctx,
+		managementAuthentication.client,
+		"POST",
+		"/api/v1/management/authentication/{env_id}/api-token",
+		pathMap,
+		nil,
+		headerMap,
+		&apiTokenIn,
+	)
 }

@@ -37,15 +37,11 @@ data class EndpointListOptions(
 
 data class EndpointCreateOptions(val idempotencyKey: String? = null)
 
-data class EndpointBulkReplayOptions(val idempotencyKey: String? = null)
-
-data class EndpointRecoverOptions(val idempotencyKey: String? = null)
+data class EndpointRotateSecretOptions(val idempotencyKey: String? = null)
 
 data class EndpointReplayMissingOptions(val idempotencyKey: String? = null)
 
-data class EndpointRotateSecretOptions(val idempotencyKey: String? = null)
-
-data class EndpointSendExampleOptions(val idempotencyKey: String? = null)
+data class EndpointBulkReplayOptions(val idempotencyKey: String? = null)
 
 data class EndpointGetStatsOptions(
     /** Filter the range to data starting from this date. */
@@ -53,6 +49,10 @@ data class EndpointGetStatsOptions(
     /** Filter the range to data ending by this date. */
     val until: Instant? = null,
 )
+
+data class EndpointRecoverOptions(val idempotencyKey: String? = null)
+
+data class EndpointSendExampleOptions(val idempotencyKey: String? = null)
 
 class Endpoint(private val client: SvixHttpClient) {
     /** List the application's endpoints. */
@@ -132,41 +132,40 @@ class Endpoint(private val client: SvixHttpClient) {
     }
 
     /**
-     * Bulk replay messages sent to the endpoint.
+     * Get the endpoint's signing secret.
      *
-     * Only messages that were created after `since` will be sent. This will replay both successful,
-     * and failed messages
-     *
-     * A completed task will return a payload like the following:
-     * ```json
-     * {
-     *   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
-     *   "status": "finished",
-     *   "task": "endpoint.bulk-replay",
-     *   "data": {
-     *     "messagesSent": 2
-     *   }
-     * }
-     * ```
+     * This is used to verify the authenticity of the webhook. For more information please refer to
+     * [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
      */
-    suspend fun bulkReplay(
+    suspend fun getSecret(appId: String, endpointId: String): EndpointSecretOut {
+        val url =
+            client.newUrlBuilder().encodedPath("/api/v1/app/$appId/endpoint/$endpointId/secret")
+        return client.executeRequest<Any, EndpointSecretOut>("GET", url.build())
+    }
+
+    /**
+     * Rotates the endpoint's signing secret.
+     *
+     * The previous secret will remain valid for the next 24 hours.
+     */
+    suspend fun rotateSecret(
         appId: String,
         endpointId: String,
-        bulkReplayIn: BulkReplayIn,
-        options: EndpointBulkReplayOptions = EndpointBulkReplayOptions(),
-    ): ReplayOut {
+        endpointSecretRotateIn: EndpointSecretRotateIn,
+        options: EndpointRotateSecretOptions = EndpointRotateSecretOptions(),
+    ) {
         val url =
             client
                 .newUrlBuilder()
-                .encodedPath("/api/v1/app/$appId/endpoint/$endpointId/bulk-replay")
+                .encodedPath("/api/v1/app/$appId/endpoint/$endpointId/secret/rotate")
         val headers = Headers.Builder()
         options.idempotencyKey?.let { headers.add("idempotency-key", it) }
 
-        return client.executeRequest<BulkReplayIn, ReplayOut>(
+        client.executeRequest<EndpointSecretRotateIn, Boolean>(
             "POST",
             url.build(),
             headers = headers.build(),
-            reqBody = bulkReplayIn,
+            reqBody = endpointSecretRotateIn,
         )
     }
 
@@ -209,39 +208,30 @@ class Endpoint(private val client: SvixHttpClient) {
         )
     }
 
-    /**
-     * Resend all failed messages since a given time.
-     *
-     * Messages that were sent successfully, even if failed initially, are not resent.
-     *
-     * A completed task will return a payload like the following:
-     * ```json
-     * {
-     *   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
-     *   "status": "finished",
-     *   "task": "endpoint.recover",
-     *   "data": {
-     *     "messagesSent": 2
-     *   }
-     * }
-     * ```
-     */
-    suspend fun recover(
+    /** Get the transformation code associated with this endpoint. */
+    suspend fun transformationGet(appId: String, endpointId: String): EndpointTransformationOut {
+        val url =
+            client
+                .newUrlBuilder()
+                .encodedPath("/api/v1/app/$appId/endpoint/$endpointId/transformation")
+        return client.executeRequest<Any, EndpointTransformationOut>("GET", url.build())
+    }
+
+    /** Set or unset the transformation code associated with this endpoint. */
+    suspend fun patchTransformation(
         appId: String,
         endpointId: String,
-        recoverIn: RecoverIn,
-        options: EndpointRecoverOptions = EndpointRecoverOptions(),
-    ): RecoverOut {
+        endpointTransformationPatch: EndpointTransformationPatch,
+    ) {
         val url =
-            client.newUrlBuilder().encodedPath("/api/v1/app/$appId/endpoint/$endpointId/recover")
-        val headers = Headers.Builder()
-        options.idempotencyKey?.let { headers.add("idempotency-key", it) }
+            client
+                .newUrlBuilder()
+                .encodedPath("/api/v1/app/$appId/endpoint/$endpointId/transformation")
 
-        return client.executeRequest<RecoverIn, RecoverOut>(
-            "POST",
+        client.executeRequest<EndpointTransformationPatch, Boolean>(
+            "PATCH",
             url.build(),
-            headers = headers.build(),
-            reqBody = recoverIn,
+            reqBody = endpointTransformationPatch,
         )
     }
 
@@ -285,40 +275,90 @@ class Endpoint(private val client: SvixHttpClient) {
     }
 
     /**
-     * Get the endpoint's signing secret.
+     * Bulk replay messages sent to the endpoint.
      *
-     * This is used to verify the authenticity of the webhook. For more information please refer to
-     * [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
-     */
-    suspend fun getSecret(appId: String, endpointId: String): EndpointSecretOut {
-        val url =
-            client.newUrlBuilder().encodedPath("/api/v1/app/$appId/endpoint/$endpointId/secret")
-        return client.executeRequest<Any, EndpointSecretOut>("GET", url.build())
-    }
-
-    /**
-     * Rotates the endpoint's signing secret.
+     * Only messages that were created after `since` will be sent. This will replay both successful,
+     * and failed messages
      *
-     * The previous secret will remain valid for the next 24 hours.
+     * A completed task will return a payload like the following:
+     * ```json
+     * {
+     *   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+     *   "status": "finished",
+     *   "task": "endpoint.bulk-replay",
+     *   "data": {
+     *     "messagesSent": 2
+     *   }
+     * }
+     * ```
      */
-    suspend fun rotateSecret(
+    suspend fun bulkReplay(
         appId: String,
         endpointId: String,
-        endpointSecretRotateIn: EndpointSecretRotateIn,
-        options: EndpointRotateSecretOptions = EndpointRotateSecretOptions(),
-    ) {
+        bulkReplayIn: BulkReplayIn,
+        options: EndpointBulkReplayOptions = EndpointBulkReplayOptions(),
+    ): ReplayOut {
         val url =
             client
                 .newUrlBuilder()
-                .encodedPath("/api/v1/app/$appId/endpoint/$endpointId/secret/rotate")
+                .encodedPath("/api/v1/app/$appId/endpoint/$endpointId/bulk-replay")
         val headers = Headers.Builder()
         options.idempotencyKey?.let { headers.add("idempotency-key", it) }
 
-        client.executeRequest<EndpointSecretRotateIn, Boolean>(
+        return client.executeRequest<BulkReplayIn, ReplayOut>(
             "POST",
             url.build(),
             headers = headers.build(),
-            reqBody = endpointSecretRotateIn,
+            reqBody = bulkReplayIn,
+        )
+    }
+
+    /** Get basic statistics for the endpoint. */
+    suspend fun getStats(
+        appId: String,
+        endpointId: String,
+        options: EndpointGetStatsOptions = EndpointGetStatsOptions(),
+    ): EndpointStats {
+        val url =
+            client.newUrlBuilder().encodedPath("/api/v1/app/$appId/endpoint/$endpointId/stats")
+        options.since?.let { url.addQueryParameter("since", serializeQueryParam(it)) }
+        options.until?.let { url.addQueryParameter("until", serializeQueryParam(it)) }
+        return client.executeRequest<Any, EndpointStats>("GET", url.build())
+    }
+
+    /**
+     * Resend all failed messages since a given time.
+     *
+     * Messages that were sent successfully, even if failed initially, are not resent.
+     *
+     * A completed task will return a payload like the following:
+     * ```json
+     * {
+     *   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+     *   "status": "finished",
+     *   "task": "endpoint.recover",
+     *   "data": {
+     *     "messagesSent": 2
+     *   }
+     * }
+     * ```
+     */
+    suspend fun recover(
+        appId: String,
+        endpointId: String,
+        recoverIn: RecoverIn,
+        options: EndpointRecoverOptions = EndpointRecoverOptions(),
+    ): RecoverOut {
+        val url =
+            client.newUrlBuilder().encodedPath("/api/v1/app/$appId/endpoint/$endpointId/recover")
+        val headers = Headers.Builder()
+        options.idempotencyKey?.let { headers.add("idempotency-key", it) }
+
+        return client.executeRequest<RecoverIn, RecoverOut>(
+            "POST",
+            url.build(),
+            headers = headers.build(),
+            reqBody = recoverIn,
         )
     }
 
@@ -341,46 +381,6 @@ class Endpoint(private val client: SvixHttpClient) {
             url.build(),
             headers = headers.build(),
             reqBody = eventExampleIn,
-        )
-    }
-
-    /** Get basic statistics for the endpoint. */
-    suspend fun getStats(
-        appId: String,
-        endpointId: String,
-        options: EndpointGetStatsOptions = EndpointGetStatsOptions(),
-    ): EndpointStats {
-        val url =
-            client.newUrlBuilder().encodedPath("/api/v1/app/$appId/endpoint/$endpointId/stats")
-        options.since?.let { url.addQueryParameter("since", serializeQueryParam(it)) }
-        options.until?.let { url.addQueryParameter("until", serializeQueryParam(it)) }
-        return client.executeRequest<Any, EndpointStats>("GET", url.build())
-    }
-
-    /** Get the transformation code associated with this endpoint. */
-    suspend fun transformationGet(appId: String, endpointId: String): EndpointTransformationOut {
-        val url =
-            client
-                .newUrlBuilder()
-                .encodedPath("/api/v1/app/$appId/endpoint/$endpointId/transformation")
-        return client.executeRequest<Any, EndpointTransformationOut>("GET", url.build())
-    }
-
-    /** Set or unset the transformation code associated with this endpoint. */
-    suspend fun patchTransformation(
-        appId: String,
-        endpointId: String,
-        endpointTransformationPatch: EndpointTransformationPatch,
-    ) {
-        val url =
-            client
-                .newUrlBuilder()
-                .encodedPath("/api/v1/app/$appId/endpoint/$endpointId/transformation")
-
-        client.executeRequest<EndpointTransformationPatch, Boolean>(
-            "PATCH",
-            url.build(),
-            reqBody = endpointTransformationPatch,
         )
     }
 

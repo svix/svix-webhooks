@@ -161,6 +161,22 @@ If `false`, canceled attempts are returned as Success (0) for backwards compatib
 
 
 @dataclass
+class MessageAttemptListAttemptedDestinationsOptions(BaseOptions):
+    limit: t.Optional[int] = None
+    """Limit the number of returned items"""
+    iterator: t.Optional[str] = None
+    """The iterator returned from a prior invocation"""
+
+    def _query_params(self) -> t.Dict[str, str]:
+        return serialize_params(
+            {
+                "limit": self.limit,
+                "iterator": self.iterator,
+            }
+        )
+
+
+@dataclass
 class MessageAttemptGetOptions(BaseOptions):
     expanded_statuses: t.Optional[bool] = None
     """When `true`, return the Canceled (4) status in attempts.
@@ -173,22 +189,6 @@ If `false`, canceled attempts are returned as Success (0) for backwards compatib
                 "expanded_statuses": self.expanded_statuses
                 if self.expanded_statuses is not None
                 else True,
-            }
-        )
-
-
-@dataclass
-class MessageAttemptListAttemptedDestinationsOptions(BaseOptions):
-    limit: t.Optional[int] = None
-    """Limit the number of returned items"""
-    iterator: t.Optional[str] = None
-    """The iterator returned from a prior invocation"""
-
-    def _query_params(self) -> t.Dict[str, str]:
-        return serialize_params(
-            {
-                "limit": self.limit,
-                "iterator": self.iterator,
             }
         )
 
@@ -286,6 +286,30 @@ class MessageAttemptAsync(ApiBase):
         )
         return ListResponseEndpointMessageOut.model_validate(response.json())
 
+    async def list_attempted_destinations(
+        self,
+        app_id: str,
+        msg_id: str,
+        options: MessageAttemptListAttemptedDestinationsOptions = (
+            MessageAttemptListAttemptedDestinationsOptions()
+        ),
+    ) -> ListResponseMessageEndpointOut:
+        """List endpoints attempted by a given message.
+
+        Additionally includes metadata about the latest message attempt.
+        By default, endpoints are listed in ascending order by ID."""
+        response = await self._request_asyncio(
+            method="get",
+            path="/api/v1/app/{app_id}/msg/{msg_id}/endpoint",
+            path_params={
+                "app_id": app_id,
+                "msg_id": msg_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
+        )
+        return ListResponseMessageEndpointOut.model_validate(response.json())
+
     async def get(
         self,
         app_id: str,
@@ -321,30 +345,6 @@ class MessageAttemptAsync(ApiBase):
                 "attempt_id": attempt_id,
             },
         )
-
-    async def list_attempted_destinations(
-        self,
-        app_id: str,
-        msg_id: str,
-        options: MessageAttemptListAttemptedDestinationsOptions = (
-            MessageAttemptListAttemptedDestinationsOptions()
-        ),
-    ) -> ListResponseMessageEndpointOut:
-        """List endpoints attempted by a given message.
-
-        Additionally includes metadata about the latest message attempt.
-        By default, endpoints are listed in ascending order by ID."""
-        response = await self._request_asyncio(
-            method="get",
-            path="/api/v1/app/{app_id}/msg/{msg_id}/endpoint",
-            path_params={
-                "app_id": app_id,
-                "msg_id": msg_id,
-            },
-            query_params=options._query_params(),
-            header_params=options._header_params(),
-        )
-        return ListResponseMessageEndpointOut.model_validate(response.json())
 
     async def resend(
         self,
@@ -449,6 +449,30 @@ class MessageAttempt(ApiBase):
         )
         return ListResponseEndpointMessageOut.model_validate(response.json())
 
+    def list_attempted_destinations(
+        self,
+        app_id: str,
+        msg_id: str,
+        options: MessageAttemptListAttemptedDestinationsOptions = (
+            MessageAttemptListAttemptedDestinationsOptions()
+        ),
+    ) -> ListResponseMessageEndpointOut:
+        """List endpoints attempted by a given message.
+
+        Additionally includes metadata about the latest message attempt.
+        By default, endpoints are listed in ascending order by ID."""
+        response = self._request_sync(
+            method="get",
+            path="/api/v1/app/{app_id}/msg/{msg_id}/endpoint",
+            path_params={
+                "app_id": app_id,
+                "msg_id": msg_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
+        )
+        return ListResponseMessageEndpointOut.model_validate(response.json())
+
     def get(
         self,
         app_id: str,
@@ -484,30 +508,6 @@ class MessageAttempt(ApiBase):
                 "attempt_id": attempt_id,
             },
         )
-
-    def list_attempted_destinations(
-        self,
-        app_id: str,
-        msg_id: str,
-        options: MessageAttemptListAttemptedDestinationsOptions = (
-            MessageAttemptListAttemptedDestinationsOptions()
-        ),
-    ) -> ListResponseMessageEndpointOut:
-        """List endpoints attempted by a given message.
-
-        Additionally includes metadata about the latest message attempt.
-        By default, endpoints are listed in ascending order by ID."""
-        response = self._request_sync(
-            method="get",
-            path="/api/v1/app/{app_id}/msg/{msg_id}/endpoint",
-            path_params={
-                "app_id": app_id,
-                "msg_id": msg_id,
-            },
-            query_params=options._query_params(),
-            header_params=options._header_params(),
-        )
-        return ListResponseMessageEndpointOut.model_validate(response.json())
 
     def resend(
         self,

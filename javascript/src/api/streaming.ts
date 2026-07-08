@@ -37,6 +37,25 @@ export class Streaming {
     return new StreamingStream(this.requestCtx);
   }
 
+  /** Get the transformation code associated with this sink. */
+  public async sinkTransformationGet(
+    streamId: string,
+    sinkId: string
+  ): Promise<SinkTransformationOut> {
+    const request = new SvixRequest(
+      HttpMethod.GET,
+      "/api/v1/stream/{stream_id}/sink/{sink_id}/transformation"
+    );
+
+    request.setPathParam("stream_id", streamId);
+    request.setPathParam("sink_id", sinkId);
+
+    return await request.send(
+      this.requestCtx,
+      SinkTransformationOutSerializer._fromJsonObject
+    );
+  }
+
   /**
    * Get the HTTP sink headers.
    *
@@ -84,25 +103,6 @@ export class Streaming {
     return await request.send(
       this.requestCtx,
       EndpointHeadersOutSerializer._fromJsonObject
-    );
-  }
-
-  /** Get the transformation code associated with this sink. */
-  public async sinkTransformationGet(
-    streamId: string,
-    sinkId: string
-  ): Promise<SinkTransformationOut> {
-    const request = new SvixRequest(
-      HttpMethod.GET,
-      "/api/v1/stream/{stream_id}/sink/{sink_id}/transformation"
-    );
-
-    request.setPathParam("stream_id", streamId);
-    request.setPathParam("sink_id", sinkId);
-
-    return await request.send(
-      this.requestCtx,
-      SinkTransformationOutSerializer._fromJsonObject
     );
   }
 }

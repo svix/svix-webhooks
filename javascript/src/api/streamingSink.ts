@@ -140,6 +140,24 @@ export class StreamingSink {
     return await request.send(this.requestCtx, StreamSinkOutSerializer._fromJsonObject);
   }
 
+  /** Set or unset the transformation code associated with this sink. */
+  public async transformationPartialUpdate(
+    streamId: string,
+    sinkId: string,
+    sinkTransformIn: SinkTransformIn
+  ): Promise<EmptyResponse> {
+    const request = new SvixRequest(
+      HttpMethod.PATCH,
+      "/api/v1/stream/{stream_id}/sink/{sink_id}/transformation"
+    );
+
+    request.setPathParam("stream_id", streamId);
+    request.setPathParam("sink_id", sinkId);
+    request.setBody(SinkTransformInSerializer._toJsonObject(sinkTransformIn));
+
+    return await request.send(this.requestCtx, EmptyResponseSerializer._fromJsonObject);
+  }
+
   /**
    * Get the sink's signing secret (only supported for http sinks)
    *
@@ -177,24 +195,6 @@ export class StreamingSink {
     request.setBody(
       EndpointSecretRotateInSerializer._toJsonObject(endpointSecretRotateIn)
     );
-
-    return await request.send(this.requestCtx, EmptyResponseSerializer._fromJsonObject);
-  }
-
-  /** Set or unset the transformation code associated with this sink. */
-  public async transformationPartialUpdate(
-    streamId: string,
-    sinkId: string,
-    sinkTransformIn: SinkTransformIn
-  ): Promise<EmptyResponse> {
-    const request = new SvixRequest(
-      HttpMethod.PATCH,
-      "/api/v1/stream/{stream_id}/sink/{sink_id}/transformation"
-    );
-
-    request.setPathParam("stream_id", streamId);
-    request.setPathParam("sink_id", sinkId);
-    request.setBody(SinkTransformInSerializer._toJsonObject(sinkTransformIn));
 
     return await request.send(this.requestCtx, EmptyResponseSerializer._fromJsonObject);
   }

@@ -102,21 +102,6 @@ class Integration
     }
 
     /**
-     * Get an integration's key.
-     *
-     * @throws ApiException
-     */
-    public function getKey(
-        string $appId,
-        string $integId,
-    ): IntegrationKeyOut {
-        $request = $this->client->newReq('GET', "/api/v1/app/{$appId}/integration/{$integId}/key");
-        $res = $this->client->send($request);
-
-        return IntegrationKeyOut::fromJson($res);
-    }
-
-    /**
      * Rotate the integration's key. The previous key will be immediately revoked.
      *
      * @throws ApiException
@@ -128,6 +113,21 @@ class Integration
     ): IntegrationKeyOut {
         $request = $this->client->newReq('POST', "/api/v1/app/{$appId}/integration/{$integId}/key/rotate");
         $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
+        $res = $this->client->send($request);
+
+        return IntegrationKeyOut::fromJson($res);
+    }
+
+    /**
+     * Get an integration's key.
+     *
+     * @throws ApiException
+     */
+    public function getKey(
+        string $appId,
+        string $integId,
+    ): IntegrationKeyOut {
+        $request = $this->client->newReq('GET', "/api/v1/app/{$appId}/integration/{$integId}/key");
         $res = $this->client->send($request);
 
         return IntegrationKeyOut::fromJson($res);

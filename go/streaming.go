@@ -26,6 +26,28 @@ func newStreaming(client *internal.SvixHttpClient) *Streaming {
 	}
 }
 
+// Get the transformation code associated with this sink.
+func (streaming *Streaming) SinkTransformationGet(
+	ctx context.Context,
+	streamId string,
+	sinkId string,
+) (*models.SinkTransformationOut, error) {
+	pathMap := map[string]string{
+		"stream_id": streamId,
+		"sink_id":   sinkId,
+	}
+	return internal.ExecuteRequest[any, models.SinkTransformationOut](
+		ctx,
+		streaming.client,
+		"GET",
+		"/api/v1/stream/{stream_id}/sink/{sink_id}/transformation",
+		pathMap,
+		nil,
+		nil,
+		nil,
+	)
+}
+
 // Get the HTTP sink headers.
 //
 // Only valid for `http` or `otelTracing` sinks.
@@ -72,27 +94,5 @@ func (streaming *Streaming) SinkHeadersPatch(
 		nil,
 		nil,
 		&httpSinkHeadersPatchIn,
-	)
-}
-
-// Get the transformation code associated with this sink.
-func (streaming *Streaming) SinkTransformationGet(
-	ctx context.Context,
-	streamId string,
-	sinkId string,
-) (*models.SinkTransformationOut, error) {
-	pathMap := map[string]string{
-		"stream_id": streamId,
-		"sink_id":   sinkId,
-	}
-	return internal.ExecuteRequest[any, models.SinkTransformationOut](
-		ctx,
-		streaming.client,
-		"GET",
-		"/api/v1/stream/{stream_id}/sink/{sink_id}/transformation",
-		pathMap,
-		nil,
-		nil,
-		nil,
 	)
 }

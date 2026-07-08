@@ -22,19 +22,19 @@ type AuthenticationAppPortalAccessOptions struct {
 	IdempotencyKey *string
 }
 
-type AuthenticationExpireAllOptions struct {
-	IdempotencyKey *string
-}
-
 type AuthenticationLogoutOptions struct {
 	IdempotencyKey *string
 }
 
-type AuthenticationStreamLogoutOptions struct {
+type AuthenticationExpireAllOptions struct {
 	IdempotencyKey *string
 }
 
 type AuthenticationStreamPortalAccessOptions struct {
+	IdempotencyKey *string
+}
+
+type AuthenticationStreamLogoutOptions struct {
 	IdempotencyKey *string
 }
 
@@ -75,6 +75,35 @@ func (authentication *Authentication) AppPortalAccess(
 		headerMap,
 		&appPortalAccessIn,
 	)
+}
+
+// Logout an app token.
+//
+// Trying to log out other tokens will fail.
+func (authentication *Authentication) Logout(
+	ctx context.Context,
+	o *AuthenticationLogoutOptions,
+) error {
+	headerMap := map[string]string{}
+	if o != nil {
+		var err error
+
+		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		if err != nil {
+			return err
+		}
+	}
+	_, err := internal.ExecuteRequest[any, any](
+		ctx,
+		authentication.client,
+		"POST",
+		"/api/v1/auth/logout",
+		nil,
+		nil,
+		headerMap,
+		nil,
+	)
+	return err
 }
 
 // Expire all of the tokens associated with a specific application.
@@ -138,64 +167,6 @@ func (authentication *Authentication) DashboardAccess(
 	)
 }
 
-// Logout an app token.
-//
-// Trying to log out other tokens will fail.
-func (authentication *Authentication) Logout(
-	ctx context.Context,
-	o *AuthenticationLogoutOptions,
-) error {
-	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return err
-		}
-	}
-	_, err := internal.ExecuteRequest[any, any](
-		ctx,
-		authentication.client,
-		"POST",
-		"/api/v1/auth/logout",
-		nil,
-		nil,
-		headerMap,
-		nil,
-	)
-	return err
-}
-
-// Logout a stream token.
-//
-// Trying to log out other tokens will fail.
-func (authentication *Authentication) StreamLogout(
-	ctx context.Context,
-	o *AuthenticationStreamLogoutOptions,
-) error {
-	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return err
-		}
-	}
-	_, err := internal.ExecuteRequest[any, any](
-		ctx,
-		authentication.client,
-		"POST",
-		"/api/v1/auth/stream-logout",
-		nil,
-		nil,
-		headerMap,
-		nil,
-	)
-	return err
-}
-
 // Use this function to get magic links (and authentication codes) for connecting your users to the Stream Consumer Portal.
 func (authentication *Authentication) StreamPortalAccess(
 	ctx context.Context,
@@ -225,6 +196,35 @@ func (authentication *Authentication) StreamPortalAccess(
 		headerMap,
 		&streamPortalAccessIn,
 	)
+}
+
+// Logout a stream token.
+//
+// Trying to log out other tokens will fail.
+func (authentication *Authentication) StreamLogout(
+	ctx context.Context,
+	o *AuthenticationStreamLogoutOptions,
+) error {
+	headerMap := map[string]string{}
+	if o != nil {
+		var err error
+
+		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		if err != nil {
+			return err
+		}
+	}
+	_, err := internal.ExecuteRequest[any, any](
+		ctx,
+		authentication.client,
+		"POST",
+		"/api/v1/auth/stream-logout",
+		nil,
+		nil,
+		headerMap,
+		nil,
+	)
+	return err
 }
 
 // Expire all of the tokens associated with a specific stream.
@@ -259,28 +259,6 @@ func (authentication *Authentication) StreamExpireAll(
 	return err
 }
 
-// Get the current auth token for the stream poller.
-func (authentication *Authentication) GetStreamPollerToken(
-	ctx context.Context,
-	streamId string,
-	sinkId string,
-) (*models.ApiTokenOut, error) {
-	pathMap := map[string]string{
-		"stream_id": streamId,
-		"sink_id":   sinkId,
-	}
-	return internal.ExecuteRequest[any, models.ApiTokenOut](
-		ctx,
-		authentication.client,
-		"GET",
-		"/api/v1/auth/stream/{stream_id}/sink/{sink_id}/poller/token",
-		pathMap,
-		nil,
-		nil,
-		nil,
-	)
-}
-
 // Create a new auth token for the stream poller API.
 func (authentication *Authentication) RotateStreamPollerToken(
 	ctx context.Context,
@@ -311,5 +289,27 @@ func (authentication *Authentication) RotateStreamPollerToken(
 		nil,
 		headerMap,
 		&rotatePollerTokenIn,
+	)
+}
+
+// Get the current auth token for the stream poller.
+func (authentication *Authentication) GetStreamPollerToken(
+	ctx context.Context,
+	streamId string,
+	sinkId string,
+) (*models.ApiTokenOut, error) {
+	pathMap := map[string]string{
+		"stream_id": streamId,
+		"sink_id":   sinkId,
+	}
+	return internal.ExecuteRequest[any, models.ApiTokenOut](
+		ctx,
+		authentication.client,
+		"GET",
+		"/api/v1/auth/stream/{stream_id}/sink/{sink_id}/poller/token",
+		pathMap,
+		nil,
+		nil,
+		nil,
 	)
 }

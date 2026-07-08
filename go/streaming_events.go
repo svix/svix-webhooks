@@ -19,10 +19,6 @@ func newStreamingEvents(client *internal.SvixHttpClient) *StreamingEvents {
 	}
 }
 
-type StreamingEventsCreateOptions struct {
-	IdempotencyKey *string
-}
-
 type StreamingEventsGetOptions struct {
 	// Limit the number of returned items
 	Limit *uint64
@@ -31,35 +27,8 @@ type StreamingEventsGetOptions struct {
 	After    *time.Time
 }
 
-// Creates events on the Stream.
-func (streamingEvents *StreamingEvents) Create(
-	ctx context.Context,
-	streamId string,
-	createStreamEventsIn models.CreateStreamEventsIn,
-	o *StreamingEventsCreateOptions,
-) (*models.CreateStreamEventsOut, error) {
-	pathMap := map[string]string{
-		"stream_id": streamId,
-	}
-	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return internal.ExecuteRequest[models.CreateStreamEventsIn, models.CreateStreamEventsOut](
-		ctx,
-		streamingEvents.client,
-		"POST",
-		"/api/v1/stream/{stream_id}/events",
-		pathMap,
-		nil,
-		headerMap,
-		&createStreamEventsIn,
-	)
+type StreamingEventsCreateOptions struct {
+	IdempotencyKey *string
 }
 
 // Iterate over a stream of events.
@@ -95,5 +64,36 @@ func (streamingEvents *StreamingEvents) Get(
 		queryMap,
 		nil,
 		nil,
+	)
+}
+
+// Creates events on the Stream.
+func (streamingEvents *StreamingEvents) Create(
+	ctx context.Context,
+	streamId string,
+	createStreamEventsIn models.CreateStreamEventsIn,
+	o *StreamingEventsCreateOptions,
+) (*models.CreateStreamEventsOut, error) {
+	pathMap := map[string]string{
+		"stream_id": streamId,
+	}
+	headerMap := map[string]string{}
+	if o != nil {
+		var err error
+
+		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return internal.ExecuteRequest[models.CreateStreamEventsIn, models.CreateStreamEventsOut](
+		ctx,
+		streamingEvents.client,
+		"POST",
+		"/api/v1/stream/{stream_id}/events",
+		pathMap,
+		nil,
+		headerMap,
+		&createStreamEventsIn,
 	)
 }

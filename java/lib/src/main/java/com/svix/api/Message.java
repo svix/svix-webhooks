@@ -167,47 +167,6 @@ public class Message {
     }
 
     /**
-     * Delete all message payloads for the application.
-     *
-     * <p>This operation is only available in the <a href="https://svix.com/pricing"
-     * target="_blank">Enterprise</a> plan.
-     *
-     * <p>A completed task will return a payload like the following: ```json { "id":
-     * "qtask_33qen93MNuelBAq1T9G7eHLJRsF", "status": "finished", "task":
-     * "application.purge_content", "data": { "messagesPurged": 150 } } ```
-     */
-    public ExpungeAllContentsOut expungeAllContents(final String appId)
-            throws IOException, ApiException {
-        return this.expungeAllContents(appId, new MessageExpungeAllContentsOptions());
-    }
-
-    /**
-     * Delete all message payloads for the application.
-     *
-     * <p>This operation is only available in the <a href="https://svix.com/pricing"
-     * target="_blank">Enterprise</a> plan.
-     *
-     * <p>A completed task will return a payload like the following: ```json { "id":
-     * "qtask_33qen93MNuelBAq1T9G7eHLJRsF", "status": "finished", "task":
-     * "application.purge_content", "data": { "messagesPurged": 150 } } ```
-     */
-    public ExpungeAllContentsOut expungeAllContents(
-            final String appId, final MessageExpungeAllContentsOptions options)
-            throws IOException, ApiException {
-        HttpUrl.Builder url =
-                this.client
-                        .newUrlBuilder()
-                        .encodedPath(
-                                String.format("/api/v1/app/%s/msg/expunge-all-contents", appId));
-        Map<String, String> headers = new HashMap<>();
-        if (options.idempotencyKey != null) {
-            headers.put("idempotency-key", options.idempotencyKey);
-        }
-        return this.client.executeRequest(
-                "POST", url.build(), Headers.of(headers), null, ExpungeAllContentsOut.class);
-    }
-
-    /**
      * A pre-check call for `message.create` that checks whether any active endpoints are listening
      * to this message.
      *
@@ -281,6 +240,47 @@ public class Message {
                         .newUrlBuilder()
                         .encodedPath(String.format("/api/v1/app/%s/msg/%s/content", appId, msgId));
         this.client.executeRequest("DELETE", url.build(), null, null, null);
+    }
+
+    /**
+     * Delete all message payloads for the application.
+     *
+     * <p>This operation is only available in the <a href="https://svix.com/pricing"
+     * target="_blank">Enterprise</a> plan.
+     *
+     * <p>A completed task will return a payload like the following: ```json { "id":
+     * "qtask_33qen93MNuelBAq1T9G7eHLJRsF", "status": "finished", "task":
+     * "application.purge_content", "data": { "messagesPurged": 150 } } ```
+     */
+    public ExpungeAllContentsOut expungeAllContents(final String appId)
+            throws IOException, ApiException {
+        return this.expungeAllContents(appId, new MessageExpungeAllContentsOptions());
+    }
+
+    /**
+     * Delete all message payloads for the application.
+     *
+     * <p>This operation is only available in the <a href="https://svix.com/pricing"
+     * target="_blank">Enterprise</a> plan.
+     *
+     * <p>A completed task will return a payload like the following: ```json { "id":
+     * "qtask_33qen93MNuelBAq1T9G7eHLJRsF", "status": "finished", "task":
+     * "application.purge_content", "data": { "messagesPurged": 150 } } ```
+     */
+    public ExpungeAllContentsOut expungeAllContents(
+            final String appId, final MessageExpungeAllContentsOptions options)
+            throws IOException, ApiException {
+        HttpUrl.Builder url =
+                this.client
+                        .newUrlBuilder()
+                        .encodedPath(
+                                String.format("/api/v1/app/%s/msg/expunge-all-contents", appId));
+        Map<String, String> headers = new HashMap<>();
+        if (options.idempotencyKey != null) {
+            headers.put("idempotency-key", options.idempotencyKey);
+        }
+        return this.client.executeRequest(
+                "POST", url.build(), Headers.of(headers), null, ExpungeAllContentsOut.class);
     }
 
     /**

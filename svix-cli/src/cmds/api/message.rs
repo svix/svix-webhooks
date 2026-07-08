@@ -80,19 +80,6 @@ impl From<MessageCreateOptions> for svix::api::MessageCreateOptions {
 }
 
 #[derive(Args, Clone)]
-pub struct MessageExpungeAllContentsOptions {
-    #[arg(long)]
-    pub idempotency_key: Option<String>,
-}
-
-impl From<MessageExpungeAllContentsOptions> for svix::api::MessageExpungeAllContentsOptions {
-    fn from(value: MessageExpungeAllContentsOptions) -> Self {
-        let MessageExpungeAllContentsOptions { idempotency_key } = value;
-        Self { idempotency_key }
-    }
-}
-
-#[derive(Args, Clone)]
 pub struct MessagePrecheckOptions {
     #[arg(long)]
     pub idempotency_key: Option<String>,
@@ -116,6 +103,19 @@ impl From<MessageGetOptions> for svix::api::MessageGetOptions {
     fn from(value: MessageGetOptions) -> Self {
         let MessageGetOptions { with_content } = value;
         Self { with_content }
+    }
+}
+
+#[derive(Args, Clone)]
+pub struct MessageExpungeAllContentsOptions {
+    #[arg(long)]
+    pub idempotency_key: Option<String>,
+}
+
+impl From<MessageExpungeAllContentsOptions> for svix::api::MessageExpungeAllContentsOptions {
+    fn from(value: MessageExpungeAllContentsOptions) -> Self {
+        let MessageExpungeAllContentsOptions { idempotency_key } = value;
+        Self { idempotency_key }
     }
 }
 
@@ -232,41 +232,6 @@ pub enum MessageCommands {
         #[clap(flatten)]
         options: MessageCreateOptions,
     },
-    /// Delete all message payloads for the application.
-    ///
-    /// This operation is only available in the <a href="https://svix.com/pricing" target="_blank">Enterprise</a> plan.
-    ///
-    /// A completed task will return a payload like the following:
-    /// ```json
-    /// {
-    ///   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
-    ///   "status": "finished",
-    ///   "task": "application.purge_content",
-    ///   "data": {
-    ///     "messagesPurged": 150
-    ///   }
-    /// }
-    /// ```
-    #[command(help_template = concat!(
-            "{about-with-newline}\n",
-            "{usage-heading} {usage}\n\n",
-            "Example: svix message expunge-all-contents app_abc000000000000000000000000\n",
-            "{after-help}",
-            "\n",
-            "{all-args}",
-        ))]
-    #[command(after_help = "Example response:
-{
-  \"id\": \"qtask_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
-  \"status\": \"running\",
-  \"task\": \"endpoint.replay\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
-}\n")]
-    ExpungeAllContents {
-        app_id: String,
-        #[clap(flatten)]
-        options: MessageExpungeAllContentsOptions,
-    },
     /// A pre-check call for `message.create` that checks whether any active endpoints are
     /// listening to this message.
     ///
@@ -341,6 +306,41 @@ pub enum MessageCommands {
         app_id: String,
         id: String,
     },
+    /// Delete all message payloads for the application.
+    ///
+    /// This operation is only available in the <a href="https://svix.com/pricing" target="_blank">Enterprise</a> plan.
+    ///
+    /// A completed task will return a payload like the following:
+    /// ```json
+    /// {
+    ///   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+    ///   "status": "finished",
+    ///   "task": "application.purge_content",
+    ///   "data": {
+    ///     "messagesPurged": 150
+    ///   }
+    /// }
+    /// ```
+    #[command(help_template = concat!(
+            "{about-with-newline}\n",
+            "{usage-heading} {usage}\n\n",
+            "Example: svix message expunge-all-contents app_abc000000000000000000000000\n",
+            "{after-help}",
+            "\n",
+            "{all-args}",
+        ))]
+    #[command(after_help = "Example response:
+{
+  \"id\": \"qtask_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+  \"status\": \"running\",
+  \"task\": \"endpoint.replay\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+}\n")]
+    ExpungeAllContents {
+        app_id: String,
+        #[clap(flatten)]
+        options: MessageExpungeAllContentsOptions,
+    },
 }
 
 impl MessageCommands {
@@ -365,13 +365,6 @@ impl MessageCommands {
                 let resp = client
                     .message()
                     .create(app_id, message_in.into_inner(), Some(options.into()))
-                    .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
-            }
-            Self::ExpungeAllContents { app_id, options } => {
-                let resp = client
-                    .message()
-                    .expunge_all_contents(app_id, Some(options.into()))
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
@@ -403,6 +396,13 @@ impl MessageCommands {
             }
             Self::ExpungeContent { app_id, id } => {
                 client.message().expunge_content(app_id, id).await?;
+            }
+            Self::ExpungeAllContents { app_id, options } => {
+                let resp = client
+                    .message()
+                    .expunge_all_contents(app_id, Some(options.into()))
+                    .await?;
+                crate::json::print_json_output(&resp, color_mode)?;
             }
         }
 

@@ -234,6 +234,26 @@ pub enum StreamingSinkCommands {
         sink_id: String,
         stream_sink_patch: Option<crate::json::JsonOf<StreamSinkPatch>>,
     },
+    /// Set or unset the transformation code associated with this sink.
+    #[command(help_template = concat!(
+            "{about-with-newline}\n",
+            "{usage-heading} {usage}\n\n",
+            "Example: svix streaming sink transformation-partial-update strm_abc000000000000000000 sink_abc000000000000000000 {...}\n",
+            "{after-help}",
+            "\n",
+            "{all-args}",
+        ))]
+    #[command(after_help = "Example body:
+{
+  \"code\": \"...\"
+}\n\nExample response:
+{
+}\n")]
+    TransformationPartialUpdate {
+        stream_id: String,
+        sink_id: String,
+        sink_transform_in: Option<crate::json::JsonOf<SinkTransformIn>>,
+    },
     /// Get the sink's signing secret (only supported for http sinks)
     ///
     /// This is used to verify the authenticity of the delivery.
@@ -274,26 +294,6 @@ pub enum StreamingSinkCommands {
         endpoint_secret_rotate_in: Option<crate::json::JsonOf<EndpointSecretRotateIn>>,
         #[clap(flatten)]
         options: StreamingSinkRotateSecretOptions,
-    },
-    /// Set or unset the transformation code associated with this sink.
-    #[command(help_template = concat!(
-            "{about-with-newline}\n",
-            "{usage-heading} {usage}\n\n",
-            "Example: svix streaming sink transformation-partial-update strm_abc000000000000000000 sink_abc000000000000000000 {...}\n",
-            "{after-help}",
-            "\n",
-            "{all-args}",
-        ))]
-    #[command(after_help = "Example body:
-{
-  \"code\": \"...\"
-}\n\nExample response:
-{
-}\n")]
-    TransformationPartialUpdate {
-        stream_id: String,
-        sink_id: String,
-        sink_transform_in: Option<crate::json::JsonOf<SinkTransformIn>>,
     },
 }
 
@@ -367,6 +367,22 @@ impl StreamingSinkCommands {
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
+            Self::TransformationPartialUpdate {
+                stream_id,
+                sink_id,
+                sink_transform_in,
+            } => {
+                let resp = client
+                    .streaming()
+                    .sink()
+                    .transformation_partial_update(
+                        stream_id,
+                        sink_id,
+                        sink_transform_in.unwrap_or_default().into_inner(),
+                    )
+                    .await?;
+                crate::json::print_json_output(&resp, color_mode)?;
+            }
             Self::GetSecret { stream_id, sink_id } => {
                 let resp = client
                     .streaming()
@@ -389,22 +405,6 @@ impl StreamingSinkCommands {
                         sink_id,
                         endpoint_secret_rotate_in.unwrap_or_default().into_inner(),
                         Some(options.into()),
-                    )
-                    .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
-            }
-            Self::TransformationPartialUpdate {
-                stream_id,
-                sink_id,
-                sink_transform_in,
-            } => {
-                let resp = client
-                    .streaming()
-                    .sink()
-                    .transformation_partial_update(
-                        stream_id,
-                        sink_id,
-                        sink_transform_in.unwrap_or_default().into_inner(),
                     )
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;

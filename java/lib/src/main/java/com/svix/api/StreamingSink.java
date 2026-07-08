@@ -121,6 +121,21 @@ public class StreamingSink {
                 "PATCH", url.build(), null, streamSinkPatch, StreamSinkOut.class);
     }
 
+    /** Set or unset the transformation code associated with this sink. */
+    public EmptyResponse transformationPartialUpdate(
+            final String streamId, final String sinkId, final SinkTransformIn sinkTransformIn)
+            throws IOException, ApiException {
+        HttpUrl.Builder url =
+                this.client
+                        .newUrlBuilder()
+                        .encodedPath(
+                                String.format(
+                                        "/api/v1/stream/%s/sink/%s/transformation",
+                                        streamId, sinkId));
+        return this.client.executeRequest(
+                "PATCH", url.build(), null, sinkTransformIn, EmptyResponse.class);
+    }
+
     /**
      * Get the sink's signing secret (only supported for http sinks)
      *
@@ -174,20 +189,5 @@ public class StreamingSink {
                 Headers.of(headers),
                 endpointSecretRotateIn,
                 EmptyResponse.class);
-    }
-
-    /** Set or unset the transformation code associated with this sink. */
-    public EmptyResponse transformationPartialUpdate(
-            final String streamId, final String sinkId, final SinkTransformIn sinkTransformIn)
-            throws IOException, ApiException {
-        HttpUrl.Builder url =
-                this.client
-                        .newUrlBuilder()
-                        .encodedPath(
-                                String.format(
-                                        "/api/v1/stream/%s/sink/%s/transformation",
-                                        streamId, sinkId));
-        return this.client.executeRequest(
-                "PATCH", url.build(), null, sinkTransformIn, EmptyResponse.class);
     }
 }

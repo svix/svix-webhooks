@@ -46,10 +46,6 @@ type MessageCreateOptions struct {
 	IdempotencyKey *string
 }
 
-type MessageExpungeAllContentsOptions struct {
-	IdempotencyKey *string
-}
-
 type MessagePrecheckOptions struct {
 	IdempotencyKey *string
 }
@@ -57,6 +53,10 @@ type MessagePrecheckOptions struct {
 type MessageGetOptions struct {
 	// When `true` message payloads are included in the response.
 	WithContent *bool
+}
+
+type MessageExpungeAllContentsOptions struct {
+	IdempotencyKey *string
 }
 
 // List all of the application's messages.
@@ -152,52 +152,6 @@ func (message *Message) Create(
 	return response, nil
 }
 
-// Delete all message payloads for the application.
-//
-// This operation is only available in the <a href="https://svix.com/pricing" target="_blank">Enterprise</a> plan.
-//
-// A completed task will return a payload like the following:
-// ```json
-//
-//	{
-//	  "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
-//	  "status": "finished",
-//	  "task": "application.purge_content",
-//	  "data": {
-//	    "messagesPurged": 150
-//	  }
-//	}
-//
-// ```
-func (message *Message) ExpungeAllContents(
-	ctx context.Context,
-	appId string,
-	o *MessageExpungeAllContentsOptions,
-) (*models.ExpungeAllContentsOut, error) {
-	pathMap := map[string]string{
-		"app_id": appId,
-	}
-	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return internal.ExecuteRequest[any, models.ExpungeAllContentsOut](
-		ctx,
-		message.client,
-		"POST",
-		"/api/v1/app/{app_id}/msg/expunge-all-contents",
-		pathMap,
-		nil,
-		headerMap,
-		nil,
-	)
-}
-
 // A pre-check call for `message.create` that checks whether any active endpoints are
 // listening to this message.
 //
@@ -290,4 +244,50 @@ func (message *Message) ExpungeContent(
 		nil,
 	)
 	return err
+}
+
+// Delete all message payloads for the application.
+//
+// This operation is only available in the <a href="https://svix.com/pricing" target="_blank">Enterprise</a> plan.
+//
+// A completed task will return a payload like the following:
+// ```json
+//
+//	{
+//	  "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+//	  "status": "finished",
+//	  "task": "application.purge_content",
+//	  "data": {
+//	    "messagesPurged": 150
+//	  }
+//	}
+//
+// ```
+func (message *Message) ExpungeAllContents(
+	ctx context.Context,
+	appId string,
+	o *MessageExpungeAllContentsOptions,
+) (*models.ExpungeAllContentsOut, error) {
+	pathMap := map[string]string{
+		"app_id": appId,
+	}
+	headerMap := map[string]string{}
+	if o != nil {
+		var err error
+
+		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return internal.ExecuteRequest[any, models.ExpungeAllContentsOut](
+		ctx,
+		message.client,
+		"POST",
+		"/api/v1/app/{app_id}/msg/expunge-all-contents",
+		pathMap,
+		nil,
+		headerMap,
+		nil,
+	)
 }

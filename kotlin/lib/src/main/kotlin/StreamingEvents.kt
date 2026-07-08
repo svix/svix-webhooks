@@ -7,8 +7,6 @@ import com.svix.kotlin.models.EventStreamOut
 import kotlinx.datetime.Instant
 import okhttp3.Headers
 
-data class StreamingEventsCreateOptions(val idempotencyKey: String? = null)
-
 data class StreamingEventsGetOptions(
     /** Limit the number of returned items */
     val limit: ULong? = null,
@@ -17,7 +15,26 @@ data class StreamingEventsGetOptions(
     val after: Instant? = null,
 )
 
+data class StreamingEventsCreateOptions(val idempotencyKey: String? = null)
+
 class StreamingEvents(private val client: SvixHttpClient) {
+    /**
+     * Iterate over a stream of events.
+     *
+     * The sink must be of type `poller` to use the poller endpoint.
+     */
+    suspend fun get(
+        streamId: String,
+        sinkId: String,
+        options: StreamingEventsGetOptions = StreamingEventsGetOptions(),
+    ): EventStreamOut {
+        val url = client.newUrlBuilder().encodedPath("/api/v1/stream/$streamId/sink/$sinkId/events")
+        options.limit?.let { url.addQueryParameter("limit", serializeQueryParam(it)) }
+        options.iterator?.let { url.addQueryParameter("iterator", it) }
+        options.after?.let { url.addQueryParameter("after", serializeQueryParam(it)) }
+        return client.executeRequest<Any, EventStreamOut>("GET", url.build())
+    }
+
     /** Creates events on the Stream. */
     suspend fun create(
         streamId: String,
@@ -34,22 +51,5 @@ class StreamingEvents(private val client: SvixHttpClient) {
             headers = headers.build(),
             reqBody = createStreamEventsIn,
         )
-    }
-
-    /**
-     * Iterate over a stream of events.
-     *
-     * The sink must be of type `poller` to use the poller endpoint.
-     */
-    suspend fun get(
-        streamId: String,
-        sinkId: String,
-        options: StreamingEventsGetOptions = StreamingEventsGetOptions(),
-    ): EventStreamOut {
-        val url = client.newUrlBuilder().encodedPath("/api/v1/stream/$streamId/sink/$sinkId/events")
-        options.limit?.let { url.addQueryParameter("limit", serializeQueryParam(it)) }
-        options.iterator?.let { url.addQueryParameter("iterator", it) }
-        options.after?.let { url.addQueryParameter("after", serializeQueryParam(it)) }
-        return client.executeRequest<Any, EventStreamOut>("GET", url.build())
     }
 }
