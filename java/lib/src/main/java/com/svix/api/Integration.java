@@ -131,20 +131,4 @@ public class Integration {
         return this.client.executeRequest(
                 "POST", url.build(), Headers.of(headers), null, IntegrationKeyOut.class);
     }
-
-    /**
-     * Get an integration's key.
-     *
-     * @deprecated
-     */
-    @Deprecated
-    public IntegrationKeyOut getKey(final String appId, final String integId)
-            throws IOException, ApiException {
-        HttpUrl.Builder url =
-                this.client
-                        .newUrlBuilder()
-                        .encodedPath(
-                                String.format("/api/v1/app/%s/integration/%s/key", appId, integId));
-        return this.client.executeRequest("GET", url.build(), null, null, IntegrationKeyOut.class);
-    }
 }

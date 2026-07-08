@@ -10823,7 +10823,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/EndpointRateLimitStatusOut"
+                                    "$ref": "#/components/schemas/EndpointThrottleRateStatusOut"
                                 }
                             }
                         }
@@ -21220,203 +21220,6 @@
                         "lang": "Shell",
                         "label": "cURL",
                         "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/app_1srOrx2ZWZBpBUvZwXKQmoEYga2/integration/integ_1srOrx2ZWZBpBUvZwXKQmoEYga2/key/rotate' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json'"
-                    }
-                ]
-            }
-        },
-        "/api/v1/app/{app_id}/integration/{integ_id}/key": {
-            "get": {
-                "tags": [
-                    "Integration"
-                ],
-                "summary": "Get Integration Key",
-                "description": "Get an integration's key.",
-                "operationId": "v1.integration.get-key",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "app_id",
-                        "description": "The Application's ID or UID.",
-                        "required": true,
-                        "schema": {
-                            "description": "The Application's ID or UID.",
-                            "type": "string",
-                            "maxLength": 256,
-                            "minLength": 1,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                            "example": "unique-identifier"
-                        },
-                        "style": "simple"
-                    },
-                    {
-                        "in": "path",
-                        "name": "integ_id",
-                        "description": "The Integration's ID.",
-                        "required": true,
-                        "schema": {
-                            "description": "The Integration's ID.",
-                            "type": "string",
-                            "maxLength": 33,
-                            "minLength": 33,
-                            "pattern": "^integ_[A-Za-z0-9]{27}$",
-                            "example": "integ_1srOrx2ZWZBpBUvZwXKQmoEYga2"
-                        },
-                        "style": "simple"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/IntegrationKeyOut"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        }
-                    },
-                    "409": {
-                        "description": "Conflict",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    },
-                    "429": {
-                        "description": "Too Many Requests",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        }
-                    }
-                },
-                "deprecated": true,
-                "security": [
-                    {
-                        "HTTPBearer": []
-                    }
-                ],
-                "x-codeSamples": [
-                    {
-                        "lang": "TypeScript",
-                        "label": "JavaScript",
-                        "source": "const response = await svix.integration.getKey(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"integ_1srOrx2ZWZBpBUvZwXKQmoEYga2\"\n);"
-                    },
-                    {
-                        "lang": "TypeScript",
-                        "label": "TypeScript",
-                        "source": "const response = await svix.integration.getKey(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"integ_1srOrx2ZWZBpBUvZwXKQmoEYga2\"\n);"
-                    },
-                    {
-                        "lang": "Python",
-                        "label": "Python",
-                        "source": "response = svix.integration.get_key(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"integ_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n)"
-                    },
-                    {
-                        "lang": "Python",
-                        "label": "Python (Async)",
-                        "source": "response = await svix.integration.get_key(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"integ_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n)"
-                    },
-                    {
-                        "lang": "Go",
-                        "label": "Go",
-                        "source": "response, err := svix.Integration.GetKey(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"integ_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n)"
-                    },
-                    {
-                        "lang": "Kotlin",
-                        "label": "Kotlin",
-                        "source": "val response =\n    svix.integration.getKey(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", \"integ_1srOrx2ZWZBpBUvZwXKQmoEYga2\")"
-                    },
-                    {
-                        "lang": "Java",
-                        "label": "Java",
-                        "source": "var response = svix.getIntegration()\n        .getKey(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", \"integ_1srOrx2ZWZBpBUvZwXKQmoEYga2\");"
-                    },
-                    {
-                        "lang": "Ruby",
-                        "label": "Ruby",
-                        "source": "response = svix.integration.get_key(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", \"integ_1srOrx2ZWZBpBUvZwXKQmoEYga2\")"
-                    },
-                    {
-                        "lang": "Rust",
-                        "label": "Rust",
-                        "source": "let response = svix\n    .integration()\n    .get_key(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n        \"integ_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n    )\n    .await?;"
-                    },
-                    {
-                        "lang": "C#",
-                        "label": "C#",
-                        "source": "var response = svix.Integration.GetKey(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"integ_1srOrx2ZWZBpBUvZwXKQmoEYga2\"\n);"
-                    },
-                    {
-                        "lang": "PHP",
-                        "label": "PHP",
-                        "source": "$response = $svix->integration->getKey(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"integ_1srOrx2ZWZBpBUvZwXKQmoEYga2\"\n);"
-                    },
-                    {
-                        "lang": "Shell",
-                        "label": "CLI",
-                        "source": "svix integration get-key \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" \"integ_1srOrx2ZWZBpBUvZwXKQmoEYga2\""
-                    },
-                    {
-                        "lang": "Shell",
-                        "label": "cURL",
-                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/app_1srOrx2ZWZBpBUvZwXKQmoEYga2/integration/integ_1srOrx2ZWZBpBUvZwXKQmoEYga2/key' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json'"
                     }
                 ]
             }
@@ -43549,7 +43352,7 @@
                     "success"
                 ]
             },
-            "EndpointRateLimitStatusOut": {
+            "EndpointThrottleRateStatusOut": {
                 "type": "object",
                 "properties": {
                     "status": {
