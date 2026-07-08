@@ -10,12 +10,6 @@ pub struct ApplicationPatch {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
 
-    /// Deprecated, use `throttleRate` instead.
-    #[deprecated]
-    #[serde(rename = "rateLimit")]
-    #[serde(default, skip_serializing_if = "JsOption::is_undefined")]
-    pub rate_limit: JsOption<u16>,
-
     /// Maximum messages per second to send to this application.
     ///
     /// Outgoing messages will be throttled to this rate.
@@ -30,11 +24,9 @@ pub struct ApplicationPatch {
 
 impl ApplicationPatch {
     pub fn new() -> Self {
-        #[allow(deprecated)]
         Self {
             metadata: None,
             name: None,
-            rate_limit: JsOption::Undefined,
             throttle_rate: JsOption::Undefined,
             uid: JsOption::Undefined,
         }

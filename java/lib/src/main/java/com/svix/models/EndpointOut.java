@@ -30,12 +30,10 @@ public class EndpointOut {
     @JsonProperty private Set<String> filterTypes;
     @JsonProperty private String id;
     @JsonProperty private Map<String, String> metadata;
-    @JsonProperty private Long rateLimit;
     @JsonProperty private Long throttleRate;
     @JsonProperty private String uid;
     @JsonProperty private OffsetDateTime updatedAt;
     @JsonProperty private URI url;
-    @JsonProperty private Integer version;
 
     public EndpointOut() {}
 
@@ -199,28 +197,6 @@ public class EndpointOut {
         this.metadata = metadata;
     }
 
-    @Deprecated
-    public EndpointOut rateLimit(Long rateLimit) {
-        this.rateLimit = rateLimit;
-        return this;
-    }
-
-    /**
-     * Deprecated, use `throttleRate` instead.
-     *
-     * @return rateLimit
-     */
-    @javax.annotation.Nullable
-    @Deprecated
-    public Long getRateLimit() {
-        return rateLimit;
-    }
-
-    @Deprecated
-    public void setRateLimit(Long rateLimit) {
-        this.rateLimit = rateLimit;
-    }
-
     public EndpointOut throttleRate(Long throttleRate) {
         this.throttleRate = throttleRate;
         return this;
@@ -297,28 +273,6 @@ public class EndpointOut {
 
     public void setUrl(URI url) {
         this.url = url;
-    }
-
-    @Deprecated
-    public EndpointOut version(Integer version) {
-        this.version = version;
-        return this;
-    }
-
-    /**
-     * Get version
-     *
-     * @return version
-     */
-    @javax.annotation.Nonnull
-    @Deprecated
-    public Integer getVersion() {
-        return version;
-    }
-
-    @Deprecated
-    public void setVersion(Integer version) {
-        this.version = version;
     }
 
     /**

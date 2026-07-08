@@ -11,8 +11,6 @@ module Svix
     # The Endpoint's ID.
     attr_accessor :id
     attr_accessor :metadata
-    # Deprecated, use `throttleRate` instead.
-    attr_accessor :rate_limit
     # Maximum messages per second to send to this endpoint.
     #
     # Outgoing messages will be throttled to this rate.
@@ -28,7 +26,6 @@ module Svix
       "disabled",
       "id",
       "metadata",
-      "rate_limit",
       "throttle_rate",
       "uid",
       "updated_at",
@@ -59,7 +56,6 @@ module Svix
       attrs["disabled"] = attributes["disabled"]
       attrs["id"] = attributes["id"]
       attrs["metadata"] = attributes["metadata"]
-      attrs["rate_limit"] = attributes["rateLimit"]
       attrs["throttle_rate"] = attributes["throttleRate"]
       attrs["uid"] = attributes["uid"]
       attrs["updated_at"] = DateTime.rfc3339(attributes["updatedAt"]).to_time
@@ -74,7 +70,6 @@ module Svix
       out["disabled"] = Svix::serialize_primitive(@disabled) if @disabled
       out["id"] = Svix::serialize_primitive(@id) if @id
       out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
-      out["rateLimit"] = Svix::serialize_primitive(@rate_limit) if @rate_limit
       out["throttleRate"] = Svix::serialize_primitive(@throttle_rate) if @throttle_rate
       out["uid"] = Svix::serialize_primitive(@uid) if @uid
       out["updatedAt"] = Svix::serialize_primitive(@updated_at) if @updated_at

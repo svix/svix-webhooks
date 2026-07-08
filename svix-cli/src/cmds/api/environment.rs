@@ -140,7 +140,6 @@ pub enum EnvironmentCommands {
     \"archived\": false,
     \"deprecated\": true,
     \"description\": \"A user has signed up\",
-    \"featureFlag\": \"...\",
     \"featureFlags\": [\"cool-new-feature\"],
     \"groupName\": \"user\",
     \"name\": \"user.signup\",

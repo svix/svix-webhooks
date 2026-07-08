@@ -27,11 +27,9 @@ public class EndpointUpdate {
     @JsonProperty private Boolean disabled;
     @JsonProperty private Set<String> filterTypes;
     @JsonProperty private Map<String, String> metadata;
-    @JsonProperty private Long rateLimit;
     @JsonProperty private Long throttleRate;
     @JsonProperty private String uid;
     @JsonProperty private URI url;
-    @JsonProperty private Long version;
 
     public EndpointUpdate() {}
 
@@ -157,28 +155,6 @@ public class EndpointUpdate {
         this.metadata = metadata;
     }
 
-    @Deprecated
-    public EndpointUpdate rateLimit(Long rateLimit) {
-        this.rateLimit = rateLimit;
-        return this;
-    }
-
-    /**
-     * Deprecated, use `throttleRate` instead.
-     *
-     * @return rateLimit
-     */
-    @javax.annotation.Nullable
-    @Deprecated
-    public Long getRateLimit() {
-        return rateLimit;
-    }
-
-    @Deprecated
-    public void setRateLimit(Long rateLimit) {
-        this.rateLimit = rateLimit;
-    }
-
     public EndpointUpdate throttleRate(Long throttleRate) {
         this.throttleRate = throttleRate;
         return this;
@@ -236,28 +212,6 @@ public class EndpointUpdate {
 
     public void setUrl(URI url) {
         this.url = url;
-    }
-
-    @Deprecated
-    public EndpointUpdate version(Long version) {
-        this.version = version;
-        return this;
-    }
-
-    /**
-     * Get version
-     *
-     * @return version
-     */
-    @javax.annotation.Nullable
-    @Deprecated
-    public Long getVersion() {
-        return version;
-    }
-
-    @Deprecated
-    public void setVersion(Long version) {
-        this.version = version;
     }
 
     /**

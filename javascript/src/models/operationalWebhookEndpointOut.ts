@@ -10,12 +10,6 @@ export interface OperationalWebhookEndpointOut {
   id: string;
   metadata: { [key: string]: string };
   /**
-   * Deprecated, use `throttleRate` instead.
-   *
-   * @deprecated
-   */
-  rateLimit?: number | null;
-  /**
    * Maximum messages per second to send to this endpoint.
    *
    * Outgoing messages will be throttled to this rate.
@@ -36,7 +30,6 @@ export const OperationalWebhookEndpointOutSerializer = {
       filterTypes: object["filterTypes"],
       id: object["id"],
       metadata: object["metadata"],
-      rateLimit: object["rateLimit"],
       throttleRate: object["throttleRate"],
       uid: object["uid"],
       updatedAt: new Date(object["updatedAt"]),
@@ -52,7 +45,6 @@ export const OperationalWebhookEndpointOutSerializer = {
       filterTypes: self.filterTypes,
       id: self.id,
       metadata: self.metadata,
-      rateLimit: self.rateLimit,
       throttleRate: self.throttleRate,
       uid: self.uid,
       updatedAt: self.updatedAt,

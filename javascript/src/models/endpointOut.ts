@@ -12,12 +12,6 @@ export interface EndpointOut {
   id: string;
   metadata: { [key: string]: string };
   /**
-   * Deprecated, use `throttleRate` instead.
-   *
-   * @deprecated
-   */
-  rateLimit?: number | null;
-  /**
    * Maximum messages per second to send to this endpoint.
    *
    * Outgoing messages will be throttled to this rate.
@@ -27,7 +21,6 @@ export interface EndpointOut {
   uid?: string | null;
   updatedAt: Date;
   url: string;
-  version: number;
 }
 
 export const EndpointOutSerializer = {
@@ -40,12 +33,10 @@ export const EndpointOutSerializer = {
       filterTypes: object["filterTypes"],
       id: object["id"],
       metadata: object["metadata"],
-      rateLimit: object["rateLimit"],
       throttleRate: object["throttleRate"],
       uid: object["uid"],
       updatedAt: new Date(object["updatedAt"]),
       url: object["url"],
-      version: object["version"],
     };
   },
 
@@ -58,12 +49,10 @@ export const EndpointOutSerializer = {
       filterTypes: self.filterTypes,
       id: self.id,
       metadata: self.metadata,
-      rateLimit: self.rateLimit,
       throttleRate: self.throttleRate,
       uid: self.uid,
       updatedAt: self.updatedAt,
       url: self.url,
-      version: self.version,
     };
   },
 };

@@ -103,8 +103,6 @@ pub async fn exec(
             schemas: Some(schema_example()),
             archived: None,
             deprecated: None,
-            #[expect(deprecated)]
-            feature_flag: None,
             feature_flags: None,
             group_name: None,
         };

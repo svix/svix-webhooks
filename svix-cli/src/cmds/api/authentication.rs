@@ -127,7 +127,6 @@ pub enum AuthenticationCommands {
   \"application\": {
     \"metadata\": {\"key\": \"...\"},
     \"name\": \"My first application\",
-    \"rateLimit\": 123,
     \"throttleRate\": 123,
     \"uid\": \"unique-identifier\"
   },

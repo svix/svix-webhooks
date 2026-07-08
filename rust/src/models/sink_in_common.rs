@@ -20,12 +20,6 @@ pub struct SinkInCommon {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub metadata: Option<std::collections::HashMap<String, String>>,
 
-    /// Deprecated, use `throttleRate` instead.
-    #[deprecated]
-    #[serde(rename = "rateLimit")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub rate_limit: Option<u16>,
-
     /// The endpoint's verification secret.
     ///
     /// Format: `base64` encoded random bytes optionally prefixed with `whsec_`.
@@ -48,14 +42,12 @@ pub struct SinkInCommon {
 
 impl SinkInCommon {
     pub fn new() -> Self {
-        #[allow(deprecated)]
         Self {
             channels: None,
             description: None,
             disabled: None,
             filter_types: None,
             metadata: None,
-            rate_limit: None,
             secret: None,
             throttle_rate: None,
             uid: None,

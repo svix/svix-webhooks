@@ -128,7 +128,7 @@ class WiremockTests {
             svx.endpoint.patch(
                 "ap",
                 "endp",
-                EndpointPatch(filterTypes = MaybeUnset.Unset, version = 42u),
+                EndpointPatch(filterTypes = MaybeUnset.Unset, disabled = false),
             )
         }
         // MaybeUnset.Present
@@ -147,7 +147,7 @@ class WiremockTests {
         wireMockServer.verify(
             1,
             patchRequestedFor(urlEqualTo("/api/v1/app/ap/endpoint/endp"))
-                .withRequestBody(equalTo("""{"version":42}""")),
+                .withRequestBody(equalTo("""{"disabled":false}""")),
         )
     }
 

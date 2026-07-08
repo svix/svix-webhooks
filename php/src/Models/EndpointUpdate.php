@@ -13,7 +13,6 @@ class EndpointUpdate implements \JsonSerializable
      * @param list<string>|null          $channels     list of message channels this endpoint listens to (omit for all)
      * @param list<string>|null          $filterTypes
      * @param array<string, string>|null $metadata
-     * @param int|null                   $rateLimit    deprecated, use `throttleRate` instead
      * @param int|null                   $throttleRate Maximum messages per second to send to this endpoint.
      *
      * Outgoing messages will be throttled to this rate.
@@ -26,10 +25,8 @@ class EndpointUpdate implements \JsonSerializable
         public readonly ?bool $disabled = null,
         public readonly ?array $filterTypes = null,
         public readonly ?array $metadata = null,
-        public readonly ?int $rateLimit = null,
         public readonly ?int $throttleRate = null,
         public readonly ?string $uid = null,
-        public readonly ?int $version = null,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -47,11 +44,9 @@ class EndpointUpdate implements \JsonSerializable
             disabled: null,
             filterTypes: null,
             metadata: null,
-            rateLimit: null,
             throttleRate: null,
             uid: null,
             url: $url,
-            version: null,
             setFields: ['url' => true]
         );
     }
@@ -67,11 +62,9 @@ class EndpointUpdate implements \JsonSerializable
             disabled: $this->disabled,
             filterTypes: $this->filterTypes,
             metadata: $this->metadata,
-            rateLimit: $this->rateLimit,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
             url: $this->url,
-            version: $this->version,
             setFields: $setFields
         );
     }
@@ -87,11 +80,9 @@ class EndpointUpdate implements \JsonSerializable
             disabled: $this->disabled,
             filterTypes: $this->filterTypes,
             metadata: $this->metadata,
-            rateLimit: $this->rateLimit,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
             url: $this->url,
-            version: $this->version,
             setFields: $setFields
         );
     }
@@ -107,11 +98,9 @@ class EndpointUpdate implements \JsonSerializable
             disabled: $disabled,
             filterTypes: $this->filterTypes,
             metadata: $this->metadata,
-            rateLimit: $this->rateLimit,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
             url: $this->url,
-            version: $this->version,
             setFields: $setFields
         );
     }
@@ -127,11 +116,9 @@ class EndpointUpdate implements \JsonSerializable
             disabled: $this->disabled,
             filterTypes: $filterTypes,
             metadata: $this->metadata,
-            rateLimit: $this->rateLimit,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
             url: $this->url,
-            version: $this->version,
             setFields: $setFields
         );
     }
@@ -147,31 +134,9 @@ class EndpointUpdate implements \JsonSerializable
             disabled: $this->disabled,
             filterTypes: $this->filterTypes,
             metadata: $metadata,
-            rateLimit: $this->rateLimit,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
             url: $this->url,
-            version: $this->version,
-            setFields: $setFields
-        );
-    }
-
-    public function withRateLimit(?int $rateLimit): self
-    {
-        $setFields = $this->setFields;
-        $setFields['rateLimit'] = true;
-
-        return new self(
-            channels: $this->channels,
-            description: $this->description,
-            disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
-            metadata: $this->metadata,
-            rateLimit: $rateLimit,
-            throttleRate: $this->throttleRate,
-            uid: $this->uid,
-            url: $this->url,
-            version: $this->version,
             setFields: $setFields
         );
     }
@@ -187,11 +152,9 @@ class EndpointUpdate implements \JsonSerializable
             disabled: $this->disabled,
             filterTypes: $this->filterTypes,
             metadata: $this->metadata,
-            rateLimit: $this->rateLimit,
             throttleRate: $throttleRate,
             uid: $this->uid,
             url: $this->url,
-            version: $this->version,
             setFields: $setFields
         );
     }
@@ -207,31 +170,9 @@ class EndpointUpdate implements \JsonSerializable
             disabled: $this->disabled,
             filterTypes: $this->filterTypes,
             metadata: $this->metadata,
-            rateLimit: $this->rateLimit,
             throttleRate: $this->throttleRate,
             uid: $uid,
             url: $this->url,
-            version: $this->version,
-            setFields: $setFields
-        );
-    }
-
-    public function withVersion(?int $version): self
-    {
-        $setFields = $this->setFields;
-        $setFields['version'] = true;
-
-        return new self(
-            channels: $this->channels,
-            description: $this->description,
-            disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
-            metadata: $this->metadata,
-            rateLimit: $this->rateLimit,
-            throttleRate: $this->throttleRate,
-            uid: $this->uid,
-            url: $this->url,
-            version: $version,
             setFields: $setFields
         );
     }
@@ -256,17 +197,11 @@ class EndpointUpdate implements \JsonSerializable
         if (null !== $this->metadata) {
             $data['metadata'] = $this->metadata;
         }
-        if (isset($this->setFields['rateLimit'])) {
-            $data['rateLimit'] = $this->rateLimit;
-        }
         if (isset($this->setFields['throttleRate'])) {
             $data['throttleRate'] = $this->throttleRate;
         }
         if (isset($this->setFields['uid'])) {
             $data['uid'] = $this->uid;
-        }
-        if (isset($this->setFields['version'])) {
-            $data['version'] = $this->version;
         }
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
@@ -283,11 +218,9 @@ class EndpointUpdate implements \JsonSerializable
             disabled: \Svix\Utils::deserializeBool($data, 'disabled', false, 'EndpointUpdate'),
             filterTypes: \Svix\Utils::getValFromJson($data, 'filterTypes', false, 'EndpointUpdate'),
             metadata: \Svix\Utils::getValFromJson($data, 'metadata', false, 'EndpointUpdate'),
-            rateLimit: \Svix\Utils::deserializeInt($data, 'rateLimit', false, 'EndpointUpdate'),
             throttleRate: \Svix\Utils::deserializeInt($data, 'throttleRate', false, 'EndpointUpdate'),
             uid: \Svix\Utils::deserializeString($data, 'uid', false, 'EndpointUpdate'),
-            url: \Svix\Utils::getValFromJson($data, 'url', true, 'EndpointUpdate'),
-            version: \Svix\Utils::deserializeInt($data, 'version', false, 'EndpointUpdate')
+            url: \Svix\Utils::getValFromJson($data, 'url', true, 'EndpointUpdate')
         );
     }
 

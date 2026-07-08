@@ -28,14 +28,12 @@ public class MessageEndpointOut {
     @JsonProperty private Set<String> filterTypes;
     @JsonProperty private String id;
     @JsonProperty private OffsetDateTime nextAttempt;
-    @JsonProperty private Long rateLimit;
     @JsonProperty private MessageStatus status;
     @JsonProperty private MessageStatusText statusText;
     @JsonProperty private Long throttleRate;
     @JsonProperty private String uid;
     @JsonProperty private OffsetDateTime updatedAt;
     @JsonProperty private URI url;
-    @JsonProperty private Integer version;
 
     public MessageEndpointOut() {}
 
@@ -190,28 +188,6 @@ public class MessageEndpointOut {
         this.nextAttempt = nextAttempt;
     }
 
-    @Deprecated
-    public MessageEndpointOut rateLimit(Long rateLimit) {
-        this.rateLimit = rateLimit;
-        return this;
-    }
-
-    /**
-     * Deprecated, use `throttleRate` instead.
-     *
-     * @return rateLimit
-     */
-    @javax.annotation.Nullable
-    @Deprecated
-    public Long getRateLimit() {
-        return rateLimit;
-    }
-
-    @Deprecated
-    public void setRateLimit(Long rateLimit) {
-        this.rateLimit = rateLimit;
-    }
-
     public MessageEndpointOut status(MessageStatus status) {
         this.status = status;
         return this;
@@ -326,28 +302,6 @@ public class MessageEndpointOut {
 
     public void setUrl(URI url) {
         this.url = url;
-    }
-
-    @Deprecated
-    public MessageEndpointOut version(Integer version) {
-        this.version = version;
-        return this;
-    }
-
-    /**
-     * Get version
-     *
-     * @return version
-     */
-    @javax.annotation.Nonnull
-    @Deprecated
-    public Integer getVersion() {
-        return version;
-    }
-
-    @Deprecated
-    public void setVersion(Integer version) {
-        this.version = version;
     }
 
     /**

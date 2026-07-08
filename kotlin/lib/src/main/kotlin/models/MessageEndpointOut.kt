@@ -16,8 +16,6 @@ data class MessageEndpointOut(
     /** The Endpoint's ID. */
     val id: String,
     val nextAttempt: Instant? = null,
-    /** Deprecated, use `throttleRate` instead. */
-    val rateLimit: UShort? = null,
     val status: MessageStatus,
     val statusText: MessageStatusText,
     /**
@@ -30,5 +28,4 @@ data class MessageEndpointOut(
     val uid: String? = null,
     val updatedAt: Instant,
     val url: String,
-    val version: Int,
 )

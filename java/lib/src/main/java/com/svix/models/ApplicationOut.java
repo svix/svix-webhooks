@@ -24,7 +24,6 @@ public class ApplicationOut {
     @JsonProperty private String id;
     @JsonProperty private Map<String, String> metadata;
     @JsonProperty private String name;
-    @JsonProperty private Long rateLimit;
     @JsonProperty private Long throttleRate;
     @JsonProperty private String uid;
     @JsonProperty private OffsetDateTime updatedAt;
@@ -114,28 +113,6 @@ public class ApplicationOut {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    @Deprecated
-    public ApplicationOut rateLimit(Long rateLimit) {
-        this.rateLimit = rateLimit;
-        return this;
-    }
-
-    /**
-     * Deprecated, use `throttleRate` instead.
-     *
-     * @return rateLimit
-     */
-    @javax.annotation.Nullable
-    @Deprecated
-    public Long getRateLimit() {
-        return rateLimit;
-    }
-
-    @Deprecated
-    public void setRateLimit(Long rateLimit) {
-        this.rateLimit = rateLimit;
     }
 
     public ApplicationOut throttleRate(Long throttleRate) {

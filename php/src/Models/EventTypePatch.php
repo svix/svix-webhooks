@@ -10,7 +10,6 @@ class EventTypePatch implements \JsonSerializable
     private array $setFields = [];
 
     /**
-     * @param string|null       $featureFlag  deprecated, use `featureFlags` instead
      * @param list<string>|null $featureFlags
      * @param string|null       $groupName    The event type group's name
      */
@@ -18,7 +17,6 @@ class EventTypePatch implements \JsonSerializable
         public readonly ?bool $archived = null,
         public readonly ?bool $deprecated = null,
         public readonly ?string $description = null,
-        public readonly ?string $featureFlag = null,
         public readonly ?array $featureFlags = null,
         public readonly ?string $groupName = null,
         public readonly ?array $schemas = null,
@@ -36,7 +34,6 @@ class EventTypePatch implements \JsonSerializable
             archived: null,
             deprecated: null,
             description: null,
-            featureFlag: null,
             featureFlags: null,
             groupName: null,
             schemas: null,
@@ -53,7 +50,6 @@ class EventTypePatch implements \JsonSerializable
             archived: $archived,
             deprecated: $this->deprecated,
             description: $this->description,
-            featureFlag: $this->featureFlag,
             featureFlags: $this->featureFlags,
             groupName: $this->groupName,
             schemas: $this->schemas,
@@ -70,7 +66,6 @@ class EventTypePatch implements \JsonSerializable
             archived: $this->archived,
             deprecated: $deprecated,
             description: $this->description,
-            featureFlag: $this->featureFlag,
             featureFlags: $this->featureFlags,
             groupName: $this->groupName,
             schemas: $this->schemas,
@@ -87,24 +82,6 @@ class EventTypePatch implements \JsonSerializable
             archived: $this->archived,
             deprecated: $this->deprecated,
             description: $description,
-            featureFlag: $this->featureFlag,
-            featureFlags: $this->featureFlags,
-            groupName: $this->groupName,
-            schemas: $this->schemas,
-            setFields: $setFields
-        );
-    }
-
-    public function withFeatureFlag(?string $featureFlag): self
-    {
-        $setFields = $this->setFields;
-        $setFields['featureFlag'] = true;
-
-        return new self(
-            archived: $this->archived,
-            deprecated: $this->deprecated,
-            description: $this->description,
-            featureFlag: $featureFlag,
             featureFlags: $this->featureFlags,
             groupName: $this->groupName,
             schemas: $this->schemas,
@@ -121,7 +98,6 @@ class EventTypePatch implements \JsonSerializable
             archived: $this->archived,
             deprecated: $this->deprecated,
             description: $this->description,
-            featureFlag: $this->featureFlag,
             featureFlags: $featureFlags,
             groupName: $this->groupName,
             schemas: $this->schemas,
@@ -138,7 +114,6 @@ class EventTypePatch implements \JsonSerializable
             archived: $this->archived,
             deprecated: $this->deprecated,
             description: $this->description,
-            featureFlag: $this->featureFlag,
             featureFlags: $this->featureFlags,
             groupName: $groupName,
             schemas: $this->schemas,
@@ -155,7 +130,6 @@ class EventTypePatch implements \JsonSerializable
             archived: $this->archived,
             deprecated: $this->deprecated,
             description: $this->description,
-            featureFlag: $this->featureFlag,
             featureFlags: $this->featureFlags,
             groupName: $this->groupName,
             schemas: $schemas,
@@ -176,9 +150,6 @@ class EventTypePatch implements \JsonSerializable
         }
         if (null !== $this->description) {
             $data['description'] = $this->description;
-        }
-        if (isset($this->setFields['featureFlag'])) {
-            $data['featureFlag'] = $this->featureFlag;
         }
         if (isset($this->setFields['featureFlags'])) {
             $data['featureFlags'] = $this->featureFlags;
@@ -202,7 +173,6 @@ class EventTypePatch implements \JsonSerializable
             archived: \Svix\Utils::deserializeBool($data, 'archived', false, 'EventTypePatch'),
             deprecated: \Svix\Utils::deserializeBool($data, 'deprecated', false, 'EventTypePatch'),
             description: \Svix\Utils::deserializeString($data, 'description', false, 'EventTypePatch'),
-            featureFlag: \Svix\Utils::deserializeString($data, 'featureFlag', false, 'EventTypePatch'),
             featureFlags: \Svix\Utils::getValFromJson($data, 'featureFlags', false, 'EventTypePatch'),
             groupName: \Svix\Utils::deserializeString($data, 'groupName', false, 'EventTypePatch'),
             schemas: \Svix\Utils::getValFromJson($data, 'schemas', false, 'EventTypePatch')

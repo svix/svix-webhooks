@@ -7,8 +7,6 @@ module Svix
     attr_accessor :description
     attr_accessor :disabled
     attr_accessor :metadata
-    # Deprecated, use `throttleRate` instead.
-    attr_accessor :rate_limit
     # Maximum messages per second to send to this endpoint.
     #
     # Outgoing messages will be throttled to this rate.
@@ -17,7 +15,7 @@ module Svix
     attr_accessor :uid
     attr_accessor :url
 
-    ALL_FIELD ||= ["description", "disabled", "metadata", "rate_limit", "throttle_rate", "uid", "url"].freeze
+    ALL_FIELD ||= ["description", "disabled", "metadata", "throttle_rate", "uid", "url"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -41,7 +39,6 @@ module Svix
       attrs["description"] = attributes["description"]
       attrs["disabled"] = attributes["disabled"]
       attrs["metadata"] = attributes["metadata"]
-      attrs["rate_limit"] = attributes["rateLimit"]
       attrs["throttle_rate"] = attributes["throttleRate"]
       attrs["uid"] = attributes["uid"]
       attrs["url"] = attributes["url"]
@@ -53,7 +50,6 @@ module Svix
       out["description"] = Svix::serialize_primitive(@description) if @description
       out["disabled"] = Svix::serialize_primitive(@disabled) if @disabled
       out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
-      out["rateLimit"] = Svix::serialize_primitive(@rate_limit) if @rate_limit
       out["throttleRate"] = Svix::serialize_primitive(@throttle_rate) if @throttle_rate
       out["uid"] = Svix::serialize_primitive(@uid) if @uid
       out["url"] = Svix::serialize_primitive(@url) if @url

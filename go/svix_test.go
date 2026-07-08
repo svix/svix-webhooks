@@ -372,9 +372,6 @@ func TestModelDeserialization(t *testing.T) {
 	if ep_out.Url != "http://example.local" {
 		t.Error("unexpected value for url", ep_out.Url)
 	}
-	if ep_out.Version != 1 {
-		t.Error("unexpected value for version", ep_out.Version)
-	}
 
 	ep_out = models.EndpointOut{}
 	// full example from API docs
@@ -430,9 +427,6 @@ func TestModelDeserialization(t *testing.T) {
 	}
 	if ep_out.Url != "https://example.com/webhook/" {
 		t.Error("unexpected value for url", ep_out.Url)
-	}
-	if ep_out.Version != 1 {
-		t.Error("unexpected value for version", ep_out.Version)
 	}
 	if *ep_out.Disabled != false {
 		t.Error("unexpected value for disabled", ep_out.Disabled)
@@ -496,9 +490,6 @@ func TestModelDeserialization(t *testing.T) {
 	}
 	if ep_out.Url != "https://example.com/webhook/" {
 		t.Error("unexpected value for url", ep_out.Url)
-	}
-	if ep_out.Version != 1 {
-		t.Error("unexpected value for version", ep_out.Version)
 	}
 	if ep_out.Disabled != nil {
 		t.Error("unexpected value for disabled", ep_out.Disabled)
