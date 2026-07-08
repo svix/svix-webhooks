@@ -25,12 +25,6 @@ pub struct EndpointOut {
 
     pub metadata: std::collections::HashMap<String, String>,
 
-    /// Deprecated, use `throttleRate` instead.
-    #[deprecated]
-    #[serde(rename = "rateLimit")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub rate_limit: Option<u16>,
-
     /// Maximum messages per second to send to this endpoint.
     ///
     /// Outgoing messages will be throttled to this rate.
@@ -46,9 +40,6 @@ pub struct EndpointOut {
     pub updated_at: String,
 
     pub url: String,
-
-    #[deprecated]
-    pub version: i32,
 }
 
 impl EndpointOut {
@@ -59,9 +50,7 @@ impl EndpointOut {
         metadata: std::collections::HashMap<String, String>,
         updated_at: String,
         url: String,
-        version: i32,
     ) -> Self {
-        #[allow(deprecated)]
         Self {
             channels: None,
             created_at,
@@ -70,12 +59,10 @@ impl EndpointOut {
             filter_types: None,
             id,
             metadata,
-            rate_limit: None,
             throttle_rate: None,
             uid: None,
             updated_at,
             url,
-            version,
         }
     }
 }

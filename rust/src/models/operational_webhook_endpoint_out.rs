@@ -21,12 +21,6 @@ pub struct OperationalWebhookEndpointOut {
 
     pub metadata: std::collections::HashMap<String, String>,
 
-    /// Deprecated, use `throttleRate` instead.
-    #[deprecated]
-    #[serde(rename = "rateLimit")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub rate_limit: Option<u16>,
-
     /// Maximum messages per second to send to this endpoint.
     ///
     /// Outgoing messages will be throttled to this rate.
@@ -53,7 +47,6 @@ impl OperationalWebhookEndpointOut {
         updated_at: String,
         url: String,
     ) -> Self {
-        #[allow(deprecated)]
         Self {
             created_at,
             description,
@@ -61,7 +54,6 @@ impl OperationalWebhookEndpointOut {
             filter_types: None,
             id,
             metadata,
-            rate_limit: None,
             throttle_rate: None,
             uid: None,
             updated_at,

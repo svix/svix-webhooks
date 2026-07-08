@@ -5749,67 +5749,67 @@
                     {
                         "lang": "TypeScript",
                         "label": "JavaScript",
-                        "source": "const response = await svix.endpoint.create(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", {\n  description: \"An example endpoint name\",\n  throttleRate: 1,\n  uid: \"unique-identifier\",\n  url: \"https://example.com/webhook/\",\n  headers: { \"X-Example\": \"123\", \"X-Foobar\": \"Bar\" },\n  disabled: true,\n  filterTypes: [\"user.signup\", \"user.deleted\"],\n  channels: [\"project_123\", \"group_2\"],\n  secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n  metadata: {},\n});"
+                        "source": "const response = await svix.endpoint.create(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", {\n  description: \"An example endpoint name\",\n  throttleRate: 1,\n  uid: \"unique-identifier\",\n  url: \"https://example.com/webhook/\",\n  disabled: true,\n  filterTypes: [\"user.signup\", \"user.deleted\"],\n  channels: [\"project_123\", \"group_2\"],\n  secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n  metadata: {},\n  headers: { \"X-Example\": \"123\", \"X-Foobar\": \"Bar\" },\n});"
                     },
                     {
                         "lang": "TypeScript",
                         "label": "TypeScript",
-                        "source": "const response = await svix.endpoint.create(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", {\n  description: \"An example endpoint name\",\n  throttleRate: 1,\n  uid: \"unique-identifier\",\n  url: \"https://example.com/webhook/\",\n  headers: { \"X-Example\": \"123\", \"X-Foobar\": \"Bar\" },\n  disabled: true,\n  filterTypes: [\"user.signup\", \"user.deleted\"],\n  channels: [\"project_123\", \"group_2\"],\n  secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n  metadata: {},\n});"
+                        "source": "const response = await svix.endpoint.create(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", {\n  description: \"An example endpoint name\",\n  throttleRate: 1,\n  uid: \"unique-identifier\",\n  url: \"https://example.com/webhook/\",\n  disabled: true,\n  filterTypes: [\"user.signup\", \"user.deleted\"],\n  channels: [\"project_123\", \"group_2\"],\n  secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n  metadata: {},\n  headers: { \"X-Example\": \"123\", \"X-Foobar\": \"Bar\" },\n});"
                     },
                     {
                         "lang": "Python",
                         "label": "Python",
-                        "source": "response = svix.endpoint.create(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    EndpointIn(\n        description=\"An example endpoint name\",\n        throttle_rate=1,\n        uid=\"unique-identifier\",\n        url=\"https://example.com/webhook/\",\n        headers={\"X-Example\": \"123\", \"X-Foobar\": \"Bar\"},\n        disabled=True,\n        filter_types=[\n            \"user.signup\",\n            \"user.deleted\",\n        ],\n        channels=[\n            \"project_123\",\n            \"group_2\",\n        ],\n        secret=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n        metadata={},\n    ),\n)"
+                        "source": "response = svix.endpoint.create(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    EndpointIn(\n        description=\"An example endpoint name\",\n        throttle_rate=1,\n        uid=\"unique-identifier\",\n        url=\"https://example.com/webhook/\",\n        disabled=True,\n        filter_types=[\n            \"user.signup\",\n            \"user.deleted\",\n        ],\n        channels=[\n            \"project_123\",\n            \"group_2\",\n        ],\n        secret=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n        metadata={},\n        headers={\"X-Example\": \"123\", \"X-Foobar\": \"Bar\"},\n    ),\n)"
                     },
                     {
                         "lang": "Python",
                         "label": "Python (Async)",
-                        "source": "response = await svix.endpoint.create(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    EndpointIn(\n        description=\"An example endpoint name\",\n        throttle_rate=1,\n        uid=\"unique-identifier\",\n        url=\"https://example.com/webhook/\",\n        headers={\"X-Example\": \"123\", \"X-Foobar\": \"Bar\"},\n        disabled=True,\n        filter_types=[\n            \"user.signup\",\n            \"user.deleted\",\n        ],\n        channels=[\n            \"project_123\",\n            \"group_2\",\n        ],\n        secret=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n        metadata={},\n    ),\n)"
+                        "source": "response = await svix.endpoint.create(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    EndpointIn(\n        description=\"An example endpoint name\",\n        throttle_rate=1,\n        uid=\"unique-identifier\",\n        url=\"https://example.com/webhook/\",\n        disabled=True,\n        filter_types=[\n            \"user.signup\",\n            \"user.deleted\",\n        ],\n        channels=[\n            \"project_123\",\n            \"group_2\",\n        ],\n        secret=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n        metadata={},\n        headers={\"X-Example\": \"123\", \"X-Foobar\": \"Bar\"},\n    ),\n)"
                     },
                     {
                         "lang": "Go",
                         "label": "Go",
-                        "source": "response, err := svix.Endpoint.Create(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\tEndpointIn{\n\t\tDescription:  new(\"An example endpoint name\"),\n\t\tThrottleRate: new(uint16(1)),\n\t\tUid:          new(\"unique-identifier\"),\n\t\tUrl:          \"https://example.com/webhook/\",\n\t\tHeaders:      &map[string]string{\"X-Example\": \"123\", \"X-Foobar\": \"Bar\"},\n\t\tDisabled:     new(true),\n\t\tFilterTypes:  []string{\"user.signup\", \"user.deleted\"},\n\t\tChannels:     []string{\"project_123\", \"group_2\"},\n\t\tSecret:       new(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"),\n\t\tMetadata:     nil,\n\t},\n\tnil,\n)"
+                        "source": "response, err := svix.Endpoint.Create(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\tEndpointIn{\n\t\tDescription:  new(\"An example endpoint name\"),\n\t\tThrottleRate: new(uint16(1)),\n\t\tUid:          new(\"unique-identifier\"),\n\t\tUrl:          \"https://example.com/webhook/\",\n\t\tDisabled:     new(true),\n\t\tFilterTypes:  []string{\"user.signup\", \"user.deleted\"},\n\t\tChannels:     []string{\"project_123\", \"group_2\"},\n\t\tSecret:       new(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"),\n\t\tMetadata:     nil,\n\t\tHeaders:      &map[string]string{\"X-Example\": \"123\", \"X-Foobar\": \"Bar\"},\n\t},\n\tnil,\n)"
                     },
                     {
                         "lang": "Kotlin",
                         "label": "Kotlin",
-                        "source": "val response =\n    svix.endpoint.create(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n        EndpointIn(\n            description = \"An example endpoint name\",\n            throttleRate = 1u,\n            uid = \"unique-identifier\",\n            url = \"https://example.com/webhook/\",\n            headers = mapOf(\"X-Example\" to \"123\", \"X-Foobar\" to \"Bar\"),\n            disabled = true,\n            filterTypes = setOf(\"user.signup\", \"user.deleted\"),\n            channels = setOf(\"project_123\", \"group_2\"),\n            secret = \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n            metadata = mapOf(),\n        ),\n    )"
+                        "source": "val response =\n    svix.endpoint.create(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n        EndpointIn(\n            description = \"An example endpoint name\",\n            throttleRate = 1u,\n            uid = \"unique-identifier\",\n            url = \"https://example.com/webhook/\",\n            disabled = true,\n            filterTypes = setOf(\"user.signup\", \"user.deleted\"),\n            channels = setOf(\"project_123\", \"group_2\"),\n            secret = \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n            metadata = mapOf(),\n            headers = mapOf(\"X-Example\" to \"123\", \"X-Foobar\" to \"Bar\"),\n        ),\n    )"
                     },
                     {
                         "lang": "Java",
                         "label": "Java",
-                        "source": "var response = svix.getEndpoint()\n        .create(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            new EndpointIn()\n                .description(\"An example endpoint name\")\n                .throttleRate(1L)\n                .uid(\"unique-identifier\")\n                .url(URI.create(\"https://example.com/webhook/\"))\n                .headers(Map.ofEntries(Map.entry(\"X-Example\", \"123\"), Map.entry(\"X-Foobar\", \"Bar\")))\n                .disabled(true)\n                .filterTypes(Set.of(\"user.signup\", \"user.deleted\"))\n                .channels(Set.of(\"project_123\", \"group_2\"))\n                .secret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n                .metadata(Map.of()));"
+                        "source": "var response = svix.getEndpoint()\n        .create(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            new EndpointIn()\n                .description(\"An example endpoint name\")\n                .throttleRate(1L)\n                .uid(\"unique-identifier\")\n                .url(URI.create(\"https://example.com/webhook/\"))\n                .disabled(true)\n                .filterTypes(Set.of(\"user.signup\", \"user.deleted\"))\n                .channels(Set.of(\"project_123\", \"group_2\"))\n                .secret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n                .metadata(Map.of())\n                .headers(\n                    Map.ofEntries(Map.entry(\"X-Example\", \"123\"), Map.entry(\"X-Foobar\", \"Bar\"))));"
                     },
                     {
                         "lang": "Ruby",
                         "label": "Ruby",
-                        "source": "response = svix\n  .endpoint\n  .create(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    {\n      description: \"An example endpoint name\",\n      throttleRate: 1,\n      uid: \"unique-identifier\",\n      url: \"https://example.com/webhook/\",\n      headers: {:\"X-Example\" => \"123\", :\"X-Foobar\" => \"Bar\"},\n      disabled: true,\n      filterTypes: [\"user.signup\", \"user.deleted\"],\n      channels: [\"project_123\", \"group_2\"],\n      secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n      metadata: {}\n    }\n  )"
+                        "source": "response = svix\n  .endpoint\n  .create(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    {\n      description: \"An example endpoint name\",\n      throttleRate: 1,\n      uid: \"unique-identifier\",\n      url: \"https://example.com/webhook/\",\n      disabled: true,\n      filterTypes: [\"user.signup\", \"user.deleted\"],\n      channels: [\"project_123\", \"group_2\"],\n      secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n      metadata: {},\n      headers: {:\"X-Example\" => \"123\", :\"X-Foobar\" => \"Bar\"}\n    }\n  )"
                     },
                     {
                         "lang": "Rust",
                         "label": "Rust",
-                        "source": "let response = svix\n    .endpoint()\n    .create(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n        EndpointIn {\n            description: Some(\"An example endpoint name\".to_string()),\n            throttle_rate: Some(1),\n            uid: Some(\"unique-identifier\".to_string()),\n            url: \"https://example.com/webhook/\".to_string(),\n            headers: Some(\n                HashMap::from([\n                    (\"X-Example\".to_string(), \"123\".to_string()),\n                    (\"X-Foobar\".to_string(), \"Bar\".to_string()),\n                ]),\n            ),\n            disabled: Some(true),\n            filter_types: Some(\n                vec![\"user.signup\".to_string(), \"user.deleted\".to_string()],\n            ),\n            channels: Some(vec![\"project_123\".to_string(), \"group_2\".to_string()]),\n            secret: Some(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\".to_string()),\n            metadata: Some(HashMap::new()),\n        },\n        None,\n    )\n    .await?;"
+                        "source": "let response = svix\n    .endpoint()\n    .create(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n        EndpointIn {\n            description: Some(\"An example endpoint name\".to_string()),\n            throttle_rate: Some(1),\n            uid: Some(\"unique-identifier\".to_string()),\n            url: \"https://example.com/webhook/\".to_string(),\n            disabled: Some(true),\n            filter_types: Some(\n                vec![\"user.signup\".to_string(), \"user.deleted\".to_string()],\n            ),\n            channels: Some(vec![\"project_123\".to_string(), \"group_2\".to_string()]),\n            secret: Some(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\".to_string()),\n            metadata: Some(HashMap::new()),\n            headers: Some(\n                HashMap::from([\n                    (\"X-Example\".to_string(), \"123\".to_string()),\n                    (\"X-Foobar\".to_string(), \"Bar\".to_string()),\n                ]),\n            ),\n        },\n        None,\n    )\n    .await?;"
                     },
                     {
                         "lang": "C#",
                         "label": "C#",
-                        "source": "var response = svix.Endpoint.Create(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    new EndpointIn\n    {\n        Description = \"An example endpoint name\",\n        ThrottleRate = 1,\n        Uid = \"unique-identifier\",\n        Url = \"https://example.com/webhook/\",\n        Headers = new() { { \"X-Example\", \"123\" }, { \"X-Foobar\", \"Bar\" } },\n        Disabled = true,\n        FilterTypes = [\"user.signup\", \"user.deleted\"],\n        Channels = [\"project_123\", \"group_2\"],\n        Secret = \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n        Metadata = [],\n    }\n);"
+                        "source": "var response = svix.Endpoint.Create(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    new EndpointIn\n    {\n        Description = \"An example endpoint name\",\n        ThrottleRate = 1,\n        Uid = \"unique-identifier\",\n        Url = \"https://example.com/webhook/\",\n        Disabled = true,\n        FilterTypes = [\"user.signup\", \"user.deleted\"],\n        Channels = [\"project_123\", \"group_2\"],\n        Secret = \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n        Metadata = [],\n        Headers = new() { { \"X-Example\", \"123\" }, { \"X-Foobar\", \"Bar\" } },\n    }\n);"
                     },
                     {
                         "lang": "PHP",
                         "label": "PHP",
-                        "source": "$response = $svix->endpoint->create(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    EndpointIn::create(\n        url: \"https://example.com/webhook/\"\n    )\n    ->withDescription(\"An example endpoint name\")\n    ->withThrottleRate(1)\n    ->withUid(\"unique-identifier\")\n    ->withHeaders([\"X-Example\" => \"123\", \"X-Foobar\" => \"Bar\"])\n    ->withDisabled(true)\n    ->withFilterTypes([\"user.signup\",\"user.deleted\"])\n    ->withChannels([\"project_123\",\"group_2\"])\n    ->withSecret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n    ->withMetadata([])\n);"
+                        "source": "$response = $svix->endpoint->create(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    EndpointIn::create(\n        url: \"https://example.com/webhook/\"\n    )\n    ->withDescription(\"An example endpoint name\")\n    ->withThrottleRate(1)\n    ->withUid(\"unique-identifier\")\n    ->withDisabled(true)\n    ->withFilterTypes([\"user.signup\",\"user.deleted\"])\n    ->withChannels([\"project_123\",\"group_2\"])\n    ->withSecret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n    ->withMetadata([])\n    ->withHeaders([\"X-Example\" => \"123\", \"X-Foobar\" => \"Bar\"])\n);"
                     },
                     {
                         "lang": "Shell",
                         "label": "CLI",
-                        "source": "svix endpoint create \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" '{\n    \"description\": \"An example endpoint name\",\n    \"throttleRate\": 1,\n    \"uid\": \"unique-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"headers\": {\n      \"X-Example\": \"123\",\n      \"X-Foobar\": \"Bar\"\n    },\n    \"disabled\": true,\n    \"filterTypes\": [\n      \"user.signup\",\n      \"user.deleted\"\n    ],\n    \"channels\": [\n      \"project_123\",\n      \"group_2\"\n    ],\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    \"metadata\": {}\n  }'"
+                        "source": "svix endpoint create \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" '{\n    \"description\": \"An example endpoint name\",\n    \"throttleRate\": 1,\n    \"uid\": \"unique-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"disabled\": true,\n    \"filterTypes\": [\n      \"user.signup\",\n      \"user.deleted\"\n    ],\n    \"channels\": [\n      \"project_123\",\n      \"group_2\"\n    ],\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    \"metadata\": {},\n    \"headers\": {\n      \"X-Example\": \"123\",\n      \"X-Foobar\": \"Bar\"\n    }\n  }'"
                     },
                     {
                         "lang": "Shell",
                         "label": "cURL",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/app_1srOrx2ZWZBpBUvZwXKQmoEYga2/endpoint' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"description\": \"An example endpoint name\",\n    \"throttleRate\": 1,\n    \"uid\": \"unique-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"headers\": {\n      \"X-Example\": \"123\",\n      \"X-Foobar\": \"Bar\"\n    },\n    \"disabled\": true,\n    \"filterTypes\": [\n      \"user.signup\",\n      \"user.deleted\"\n    ],\n    \"channels\": [\n      \"project_123\",\n      \"group_2\"\n    ],\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    \"metadata\": {}\n  }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/app_1srOrx2ZWZBpBUvZwXKQmoEYga2/endpoint' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"description\": \"An example endpoint name\",\n    \"throttleRate\": 1,\n    \"uid\": \"unique-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"disabled\": true,\n    \"filterTypes\": [\n      \"user.signup\",\n      \"user.deleted\"\n    ],\n    \"channels\": [\n      \"project_123\",\n      \"group_2\"\n    ],\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n    \"metadata\": {},\n    \"headers\": {\n      \"X-Example\": \"123\",\n      \"X-Foobar\": \"Bar\"\n    }\n  }'"
                     }
                 ]
             }
@@ -6159,67 +6159,67 @@
                     {
                         "lang": "TypeScript",
                         "label": "JavaScript",
-                        "source": "const response = await svix.endpoint.update(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n  {\n    description: \"An example endpoint name\",\n    throttleRate: 1,\n    uid: \"unique-identifier\",\n    url: \"https://example.com/webhook/\",\n    metadata: {},\n    disabled: true,\n    filterTypes: [\"user.signup\", \"user.deleted\"],\n    channels: [\"project_123\", \"group_2\"],\n  }\n);"
+                        "source": "const response = await svix.endpoint.update(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n  {\n    description: \"An example endpoint name\",\n    throttleRate: 1,\n    uid: \"unique-identifier\",\n    url: \"https://example.com/webhook/\",\n    disabled: true,\n    filterTypes: [\"user.signup\", \"user.deleted\"],\n    channels: [\"project_123\", \"group_2\"],\n    metadata: {},\n  }\n);"
                     },
                     {
                         "lang": "TypeScript",
                         "label": "TypeScript",
-                        "source": "const response = await svix.endpoint.update(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n  {\n    description: \"An example endpoint name\",\n    throttleRate: 1,\n    uid: \"unique-identifier\",\n    url: \"https://example.com/webhook/\",\n    metadata: {},\n    disabled: true,\n    filterTypes: [\"user.signup\", \"user.deleted\"],\n    channels: [\"project_123\", \"group_2\"],\n  }\n);"
+                        "source": "const response = await svix.endpoint.update(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n  {\n    description: \"An example endpoint name\",\n    throttleRate: 1,\n    uid: \"unique-identifier\",\n    url: \"https://example.com/webhook/\",\n    disabled: true,\n    filterTypes: [\"user.signup\", \"user.deleted\"],\n    channels: [\"project_123\", \"group_2\"],\n    metadata: {},\n  }\n);"
                     },
                     {
                         "lang": "Python",
                         "label": "Python",
-                        "source": "response = svix.endpoint.update(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointUpdate(\n        description=\"An example endpoint name\",\n        throttle_rate=1,\n        uid=\"unique-identifier\",\n        url=\"https://example.com/webhook/\",\n        metadata={},\n        disabled=True,\n        filter_types=[\n            \"user.signup\",\n            \"user.deleted\",\n        ],\n        channels=[\n            \"project_123\",\n            \"group_2\",\n        ],\n    ),\n)"
+                        "source": "response = svix.endpoint.update(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointUpdate(\n        description=\"An example endpoint name\",\n        throttle_rate=1,\n        uid=\"unique-identifier\",\n        url=\"https://example.com/webhook/\",\n        disabled=True,\n        filter_types=[\n            \"user.signup\",\n            \"user.deleted\",\n        ],\n        channels=[\n            \"project_123\",\n            \"group_2\",\n        ],\n        metadata={},\n    ),\n)"
                     },
                     {
                         "lang": "Python",
                         "label": "Python (Async)",
-                        "source": "response = await svix.endpoint.update(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointUpdate(\n        description=\"An example endpoint name\",\n        throttle_rate=1,\n        uid=\"unique-identifier\",\n        url=\"https://example.com/webhook/\",\n        metadata={},\n        disabled=True,\n        filter_types=[\n            \"user.signup\",\n            \"user.deleted\",\n        ],\n        channels=[\n            \"project_123\",\n            \"group_2\",\n        ],\n    ),\n)"
+                        "source": "response = await svix.endpoint.update(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointUpdate(\n        description=\"An example endpoint name\",\n        throttle_rate=1,\n        uid=\"unique-identifier\",\n        url=\"https://example.com/webhook/\",\n        disabled=True,\n        filter_types=[\n            \"user.signup\",\n            \"user.deleted\",\n        ],\n        channels=[\n            \"project_123\",\n            \"group_2\",\n        ],\n        metadata={},\n    ),\n)"
                     },
                     {
                         "lang": "Go",
                         "label": "Go",
-                        "source": "response, err := svix.Endpoint.Update(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tEndpointUpdate{\n\t\tDescription:  new(\"An example endpoint name\"),\n\t\tThrottleRate: new(uint16(1)),\n\t\tUid:          new(\"unique-identifier\"),\n\t\tUrl:          \"https://example.com/webhook/\",\n\t\tMetadata:     nil,\n\t\tDisabled:     new(true),\n\t\tFilterTypes:  []string{\"user.signup\", \"user.deleted\"},\n\t\tChannels:     []string{\"project_123\", \"group_2\"},\n\t},\n)"
+                        "source": "response, err := svix.Endpoint.Update(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tEndpointUpdate{\n\t\tDescription:  new(\"An example endpoint name\"),\n\t\tThrottleRate: new(uint16(1)),\n\t\tUid:          new(\"unique-identifier\"),\n\t\tUrl:          \"https://example.com/webhook/\",\n\t\tDisabled:     new(true),\n\t\tFilterTypes:  []string{\"user.signup\", \"user.deleted\"},\n\t\tChannels:     []string{\"project_123\", \"group_2\"},\n\t\tMetadata:     nil,\n\t},\n)"
                     },
                     {
                         "lang": "Kotlin",
                         "label": "Kotlin",
-                        "source": "val response =\n    svix.endpoint.update(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n        \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n        EndpointUpdate(\n            description = \"An example endpoint name\",\n            throttleRate = 1u,\n            uid = \"unique-identifier\",\n            url = \"https://example.com/webhook/\",\n            metadata = mapOf(),\n            disabled = true,\n            filterTypes = setOf(\"user.signup\", \"user.deleted\"),\n            channels = setOf(\"project_123\", \"group_2\"),\n        ),\n    )"
+                        "source": "val response =\n    svix.endpoint.update(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n        \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n        EndpointUpdate(\n            description = \"An example endpoint name\",\n            throttleRate = 1u,\n            uid = \"unique-identifier\",\n            url = \"https://example.com/webhook/\",\n            disabled = true,\n            filterTypes = setOf(\"user.signup\", \"user.deleted\"),\n            channels = setOf(\"project_123\", \"group_2\"),\n            metadata = mapOf(),\n        ),\n    )"
                     },
                     {
                         "lang": "Java",
                         "label": "Java",
-                        "source": "var response = svix.getEndpoint()\n        .update(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n            new EndpointUpdate()\n                .description(\"An example endpoint name\")\n                .throttleRate(1L)\n                .uid(\"unique-identifier\")\n                .url(URI.create(\"https://example.com/webhook/\"))\n                .metadata(Map.of())\n                .disabled(true)\n                .filterTypes(Set.of(\"user.signup\", \"user.deleted\"))\n                .channels(Set.of(\"project_123\", \"group_2\")));"
+                        "source": "var response = svix.getEndpoint()\n        .update(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n            new EndpointUpdate()\n                .description(\"An example endpoint name\")\n                .throttleRate(1L)\n                .uid(\"unique-identifier\")\n                .url(URI.create(\"https://example.com/webhook/\"))\n                .disabled(true)\n                .filterTypes(Set.of(\"user.signup\", \"user.deleted\"))\n                .channels(Set.of(\"project_123\", \"group_2\"))\n                .metadata(Map.of()));"
                     },
                     {
                         "lang": "Ruby",
                         "label": "Ruby",
-                        "source": "response = svix\n  .endpoint\n  .update(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    {\n      description: \"An example endpoint name\",\n      throttleRate: 1,\n      uid: \"unique-identifier\",\n      url: \"https://example.com/webhook/\",\n      metadata: {},\n      disabled: true,\n      filterTypes: [\"user.signup\", \"user.deleted\"],\n      channels: [\"project_123\", \"group_2\"]\n    }\n  )"
+                        "source": "response = svix\n  .endpoint\n  .update(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    {\n      description: \"An example endpoint name\",\n      throttleRate: 1,\n      uid: \"unique-identifier\",\n      url: \"https://example.com/webhook/\",\n      disabled: true,\n      filterTypes: [\"user.signup\", \"user.deleted\"],\n      channels: [\"project_123\", \"group_2\"],\n      metadata: {}\n    }\n  )"
                     },
                     {
                         "lang": "Rust",
                         "label": "Rust",
-                        "source": "let response = svix\n    .endpoint()\n    .update(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n        \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\".to_string(),\n        EndpointUpdate {\n            description: Some(\"An example endpoint name\".to_string()),\n            throttle_rate: Some(1),\n            uid: Some(\"unique-identifier\".to_string()),\n            url: \"https://example.com/webhook/\".to_string(),\n            metadata: Some(HashMap::new()),\n            disabled: Some(true),\n            filter_types: Some(\n                vec![\"user.signup\".to_string(), \"user.deleted\".to_string()],\n            ),\n            channels: Some(vec![\"project_123\".to_string(), \"group_2\".to_string()]),\n        },\n    )\n    .await?;"
+                        "source": "let response = svix\n    .endpoint()\n    .update(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n        \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\".to_string(),\n        EndpointUpdate {\n            description: Some(\"An example endpoint name\".to_string()),\n            throttle_rate: Some(1),\n            uid: Some(\"unique-identifier\".to_string()),\n            url: \"https://example.com/webhook/\".to_string(),\n            disabled: Some(true),\n            filter_types: Some(\n                vec![\"user.signup\".to_string(), \"user.deleted\".to_string()],\n            ),\n            channels: Some(vec![\"project_123\".to_string(), \"group_2\".to_string()]),\n            metadata: Some(HashMap::new()),\n        },\n    )\n    .await?;"
                     },
                     {
                         "lang": "C#",
                         "label": "C#",
-                        "source": "var response = svix.Endpoint.Update(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    new EndpointUpdate\n    {\n        Description = \"An example endpoint name\",\n        ThrottleRate = 1,\n        Uid = \"unique-identifier\",\n        Url = \"https://example.com/webhook/\",\n        Metadata = [],\n        Disabled = true,\n        FilterTypes = [\"user.signup\", \"user.deleted\"],\n        Channels = [\"project_123\", \"group_2\"],\n    }\n);"
+                        "source": "var response = svix.Endpoint.Update(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    new EndpointUpdate\n    {\n        Description = \"An example endpoint name\",\n        ThrottleRate = 1,\n        Uid = \"unique-identifier\",\n        Url = \"https://example.com/webhook/\",\n        Disabled = true,\n        FilterTypes = [\"user.signup\", \"user.deleted\"],\n        Channels = [\"project_123\", \"group_2\"],\n        Metadata = [],\n    }\n);"
                     },
                     {
                         "lang": "PHP",
                         "label": "PHP",
-                        "source": "$response = $svix->endpoint->update(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointUpdate::create(\n        url: \"https://example.com/webhook/\"\n    )\n    ->withDescription(\"An example endpoint name\")\n    ->withThrottleRate(1)\n    ->withUid(\"unique-identifier\")\n    ->withMetadata([])\n    ->withDisabled(true)\n    ->withFilterTypes([\"user.signup\",\"user.deleted\"])\n    ->withChannels([\"project_123\",\"group_2\"])\n);"
+                        "source": "$response = $svix->endpoint->update(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointUpdate::create(\n        url: \"https://example.com/webhook/\"\n    )\n    ->withDescription(\"An example endpoint name\")\n    ->withThrottleRate(1)\n    ->withUid(\"unique-identifier\")\n    ->withDisabled(true)\n    ->withFilterTypes([\"user.signup\",\"user.deleted\"])\n    ->withChannels([\"project_123\",\"group_2\"])\n    ->withMetadata([])\n);"
                     },
                     {
                         "lang": "Shell",
                         "label": "CLI",
-                        "source": "svix endpoint update \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\" '{\n    \"description\": \"An example endpoint name\",\n    \"throttleRate\": 1,\n    \"uid\": \"unique-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"metadata\": {},\n    \"disabled\": true,\n    \"filterTypes\": [\n      \"user.signup\",\n      \"user.deleted\"\n    ],\n    \"channels\": [\n      \"project_123\",\n      \"group_2\"\n    ]\n  }'"
+                        "source": "svix endpoint update \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\" '{\n    \"description\": \"An example endpoint name\",\n    \"throttleRate\": 1,\n    \"uid\": \"unique-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"disabled\": true,\n    \"filterTypes\": [\n      \"user.signup\",\n      \"user.deleted\"\n    ],\n    \"channels\": [\n      \"project_123\",\n      \"group_2\"\n    ],\n    \"metadata\": {}\n  }'"
                     },
                     {
                         "lang": "Shell",
                         "label": "cURL",
-                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/app/app_1srOrx2ZWZBpBUvZwXKQmoEYga2/endpoint/ep_33ZIBDmz66FcPG35FnsbM6Ie4X1' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"description\": \"An example endpoint name\",\n    \"throttleRate\": 1,\n    \"uid\": \"unique-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"metadata\": {},\n    \"disabled\": true,\n    \"filterTypes\": [\n      \"user.signup\",\n      \"user.deleted\"\n    ],\n    \"channels\": [\n      \"project_123\",\n      \"group_2\"\n    ]\n  }'"
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/app/app_1srOrx2ZWZBpBUvZwXKQmoEYga2/endpoint/ep_33ZIBDmz66FcPG35FnsbM6Ie4X1' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"description\": \"An example endpoint name\",\n    \"throttleRate\": 1,\n    \"uid\": \"unique-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"disabled\": true,\n    \"filterTypes\": [\n      \"user.signup\",\n      \"user.deleted\"\n    ],\n    \"channels\": [\n      \"project_123\",\n      \"group_2\"\n    ],\n    \"metadata\": {}\n  }'"
                     }
                 ]
             },
@@ -6550,67 +6550,67 @@
                     {
                         "lang": "TypeScript",
                         "label": "JavaScript",
-                        "source": "const response = await svix.endpoint.patch(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n  {\n    description: \"sample string\",\n    throttleRate: 1,\n    uid: \"unique-identifier\",\n    url: \"sample string\",\n    metadata: {},\n    disabled: true,\n    filterTypes: [],\n    channels: [],\n  }\n);"
+                        "source": "const response = await svix.endpoint.patch(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n  {\n    description: \"sample string\",\n    throttleRate: 1,\n    uid: \"unique-identifier\",\n    url: \"sample string\",\n    disabled: true,\n    filterTypes: [],\n    channels: [],\n    metadata: {},\n  }\n);"
                     },
                     {
                         "lang": "TypeScript",
                         "label": "TypeScript",
-                        "source": "const response = await svix.endpoint.patch(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n  {\n    description: \"sample string\",\n    throttleRate: 1,\n    uid: \"unique-identifier\",\n    url: \"sample string\",\n    metadata: {},\n    disabled: true,\n    filterTypes: [],\n    channels: [],\n  }\n);"
+                        "source": "const response = await svix.endpoint.patch(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n  {\n    description: \"sample string\",\n    throttleRate: 1,\n    uid: \"unique-identifier\",\n    url: \"sample string\",\n    disabled: true,\n    filterTypes: [],\n    channels: [],\n    metadata: {},\n  }\n);"
                     },
                     {
                         "lang": "Python",
                         "label": "Python",
-                        "source": "response = svix.endpoint.patch(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointPatch(\n        description=\"sample string\",\n        throttle_rate=1,\n        uid=\"unique-identifier\",\n        url=\"sample string\",\n        metadata={},\n        disabled=True,\n        filter_types=[],\n        channels=[],\n    ),\n)"
+                        "source": "response = svix.endpoint.patch(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointPatch(\n        description=\"sample string\",\n        throttle_rate=1,\n        uid=\"unique-identifier\",\n        url=\"sample string\",\n        disabled=True,\n        filter_types=[],\n        channels=[],\n        metadata={},\n    ),\n)"
                     },
                     {
                         "lang": "Python",
                         "label": "Python (Async)",
-                        "source": "response = await svix.endpoint.patch(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointPatch(\n        description=\"sample string\",\n        throttle_rate=1,\n        uid=\"unique-identifier\",\n        url=\"sample string\",\n        metadata={},\n        disabled=True,\n        filter_types=[],\n        channels=[],\n    ),\n)"
+                        "source": "response = await svix.endpoint.patch(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointPatch(\n        description=\"sample string\",\n        throttle_rate=1,\n        uid=\"unique-identifier\",\n        url=\"sample string\",\n        disabled=True,\n        filter_types=[],\n        channels=[],\n        metadata={},\n    ),\n)"
                     },
                     {
                         "lang": "Go",
                         "label": "Go",
-                        "source": "response, err := svix.Endpoint.Patch(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tEndpointPatch{\n\t\tDescription:  new(\"sample string\"),\n\t\tThrottleRate: NewNullable(uint16(1)),\n\t\tUid:          NewNullable(\"unique-identifier\"),\n\t\tUrl:          new(\"sample string\"),\n\t\tMetadata:     nil,\n\t\tDisabled:     new(true),\n\t\tFilterTypes:  NewNullable([]string{}),\n\t\tChannels:     NewNullable([]string{}),\n\t},\n)"
+                        "source": "response, err := svix.Endpoint.Patch(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tEndpointPatch{\n\t\tDescription:  new(\"sample string\"),\n\t\tThrottleRate: NewNullable(uint16(1)),\n\t\tUid:          NewNullable(\"unique-identifier\"),\n\t\tUrl:          new(\"sample string\"),\n\t\tDisabled:     new(true),\n\t\tFilterTypes:  NewNullable([]string{}),\n\t\tChannels:     NewNullable([]string{}),\n\t\tMetadata:     nil,\n\t},\n)"
                     },
                     {
                         "lang": "Kotlin",
                         "label": "Kotlin",
-                        "source": "val response =\n    svix.endpoint.patch(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n        \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n        EndpointPatch(\n            description = \"sample string\",\n            throttleRate = MaybeUnset.Present(1u),\n            uid = MaybeUnset.Present(\"unique-identifier\"),\n            url = \"https://example.com/\",\n            metadata = mapOf(),\n            disabled = true,\n            filterTypes = MaybeUnset.Present(setOf()),\n            channels = MaybeUnset.Present(setOf()),\n        ),\n    )"
+                        "source": "val response =\n    svix.endpoint.patch(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n        \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n        EndpointPatch(\n            description = \"sample string\",\n            throttleRate = MaybeUnset.Present(1u),\n            uid = MaybeUnset.Present(\"unique-identifier\"),\n            url = \"https://example.com/\",\n            disabled = true,\n            filterTypes = MaybeUnset.Present(setOf()),\n            channels = MaybeUnset.Present(setOf()),\n            metadata = mapOf(),\n        ),\n    )"
                     },
                     {
                         "lang": "Java",
                         "label": "Java",
-                        "source": "var response = svix.getEndpoint()\n        .patch(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n            new EndpointPatch()\n                .description(\"sample string\")\n                .throttleRate(1L)\n                .uid(\"unique-identifier\")\n                .url(URI.create(\"https://example.com/\"))\n                .metadata(Map.of())\n                .disabled(true)\n                .filterTypes(Set.of())\n                .channels(Set.of()));"
+                        "source": "var response = svix.getEndpoint()\n        .patch(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n            new EndpointPatch()\n                .description(\"sample string\")\n                .throttleRate(1L)\n                .uid(\"unique-identifier\")\n                .url(URI.create(\"https://example.com/\"))\n                .disabled(true)\n                .filterTypes(Set.of())\n                .channels(Set.of())\n                .metadata(Map.of()));"
                     },
                     {
                         "lang": "Ruby",
                         "label": "Ruby",
-                        "source": "response = svix\n  .endpoint\n  .patch(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    {\n      description: \"sample string\",\n      throttleRate: 1,\n      uid: \"unique-identifier\",\n      url: \"sample string\",\n      metadata: {},\n      disabled: true,\n      filterTypes: [],\n      channels: []\n    }\n  )"
+                        "source": "response = svix\n  .endpoint\n  .patch(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    {\n      description: \"sample string\",\n      throttleRate: 1,\n      uid: \"unique-identifier\",\n      url: \"sample string\",\n      disabled: true,\n      filterTypes: [],\n      channels: [],\n      metadata: {}\n    }\n  )"
                     },
                     {
                         "lang": "Rust",
                         "label": "Rust",
-                        "source": "let response = svix\n    .endpoint()\n    .patch(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n        \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\".to_string(),\n        EndpointPatch {\n            description: Some(\"sample string\".to_string()),\n            throttle_rate: js_option::JsOption::Some(1),\n            uid: js_option::JsOption::Some(\"unique-identifier\".to_string()),\n            url: Some(\"sample string\".to_string()),\n            metadata: Some(HashMap::new()),\n            disabled: Some(true),\n            filter_types: js_option::JsOption::Some(vec![]),\n            channels: js_option::JsOption::Some(vec![]),\n        },\n    )\n    .await?;"
+                        "source": "let response = svix\n    .endpoint()\n    .patch(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n        \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\".to_string(),\n        EndpointPatch {\n            description: Some(\"sample string\".to_string()),\n            throttle_rate: js_option::JsOption::Some(1),\n            uid: js_option::JsOption::Some(\"unique-identifier\".to_string()),\n            url: Some(\"sample string\".to_string()),\n            disabled: Some(true),\n            filter_types: js_option::JsOption::Some(vec![]),\n            channels: js_option::JsOption::Some(vec![]),\n            metadata: Some(HashMap::new()),\n        },\n    )\n    .await?;"
                     },
                     {
                         "lang": "C#",
                         "label": "C#",
-                        "source": "var response = svix.Endpoint.Patch(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    new EndpointPatch\n    {\n        Description = \"sample string\",\n        ThrottleRate = 1,\n        Uid = \"unique-identifier\",\n        Url = \"sample string\",\n        Metadata = [],\n        Disabled = true,\n        FilterTypes = MaybeUnset<List<string>?>.Set([]),\n        Channels = MaybeUnset<List<string>?>.Set([]),\n    }\n);"
+                        "source": "var response = svix.Endpoint.Patch(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    new EndpointPatch\n    {\n        Description = \"sample string\",\n        ThrottleRate = 1,\n        Uid = \"unique-identifier\",\n        Url = \"sample string\",\n        Disabled = true,\n        FilterTypes = MaybeUnset<List<string>?>.Set([]),\n        Channels = MaybeUnset<List<string>?>.Set([]),\n        Metadata = [],\n    }\n);"
                     },
                     {
                         "lang": "PHP",
                         "label": "PHP",
-                        "source": "$response = $svix->endpoint->patch(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointPatch::create()\n    ->withDescription(\"sample string\")\n    ->withThrottleRate(1)\n    ->withUid(\"unique-identifier\")\n    ->withUrl(\"sample string\")\n    ->withMetadata([])\n    ->withDisabled(true)\n    ->withFilterTypes([])\n    ->withChannels([])\n);"
+                        "source": "$response = $svix->endpoint->patch(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointPatch::create()\n    ->withDescription(\"sample string\")\n    ->withThrottleRate(1)\n    ->withUid(\"unique-identifier\")\n    ->withUrl(\"sample string\")\n    ->withDisabled(true)\n    ->withFilterTypes([])\n    ->withChannels([])\n    ->withMetadata([])\n);"
                     },
                     {
                         "lang": "Shell",
                         "label": "CLI",
-                        "source": "svix endpoint patch \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\" '{\n    \"description\": \"sample string\",\n    \"throttleRate\": 1,\n    \"uid\": \"unique-identifier\",\n    \"url\": \"sample string\",\n    \"metadata\": {},\n    \"disabled\": true,\n    \"filterTypes\": [],\n    \"channels\": []\n  }'"
+                        "source": "svix endpoint patch \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\" '{\n    \"description\": \"sample string\",\n    \"throttleRate\": 1,\n    \"uid\": \"unique-identifier\",\n    \"url\": \"sample string\",\n    \"disabled\": true,\n    \"filterTypes\": [],\n    \"channels\": [],\n    \"metadata\": {}\n  }'"
                     },
                     {
                         "lang": "Shell",
                         "label": "cURL",
-                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/app/app_1srOrx2ZWZBpBUvZwXKQmoEYga2/endpoint/ep_33ZIBDmz66FcPG35FnsbM6Ie4X1' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"description\": \"sample string\",\n    \"throttleRate\": 1,\n    \"uid\": \"unique-identifier\",\n    \"url\": \"sample string\",\n    \"metadata\": {},\n    \"disabled\": true,\n    \"filterTypes\": [],\n    \"channels\": []\n  }'"
+                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/app/app_1srOrx2ZWZBpBUvZwXKQmoEYga2/endpoint/ep_33ZIBDmz66FcPG35FnsbM6Ie4X1' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"description\": \"sample string\",\n    \"throttleRate\": 1,\n    \"uid\": \"unique-identifier\",\n    \"url\": \"sample string\",\n    \"disabled\": true,\n    \"filterTypes\": [],\n    \"channels\": [],\n    \"metadata\": {}\n  }'"
                     }
                 ]
             }
@@ -41086,14 +41086,6 @@
                         "minLength": 1,
                         "example": "My first application"
                     },
-                    "rateLimit": {
-                        "description": "Deprecated, use `throttleRate` instead.",
-                        "type": "integer",
-                        "format": "uint16",
-                        "deprecated": true,
-                        "minimum": 1,
-                        "nullable": true
-                    },
                     "throttleRate": {
                         "description": "Maximum messages per second to send to this application.\n\nOutgoing messages will be throttled to this rate.",
                         "type": "integer",
@@ -41756,14 +41748,6 @@
                         "type": "string",
                         "example": "My first application"
                     },
-                    "rateLimit": {
-                        "description": "Deprecated, use `throttleRate` instead.",
-                        "type": "integer",
-                        "format": "uint16",
-                        "deprecated": true,
-                        "minimum": 0,
-                        "nullable": true
-                    },
                     "throttleRate": {
                         "description": "Maximum messages per second to send to this application.\n\nOutgoing messages will be throttled to this rate.",
                         "type": "integer",
@@ -41836,14 +41820,6 @@
                 "properties": {
                     "name": {
                         "type": "string"
-                    },
-                    "rateLimit": {
-                        "description": "Deprecated, use `throttleRate` instead.",
-                        "type": "integer",
-                        "format": "uint16",
-                        "deprecated": true,
-                        "minimum": 0,
-                        "nullable": true
                     },
                     "throttleRate": {
                         "description": "Maximum messages per second to send to this application.\n\nOutgoing messages will be throttled to this rate.",
@@ -42115,14 +42091,6 @@
                         "default": "",
                         "example": "An example endpoint name"
                     },
-                    "rateLimit": {
-                        "description": "Deprecated, use `throttleRate` instead.",
-                        "type": "integer",
-                        "format": "uint16",
-                        "deprecated": true,
-                        "minimum": 1,
-                        "nullable": true
-                    },
                     "throttleRate": {
                         "description": "Maximum messages per second to send to this endpoint.\n\nOutgoing messages will be throttled to this rate.",
                         "type": "integer",
@@ -42145,15 +42113,6 @@
                         "minLength": 1,
                         "maxLength": 65536,
                         "example": "https://example.com/webhook/"
-                    },
-                    "version": {
-                        "type": "integer",
-                        "format": "uint16",
-                        "default": 1,
-                        "deprecated": true,
-                        "nullable": true,
-                        "minimum": 1,
-                        "example": 1
                     },
                     "disabled": {
                         "type": "boolean",
@@ -42246,14 +42205,6 @@
                         "description": "An example endpoint name.",
                         "type": "string"
                     },
-                    "rateLimit": {
-                        "description": "Deprecated, use `throttleRate` instead.",
-                        "type": "integer",
-                        "format": "uint16",
-                        "deprecated": true,
-                        "minimum": 0,
-                        "nullable": true
-                    },
                     "throttleRate": {
                         "description": "Maximum messages per second to send to this endpoint.\n\nOutgoing messages will be throttled to this rate.",
                         "type": "integer",
@@ -42276,13 +42227,6 @@
                         "minLength": 1,
                         "maxLength": 65536,
                         "example": "https://example.com/webhook/"
-                    },
-                    "version": {
-                        "type": "integer",
-                        "format": "int32",
-                        "deprecated": true,
-                        "minimum": 1,
-                        "example": 1
                     },
                     "disabled": {
                         "type": "boolean",
@@ -42339,8 +42283,7 @@
                     "id",
                     "metadata",
                     "updatedAt",
-                    "url",
-                    "version"
+                    "url"
                 ]
             },
             "ListResponse_EndpointOut_": {
@@ -42380,14 +42323,6 @@
                         "default": "",
                         "example": "An example endpoint name"
                     },
-                    "rateLimit": {
-                        "description": "Deprecated, use `throttleRate` instead.",
-                        "type": "integer",
-                        "format": "uint16",
-                        "deprecated": true,
-                        "minimum": 1,
-                        "nullable": true
-                    },
                     "throttleRate": {
                         "description": "Maximum messages per second to send to this endpoint.\n\nOutgoing messages will be throttled to this rate.",
                         "type": "integer",
@@ -42410,15 +42345,6 @@
                         "minLength": 1,
                         "maxLength": 65536,
                         "example": "https://example.com/webhook/"
-                    },
-                    "version": {
-                        "type": "integer",
-                        "format": "uint16",
-                        "default": 1,
-                        "deprecated": true,
-                        "nullable": true,
-                        "minimum": 1,
-                        "example": 1
                     },
                     "disabled": {
                         "type": "boolean",
@@ -42478,14 +42404,6 @@
                     "description": {
                         "type": "string"
                     },
-                    "rateLimit": {
-                        "description": "Deprecated, use `throttleRate` instead.",
-                        "type": "integer",
-                        "format": "uint16",
-                        "deprecated": true,
-                        "minimum": 0,
-                        "nullable": true
-                    },
                     "throttleRate": {
                         "description": "Maximum messages per second to send to this endpoint.\n\nOutgoing messages will be throttled to this rate.",
                         "type": "integer",
@@ -42505,13 +42423,6 @@
                     "url": {
                         "type": "string",
                         "format": "uri"
-                    },
-                    "version": {
-                        "type": "integer",
-                        "format": "uint16",
-                        "deprecated": true,
-                        "minimum": 1,
-                        "example": 1
                     },
                     "disabled": {
                         "type": "boolean"
@@ -42537,14 +42448,6 @@
                             "example": "project_1337"
                         },
                         "uniqueItems": true,
-                        "nullable": true
-                    },
-                    "secret": {
-                        "description": "The endpoint's verification secret.\n\nFormat: `base64` encoded random bytes optionally prefixed with `whsec_`.\nIt is recommended to not set this and let the server generate the secret.",
-                        "type": "string",
-                        "deprecated": true,
-                        "pattern": "^(whsec_|whsk_|whsk1_|whpk_|whpk1_)?[a-zA-Z0-9+/=]{32,100}$",
-                        "example": "whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD",
                         "nullable": true
                     },
                     "metadata": {
@@ -42702,14 +42605,6 @@
                         "default": "",
                         "example": "An example endpoint name"
                     },
-                    "rateLimit": {
-                        "description": "Deprecated, use `throttleRate` instead.",
-                        "type": "integer",
-                        "format": "uint16",
-                        "deprecated": true,
-                        "minimum": 1,
-                        "nullable": true
-                    },
                     "throttleRate": {
                         "description": "Maximum messages per second to send to this endpoint.\n\nOutgoing messages will be throttled to this rate.",
                         "type": "integer",
@@ -42851,14 +42746,6 @@
                     "description": {
                         "description": "An example endpoint name.",
                         "type": "string"
-                    },
-                    "rateLimit": {
-                        "description": "Deprecated, use `throttleRate` instead.",
-                        "type": "integer",
-                        "format": "uint16",
-                        "deprecated": true,
-                        "minimum": 0,
-                        "nullable": true
                     },
                     "throttleRate": {
                         "description": "Maximum messages per second to send to this endpoint.\n\nOutgoing messages will be throttled to this rate.",
@@ -43947,14 +43834,6 @@
                         "default": "",
                         "example": "An example endpoint name"
                     },
-                    "rateLimit": {
-                        "description": "Deprecated, use `throttleRate` instead.",
-                        "type": "integer",
-                        "format": "uint16",
-                        "deprecated": true,
-                        "minimum": 1,
-                        "nullable": true
-                    },
                     "throttleRate": {
                         "description": "Maximum messages per second to send to this endpoint.\n\nOutgoing messages will be throttled to this rate.",
                         "type": "integer",
@@ -44109,15 +43988,6 @@
                         "example": [
                             "cool-new-feature"
                         ]
-                    },
-                    "featureFlag": {
-                        "description": "Deprecated, use `featureFlags` instead.",
-                        "type": "string",
-                        "default": null,
-                        "deprecated": true,
-                        "maxLength": 256,
-                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                        "nullable": true
                     }
                 },
                 "required": [
@@ -44411,14 +44281,6 @@
                         },
                         "uniqueItems": true,
                         "nullable": true
-                    },
-                    "featureFlag": {
-                        "description": "Deprecated, use `featureFlags` instead.",
-                        "type": "string",
-                        "deprecated": true,
-                        "maxLength": 256,
-                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                        "nullable": true
                     }
                 },
                 "required": [
@@ -44484,15 +44346,6 @@
                             "cool-new-feature"
                         ]
                     },
-                    "featureFlag": {
-                        "description": "Deprecated, use `featureFlags` instead.",
-                        "type": "string",
-                        "default": null,
-                        "deprecated": true,
-                        "maxLength": 256,
-                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                        "nullable": true
-                    },
                     "groupName": {
                         "description": "The event type group's name",
                         "type": "string",
@@ -44556,14 +44409,6 @@
                         "example": [
                             "cool-new-feature"
                         ]
-                    },
-                    "featureFlag": {
-                        "description": "Deprecated, use `featureFlags` instead.",
-                        "type": "string",
-                        "deprecated": true,
-                        "maxLength": 256,
-                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                        "nullable": true
                     },
                     "groupName": {
                         "description": "The event type group's name",
@@ -46554,14 +46399,6 @@
                         "description": "An example endpoint name.",
                         "type": "string"
                     },
-                    "rateLimit": {
-                        "description": "Deprecated, use `throttleRate` instead.",
-                        "type": "integer",
-                        "format": "uint16",
-                        "deprecated": true,
-                        "minimum": 0,
-                        "nullable": true
-                    },
                     "throttleRate": {
                         "description": "Maximum messages per second to send to this endpoint.\n\nOutgoing messages will be throttled to this rate.",
                         "type": "integer",
@@ -46584,13 +46421,6 @@
                         "minLength": 1,
                         "maxLength": 65536,
                         "example": "https://example.com/webhook/"
-                    },
-                    "version": {
-                        "type": "integer",
-                        "format": "int32",
-                        "deprecated": true,
-                        "minimum": 1,
-                        "example": 1
                     },
                     "disabled": {
                         "type": "boolean",
@@ -46648,8 +46478,7 @@
                     "status",
                     "statusText",
                     "updatedAt",
-                    "url",
-                    "version"
+                    "url"
                 ]
             },
             "ListResponse_MessageAttemptEndpointOut_": {
@@ -49672,14 +49501,6 @@
                         "description": "An example endpoint name.",
                         "type": "string"
                     },
-                    "rateLimit": {
-                        "description": "Deprecated, use `throttleRate` instead.",
-                        "type": "integer",
-                        "format": "uint16",
-                        "deprecated": true,
-                        "minimum": 0,
-                        "nullable": true
-                    },
                     "throttleRate": {
                         "description": "Maximum messages per second to send to this endpoint.\n\nOutgoing messages will be throttled to this rate.",
                         "type": "integer",
@@ -49756,14 +49577,6 @@
                         "default": "",
                         "example": "An example endpoint name"
                     },
-                    "rateLimit": {
-                        "description": "Deprecated, use `throttleRate` instead.",
-                        "type": "integer",
-                        "format": "uint16",
-                        "deprecated": true,
-                        "minimum": 1,
-                        "nullable": true
-                    },
                     "throttleRate": {
                         "description": "Maximum messages per second to send to this endpoint.\n\nOutgoing messages will be throttled to this rate.",
                         "type": "integer",
@@ -49834,14 +49647,6 @@
                         "type": "string",
                         "default": "",
                         "example": "An example endpoint name"
-                    },
-                    "rateLimit": {
-                        "description": "Deprecated, use `throttleRate` instead.",
-                        "type": "integer",
-                        "format": "uint16",
-                        "deprecated": true,
-                        "minimum": 1,
-                        "nullable": true
                     },
                     "throttleRate": {
                         "description": "Maximum messages per second to send to this endpoint.\n\nOutgoing messages will be throttled to this rate.",
@@ -52934,14 +52739,6 @@
                         "description": "An example endpoint name.",
                         "type": "string"
                     },
-                    "rateLimit": {
-                        "description": "Deprecated, use `throttleRate` instead.",
-                        "type": "integer",
-                        "format": "uint16",
-                        "deprecated": true,
-                        "minimum": 0,
-                        "nullable": true
-                    },
                     "throttleRate": {
                         "description": "Maximum messages per second to send to this endpoint.\n\nOutgoing messages will be throttled to this rate.",
                         "type": "integer",
@@ -53002,14 +52799,6 @@
                         "default": "",
                         "example": "An example endpoint name"
                     },
-                    "rateLimit": {
-                        "description": "Deprecated, use `throttleRate` instead.",
-                        "type": "integer",
-                        "format": "uint16",
-                        "deprecated": true,
-                        "minimum": 1,
-                        "nullable": true
-                    },
                     "throttleRate": {
                         "description": "Maximum messages per second to send to this endpoint.\n\nOutgoing messages will be throttled to this rate.",
                         "type": "integer",
@@ -53064,14 +52853,6 @@
                         "type": "string",
                         "default": "",
                         "example": "An example endpoint name"
-                    },
-                    "rateLimit": {
-                        "description": "Deprecated, use `throttleRate` instead.",
-                        "type": "integer",
-                        "format": "uint16",
-                        "deprecated": true,
-                        "minimum": 1,
-                        "nullable": true
                     },
                     "throttleRate": {
                         "description": "Maximum messages per second to send to this endpoint.\n\nOutgoing messages will be throttled to this rate.",

@@ -4,12 +4,6 @@ export interface EventTypeUpdate {
   archived?: boolean;
   deprecated?: boolean;
   description: string;
-  /**
-   * Deprecated, use `featureFlags` instead.
-   *
-   * @deprecated
-   */
-  featureFlag?: string | null;
   featureFlags?: string[] | null;
   /** The event type group's name */
   groupName?: string | null;
@@ -23,7 +17,6 @@ export const EventTypeUpdateSerializer = {
       archived: object["archived"],
       deprecated: object["deprecated"],
       description: object["description"],
-      featureFlag: object["featureFlag"],
       featureFlags: object["featureFlags"],
       groupName: object["groupName"],
       schemas: object["schemas"],
@@ -35,7 +28,6 @@ export const EventTypeUpdateSerializer = {
       archived: self.archived,
       deprecated: self.deprecated,
       description: self.description,
-      featureFlag: self.featureFlag,
       featureFlags: self.featureFlags,
       groupName: self.groupName,
       schemas: self.schemas,

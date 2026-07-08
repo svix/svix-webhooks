@@ -86,7 +86,6 @@ pub enum ApplicationCommands {
     \"id\": \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
     \"metadata\": {\"key\": \"...\"},
     \"name\": \"My first application\",
-    \"rateLimit\": 123,
     \"throttleRate\": 123,
     \"uid\": \"unique-identifier\",
     \"updatedAt\": \"2030-01-01T00:00:00Z\"
@@ -112,7 +111,6 @@ pub enum ApplicationCommands {
 {
   \"metadata\": {\"key\": \"...\"},
   \"name\": \"My first application\",
-  \"rateLimit\": 123,
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\"
 }\n\nExample response:
@@ -121,7 +119,6 @@ pub enum ApplicationCommands {
   \"id\": \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
   \"metadata\": {\"key\": \"...\"},
   \"name\": \"My first application\",
-  \"rateLimit\": 123,
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
   \"updatedAt\": \"2030-01-01T00:00:00Z\"
@@ -146,7 +143,6 @@ pub enum ApplicationCommands {
   \"id\": \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
   \"metadata\": {\"key\": \"...\"},
   \"name\": \"My first application\",
-  \"rateLimit\": 123,
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
   \"updatedAt\": \"2030-01-01T00:00:00Z\"
@@ -165,7 +161,6 @@ pub enum ApplicationCommands {
 {
   \"metadata\": {\"key\": \"...\"},
   \"name\": \"My first application\",
-  \"rateLimit\": 123,
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\"
 }\n\nExample response:
@@ -174,7 +169,6 @@ pub enum ApplicationCommands {
   \"id\": \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
   \"metadata\": {\"key\": \"...\"},
   \"name\": \"My first application\",
-  \"rateLimit\": 123,
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
   \"updatedAt\": \"2030-01-01T00:00:00Z\"
@@ -206,7 +200,6 @@ pub enum ApplicationCommands {
 {
   \"metadata\": {\"key\": \"...\"},
   \"name\": \"...\",
-  \"rateLimit\": 123,
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\"
 }\n\nExample response:
@@ -215,7 +208,6 @@ pub enum ApplicationCommands {
   \"id\": \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
   \"metadata\": {\"key\": \"...\"},
   \"name\": \"My first application\",
-  \"rateLimit\": 123,
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
   \"updatedAt\": \"2030-01-01T00:00:00Z\"

@@ -7,7 +7,6 @@ type SinkInCommon struct {
 	Disabled    *bool              `json:"disabled,omitempty"`
 	FilterTypes []string           `json:"filterTypes,omitempty"`
 	Metadata    *map[string]string `json:"metadata,omitempty"`
-	RateLimit   *uint16            `json:"rateLimit,omitempty"` // Deprecated, use `throttleRate` instead.
 	// The endpoint's verification secret.
 	//
 	// Format: `base64` encoded random bytes optionally prefixed with `whsec_`.

@@ -8,7 +8,6 @@ type EndpointIn struct {
 	FilterTypes []string           `json:"filterTypes,omitempty"`
 	Headers     *map[string]string `json:"headers,omitempty"`
 	Metadata    *map[string]string `json:"metadata,omitempty"`
-	RateLimit   *uint16            `json:"rateLimit,omitempty"` // Deprecated, use `throttleRate` instead.
 	// The endpoint's verification secret.
 	//
 	// Format: `base64` encoded random bytes optionally prefixed with `whsec_`.
@@ -20,5 +19,4 @@ type EndpointIn struct {
 	ThrottleRate *uint16 `json:"throttleRate,omitempty"`
 	Uid          *string `json:"uid,omitempty"` // Optional unique identifier for the endpoint.
 	Url          string  `json:"url"`
-	Version      *uint16 `json:"version,omitempty"`
 }

@@ -5,12 +5,6 @@ export interface IngestEndpointUpdate {
   disabled?: boolean;
   metadata?: { [key: string]: string };
   /**
-   * Deprecated, use `throttleRate` instead.
-   *
-   * @deprecated
-   */
-  rateLimit?: number | null;
-  /**
    * Maximum messages per second to send to this endpoint.
    *
    * Outgoing messages will be throttled to this rate.
@@ -27,7 +21,6 @@ export const IngestEndpointUpdateSerializer = {
       description: object["description"],
       disabled: object["disabled"],
       metadata: object["metadata"],
-      rateLimit: object["rateLimit"],
       throttleRate: object["throttleRate"],
       uid: object["uid"],
       url: object["url"],
@@ -39,7 +32,6 @@ export const IngestEndpointUpdateSerializer = {
       description: self.description,
       disabled: self.disabled,
       metadata: self.metadata,
-      rateLimit: self.rateLimit,
       throttleRate: self.throttleRate,
       uid: self.uid,
       url: self.url,

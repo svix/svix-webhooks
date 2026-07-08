@@ -14,7 +14,6 @@ class OperationalWebhookEndpointOut implements \JsonSerializable
      * @param list<string>|null     $filterTypes
      * @param string                $id           the Endpoint's ID
      * @param array<string, string> $metadata
-     * @param int|null              $rateLimit    deprecated, use `throttleRate` instead
      * @param int|null              $throttleRate Maximum messages per second to send to this endpoint.
      *
      * Outgoing messages will be throttled to this rate.
@@ -29,7 +28,6 @@ class OperationalWebhookEndpointOut implements \JsonSerializable
         public readonly string $url,
         public readonly ?bool $disabled = null,
         public readonly ?array $filterTypes = null,
-        public readonly ?int $rateLimit = null,
         public readonly ?int $throttleRate = null,
         public readonly ?string $uid = null,
         array $setFields = [],
@@ -55,7 +53,6 @@ class OperationalWebhookEndpointOut implements \JsonSerializable
             filterTypes: null,
             id: $id,
             metadata: $metadata,
-            rateLimit: null,
             throttleRate: null,
             uid: null,
             updatedAt: $updatedAt,
@@ -76,7 +73,6 @@ class OperationalWebhookEndpointOut implements \JsonSerializable
             filterTypes: $this->filterTypes,
             id: $this->id,
             metadata: $this->metadata,
-            rateLimit: $this->rateLimit,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
             updatedAt: $this->updatedAt,
@@ -97,28 +93,6 @@ class OperationalWebhookEndpointOut implements \JsonSerializable
             filterTypes: $filterTypes,
             id: $this->id,
             metadata: $this->metadata,
-            rateLimit: $this->rateLimit,
-            throttleRate: $this->throttleRate,
-            uid: $this->uid,
-            updatedAt: $this->updatedAt,
-            url: $this->url,
-            setFields: $setFields
-        );
-    }
-
-    public function withRateLimit(?int $rateLimit): self
-    {
-        $setFields = $this->setFields;
-        $setFields['rateLimit'] = true;
-
-        return new self(
-            createdAt: $this->createdAt,
-            description: $this->description,
-            disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
-            id: $this->id,
-            metadata: $this->metadata,
-            rateLimit: $rateLimit,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
             updatedAt: $this->updatedAt,
@@ -139,7 +113,6 @@ class OperationalWebhookEndpointOut implements \JsonSerializable
             filterTypes: $this->filterTypes,
             id: $this->id,
             metadata: $this->metadata,
-            rateLimit: $this->rateLimit,
             throttleRate: $throttleRate,
             uid: $this->uid,
             updatedAt: $this->updatedAt,
@@ -160,7 +133,6 @@ class OperationalWebhookEndpointOut implements \JsonSerializable
             filterTypes: $this->filterTypes,
             id: $this->id,
             metadata: $this->metadata,
-            rateLimit: $this->rateLimit,
             throttleRate: $this->throttleRate,
             uid: $uid,
             updatedAt: $this->updatedAt,
@@ -185,9 +157,6 @@ class OperationalWebhookEndpointOut implements \JsonSerializable
         if (isset($this->setFields['filterTypes'])) {
             $data['filterTypes'] = $this->filterTypes;
         }
-        if (isset($this->setFields['rateLimit'])) {
-            $data['rateLimit'] = $this->rateLimit;
-        }
         if (isset($this->setFields['throttleRate'])) {
             $data['throttleRate'] = $this->throttleRate;
         }
@@ -210,7 +179,6 @@ class OperationalWebhookEndpointOut implements \JsonSerializable
             filterTypes: \Svix\Utils::getValFromJson($data, 'filterTypes', false, 'OperationalWebhookEndpointOut'),
             id: \Svix\Utils::deserializeString($data, 'id', true, 'OperationalWebhookEndpointOut'),
             metadata: \Svix\Utils::getValFromJson($data, 'metadata', true, 'OperationalWebhookEndpointOut'),
-            rateLimit: \Svix\Utils::deserializeInt($data, 'rateLimit', false, 'OperationalWebhookEndpointOut'),
             throttleRate: \Svix\Utils::deserializeInt($data, 'throttleRate', false, 'OperationalWebhookEndpointOut'),
             uid: \Svix\Utils::deserializeString($data, 'uid', false, 'OperationalWebhookEndpointOut'),
             updatedAt: \Svix\Utils::deserializeDt($data, 'updatedAt', true, 'OperationalWebhookEndpointOut'),

@@ -455,14 +455,12 @@ pub enum MessageAttemptCommands {
     \"filterTypes\": [\"user.signup\",\"user.deleted\"],
     \"id\": \"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
     \"nextAttempt\": \"2030-01-01T00:00:00Z\",
-    \"rateLimit\": 123,
     \"status\": 0,
     \"statusText\": \"success\",
     \"throttleRate\": 123,
     \"uid\": \"unique-identifier\",
     \"updatedAt\": \"2030-01-01T00:00:00Z\",
-    \"url\": \"https://example.com/webhook/\",
-    \"version\": 1
+    \"url\": \"https://example.com/webhook/\"
   }],
   \"done\": true,
   \"iterator\": \"iterator\",

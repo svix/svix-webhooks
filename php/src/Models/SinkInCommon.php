@@ -13,7 +13,6 @@ class SinkInCommon implements \JsonSerializable
      * @param list<string>|null          $channels    list of message channels this sink listens to (omit for all)
      * @param list<string>|null          $filterTypes
      * @param array<string, string>|null $metadata
-     * @param int|null                   $rateLimit   deprecated, use `throttleRate` instead
      * @param string|null                $secret      The endpoint's verification secret.
      *
      * Format: `base64` encoded random bytes optionally prefixed with `whsec_`.
@@ -29,7 +28,6 @@ class SinkInCommon implements \JsonSerializable
         public readonly ?bool $disabled = null,
         public readonly ?array $filterTypes = null,
         public readonly ?array $metadata = null,
-        public readonly ?int $rateLimit = null,
         public readonly ?string $secret = null,
         public readonly ?int $throttleRate = null,
         public readonly ?string $uid = null,
@@ -49,7 +47,6 @@ class SinkInCommon implements \JsonSerializable
             disabled: null,
             filterTypes: null,
             metadata: null,
-            rateLimit: null,
             secret: null,
             throttleRate: null,
             uid: null,
@@ -68,7 +65,6 @@ class SinkInCommon implements \JsonSerializable
             disabled: $this->disabled,
             filterTypes: $this->filterTypes,
             metadata: $this->metadata,
-            rateLimit: $this->rateLimit,
             secret: $this->secret,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
@@ -87,7 +83,6 @@ class SinkInCommon implements \JsonSerializable
             disabled: $this->disabled,
             filterTypes: $this->filterTypes,
             metadata: $this->metadata,
-            rateLimit: $this->rateLimit,
             secret: $this->secret,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
@@ -106,7 +101,6 @@ class SinkInCommon implements \JsonSerializable
             disabled: $disabled,
             filterTypes: $this->filterTypes,
             metadata: $this->metadata,
-            rateLimit: $this->rateLimit,
             secret: $this->secret,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
@@ -125,7 +119,6 @@ class SinkInCommon implements \JsonSerializable
             disabled: $this->disabled,
             filterTypes: $filterTypes,
             metadata: $this->metadata,
-            rateLimit: $this->rateLimit,
             secret: $this->secret,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
@@ -144,26 +137,6 @@ class SinkInCommon implements \JsonSerializable
             disabled: $this->disabled,
             filterTypes: $this->filterTypes,
             metadata: $metadata,
-            rateLimit: $this->rateLimit,
-            secret: $this->secret,
-            throttleRate: $this->throttleRate,
-            uid: $this->uid,
-            setFields: $setFields
-        );
-    }
-
-    public function withRateLimit(?int $rateLimit): self
-    {
-        $setFields = $this->setFields;
-        $setFields['rateLimit'] = true;
-
-        return new self(
-            channels: $this->channels,
-            description: $this->description,
-            disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
-            metadata: $this->metadata,
-            rateLimit: $rateLimit,
             secret: $this->secret,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
@@ -182,7 +155,6 @@ class SinkInCommon implements \JsonSerializable
             disabled: $this->disabled,
             filterTypes: $this->filterTypes,
             metadata: $this->metadata,
-            rateLimit: $this->rateLimit,
             secret: $secret,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
@@ -201,7 +173,6 @@ class SinkInCommon implements \JsonSerializable
             disabled: $this->disabled,
             filterTypes: $this->filterTypes,
             metadata: $this->metadata,
-            rateLimit: $this->rateLimit,
             secret: $this->secret,
             throttleRate: $throttleRate,
             uid: $this->uid,
@@ -220,7 +191,6 @@ class SinkInCommon implements \JsonSerializable
             disabled: $this->disabled,
             filterTypes: $this->filterTypes,
             metadata: $this->metadata,
-            rateLimit: $this->rateLimit,
             secret: $this->secret,
             throttleRate: $this->throttleRate,
             uid: $uid,
@@ -248,9 +218,6 @@ class SinkInCommon implements \JsonSerializable
         if (null !== $this->metadata) {
             $data['metadata'] = $this->metadata;
         }
-        if (isset($this->setFields['rateLimit'])) {
-            $data['rateLimit'] = $this->rateLimit;
-        }
         if (isset($this->setFields['secret'])) {
             $data['secret'] = $this->secret;
         }
@@ -275,7 +242,6 @@ class SinkInCommon implements \JsonSerializable
             disabled: \Svix\Utils::deserializeBool($data, 'disabled', false, 'SinkInCommon'),
             filterTypes: \Svix\Utils::getValFromJson($data, 'filterTypes', false, 'SinkInCommon'),
             metadata: \Svix\Utils::getValFromJson($data, 'metadata', false, 'SinkInCommon'),
-            rateLimit: \Svix\Utils::deserializeInt($data, 'rateLimit', false, 'SinkInCommon'),
             secret: \Svix\Utils::deserializeString($data, 'secret', false, 'SinkInCommon'),
             throttleRate: \Svix\Utils::deserializeInt($data, 'throttleRate', false, 'SinkInCommon'),
             uid: \Svix\Utils::deserializeString($data, 'uid', false, 'SinkInCommon')

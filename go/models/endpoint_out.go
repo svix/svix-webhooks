@@ -11,7 +11,6 @@ type EndpointOut struct {
 	FilterTypes []string          `json:"filterTypes,omitempty"`
 	Id          string            `json:"id"` // The Endpoint's ID.
 	Metadata    map[string]string `json:"metadata"`
-	RateLimit   *uint16           `json:"rateLimit,omitempty"` // Deprecated, use `throttleRate` instead.
 	// Maximum messages per second to send to this endpoint.
 	//
 	// Outgoing messages will be throttled to this rate.
@@ -19,5 +18,4 @@ type EndpointOut struct {
 	Uid          *string   `json:"uid,omitempty"` // Optional unique identifier for the endpoint.
 	UpdatedAt    time.Time `json:"updatedAt"`
 	Url          string    `json:"url"`
-	Version      int32     `json:"version"`
 }

@@ -21,9 +21,6 @@ namespace Svix.Models
         [JsonProperty("metadata", Required = Required.Always)]
         public required Dictionary<string, string> Metadata { get; set; }
 
-        [JsonProperty("rateLimit")]
-        public ushort? RateLimit { get; set; } = null;
-
         [JsonProperty("throttleRate")]
         public ushort? ThrottleRate { get; set; } = null;
 
@@ -46,7 +43,6 @@ namespace Svix.Models
             sb.Append("  Disabled: ").Append(Disabled).Append('\n');
             sb.Append("  Id: ").Append(Id).Append('\n');
             sb.Append("  Metadata: ").Append(Metadata).Append('\n');
-            sb.Append("  RateLimit: ").Append(RateLimit).Append('\n');
             sb.Append("  ThrottleRate: ").Append(ThrottleRate).Append('\n');
             sb.Append("  Uid: ").Append(Uid).Append('\n');
             sb.Append("  UpdatedAt: ").Append(UpdatedAt).Append('\n');

@@ -9,8 +9,6 @@ data class OperationalWebhookEndpointIn(
     val disabled: Boolean? = null,
     val filterTypes: Set<String>? = null,
     val metadata: Map<String, String>? = null,
-    /** Deprecated, use `throttleRate` instead. */
-    val rateLimit: UShort? = null,
     /**
      * The endpoint's verification secret.
      *

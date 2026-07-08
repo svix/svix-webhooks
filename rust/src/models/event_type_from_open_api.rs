@@ -7,12 +7,6 @@ pub struct EventTypeFromOpenApi {
 
     pub description: String,
 
-    /// Deprecated, use `featureFlags` instead.
-    #[deprecated]
-    #[serde(rename = "featureFlag")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub feature_flag: Option<String>,
-
     #[serde(rename = "featureFlags")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub feature_flags: Option<Vec<String>>,
@@ -31,11 +25,9 @@ pub struct EventTypeFromOpenApi {
 
 impl EventTypeFromOpenApi {
     pub fn new(deprecated: bool, description: String, name: String) -> Self {
-        #[allow(deprecated)]
         Self {
             deprecated,
             description,
-            feature_flag: None,
             feature_flags: None,
             group_name: None,
             name,

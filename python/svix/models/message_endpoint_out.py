@@ -25,9 +25,6 @@ class MessageEndpointOut(BaseModel):
 
     next_attempt: t.Optional[datetime] = None
 
-    rate_limit: t.Optional[int] = None
-    """Deprecated, use `throttleRate` instead."""
-
     status: MessageStatus
 
     status_text: MessageStatusText
@@ -43,5 +40,3 @@ class MessageEndpointOut(BaseModel):
     updated_at: datetime
 
     url: str
-
-    version: int

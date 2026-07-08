@@ -28,12 +28,10 @@ public class EndpointIn {
     @JsonProperty private Set<String> filterTypes;
     @JsonProperty private Map<String, String> headers;
     @JsonProperty private Map<String, String> metadata;
-    @JsonProperty private Long rateLimit;
     @JsonProperty private String secret;
     @JsonProperty private Long throttleRate;
     @JsonProperty private String uid;
     @JsonProperty private URI url;
-    @JsonProperty private Long version;
 
     public EndpointIn() {}
 
@@ -187,28 +185,6 @@ public class EndpointIn {
         this.metadata = metadata;
     }
 
-    @Deprecated
-    public EndpointIn rateLimit(Long rateLimit) {
-        this.rateLimit = rateLimit;
-        return this;
-    }
-
-    /**
-     * Deprecated, use `throttleRate` instead.
-     *
-     * @return rateLimit
-     */
-    @javax.annotation.Nullable
-    @Deprecated
-    public Long getRateLimit() {
-        return rateLimit;
-    }
-
-    @Deprecated
-    public void setRateLimit(Long rateLimit) {
-        this.rateLimit = rateLimit;
-    }
-
     public EndpointIn secret(String secret) {
         this.secret = secret;
         return this;
@@ -288,28 +264,6 @@ public class EndpointIn {
 
     public void setUrl(URI url) {
         this.url = url;
-    }
-
-    @Deprecated
-    public EndpointIn version(Long version) {
-        this.version = version;
-        return this;
-    }
-
-    /**
-     * Get version
-     *
-     * @return version
-     */
-    @javax.annotation.Nullable
-    @Deprecated
-    public Long getVersion() {
-        return version;
-    }
-
-    @Deprecated
-    public void setVersion(Long version) {
-        this.version = version;
     }
 
     /**

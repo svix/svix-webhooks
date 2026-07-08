@@ -10,7 +10,6 @@ class EventTypeFromOpenApi implements \JsonSerializable
     private array $setFields = [];
 
     /**
-     * @param string|null       $featureFlag  deprecated, use `featureFlags` instead
      * @param list<string>|null $featureFlags
      * @param string|null       $groupName    The event type group's name
      * @param string            $name         The event type's name
@@ -19,7 +18,6 @@ class EventTypeFromOpenApi implements \JsonSerializable
         public readonly bool $deprecated,
         public readonly string $description,
         public readonly string $name,
-        public readonly ?string $featureFlag = null,
         public readonly ?array $featureFlags = null,
         public readonly ?string $groupName = null,
         public readonly ?array $schemas = null,
@@ -39,29 +37,11 @@ class EventTypeFromOpenApi implements \JsonSerializable
         return new self(
             deprecated: $deprecated,
             description: $description,
-            featureFlag: null,
             featureFlags: null,
             groupName: null,
             name: $name,
             schemas: null,
             setFields: ['deprecated' => true, 'description' => true, 'name' => true]
-        );
-    }
-
-    public function withFeatureFlag(?string $featureFlag): self
-    {
-        $setFields = $this->setFields;
-        $setFields['featureFlag'] = true;
-
-        return new self(
-            deprecated: $this->deprecated,
-            description: $this->description,
-            featureFlag: $featureFlag,
-            featureFlags: $this->featureFlags,
-            groupName: $this->groupName,
-            name: $this->name,
-            schemas: $this->schemas,
-            setFields: $setFields
         );
     }
 
@@ -73,7 +53,6 @@ class EventTypeFromOpenApi implements \JsonSerializable
         return new self(
             deprecated: $this->deprecated,
             description: $this->description,
-            featureFlag: $this->featureFlag,
             featureFlags: $featureFlags,
             groupName: $this->groupName,
             name: $this->name,
@@ -90,7 +69,6 @@ class EventTypeFromOpenApi implements \JsonSerializable
         return new self(
             deprecated: $this->deprecated,
             description: $this->description,
-            featureFlag: $this->featureFlag,
             featureFlags: $this->featureFlags,
             groupName: $groupName,
             name: $this->name,
@@ -107,7 +85,6 @@ class EventTypeFromOpenApi implements \JsonSerializable
         return new self(
             deprecated: $this->deprecated,
             description: $this->description,
-            featureFlag: $this->featureFlag,
             featureFlags: $this->featureFlags,
             groupName: $this->groupName,
             name: $this->name,
@@ -123,9 +100,6 @@ class EventTypeFromOpenApi implements \JsonSerializable
             'description' => $this->description,
             'name' => $this->name];
 
-        if (isset($this->setFields['featureFlag'])) {
-            $data['featureFlag'] = $this->featureFlag;
-        }
         if (isset($this->setFields['featureFlags'])) {
             $data['featureFlags'] = $this->featureFlags;
         }
@@ -147,7 +121,6 @@ class EventTypeFromOpenApi implements \JsonSerializable
         return new self(
             deprecated: \Svix\Utils::deserializeBool($data, 'deprecated', true, 'EventTypeFromOpenApi'),
             description: \Svix\Utils::deserializeString($data, 'description', true, 'EventTypeFromOpenApi'),
-            featureFlag: \Svix\Utils::deserializeString($data, 'featureFlag', false, 'EventTypeFromOpenApi'),
             featureFlags: \Svix\Utils::getValFromJson($data, 'featureFlags', false, 'EventTypeFromOpenApi'),
             groupName: \Svix\Utils::deserializeString($data, 'groupName', false, 'EventTypeFromOpenApi'),
             name: \Svix\Utils::deserializeString($data, 'name', true, 'EventTypeFromOpenApi'),
